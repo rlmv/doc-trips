@@ -47,9 +47,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'doc_fyt.urls'
+ROOT_URLCONF = 'urls'
 
-WSGI_APPLICATION = 'doc_fyt.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
