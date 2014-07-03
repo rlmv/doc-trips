@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -45,7 +46,19 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # enable Dartmouth SSO
+    'django_cas.middleware.CASMiddleware',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', 
+    'cas.backends.CASBackend',
+)
+
+CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
+CAS_RESPONSE_CALLBACKS = ( 'user.cas_callback.dart_callback' )
+CAS_LOGOUT_COMPLETELY = True
 
 ROOT_URLCONF = 'urls'
 
