@@ -1,13 +1,19 @@
 
+
+VENV=fyt-venv
+PYTHON=$(VENV)/bin/python
+PIP=$(VENV)/bin/pip
+
 all:
-	python manage.py runserver
+	$(PYTHON) manage.py runserver
 
 install:
-	pip install django_cas_sso
+	pyvenv $(VENV)
+	$(PIP) install -r requirements.txt
 
 # should later use migrate
 sync:
-	python manage.py syncdb
+	$(PYTHON) manage.py syncdb
 
 clean:
 	rm -rf *.pyc
