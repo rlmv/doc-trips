@@ -12,6 +12,12 @@ class UserProfile(models.Model):
     """
     user = models.OneToOneField(User, unique=True)
     netid = models.CharField(max_length=40)
+    did = models.CharField(max_length=40)
+    uid = models.CharField(max_length=40)
+    affil = models.CharField(max_length=40)
+    alumni_id = models.CharField(max_length=40)
+    auth_type = models.CharField(max_length=40)
+
 
 
 def create_profile(sender, instance, created, **kwargs):

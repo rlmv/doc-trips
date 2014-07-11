@@ -10,23 +10,17 @@ logger = logging.getLogger(__name__)
 def dartmouth_cas_callback(tree):
     """ Callback function for parsing Dartmouth's CAS response.
     
-    
-    The django_cas Tree is a ElementTree object. 
+    This is called by the django_cas backend. 
+    tree is a ElementTree object. 
     """
 
     tag_prefix = "{http://www.yale.edu/tp/cas}"
-
     findtext = lambda x: tree[0].findtext(tag_prefix + x)
 
     username = findtext('name')
-    did = findtext('did')
     netid = findtext('netid')
-    uid = findtext('uid')
     user_str = findtext('user') # fmt: username @DARTMOUTH.EDU
-    affil = findtext('affil')
-    alumniid = findtext('alumniid')
-    authtype = findtext('authType')
-    
+
     email = netid + '@dartmouth.edu'
     
     # hack hack: CAS backend uses the tree[0][0] field
@@ -46,6 +40,12 @@ def dartmouth_cas_callback(tree):
         
         profile = user.userprofile
         profile.netid = netid
-        # profile.name = username
+        profile.did = findtext('did')
+        profile.uid = findtext('uid')
+        profile.affil = findtext('affil')
+        profile.alumni_id = findtext('alumniid')
+        profile.auth_type = findtext('authType')
         
+        # profile.name = username
+        user.save()
         profile.save()

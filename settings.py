@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(__file__)
 
 
 # Quick-start development settings - unsuitable for production
@@ -48,19 +48,21 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # enable Dartmouth SSO
+    # enable Dartmouth WebAuth
     'django_cas.middleware.CASMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend', 
+    'django.contrib.auth.backends.ModelBackend',  # TODO: do we need this with CAS?
     'django_cas.backends.CASBackend',
 )
 
+# django_cas / Dartmouth WebAuth settings 
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 CAS_RESPONSE_CALLBACKS = [ 'user.cas.dartmouth_cas_callback' ]
 CAS_LOGOUT_COMPLETELY = True
 
+# login_required decorator redirects to here. This is a django_cas view.
 LOGIN_URL = '/user/login'
 
 ROOT_URLCONF = 'urls'
@@ -85,7 +87,7 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
 USE_L10N = True
 
