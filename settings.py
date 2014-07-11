@@ -36,7 +36,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user'
+    'django_cas',
+    'user',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,8 +58,10 @@ AUTHENTICATION_BACKENDS = (
 )
 
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
-CAS_RESPONSE_CALLBACKS = ( 'user.dartmouth_cas_callback' )
+CAS_RESPONSE_CALLBACKS = [ 'user.cas.dartmouth_cas_callback' ]
 CAS_LOGOUT_COMPLETELY = True
+
+LOGIN_URL = '/user/login'
 
 ROOT_URLCONF = 'urls'
 
