@@ -53,11 +53,11 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', 
-    'cas.backends.CASBackend',
+    'django_cas.backends.CASBackend',
 )
 
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
-CAS_RESPONSE_CALLBACKS = ( 'user.cas_callback.dart_callback' )
+CAS_RESPONSE_CALLBACKS = ( 'user.dartmouth_cas_callback' )
 CAS_LOGOUT_COMPLETELY = True
 
 ROOT_URLCONF = 'urls'
