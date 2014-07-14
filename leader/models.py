@@ -1,12 +1,13 @@
 
 
+
 from django.db import models
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
 # TODO: move to globals and reuse for trippees
-TSHIRT_SIZES = (
+TSHIRT_SIZE_CHOICES = (
     ('S', 'Small'), 
     ('M', 'Medium'), 
     ('L', 'Large'), 
@@ -14,12 +15,13 @@ TSHIRT_SIZES = (
 )
 
 
-class LeaderApplications(models.Model):
+class LeaderApplication(models.Model):
 
     """ Status choices. 
 
     See https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
     """
+    PENDING = 'PEND'
     ACCEPTED = 'ACC'
     WAITLISTED = 'WAIT'
     REJECTED = 'REJ'
@@ -28,6 +30,7 @@ class LeaderApplications(models.Model):
     DEPRECATED = 'DEP'
     DISQUALIFIED = 'DISQ'
     STATUS_CHOICES = (
+        (PENDING, 'Pending'),
         (ACCEPTED, 'Accepted'),
         (WAITLISTED, 'Waitlisted'), 
         (REJECTED, 'Rejected'), 
@@ -38,7 +41,7 @@ class LeaderApplications(models.Model):
     )
 
     user = models.ForeignKey(User)
-    status = models.CharField(max_length=4, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     class_year = models.PositiveIntegerField()
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
     gender = models.CharField(max_length=255)
@@ -52,9 +55,15 @@ class LeaderApplications(models.Model):
 
     # TODO: should application questiosn and answers be hardcoded or dynamic?
 
-    notes = models.CharField(max_length=255)
+    notes = models.CharField(max_length=255, blank=True) # not required in form
 
-    # TODO: 
-    
+    def get_absolute_url(self): 
+        """ Get the URL for this object. 
+        
+        See https://docs.djangoproject.com/en/1.6/ref/models/instances/#django.db.models.Model.get_absolute_url
+        """
+        from django.core.urlresolvers import reverse
+        return reverse('leader:leaderapplication', kwargs={'pk': self.pk}) 
+        
     
     
