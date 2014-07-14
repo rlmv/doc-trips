@@ -1,9 +1,18 @@
 
+
 Packages
 ========
+cms:
 mezzanine
 mezzanine_blocks
 something like https://github.com/schneck/django-foreignkeysearch may be useful
+
+admin site:
+http://grappelliproject.com/
+https://github.com/etianen/django-reversion
+
+dynamic settings: 
+https://github.com/comoga/django-constance
 
 
 * CMS means page should be admin editable
@@ -41,25 +50,29 @@ It would be nice to have a way to add CMS generated pages anywhere on the site.
 Private (DYN) (@LOGIN)
 =======
 
-* leader 
-    - application
-    - trip information
+* leader login 
+    - Application. Form view of the `LeaderApplication` model. (Without customizable questions for the first iteration--this can later be changed.) Must cache answers so that users can return to the page to finish their application--Save/Submit buttons? Available if  `leader_application_available` < date < `application_due`. Submits with `trips_year` specification.
+    - Trip Information. If the date > `leader_assignments_posted` trip assignment is available. This shows dates of trip, trip description, trip type, (trippees?) (co-leader?)
 
 main Database:
+-------------
 
-* checklists : large and complex. A full collection of checklists for every day of trips. 
+Every database url looks like /database/2013/ for some year. Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips-year value.
+
+* checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
 * globals (/admin) : 
-    - trips cost, application dates, assignments, etc.
-    - sections. number of sections, dates for arrival, transfer/international/NAD etc.
+    - (use django-constance)
+    - `trips_year`. 
+    - `migration_date` - date on which `trips_year` will increment to the next year. All application dates, section dates, etc will be incremented by a year. has a hard minimum. Also, a 'migrate now' button.
+    - `trips_cost`
+    - `leader_application_available`, `leader_application_due`, `leader_recommendation_due`
+    - `leader_assignments_posted`
+    - `trippee_registrations_available`, `due`
+    - `trippee_assignments_posted`
+    - sections. Section model. number of sections, dates for arrival, transfer/international/NAD etc.
 
-* safety log  (PRIO LOW)
-    - incident matrix of all reports. Show all trip templates (or scheduled trips?), and all incidents for those trips. Unscheduled trips should show a '-'.
-    - summary of all incidents. 
-    - 'new call' link 
-    - incident updates should be implemented by extending django's built-in comments.
-
-* trippees
+* trippees - `Trippee`, `TrippeeRegistration` models
     - table of all trippees, unassigned trippees are propogated to the top
     - each trippee page is editable by admin, and provides buttons for assignment to a trip. 
     - trippee registrations are matched with trippees (college provided information). this should be easily done via DIDs
@@ -67,11 +80,11 @@ main Database:
     - find. search for trippees given many criteria. perhaps using a package like https://github.com/esistgut/django-simple-search
 
 * leaders
-    - table of all leader applications, accepted/waitlisted, assignments, grade, and links to change all these. able to sort by grade, gender. should bubble unassigned leaders and leaders with no status.
-    - links to view leaders sorted by trip
+    - Table of all leader applications, accepted/waitlisted, assignments, grade, and links to change all these. Able to sort by grade, gender. should bubble unassigned leaders and leaders with no status. Able to change status of application.
+    - Table of leaders sorted by section/trip
     - blitzlists. many.
-    - graders. list of graders. need a way to grant grading permissions to graders. use dnd interface.
-    - grades. feeds leader applications to users with grader permissions. same grader should not get same app twice. should filter out 'deprecated' apps.
+    - graders. list of graders, and a portal to grant Users grader permissions. Use dnd interface.
+    - grades. feeds leader applications to users with grader permissions. same grader should not get same app twice. should filter out 'deprecated' applications.
 
 * trips
     - landing page w/ table of all trip templates and existence on section. links to scheduled trips.
@@ -90,12 +103,26 @@ main Database:
     - tshirts - from leaders and trippee applications.
     - others??
 
+
+* safety log  (PRIO LOW)
+    - incident matrix of all reports. Show all trip templates (or scheduled trips?), and all incidents for those trips. Unscheduled trips should show a '-'.
+    - summary of all incidents. 
+    - 'new call' link 
+    - incident updates should be implemented by extending django's built-in comments.
+
+
+Permissions:
+============
+`superuser`
+`admin/director` - can view and edit all database. Cannot touch User objects.
+`graders`
+`leaders` - a User is a leader if she has submitted a `LeaderApplication`
+`trippee` - incoming students
+
+
+
 DB design
 =========
-
-years - use PARTITION?
-
-basically all data should be versioned? For example, should be able to go back and look at trip types for all previous years. 
 
 when migrating, copy db tables from
 * trip types 
@@ -127,5 +154,9 @@ Big Questions
 
 * how is the trippee information imported from the college?
 
-* should trainings have templates?
+* should trip leader trainings be implemented with templates?
 
+* should long-lasting data (templates) be reversioned/recoverable?
+
+
+http://www.rdegges.com/the-perfect-django-settings-file/

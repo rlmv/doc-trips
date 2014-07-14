@@ -19,7 +19,6 @@ class UserProfile(models.Model):
     auth_type = models.CharField(max_length=40)
 
 
-
 def create_profile(sender, instance, created, **kwargs):
     """ Create a UserProfile for every created User. """
     if created:
