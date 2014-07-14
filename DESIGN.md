@@ -51,13 +51,16 @@ Private (DYN) (@LOGIN)
 =======
 
 * leader login 
-    - Application. Form view of the `LeaderApplication` model. (Without customizable questions for the first iteration--this can later be changed.) Must cache answers so that users can return to the page to finish their application--Save/Submit buttons? Available if  `leader_application_available` < date < `application_due`. Submits with `trips_year` specification.
+    - Application. Form view of the `LeaderApplication` model. (Without customizable questions for the first iteration--this can later be changed.) Must cache answers so that users can return to the page to finish their application--Save/Submit buttons? Available if  `leader_application_available` < date < `application_due`. Submits with `trips_year` specification. 
     - Trip Information. If the date > `leader_assignments_posted` trip assignment is available. This shows dates of trip, trip description, trip type, (trippees?) (co-leader?)
+
+* leader recommendation 
+    - perma-link (by year?) which lets (anyone? User) submit a recommendation for a leader. Should be available at /leader/recommendation/:id
 
 main Database:
 -------------
 
-Every database url looks like /database/2013/ for some year. Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips-year value.
+Every database url looks like /database/:year for some year. Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips-year value.
 
 * checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
