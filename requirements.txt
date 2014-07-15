@@ -1,3 +1,4 @@
 
 django
 django_cas_sso
+-e git+git://github.com/comoga/django-constance#egg=django-constance

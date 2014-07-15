@@ -41,6 +41,8 @@ class LeaderApplication(models.Model):
     )
 
     user = models.ForeignKey(User)
+    trips_year = models.PositiveIntegerField()
+
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     class_year = models.PositiveIntegerField()
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)

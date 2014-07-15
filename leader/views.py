@@ -5,6 +5,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.decorators import login_required
 
+from constance import config
+
 from .models import LeaderApplication
 
 import logging
@@ -14,9 +16,9 @@ class LeaderApplicationView(DetailView):
     model = LeaderApplication
     context_object_name = 'leaderapplication'
     # default form : leaderapplication_detail.html
-
     
 leaderapplication = login_required(LeaderApplicationView.as_view())
+
 
 class CreateLeaderApplication(CreateView):
     model = LeaderApplication
@@ -26,12 +28,12 @@ class CreateLeaderApplication(CreateView):
     def form_valid(self, form):
         """ Attach creating user to Application. """
         form.instance.user = self.request.user
+        form.instance.trips_year = config.trips_year
         return super(CreateLeaderApplication, self).form_valid(form)
 
     # the views uses the default form leaderapplication_form.html
 
 create_leaderapplication = login_required(CreateLeaderApplication.as_view())
-
 
 class EditLeaderApplication(UpdateView):
     model = LeaderApplication

@@ -36,9 +36,16 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # third party
     'django_cas',
+    'constance',
+    'constance.backends.database',
+    
+    # custom
     'user',
     'leader',
+    'leader_grade',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -70,7 +77,6 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
@@ -79,6 +85,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+}
+
+# Dynamic settings. django-constance https://github.com/comoga/django-constance
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+CONSTANCE_CONFIG = {
+    'trips_year': (2014, 'year of current trips'),
 }
 
 # Internationalization
