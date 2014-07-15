@@ -15,6 +15,9 @@ install:
 sync:
 	$(PYTHON) manage.py syncdb
 
+test:
+	$(PYTHON) manage.py test
+
 clean:
 	rm -rf *.pyc
 	rm -rf *~
