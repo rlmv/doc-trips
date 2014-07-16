@@ -1,3 +1,7 @@
 
 
 <p>{{ leader_application.hinman_box }}</p>
+<form action="" method="post"> {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Submit Grade"/>
+</form>

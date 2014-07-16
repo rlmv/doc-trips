@@ -1,14 +1,17 @@
 
 from django.shortcuts import redirect
+from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 from django.views.generic.base import RedirectView
 from django.views.generic.detail import DetailView
 from django.db.models import Count
+from django.forms import ModelForm
 
 from .models import LeaderGrade
 from leader.models import LeaderApplication
+from leader.views import LeaderApplicationView
 
 import logging
 logger = logging.getLogger(__name__)
@@ -52,16 +55,41 @@ def redirect_to_next_gradable_application(request):
     # TODO: use template
     if not application:
         return HttpResponse('<h3>No applications left to grade </h3>')
-    logger.debug(application.hinman_box)
     return redirect('grade:grade', pk=application.pk)
     
 
-class GradeApplicationView(DetailView):
-    # TODO: POST to this view should create a grade
+class LeaderGradeForm(ModelForm):
+    class Meta:
+        model = LeaderGrade
+        fields = '__all__'
 
-    model = LeaderApplication
+
+class GradeApplicationView(FormView, LeaderApplicationView):
+
     template_name = 'leader_grade/grade.html'
-    context_object_name = 'leader_application'
+
+    # form parameters
+    form_class = LeaderGradeForm
+    form_object_name = 'form'
+
+    """ Must be a lazy - this is called before the urlconf is loaded.
+    See http://stackoverflow.com/a/22903110/3818777 """
+    success_url = reverse_lazy('grade:random')
+
+    def get_context_data(self, **kwargs):
+        """ Override the FormView and ApplicationView context data.
+
+        Necessary to send both form and object to the template. """
+        
+        context = {}
+        
+        obj = self.get_object()
+        context[self.get_context_object_name(obj)] = obj
+        context[self.form_object_name] = self.get_form(self.get_form_class())
+
+        context.update(**kwargs)
+        
+        return context
     
 grade_application = GradeApplicationView.as_view()    
 

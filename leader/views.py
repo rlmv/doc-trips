@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 class LeaderApplicationView(DetailView):
     model = LeaderApplication
-    context_object_name = 'leaderapplication'
-    # default form : leaderapplication_detail.html
+    context_object_name = 'leader_application'
+    # default template : leaderapplication_detail.html
     
 leaderapplication = login_required(LeaderApplicationView.as_view())
 
