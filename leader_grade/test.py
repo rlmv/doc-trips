@@ -10,18 +10,17 @@ from .views import get_next_application_to_grade
 class GradeValidationTestCase(TestCase):
 
     def test_grade_validation(self):
-        exclude = ['grader', 'leader_application', 'comment']
-        
-        bad_grade = LeaderGrade(grade=LeaderGrade.MIN_GRADE - 1)
-        with self.assertRaises(ValidationError):
-            bad_grade.clean_fields(exclude=exclude)
 
-        bad_grade = LeaderGrade(grade=LeaderGrade.MAX_GRADE + 1)
+        bad_grade = mommy.make('LeaderGrade', grade=LeaderGrade.MIN_GRADE-1)
         with self.assertRaises(ValidationError):
-            bad_grade.clean_fields(exclude=exclude)
+            bad_grade.clean_fields()
 
-        good_grade = LeaderGrade(grade=(LeaderGrade.MIN_GRADE + LeaderGrade.MAX_GRADE) / 2)
-        good_grade.clean_fields(exclude=exclude)
+        bad_grade.grade = LeaderGrade.MAX_GRADE + 1
+        with self.assertRaises(ValidationError):
+            bad_grade.clean_fields()
+
+        good_grade = mommy.make('LeaderGrade', grade=(LeaderGrade.MIN_GRADE + LeaderGrade.MAX_GRADE) / 2)
+        good_grade.clean_fields()
 
 
 class GetNextApplicationToGradeTestCase(TestCase):
