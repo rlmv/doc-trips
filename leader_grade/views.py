@@ -34,11 +34,14 @@ def get_next_application_to_grade(user):
 
 def get_random_application_by_num_grades(user, num):
 
-    return (LeaderApplication.objects
-        .annotate(Count('leadergrade'))
-        .filter(leadergrade__count=num)
-        # random ordering. TODO: this may be expensive?
-        .order_by('?'))[0]
+    app = (LeaderApplication.objects
+           .annotate(Count('leadergrade'))
+           .filter(leadergrade__count=num)
+           .exclude(leadergrade__grader=user)
+           # random ordering. TODO: this may be expensive?
+           .order_by('?')[:1])
+    
+    return app[0] if app else None
 
 
 # TODO: needs to be grader permission based
@@ -54,6 +57,7 @@ def redirect_to_next_gradable_application(request):
     
 
 class GradeApplicationView(DetailView):
+    # TODO: POST to this view should create a grade
 
     model = LeaderApplication
     template_name = 'leader_grade/grade.html'
