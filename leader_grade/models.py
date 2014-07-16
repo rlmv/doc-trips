@@ -20,7 +20,7 @@ class LeaderGrade(models.Model):
     MIN_GRADE = 0
     MAX_GRADE = 5
 
-    grader = models.ForeignKey(get_user_model()) # user
+    grader = models.ForeignKey(get_user_model()) 
     leader_application = models.ForeignKey(LeaderApplication)
     grade = models.DecimalField(max_digits=3, decimal_places=2, 
                                 validators=[validate_grade(MIN_GRADE, MAX_GRADE)])

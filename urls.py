@@ -8,6 +8,6 @@ urlpatterns = patterns('',
     url(r'^$', 'views.index', name='index'),
     url(r'^user/', include('user.urls', namespace='user')),
     url(r'^leader/', include('leader.urls', namespace='leader')),
+    url(r'^leader/grade/', include('leader_grade.urls', namespace='grade')),
     url(r'^admin/', include(admin.site.urls)),
-
 )
