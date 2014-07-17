@@ -18,19 +18,7 @@ class LeaderApplicationFilterSet(FilterSet):
         'class_year',
     ]
 
-"""
-@login_required
-def list_view(request):
-    applications = LeaderApplication.objects.all()
-    app_filter = LeaderApplicationFilterSet(applications, request.GET)
-    return render(request, 'leader/list_application.html', {
-        'applications': app_filter.qs,
-        'application_filter': app_filter,
-    })
-"""
-
 from vanilla import ListView
-
 
 class FilterListView(ListView):
 
