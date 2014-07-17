@@ -1,0 +1,10 @@
+
+
+
+{{ application_filter }}
+<ul>
+  {% for app in applications %}
+  <li><a href="{{ app.get_absolute_url }}">{{ app }}</a></li>
+  {% endfor %}
+</ul>
+  

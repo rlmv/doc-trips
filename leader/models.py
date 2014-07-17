@@ -68,6 +68,9 @@ class LeaderApplication(models.Model):
         """
         from django.core.urlresolvers import reverse
         return reverse('leader:leaderapplication', kwargs={'pk': self.pk}) 
+
+    def __str__(self):
+        return self.user.username
         
     
     
