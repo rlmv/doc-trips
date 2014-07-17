@@ -48,6 +48,7 @@ def get_random_application_by_num_grades(user, num):
 
 
 # TODO: needs to be grader permission based
+# TODO: convert to class view
 @login_required
 def redirect_to_next_gradable_application(request):
 
@@ -61,8 +62,7 @@ def redirect_to_next_gradable_application(request):
 class LeaderGradeForm(ModelForm):
     class Meta:
         model = LeaderGrade
-        fields = '__all__'
-
+        fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
 
 class GradeApplicationView(FormView, LeaderApplicationView):
 
@@ -70,13 +70,27 @@ class GradeApplicationView(FormView, LeaderApplicationView):
 
     # form parameters
     form_class = LeaderGradeForm
-    form_object_name = 'form'
+    """ The form is passed to the template as 'form' for compatibilty
+    with FormView.form_invalid. """
 
     """ Must be a lazy - this is called before the urlconf is loaded.
     See http://stackoverflow.com/a/22903110/3818777 """
     success_url = reverse_lazy('grade:random')
+    
+    def form_valid(self, form):
+        """ Add grader and application to the grade, save to database.
+        
+        Redirects to success_url. 
+        """
+        
+        grade = form.save(commit=False)
+        grade.grader = self.request.user
+        grade.leader_application = self.get_object()
+        grade.save()
 
-    def get_context_data(self, **kwargs):
+        return super(GradeApplicationView, self).form_valid(form)
+
+    def get_context_data(self, form=None, **kwargs):
         """ Override the FormView and ApplicationView context data.
 
         Necessary to send both form and object to the template. """
@@ -85,7 +99,9 @@ class GradeApplicationView(FormView, LeaderApplicationView):
         
         obj = self.get_object()
         context[self.get_context_object_name(obj)] = obj
-        context[self.form_object_name] = self.get_form(self.get_form_class())
+        if not form:
+            form = self.get_form(self.get_form_class())
+        context['form'] = form
 
         context.update(**kwargs)
         
