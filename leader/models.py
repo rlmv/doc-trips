@@ -49,7 +49,7 @@ class LeaderApplication(models.Model):
     gender = models.CharField(max_length=255)
     hinman_box = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
-    offcampus_address = models.CharField(max_length=255)     # TODO: do we need this?
+    offcampus_address = models.CharField(max_length=255, blank=True)     # TODO: do we need this?
 
     # TODO: write sections model
     # sections_prefer = models.ManyToManyField('Section')
@@ -61,6 +61,8 @@ class LeaderApplication(models.Model):
 
     def get_absolute_url(self): 
         """ Get the URL for this object. 
+
+        TODO: what is this used for?
         
         See https://docs.djangoproject.com/en/1.6/ref/models/instances/#django.db.models.Model.get_absolute_url
         """

@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     url(r'^leader/', include('leader.urls', namespace='leader')),
     url(r'^leader/grade/', include('leader_grade.urls', namespace='grade')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^grappelli/', include('grappelli.urls')),
 )

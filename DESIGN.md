@@ -10,6 +10,7 @@ something like https://github.com/schneck/django-foreignkeysearch may be useful
 admin site:
 http://grappelliproject.com/
 https://github.com/etianen/django-reversion
+http://django-filebrowser.readthedocs.org
 
 dynamic settings: 
 https://github.com/comoga/django-constance
