@@ -31,23 +31,41 @@ def list_view(request):
 
 from vanilla import ListView
 
-class LeaderApplicationList(ListView):
+
+class FilterListView(ListView):
+
+    """ Implements easyfilter filtering on a vanilla ListView. """
+    
+    filterset = None # filterset object
+    context_filter_name = None # context name of filter
+    
+    def __init__(self, *args, **kwargs):
+        super(FilterListView, self).__init__(*args, **kwargs)
+        
+        if self.filterset is None or self.context_filter_name is None:
+            from django.core.exceptions import ImproperlyConfigured
+            raise ImproperlyConfigured("FilterListView requires 'filterset' "
+                                       "and 'context_filter_name' attributes")
+    
+    def get_queryset(self):
+        qs = super(FilterListView, self).get_queryset()
+        self.filter_object = self.filterset(qs, self.request.GET)
+        return self.filter_object.qs
+
+    def get_context_data(self, **kwargs):
+        context = super(FilterListView, self).get_context_data(**kwargs)
+        context[self.context_filter_name] = self.filter_object
+        return context
+        
+        
+class LeaderApplicationList(FilterListView):
     
     model = LeaderApplication
     template_name = 'leader/list_application.html'
     context_object_name = 'applications'
-    filter_object_name = 'application_filter'
+    filterset = LeaderApplicationFilterSet
+    context_filter_name = 'application_filter'
 
-    def get_queryset(self):
-        applications = super(LeaderApplicationList, self).get_queryset()
-        self.app_filter = LeaderApplicationFilterSet(applications, self.request.GET)
-        return self.app_filter.qs
-
-    def get_context_data(self, **kwargs):
-        context = super(LeaderApplicationList, self).get_context_data(**kwargs)
-        context[self.filter_object_name] = self.app_filter
-        return context
-        
 list_view = login_required(LeaderApplicationList.as_view())
     
 
