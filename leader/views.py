@@ -22,7 +22,10 @@ from vanilla import ListView
 
 class FilterListView(ListView):
 
-    """ Implements easyfilter filtering on a vanilla ListView. """
+    """ Implements easyfilter filtering on a vanilla ListView. 
+
+    filterset and context_filter_name attributes must be specified.
+    """
     
     filterset = None # filterset object
     context_filter_name = None # context name of filter
@@ -44,7 +47,7 @@ class FilterListView(ListView):
         context = super(FilterListView, self).get_context_data(**kwargs)
         context[self.context_filter_name] = self.filter_object
         return context
-        
+
         
 class LeaderApplicationList(FilterListView):
     

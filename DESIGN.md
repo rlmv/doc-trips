@@ -94,7 +94,7 @@ Every database url looks like /database/:year for some year. Each menu database 
     - landing page w/ table of all trip templates and existence on section. links to scheduled trips.
     - trip templates. "uninstantiated trips".
     - trip types. used in trip templates, and to display on leader and trippee applications.
-    - campsites. used in trip templates. contains table of capacities/max outs. for any given day.
+    - campsites. used in trip templates. should indicate whether more than one trip is scheduled for the same campsite. Scheduling a campsite which another trip is using should give an error.
     - about numbering page.
 
 * transportation
