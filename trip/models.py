@@ -15,11 +15,25 @@ class ScheduledTrip(models.Model):
         # TODO: add section info
         return str(self.template)
 
+
 class Section(models.Model):
     
-    trips_year = models.PositiveIntegerField()
-    
+    """ Model to represent a trips section. """
 
+    trips_year = models.PositiveIntegerField()
+    name = models.CharField(max_length=1) # A,B,C, etc
+    leaders_arrive = models.DateTimeField()
+    
+    is_local = models.BooleanField(default=False)
+    is_exchange = models.BooleanField(default=False)
+    is_transfer = models.BooleanField(default=False)
+    is_international = models.BooleanField(default=False)
+    is_fysep = models.BooleanField(default=False)
+    is_native = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
 
 class TripTemplate(models.Model):
 
