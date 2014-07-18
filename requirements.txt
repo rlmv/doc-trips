@@ -6,3 +6,4 @@ model_mommy
 django-grappelli
 django-easyfilters
 django-vanilla-views
+south

@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'django_cas',
     'constance',
     'constance.backends.database',
+    'south',
     
     # custom
     'user',
