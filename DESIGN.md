@@ -12,6 +12,10 @@ http://grappelliproject.com/
 https://github.com/etianen/django-reversion
 http://django-filebrowser.readthedocs.org
 
+OR: <<<<
+http://django-admin-tools.readthedocs.org/en/latest/installation.html
+https://bitbucket.org/salvator/django-admintools-bootstrap
+
 dynamic settings: 
 https://github.com/comoga/django-constance
 

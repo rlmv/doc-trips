@@ -15,6 +15,12 @@ install:
 sync:
 	$(PYTHON) manage.py syncdb
 
+migrations:
+	$(PYTHON) manage.py makemigrations
+
+migrate:
+	$(PYTHON) manage.py migrate
+
 test:
 	$(PYTHON) manage.py test
 

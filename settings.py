@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'user',
     'leader',
     'leader_grade',
+    'trip',
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,0 +1,14 @@
+
+
+from vanilla import ListView
+
+from trip.models import ScheduledTrip
+
+class ScheduledTripListView(ListView):
+    model = ScheduledTrip
+    template_name = 'trip/trip_index.html'
+    context_object_name = 'trips'
+
+    
+trip_index = ScheduledTripListView.as_view()
+
