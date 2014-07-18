@@ -53,6 +53,7 @@ INSTALLED_APPS = (
     'leader',
     'leader_grade',
     'trip',
+    'global',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -94,10 +95,12 @@ DATABASES = {
     }
 }
 
+import datetime
 # Dynamic settings. django-constance https://github.com/comoga/django-constance
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'trips_year': (2014, 'year of current trips'),
+    'migrate_date':  (datetime.datetime.today(), 'date to migrate'),
 }
 
 # ordered this way for Grappelli

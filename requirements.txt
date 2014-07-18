@@ -7,3 +7,5 @@ django-grappelli
 django-easyfilters
 django-vanilla-views
 south
+django-crispy-forms
+django-bootstrap3
