@@ -15,6 +15,11 @@ class ScheduledTrip(models.Model):
         # TODO: add section info
         return str(self.template)
 
+class Section(models.Model):
+    
+    trips_year = models.PositiveIntegerField()
+    
+
 
 class TripTemplate(models.Model):
 

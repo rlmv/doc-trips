@@ -2,8 +2,9 @@
 
 from django.db import models
 
-
 class Config(models.Model):
+
+    """ TODO: implement and replace constance with this. """
     
     # set the current trip year for the entire site
     trips_year = models.PostiveIntegerField()

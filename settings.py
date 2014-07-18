@@ -53,7 +53,7 @@ INSTALLED_APPS = (
     'leader',
     'leader_grade',
     'trip',
-    'global',
+    'config',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -100,7 +100,7 @@ import datetime
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 CONSTANCE_CONFIG = {
     'trips_year': (2014, 'year of current trips'),
-    'migrate_date':  (datetime.datetime.today(), 'date to migrate'),
+    'migration_date':  (datetime.datetime.today(), 'date to migrate'),
 }
 
 # ordered this way for Grappelli
