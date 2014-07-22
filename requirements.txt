@@ -9,3 +9,7 @@ django-vanilla-views
 south
 django-crispy-forms
 django-bootstrap3
+
+mezzanine
+mezzanine-grappelli
+-e git+git://github.com/renyi/mezzanine-blocks#egg=mezzanine-blocks
