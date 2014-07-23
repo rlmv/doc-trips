@@ -16,11 +16,5 @@ class UserProfileInline(admin.StackedInline):
 class UserProfileAdmin(UserAdmin):
     inlines = [ UserProfileInline, ]
 
-    def has_delete_permission(self, request, obj=None):
-        return False
-
-    def get_model_perms(self, request):
-        return {}
-
 admin.site.unregister(User)
 admin.site.register(User, UserProfileAdmin)
