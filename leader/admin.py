@@ -2,8 +2,7 @@
 
 from django.contrib import admin
 
-from leader.models import LeaderApplication
-from leader_grade.models import LeaderGrade
+from leader.models import LeaderApplication, LeaderGrade
 
 class LeaderGradeInline(admin.TabularInline):
     model = LeaderGrade
@@ -33,3 +32,4 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
 #    change_list_filter_template = "admin/filter_listing.html"
 
 admin.site.register(LeaderApplication, LeaderApplicationAdmin)
+admin.site.register(LeaderGrade)

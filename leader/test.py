@@ -35,7 +35,7 @@ class GetNextApplicationToGradeTestCase(TestCase):
         application.save()
 
         # no LeaderGrades with foreign key set to this app exist
-        self.assertListEqual(list(application.leadergrade_set.all()), [])
+        self.assertListEqual(list(application.grades.all()), [])
         
         next = get_next_application_to_grade(self.user)
         self.assertEqual(application, next)
