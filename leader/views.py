@@ -80,7 +80,6 @@ class CreateLeaderApplication(CreateView):
     def form_valid(self, form):
         """ Attach creating user to Application. """
         form.instance.user = self.request.user
-        form.instance.trips_year = config.trips_year
         return super(CreateLeaderApplication, self).form_valid(form)
 
     # the views uses the default form leaderapplication_form.html

@@ -5,7 +5,8 @@ django_cas_sso
 
 # picklefield is a requirement for constance, since we are installing directly from the repo
 django-picklefield
--e git+git://github.com/comoga/django-constance#egg=django-constance
+#django-constance
+git+git://github.com/comoga/django-constance
 
 model_mommy
 

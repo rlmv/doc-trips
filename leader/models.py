@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
+from db.models import DatabaseModel
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (
@@ -15,7 +16,7 @@ TSHIRT_SIZE_CHOICES = (
 )
 
 
-class LeaderApplication(models.Model):
+class LeaderApplication(DatabaseModel):
 
     """ Status choices. 
 
@@ -41,7 +42,6 @@ class LeaderApplication(models.Model):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    trips_year = models.PositiveIntegerField()
     assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, blank=True, related_name='leaders')
 
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
@@ -83,15 +83,16 @@ class LeaderApplication(models.Model):
         return self.user.username
         
 
-def validate_grade(min, max):
-    def validate(grade):
-        if grade < min or grade > max:
-            raise ValidationError('grade is not in required range [{}, {}]'
-                                  .format(min, max))
-    return validate
+
+def validate_grade(grade):
+    min = LeaderGrade.MIN_GRADE
+    max = LeaderGrade.MAX_GRADE
+    if grade < min or grade > max:
+        raise ValidationError('grade is not in required range [{}, {}]'
+                              .format(min, max))
 
 
-class LeaderGrade(models.Model):
+class LeaderGrade(DatabaseModel):
 
     MIN_GRADE = 0
     MAX_GRADE = 5
@@ -99,7 +100,7 @@ class LeaderGrade(models.Model):
     grader = models.ForeignKey(settings.AUTH_USER_MODEL)
     leader_application = models.ForeignKey(LeaderApplication, related_name='grades')
     grade = models.DecimalField(max_digits=3, decimal_places=2, 
-                                validators=[validate_grade(MIN_GRADE, MAX_GRADE)])
+                                validators=[ validate_grade ])
     comment = models.CharField(max_length=255)
     hard_skills = models.BooleanField(default=False)
     soft_skills = models.BooleanField(default=False)

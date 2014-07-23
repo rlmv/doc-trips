@@ -1,29 +1,29 @@
 
 from django.conf import settings
+
 from django.db import models
+from db.models import DatabaseModel
 
-
-class ScheduledTrip(models.Model):
+class ScheduledTrip(DatabaseModel):
 
 
     template = models.ForeignKey('TripTemplate')
     section = models.ForeignKey('Section')
 
-    # The leaders for this trip can be selected with the 'leaders' field.
+    # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
             
     def __str__(self):
-        # TODO: add section info
-        return str(self.template)
+
+        return '{}{} - {}'.format(self.section.name, self.template.name, self.template.description)
 
 
-class Section(models.Model):
+class Section(DatabaseModel):
     
     """ Model to represent a trips section. """
 
-    trips_year = models.PositiveIntegerField()
     name = models.CharField(max_length=1) # A,B,C, etc
-    leaders_arrive = models.DateTimeField()
+    leaders_arrive = models.DateField()
     
     is_local = models.BooleanField(default=False)
     is_exchange = models.BooleanField(default=False)
@@ -36,10 +36,8 @@ class Section(models.Model):
         return self.name
 
 
-class TripTemplate(models.Model):
+class TripTemplate(DatabaseModel):
 
-    trips_year = models.PositiveIntegerField()
-    
     name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
     description = models.CharField(max_length=255) # short info
 
@@ -57,9 +55,7 @@ class TripTemplate(models.Model):
     def __str__(self):
         return "{}: {}".format(self.name, self.description)
 
-class TripType(models.Model):
-    
-    trips_year = models.PositiveIntegerField()
+class TripType(DatabaseModel):
     
     name = models.CharField(max_length=255)
     leader_description = models.TextField()
@@ -70,10 +66,7 @@ class TripType(models.Model):
     def __str__(self):
         return self.name
 
-
-class Campsite(models.Model):
-
-    trips_year = models.PositiveIntegerField()
+class Campsite(DatabaseModel):
     
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()

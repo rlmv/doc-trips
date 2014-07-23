@@ -46,12 +46,15 @@ INSTALLED_APPS = (
     'constance.backends.database',
     'south',
 
-    # custum
+    # custom
     'user',
     'leader',
     'trip',
     'config',
+    'db',
 )
+
+TRIPS_YEAR = 2014
 
 
 MIDDLEWARE_CLASSES = (
