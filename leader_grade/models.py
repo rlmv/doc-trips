@@ -1,7 +1,6 @@
 
-
+from django.conf import settings
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from leader.models import LeaderApplication
@@ -20,8 +19,8 @@ class LeaderGrade(models.Model):
     MIN_GRADE = 0
     MAX_GRADE = 5
 
-    grader = models.ForeignKey(get_user_model()) 
-    leader_application = models.ForeignKey(LeaderApplication)
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL)
+    leader_application = models.ForeignKey(LeaderApplication, related_name='grades')
     grade = models.DecimalField(max_digits=3, decimal_places=2, 
                                 validators=[validate_grade(MIN_GRADE, MAX_GRADE)])
     comment = models.CharField(max_length=255)

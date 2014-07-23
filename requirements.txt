@@ -8,10 +8,14 @@ django-picklefield
 -e git+git://github.com/comoga/django-constance#egg=django-constance
 
 model_mommy
-django-grappelli
+
+#django-grappelli
+# need dev version for django 1.7 compatibility
+git+git://github.com/sehmaschine/django-grappelli.git@dev/2.6.x
+
 django-easyfilters
 django-vanilla-views
-southdjango-crispy-forms
+django-crispy-forms
 django-bootstrap3
 
 mezzanine

@@ -1,12 +1,11 @@
 
-
+from django.conf import settings
 from django.db import models
-from django.contrib.auth import get_user_model
 
 
 class ScheduledTrip(models.Model):
 
-    trips_year = models.PositiveIntegerField()
+
     template = models.ForeignKey('TripTemplate')
     section = models.ForeignKey('Section')
 

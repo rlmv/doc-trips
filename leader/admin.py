@@ -21,15 +21,15 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
 
     # can we hid trips_year? can we make trips_year universally uneditable/invisible?
     
-    list_display = ('user', 'status', 'leadergrade_set')
+    list_display = ('user', 'status')
     list_editable = ('status',)
     list_filter = ('status',)
     
-    readonly_fields = [ 'trips_year',] # etc.
+ #   readonly_fields = [ 'trips_year',] # etc.
 
     inlines = [ LeaderGradeInline ]
 
-    change_list_template = "admin/change_list_filter_sidebar.html"
-    change_list_filter_template = "admin/filter_listing.html"
+#    change_list_template = "admin/change_list_filter_sidebar.html"
+#    change_list_filter_template = "admin/filter_listing.html"
 
 admin.site.register(LeaderApplication, LeaderApplicationAdmin)

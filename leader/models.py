@@ -1,9 +1,9 @@
 
 
-
+from django.conf import settings
 from django.db import models
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from django.core.exceptions import ValidationError
 
 
 # TODO: move to globals and reuse for trippees
@@ -40,9 +40,9 @@ class LeaderApplication(models.Model):
         (DISQUALIFIED, 'Disqualified'),
     )
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     trips_year = models.PositiveIntegerField()
-    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, related_name='leaders')
+    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, blank=True, related_name='leaders')
 
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     class_year = models.PositiveIntegerField()
@@ -66,11 +66,8 @@ class LeaderApplication(models.Model):
         This is called by django to validate ModelForms and the like. See
         https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.clean
         """
-
-        pass
-        
-
-
+        if self.status != self.ACCEPTED and self.assigned_trip:
+            raise ValidationError("un-accepted ({}) LeaderApplication cannot be assigned to a trip".format(self.status))
 
     def get_absolute_url(self): 
         """ Get the URL for this object. 
