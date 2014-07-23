@@ -12,6 +12,8 @@ http://grappelliproject.com/
 https://github.com/etianen/django-reversion
 http://django-filebrowser.readthedocs.org
 
+https://github.com/mauler/django-grappelli-navbar
+
 OR: <<<<
 http://django-admin-tools.readthedocs.org/en/latest/installation.html
 https://bitbucket.org/salvator/django-admintools-bootstrap
@@ -27,6 +29,8 @@ CMS needs to support image uploads and documents
 
 Public Pages
 ===========
+
+The front end will have a nice, clean, Bootstrap interface.
 
 * about the program (CMS)
 * contact (CMS) 
@@ -65,7 +69,13 @@ Private (DYN) (@LOGIN)
 main Database:
 -------------
 
-Every database url looks like /database/:year for some year. Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips-year value.
+Every database url looks like /database/:year for some year (or has a query string trips_year=:year? Which is simpler? We probably want the former, otherwise the query string must be appended to each link.) Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips_year value.
+
+The database will be an instance of the Django admin site, since many capabilities of the database are already present in the admin (eg., creating, editing, updating objects) and the database will only be seen by a few users each year. 
+
+By default, Django uses the User.is_staff property to allow users access to the admin  site. In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which we don't want to be readily editable.
+
+In order to support the versioning of the database by year, we should subclass ModelAdmin, specifically the get_queryset method. A further subclass should probably handle the is_staff restrictions by overriding the permission methods.
 
 * checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
