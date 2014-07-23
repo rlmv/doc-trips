@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from user.models import UserProfile
 
@@ -8,6 +8,7 @@ from user.models import UserProfile
 from http://stackoverflow.com/a/4565957/3818777
 """
 
+User = get_user_model()
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
