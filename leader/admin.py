@@ -25,7 +25,7 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
     list_editable = ('status',)
     list_filter = ('status',)
     
-    readonly_fields = ['user', 'trips_year',] # etc.
+    readonly_fields = [ 'trips_year',] # etc.
 
     inlines = [ LeaderGradeInline ]
 

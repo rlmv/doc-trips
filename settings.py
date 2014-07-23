@@ -47,14 +47,15 @@ INSTALLED_APPS = (
     'constance',
     'constance.backends.database',
     'south',
-    
-    # custom
+
+    # custum
     'user',
     'leader',
     'leader_grade',
     'trip',
     'config',
 )
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

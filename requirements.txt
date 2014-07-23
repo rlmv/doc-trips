@@ -1,13 +1,17 @@
 
-django
+# django - need migration support
+https://www.djangoproject.com/download/1.7c1/tarball/
 django_cas_sso
+
+# picklefield is a requirement for constance, since we are installing directly from the repo
+django-picklefield
 -e git+git://github.com/comoga/django-constance#egg=django-constance
+
 model_mommy
 django-grappelli
 django-easyfilters
 django-vanilla-views
-south
-django-crispy-forms
+southdjango-crispy-forms
 django-bootstrap3
 
 mezzanine

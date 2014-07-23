@@ -42,6 +42,7 @@ class LeaderApplication(models.Model):
 
     user = models.ForeignKey(User)
     trips_year = models.PositiveIntegerField()
+    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, related_name='leaders')
 
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     class_year = models.PositiveIntegerField()
@@ -58,6 +59,18 @@ class LeaderApplication(models.Model):
     # TODO: should application questiosn and answers be hardcoded or dynamic?
 
     notes = models.CharField(max_length=255, blank=True) # not required in form
+
+    def clean(self):
+        """ Make sure that leaders can only be assigned to trips if status==ACCEPTED.
+        
+        This is called by django to validate ModelForms and the like. See
+        https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.clean
+        """
+
+        pass
+        
+
+
 
     def get_absolute_url(self): 
         """ Get the URL for this object. 

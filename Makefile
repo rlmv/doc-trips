@@ -1,8 +1,9 @@
 
 
-VENV=fyt-venv
+VENV=venv
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
+FAB=$(VENV)/bin/fab
 
 all:
 	$(PYTHON) manage.py runserver

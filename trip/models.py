@@ -8,8 +8,10 @@ class ScheduledTrip(models.Model):
 
     trips_year = models.PositiveIntegerField()
     template = models.ForeignKey('TripTemplate')
-    
-    # TODO: section = models.ForeignKey('Section')
+    section = models.ForeignKey('Section')
+
+    # The leaders for this trip can be selected with the 'leaders' field.
+    # See LeaderApplication.assigned_trip.
             
     def __str__(self):
         # TODO: add section info
@@ -33,7 +35,7 @@ class Section(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class TripTemplate(models.Model):
 
