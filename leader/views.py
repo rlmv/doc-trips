@@ -1,4 +1,6 @@
 
+import logging
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
@@ -8,20 +10,19 @@ from django.forms import ModelForm
 
 from constance import config
 from vanilla import ListView, CreateView, DetailView, UpdateView, FormView, RedirectView
+from django_easyfilters import FilterSet
 
 from .models import LeaderApplication, LeaderGrade
 
-import logging
 logger = logging.getLogger(__name__)
 
-from django_easyfilters import FilterSet
 class LeaderApplicationFilterSet(FilterSet):
     fields = [
         'status',
         'class_year',
     ]
 
-
+# TODO: move this to a utils module
 class FilterListView(ListView):
 
     """ Implements easyfilter filtering on a vanilla ListView. 
