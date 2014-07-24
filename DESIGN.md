@@ -77,6 +77,7 @@ By default, Django uses the User.is_staff property to allow users access to the 
 
 In order to support the versioning of the database by year, we should subclass ModelAdmin, specifically the get_queryset method. A further subclass should probably handle the is_staff restrictions by overriding the permission methods.
 
+
 * checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
 * globals (/admin) : 
@@ -99,10 +100,10 @@ In order to support the versioning of the database by year, we should subclass M
 
 * leaders
     - Table of all leader applications, accepted/waitlisted, assignments, grade, and links to change all these. Able to sort by grade, gender. should bubble unassigned leaders and leaders with no status. Able to change status of application.
-    - Table of leaders sorted by section/trip
-    - blitzlists. many.
-    - graders. list of graders, and a portal to grant Users grader permissions. Use dnd interface.
-    - grades. feeds leader applications to users with grader permissions. same grader should not get same app twice. should filter out 'deprecated' applications.
+    -[ ] Table of leaders sorted by section/trip
+    -[ ] blitzlists. many.
+    -[ ] graders. list of graders, and a portal to grant Users grader permissions. Use dnd interface.
+    -[x] grades. feeds leader applications to users with grader permissions. same grader should not get same app twice. should filter out 'deprecated' applications.
 
 * trips
     - landing page w/ table of all trip templates and existence on section. links to scheduled trips.

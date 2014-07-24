@@ -1,8 +1,6 @@
 
-
 from django.db import models
 from django.conf import settings
-
 
 
 class TripsYear(models.Model):
@@ -13,8 +11,22 @@ class TripsYear(models.Model):
     """
     
     year = models.PositiveIntegerField(unique=True, primary_key=True)
-    # TODO: give this a default value?? VV
-    is_current = models.BooleanField() # only one current TripsYear at any time
+    is_current = models.BooleanField(default=False) # only one current TripsYear at any time
+
+
+class TripsYearAccessor:
+    
+    """ Global acccessor for the current trips year. 
+
+    TODO: move this into a better named module.
+    """
+    
+    @property
+    def current(self):
+        """ Get the current TripsYear object. """
+        return TripsYear.objects.filter(is_current=True)[0]
+    
+trips_year = TripsYearAccessor()
 
 
 class DatabaseModel(models.Model):
@@ -26,16 +38,22 @@ class DatabaseModel(models.Model):
     See https://docs.djangoproject.com/en/dev/topics/db/models/#abstract-base-classes
     """
     
-    trips_year = models.ForeignKey('TripsYear', editable=False)
+    # TODO: index on trips_year?
+    trips_year = models.ForeignKey('TripsYear', editable=False) 
 
     class Meta:
         abstract = True
 
     def save(self, *args, **kwargs):
-        # TODO: trips_year value should come from dynamic config
-        if self.pk is None: # created
-            self.trips_year = settings.TRIPS_YEAR
+        """ When an new object is created, attach current trips_year.
 
+        This overrides the default model save method.
+        """
+        
+        # TODO: should this check whether trips_year is already set?
+        if self.pk is None: # created
+            self.trips_year = trips_year.current
+            
         super(DatabaseModel, self).save(*args, **kwargs)
 
 

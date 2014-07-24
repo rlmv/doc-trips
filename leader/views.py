@@ -101,7 +101,7 @@ def get_next_application_to_grade(user):
     one grade.
     (2) has not already been graded by this user
     (3) the application is not disqualified, deprecated, etc. See
-    LeaderApplication status field.
+    LeaderApplication status field. It should be PENDING.
 
     """
 
@@ -112,10 +112,11 @@ def get_next_application_to_grade(user):
     return app
 
 def get_random_application_by_num_grades(user, num):
-    """ Return a random application that user has not graded, 
+    """ Return a random PENDING application that user has not graded, 
     which has only been graded by num people. """
 
     app = (LeaderApplication.objects
+           .filter(status=LeaderApplication.PENDING)
            .annotate(Count('grades'))
            .filter(grades__count=num)
            .exclude(grades__grader=user)

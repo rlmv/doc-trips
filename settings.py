@@ -42,8 +42,8 @@ INSTALLED_APPS = (
 
     # third party
     'django_cas',
-    'constance',
-    'constance.backends.database',
+#    'constance',
+#    'constance.backends.database',
     'south',
 
     # custom
