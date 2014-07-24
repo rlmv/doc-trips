@@ -112,6 +112,8 @@ def get_next_application_to_grade(user):
     return app
 
 def get_random_application_by_num_grades(user, num):
+    """ Return a random application that user has not graded, 
+    which has only been graded by num people. """
 
     app = (LeaderApplication.objects
            .annotate(Count('grades'))

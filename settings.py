@@ -50,7 +50,6 @@ INSTALLED_APPS = (
     'user',
     'leader',
     'trip',
-    'config',
     'db',
 )
 
