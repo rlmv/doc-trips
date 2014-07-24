@@ -4,6 +4,19 @@ from django.db import models
 from django.conf import settings
 
 
+
+class TripsYear(models.Model):
+
+    """ Global config object. Each year of trips has one such object.
+
+    All other db objects point to their years' TripsYear.
+    """
+    
+    year = models.PositiveIntegerField(unique=True, primary_key=True)
+    # TODO: give this a default value?? VV
+    is_current = models.BooleanField() # only one current TripsYear at any time
+
+
 class DatabaseModel(models.Model):
 
     """ Abstract base class for all models in the database.
@@ -13,7 +26,7 @@ class DatabaseModel(models.Model):
     See https://docs.djangoproject.com/en/dev/topics/db/models/#abstract-base-classes
     """
     
-    trips_year = models.PositiveIntegerField(editable=False)
+    trips_year = models.ForeignKey('TripsYear', editable=False)
 
     class Meta:
         abstract = True
@@ -25,13 +38,6 @@ class DatabaseModel(models.Model):
 
         super(DatabaseModel, self).save(*args, **kwargs)
 
-
-class TripsYear(models.Model):
-
-    """ Global config object. Each year of trips has one such object. """
-    
-    year = models.PositiveIntegerField(unique=True, primary_key=True)
-    is_current = models.BooleanField() # only one current TripsYear at any time
 
 class Calendar(DatabaseModel):
 
