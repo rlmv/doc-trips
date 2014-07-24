@@ -1,8 +1,5 @@
 
 from django.shortcuts import render, redirect
-from django.views.generic.detail import DetailView
-from django.views.generic.base import RedirectView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse
@@ -10,6 +7,7 @@ from django.db.models import Count
 from django.forms import ModelForm
 
 from constance import config
+from vanilla import ListView, CreateView, DetailView, UpdateView, FormView, RedirectView
 
 from .models import LeaderApplication, LeaderGrade
 
@@ -23,7 +21,6 @@ class LeaderApplicationFilterSet(FilterSet):
         'class_year',
     ]
 
-from vanilla import ListView
 
 class FilterListView(ListView):
 
@@ -57,41 +54,41 @@ class FilterListView(ListView):
 class LeaderApplicationList(FilterListView):
     
     model = LeaderApplication
-    template_name = 'leader/list_application.html'
+    template_name = 'leader/application_list.html'
     context_object_name = 'applications'
     filterset = LeaderApplicationFilterSet
     context_filter_name = 'application_filter'
 
 list_view = login_required(LeaderApplicationList.as_view())
-    
 
-class LeaderApplicationView(DetailView):
+    
+class LeaderApplicationDetail(DetailView):
     model = LeaderApplication
     context_object_name = 'leader_application'
-    # default template : leaderapplication_detail.html
+    template_name = 'leader/application_detail.html'
     
-leaderapplication = login_required(LeaderApplicationView.as_view())
+leaderapplication = login_required(LeaderApplicationDetail.as_view())
+
 
 class CreateLeaderApplication(CreateView):
     model = LeaderApplication
-    fields = ['class_year', 'gender', 'tshirt_size', 'hinman_box', 'phone',
-              'offcampus_address', 'notes',] 
-    
+    template_name = 'leader/application_form.html'
+    fields = '__all__'
+
     def form_valid(self, form):
         """ Attach creating user to Application. """
         form.instance.user = self.request.user
         return super(CreateLeaderApplication, self).form_valid(form)
 
-    # the views uses the default form leaderapplication_form.html
-
 create_leaderapplication = login_required(CreateLeaderApplication.as_view())
+
 
 class EditLeaderApplication(UpdateView):
     model = LeaderApplication
+    template_name = 'leader/application_form.html'
     fields = '__all__'
 
 edit_leaderapplication = login_required(EditLeaderApplication.as_view())
-
 
 
 def get_next_application_to_grade(user):
@@ -143,26 +140,39 @@ class LeaderGradeForm(ModelForm):
         fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
 
 
-# TODO: refactor this using vanilla views
-class GradeApplicationView(FormView, LeaderApplicationView):
+class GradeApplicationView(DetailView, FormView):
 
+    """ Grade a LeaderApplication object. 
+
+    The DetailView encapsulates the LeaderApplication, 
+    the FormView the grade form. 
+    """
+
+    model = LeaderApplication
     template_name = 'leader/grade.html'
+    context_object_name = 'leader_application'
 
-    # form parameters
     form_class = LeaderGradeForm
-    """ The form is passed to the template as 'form' for compatibilty
-    with FormView.form_invalid. """
-
     """ Must be a lazy - this is called before the urlconf is loaded.
     See http://stackoverflow.com/a/22903110/3818777 """
-    success_url = reverse_lazy('grade:random')
+    success_url = reverse_lazy('leader:grade_random')
+
+    def get_context_data(self, **kwargs):
+        """ Get context data to render in template.
+
+        Because The DetailView is first in the MRO inheritance tree,
+        The super call retrives the LeaderaApplication object (saved as context_object_name).
+        Then we manually add the form instance.
+        """
+        context = super(GradeApplicationView, self).get_context_data(**kwargs)
+        context['form'] = self.get_form()
+        return context
     
     def form_valid(self, form):
-        """ Add grader and application to the grade, save to database.
+        """ Attach grader and application to the grade, save grade to database.
         
         Redirects to success_url. 
         """
-        
         grade = form.save(commit=False)
         grade.grader = self.request.user
         grade.leader_application = self.get_object()
@@ -170,23 +180,7 @@ class GradeApplicationView(FormView, LeaderApplicationView):
 
         return super(GradeApplicationView, self).form_valid(form)
 
-    def get_context_data(self, form=None, **kwargs):
-        """ Override the FormView and ApplicationView context data.
-
-        Necessary to send both form and object to the template. """
-        
-        context = {}
-        
-        obj = self.get_object()
-        context[self.get_context_object_name(obj)] = obj
-        if not form:
-            form = self.get_form(self.get_form_class())
-        context['form'] = form
-
-        context.update(**kwargs)
-        
-        return context
-    
+# TODO: restrict to graders
 grade_application = GradeApplicationView.as_view()    
 
 
