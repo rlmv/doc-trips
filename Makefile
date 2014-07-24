@@ -22,7 +22,8 @@ migrations:
 migrate:
 	$(PYTHON) manage.py migrate
 
-test:
+.PHONY: test
+test: 
 	$(PYTHON) manage.py test
 
 clean:

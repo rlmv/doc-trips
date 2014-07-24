@@ -25,7 +25,9 @@ class TripsYearAccessor:
     def current(self):
         """ Get the current TripsYear object. """
         return TripsYear.objects.filter(is_current=True)[0]
+
     
+
 trips_year = TripsYearAccessor()
 
 
@@ -39,6 +41,7 @@ class DatabaseModel(models.Model):
     """
     
     # TODO: index on trips_year?
+    # editable=False hides this field in all forms
     trips_year = models.ForeignKey('TripsYear', editable=False) 
 
     class Meta:

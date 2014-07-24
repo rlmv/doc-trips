@@ -4,14 +4,20 @@ from django.core.exceptions import ValidationError
 
 from model_mommy import mommy
 
-from .models import LeaderGrade
+from .models import LeaderGrade, LeaderApplication
 from .views import get_next_application_to_grade
 
+from test.fixtures import init_trips_year
+
 class GradeValidationTestCase(TestCase):
+
+    def setUp(self):
+        init_trips_year()
 
     def test_grade_validation(self):
 
         bad_grade = mommy.make('LeaderGrade', grade=LeaderGrade.MIN_GRADE-1)
+                               
         with self.assertRaises(ValidationError):
             bad_grade.clean_fields()
 
@@ -26,12 +32,14 @@ class GradeValidationTestCase(TestCase):
 class GetNextApplicationToGradeTestCase(TestCase):
 
     def setUp(self):
+        init_trips_year()
+        
         self.user = mommy.make('User')
         self.user.save()
 
     def test_with_no_grades(self):
 
-        application = mommy.make('LeaderApplication')
+        application = mommy.make('LeaderApplication', status=LeaderApplication.PENDING)
         application.save()
 
         # no LeaderGrades with foreign key set to this app exist
@@ -42,9 +50,9 @@ class GetNextApplicationToGradeTestCase(TestCase):
 
     def test_graded_ungraded_priority(self):
 
-        grade1 = mommy.make('LeaderGrade')    
+        grade1 = mommy.make('LeaderGrade', leader_application__status=LeaderApplication.PENDING)    
         app1 = grade1.leader_application
-        app2 = mommy.make('LeaderApplication')
+        app2 = mommy.make('LeaderApplication', status=LeaderApplication.PENDING)
 
         app1.save()
         app2.save()
@@ -54,10 +62,15 @@ class GetNextApplicationToGradeTestCase(TestCase):
 
     def test_user_can_only_grade_application_once(self):
         
-        grade1 = mommy.make('LeaderGrade', grader=self.user)
+        grade1 = mommy.make('LeaderGrade', grader=self.user, leader_application__status=LeaderApplication.PENDING)
         next = get_next_application_to_grade(self.user)
         self.assertIsNone(next, 'no applications should be available')
+
+    def test_only_grade_pending_applications(self):
         
+        application = mommy.make(LeaderApplication, status=LeaderApplication.ACCEPTED)
+        next = get_next_application_to_grade(self.user)
+        self.assertIsNone(next, 'ACCEPTED (or any status except PENDING) should not be gradable')
         
         
 
