@@ -1,5 +1,8 @@
 
-# django - need migration support
+coverage
+#django-coverage
+
+# django dev - need migration support
 https://www.djangoproject.com/download/1.7c1/tarball/
 django_cas_sso
 

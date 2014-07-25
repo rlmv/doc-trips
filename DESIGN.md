@@ -165,6 +165,12 @@ See crews VV - there needs to be a permission granting portal.
 
 Can we hack the DND to find DIDs from names? Check out http://www.dartmouth.edu/comp/systems/netid.html and http://www.dartmouth.edu/comp/_permacode/current/scripts/netid_lookup.js
 
+Testing
+=======
+
+Many key functions have Django TestCases. You usually need to call test.fixtures.init_trips_year in TestCase.setUp.
+
+
 Big Questions
 =========
 * should crews be integrated into the site? this will add a fair amount of architecture, and probably not much utility since crews don't come into play with logistics. However, if WebAuth is being used exclusively for login there needs to be some way for crews to be given permissions for accessing the database, yes? This could be done by inputing a list of DIDs perhaps.
@@ -176,6 +182,5 @@ Big Questions
 * should trip leader trainings be implemented with templates?
 
 * should long-lasting data (templates) be reversioned/recoverable?
-
 
 http://www.rdegges.com/the-perfect-django-settings-file/
