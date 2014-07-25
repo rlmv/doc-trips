@@ -52,9 +52,9 @@ class LeaderApplication(DatabaseModel):
     phone = models.CharField(max_length=255)
     offcampus_address = models.CharField(max_length=255, blank=True)     # TODO: do we need this?
 
-    # TODO: write sections model
-    # sections_prefer = models.ManyToManyField('Section')
-    # sections_available = models.ManyToManyField('Section')
+    # reverse lookups from Section are not needed, hence the '+'
+    preferred_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
+    available_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
 
     # TODO: should application questiosn and answers be hardcoded or dynamic?
 

@@ -3,7 +3,9 @@
 from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.html import mark_safe
-from django.db.models import Avg
+from django.db import  models
+from django import forms
+from django.forms.widgets import CheckboxSelectMultiple
 
 from leader.models import LeaderApplication, LeaderGrade
 
@@ -59,6 +61,25 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
     list_editable = ('status', 'assigned_trip')
     list_filter = ('status',)
 
+    readonly_fields = ('average_grade',) # so these can be displayed in fields
+    fields = ('user', 
+              ('status', 'average_grade'),
+              ('assigned_trip', 'assigned_trip_link'),
+              'class_year', 
+              'tshirt_size', 
+              'gender', 
+              ('hinman_box', 'phone'),
+              'offcampus_address',
+              ('preferred_sections', 'available_sections'),
+              'notes',
+    )
+
+
+    # display preferred_sections and available_sections with checkbox selectors
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
+    }
+
     inlines = [ LeaderGradeInline ]
 
     # grappelli options - 
@@ -74,7 +95,7 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
         """
         
         qs = super(LeaderApplicationAdmin, self).queryset(request)
-        return qs.annotate(Avg('grades__grade'))
+        return qs.annotate(models.Avg('grades__grade'))
 
 
     def average_grade(self, application):
