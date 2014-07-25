@@ -71,6 +71,6 @@ class GetNextApplicationToGradeTestCase(TestCase):
         application = mommy.make(LeaderApplication, status=LeaderApplication.ACCEPTED)
         next = get_next_application_to_grade(self.user)
         self.assertIsNone(next, 'ACCEPTED (or any status except PENDING) should not be gradable')
-        
+
         
 

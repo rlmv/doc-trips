@@ -156,6 +156,8 @@ Interface
 =========
 Don't rely on colors to indicate status - people are colorblind
 
+TODO: add rich text editor for text areas.
+
 Auth
 ====
 webAuth

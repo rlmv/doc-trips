@@ -67,7 +67,8 @@ class LeaderApplication(DatabaseModel):
         https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.clean
         """
         if self.status != self.ACCEPTED and self.assigned_trip:
-            raise ValidationError("un-accepted ({}) LeaderApplication cannot be assigned to a trip".format(self.status))
+            raise ValidationError("A '{}' LeaderApplication cannot be assigned to a trip. "
+                                  "Change status to 'Accepted'".format(self.get_status_display()))
 
     def get_absolute_url(self): 
         """ Get the URL for this object. 
@@ -79,10 +80,10 @@ class LeaderApplication(DatabaseModel):
         from django.core.urlresolvers import reverse
         return reverse('leader:leaderapplication', kwargs={'pk': self.pk}) 
 
+
     def __str__(self):
         return self.user.username
         
-
 
 def validate_grade(grade):
     min = LeaderGrade.MIN_GRADE
@@ -99,7 +100,7 @@ class LeaderGrade(DatabaseModel):
 
     grader = models.ForeignKey(settings.AUTH_USER_MODEL)
     leader_application = models.ForeignKey(LeaderApplication, related_name='grades')
-    grade = models.DecimalField(max_digits=3, decimal_places=2, 
+    grade = models.DecimalField(max_digits=3, decimal_places=1, 
                                 validators=[ validate_grade ])
     comment = models.CharField(max_length=255)
     hard_skills = models.BooleanField(default=False)
