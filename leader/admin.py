@@ -59,7 +59,7 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
                     'average_grade', 'grader_comments')
     list_display_links = ('user',)
     list_editable = ('status', 'assigned_trip')
-    list_filter = ('status',)
+    list_filter = ('status', 'class_year')
 
     readonly_fields = ('average_grade',) # so these can be displayed in fields
     fields = ('user', 
@@ -90,12 +90,12 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
     def queryset(self, request):
         """ Add average value of all grades to application.
         
-        Saved on the model as grades__grade__avg.
-        Overrides default queryset method.
+        Saved on the model as grades__grade__avg. Orders objects 
+        by the computed averages. Overrides default queryset method.
         """
         
         qs = super(LeaderApplicationAdmin, self).queryset(request)
-        return qs.annotate(models.Avg('grades__grade'))
+        return qs.annotate(models.Avg('grades__grade')).order_by('grades__grade__avg')
 
 
     def average_grade(self, application):
@@ -105,9 +105,10 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
         """
         
         avg = application.grades__grade__avg
-        if avg is None:
+        try:
+            return round(avg, 1)
+        except TypeError:
             return '-'
-        return round(avg, 1)
     average_grade.admin_order_field = 'grades__grade__avg'
 
 
