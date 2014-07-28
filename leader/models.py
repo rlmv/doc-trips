@@ -53,6 +53,8 @@ class LeaderApplication(DatabaseModel):
     offcampus_address = models.CharField(max_length=255, blank=True)     # TODO: do we need this?
 
     # reverse lookups from Section are not needed, hence the '+'
+    # leaders for a section can be looked up via assigned_trip.section.
+    # (We may later need this to suggest leaders to assign to a trip.)
     preferred_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
     available_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
 
@@ -68,7 +70,7 @@ class LeaderApplication(DatabaseModel):
         """
         if self.status != self.ACCEPTED and self.assigned_trip:
             raise ValidationError("A '{}' LeaderApplication cannot be assigned to a trip. "
-                                  "Change status to 'Accepted'".format(self.get_status_display()))
+                                  "Change status to 'Accepted' or remove trip assignment.".format(self.get_status_display()))
 
     def get_absolute_url(self): 
         """ Get the URL for this object. 

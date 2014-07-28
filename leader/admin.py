@@ -49,7 +49,7 @@ def add_link_field(target_model=None, field='', app='', field_name='link'):
         return cls
     return add_link
 
-
+# TODO: link should land on trip display page, not scheduled trip change form
 @add_link_field('ScheduledTrip', field='assigned_trip', app='trip', field_name='assigned_trip_link')
 class LeaderApplicationAdmin(admin.ModelAdmin):
 
@@ -73,7 +73,6 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
               ('preferred_sections', 'available_sections'),
               'notes',
     )
-
 
     # display preferred_sections and available_sections with checkbox selectors
     formfield_overrides = {
@@ -119,5 +118,11 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
 
 
 
+class LeaderGradeAdmin(admin.ModelAdmin):
+
+    model = LeaderGrade
+    
+    
+
 admin.site.register(LeaderApplication, LeaderApplicationAdmin)
-admin.site.register(LeaderGrade)
+admin.site.register(LeaderGrade, LeaderGradeAdmin)

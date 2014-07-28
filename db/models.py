@@ -24,18 +24,31 @@ class TripsYearAccessor:
     @property
     def current(self):
         """ Get the current TripsYear object. """
-        return TripsYear.objects.filter(is_current=True)[0]
+        return TripsYear.objects.get(is_current=True)
 
-    
+
 
 trips_year = TripsYearAccessor()
+
+class CalendarAccessor:
+
+    """ Global accessor for important dates. """
+
+    @property
+    def current(self):
+        """ Get the current Calendar object"""
+        return Calendar.objects.get(trips_year=trips_year.current)
+
+calendar = CalendarAccessor()
 
 
 class DatabaseModel(models.Model):
 
     """ Abstract base class for all models in the database.
 
-    Manages the trips_year property.
+    Manages the trips_year property. Whenever a DatabaseModel is created,
+    the current trips_year is automatically attached to the object if it is
+    not already. 
     
     See https://docs.djangoproject.com/en/dev/topics/db/models/#abstract-base-classes
     """
@@ -73,6 +86,8 @@ class Calendar(DatabaseModel):
     trippee_assignment_posted = models.DateTimeField()
 
     migration_date = models.DateTimeField()
+
+
 
 class Cost(DatabaseModel):
 
