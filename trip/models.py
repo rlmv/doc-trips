@@ -1,4 +1,7 @@
 
+
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
 
@@ -32,6 +35,35 @@ class Section(DatabaseModel):
     is_international = models.BooleanField(default=False)
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
+
+    @property
+    def trippees_arrive(self):
+        """ Date that trippees arrive in Hanover. """
+        return self.leaders_arrive + timedelta(days=1)
+
+    @property
+    def at_campsite_1(self):
+        return self.leaders_arrive + timedelta(days=2)
+
+    @property
+    def at_campsite_2(self):
+        return self.leaders_arrive + timedelta(days=3)
+
+    @property
+    def nights_camping(self):
+        """ List of dates when trippees are camping out on the trail. """
+        
+        return [self.at_campsite_1, self.at_campsite_2]
+
+    @property
+    def arrive_at_lodge(self):
+        """ Date section arrives at the lodge. """
+        return self.leaders_arrive + timedelta(days=4)
+
+    @property
+    def return_to_campus(self):
+        """ Date section returns to campus. """
+        return self.leaders_arrive + timedelta(days=5)
 
     def __str__(self):
         return self.name
@@ -72,11 +104,8 @@ class Campsite(DatabaseModel):
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
     directions = models.TextField()
-    
-    """ TODO:
-    bugout
-    secret
-    """
+    bugout = models.TextField() # directions for quick help/escape
+    secret = models.TextField() # door codes, hidden things, other secret information
 
     def __str__(self):
         return self.name

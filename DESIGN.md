@@ -71,6 +71,9 @@ main Database:
 
 Every database url looks like /database/:year for some year (or has a query string trips_year=:year? Which is simpler? We probably want the former, otherwise the query string must be appended to each link.) Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips_year value.
 
+
+See http://stackoverflow.com/questions/7259871/custom-django-admin-site-with-parent-url-parameter for details about adding custom url parameters to the admin site.
+
 The database will be an instance of the Django admin site, since many capabilities of the database are already present in the admin (eg., creating, editing, updating objects) and the database will only be seen by a few users each year. 
 
 By default, Django uses the User.is_staff property to allow users access to the admin  site. In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which we don't want to be readily editable.
@@ -156,7 +159,7 @@ Interface
 =========
 Don't rely on colors to indicate status - people are colorblind
 
-TODO: add rich text editor for text areas.
+TODO: add rich text editor for text areas - formfield_overrides
 
 Auth
 ====

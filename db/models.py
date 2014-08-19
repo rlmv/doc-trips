@@ -2,7 +2,6 @@
 from django.db import models
 from django.conf import settings
 
-
 class TripsYear(models.Model):
 
     """ Global config object. Each year of trips has one such object.
@@ -30,16 +29,6 @@ class TripsYearAccessor:
 
 trips_year = TripsYearAccessor()
 
-class CalendarAccessor:
-
-    """ Global accessor for important dates. """
-
-    @property
-    def current(self):
-        """ Get the current Calendar object"""
-        return Calendar.objects.get(trips_year=trips_year.current)
-
-calendar = CalendarAccessor()
 
 
 class DatabaseModel(models.Model):
@@ -73,6 +62,20 @@ class DatabaseModel(models.Model):
         super(DatabaseModel, self).save(*args, **kwargs)
 
 
+class CalendarManager(models.Model):
+    
+    def current(self):
+        """ Get the current Calendar object"""
+        return Calendar.objects.get(trips_year=trips_year.current)
+        
+    # is this the best way to do this?
+    def dates_with_trips_camping(self, trips_year):
+        """ Get a list of all dates with trips camping out on the trail.
+
+        Pulls information from the Section objects. """
+        
+        sections = Section.objects.filter(trips_year=trips_year)
+
 class Calendar(DatabaseModel):
 
     # trips_year is inherited from DatabaseModel
@@ -87,7 +90,8 @@ class Calendar(DatabaseModel):
 
     migration_date = models.DateTimeField()
 
-
+    # override the default object manager
+    objects = CalendarManager()
 
 class Cost(DatabaseModel):
 

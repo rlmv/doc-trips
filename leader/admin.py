@@ -81,7 +81,7 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
 
     inlines = [ LeaderGradeInline ]
 
-    # grappelli options - 
+    # grappelli options - show filters in the sidebar
     change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
