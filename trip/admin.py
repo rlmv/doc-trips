@@ -20,8 +20,13 @@ class TripTypeAdmin(admin.ModelAdmin):
     actions = None
 
 
+class TripTemplateAdmin(admin.ModelAdmin):
+    
+    list_display = ['name', 'description', 'trip_type']
+
+
 admin.site.register(Campsite, CampsiteAdmin)
 admin.site.register(TripType, TripTypeAdmin)
-admin.site.register(TripTemplate)
+admin.site.register(TripTemplate, TripTemplateAdmin)
 admin.site.register(ScheduledTrip)
 admin.site.register(Section)
