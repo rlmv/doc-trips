@@ -76,7 +76,7 @@ See http://stackoverflow.com/questions/7259871/custom-django-admin-site-with-par
 
 The database will be an instance of the Django admin site, since many capabilities of the database are already present in the admin (eg., creating, editing, updating objects) and the database will only be seen by a few users each year. 
 
-By default, Django uses the User.is_staff property to allow users access to the admin  site. In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which we don't want to be readily editable.
+By default, Django uses the User.is_staff property to allow users access to the admin  site. In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which should not be editable by the trips directors.
 
 In order to support the versioning of the database by year, we should subclass ModelAdmin, specifically the get_queryset method. A further subclass should probably handle the is_staff restrictions by overriding the permission methods.
 
@@ -112,10 +112,10 @@ In order to support the versioning of the database by year, we should subclass M
     - landing page w/ table of all trip templates and existence on section. links to scheduled trips.
     - trip templates. "uninstantiated trips".
     - trip types. used in trip templates, and to display on leader and trippee applications.
-    - campsites. used in trip templates. should indicate whether more than one trip is scheduled for the same campsite. Scheduling a campsite which another trip is using should give an error.
-    - about numbering page.
+    -[ ] campsites. used in trip templates. should indicate the number of trips scheduled for the campsite on any given night, and the capacity/overflow.
+    -[ ] about trips numbering page.
 
-* transportation
+* transport
     - landing page w/ scheduled transportation, ability to add/delete
     - transportation routes. Grant Bus, Local Bus, etc. should show which stops each can service.
     - transportation stops. each stop is linked to a primary route. 
@@ -174,6 +174,35 @@ Testing
 =======
 
 Many key functions have Django TestCases. You usually need to call test.fixtures.init_trips_year in TestCase.setUp.
+
+
+Timeline
+========
+
+Immediate:
+[ ] leader applications, (leader application recommendations), 
+[ ] basic login, user permissions
+[ ] grading leader applications
+[ ] application styling 
+[ ] basic trip information - trip types, section configuration
+[ ] 
+
+Midrange:
+[ ] leader portal: trip assignments
+[ ] front facing public pages
+[ ] trippee signup
+
+
+Pre-trips:
+[ ] checklists
+[ ] trippee checkin
+[ ] safety log
+[ ] raid blog
+
+
+2 year:
+[ ] archive view of previous years information
+
 
 
 Big Questions
