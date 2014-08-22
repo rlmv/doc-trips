@@ -82,8 +82,15 @@ class TripTemplate(DatabaseModel):
     dropoff_transport_stop = models.ForeignKey('TransportStop')
     pickup_transport_stop = models.ForeignKey('TransportStop')
     """
+
+    # TODO: better related names
     campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
     campsite_2 = models.ForeignKey('Campsite', related_name='trip_night_2')
+
+    @property
+    def max_num_people(self):
+        """ Maximum number of people on trip: max_trippees + 2 leaders """
+        return self.max_trippees + 2
 
     def __str__(self):
         return "{}: {}".format(self.name, self.description)

@@ -2,33 +2,30 @@
 from django.db import models
 from django.conf import settings
 
+class TripsYearManager(models.Manager):
+    """ Object manager for TripsYear """
+
+    def current(self):
+        """ Get the current TripsYear object. 
+
+        current refers to the year of trips, eg. Trips 2014, 
+        not *necessarily* the actual date.
+        """
+        return TripsYear.objects.get(is_current=True)
+
+
 class TripsYear(models.Model):
 
     """ Global config object. Each year of trips has one such object.
 
     All other db objects point to their years' TripsYear.
     """
-    
+
     year = models.PositiveIntegerField(unique=True, primary_key=True)
-    is_current = models.BooleanField(default=False) # only one current TripsYear at any time
+    # only one current TripsYear at any time
+    is_current = models.BooleanField(default=False) 
 
-
-class TripsYearAccessor:
-    
-    """ Global acccessor for the current trips year. 
-
-    TODO: move this into a better named module.
-    """
-    
-    @property
-    def current(self):
-        """ Get the current TripsYear object. """
-        return TripsYear.objects.get(is_current=True)
-
-
-
-trips_year = TripsYearAccessor()
-
+    objects = TripsYearManager()
 
 
 class DatabaseModel(models.Model):
@@ -57,18 +54,19 @@ class DatabaseModel(models.Model):
         
         # TODO: should this check whether trips_year is already set?
         if self.pk is None: # created
-            self.trips_year = trips_year.current
+            self.trips_year = TripsYear.objects.current()
             
         super(DatabaseModel, self).save(*args, **kwargs)
 
 
-class CalendarManager(models.Model):
+class CalendarManager(models.Manager):
     
     def current(self):
         """ Get the current Calendar object"""
-        return Calendar.objects.get(trips_year=trips_year.current)
+        return Calendar.objects.get(trips_year=TripsYear.objects.current)
         
-    # is this the best way to do this?
+    # TODO: is this the best way to do this? I think this muddies the 
+    # abstraction separation
     def dates_with_trips_camping(self, trips_year):
         """ Get a list of all dates with trips camping out on the trail.
 
