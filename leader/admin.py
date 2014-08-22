@@ -61,9 +61,10 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
     list_editable = ('status', 'assigned_trip')
     list_filter = ('status', 'class_year')
 
-    readonly_fields = ('average_grade',) # so these can be displayed in fields
+    # callables can only be displayed in 'fields' if they are readonly
+    readonly_fields = ('average_grade', 'grader_comments') 
     fields = ('user', 
-              ('status', 'average_grade'),
+              ('status', 'average_grade', 'grader_comments'),
               ('assigned_trip', 'assigned_trip_link'),
               'class_year', 
               'tshirt_size', 
@@ -74,7 +75,7 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
               'notes',
     )
 
-    # display preferred_sections and available_sections with checkbox selectors
+    # show checkbox selectors for preferred_sections and available_sections 
     formfield_overrides = {
         models.ManyToManyField: {'widget': forms.CheckboxSelectMultiple},
     }
@@ -87,10 +88,10 @@ class LeaderApplicationAdmin(admin.ModelAdmin):
 
 
     def queryset(self, request):
-        """ Add average value of all grades to application.
+        """ Compute the average value of all grades for application.
         
-        Saved on the model as grades__grade__avg. Orders objects 
-        by the computed averages. Overrides default queryset method.
+        This is saved on the model as grades__grade__avg. Objects are ordered
+        by the computed averages. This overrides the default queryset method.
         """
         
         qs = super(LeaderApplicationAdmin, self).queryset(request)
