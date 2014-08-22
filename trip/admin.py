@@ -37,17 +37,16 @@ class CampsiteAdmin(admin.ModelAdmin):
             .filter(trips_year=trips_year)
             .filter(Q(template__campsite_1=campsite) | Q(template__campsite_2=campsite)))
 
-        dates_map = collections.defaultdict(int)
+        # mapping of dates -> number of people staying at campsite on that date
+        num_people_per_date = collections.defaultdict(int)
 
         for trip in resident_trips:
             if trip.template.campsite_1 == campsite:
-                dates_map[trip.section.at_campsite_1] += trip.template.max_num_people
+                num_people_per_date[trip.section.at_campsite_1] += trip.template.max_num_people
             if trip.template.campsite_2 == campsite:
-                dates_map[trip.section.at_campsite_2] += trip.template.max_num_people
+                num_people_per_date[trip.section.at_campsite_2] += trip.template.max_num_people
         
-        dates_map = dict(dates_map)
-
-        return ' | '.join(map(lambda d: str(dates_map.get(d, '-')), camping_dates))
+        return ' | '.join(map(lambda d: str(num_people_per_date.get(d, '-')), camping_dates))
 
         # return '|'.join(map(str, camping_dates))
 
