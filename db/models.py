@@ -52,7 +52,7 @@ class DatabaseModel(models.Model):
         If trips_year is explicitly specified, use that year instead. 
         This overrides the default model save method.
         """
-        if self.pk is None and getattr(self, 'trips_year', None) is None:
+        if self.pk is None and not hasattr(self, 'trips_year'):
             self.trips_year = TripsYear.objects.current()
             
         super(DatabaseModel, self).save(*args, **kwargs)
