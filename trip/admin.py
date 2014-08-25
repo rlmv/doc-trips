@@ -32,6 +32,8 @@ class CampsiteAdmin(admin.ModelAdmin):
     def dates(self, campsite):
         """ Display the number of people staying at a campsite
         (supposing all trips are maxed out) for all dates.
+
+        TODO: remove this, or use some in a caching strategy for get_list_display
         """
         trips_year = campsite.trips_year
         camping_dates = self.get_camping_dates(trips_year)
@@ -84,6 +86,9 @@ class CampsiteAdmin(admin.ModelAdmin):
         """
         try:
             date = datetime.strptime(attr, '%Y-%m-%d').date()
+        except ValueError:
+            return super(CampsiteAdmin, self).__getattr__(self, attr)
+        else:
 
             def date_capacity_getter(campsite):
 
@@ -95,9 +100,9 @@ class CampsiteAdmin(admin.ModelAdmin):
                     ScheduledTrip.objects
                     .filter(trips_year=trips_year)
                     .filter(Q(template__campsite_1=campsite,
-                            section__leaders_arrive=date-timedelta(days=2)) |
+                              section__leaders_arrive=date-timedelta(days=2)) |
                             Q(template__campsite_2=campsite,
-                            section__leaders_arrive=date-timedelta(days=3))))
+                              section__leaders_arrive=date-timedelta(days=3))))
 
                 num_residents = 0
                 for trip in resident_trips:
@@ -115,9 +120,6 @@ class CampsiteAdmin(admin.ModelAdmin):
             date_capacity_getter.short_description = date.strftime('%m-%d')
 
             return date_capacity_getter
-
-        except ValueError:
-            return super(CampsiteAdmin, self).__getattr__(self, attr)
 
 
 class TripTypeAdmin(admin.ModelAdmin):
