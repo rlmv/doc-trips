@@ -1,21 +1,23 @@
 
 
-from vanilla import ListView, UpdateView
+from vanilla import ListView, UpdateView, CreateView
 
 from trip.models import ScheduledTrip
+from db.views import DatabaseMixin
 
-class ScheduledTripListView(ListView):
+class ScheduledTripListView(DatabaseMixin, ListView):
     model = ScheduledTrip
     template_name = 'trip/trip_index.html'
     context_object_name = 'trips'
 
-trip_index = ScheduledTripListView.as_view()
 
-class ScheduledTripUpdateView(UpdateView):
+class ScheduledTripUpdateView(DatabaseMixin, UpdateView):
     model = ScheduledTrip
-    template_name = 'trip/trip_update.html'
+    template_name = 'db/update.html'
     context_object_name = 'trip'
 
-trip_update = ScheduledTripUpdateView.as_view()
+class ScheduledTripCreateView(CreateView):
+    model = ScheduledTrip
+    template_name = 'db/create.html'
 
 
