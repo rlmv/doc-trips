@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.core.urlresolvers import reverse
 
 from db.models import DatabaseModel
 
@@ -16,6 +17,16 @@ class ScheduledTrip(DatabaseModel):
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
+
+    def get_absolute_url(self):
+        """ TODO: return detailview, not update view? 
+
+        Using _id instead of .pk saves a database hit. See
+        https://docs.djangoproject.com/en/dev/topics/db/optimization/#use-foreign-key-values-directly 
+        """
+        kwargs = {'trips_year' : self.trips_year_id, 
+                  'pk' : self.pk }
+        return reverse('db:trip:trip_update', kwargs=kwargs)
             
     def __str__(self):
 

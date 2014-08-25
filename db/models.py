@@ -30,7 +30,7 @@ class TripsYear(models.Model):
 
 class DatabaseModel(models.Model):
 
-    """ Abstract base class for all models in the database.
+    """ Abstract base class for all models in the trips database.
 
     Manages the trips_year property. Whenever a DatabaseModel is created,
     the current trips_year is automatically attached to the object if it is
@@ -38,7 +38,7 @@ class DatabaseModel(models.Model):
     
     See https://docs.djangoproject.com/en/dev/topics/db/models/#abstract-base-classes
     """
-    
+
     # TODO: index on trips_year?
     # editable=False hides this field in all forms
     trips_year = models.ForeignKey('TripsYear', editable=False) 
@@ -48,12 +48,11 @@ class DatabaseModel(models.Model):
 
     def save(self, *args, **kwargs):
         """ When an new object is created, attach current trips_year.
-
+        
+        If trips_year is explicitly specified, use that year instead. 
         This overrides the default model save method.
         """
-        
-        # TODO: should this check whether trips_year is already set?
-        if self.pk is None: # created
+        if self.pk is None and getattr(self, 'trips_year', None) is None:
             self.trips_year = TripsYear.objects.current()
             
         super(DatabaseModel, self).save(*args, **kwargs)

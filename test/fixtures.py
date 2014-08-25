@@ -13,3 +13,5 @@ def init_trips_year():
 
     trips_year = TripsYear(year=2014, is_current=True)
     trips_year.save()
+
+    return trips_year
