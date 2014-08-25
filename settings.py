@@ -31,8 +31,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = (
 
     # must be before admin
-    'grappelli',
-
+#    'grappelli',
+    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

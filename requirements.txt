@@ -1,4 +1,6 @@
 
+django-suit
+
 coverage
 #django-coverage
 
