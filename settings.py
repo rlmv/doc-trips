@@ -32,7 +32,7 @@ INSTALLED_APPS = (
 
     # must be before admin
 #    'grappelli',
-    'suit',
+#    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

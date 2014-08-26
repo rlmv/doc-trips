@@ -1,7 +1,5 @@
 
-from django.core.urlresolvers import reverse_lazy, reverse
-
-from trip.models import ScheduledTrip, TripTemplate
+from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite
 from db.views import DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView
 
 
@@ -23,6 +21,7 @@ class ScheduledTripDeleteView(DatabaseDeleteView):
     template_name = 'db/update.html'
     success_url_pattern = 'db:trip:trip_index'
 
+
 class TripTemplateListView(DatabaseListView):
     model = TripTemplate
     template_name = 'trip/template_index.html'
@@ -30,15 +29,26 @@ class TripTemplateListView(DatabaseListView):
 
 class TripTemplateCreateView(DatabaseCreateView):
     model = TripTemplate
-    success_url_pattern = 'db:template:template_update'
 
 class TripTemplateUpdateView(DatabaseUpdateView):
     model = TripTemplate
-    success_url_pattern = 'db:template:template_update'
 
 class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:template:template_index'
     
 
+class TripTypeListView(DatabaseListView):
+    model = TripType
+    template_name = 'triptype/triptype_index.html'
+    context_object_name = 'triptypes'
 
+class TripTypeCreateView(DatabaseCreateView):
+    model = TripType
+
+class TripTypeUpdateView(DatabaseUpdateView):
+    model = TripType
+
+class TripTypeDeleteView(DatabaseDeleteView):
+    model = TripType
+    success_url_pattern = 'db:triptype:triptype_index'

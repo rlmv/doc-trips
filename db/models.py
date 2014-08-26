@@ -39,6 +39,7 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
+    # TODO: move this to a subclass similar to Meta? eg. Config?
     absolute_url_pattern = None
 
     def get_absolute_url(self):

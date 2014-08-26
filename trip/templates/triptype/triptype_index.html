@@ -1,0 +1,6 @@
+
+<ul>
+  {% for type in triptypes %}
+  <li> <a href="{{ type.get_absolute_url }}">{{ type }}</a></li>
+  {% endfor %}
+</ul>

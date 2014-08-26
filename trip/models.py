@@ -107,6 +107,8 @@ class TripType(DatabaseModel):
     packing_list = models.TextField() # TODO: this should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
+    absolute_url_pattern = 'db:triptype:triptype_update'
+
     def __str__(self):
         return self.name
 

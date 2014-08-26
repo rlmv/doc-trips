@@ -7,6 +7,7 @@ from trip.urls import * # TODO
 trips_year_urlpatterns = patterns('', 
     url(r'^trips/', include(trip_urlpatterns, namespace='trip')),
     url(r'^templates/', include(template_urlpatterns, namespace='template')),                              
+    url(r'^types/', include(triptype_urlpatterns, namespace='triptype')),                              
 )
 
 urlpatterns = patterns('',
