@@ -16,6 +16,19 @@ class DatabaseMixin():
         qs = super(DatabaseMixin, self).get_queryset()
         return qs.filter(trips_year=self.kwargs['trips_year'])
 
+
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+class LoginRequiredMixin():
+    """ Class based view mixin which adds login protection """
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredDecorator, self).dispatch(request, *args, **kwargs)
+    
+    
+
     
 
 
