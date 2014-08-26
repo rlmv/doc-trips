@@ -1,6 +1,7 @@
 
 from django.test import TestCase
 from django.db import models
+from django.test.utils import override_settings
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
@@ -29,6 +30,13 @@ class DatabaseModelTestCase(TestCase):
         self.assertNotEqual(e2.trips_year, self.trips_year, 
                             'saving should not overide explicitly specified trip_year')
 
+    @override_settings(ROOT_URLCONF='db.test.test_urls')
+    def test_get_absolute_url(self):
+        
+        e = ExampleDatabaseModel(some_field='ocho')
+        e.save()
+        e.absolute_url_pattern = 'test_url'
+        e.get_absolute_url()
 
 class CalendarTestCase(TestCase):
 

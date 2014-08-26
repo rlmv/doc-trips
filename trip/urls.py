@@ -14,6 +14,7 @@ trip_urlpatterns = patterns('',
 template_urlpatterns = patterns('',
     url(r'^$', TripTemplateListView.as_view(), name='template_list'),
     url(r'^create$', TripTemplateCreateView.as_view(), name='template_create'),
+                                
 )                                
 
 
