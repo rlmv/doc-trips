@@ -1,6 +1,8 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.core.exceptions import ImproperlyConfigured
 
 from db.managers import TripsYearManager, CalendarManager
 
@@ -36,6 +38,26 @@ class DatabaseModel(models.Model):
 
     class Meta:
         abstract = True
+
+    absolute_url_pattern = None
+
+    def get_absolute_url(self):
+        """ Get the absolute url for database objects. 
+
+        Uses the url namespace string specified in absolute_url_pattern
+        to perform a reverse lookup. This is mostly used by class based 
+        views, and can be overridden if necessary.
+
+        """
+        if not self.absolute_url_pattern:
+            msg = 'need absolute_url_pattern to reverse absolute url'
+            raise ImproperlyConfigured(msg)
+
+        # Using _id instead of .pk saves a database hit. See
+        # https://docs.djangoproject.com/en/dev/topics/db/optimization/#use-foreign-key-values-directly 
+        kwargs = {'trips_year': self.trips_year_id,
+                  'pk': self.pk}
+        return reverse(self.absolute_url_pattern, kwargs=kwargs)
 
     def save(self, *args, **kwargs):
         """ When an new object is created, attach current trips_year.

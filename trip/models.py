@@ -11,22 +11,13 @@ from db.models import DatabaseModel
 
 class ScheduledTrip(DatabaseModel):
 
-
     template = models.ForeignKey('TripTemplate')
     section = models.ForeignKey('Section')
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
 
-    def get_absolute_url(self):
-        """ TODO: return detailview, not update view? 
-
-        Using _id instead of .pk saves a database hit. See
-        https://docs.djangoproject.com/en/dev/topics/db/optimization/#use-foreign-key-values-directly 
-        """
-        kwargs = {'trips_year' : self.trips_year_id, 
-                  'pk' : self.pk }
-        return reverse('db:trip:trip_update', kwargs=kwargs)
+    absolute_url_pattern = 'db:trip:trip_update'
             
     def __str__(self):
 
@@ -98,17 +89,12 @@ class TripTemplate(DatabaseModel):
     campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
     campsite_2 = models.ForeignKey('Campsite', related_name='trip_night_2')
 
+    absolute_url_pattern = 'db:trip:template_update'
+
     @property
     def max_num_people(self):
         """ Maximum number of people on trip: max_trippees + 2 leaders """
         return self.max_trippees + 2
-
-    def get_absolute_url(self):
-
-        kwargs = {'trips_year' : self.trips_year_id, 
-                  'pk' : self.pk}
-        return reverse('db:trip:template_update')
-
 
     def __str__(self):
         return "{}: {}".format(self.name, self.description)
