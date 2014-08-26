@@ -17,8 +17,9 @@ class ScheduledTrip(DatabaseModel):
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
 
-    absolute_url_pattern = 'db:trip:trip_update'
-            
+    class Meta:
+        verbose_name = 'trip'
+
     def __str__(self):
 
         return '{}{} - {}'.format(self.section.name, self.template.name, self.template.description)
@@ -38,8 +39,6 @@ class Section(DatabaseModel):
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
 
-    absolute_url_pattern = 'db:section:section_update'
-
     @property
     def trippees_arrive(self):
         """ Date that trippees arrive in Hanover. """
@@ -56,7 +55,6 @@ class Section(DatabaseModel):
     @property
     def nights_camping(self):
         """ List of dates when trippees are camping out on the trail. """
-        
         return [self.at_campsite_1, self.at_campsite_2]
 
     @property
@@ -91,7 +89,8 @@ class TripTemplate(DatabaseModel):
     campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
     campsite_2 = models.ForeignKey('Campsite', related_name='trip_night_2')
 
-    absolute_url_pattern = 'db:template:template_update'
+    class Meta:
+        verbose_name = 'template'
 
     @property
     def max_num_people(self):
@@ -110,8 +109,6 @@ class TripType(DatabaseModel):
     packing_list = models.TextField() # TODO: this should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
-    absolute_url_pattern = 'db:triptype:triptype_update'
-
     def __str__(self):
         return self.name
 
@@ -123,8 +120,6 @@ class Campsite(DatabaseModel):
     directions = models.TextField()
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
-
-    absolute_url_pattern = 'db:campsite:campsite_update'
 
     def __str__(self):
         return self.name

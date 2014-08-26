@@ -67,33 +67,35 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
 
 class DatabaseViewFactory():
 
-    def __init__(self, model, short_name):
-        
+    def __init__(self, model):
+
+        ref_name = model.get_reference_name()
+
         class IndexView(DatabaseListView):
             pass
         IndexView.model = model
-        IndexView.template_name = '{0}/{0}_index.html'.format(short_name)
-        IndexView.context_object_name = '{}s'.format(short_name)
-        IndexView.name = '{}_index'.format(short_name)
+        IndexView.template_name = '{0}/{0}_index.html'.format(ref_name)
+        IndexView.context_object_name = '{}s'.format(ref_name)
+        IndexView.name = '{}_index'.format(ref_name)
         self.IndexView = IndexView
 
         class CreateView(DatabaseCreateView):
             pass
         CreateView.model = model
-        CreateView.name = '{}_create'.format(short_name)
+        CreateView.name = '{}_create'.format(ref_name)
         self.CreateView = CreateView
 
         class UpdateView(DatabaseUpdateView):
             pass
         UpdateView.model = model
-        UpdateView.name = '{}_update'.format(short_name)
+        UpdateView.name = '{}_update'.format(ref_name)
         self.UpdateView = UpdateView
 
         class DeleteView(DatabaseDeleteView):
             pass
         DeleteView.model = model
-        DeleteView.success_url_pattern = 'db:{}:{}'.format(short_name, self.IndexView.name)
-        DeleteView.name = '{}_delete'.format(short_name)
+        DeleteView.success_url_pattern = 'db:{}:{}'.format(ref_name, self.IndexView.name)
+        DeleteView.name = '{}_delete'.format(ref_name)
         self.DeleteView = DeleteView
 
     def get_urls(self):

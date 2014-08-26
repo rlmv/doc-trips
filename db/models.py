@@ -40,25 +40,38 @@ class DatabaseModel(models.Model):
         abstract = True
 
     # TODO: move this to a subclass similar to Meta? eg. Config?
-    absolute_url_pattern = None
+    #    absolute_url_pattern = None
 
     def get_absolute_url(self):
         """ Get the absolute url for database objects. 
 
-        Uses the url namespace string specified in absolute_url_pattern
-        to perform a reverse lookup. This is mostly used by class based 
-        views, and can be overridden if necessary.
+        Use the verbose_name of the model to to a namespace lookup.
+        TODO: use a DetailView as target, or stick with update?
         """
-
+        
+        name = self.get_reference_name()
+        url_pattern = '{0}:{1}:{1}_update'.format('db', name) 
+        
+        """
         if not self.absolute_url_pattern:
             msg = ("%s must define 'absolute_url_pattern' or override "
                   "'get_absolute_url' to reverse absolute url")
             raise ImproperlyConfigured(msg % self.__class__.__name__)
-
+        """
         # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
         kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
-        return reverse(self.absolute_url_pattern, kwargs=kwargs)
+        return reverse(url_pattern, kwargs=kwargs)
 
+    @classmethod
+    def get_reference_name(cls):
+        """ Return the canonical name by which to reference the model
+        
+        Used to name urls and url namespaces. 
+
+        This is a class method so that it can be called on the Model
+        in addition to instances.
+        """
+        return cls._meta.verbose_name.replace(' ', '')
 
     def save(self, *args, **kwargs):
         """ Attach the current trips_year to new database objects.

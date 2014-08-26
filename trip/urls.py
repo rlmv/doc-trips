@@ -17,12 +17,7 @@ template_urlpatterns = patterns('',
     url(r'^(?P<pk>[0-9]+)/delete', TripTemplateDeleteView.as_view(), name='template_delete'),                                
 )                                
 
-triptype_urlpatterns = patterns('',
-    url(r'^$', TripTypeListView.as_view(), name='triptype_index'),
-    url(r'^create$', TripTypeCreateView.as_view(), name='triptype_create'),                             
-    url(r'^(?P<pk>[0-9]+)/update', TripTypeUpdateView.as_view(), name='triptype_update'),                             
-    url(r'^(?P<pk>[0-9]+)/delete', TripTypeDeleteView.as_view(), name='triptype_delete'),
-)                                
+triptype_urlpatterns = TripTypeViews.get_urls()
 
 campsite_urlpatterns = CampsiteViews.get_urls()
 

@@ -1,6 +1,6 @@
 
 <ul>
   {% for campsite in campsites %}
-  <li> <a href="{{ type.get_absolute_url }}">{{ campsite }}</a></li>
+  <li> <a href="{{ campsite.get_absolute_url }}">{{ campsite }}</a></li>
   {% endfor %}
 </ul>

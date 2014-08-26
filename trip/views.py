@@ -38,24 +38,9 @@ class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:template:template_index'
     
+TripTypeViews = DatabaseViewFactory(TripType)
 
-class TripTypeListView(DatabaseListView):
-    model = TripType
-    template_name = 'triptype/triptype_index.html'
-    context_object_name = 'triptypes'
+CampsiteViews = DatabaseViewFactory(Campsite)
 
-class TripTypeCreateView(DatabaseCreateView):
-    model = TripType
-
-class TripTypeUpdateView(DatabaseUpdateView):
-    model = TripType
-
-class TripTypeDeleteView(DatabaseDeleteView):
-    model = TripType
-    success_url_pattern = 'db:triptype:triptype_index'
-
-
-CampsiteViews = DatabaseViewFactory(Campsite, 'campsite')
-
-SectionViews = DatabaseViewFactory(Section, 'section')
+SectionViews = DatabaseViewFactory(Section)
                                
