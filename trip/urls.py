@@ -1,5 +1,4 @@
 
-
 from django.conf.urls import patterns, url
 
 from trip.views import *
@@ -12,9 +11,10 @@ trip_urlpatterns = patterns('',
 )
 
 template_urlpatterns = patterns('',
-    url(r'^$', TripTemplateListView.as_view(), name='template_list'),
+    url(r'^$', TripTemplateListView.as_view(), name='template_index'),
     url(r'^create$', TripTemplateCreateView.as_view(), name='template_create'),
-                                
+    url(r'^(?P<pk>[0-9]+)/update', TripTemplateUpdateView.as_view(), name='template_update'),
+    url(r'^(?P<pk>[0-9]+)/delete', TripTemplateDeleteView.as_view(), name='template_delete'),                                
 )                                
 
 

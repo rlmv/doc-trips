@@ -1,44 +1,44 @@
 
 from django.core.urlresolvers import reverse_lazy, reverse
-from vanilla import ListView, UpdateView, CreateView, DeleteView
 
 from trip.models import ScheduledTrip, TripTemplate
-from db.views import DatabaseMixin
+from db.views import DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView
 
-class ScheduledTripListView(DatabaseMixin, ListView):
+
+class ScheduledTripListView(DatabaseListView):
     model = ScheduledTrip
     template_name = 'trip/trip_index.html'
     context_object_name = 'trips'
 
+class ScheduledTripUpdateView(DatabaseUpdateView):
+    model = ScheduledTrip
+    success_url_pattern = 'db:trip:trip_update'
 
-class ScheduledTripUpdateView(DatabaseMixin, UpdateView):
+class ScheduledTripCreateView(DatabaseCreateView):
+    model = ScheduledTrip
+    success_url_pattern = 'db:trip:trip_update'
+
+class ScheduledTripDeleteView(DatabaseDeleteView):
     model = ScheduledTrip
     template_name = 'db/update.html'
+    success_url_pattern = 'db:trip:trip_index'
 
-
-class ScheduledTripCreateView(CreateView):
-    model = ScheduledTrip
-    template_name = 'db/create.html'
-
-
-class ScheduledTripDeleteView(DatabaseMixin, DeleteView):
-
-    model = ScheduledTrip
-    template_name = 'db/update.html'
-
-    def get_success_url(self):
-        kwargs = {'trips_year' : self.kwargs['trips_year']}
-        return reverse('db:trip:trip_index', kwargs=kwargs)
-    
-
-class TripTemplateListView(DatabaseMixin, ListView):
-
+class TripTemplateListView(DatabaseListView):
     model = TripTemplate
     template_name = 'trip/template_list.html'
     context_object_name = 'templates' # TODO: trip_templates?
 
-
-class TripTemplateCreateView(DatabaseMixin, CreateView):
-    
+class TripTemplateCreateView(DatabaseCreateView):
     model = TripTemplate
-    template_name = 'db/create.html'
+    success_url_pattern = 'db:template:template_update'
+
+class TripTemplateUpdateView(DatabaseUpdateView):
+    model = TripTemplate
+    success_url_pattern = 'db:template:template_update'
+
+class TripTemplateDeleteView(DatabaseDeleteView):
+    model = TripTemplate
+    success_url_pattern = 'db:template:template_index'
+    
+
+

@@ -16,8 +16,6 @@ class ScheduledTrip(DatabaseModel):
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
-
-    absolute_url_pattern = 'db:trip:trip_update'
             
     def __str__(self):
 
@@ -88,8 +86,6 @@ class TripTemplate(DatabaseModel):
     # TODO: better related names
     campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
     campsite_2 = models.ForeignKey('Campsite', related_name='trip_night_2')
-
-    absolute_url_pattern = 'db:trip:template_update'
 
     @property
     def max_num_people(self):
