@@ -2,7 +2,7 @@
 from django.core.urlresolvers import reverse_lazy, reverse
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
-from trip.models import ScheduledTrip
+from trip.models import ScheduledTrip, TripTemplate
 from db.views import DatabaseMixin
 
 class ScheduledTripListView(DatabaseMixin, ListView):
@@ -32,3 +32,8 @@ class ScheduledTripDeleteView(DatabaseMixin, DeleteView):
     
 
 
+class TripTemplateListView(DatabaseMixin, ListView):
+
+    model = TripTemplate
+    template_name = 'trip/template_list.html'
+    context_object_name = 'templates' # TODO: trip_templates?
