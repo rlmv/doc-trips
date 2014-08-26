@@ -30,51 +30,36 @@ class DatabaseMixin(LoginRequiredMixin):
         return qs.filter(trips_year=self.kwargs['trips_year'])
 
 
-class SuccessUrlMixin():
-    """ Mixin which reverses 'success_url_pattern' to lookup success url """
-
-    success_url_pattern = None
-
-    def get_success_url(self):
-        
-        if self.success_url_pattern:
-            kwargs = {'trips_year': self.kwargs['trips_year']}
-            return reverse(self.success_url_pattern, kwargs=kwargs)
-        
-        return super(SuccessUrlMixin, self).get_success_url()
-
-
-class SuccessUrlWithPkMixin():
-    """ Like SuccessUrlMixin, but adds the object pk to the lookup """
-
-    success_url_pattern = None
-
-    def get_success_url(self):
-        
-        if self.success_url_pattern:
-            kwargs = {'trips_year': self.kwargs['trips_year'],
-                      'pk': self.object.pk }
-            return reverse(self.success_url_pattern, kwargs=kwargs)
-
-        return super(SuccessUrlMixin, self).get_success_url()
-
-
 class DatabaseListView(DatabaseMixin, ListView):
     pass
 
 
-class DatabaseCreateView(DatabaseMixin, SuccessUrlWithPkMixin, CreateView):
+class DatabaseCreateView(DatabaseMixin, CreateView):
     template_name = 'db/create.html'
 
 
-class DatabaseUpdateView(DatabaseMixin, SuccessUrlWithPkMixin, UpdateView):
+class DatabaseUpdateView(DatabaseMixin, UpdateView):
     template_name ='db/update.html'
 
 
-class DatabaseDeleteView(DatabaseMixin, SuccessUrlMixin, DeleteView):
+class DatabaseDeleteView(DatabaseMixin, DeleteView):
     template_name = 'db/delete.html'
 
+    success_url_pattern = None
 
+    def get_success_url(self):
+        """ Helper method for getting the success url based on 
+        succes_url_pattern. 
+
+        Needed because DeleteView cannot check get_absolute_url.
+        """
+
+        if self.success_url_pattern:
+            kwargs = {'trips_year': self.kwargs['trips_year']}
+            return reverse(self.success_url_pattern, kwargs=kwargs)
+
+        return super(DatabaseDeleteView, self).get_success_url()
+        
     
 
     
