@@ -1,0 +1,6 @@
+
+<ul>
+  {% for template in templates %}
+  <li><a href="{{ template.get_absolute_url }}">{{ template }}</a></li>
+  {% endfor %}
+</ul>

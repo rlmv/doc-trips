@@ -25,8 +25,8 @@ class ScheduledTripDeleteView(DatabaseDeleteView):
 
 class TripTemplateListView(DatabaseListView):
     model = TripTemplate
-    template_name = 'trip/template_list.html'
-    context_object_name = 'templates' # TODO: trip_templates?
+    template_name = 'trip/template_index.html'
+    context_object_name = 'templates' 
 
 class TripTemplateCreateView(DatabaseCreateView):
     model = TripTemplate

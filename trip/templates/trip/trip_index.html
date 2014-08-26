@@ -2,6 +2,6 @@
 
 <ul>
   {% for trip in trips %}
-  <li> {{ trip }} </li>
+  <li> <a href="{{ trip.get_absolute_url }}">{{ trip }}</a></li>
   {% endfor %}
 </ul>
