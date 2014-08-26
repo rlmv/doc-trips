@@ -50,17 +50,16 @@ class DatabaseModel(models.Model):
 
         """
         if not self.absolute_url_pattern:
-            msg = 'need absolute_url_pattern to reverse absolute url'
-            raise ImproperlyConfigured(msg)
+            msg = ("%s must define 'absolute_url_pattern' or override "
+                  "'get_absolute_url' to reverse absolute url")
+            raise ImproperlyConfigured(msg % self.__class__.__name__)
 
-        # Using _id instead of .pk saves a database hit. See
-        # https://docs.djangoproject.com/en/dev/topics/db/optimization/#use-foreign-key-values-directly 
-        kwargs = {'trips_year': self.trips_year_id,
-                  'pk': self.pk}
+        # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
+        kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
         return reverse(self.absolute_url_pattern, kwargs=kwargs)
 
     def save(self, *args, **kwargs):
-        """ When an new object is created, attach current trips_year.
+        """ Attach the current trips_year to new database objects.
         
         If trips_year is explicitly specified, use that year instead. 
         This overrides the default model save method.
