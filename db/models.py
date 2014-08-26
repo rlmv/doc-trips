@@ -2,16 +2,7 @@
 from django.db import models
 from django.conf import settings
 
-class TripsYearManager(models.Manager):
-    """ Object manager for TripsYear """
-
-    def current(self):
-        """ Get the current TripsYear object. 
-
-        current refers to the year of trips, eg. Trips 2014, 
-        not *necessarily* the actual date.
-        """
-        return TripsYear.objects.get(is_current=True)
+from db.managers import TripsYearManager, CalendarManager
 
 
 class TripsYear(models.Model):
@@ -57,30 +48,17 @@ class DatabaseModel(models.Model):
             
         super(DatabaseModel, self).save(*args, **kwargs)
 
-
-class CalendarManager(models.Manager):
-    
-    def current(self):
-        """ Get the current Calendar object"""
-        return Calendar.objects.get(trips_year=TripsYear.objects.current)
         
-    # TODO: is this the best way to do this? I think this muddies the 
-    # abstraction separation
-    def dates_with_trips_camping(self, trips_year):
-        """ Get a list of all dates with trips camping out on the trail.
-
-        Pulls information from the Section objects. """
-        
-        sections = Section.objects.filter(trips_year=trips_year)
-
 class Calendar(DatabaseModel):
 
     # trips_year is inherited from DatabaseModel
 
     leader_application_available = models.DateTimeField()
     leader_application_due = models.DateTimeField()
+
     # TODO: ??? are we going to have leader recs?
     # leader_recommendation_due = models.DateTimeField()
+
     leader_assignment_posted = models.DateTimeField()
     trippee_registration_available = models.DateTimeField()
     trippee_assignment_posted = models.DateTimeField()
