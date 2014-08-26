@@ -1,10 +1,11 @@
 
 <table>
-  {% for type in triptypes %}
   <tr>
     <th>Name</th>
     <th>Leader Description</th>
-    <th>Trippee Description</th>`
+    <th>Trippee Description</th>
+  </tr>
+  {% for type in triptypes %}
   <tr> 
     <td><a href="{{ type.get_absolute_url }}">{{ type }}</a></td>
     <td>{{ type.leader_description }}</td>
