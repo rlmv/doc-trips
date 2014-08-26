@@ -47,8 +47,8 @@ class DatabaseModel(models.Model):
         Uses the url namespace string specified in absolute_url_pattern
         to perform a reverse lookup. This is mostly used by class based 
         views, and can be overridden if necessary.
-
         """
+
         if not self.absolute_url_pattern:
             msg = ("%s must define 'absolute_url_pattern' or override "
                   "'get_absolute_url' to reverse absolute url")

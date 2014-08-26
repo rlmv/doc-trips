@@ -51,7 +51,9 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
         """ Helper method for getting the success url based on 
         succes_url_pattern. 
 
-        Needed because DeleteView cannot check get_absolute_url.
+        CreateView and UpdateView use the models get_absolute_url
+        to find the success_url. DeleteView cannot do this because the
+        target object hsa been deleted.
         """
 
         if self.success_url_pattern:
