@@ -23,3 +23,7 @@ triptype_urlpatterns = patterns('',
     url(r'^(?P<pk>[0-9]+)/update', TripTypeUpdateView.as_view(), name='triptype_update'),                             
     url(r'^(?P<pk>[0-9]+)/delete', TripTypeDeleteView.as_view(), name='triptype_delete'),
 )                                
+
+campsite_urlpatterns = CampsiteViews.get_urls()
+
+section_urlpatterns = SectionViews.get_urls()

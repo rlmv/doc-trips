@@ -1,6 +1,7 @@
 
-from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite
-from db.views import DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView
+from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+                     DatabaseListView, DatabaseViewFactory)
 
 
 class ScheduledTripListView(DatabaseListView):
@@ -52,3 +53,9 @@ class TripTypeUpdateView(DatabaseUpdateView):
 class TripTypeDeleteView(DatabaseDeleteView):
     model = TripType
     success_url_pattern = 'db:triptype:triptype_index'
+
+
+CampsiteViews = DatabaseViewFactory(Campsite, 'campsite')
+
+SectionViews = DatabaseViewFactory(Section, 'section')
+                               

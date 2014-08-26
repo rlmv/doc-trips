@@ -38,6 +38,8 @@ class Section(DatabaseModel):
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
 
+    absolute_url_pattern = 'db:section:section_update'
+
     @property
     def trippees_arrive(self):
         """ Date that trippees arrive in Hanover. """
@@ -99,6 +101,7 @@ class TripTemplate(DatabaseModel):
     def __str__(self):
         return "{}: {}".format(self.name, self.description)
 
+
 class TripType(DatabaseModel):
     
     name = models.CharField(max_length=255)
@@ -112,6 +115,7 @@ class TripType(DatabaseModel):
     def __str__(self):
         return self.name
 
+
 class Campsite(DatabaseModel):
     
     name = models.CharField(max_length=255)
@@ -119,6 +123,8 @@ class Campsite(DatabaseModel):
     directions = models.TextField()
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
+
+    absolute_url_pattern = 'db:campsite:campsite_update'
 
     def __str__(self):
         return self.name
