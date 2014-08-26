@@ -31,9 +31,14 @@ class ScheduledTripDeleteView(DatabaseMixin, DeleteView):
         return reverse('db:trip:trip_index', kwargs=kwargs)
     
 
-
 class TripTemplateListView(DatabaseMixin, ListView):
 
     model = TripTemplate
     template_name = 'trip/template_list.html'
     context_object_name = 'templates' # TODO: trip_templates?
+
+
+class TripTemplateCreateView(DatabaseMixin, CreateView):
+    
+    model = TripTemplate
+    template_name = 'db/create.html'

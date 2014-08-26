@@ -103,6 +103,13 @@ class TripTemplate(DatabaseModel):
         """ Maximum number of people on trip: max_trippees + 2 leaders """
         return self.max_trippees + 2
 
+    def get_absolute_url(self):
+
+        kwargs = {'trips_year' : self.trips_year_id, 
+                  'pk' : self.pk}
+        return reverse('db:trip:template_update')
+
+
     def __str__(self):
         return "{}: {}".format(self.name, self.description)
 
