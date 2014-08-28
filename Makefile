@@ -6,24 +6,26 @@ PIP=$(VENV)/bin/pip
 FAB=$(VENV)/bin/fab
 COVERAGE=$(VENV)/bin/coverage
 
+MANAGE=$(PYTHON) doc-trips/manage.py
+
 
 .PHONY: install migrations migrate test coverage clean
 
 all:
-	$(PYTHON) manage.py runserver
+	$(MANAGE) runserver
 
 install:
 	pyvenv $(VENV)
 	$(PIP) install -r requirements.txt
 
 migrations:
-	$(PYTHON) manage.py makemigrations
+	$(MANAGE) makemigrations
 
 migrate:
-	$(PYTHON) manage.py migrate
+	$(MANAGE) migrate
 
 test: 
-	$(PYTHON) manage.py test
+	$(MANAGE) test
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test
