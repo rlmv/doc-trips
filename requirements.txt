@@ -12,7 +12,7 @@ model_mommy
 
 #django-grappelli
 # need dev version for django 1.7 compatibility
-git+git://github.com/sehmaschine/django-grappelli.git@dev/2.6.x
+#git+git://github.com/sehmaschine/django-grappelli.git@dev/2.6.x
 
 django-easyfilters
 django-vanilla-views
