@@ -8,7 +8,6 @@ from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
 
-from constance import config
 from vanilla import ListView, CreateView, DetailView, UpdateView, FormView, RedirectView
 from django_easyfilters import FilterSet
 
