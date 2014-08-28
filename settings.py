@@ -48,10 +48,10 @@ INSTALLED_APPS = (
 #    'south',
 
     # custom
+    'db',
     'user',
     'leader',
     'trip',
-    'db',
 )
 
 TRIPS_YEAR = 2014
@@ -100,7 +100,7 @@ DATABASES = {
 
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(),
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
 }
 
 import datetime
