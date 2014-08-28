@@ -1,17 +1,12 @@
 
-django-suit
+#django-suit
 
 coverage
 #django-coverage
 
 # django dev - need migration support
-https://www.djangoproject.com/download/1.7c1/tarball/
+https://www.djangoproject.com/download/1.7c3/tarball/
 django_cas_sso
-
-# picklefield is a requirement for constance, since we are installing directly from the repo
-django-picklefield
-#django-constance
-git+git://github.com/comoga/django-constance
 
 model_mommy
 
@@ -24,6 +19,8 @@ django-vanilla-views
 django-crispy-forms
 django-bootstrap3
 
-mezzanine
-mezzanine-grappelli
--e git+git://github.com/renyi/mezzanine-blocks#egg=mezzanine-blocks
+#mezzanine
+#mezzanine-grappelli
+#-e git+git://github.com/renyi/mezzanine-blocks#egg=mezzanine-blocks
+
+django-toolbelt 
