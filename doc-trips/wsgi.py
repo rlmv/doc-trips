@@ -10,6 +10,12 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "doc-trips.settings")
 
+import sys
+from django.conf import settings
+BASE_DIR = settings.BASE_DIR
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
+
 from django.core.wsgi import get_wsgi_application
 from dj_static import Cling
 

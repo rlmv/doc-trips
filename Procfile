@@ -1,4 +1,4 @@
 
-web: gunicorn doc-trips.wsgi --log-file -
+web: gunicorn doc-trips.wsgi --log-file - 
 
 
