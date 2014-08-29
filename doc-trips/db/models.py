@@ -39,14 +39,11 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
-    # TODO: move this to a subclass similar to Meta? eg. Config?
-    #    absolute_url_pattern = None
 
-    def get_absolute_url(self):
+    def get_update_url(self):
         """ Get the absolute url for database objects. 
 
         Use the verbose_name of the model to to a namespace lookup.
-        TODO: use a DetailView as target, or stick with update?
         """
         
         name = self.get_reference_name()
@@ -61,6 +58,12 @@ class DatabaseModel(models.Model):
         # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
         kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
         return reverse(url_pattern, kwargs=kwargs)
+    
+    
+    def get_absolute_url(self):
+        """ TODO: use a DetailView as target, or stick with update? """
+        return self.get_update_url()
+    
 
     @classmethod
     def get_reference_name(cls):

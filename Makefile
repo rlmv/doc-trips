@@ -28,7 +28,7 @@ test:
 	$(MANAGE) test
 
 coverage:
-	$(COVERAGE) run --omit "$(VENV)/*" manage.py test
+	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
 	$(COVERAGE) report -m
 	$(COVERAGE) html -d coverage
 

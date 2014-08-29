@@ -1,4 +1,7 @@
 
+{% load verbose %}
+{% load links %}
+
 <table>
   <tr>
     <th>Name</th>
@@ -10,6 +13,7 @@
     <td><a href="{{ type.get_absolute_url }}">{{ type }}</a></td>
     <td>{{ type.leader_description }}</td>
     <td>{{ type.trippee_description }}</td>
+    <td>{{ type|edit_link }}</td>
   </tr>
   {% endfor %}
 </table>
