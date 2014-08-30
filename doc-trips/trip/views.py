@@ -28,6 +28,27 @@ class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip
     success_url_pattern = 'db:trip:trip_update'
 
+    def get_form(self, data=None, files=None, **kwargs):
+        """ Populate the CreateForm with query parameters
+
+        Used by the trip_index.html template to link to a create form 
+        for a template-section pair
+
+        TODO: should this be simplified to 
+        if GET has items:
+           data = GET
+        ??
+        """
+
+        cls = self.get_form_class()
+        
+        GET = self.request.GET
+        if 'section' in GET and 'template' in GET:
+            data = {'section': GET['section'], 'template': GET['template']}
+        
+        return cls(data=data, files=files, **kwargs)
+        
+
 class ScheduledTripDeleteView(DatabaseDeleteView):
     model = ScheduledTrip
     template_name = 'db/update.html'
