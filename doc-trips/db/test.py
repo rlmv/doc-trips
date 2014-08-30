@@ -62,6 +62,7 @@ class DatabaseMixinTestCase(TestCase):
     def setUp(self):
         self.current_trips_year = init_trips_year()
         self.old_trips_year = mommy.make(TripsYear, is_current=False)
+        self.old_trips_year.save()
     
     def test_trips_year_queryset_filtering(self):
         

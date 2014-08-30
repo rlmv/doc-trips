@@ -1,6 +1,23 @@
 
-<ul>
+
+{% load links %}
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Capacity</th>
+    {% for date in camping_dates %}
+    <th> {{ date }} </th>
+    {% endfor %}
+  </tr>
   {% for campsite in campsites %}
-  <li> <a href="{{ campsite.get_absolute_url }}">{{ campsite }}</a></li>
+  <tr>
+    <td> {{ campsite.name }} </td>
+    <td> {{ campsite.capacity }} </td>
+    {% for trips in campsite.get_occupancy_list %}
+    <td> {{ trips }} </td>
+    {% endfor %}
+    <td> {{ campsite|edit_link }} </td>
+  </tr>
   {% endfor %}
-</ul>
+</table>

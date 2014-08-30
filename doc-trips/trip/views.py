@@ -40,7 +40,15 @@ class TripTemplateDeleteView(DatabaseDeleteView):
     
 TripTypeViews = DatabaseViewFactory(TripType)
 
+# TODO: prettify. would passsing custom views to the factory be slicker?
 CampsiteViews = DatabaseViewFactory(Campsite)
+def get_context_data(self, **kwargs):
+    trips_year = self.kwargs['trips_year']
+    context = super(CampsiteViews.IndexView, self).get_context_data(**kwargs)
+    context['camping_dates'] = Section.dates.camping_dates(trips_year)
+    return context
+CampsiteViews.IndexView.get_context_data = get_context_data
+
 
 SectionViews = DatabaseViewFactory(Section)
                                

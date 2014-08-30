@@ -1,12 +1,14 @@
-
+import collections
 
 from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.core.urlresolvers import reverse
 
 from db.models import DatabaseModel
+from trip.managers import SectionDatesManager
 
 
 class ScheduledTrip(DatabaseModel):
@@ -38,6 +40,9 @@ class Section(DatabaseModel):
     is_international = models.BooleanField(default=False)
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
+    
+    objects = models.Manager()
+    dates = SectionDatesManager()
 
     @property
     def trippees_arrive(self):
@@ -121,5 +126,41 @@ class Campsite(DatabaseModel):
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
 
+    def get_occupancy(self):
+        """ Get all ScheduledTrips staying at this campsite
+        
+        Returns a dictionary of date:list(trips) pairs. 
+        """
+        
+        trips_year = self.trips_year
+        camping_dates = Section.dates.camping_dates(trips_year)
+
+        # all trips which stay at campsite
+        resident_trips = (ScheduledTrip.objects
+                          .filter(trips_year=trips_year)
+                          .filter(Q(template__campsite_1=self) |
+                                  Q(template__campsite_2=self)))
+
+        # mapping of dates -> trips at this campsite
+        trips_by_date = {date: [] for date in camping_dates}
+
+        for trip in resident_trips:
+            if trip.template.campsite_1 == self:
+                trips_by_date[trip.section.at_campsite_1].append(trip)
+            if trip.template.campsite_2 == self:
+                trips_by_date[trip.section.at_campsite_2].append(trip)
+
+        return trips_by_date
+
+    def get_occupancy_list(self):
+        """ List of ScheduledTrips at campsite
+
+        The occupancy has a one-to-one correspondance with Section.dates.camping_dates
+        """
+        
+        occupancy = self.get_occupancy()
+        keys = sorted(occupancy.keys())
+        return map(lambda k: occupancy[k], keys)
+    
     def __str__(self):
         return self.name
