@@ -21,6 +21,9 @@ class ScheduledTrip(DatabaseModel):
 
     class Meta:
         verbose_name = 'trip'
+        # no two ScheduledTrips can have the same template-section-trips_year
+        # combination; we don't want to schedule two identical trips
+        unique_together = ('template', 'section', 'trips_year')
 
     def __str__(self):
 
