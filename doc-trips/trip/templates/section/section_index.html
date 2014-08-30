@@ -1,6 +1,27 @@
 
-<ul>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Leaders Arrive</th>
+    <th>Local</th>
+    <th>Exchange</th>
+    <th>Transfer</th>
+    <th>International</th>
+    <th>Native American</th>
+    <th>FYSEP</th>
+  </tr>
+  
   {% for section in sections %}
-  <li> <a href="{{ section.get_absolute_url }}">{{ section }}</a></li>
+  <tr>
+    <td>{{ section.name }}</td>
+    <td>{{ section.leaders_arrive }}</td>
+    <td>{{ section.is_local }}</td>
+    <td>{{ section.is_exchange }}</td>
+    <td>{{ section.is_transfer }}</td>
+    <td>{{ section.is_international }}</td>
+    <td>{{ section.is_native }}</td>
+    <td>{{ section.is_fysep }}</td>
+    <td><a href="{{ section.get_update_url }}">edit</a></td>
+  </tr>
   {% endfor %}
-</ul>
+</table
