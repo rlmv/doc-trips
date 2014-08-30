@@ -58,12 +58,18 @@ class DatabaseModel(models.Model):
         # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
         kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
         return reverse(url_pattern, kwargs=kwargs)
-    
-    
+
     def get_absolute_url(self):
         """ TODO: use a DetailView as target, or stick with update? """
         return self.get_update_url()
-    
+
+    def get_delete_url(self):
+        """  Get the canonical url to delete this object """
+        name = self.get_reference_name()
+        url_pattern = '{0}:{1}:{1}_delete'.format('db', name)
+
+        kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
+        return reverse(url_pattern, kwargs=kwargs)
 
     @classmethod
     def get_reference_name(cls):
