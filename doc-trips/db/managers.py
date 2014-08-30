@@ -12,7 +12,7 @@ class TripsYearManager(models.Manager):
         current refers to the year of trips, eg. Trips 2014, 
         not *necessarily* the actual date.
         """
-        return self.model.objects.get(is_current=True)
+        return self.get(is_current=True)
 
 
 class CalendarManager(models.Manager):
@@ -23,7 +23,6 @@ class CalendarManager(models.Manager):
 
         # get_model prevents circular dependency
         TripsYear = models.get_model('db', 'TripsYear')
-        Calendar = self.model
 
-        return Calendar.objects.get(trips_year=TripsYear.objects.current())
+        return self.get(trips_year=TripsYear.objects.current())
 
