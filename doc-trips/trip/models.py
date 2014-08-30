@@ -24,8 +24,8 @@ class ScheduledTrip(DatabaseModel):
 
     def __str__(self):
 
-        return '{}{} - {}'.format(self.section.name, self.template.name, self.template.description)
-
+        # return '{}{}- {}'.format(self.section.name, self.template.name, self.template.description)
+        return '{}{}'.format(self.section.name, self.template.name)
 
 class Section(DatabaseModel):
     
@@ -102,6 +102,35 @@ class TripTemplate(DatabaseModel):
         """ Maximum number of people on trip: max_trippees + 2 leaders """
         return self.max_trippees + 2
 
+    def get_scheduled_trips(self):
+        """ Get all scheduled trips which use this template 
+
+        Returns a dictionary of section:scheduledtrip/None
+
+        TODO: optimize this. Calling this for every row means a lot
+        of redundant queries. 
+
+        Can we compute the entire table with a constant number of queries? 
+        """
+        scheduled_trips = (ScheduledTrip.objects
+                 .filter(trips_year=self.trips_year)
+                 .filter(template=self))
+        
+        sections = Section.objects.filter(trips_year=self.trips_year)
+        
+        trips_by_section = {section: None for section in sections}
+        
+        for trip in scheduled_trips:
+            trips_by_section[trip.section] = trip
+
+        return trips_by_section
+
+    def get_scheduled_trips_list(self):
+        
+        trips_by_section = self.get_scheduled_trips()
+        keys = sorted(trips_by_section.keys(), key=(lambda s: s.name))
+        return map(lambda k: trips_by_section[k], keys)
+
     def __str__(self):
         return "{}: {}".format(self.name, self.description)
 
@@ -125,7 +154,6 @@ class Campsite(DatabaseModel):
     directions = models.TextField()
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
-
     def get_occupancy(self):
         """ Get all ScheduledTrips staying at this campsite
         

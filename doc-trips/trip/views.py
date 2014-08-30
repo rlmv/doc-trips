@@ -5,9 +5,20 @@ from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView
 
 
 class ScheduledTripListView(DatabaseListView):
-    model = ScheduledTrip
+    """ Note: this queries on TripTemplates, not ScheduledTrips 
+    Rename to clarify?
+    """
+    model = TripTemplate
     template_name = 'trip/trip_index.html'
-    context_object_name = 'trips'
+    context_object_name = 'templates'
+
+    def get_context_data(self, **kwargs):
+        """ Add sections to template context """
+        context = super(ScheduledTripListView, self).get_context_data(**kwargs)
+        trips_year = self.kwargs['trips_year']
+        # TODO: optimize this using .only? vv
+        context['sections'] = Section.objects.filter(trips_year=trips_year)
+        return context
 
 class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip

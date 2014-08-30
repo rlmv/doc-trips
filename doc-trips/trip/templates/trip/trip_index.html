@@ -1,7 +1,31 @@
 
+{% load links %}
 
-<ul>
-  {% for trip in trips %}
-  <li> <a href="{{ trip.get_absolute_url }}">{{ trip }}</a></li>
+<table>
+  <tr>
+    <th>Template</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Max trippees</th>
+    {% for section in sections %}
+    <th>{{ section }}</th>
+    {% endfor %}
+  </tr>
+  {% for template in templates %}
+  <tr>
+    <td> {{ template.name }} </td>
+    <td> {{ template.trip_type.name }} </td>
+    <td> {{ template.description }} </td>
+    <td> {{ template.max_trippees }} </td>
+
+    {% for section, trip in template.get_scheduled_trips.items %}
+    {% if trip %}
+    <td><a href="{{ trip.get_update_url }}">{{ trip }}</a></td>
+    {% else %}
+    <td><a href="{% url 'db:trip:trip_create' trips_year=section.trips_year.year %}">add</a></td>
+    {% endif %}
+    {% endfor %}
+
+  </tr>
   {% endfor %}
-</ul>
+</table>
