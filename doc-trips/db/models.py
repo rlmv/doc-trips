@@ -53,7 +53,7 @@ class DatabaseModel(models.Model):
         if not self.absolute_url_pattern:
             msg = ("%s must define 'absolute_url_pattern' or override "
                   "'get_absolute_url' to reverse absolute url")
-            raise ImproperlyConfigured(msg % self.__class__.__name__)
+            raise ImproperlyConfigured(msg % self.__class__.__vname__)
         """
         # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
         kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}

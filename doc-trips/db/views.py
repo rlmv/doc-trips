@@ -34,6 +34,7 @@ class DatabaseMixin():
 
 class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
     pass
+    
 
 
 class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
