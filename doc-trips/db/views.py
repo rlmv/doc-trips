@@ -14,11 +14,12 @@ class LoginRequiredMixin():
         return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
-class DatabaseMixin(LoginRequiredMixin):
+class DatabaseMixin():
     """ Mixin for vanilla views to filter objects based on trips_year.
 
     Plugs into ModelViews. The url is a database url of the form
-    /something/{{trips_year}}/something.
+    /something/{{trips_year}}/something. The ListView will only display 
+    objects for the specified trips_year.
 
     TODO: handle requests for trips_years which are not in the database.
     They should give 404s? This must not mess up ListViews with no results.
@@ -31,19 +32,19 @@ class DatabaseMixin(LoginRequiredMixin):
         return qs.filter(trips_year=self.kwargs['trips_year'])
 
 
-class DatabaseListView(DatabaseMixin, ListView):
+class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
     pass
 
 
-class DatabaseCreateView(DatabaseMixin, CreateView):
+class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
     template_name = 'db/create.html'
 
 
-class DatabaseUpdateView(DatabaseMixin, UpdateView):
+class DatabaseUpdateView(DatabaseMixin, LoginRequiredMixin, UpdateView):
     template_name ='db/update.html'
 
 
-class DatabaseDeleteView(DatabaseMixin, DeleteView):
+class DatabaseDeleteView(DatabaseMixin, LoginRequiredMixin, DeleteView):
     template_name = 'db/delete.html'
 
     success_url_pattern = None

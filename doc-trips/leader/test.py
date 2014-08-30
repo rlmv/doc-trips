@@ -4,8 +4,8 @@ from django.core.exceptions import ValidationError
 
 from model_mommy import mommy
 
-from .models import LeaderGrade, LeaderApplication
-from .views import get_next_application_to_grade
+from leader.models import LeaderGrade, LeaderApplication
+from leader.views import get_next_application_to_grade
 
 from test.fixtures import init_trips_year
 
