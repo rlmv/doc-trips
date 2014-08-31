@@ -93,11 +93,12 @@ class DatabaseViewFactory():
     def __init__(self, model):
 
         ref_name = model.get_reference_name()
+        app_name = model.get_app_name()
 
         class IndexView(DatabaseListView):
             pass
         IndexView.model = model
-        IndexView.template_name = '{0}/{0}_index.html'.format(ref_name)
+        IndexView.template_name = '{}/{}_index.html'.format(app_name, ref_name)
         IndexView.context_object_name = '{}s'.format(ref_name)
         IndexView.name = '{}_index'.format(ref_name)
         self.IndexView = IndexView

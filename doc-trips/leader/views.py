@@ -11,7 +11,9 @@ from django.forms import ModelForm
 from vanilla import ListView, CreateView, DetailView, UpdateView, FormView, RedirectView
 from django_easyfilters import FilterSet
 
-from .models import LeaderApplication, LeaderGrade
+from leader.models import LeaderApplication, LeaderGrade
+
+from db.views import DatabaseViewFactory
 
 logger = logging.getLogger(__name__)
 
@@ -50,24 +52,7 @@ class FilterListView(ListView):
         context[self.context_filter_name] = self.filter_object
         return context
 
-        
-class LeaderApplicationList(FilterListView):
-    
-    model = LeaderApplication
-    template_name = 'leader/application_list.html'
-    context_object_name = 'applications'
-    filterset = LeaderApplicationFilterSet
-    context_filter_name = 'application_filter'
-
-list_view = login_required(LeaderApplicationList.as_view())
-
-    
-class LeaderApplicationDetail(DetailView):
-    model = LeaderApplication
-    context_object_name = 'leader_application'
-    template_name = 'leader/application_detail.html'
-    
-leaderapplication = login_required(LeaderApplicationDetail.as_view())
+LeaderApplicationDatabaseViews = DatabaseViewFactory(LeaderApplication)
 
 
 class CreateLeaderApplication(CreateView):

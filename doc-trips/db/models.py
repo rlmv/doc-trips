@@ -94,6 +94,11 @@ class DatabaseModel(models.Model):
         """
         return cls._meta.verbose_name.replace(' ', '')
 
+    @classmethod
+    def get_app_name(cls):
+        """ Return the app name of cls """
+        return cls._meta.app_label
+
     def save(self, *args, **kwargs):
         """ Attach the current trips_year to new database objects.
         
