@@ -90,7 +90,7 @@ class DatabaseModel(models.Model):
         """
         if self.pk is None and not hasattr(self, 'trips_year'):
             self.trips_year = TripsYear.objects.current()
-            
+
         super(DatabaseModel, self).save(*args, **kwargs)
 
         

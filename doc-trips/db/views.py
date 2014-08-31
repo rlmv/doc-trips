@@ -3,6 +3,8 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.db import IntegrityError
+from django.core.exceptions import NON_FIELD_ERRORS
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
 
@@ -31,11 +33,30 @@ class DatabaseMixin():
         qs = super(DatabaseMixin, self).get_queryset()
         return qs.filter(trips_year=self.kwargs['trips_year'])
 
+    def form_valid(self, form):
+        """ Called for valid forms - specifically Create and Update
+ 
+        This deals with a corner case of form validation. Because we add 
+        the current trips_year in DatabaseModel.save, which happens after
+        ModelForm validation, we cannot check for uniqueness constraints 
+        raised by trips_year (specifically for ScheduledTrip). Fortunately
+        the databse raises an IntegrityError, which we catch here and pass to 
+        form_invalid.
+
+        TODO: parse and prettify the error message
+        """
+
+        try:
+            super(DatabaseMixin, self).form_valid(form)
+        except IntegrityError as e:
+            print(e.args)
+            form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
+            return self.form_invalid(form)
+
 
 class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
     pass
     
-
 
 class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
     template_name = 'db/create.html'
