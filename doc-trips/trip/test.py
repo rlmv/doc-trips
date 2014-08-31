@@ -26,6 +26,10 @@ class ScheduledTripTestCase(TestCase):
         response = self.client.post(ScheduledTrip.get_create_url(self.trips_year), 
                                     {'template': t1.template.pk, 'section': t1.section.pk})
         
+        self.assertGreater(len(response.context['form'].non_field_errors().as_data()), 0, 
+                           'should have an error message')
+        
+        # should not create the trip
         scheduled_trips = ScheduledTrip.objects.all()
         self.assertEquals(len(scheduled_trips), 1)
         self.assertEquals(scheduled_trips[0], t1)
