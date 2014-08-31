@@ -51,7 +51,6 @@ class ScheduledTripCreateView(DatabaseCreateView):
 
 class ScheduledTripDeleteView(DatabaseDeleteView):
     model = ScheduledTrip
-    template_name = 'db/update.html'
     success_url_pattern = 'db:trip:trip_index'
 
 

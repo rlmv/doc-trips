@@ -1,6 +1,26 @@
 
-<ul>
+
+{% load links %}
+
+<table>
+  <tr>
+    <th> Template </th>
+    <th> Description </th>
+    <th> Trip Type </th>
+    <th> Max trippees </th>
+    <th> Campsite #1 </th>
+    <th> Campsite #2 </th>
+  </tr>
   {% for template in templates %}
-  <li><a href="{{ template.get_absolute_url }}">{{ template }}</a></li>
+  <tr>
+    <td>{{ template|absolute_link }}</td>
+    <td>{{ template.description }}</td>
+    <td>{{ template.trip_type|absolute_link }}</td>
+    <td>{{ template.max_trippees }}</td>
+    <td>{{ template.campsite_1|absolute_link }}</td>
+    <td>{{ template.campsite_2|absolute_link }}</td>
+    <td>{{ template|edit_link }}</td>
+    <td>{{ template|delete_link }}</td>
+  <tr>
   {% endfor %}
-</ul>
+</table>

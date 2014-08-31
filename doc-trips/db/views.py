@@ -48,7 +48,7 @@ class DatabaseMixin():
 
         try:
             with transaction.atomic():
-                super(DatabaseMixin, self).form_valid(form)
+                return super(DatabaseMixin, self).form_valid(form)
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)

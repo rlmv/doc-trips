@@ -12,7 +12,7 @@
   </tr>
   {% for campsite in campsites %}
   <tr>
-    <td> {{ campsite.name }} </td>
+    <td> {{ campsite|absolute_link}} </td>
     <td> {{ campsite.capacity }} </td>
     
     {% for trips in campsite.get_occupancy_list %}
@@ -24,6 +24,7 @@
     {% endfor %}
 
     <td> {{ campsite|edit_link }} </td>
+    <td> {{ campsite|delete_link }} </td>
   </tr>
   {% endfor %}
 </table>
