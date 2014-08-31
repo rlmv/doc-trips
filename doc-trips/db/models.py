@@ -79,7 +79,7 @@ class DatabaseModel(models.Model):
         name = cls.get_reference_name()
         url_pattern = '{0}:{1}:{1}_create'.format('db', name)
 
-        kwargs = {'trips_year': trips_year_id}
+        kwargs = {'trips_year': trips_year.pk}
         return reverse(url_pattern, kwargs=kwargs)
 
 
