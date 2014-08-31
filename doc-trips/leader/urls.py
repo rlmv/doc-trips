@@ -1,7 +1,7 @@
 
 from django.conf.urls import patterns, url
 
-from .views import *
+from leader.views import *
 
 urlpatterns = patterns('', 
     url(r'^(?P<pk>[0-9]+)$', edit_leaderapplication, name='leaderapplication'),
@@ -10,5 +10,5 @@ urlpatterns = patterns('',
     url(r'^grade/(?P<pk>[0-9]+)$', grade_application, name='grade'),
 )
 
-leader_urlpatterns = LeaderApplicationDatabaseViews.get_urls()
+leaderapplication_urlpatterns = LeaderApplicationDatabaseViews.get_urls()
                               

@@ -1,10 +1,31 @@
 
+{% load links %}
 
+<table>
+  <tr> 
+    <th> Name </th>
+    <th> Status </th>
+    <th> Assignment </th>
+    <th> Gender </th>
+    <th> Class </th>
+  </tr>
 
-{{ application_filter }}
-<ul>
-  {% for app in applications %}
-  <li><a href="{{ app.get_absolute_url }}">{{ app }}</a></li>
+  {% for application in leaderapplications %}
+  <tr>
+    <td>{{ application.user }}</td>
+    <td>{{ application.status }}</td>
+    {% if application.assigned_trip %}
+    <td>{{ application.assigned_trip|absolute_link }}</td>
+    {% else %}
+    <td>TODO: assignment link</td>
+    {% endif %}
+    <td>{{ application.gender }}</td>
+    <td>{{ application.class_year }}</td>
+    
+    <td>{{ application|edit_link }}</td>
+    <td>{{ application|delete_link }}</td>
+
+  </tr>
   {% endfor %}
-</ul>
+</table>
   

@@ -17,43 +17,7 @@ from db.views import DatabaseViewFactory
 
 logger = logging.getLogger(__name__)
 
-class LeaderApplicationFilterSet(FilterSet):
-    fields = [
-        'status',
-        'class_year',
-    ]
-
-# TODO: move this to a utils module
-class FilterListView(ListView):
-
-    """ Implements easyfilter filtering on a vanilla ListView. 
-
-    filterset and context_filter_name attributes must be specified.
-    """
-    
-    filterset = None # filterset object
-    context_filter_name = None # context name of filter
-    
-    def __init__(self, *args, **kwargs):
-        super(FilterListView, self).__init__(*args, **kwargs)
-        
-        if self.filterset is None or self.context_filter_name is None:
-            from django.core.exceptions import ImproperlyConfigured
-            raise ImproperlyConfigured("FilterListView requires 'filterset' "
-                                       "and 'context_filter_name' attributes")
-    
-    def get_queryset(self):
-        qs = super(FilterListView, self).get_queryset()
-        self.filter_object = self.filterset(qs, self.request.GET)
-        return self.filter_object.qs
-
-    def get_context_data(self, **kwargs):
-        context = super(FilterListView, self).get_context_data(**kwargs)
-        context[self.context_filter_name] = self.filter_object
-        return context
-
 LeaderApplicationDatabaseViews = DatabaseViewFactory(LeaderApplication)
-
 
 class CreateLeaderApplication(CreateView):
     model = LeaderApplication
