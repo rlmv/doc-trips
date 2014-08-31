@@ -72,6 +72,18 @@ class DatabaseModel(models.Model):
         return reverse(url_pattern, kwargs=kwargs)
 
     @classmethod
+    def get_create_url(cls, trips_year):
+        """ Return the canonical url to create an object of cls """
+        
+        # TODO: extract 'db' from a class attribute, eg 'db_namespace'?
+        name = cls.get_reference_name()
+        url_pattern = '{0}:{1}:{1}_create'.format('db', name)
+
+        kwargs = {'trips_year': trips_year.pk}
+        return reverse(url_pattern, kwargs=kwargs)
+
+
+    @classmethod
     def get_reference_name(cls):
         """ Return the canonical name by which to reference the model
         
