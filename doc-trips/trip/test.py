@@ -1,4 +1,5 @@
 
+from django.db import transaction
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
@@ -15,16 +16,19 @@ class ScheduledTripTestCase(TestCase):
         mock_login(self)
 
     def test_unique_validation_in_create_view(self):
-        """ See the comment in DatabaseMixin.form_valid 
+        """ See the comment in DatabaseMixin.form_valid """
 
-        Posting will raise an IntegrityError if validation is not handled"""
 
         t1 = mommy.make(ScheduledTrip, trips_year=self.trips_year)
         t1.save()
 
+        #Posting will raise an IntegrityError if validation is not handled
         response = self.client.post(ScheduledTrip.get_create_url(self.trips_year), 
                                     {'template': t1.template.pk, 'section': t1.section.pk})
         
+        scheduled_trips = ScheduledTrip.objects.all()
+        self.assertEquals(len(scheduled_trips), 1)
+        self.assertEquals(scheduled_trips[0], t1)
         
         
         

@@ -3,7 +3,7 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
@@ -47,9 +47,9 @@ class DatabaseMixin():
         """
 
         try:
-            super(DatabaseMixin, self).form_valid(form)
+            with transaction.atomic():
+                super(DatabaseMixin, self).form_valid(form)
         except IntegrityError as e:
-            print(e.args)
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
 
