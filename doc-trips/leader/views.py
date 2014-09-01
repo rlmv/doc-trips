@@ -3,13 +3,13 @@ import logging
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
 
-from vanilla import ListView, CreateView, DetailView, UpdateView, FormView, RedirectView
-from django_easyfilters import FilterSet
+from vanilla import (ListView, CreateView, DetailView, UpdateView, 
+                     FormView, RedirectView, TemplateView)
 
 from leader.models import LeaderApplication, LeaderGrade
 
@@ -46,16 +46,24 @@ class EditLeaderApplication(LoginRequiredMixin, UpdateView):
 
 
 # TODO: needs to be grader permission based
-# TODO: convert to class view
-@login_required
-def redirect_to_next_gradable_application(request):
-
-    application = LeaderApplication.objects.next_to_grade(request.user)
-    # TODO: use template
-    if not application:
-        return HttpResponse('<h3>No applications left to grade </h3>')
-    return redirect('leader:grade', pk=application.pk)
+class RedirectToNextGradableApplication(LoginRequiredMixin, RedirectView):
     
+    permanent = False 
+    
+    def get_redirect_url(self, *args, **kwargs):
+        """ Return the url of the next LeaderApplication that needs grading """
+
+        application = LeaderApplication.objects.next_to_grade(self.request.user)
+        # TODO: use template
+        if not application:
+            return reverse('leader:no_application')
+        return reverse('leader:grade', kwargs={'pk': application.pk})
+
+# TODO: grader permissions
+class NoApplicationToGrade(LoginRequiredMixin, TemplateView):
+    """ Tell user there are no more applications for her to grade """
+    template_name = 'leader/no_application.html'
+
 
 class LeaderGradeForm(ModelForm):
     class Meta:
@@ -64,7 +72,7 @@ class LeaderGradeForm(ModelForm):
 
 
 # TODO: restrict this to those with grader permissions
-class GradeApplicationView(DetailView, FormView):
+class GradeApplication(LoginRequiredMixin, DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
 
@@ -88,7 +96,7 @@ class GradeApplicationView(DetailView, FormView):
         The super call retrives the LeaderaApplication object (saved as context_object_name).
         Then we manually add the form instance.
         """
-        context = super(GradeApplicationView, self).get_context_data(**kwargs)
+        context = super(GradeApplication, self).get_context_data(**kwargs)
         context['form'] = self.get_form()
         return context
     
@@ -102,7 +110,7 @@ class GradeApplicationView(DetailView, FormView):
         grade.leader_application = self.get_object()
         grade.save()
 
-        return super(GradeApplicationView, self).form_valid(form)
+        return super(GradeApplication, self).form_valid(form)
 
 
 
