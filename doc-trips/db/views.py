@@ -124,54 +124,6 @@ class DatabaseDeleteView(DatabaseMixin, LoginRequiredMixin, DeleteView):
     def urlpattern(cls):
         name = '{}_delete'.format(cls.model.get_reference_name())
         return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
-    
-
-class DatabaseViewFactory():
-
-    def __init__(self, model):
-
-        ref_name = model.get_reference_name()
-        app_name = model.get_app_name()
-
-        class IndexView(DatabaseListView):
-            pass
-        IndexView.model = model
-        IndexView.template_name = '{}/{}_index.html'.format(app_name, ref_name)
-        IndexView.context_object_name = '{}s'.format(ref_name)
-        IndexView.name = '{}_index'.format(ref_name)
-        self.IndexView = IndexView
-
-        class CreateView(DatabaseCreateView):
-            pass
-        CreateView.model = model
-        CreateView.name = '{}_create'.format(ref_name)
-        self.CreateView = CreateView
-
-        class UpdateView(DatabaseUpdateView):
-            pass
-        UpdateView.model = model
-        UpdateView.name = '{}_update'.format(ref_name)
-        self.UpdateView = UpdateView
-
-        class DeleteView(DatabaseDeleteView):
-            pass
-        DeleteView.model = model
-        DeleteView.success_url_pattern = 'db:{}:{}'.format(ref_name, self.IndexView.name)
-        DeleteView.name = '{}_delete'.format(ref_name)
-        self.DeleteView = DeleteView
-
-    def get_urls(self):
-        """ Get url patterns for views """
-
-        urlpatterns = [
-            url(r'^$', self.IndexView.as_view(), name=self.IndexView.name),
-            url(r'^create$', self.CreateView.as_view(), name=self.CreateView.name),                             
-            url(r'^(?P<pk>[0-9]+)/update', self.UpdateView.as_view(), name=self.UpdateView.name),
-            url(r'^(?P<pk>[0-9]+)/delete', self.DeleteView.as_view(), name=self.DeleteView.name)
-        ]
-
-        return urlpatterns
-
         
 
     

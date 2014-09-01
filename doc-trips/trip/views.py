@@ -1,7 +1,7 @@
 
 from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                     DatabaseListView, DatabaseViewFactory)
+                     DatabaseListView)
 
 
 class ScheduledTripListView(DatabaseListView):

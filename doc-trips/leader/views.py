@@ -13,13 +13,21 @@ from django_easyfilters import FilterSet
 
 from leader.models import LeaderApplication, LeaderGrade
 
-from db.views import DatabaseViewFactory
+from db.views import *
 
 logger = logging.getLogger(__name__)
 
-LeaderApplicationDatabaseViews = DatabaseViewFactory(LeaderApplication)
 
-class CreateLeaderApplication(CreateView):
+class LeaderApplicationListView(DatabaseListView):
+    model = LeaderApplication
+    context_object_name = 'leaderapplications'
+    template_name = 'leader/leaderapplication_index.html'
+
+class LeaderApplicationUpdateView(DatabaseUpdateView):
+    model = LeaderApplication
+
+
+class LeaderApply(LoginRequiredMixin, CreateView):
     model = LeaderApplication
     
     template_name = 'leader/application_form.html'
@@ -31,15 +39,10 @@ class CreateLeaderApplication(CreateView):
         return super(CreateLeaderApplication, self).form_valid(form)
 
 
-create_leaderapplication = login_required(CreateLeaderApplication.as_view())
-
-
-class EditLeaderApplication(UpdateView):
+class EditLeaderApplication(LoginRequiredMixin, UpdateView):
     model = LeaderApplication
     template_name = 'leader/application_form.html'
     fields = '__all__'
-
-edit_leaderapplication = login_required(EditLeaderApplication.as_view())
 
 
 # TODO: needs to be grader permission based
@@ -60,6 +63,7 @@ class LeaderGradeForm(ModelForm):
         fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
 
 
+# TODO: restrict this to those with grader permissions
 class GradeApplicationView(DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
@@ -99,9 +103,6 @@ class GradeApplicationView(DetailView, FormView):
         grade.save()
 
         return super(GradeApplicationView, self).form_valid(form)
-
-# TODO: restrict to graders
-grade_application = GradeApplicationView.as_view()    
 
 
 
