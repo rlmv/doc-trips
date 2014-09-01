@@ -82,7 +82,7 @@ class GradeApplication(LoginRequiredMixin, DetailView, FormView):
 
     model = LeaderApplication
     template_name = 'leader/grade.html'
-    context_object_name = 'leader_application'
+    context_object_name = 'leaderapplication'
 
     form_class = LeaderGradeForm
     """ Must be a lazy - this is called before the urlconf is loaded.

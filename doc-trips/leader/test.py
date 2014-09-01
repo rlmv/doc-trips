@@ -1,10 +1,12 @@
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from leader.models import LeaderGrade, LeaderApplication
-from test.fixtures import init_trips_year
+from leader.views import *
+from test.fixtures import init_trips_year, mock_login
 
 class GradeValidationTestCase(TestCase):
 
@@ -69,5 +71,28 @@ class LeaderApplicationManagerTestCase(TestCase):
         next = LeaderApplication.objects.next_to_grade(self.user)
         self.assertIsNone(next, 'ACCEPTED (or any status except PENDING) should not be gradable')
 
+
+class ApplicationViewsTestCase(TestCase):
+
+    def setUp(self):
+        mock_login(self)
+
+    def test_redirects(self):
         
+        app = mommy.make('LeaderApplication', status=LeaderApplication.PENDING)
+        app.save()
+        response = self.client.get(reverse('leader:grade_random'), follow=True)
+        self.assertEquals(app, response.context['leaderapplication'])
+
+        grade = mommy.make('LeaderGrade', grader=self.user, leader_application=app)
+        grade.save()
+        response = self.client.get(reverse('leader:grade_random'), follow=True)
+
+        self.assertEquals(response.templates[0].name, 'leader/no_application.html')
+        
+                       
+
+    
+                              
+                                   
 
