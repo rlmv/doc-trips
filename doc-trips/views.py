@@ -1,11 +1,13 @@
 
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 import logging
 
 logger = logging.getLogger(__name__)
 
+
 def index(request):
+
     return HttpResponse('Welcome to the DOC Trips website')
     

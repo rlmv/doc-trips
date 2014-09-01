@@ -22,3 +22,33 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         profile, created = UserProfile.objects.get_or_create(user=instance)
 post_save.connect(create_profile, sender=settings.AUTH_USER_MODEL) # register
+
+
+from django.db import models
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+
+# from http://stackoverflow.com/a/13952198/3818777
+
+class GlobalPermissionManager(models.Manager):
+    def get_query_set(self):
+        return super(GlobalPermissionManager, self).\
+            get_query_set().filter(content_type__name='global_permission')
+
+
+class GlobalPermission(Permission):
+    """A global permission, not attached to a model"""
+
+    objects = GlobalPermissionManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        ct, created = ContentType.objects.get_or_create(
+            name="global_permission", app_label=self._meta.app_label
+        )
+        self.content_type = ct
+        super(GlobalPermission, self).save(*args, **kwargs)
+
