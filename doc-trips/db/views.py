@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db import IntegrityError, transaction
-from django.core.exceptions import NON_FIELD_ERRORS
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
 
@@ -53,18 +53,52 @@ class DatabaseMixin():
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
 
+    @classmethod
+    def urlpattern(cls):
+        """ Return the default urlpattern for this view 
+
+        Implemented on subclass, this is just an interface stub
+        """
+        msg = 'Not implemented. Implement urlpattern() method on {}'
+        raise ImproperlyConfigured(msg.format(cls))
+
 
 class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
-    pass
+
+    def get_template_names(self):
+        """ Get the template for the ListView """
+        if self.template_name:
+            return [self.template_name]
+        
+        # auto-generate    TODO: use super() conventions?
+        template_name = '{}/{}_index.html'.format(
+            self.model.get_app_name(), 
+            self.model.get_reference_name()
+        )
+        return [template_name]
+    
+    @classmethod
+    def urlpattern(cls):
+        name = '{}_index'.format(cls.model.get_reference_name())
+        return url(r'^$', cls.as_view(), name=name)
     
 
 class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
     template_name = 'db/create.html'
 
+    @classmethod
+    def urlpattern(cls):
+        name = '{}_create'.format(cls.model.get_reference_name())
+        return url(r'^create$', cls.as_view(), name=name)
+
 
 class DatabaseUpdateView(DatabaseMixin, LoginRequiredMixin, UpdateView):
     template_name ='db/update.html'
 
+    @classmethod
+    def urlpattern(cls):
+        name = '{}_update'.format(cls.model.get_reference_name())
+        return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
 class DatabaseDeleteView(DatabaseMixin, LoginRequiredMixin, DeleteView):
     template_name = 'db/delete.html'
@@ -85,7 +119,11 @@ class DatabaseDeleteView(DatabaseMixin, LoginRequiredMixin, DeleteView):
             return reverse(self.success_url_pattern, kwargs=kwargs)
 
         return super(DatabaseDeleteView, self).get_success_url()
-        
+
+    @classmethod
+    def urlpattern(cls):
+        name = '{}_delete'.format(cls.model.get_reference_name())
+        return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
     
 
 class DatabaseViewFactory():
