@@ -69,7 +69,22 @@ class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:template:template_index'
     
-TripTypeViews = DatabaseViewFactory(TripType)
+
+class TripTypeListView(DatabaseListView):
+    model = TripType
+    context_object_name = '{}s'.format(TripType.get_reference_name())
+    template_name = 'trip/triptype_index.html'
+
+class TripTypeCreateView(DatabaseCreateView):
+    model = TripType
+
+class TripTypeUpdateView(DatabaseUpdateView):
+    model = TripType
+
+class TripTypeDeleteView(DatabaseDeleteView):
+    model = TripType
+    success_url_pattern = 'db:triptype:triptype_index'
+
 
 # TODO: prettify. would passsing custom views to the factory be slicker?
 CampsiteViews = DatabaseViewFactory(Campsite)
