@@ -8,4 +8,4 @@ Documentation:
 * How to deploy
 
 
-* database url schemes - derived from 'get_reference_name'
+* database url schemes - derived from 'get_reference_name' and 'get_app_name'

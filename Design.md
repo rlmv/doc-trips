@@ -71,20 +71,12 @@ main Database:
 
 Every database url looks like /database/:year for some year (or has a query string trips_year=:year? Which is simpler? We probably want the former, otherwise the query string must be appended to each link.) Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips_year value.
 
-
-See http://stackoverflow.com/questions/7259871/custom-django-admin-site-with-parent-url-parameter for details about adding custom url parameters to the admin site.
-
-The database will be an instance of the Django admin site, since many capabilities of the database are already present in the admin (eg., creating, editing, updating objects) and the database will only be seen by a few users each year. 
-
-By default, Django uses the User.is_staff property to allow users access to the admin  site. In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which should not be editable by the trips directors.
-
-In order to support the versioning of the database by year, we should subclass ModelAdmin, specifically the get_queryset method. A further subclass should probably handle the is_staff restrictions by overriding the permission methods.
+In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which should not be editable by the trips Design.
 
 
 * checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
 * globals (/admin) : 
-    - (use django-constance)
     - `trips_year`. 
     - `migration_date` - date on which `trips_year` will increment to the next year. All application dates, section dates, etc will be incremented by a year. has a hard minimum. Also, a 'migrate now' button.
     - `trips_cost`
@@ -95,31 +87,31 @@ In order to support the versioning of the database by year, we should subclass M
     - sections. Section model. number of sections, dates for arrival, transfer/international/NAD etc.
 
 * trippees - `Trippee`, `TrippeeRegistration` models
-    - table of all trippees, unassigned trippees are propogated to the top
-    - each trippee page is editable by admin, and provides buttons for assignment to a trip. 
-    - trippee registrations are matched with trippees (college provided information). this should be easily done via DIDs
-    - blitzlists - generates email lists of sections, etc. (PRIO LOW)
+    -[ ] table of all trippees, unassigned trippees are propogated to the top
+    -[ ] each trippee page is editable by admin, and provides buttons for assignment to a trip. 
+    -[ ] trippee registrations are matched with trippees (college provided information). this should be easily done via DIDs. How is the college information imported?
+    -[ ] blitzlists - generates email lists of sections, etc. (PRIO LOW)
     - find. search for trippees given many criteria. perhaps using a package like https://github.com/esistgut/django-simple-search
 
 * leaders
-    - Table of all leader applications, accepted/waitlisted, assignments, grade, and links to change all these. Able to sort by grade, gender. should bubble unassigned leaders and leaders with no status. Able to change status of application.
+    -[~] Table of all leader applications, accepted/waitlisted, assignments, grade, and links to change all these. Able to sort by grade, gender. should bubble unassigned leaders and leaders with no status. Able to change status of application.
     -[ ] Table of leaders sorted by section/trip
     -[ ] blitzlists. many.
     -[ ] graders. list of graders, and a portal to grant Users grader permissions. Use dnd interface.
     -[x] grades. feeds leader applications to users with grader permissions. same grader should not get same app twice. should filter out 'deprecated' applications.
 
 * trips
-    - landing page w/ table of all trip templates and existence on section. links to scheduled trips.
-    - trip templates. "uninstantiated trips".
-    - trip types. used in trip templates, and to display on leader and trippee applications.
+    -[ ] landing page w/ table of all trip templates and existence on section. links to scheduled trips.
+    -[ ] trip templates. "uninstantiated trips".
+    -[ ] trip types. used in trip templates, and to display on leader and trippee applications.
     -[ ] campsites. used in trip templates. should indicate the number of trips scheduled for the campsite on any given night, and the capacity/overflow.
     -[ ] about trips numbering page.
 
 * transport
-    - landing page w/ scheduled transportation, ability to add/delete
-    - transportation routes. Grant Bus, Local Bus, etc. should show which stops each can service.
-    - transportation stops. each stop is linked to a primary route. 
-    - somewhere in here we should show pickup/dropoff numbers, 
+    -[ ] landing page w/ scheduled transportation, ability to add/delete
+    -[ ] transportation routes. Grant Bus, Local Bus, etc. should show which stops each can service.
+    -[ ] transportation stops. each stop is linked to a primary route. 
+    -[ ] somewhere in here we should show pickup/dropoff numbers, 
 
 * statistics
     - tshirts - from leaders and trippee applications.
@@ -136,22 +128,17 @@ In order to support the versioning of the database by year, we should subclass M
 Permissions:
 ============
 `superuser`
-`admin/director` - can view and edit all database. Cannot touch User objects.
+`admin/director/staff` - can view and edit all database. Cannot touch User objects.
 `graders`
 `leaders` - a User is a leader if she has submitted a `LeaderApplication`
 `trippee` - incoming students
 
-
-
 DB design
 =========
 
-when migrating, copy db tables from
-* trip types 
+All models in the database subclass db.DatabaseModel.
 
-Should the database be editable for past years?
-
-Can we have a test year for experimentation?
+Should the database be editable for past years? Can we have a test year for experimentation?
 
 Should information from previous years be available to everyone who is logged in? e.g. previous leader pages? Is there any way to restrict new students from logging in to the leader page? Hmmm...
 
@@ -182,28 +169,32 @@ Timeline
 Immediate:
 [ ] leader applications, (leader application recommendations), 
 [ ] basic login, user permissions
-[ ] grading leader applications
+[ ] permission granting portal
+[x] grading leader applications
 [ ] application styling 
 [ ] basic trip information - trip types, section configuration
 [ ] 
 
 Midrange:
+[ ] all logistical capabilities: trip, campsite, transport scheduling
 [ ] leader portal: trip assignments
 [ ] front facing public pages
 [ ] trippee signup
-
+[ ] trippee login, view of trip assignments
+[ ] food, tshirt checklists
+[ ]
 
 Pre-trips:
-[ ] checklists
+[ ] logistics checklists
 [ ] trippee checkin
 [ ] safety log
 [ ] raid blog
 
 
 2 year:
-[ ] archive view of previous years information
-
-
+[ ] archive view of information from previous years
+[ ] longterm stability and year-to-year migration 
+[ ]
 
 Big Questions
 =========
@@ -215,6 +206,4 @@ Big Questions
 
 * should trip leader trainings be implemented with templates?
 
-* should long-lasting data (templates) be reversioned/recoverable?
 
-http://www.rdegges.com/the-perfect-django-settings-file/
