@@ -6,12 +6,12 @@ from trip.urls import * # TODO
 from leader.urls import *
 
 database_urlpatterns = patterns('', 
-    url(r'^trips/', include(trip_urlpatterns, namespace='trip')),
-    url(r'^templates/', include(template_urlpatterns, namespace='template')),                              
-    url(r'^types/', include(triptype_urlpatterns, namespace='triptype')),                              
-    url(r'^campsites/', include(campsite_urlpatterns, namespace='campsite')),
-    url(r'^sections/', include(section_urlpatterns, namespace='section')),                                  
-    url(r'^leaders/', include(leaderapplication_urlpatterns, namespace='leaderapplication')),                            
+    url(r'^trips/', include(trip_urlpatterns)),
+    url(r'^templates/', include(template_urlpatterns)),
+    url(r'^types/', include(triptype_urlpatterns)),
+    url(r'^campsites/', include(campsite_urlpatterns)),
+    url(r'^sections/', include(section_urlpatterns)),
+    url(r'^leaders/', include(leaderapplication_urlpatterns)),
 )
 
 urlpatterns = patterns('',

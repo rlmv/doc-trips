@@ -22,7 +22,7 @@
     {% if trip %}
     <td><a href="{{ trip.get_update_url }}">{{ trip }}</a></td>
     {% else %}
-    <td><a href="{% url 'db:trip:trip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
+    <td><a href="{% url 'db:trip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
     {% endif %}
     {% endfor %}
 

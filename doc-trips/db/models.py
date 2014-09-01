@@ -47,7 +47,7 @@ class DatabaseModel(models.Model):
         """
         
         name = self.get_reference_name()
-        url_pattern = '{0}:{1}:{1}_update'.format('db', name) 
+        url_pattern = '{0}:{1}_update'.format('db', name) 
         
         """
         if not self.absolute_url_pattern:
@@ -66,7 +66,7 @@ class DatabaseModel(models.Model):
     def get_delete_url(self):
         """  Get the canonical url to delete this object """
         name = self.get_reference_name()
-        url_pattern = '{0}:{1}:{1}_delete'.format('db', name)
+        url_pattern = '{}:{}_delete'.format('db', name)
 
         kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
         return reverse(url_pattern, kwargs=kwargs)
@@ -77,7 +77,7 @@ class DatabaseModel(models.Model):
         
         # TODO: extract 'db' from a class attribute, eg 'db_namespace'?
         name = cls.get_reference_name()
-        url_pattern = '{0}:{1}:{1}_create'.format('db', name)
+        url_pattern = '{}:{}_create'.format('db', name)
 
         kwargs = {'trips_year': trips_year.pk}
         return reverse(url_pattern, kwargs=kwargs)
