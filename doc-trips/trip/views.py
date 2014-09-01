@@ -67,7 +67,7 @@ class TripTemplateUpdateView(DatabaseUpdateView):
 
 class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
-    success_url_pattern = 'db:template:template_index'
+    success_url_pattern = 'db:template_index'
     
 
 class TripTypeListView(DatabaseListView):
@@ -83,18 +83,43 @@ class TripTypeUpdateView(DatabaseUpdateView):
 
 class TripTypeDeleteView(DatabaseDeleteView):
     model = TripType
-    success_url_pattern = 'db:triptype:triptype_index'
+    success_url_pattern = 'db:triptype_index'
 
 
-# TODO: prettify. would passsing custom views to the factory be slicker?
-CampsiteViews = DatabaseViewFactory(Campsite)
-def get_context_data(self, **kwargs):
-    trips_year = self.kwargs['trips_year']
-    context = super(CampsiteViews.IndexView, self).get_context_data(**kwargs)
-    context['camping_dates'] = Section.dates.camping_dates(trips_year)
-    return context
-CampsiteViews.IndexView.get_context_data = get_context_data
+class CampsiteListView(DatabaseListView):
+    model = Campsite
+    context_object_name = 'campsites'
+    template_name = 'trip/campsite_index.html'
+    
+    def get_context_data(self, **kwargs):
+        trips_year = self.kwargs['trips_year']
+        context = super(CampsiteViews.IndexView, self).get_context_data(**kwargs)
+        context['camping_dates'] = Section.dates.camping_dates(trips_year)
+        return context
+
+class CampsiteCreateView(DatabaseCreateView):
+    model = Campsite
+
+class CampsiteUpdateView(DatabaseUpdateView):
+    model = Campsite
+
+class CampsiteDeleteView(DatabaseDeleteView):
+    model = Campsite
+    success_url_pattern = 'db:campsite_index'
 
 
-SectionViews = DatabaseViewFactory(Section)
+class SectionListView(DatabaseListView):
+    model = Section
+    context_object_name = 'sections'
+    template_name = 'trip/section_index.html'
+
+class SectionCreateView(DatabaseCreateView):
+    model = Section
+
+class SectionUpdateView(DatabaseUpdateView):
+    model = Section
+
+class SectionDeleteView(DatabaseDeleteView):
+    model = Section
+    success_url_pattern = 'db:section_index'
                                

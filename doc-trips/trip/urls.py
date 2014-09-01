@@ -24,6 +24,17 @@ triptype_urlpatterns = patterns('',
     TripTypeDeleteView.urlpattern(),                        
 )                                
 
-campsite_urlpatterns = CampsiteViews.get_urls()
+campsite_urlpatterns = patterns('',
+    TripTypeListView.urlpattern(),
+    TripTypeCreateView.urlpattern(),                            
+    TripTypeUpdateView.urlpattern(),                            
+    TripTypeDeleteView.urlpattern(),                        
+)                                
 
-section_urlpatterns = SectionViews.get_urls()
+section_urlpatterns = patterns('',
+    SectionListView.urlpattern(),
+    SectionCreateView.urlpattern(),                            
+    SectionUpdateView.urlpattern(),                            
+    SectionDeleteView.urlpattern(),                        
+)                                
+
