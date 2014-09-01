@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from db.models import DatabaseModel
+from leader.managers import LeaderApplicationManager
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (
@@ -18,6 +19,8 @@ TSHIRT_SIZE_CHOICES = (
 
 class LeaderApplication(DatabaseModel):
 
+    objects = LeaderApplicationManager()
+    
     """ Status choices. 
 
     See https://docs.djangoproject.com/en/dev/ref/models/fields/#choices

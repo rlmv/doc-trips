@@ -69,10 +69,9 @@ Private (DYN) (@LOGIN)
 main Database:
 -------------
 
-Every database url looks like /database/:year for some year (or has a query string trips_year=:year? Which is simpler? We probably want the former, otherwise the query string must be appended to each link.) Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips_year value.
+Every database url looks like /db/:year for some year. Each menu database page has a dropdown menu to view the same page for previous years. The year will be clearly indicated at the top of the page. Most models should have a pre-save hook which adds a trips_year value.
 
-In order to present a functional database, some models will be restricted to staff users, eg the User model, since there are fields which should not be editable by the trips Design.
-
+In order to present a functional database, some models will be restricted to super users, eg the User model, since there are fields which should not be editable by the trips Design.
 
 * checklists : large and complex. A full collection of checklists for every day of trips.  - can perhaps be a grappeli admin page with a bunch of tables?
 
@@ -129,6 +128,7 @@ Permissions:
 ============
 `superuser`
 `admin/director/staff` - can view and edit all database. Cannot touch User objects.
+`croo` - is this intermediate distinction necessary? Should they simply have admin permissions?
 `graders`
 `leaders` - a User is a leader if she has submitted a `LeaderApplication`
 `trippee` - incoming students

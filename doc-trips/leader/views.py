@@ -21,6 +21,7 @@ LeaderApplicationDatabaseViews = DatabaseViewFactory(LeaderApplication)
 
 class CreateLeaderApplication(CreateView):
     model = LeaderApplication
+    
     template_name = 'leader/application_form.html'
     fields = '__all__'
 
@@ -28,6 +29,7 @@ class CreateLeaderApplication(CreateView):
         """ Attach creating user to Application. """
         form.instance.user = self.request.user
         return super(CreateLeaderApplication, self).form_valid(form)
+
 
 create_leaderapplication = login_required(CreateLeaderApplication.as_view())
 
@@ -40,46 +42,12 @@ class EditLeaderApplication(UpdateView):
 edit_leaderapplication = login_required(EditLeaderApplication.as_view())
 
 
-def get_next_application_to_grade(user):
-    """ Find the next leader application to grade.
-
-    This is an application which meets the following conditions:
-    (1) has not yet been graded if there are apps in the database
-    which have not been graded, otherwise an application with only 
-    one grade.
-    (2) has not already been graded by this user
-    (3) the application is not disqualified, deprecated, etc. See
-    LeaderApplication status field. It should be PENDING.
-
-    """
-
-    app = get_random_application_by_num_grades(user, 0)
-    if not app:
-        app = get_random_application_by_num_grades(user, 1)
-
-    return app
-
-def get_random_application_by_num_grades(user, num):
-    """ Return a random PENDING application that user has not graded, 
-    which has only been graded by num people. """
-
-    app = (LeaderApplication.objects
-           .filter(status=LeaderApplication.PENDING)
-           .annotate(Count('grades'))
-           .filter(grades__count=num)
-           .exclude(grades__grader=user)
-           # random ordering. TODO: this may be expensive?
-           .order_by('?')[:1])
-    
-    return app[0] if app else None
-
-
 # TODO: needs to be grader permission based
 # TODO: convert to class view
 @login_required
 def redirect_to_next_gradable_application(request):
 
-    application = get_next_application_to_grade(request.user)
+    application = LeaderApplication.objects.next_to_grade(request.user)
     # TODO: use template
     if not application:
         return HttpResponse('<h3>No applications left to grade </h3>')
