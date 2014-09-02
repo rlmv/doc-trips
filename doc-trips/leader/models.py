@@ -75,17 +75,6 @@ class LeaderApplication(DatabaseModel):
             raise ValidationError("A '{}' LeaderApplication cannot be assigned to a trip. "
                                   "Change status to 'Accepted' or remove trip assignment.".format(self.get_status_display()))
 
-    def get_absolute_url(self): 
-        """ Get the URL for this object. 
-
-        TODO: what is this used for?
-        
-        See https://docs.djangoproject.com/en/1.6/ref/models/instances/#django.db.models.Model.get_absolute_url
-        """
-        from django.core.urlresolvers import reverse
-        return reverse('leader:leaderapplication', kwargs={'pk': self.pk}) 
-
-
     def __str__(self):
         return self.user.username
         

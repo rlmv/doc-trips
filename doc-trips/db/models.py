@@ -60,7 +60,11 @@ class DatabaseModel(models.Model):
         return reverse(url_pattern, kwargs=kwargs)
 
     def get_absolute_url(self):
-        """ TODO: use a DetailView as target, or stick with update? """
+        """ 
+        TODO: use a DetailView as target, or stick with update? 
+        TODO: this doesn't necessarily apply for all obects, such as leader
+        applications and trippe registrations. 
+        """
         return self.get_update_url()
 
     def get_delete_url(self):

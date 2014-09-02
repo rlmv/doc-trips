@@ -2,6 +2,9 @@
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, permission_required
 
+# TODO: ! SEE http://django-braces.readthedocs.org/en/latest/index.html
+# for identical actions!
+
 class GraderPermissionRequiredMixin():
     """ Restrict access to users with grader permission """
 
