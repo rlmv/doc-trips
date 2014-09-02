@@ -29,26 +29,27 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 
-# from http://stackoverflow.com/a/13952198/3818777
-
-class GlobalPermissionManager(models.Manager):
+class SitePermissionManager(models.Manager):
     def get_query_set(self):
-        return super(GlobalPermissionManager, self).\
-            get_query_set().filter(content_type__name='global_permission')
+        qs = super(SitePermissionManager, self).get_query_set()
+        return qs.filter(content_type__name='site_permission')
 
 
-class GlobalPermission(Permission):
-    """A global permission, not attached to a model"""
+class SitePermission(Permission):
+    """ Implements global permission, not attached to a model.
 
-    objects = GlobalPermissionManager()
+    Shamelessly lifted from http://stackoverflow.com/a/13952198/3818777
+    """
+
+    objects = SitePermissionManager()
 
     class Meta:
-        proxy = True
+        proxy = True # proxy models are cool!
 
     def save(self, *args, **kwargs):
         ct, created = ContentType.objects.get_or_create(
-            name="global_permission", app_label=self._meta.app_label
+            name="site_permission", app_label=self._meta.app_label
         )
         self.content_type = ct
-        super(GlobalPermission, self).save(*args, **kwargs)
+        super(SitePermission, self).save(*args, **kwargs)
 
