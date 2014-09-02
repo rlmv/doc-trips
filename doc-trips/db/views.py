@@ -7,11 +7,17 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
-from user.views import DatabasePermissionRequiredMixin
+from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 
 
-class DatabaseMixin(DatabasePermissionRequiredMixin):
-    """ Mixin for vanilla views to filter objects based on trips_year.
+class DatabaseMixin(LoginRequiredMixin, PermissionRequiredMixin):
+    """ 
+    Mixin for database view pages. 
+
+    Filters objects by the trips_year named group in the url, 
+    and restricts access to users. If the user is not logged in, redirect 
+    the login page. If the user is logged in, but does not have
+    database-viewing privileges, display a 403 Forbidden page.
 
     Plugs into ModelViews. The url is a database url of the form
     /something/{{trips_year}}/something. The ListView will only display 
@@ -20,6 +26,12 @@ class DatabaseMixin(DatabasePermissionRequiredMixin):
     TODO: handle requests for trips_years which are not in the database.
     They should give 404s? This must not mess up ListViews with no results.
     """
+
+    # LoginRequiredMixin
+    redirect_unauthenticated_users = True
+    # Inherited from PermissionRequiredMixin
+    permission_required = 'user.can_access_db'
+    raise_exception = True
 
     def get_queryset(self):
         """ Get objects for requested trips_year """

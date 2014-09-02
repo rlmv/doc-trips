@@ -24,3 +24,5 @@ django-bootstrap3
 #-e git+git://github.com/renyi/mezzanine-blocks#egg=mezzanine-blocks
 
 django-toolbelt 
+
+django-braces

@@ -10,16 +10,17 @@ from django.forms import ModelForm
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+
 
 from leader.models import LeaderApplication, LeaderGrade
-
 from db.views import *
-from user.views import GraderPermissionRequiredMixin, LoginRequiredMixin
+
 
 logger = logging.getLogger(__name__)
 
 
-class LeaderApplicationDatabasListView(DatabaseListView):
+class LeaderApplicationDatabaseListView(DatabaseListView):
     model = LeaderApplication
     context_object_name = 'leaderapplications'
     template_name = 'leader/leaderapplication_index.html'
@@ -47,8 +48,19 @@ class EditLeaderApplication(LoginRequiredMixin, UpdateView):
     fields = '__all__'
 
 
+class GraderPermissionRequiredMixin(LoginRequiredMixin, PermissionRequiredMixin):
+    """ Only allow access to users with permission to grade leaderapplications. """
+
+    # From LoginRequired 
+    redirect_unauthenticated_users = True
+    # Otherwise, 
+    permission_required = 'user.can_grade_applications'
+    raise_exception = True
+
+
 class RedirectToNextGradableApplication(GraderPermissionRequiredMixin, RedirectView):
     
+    # from RedirectView
     permanent = False 
     
     def get_redirect_url(self, *args, **kwargs):
