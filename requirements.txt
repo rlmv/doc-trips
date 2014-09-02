@@ -25,4 +25,6 @@ django-bootstrap3
 
 django-toolbelt 
 
-django-braces
+#django-braces>=1.4.0 # need Login/Permission compatibility in master
+-e git+git://github.com/brack3t/django-braces.git#egg=django-braces
+

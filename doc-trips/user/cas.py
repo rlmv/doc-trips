@@ -18,6 +18,7 @@ def dartmouth_cas_callback(tree):
     findtext = lambda x: tree[0].findtext(tag_prefix + x)
 
     username = findtext('name')
+    username = '_'.join(username.split())
     netid = findtext('netid')
     user_str = findtext('user') # fmt: username @DARTMOUTH.EDU
 

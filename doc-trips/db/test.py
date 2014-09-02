@@ -1,13 +1,12 @@
 
-from django.test import TestCase
 from django.db import models
 from django.test.utils import override_settings
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
-from test.fixtures import init_trips_year
+from test import TestCase
 
 
 class ExampleDatabaseModel(DatabaseModel):
@@ -18,7 +17,7 @@ class ExampleDatabaseModel(DatabaseModel):
 class DatabaseModelTestCase(TestCase):
 
     def setUp(self):
-        self.trips_year = init_trips_year()
+        self.init_current_trips_year()
 
     def test_trips_year_automatic_addition_to_database_models(self):
         
@@ -34,67 +33,89 @@ class DatabaseModelTestCase(TestCase):
                             'saving should not overide explicitly specified trip_year')
 
 
-from db.views import DatabaseMixin
-from vanilla import ListView, UpdateView
-class ExampleListView(DatabaseMixin, ListView):
+from db.views import DatabaseUpdateView, DatabaseListView, DatabaseDeleteView
+class ExampleListView(DatabaseListView):
     model = ExampleDatabaseModel
     template_name = 'db/list.html'
     context_object_name = 'objects'
 
-class ExampleUpdateView(DatabaseMixin, UpdateView):
+class ExampleUpdateView(DatabaseUpdateView):
     model = ExampleDatabaseModel
-    template_name = 'db/update.html'
-    context_object_name = 'object'
+    context_object_name = 'wingding'
 
-urlpatterns = patterns('',
-    url(r'^(?P<trips_year>[0-9]+)/$', ExampleListView.as_view(), name='test_listview'), 
-    url(r'^(?P<trips_year>[0-9]+)/(?P<pk>[0-9]+)/$', ExampleUpdateView.as_view(), name='test_updateview'),
+class ExampleDeleteView(DatabaseDeleteView):
+    model = ExampleDatabaseModel
+    context_object_name = 'hjeeeeeeeelllp'
+
+
+example_urlpatterns = patterns('', 
+    ExampleListView.urlpattern(),                           
+    ExampleUpdateView.urlpattern(),
+    ExampleDeleteView.urlpattern(),                           
 )
+urlpatterns = patterns('', 
+    url(r'^(?P<trips_year>[0-9]+)/', include(example_urlpatterns, namespace='db'))
+)
+
+from user.permissions import *
+from db.urls import get_update_url, get_index_url
 
 @override_settings(ROOT_URLCONF='db.test')
 class DatabaseMixinTestCase(TestCase):
 
-    """ Tests for DatabseMixin. We use mix the class into custom views,
-    instead of using DatabaseListView etc. because we can't easily test 
-    the companion LoginRequiredMixin. 
-    """
+    """ Tests for DatabseMixin. """
 
     def setUp(self):
-        self.current_trips_year = init_trips_year()
-        self.old_trips_year = mommy.make(TripsYear, is_current=False)
-        self.old_trips_year.save()
-    
-    def test_trips_year_queryset_filtering(self):
+        self.init_current_trips_year()
+        self.init_old_trips_year()
+
+
+    def test_need_database_permissions_to_access_database_pages(self):
+
+        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
+        ex1.save()
+        db_url = get_update_url(ex1)
         
-        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.current_trips_year)
+        response = self.client.get(db_url)
+        # TODO: 
+        
+
+    def test_trips_year_queryset_filtering(self):
+
+        self.mock_director_login()
+
+        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.client.get(reverse('test_listview', kwargs={'trips_year': self.current_trips_year.pk}))
+        response = self.client.get(get_index_url(ex1))
         
         objects = response.context[ExampleListView.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object with matching trips_year')
 
 
-    def test_trips_year_update_view_queryset_filtering(self):
-        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.current_trips_year)
+    def test_trips_year_update_view_filters_trips_year(self):
+
+        self.mock_director_login()
+
+        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        kwargs = {'trips_year' : self.current_trips_year.year, 
-                  'pk': ex1.pk}
-        response = self.client.get(reverse('test_updateview', kwargs=kwargs))
+        response = self.client.get(get_update_url(ex1))
         object = response.context[ExampleUpdateView.context_object_name]
         self.assertEquals(object, ex1)
-
-        kwargs = {'trips_year' : self.current_trips_year.year, 
-                  'pk': ex2.pk}
-        response = self.client.get(reverse('test_updateview', kwargs=kwargs))
+        
+        response = self.client.get(reverse('db:exampledatabasemodel_update', 
+                                           kwargs={'trips_year': ex1.trips_year.year, 
+                                                   'pk': ex2.pk}))
         self.assertEquals(response.status_code, 404, 'should not find ex2 because trips_year does not match ex2.trips_year')
         
+        
+    
 
 class CalendarTestCase(TestCase):
 

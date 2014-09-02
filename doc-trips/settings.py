@@ -51,8 +51,6 @@ INSTALLED_APPS = (
     'trip',
 )
 
-TRIPS_YEAR = 2014
-
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

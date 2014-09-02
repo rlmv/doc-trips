@@ -39,46 +39,11 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
-
-    def get_update_url(self):
-        """ Get the absolute url for database objects. 
-
-        Use the verbose_name of the model to to a namespace lookup.
-        """
-        
-        name = self.get_reference_name()
-        url_pattern = '{0}:{1}_update'.format('db', name) 
-        
-        """
-        if not self.absolute_url_pattern:
-            msg = ("%s must define 'absolute_url_pattern' or override "
-                  "'get_absolute_url' to reverse absolute url")
-            raise ImproperlyConfigured(msg % self.__class__.__vname__)
-        """
-        # Using _id instead of .pk saves a database hit. See goo.gl/REX06L
-        kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
-        return reverse(url_pattern, kwargs=kwargs)
-
-    def get_absolute_url(self):
-        """ 
-        TODO: use a DetailView as target, or stick with update? 
-        TODO: this doesn't necessarily apply for all obects, such as leader
-        applications and trippe registrations. 
-        """
-        return self.get_update_url()
-
-    def get_delete_url(self):
-        """  Get the canonical url to delete this object """
-        name = self.get_reference_name()
-        url_pattern = '{}:{}_delete'.format('db', name)
-
-        kwargs = {'trips_year': self.trips_year_id, 'pk': self.pk}
-        return reverse(url_pattern, kwargs=kwargs)
-
-    @classmethod
     def get_create_url(cls, trips_year):
-        """ Return the canonical url to create an object of cls """
+        """ Return the canonical url to create an object of cls. """
         
+        # TODO: move this to a templatetag. This is going to to bork up namespace
+        # portability
         # TODO: extract 'db' from a class attribute, eg 'db_namespace'?
         name = cls.get_reference_name()
         url_pattern = '{}:{}_create'.format('db', name)
@@ -86,10 +51,10 @@ class DatabaseModel(models.Model):
         kwargs = {'trips_year': trips_year.pk}
         return reverse(url_pattern, kwargs=kwargs)
 
-
     @classmethod
     def get_reference_name(cls):
-        """ Return the canonical name by which to reference the model
+        """ 
+        Return the canonical name by which to reference the model.
         
         Used to name urls and url namespaces. 
 
@@ -100,11 +65,12 @@ class DatabaseModel(models.Model):
 
     @classmethod
     def get_app_name(cls):
-        """ Return the app name of cls """
+        """ Return the app name of cls. """
         return cls._meta.app_label
 
     def save(self, *args, **kwargs):
-        """ Attach the current trips_year to new database objects.
+        """
+        Attach the current trips_year to new database objects.
         
         If trips_year is explicitly specified, use that year instead. 
         This overrides the default model save method.
