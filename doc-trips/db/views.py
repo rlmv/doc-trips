@@ -7,16 +7,10 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView
 
-
-class LoginRequiredMixin():
-    """ Class view mixin which adds login protection """
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(LoginRequiredMixin, self).dispatch(request, *args, **kwargs)
+from user.views import DatabasePermissionRequiredMixin
 
 
-class DatabaseMixin():
+class DatabaseMixin(DatabasePermissionRequiredMixin):
     """ Mixin for vanilla views to filter objects based on trips_year.
 
     Plugs into ModelViews. The url is a database url of the form
@@ -63,7 +57,7 @@ class DatabaseMixin():
         raise ImproperlyConfigured(msg.format(cls))
 
 
-class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
+class DatabaseListView(DatabaseMixin, ListView):
 
     def get_template_names(self):
         """ Get the template for the ListView """
@@ -83,7 +77,7 @@ class DatabaseListView(DatabaseMixin, LoginRequiredMixin, ListView):
         return url(r'^$', cls.as_view(), name=name)
     
 
-class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
+class DatabaseCreateView(DatabaseMixin, CreateView):
     template_name = 'db/create.html'
 
     @classmethod
@@ -92,7 +86,7 @@ class DatabaseCreateView(DatabaseMixin, LoginRequiredMixin, CreateView):
         return url(r'^create$', cls.as_view(), name=name)
 
 
-class DatabaseUpdateView(DatabaseMixin, LoginRequiredMixin, UpdateView):
+class DatabaseUpdateView(DatabaseMixin, UpdateView):
     template_name ='db/update.html'
 
     @classmethod
@@ -100,7 +94,8 @@ class DatabaseUpdateView(DatabaseMixin, LoginRequiredMixin, UpdateView):
         name = '{}_update'.format(cls.model.get_reference_name())
         return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
-class DatabaseDeleteView(DatabaseMixin, LoginRequiredMixin, DeleteView):
+
+class DatabaseDeleteView(DatabaseMixin, DeleteView):
     template_name = 'db/delete.html'
 
     success_url_pattern = None

@@ -19,6 +19,7 @@ def initialize_groups_and_permissions():
     directors.permissions = [can_grade_applications, can_access_db]
     directors.save()
 
+    
     graders, created = Group.objects.get_or_create(name='graders')
     graders.permissions = [can_grade_applications]
     graders.save()

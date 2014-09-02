@@ -14,6 +14,7 @@ from vanilla import (ListView, CreateView, DetailView, UpdateView,
 from leader.models import LeaderApplication, LeaderGrade
 
 from db.views import *
+from user.views import GraderPermissionRequiredMixin, LoginRequiredMixin
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class EditLeaderApplication(LoginRequiredMixin, UpdateView):
 
 
 # TODO: needs to be grader permission based
-class RedirectToNextGradableApplication(LoginRequiredMixin, RedirectView):
+class RedirectToNextGradableApplication(GraderPermissionRequiredMixin, RedirectView):
     
     permanent = False 
     
@@ -60,7 +61,7 @@ class RedirectToNextGradableApplication(LoginRequiredMixin, RedirectView):
         return reverse('leader:grade', kwargs={'pk': application.pk})
 
 # TODO: grader permissions
-class NoApplicationToGrade(LoginRequiredMixin, TemplateView):
+class NoApplicationToGrade(GraderPermissionRequiredMixin, TemplateView):
     """ Tell user there are no more applications for her to grade """
     template_name = 'leader/no_application.html'
 
@@ -72,7 +73,7 @@ class LeaderGradeForm(ModelForm):
 
 
 # TODO: restrict this to those with grader permissions
-class GradeApplication(LoginRequiredMixin, DetailView, FormView):
+class GradeApplication(GraderPermissionRequiredMixin, DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
 
