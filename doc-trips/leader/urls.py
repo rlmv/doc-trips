@@ -12,7 +12,7 @@ urlpatterns = patterns('',
 )
 
 leaderapplication_urlpatterns = patterns('', 
-    LeaderApplicationListView.urlpattern(),
-    LeaderApplicationUpdateView.urlpattern(),
+    LeaderApplicationDatabaseListView.urlpattern(),
+    LeaderApplicationDatabaseUpdateView.urlpattern(),
 )                                         
                               
