@@ -1,19 +1,17 @@
 
-#django-suit
-
 coverage
 #django-coverage
 
-# django dev - need migration support
-https://www.djangoproject.com/download/1.7c3/tarball/
+django
 django_cas_sso
-
-model_mommy
 
 #django-grappelli
 # need dev version for django 1.7 compatibility
 #git+git://github.com/sehmaschine/django-grappelli.git@dev/2.6.x
 
+
+#django-braces>=1.4.0 # need Login/Permission compatibility in master
+-e git+git://github.com/brack3t/django-braces.git#egg=django-braces
 django-easyfilters
 django-vanilla-views
 django-crispy-forms
@@ -23,8 +21,13 @@ django-bootstrap3
 #mezzanine-grappelli
 #-e git+git://github.com/renyi/mezzanine-blocks#egg=mezzanine-blocks
 
+# heroku
 django-toolbelt 
 
-#django-braces>=1.4.0 # need Login/Permission compatibility in master
--e git+git://github.com/brack3t/django-braces.git#egg=django-braces
+# testing
+model_mommy
+behave
+splinter
+lxml
+cssselect
 

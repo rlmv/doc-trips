@@ -25,7 +25,7 @@ migrate:
 	$(MANAGE) migrate
 
 test: 
-	$(MANAGE) test doc-trips
+	$(MANAGE) test db
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
