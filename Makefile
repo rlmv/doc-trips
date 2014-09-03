@@ -11,7 +11,7 @@ MANAGE=$(PYTHON) doc-trips/manage.py
 BEHAVE=$(VENV)/bin/behave
 FEATURES=doc-trips/features/
 
-.PHONY: install migrations migrate behave behave_dry rm_emacs_locks maktest coverage clean
+.PHONY: install migrations migrate behave behave_dry rm_emacs_locks test coverage clean
 
 all:
 	$(MANAGE) runserver
