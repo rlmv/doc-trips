@@ -3,6 +3,10 @@ from behave import *
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 
+@given('any starting point')
+def step_nothing(context):
+    pass
+
 @given('a user')
 def step_user(context):
     context.username = 'user'

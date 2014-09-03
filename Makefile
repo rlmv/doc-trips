@@ -8,8 +8,10 @@ COVERAGE=$(VENV)/bin/coverage
 
 MANAGE=$(PYTHON) doc-trips/manage.py
 
+BEHAVE=$(VENV)/bin/behave
+FEATURES=doc-trips/features/
 
-.PHONY: install migrations migrate test coverage clean
+.PHONY: install migrations migrate behave behave_dry rm_emacs_locks maktest coverage clean
 
 all:
 	$(MANAGE) runserver
@@ -26,6 +28,15 @@ migrate:
 
 test: 
 	$(MANAGE) test db
+
+rm_emacs_locks:
+	@find $(FEATURES) -name ".#*" -delete # remove emacs lock files
+
+behave: rm_emacs_locks
+	$(BEHAVE) $(FEATURES)
+
+behave_dry: rm_emacs_locks
+	$(BEHAVE) -d $(FEATURES)
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
