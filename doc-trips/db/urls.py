@@ -4,8 +4,10 @@ from django.conf.urls import patterns, url, include
 
 from trip.urls import * # TODO
 from leader.urls import *
+from db.views import DatabaseIndexView
 
 database_urlpatterns = patterns('', 
+    url(r'^$', DatabaseIndexView.as_view(), name='db_index'),
     url(r'^trips/', include(trip_urlpatterns)),
     url(r'^templates/', include(template_urlpatterns)),
     url(r'^types/', include(triptype_urlpatterns)),
@@ -15,7 +17,7 @@ database_urlpatterns = patterns('',
 )
 
 urlpatterns = patterns('',
-    # capture the 'trips_year' parameter which is passed to all db views                 
+    # capture the 'trips_year' parameter which is passed to all db views           
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
 )                       
                                   

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
-from vanilla import ListView, UpdateView, CreateView, DeleteView
+from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
 from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 
@@ -133,6 +133,15 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
         return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
         
 
+class DatabaseIndexView(DatabaseMixin, TemplateView):
+    """ 
+    Index page of a particular trips year. 
+
+    TODO: should this display the ScheduledTrips index? 
+    """
+    
+    template_name = 'db/db_index.html'
+    
     
 
     
