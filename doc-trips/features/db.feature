@@ -17,5 +17,18 @@ Feature: database access restriction
     And the user is logged in
     When I get "/db/2014/"
     Then the result page should include "Database Index"
+
+  Scenario: access permission portal as a user    
+    Given a user 
+    And the user is logged in
+    When I get "/permissions/set/"
+    Then I should see a "403" error
+
+  Scenario: access permission portal director
+    Given a user
+    And the user is a director
+    And the user is logged in
+    When I get "/permissions/set/"
+    Then the result page should include "permission"
     
   

@@ -36,6 +36,9 @@ name='Can edit items in the trips database')
 # TODO: can_edit_safety_log
 
 
+# TODO: should we implement a proxy Group class and move these
+# to the model manager? e.g. ProxyGroup.directors() or ProxyGroup.objects.directors()
+
 def directors():    
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
