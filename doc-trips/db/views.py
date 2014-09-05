@@ -7,10 +7,9 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
-from braces.views import PermissionRequiredMixin, LoginRequiredMixin
+from permissions.views import DatabasePermissionRequired
 
-
-class DatabaseMixin(LoginRequiredMixin, PermissionRequiredMixin):
+class DatabaseMixin(DatabasePermissionRequired):
     """ 
     Mixin for database view pages. 
 
@@ -26,12 +25,6 @@ class DatabaseMixin(LoginRequiredMixin, PermissionRequiredMixin):
     TODO: handle requests for trips_years which are not in the database.
     They should give 404s? This must not mess up ListViews with no results.
     """
-
-    # LoginRequiredMixin
-    redirect_unauthenticated_users = True
-    # Inherited from PermissionRequiredMixin
-    permission_required = 'user.can_access_db'
-    raise_exception = True
 
     def get_queryset(self):
         """ Get objects for requested trips_year """

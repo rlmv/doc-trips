@@ -4,7 +4,7 @@ from behave import *
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 
-from user.permissions import directors
+from permissions import directors
 
 @given('any starting point')
 def step_nothing(context):

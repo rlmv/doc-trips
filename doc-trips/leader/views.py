@@ -10,8 +10,8 @@ from django.forms import ModelForm
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 
+from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
@@ -48,17 +48,7 @@ class EditLeaderApplication(LoginRequiredMixin, UpdateView):
     fields = '__all__'
 
 
-class GraderPermissionRequiredMixin(LoginRequiredMixin, PermissionRequiredMixin):
-    """ Only allow access to users with permission to grade leaderapplications. """
-
-    # From LoginRequired 
-    redirect_unauthenticated_users = True
-    # Otherwise, 
-    permission_required = 'user.can_grade_applications'
-    raise_exception = True
-
-
-class RedirectToNextGradableApplication(GraderPermissionRequiredMixin, RedirectView):
+class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
     
     # from RedirectView
     permanent = False 
@@ -73,7 +63,7 @@ class RedirectToNextGradableApplication(GraderPermissionRequiredMixin, RedirectV
         return reverse('leader:grade', kwargs={'pk': application.pk})
 
 
-class NoApplicationToGrade(GraderPermissionRequiredMixin, TemplateView):
+class NoApplicationToGrade(GraderPermissionRequired, TemplateView):
     """ Tell user there are no more applications for her to grade """
     template_name = 'leader/no_application.html'
 
@@ -85,7 +75,7 @@ class LeaderGradeForm(ModelForm):
 
 
 # TODO: restrict this to those with grader permissions
-class GradeApplication(GraderPermissionRequiredMixin, DetailView, FormView):
+class GradeApplication(GraderPermissionRequired, DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
 
