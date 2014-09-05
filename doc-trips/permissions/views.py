@@ -48,9 +48,17 @@ class GroupForm(forms.Form):
     directors = forms.ModelMultipleChoiceField(queryset=None, 
                                                widget=forms.CheckboxSelectMultiple, 
                                                required=False)
+    new_director = forms.CharField(required=False, 
+                                   widget=forms.TextInput(attrs={'class': 'lookupNetId', 'placeholder': 'Search me'}))
+                                                    
+    
     graders = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
                                              required=False)
+
+    new_grader = forms.CharField(required=False)
+
+    
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
@@ -91,6 +99,29 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         logger.info('The grader group now contains {}'.format(
             form.cleaned_data['graders']))
-        
+
         return super(SetPermissions, self).form_valid(form)
+        
+
+import requests
+from django.http import JsonResponse
+
+def dnd_lookup(request):
+    """ 
+    Dartmouth Name Directory connector.
+
+    The dartdm netid lookup doesn't allow cross-site requests, 
+    hence no AJAX. This view allows us to do DND lookups with 
+    typeahead.
+    """
+    
+    try:
+        payload = {'term': request.GET['query']}
+    except KeyError:
+        return JsonResponse({})
+    else:
+        r = requests.get('http://dartdm.dartmouth.edu/NetIdLookup/Lookup', 
+                         params=payload)
+        # setting safe=False allows us to return the JSON array
+        return JsonResponse(r.json(), safe=False) 
         
