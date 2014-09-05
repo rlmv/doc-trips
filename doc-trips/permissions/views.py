@@ -38,6 +38,79 @@ class GraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = True
 
 
+from django.forms import widgets
+
+class NetIdLookupWidget(widgets.MultiWidget):
+
+    def __init__(self, attrs=None):
+
+        _widgets = [widgets.TextInput(attrs=attrs), 
+                    widgets.TextInput(attrs=attrs)]
+
+        super(NetIdLookupWidget, self).__init__(_widgets, attrs)
+
+    def decompress(self, value):
+
+        """ Decompresses an initial value in to the widget fields ^^ """
+
+        if value:
+            return [value]
+        return [None]
+
+class NetIdLookupField(forms.MultiValueField):
+
+    def __init__(self, widget=None, *args, **kwargs):
+
+        if not widget:
+            widget = NetIdLookupWidget(attrs={'class': 'lookupNetId', 'placeholder': 'Search me'})
+        
+        fields = (forms.CharField(), forms.CharField())
+        
+        super(NetIdLookupField, self).__init__(fields=fields, widget=widget, *args, **kwargs)
+
+
+from django.core.exceptions import ValidationError
+
+class DartmouthDirectoryLookupField(forms.CharField):
+
+    def __init__(self, widget=None, attrs=None, *args, **kwargs):
+
+        if not widget:
+            attrs = attrs={'class': 'lookupNetId', 'placeholder': 'search'}
+            widget = widgets.TextInput(attrs=attrs)
+
+        super(DartmouthDirectoryLookupField, self).__init__(widget=widget, 
+                                                            *args, **kwargs)
+       
+    def clean(self, value):
+        """ 
+        Ensure that the database lookup is unambiguous.
+
+        The input value is usually the result of the client-side 
+        DartDM lookup, however a user can hit 'submit' with a self-
+        entered name. Because of this, and instead of trying to pass the
+        look up data back to the server, we do another DartDm lookup to 
+        ensure that the user is unambiguous. 
+
+        Return a dictionary
+
+        WAIT: this going to break, since Robert Marchman is ambiguous.
+        
+        """
+        
+        # validate required, etc.
+        value = super(DartmouthDirectoryLookupField, self).clean(value)
+
+        results = dartdm_lookup(value)
+
+        if len(results) == 0:
+            raise ValidationError('User not found')
+        if len(results) == 1:
+            return results[0]
+        else: 
+            raise ValidationError('Ambiguous results')
+
+
 class GroupForm(forms.Form):
     """ 
     Form for assigning users to groups. 
@@ -48,9 +121,7 @@ class GroupForm(forms.Form):
     directors = forms.ModelMultipleChoiceField(queryset=None, 
                                                widget=forms.CheckboxSelectMultiple, 
                                                required=False)
-    new_director = forms.CharField(required=False, 
-                                   widget=forms.TextInput(attrs={'class': 'lookupNetId', 'placeholder': 'Search me'}))
-                                                    
+    new_director = DartmouthDirectoryLookupField(required=True)
     
     graders = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
@@ -85,11 +156,13 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         
         Called with a valid form submission.
         """
+
+        print(form.cleaned_data['new_director'])
         
         director_group = directors()
         director_group.user_set = form.cleaned_data['directors']
         director_group.save()
-        
+
         logger.info('The director group now contains {}'.format(
             form.cleaned_data['directors']))
 
@@ -111,17 +184,27 @@ def dnd_lookup(request):
     Dartmouth Name Directory connector.
 
     The dartdm netid lookup doesn't allow cross-site requests, 
-    hence no AJAX. This view allows us to do DND lookups with 
-    typeahead.
+    hence no AJAX. This view allows us to do DND lookups by acting as 
+    an endpoint for typeahead.
     """
     
     try:
-        payload = {'term': request.GET['query']}
+        query = request.GET['query']
     except KeyError:
-        return JsonResponse({})
+        results = []
     else:
-        r = requests.get('http://dartdm.dartmouth.edu/NetIdLookup/Lookup', 
-                         params=payload)
-        # setting safe=False allows us to return the JSON array
-        return JsonResponse(r.json(), safe=False) 
-        
+        results = dartdm_lookup(query)
+    # setting safe=False allows us to return the JSON array
+    return JsonResponse(results, safe=False) 
+
+
+def dartdm_lookup(query_string):
+    """ 
+
+    TODO: catch requests library errors
+    """
+    payload = {'term': query_string}
+    r = requests.get('http://dartdm.dartmouth.edu/NetIdLookup/Lookup', 
+                     params=payload)
+
+    return r.json()
