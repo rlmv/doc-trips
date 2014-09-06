@@ -15,8 +15,8 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
                                    
         widgets = [forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
-                    forms.TextInput(attrs={'class': 'netIdField'}), 
-                    forms.TextInput(attrs={'class': 'nameWithAffilField'})]
+                   forms.TextInput(attrs={'class': 'netIdField'}), 
+                   forms.TextInput(attrs={'class': 'nameWithAffilField'})]
 
         super(DartmouthDirectoryLookupWidget, self).__init__(widgets, attrs)
 
@@ -35,6 +35,9 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
 
     A cleaned field of this type will be a dictionary of 
     { ____ }. 
+
+    Note: the MultiValueField takes care of validating required 
+    fields.
     """
 
     def __init__(self, *args, **kwargs):

@@ -50,7 +50,7 @@ class GroupForm(forms.Form):
     directors = forms.ModelMultipleChoiceField(queryset=None, 
                                                widget=forms.CheckboxSelectMultiple, 
                                                required=False)
-    new_director = DartmouthDirectoryLookupField(required=True)
+    new_director = DartmouthDirectoryLookupField(required=False)
     
     graders = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
@@ -83,15 +83,30 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         
         Called with a valid form submission.
         """
-
-        print(form.cleaned_data['new_director'])
         
+        directors_list = form.cleaned_data['directors']
+
+        new_director_data = form.cleaned_data['new_director']
+        if new_director_data:
+            net_id = new_director_data['net_id']
+            name = new_director_data['name_with_year']
+
+            try:
+                new_director = get_user_model().objects.get(userprofile__netid=net_id)
+            except get_user_model().DoesNotExist:
+                new_director = get_user_model().objects.create(username=name)
+                new_director.userprofile.netid = net_id
+                new_director.save()
+
+                # is the 'new' director already in the directors list?
+                if new_director not in directors_list:
+                    directors_list = list(directors_list.all()) + [new_director]
+            
         director_group = directors()
-        director_group.user_set = form.cleaned_data['directors']
+        director_group.user_set = directors_list
         director_group.save()
 
-        logger.info('The director group now contains {}'.format(
-            form.cleaned_data['directors']))
+        logger.info('The director group now contains {}'.format(directors_list))
 
         grader_group = graders()
         grader_group.user_set = form.cleaned_data['graders']

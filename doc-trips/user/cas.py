@@ -2,7 +2,6 @@
 import logging
 
 from django.contrib.auth import get_user_model
-User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,7 @@ def dartmouth_cas_callback(tree):
     tree[0][0].text = username
 
     logger.info("creating user %s" % username)
-    user, created = User.objects.get_or_create(username=username, 
+    user, created = get_user_model().objects.get_or_create(username=username, 
                                                email=email)
     if created:
         ## TODO: hacky - hack - the CAS package only allows admin 
