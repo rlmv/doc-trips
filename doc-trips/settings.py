@@ -20,7 +20,6 @@ SECRET_KEY = 'bbirkd_p03a$-6p45zzv!x)yv1+yw56*kvd(yc3o#@#j^ah=-!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 TEMPLATE_DEBUG = True
 
 # heroku settings
@@ -48,13 +47,11 @@ INSTALLED_APPS = (
     # custom
     'db',
     'user',
+    'dartdm', 
     'leader',
     'trip',
     'permissions',
 )
-
-
-TEST_RUNNER = 'django_behave.runner.DjangoBehaveTestSuiteRunner'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -74,6 +71,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # django_cas / Dartmouth WebAuth settings 
+# TODO: move this to cas app?
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 CAS_RESPONSE_CALLBACKS = [ 'user.cas.dartmouth_cas_callback' ]
 CAS_LOGOUT_COMPLETELY = True
@@ -90,21 +88,6 @@ DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
 }
 
-import datetime
-# Dynamic settings. django-constance https://github.com/comoga/django-constance
-CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
-CONSTANCE_CONFIG = {
-    'trips_year': (2014, 'year of current trips'),
-    'migration_date':  (datetime.datetime.today(), 'date to migrate'),
-}
-
-# ordered this way for Grappelli
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-)
-
-# added request for Grappelli
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.debug',
@@ -136,6 +119,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 
