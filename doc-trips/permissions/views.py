@@ -11,6 +11,8 @@ from django.contrib.auth.models import Group
 from permissions import directors, graders
 from permissions.models import SitePermission
 
+from user import get_or_create_user_by_netid
+
 logger = logging.getLogger(__name__)
 
 
@@ -84,36 +86,26 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         Called with a valid form submission.
         """
         
-        directors_list = form.cleaned_data['directors']
+        def _update_group_with_form_data(group, list_data_form_key, new_data_form_key):
+            members_list = form.cleaned_data[list_data_form_key]
+            new_data = form.cleaned_data[new_data_form_key]
 
-        new_director_data = form.cleaned_data['new_director']
-        if new_director_data:
-            net_id = new_director_data['net_id']
-            name = new_director_data['name_with_year']
+            if new_data:
+                new_member, _ = get_or_create_user_by_netid(new_data['net_id'],
+                                                             new_data['name_with_year'])
+                if new_member not in members_list:
+                    members_list = list(members_list)
+                    members_list.append(new_member)
 
-            try:
-                new_director = get_user_model().objects.get(userprofile__netid=net_id)
-            except get_user_model().DoesNotExist:
-                new_director = get_user_model().objects.create(username=name)
-                new_director.userprofile.netid = net_id
-                new_director.save()
+            group.user_set = members_list
+            group.save()
 
-                # is the 'new' director already in the directors list?
-                if new_director not in directors_list:
-                    directors_list = list(directors_list.all()) + [new_director]
-            
-        director_group = directors()
-        director_group.user_set = directors_list
-        director_group.save()
+            logger.info('Updating group %s to be %r' % (group, members_list))
 
-        logger.info('The director group now contains {}'.format(directors_list))
 
-        grader_group = graders()
-        grader_group.user_set = form.cleaned_data['graders']
-        grader_group.save()
-
-        logger.info('The grader group now contains {}'.format(
-            form.cleaned_data['graders']))
+        _update_group_with_form_data(directors(), 'directors', 'new_director')
+        
+        _update_group_with_form_data(graders(), 'graders', 'new_grader')
 
         return super(SetPermissions, self).form_valid(form)
         

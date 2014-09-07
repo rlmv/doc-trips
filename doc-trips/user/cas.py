@@ -5,6 +5,11 @@ from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
+""" 
+Note: the we are using the Dartmouth NetId as the username, 
+and setting first_name to the name of the person.
+"""
+
 
 def dartmouth_cas_callback(tree):
     """ Callback function for parsing Dartmouth's CAS response.
@@ -13,39 +18,40 @@ def dartmouth_cas_callback(tree):
     tree is a ElementTree object. 
     """
 
-    tag_prefix = "{http://www.yale.edu/tp/cas}"
-    findtext = lambda x: tree[0].findtext(tag_prefix + x)
+    def findtext(text):
+        tag_prefix = "{http://www.yale.edu/tp/cas}"
+        return tree[0].findtext(tag_prefix + text)
 
-    username = findtext('name')
-    username = '_'.join(username.split())
+    name = findtext('name')
     netid = findtext('netid')
     user_str = findtext('user') # fmt: username @DARTMOUTH.EDU
 
-    email = netid + '@dartmouth.edu'
+    # added in the get_or_create_user_by_netid function
+    # email = netid + '@dartmouth.edu'
     
     # hack hack: CAS backend uses the tree[0][0] field
-    # to get the user - we want to identify by username, 
-    # not the user_str, so we substitute this in.
-    tree[0][0].text = username
+    # to get the user - we want to identify use NetId as the username
+    # because it is guaranteed unique
+    tree[0][0].text = netid
 
-    logger.info("creating user %s" % username)
-    user, created = get_user_model().objects.get_or_create(username=username, 
-                                               email=email)
+    user, created = get_or_create_user_by_netid(netid, name)
+    
     if created:
         ## TODO: hacky - hack - the CAS package only allows admin 
         ## login for staff, fix it.
         user.is_staff = True
         # TODO: this gives all users admin priveleges, change this
         user.is_superuser = True; 
-        
+
+        # TODO: remove userprofile?
         profile = user.userprofile
         profile.netid = netid
         profile.did = findtext('did')
         profile.uid = findtext('uid')
         profile.affil = findtext('affil')
+
         profile.alumni_id = findtext('alumniid')
         profile.auth_type = findtext('authType')
-        
-        # profile.name = username
+
         user.save()
         profile.save()

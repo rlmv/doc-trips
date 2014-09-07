@@ -8,7 +8,15 @@ from dartdm.lookup import dartdm_lookup
 logger = logging.getLogger(__name__)
 
 class DartmouthDirectoryLookupWidget(forms.MultiWidget):
+    """
+    Widget to perform an AJAX Dartmouth name directory lookup. 
+    
+    Contains one visible input field and two hidden input fields.
 
+    TODO: actually make the fields hidden
+    TODO: save nameWithYear in the other hidden field instead of the affil?
+    That will make it easier to  tell whether the autocompleted field was changed.
+    """
     class Media:
         js = ('dartdm/lookup.js',)
 
