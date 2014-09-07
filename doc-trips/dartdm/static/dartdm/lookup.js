@@ -2,7 +2,7 @@
 var netIds = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
-    remote: "/dartdm/lookup/?query=%QUERY"
+    remote: "/dartdm/lookup/?term=%QUERY"
 });
  
 netIds.initialize();
@@ -20,5 +20,4 @@ $( ".dartdmLookup" ).on("typeahead:selected", function (event, object, name) {
     $(netIdField).next( ".nameWithAffilField" ).val(object.value)
 
 })
-
 

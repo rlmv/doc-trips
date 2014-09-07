@@ -12,7 +12,7 @@ def dartdm_lookup_view(request):
     """
     
     try:
-        query = request.GET['query']
+        query = request.GET['term']
     except KeyError:
         results = []
     else:
