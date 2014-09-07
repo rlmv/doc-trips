@@ -134,7 +134,18 @@ class DatabaseIndexView(DatabaseMixin, TemplateView):
     """
     
     template_name = 'db/db_index.html'
-    
+
+
+
+class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
+    """ 
+    Redirect to the trips database for the current year. 
+
+    This view is the target of database urls.
+
+    TODO: implement
+    """
+    pass
     
 
     
