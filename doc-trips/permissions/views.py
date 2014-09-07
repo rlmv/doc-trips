@@ -63,6 +63,7 @@ class GroupForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         
+        print(dir(self.fields['directors']))
         self.fields['directors'].queryset = directors().user_set
         self.fields['directors'].initial = [u.pk for u in directors().user_set.all()]
         self.fields['graders'].queryset = get_user_model().objects.all()

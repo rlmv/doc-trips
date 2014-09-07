@@ -28,7 +28,9 @@ class LeaderApplicationDatabaseListView(DatabaseListView):
 
 class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     model = LeaderApplication
-
+    # custom template to handle trip assignment
+    template_name = 'leader/db_application_update.html'
+    
 
 class LeaderApply(LoginRequiredMixin, CreateView):
     model = LeaderApplication

@@ -1,13 +1,48 @@
+import logging
 
+from django.db import models
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.forms.models import modelform_factory
 from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
 from permissions.views import DatabasePermissionRequired
+
+logger = logging.getLogger(__name__)
+
+
+def make_formfield_callback(trips_year):
+    """ 
+    Return a function responsible for making formfields. 
+    
+    Used to restrict field choices to matching trips_year.
+    """
+
+    def restrict_related_choices_by_year(model_field, **kwargs):
+        """ 
+        Formfield callback.
+        
+        Only display related objects with trips_year==trips_year.
+        """
+        
+        formfield = model_field.formfield(**kwargs)
+        if isinstance(model_field, models.ForeignKey):
+            # TOOD: also m2m? 121?
+            formfield.queryset = model_field.model.objects.filter(trips_year=trips_year)
+
+        if isinstance(model_field, (models.ManyToManyField, models.OneToOneField)):
+            msg = ('Trips database formfield handling is not implemented for %s'
+                   'Please fix that!')
+            raise NotImplementedError(msg % model_field.__class__.__name__)
+            
+        return formfield
+
+    return restrict_related_choices_by_year
+    
 
 class DatabaseMixin(DatabasePermissionRequired):
     """ 
@@ -31,6 +66,38 @@ class DatabaseMixin(DatabasePermissionRequired):
 
         qs = super(DatabaseMixin, self).get_queryset()
         return qs.filter(trips_year=self.kwargs['trips_year'])
+
+
+    def get_form_class(self):
+        """ 
+        Restricts the choices in foreignkey form fields to objects with the
+        same trips year.
+
+        Because we can't use an F() object in limit_choices_to.
+
+        formfield_callback is responsible for constructing a FormField 
+        from a passed ModelField. Our callback intercepts the usual ForeignKey
+        implementation, and only lists choices which have trips_year == to 
+        the trips_year matched in the url.
+        """
+
+        if self.form_class is not None:
+            msg = ('Specifying form_class on %s means that ForeignKey querysets will'
+                   'contain objects for ALL trips_years. You must explicitly restrict'
+                   'the querysets for these fields, or bad things will happen')
+            logger.warn(msg % self.__class__.__name__)
+            return self.form_class
+
+        if self.model is not None:
+            trips_year = self.kwargs['trips_year']
+            formfield_callback = make_formfield_callback(trips_year)
+            return modelform_factory(self.model, fields=self.fields, 
+                                     formfield_callback=formfield_callback)
+        
+        msg = "'%s' must either define 'form_class' or 'model' " \
+            "or CAREFULLY override 'get_form_class()'"
+        raise ImproperlyConfigured(msg % self.__class__.__name__)
+
 
     def form_valid(self, form):
         """ Called for valid forms - specifically Create and Update
