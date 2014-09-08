@@ -93,7 +93,7 @@ class CampsiteListView(DatabaseListView):
     
     def get_context_data(self, **kwargs):
         trips_year = self.kwargs['trips_year']
-        context = super(CampsiteViews.IndexView, self).get_context_data(**kwargs)
+        context = super(CampsiteListView, self).get_context_data(**kwargs)
         context['camping_dates'] = Section.dates.camping_dates(trips_year)
         return context
 

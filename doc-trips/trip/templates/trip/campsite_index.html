@@ -18,7 +18,7 @@
     {% for trips in campsite.get_occupancy_list %}
     <td> 
       {% for trip in trips %}
-      <a href="{{ trip.get_update_url }}">{{ trip }} </a><br/>
+      {{ trip|edit_link:trip }}
       {% endfor %}
     </td>
     {% endfor %}

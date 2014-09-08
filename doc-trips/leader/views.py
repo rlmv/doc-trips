@@ -98,7 +98,7 @@ class GradeApplication(GraderPermissionRequired, DetailView, FormView):
         """ Get context data to render in template.
 
         Because The DetailView is first in the MRO inheritance tree,
-        The super call retrives the LeaderaApplication object (saved as context_object_name).
+        The super call retrives the LeaderaApplication object (saved as context_object      
         Then we manually add the form instance.
         """
         context = super(GradeApplication, self).get_context_data(**kwargs)

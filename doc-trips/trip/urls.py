@@ -25,10 +25,10 @@ triptype_urlpatterns = patterns('',
 )                                
 
 campsite_urlpatterns = patterns('',
-    TripTypeListView.urlpattern(),
-    TripTypeCreateView.urlpattern(),                            
-    TripTypeUpdateView.urlpattern(),                            
-    TripTypeDeleteView.urlpattern(),                        
+    CampsiteListView.urlpattern(),
+    CampsiteCreateView.urlpattern(),                            
+    CampsiteUpdateView.urlpattern(),                            
+    CampsiteDeleteView.urlpattern(),                        
 )                                
 
 section_urlpatterns = patterns('',
