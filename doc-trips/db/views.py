@@ -32,7 +32,7 @@ def make_formfield_callback(trips_year):
         formfield = model_field.formfield(**kwargs)
         if isinstance(model_field, models.ForeignKey):
             # TOOD: also m2m? 121?
-            formfield.queryset = model_field.model.objects.filter(trips_year=trips_year)
+            formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
 
         if isinstance(model_field, (models.ManyToManyField, models.OneToOneField)):
             msg = ('Trips database formfield handling is not implemented for %s'
@@ -80,7 +80,7 @@ class DatabaseMixin(DatabasePermissionRequired):
         implementation, and only lists choices which have trips_year == to 
         the trips_year matched in the url.
         """
-
+#        return super(DatabaseMixin, self).get_form_class()
         if self.form_class is not None:
             msg = ('Specifying form_class on %s means that ForeignKey querysets will'
                    'contain objects for ALL trips_years. You must explicitly restrict'
