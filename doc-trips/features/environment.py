@@ -28,8 +28,14 @@ def before_scenario(context, scenario):
 
     setup_test_environment()
     context.old_db_config = connection.creation.create_test_db()
+    
+    if 'live' in scenario.tags:
+        from django.test import LiveServerTestCase
 
-    context.browser = Browser('django')
+        context.live_test_case = LiveServerTestCase()
+        context.browser = Browser(wait_time=10)
+    else:
+        context.browser = Browser('django')
     context.client = Client()
     context.test = TestCase()
 

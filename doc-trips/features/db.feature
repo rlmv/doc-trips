@@ -1,5 +1,6 @@
 Feature: database access restriction
 
+  @live
   Scenario: access database page without logging in
     Given any starting point
     When I visit database with a live browser

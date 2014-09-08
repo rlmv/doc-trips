@@ -40,13 +40,11 @@ def step_result_page(context, text):
 
 @when('I visit database with a live browser')
 def step_live_browser(context):
-    context.live_browser = splinter.Browser(wait_time=10)
-    context.live_browser.visit('http://localhost:8000/db/2014')
-    context.live_browser.quit()
+    context.browser.visit(context.live_test_case.live_server_url + '/db/2014')
 
 @then('I should be redirected to the Dartmouth login page')
 def step_redirect_to_login(context):
-    check = 'Dartmouth Web Authentication' in str(context.live_browser.html)
-    context.test.assertEqual(check, True, 'not redirected to Dartmouth login')
+    check = 'Dartmouth Web Authentication' in str(context.browser.html)
+    context.test.assertEqual(check, True, 'not redirected to Dartmouth login %s' % context.browser.html)
 
     

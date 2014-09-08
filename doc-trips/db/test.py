@@ -6,13 +6,14 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
+from db.urls import get_update_url
 from test import TestCase
 
 
 class ExampleDatabaseModel(DatabaseModel):
     """ Mock class inheriting DatabaseModel """
     some_field = models.CharField(max_length=255)
-
+    related_field = models.ForeignKey('self', null=True)
 
 class DatabaseModelTestCase(TestCase):
 
@@ -95,7 +96,6 @@ class DatabaseMixinTestCase(TestCase):
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object with matching trips_year')
 
-
     def test_trips_year_update_view_filters_trips_year(self):
 
         self.mock_director_login()
@@ -113,9 +113,28 @@ class DatabaseMixinTestCase(TestCase):
                                            kwargs={'trips_year': ex1.trips_year.year, 
                                                    'pk': ex2.pk}))
         self.assertEquals(response.status_code, 404, 'should not find ex2 because trips_year does not match ex2.trips_year')
+
+
+    def test_related_objects_in_form_has_same_trips_year_as_main_object(self):
         
+        self.mock_director_login()
+
+        ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
+        ex1.save()
+        ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
+        ex2.save()
+        ex3 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
+        ex3.save()
         
-    
+        response = self.client.get(get_update_url(ex1))
+        choices = response.context['form'].fields['related_field'].queryset
+
+        # should only show objects from current_trips_year
+        self.assertTrue(len(choices) == 2)
+        self.assertTrue(ex1 in choices)
+        self.assertTrue(ex2 not in choices)
+        self.assertTrue(ex3 in choices)
+        
 
 class CalendarTestCase(TestCase):
 

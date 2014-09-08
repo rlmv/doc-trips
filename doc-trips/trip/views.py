@@ -23,6 +23,7 @@ class ScheduledTripListView(DatabaseListView):
 class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip
     success_url_pattern = 'db:trip:trip_update'
+    fields = ['section', 'template']
 
 class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip
