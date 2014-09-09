@@ -80,7 +80,7 @@ class DatabaseMixin(DatabasePermissionRequired):
         implementation, and only lists choices which have trips_year == to 
         the trips_year matched in the url.
         """
-#        return super(DatabaseMixin, self).get_form_class()
+
         if self.form_class is not None:
             msg = ('Specifying form_class on %s means that ForeignKey querysets will'
                    'contain objects for ALL trips_years. You must explicitly restrict'
@@ -118,6 +118,11 @@ class DatabaseMixin(DatabasePermissionRequired):
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        
+        print(form.errors)
+        return super(DatabaseMixin, self).form_invalid(form)
 
     @classmethod
     def urlpattern(cls):
@@ -157,6 +162,19 @@ class DatabaseCreateView(DatabaseMixin, CreateView):
         name = '{}_create'.format(cls.model.get_reference_name())
         return url(r'^create$', cls.as_view(), name=name)
 
+    def post(self, request, *args, **kwargs):
+        """ 
+        Add trips_year to created object.
+
+        This is the vanilla CreateView, verbatim, with the addition
+        of the trips_year.
+        """
+        form = self.get_form(data=request.POST, files=request.FILES)
+        form.instance.trips_year_id = self.kwargs['trips_year']
+        if form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
 
 class DatabaseUpdateView(DatabaseMixin, UpdateView):
     template_name ='db/update.html'
@@ -164,6 +182,9 @@ class DatabaseUpdateView(DatabaseMixin, UpdateView):
     @classmethod
     def urlpattern(cls):
         name = '{}_update'.format(cls.model.get_reference_name())
+        return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
+
+
         return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
 

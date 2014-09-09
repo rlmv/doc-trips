@@ -68,18 +68,6 @@ class DatabaseModel(models.Model):
         """ Return the app name of cls. """
         return cls._meta.app_label
 
-    def save(self, *args, **kwargs):
-        """
-        Attach the current trips_year to new database objects.
-        
-        If trips_year is explicitly specified, use that year instead. 
-        This overrides the default model save method.
-        """
-        if self.pk is None and not hasattr(self, 'trips_year'):
-            self.trips_year = TripsYear.objects.current()
-
-        super(DatabaseModel, self).save(*args, **kwargs)
-
         
 class Calendar(DatabaseModel):
 

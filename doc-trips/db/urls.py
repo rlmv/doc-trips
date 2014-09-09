@@ -59,3 +59,11 @@ def get_index_url(db_object):
     return reverse(urlpattern, kwargs=kwargs)
 
 
+def get_create_url(db_cls, trips_year):
+
+    name = db_cls.get_reference_name()
+    urlpattern = '{}:{}_{}'.format('db', name, 'create')
+    kwargs = {'trips_year': trips_year.pk}
+    
+    return reverse(urlpattern, kwargs=kwargs)
+    
