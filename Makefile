@@ -27,7 +27,7 @@ migrate:
 	$(MANAGE) migrate
 
 test: 
-	$(MANAGE) test db
+	$(MANAGE) test doc-trips
 
 rm_emacs_locks:
 	@find $(FEATURES) -name ".#*" -delete # remove emacs lock files

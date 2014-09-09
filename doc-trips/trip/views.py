@@ -28,6 +28,7 @@ class ScheduledTripUpdateView(DatabaseUpdateView):
 class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip
     success_url_pattern = 'db:trip:trip_update'
+    fields = ['section', 'template']
 
     def get_form(self, data=None, files=None, **kwargs):
         """ Populate the CreateForm with query parameters

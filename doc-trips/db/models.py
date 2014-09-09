@@ -39,18 +39,6 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def get_create_url(cls, trips_year):
-        """ Return the canonical url to create an object of cls. """
-        
-        # TODO: move this to a templatetag. This is going to to bork up namespace
-        # portability
-        # TODO: extract 'db' from a class attribute, eg 'db_namespace'?
-        name = cls.get_reference_name()
-        url_pattern = '{}:{}_create'.format('db', name)
-
-        kwargs = {'trips_year': trips_year.pk}
-        return reverse(url_pattern, kwargs=kwargs)
-
     @classmethod
     def get_reference_name(cls):
         """ 

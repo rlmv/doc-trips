@@ -98,31 +98,26 @@ class DatabaseMixin(DatabasePermissionRequired):
             "or CAREFULLY override 'get_form_class()'"
         raise ImproperlyConfigured(msg % self.__class__.__name__)
 
-
     def form_valid(self, form):
-        """ Called for valid forms - specifically Create and Update
+        """ 
+        Called for valid forms - specifically Create and Update
  
-        This deals with a corner case of form validation. Because we add 
-        the current trips_year in DatabaseModel.save, which happens after
-        ModelForm validation, we cannot check for uniqueness constraints 
-        raised by trips_year (specifically for ScheduledTrip). Fortunately
-        the databse raises an IntegrityError, which we catch here and pass to 
-        form_invalid.
+        This deals with a corner case of form validation. Uniqueness 
+        constraints don't get caught til the object is saved and raises 
+        an IntegrityError.
 
-        TODO: parse and prettify the error message
+        We catch this error and pass it to form_valid.
+
+        TODO: parse and prettify the error message. Can we look at 
+        object._meta.unique_together? Can we make sure it is a uniqueness
+        error?
         """
-
         try:
             with transaction.atomic():
                 return super(DatabaseMixin, self).form_valid(form)
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        
-        print(form.errors)
-        return super(DatabaseMixin, self).form_invalid(form)
 
     @classmethod
     def urlpattern(cls):
@@ -175,6 +170,11 @@ class DatabaseCreateView(DatabaseMixin, CreateView):
             return self.form_valid(form)
         return self.form_invalid(form)
 
+    def get_success_url(self):
+        """ TODO: for now... """
+        from db.urls import get_update_url
+        return get_update_url(self.object)
+
 
 class DatabaseUpdateView(DatabaseMixin, UpdateView):
     template_name ='db/update.html'
@@ -184,9 +184,11 @@ class DatabaseUpdateView(DatabaseMixin, UpdateView):
         name = '{}_update'.format(cls.model.get_reference_name())
         return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
-
-        return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
-
+    def get_success_url(self):
+        """ Redirect to same update page for now. """
+        from db.urls import get_update_url
+        return get_update_url(self.object)
+    
 
 class DatabaseDeleteView(DatabaseMixin, DeleteView):
     template_name = 'db/delete.html'
