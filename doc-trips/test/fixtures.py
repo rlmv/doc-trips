@@ -38,7 +38,8 @@ class TestCase(TestCase):
         """
         username='user'
         password='password'
-        self.user = get_user_model().objects.create_user(username=username, password=password)
+        self.user = get_user_model().objects.create_user(username=username, 
+                                                         password=password)
         self.client.login(username=username, password=password)
 
         return self.user
@@ -51,11 +52,25 @@ class TestCase(TestCase):
         self.director = get_user_model().objects.create_user(username=username,
                                                               password=password)
         self.director.groups.add(directors())
-        self.director.save
+        self.director.save()
         
         self.client.login(username=username, password=password)
         
         return self.director
+
+
+    def mock_grader_login(self):
+        
+        username='grader'
+        password='password'
+        self.grader = get_user_model().objects.create_user(username=username, 
+                                                           password=password)
+        self.grader.groups.add(graders())
+        self.grader.save()
+        
+        self.client.login(username=username, password=password)
+        
+        return self.grader
 
 
 class LiveServerTestCase(LiveServerTestCase):
