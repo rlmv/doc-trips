@@ -15,6 +15,7 @@ from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
+from db.models import TripsYear
 
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,9 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     model = LeaderApplication
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
-    
+
+    fields = ['status']
+
 
 class LeaderApply(LoginRequiredMixin, CreateView):
     model = LeaderApplication
@@ -41,7 +44,7 @@ class LeaderApply(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """ Attach creating user to Application. """
         form.instance.user = self.request.user
-        return super(CreateLeaderApplication, self).form_valid(form)
+        return super(LeaderApply, self).form_valid(form)
 
 
 class EditLeaderApplication(LoginRequiredMixin, UpdateView):
@@ -57,7 +60,7 @@ class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
     
     def get_redirect_url(self, *args, **kwargs):
         """ Return the url of the next LeaderApplication that needs grading """
-
+        
         application = LeaderApplication.objects.next_to_grade(self.request.user)
         # TODO: use template
         if not application:
@@ -113,6 +116,7 @@ class GradeApplication(GraderPermissionRequired, DetailView, FormView):
         grade = form.save(commit=False)
         grade.grader = self.request.user
         grade.leader_application = self.get_object()
+        grade.trips_year = TripsYear.objects.current()
         grade.save()
 
         return super(GradeApplication, self).form_valid(form)

@@ -26,9 +26,12 @@ class TestCase(TestCase):
 
     def init_old_trips_year(self):
         self.old_trips_year = mommy.make(TripsYear, year=2013, is_current=False)
+        self.previous_trips_year = self.old_trips_year
         self.old_trips_year.save()
 
         return self.old_trips_year
+        
+    init_previous_trips_year = init_old_trips_year
 
     def mock_user_login(self):
         """ 

@@ -42,6 +42,7 @@ def make_formfield_callback(trips_year):
         return formfield
 
     return restrict_related_choices_by_year
+
     
 
 class DatabaseMixin(DatabasePermissionRequired):

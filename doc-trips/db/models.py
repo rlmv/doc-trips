@@ -12,6 +12,8 @@ class TripsYear(models.Model):
     """ Global config object. Each year of trips has one such object.
 
     All other db objects point to their years' TripsYear.
+
+    TODO: validate that there is only one object with is_current=True
     """
 
     year = models.PositiveIntegerField(unique=True, primary_key=True)
@@ -39,6 +41,18 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
+    def save(self, *args, **kwargs):
+        """
+        Attach the current trips_year to new database objects.
+        
+        If trips_year is explicitly specified, use that year instead. 
+        This overrides the default model save method.
+        """
+        if self.pk is None and not hasattr(self, 'trips_year'):
+            self.trips_year = TripsYear.objects.current()
+
+        super(DatabaseModel, self).save(*args, **kwargs)
+
     @classmethod
     def get_reference_name(cls):
         """ 
@@ -55,6 +69,8 @@ class DatabaseModel(models.Model):
     def get_app_name(cls):
         """ Return the app name of cls. """
         return cls._meta.app_label
+
+    
 
         
 class Calendar(DatabaseModel):
