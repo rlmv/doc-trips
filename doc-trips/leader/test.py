@@ -146,8 +146,8 @@ class ApplicationViewsTestCase(TestCase):
 
         grade = LeaderGrade.objects.get(leader_application=application)
         self.assertEquals(grade.trips_year, self.trips_year)
-        
-         
+
+    
     def test_apply_flow(self):
 
         self.mock_user_login()
@@ -158,7 +158,35 @@ class ApplicationViewsTestCase(TestCase):
         app_data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)       
 
         response = self.client.post(reverse('leader:apply'), app_data, follow=True)
+
         self.assertEquals(response.status_code, 200)
+
+    
+    def test_applying_and_revisiting_pages_allows_user_to_edit_application(self):
+        
+        self.mock_user_login()
+
+        data = model_to_dict(mommy.prepare(LeaderApplication), 
+                             fields=LeaderApply.fields)
+        response = self.client.post(reverse('leader:apply'), data, follow=True)
+        response = self.client.get(reverse('leader:apply'))
+        application = response.context['object']
+        
+        # should see previous application
+        self.assertIsNotNone(application)
+        self.assertEquals(data['class_year'], application.class_year)
+        
+
+
+
+
+
+
+
+
+
+
+
         
         
         

@@ -33,7 +33,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     template_name = 'leader/db_application_update.html'
 
 
-class LeaderApply(LoginRequiredMixin, CreateView):
+class LeaderApply(LoginRequiredMixin, UpdateView):
     model = LeaderApplication
     
     template_name = 'leader/application_form.html'
@@ -41,23 +41,29 @@ class LeaderApply(LoginRequiredMixin, CreateView):
               'offcampus_address', 'preferred_sections', 'available_sections', 
               'notes']
 
+    def get_object(self):
+        """ 
+        Return the application for this user.
+
+        If the user has already applied this year, display a form for them to
+        edit. Otherwise, display an empty application form. 
+        """
+        try:
+            return self.get_queryset().get(user=self.request.user, 
+                                        trips_year=TripsYear.objects.current())
+        except self.model.DoesNotExist:
+            return None # causes self.object and context[object] to be None
+        
     def form_valid(self, form):
         """ Attach creating user and current trips_year to Application. """
-        form.instance.user = self.request.user
-        form.instance.trips_year = TripsYear.objects.current()
+        if self.object is None:
+            form.instance.user = self.request.user
+            form.instance.trips_year = TripsYear.objects.current()
         return super(LeaderApply, self).form_valid(form)
         
     def get_success_url(self):
-        """ Redirect target for CreateView. """
-        return reverse('leader:edit_application', kwargs={'pk': self.object.pk})
-
-
-class EditLeaderApplication(LoginRequiredMixin, UpdateView):
-    model = LeaderApplication
-    template_name = 'leader/application_form.html'
-    fields = LeaderApply.fields
-
-    # TODO: display more information about the user in here.
+        """ Redirect back to this page """
+        return reverse('leader:apply')
 
 
 class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
