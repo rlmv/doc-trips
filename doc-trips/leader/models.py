@@ -57,9 +57,6 @@ class LeaderApplication(DatabaseModel):
     # TODO: do we need this?
     offcampus_address = models.CharField(max_length=255, blank=True)  
 
-    # reverse lookups from Section are not needed, hence the '+'
-    # leaders for a section can be looked up via assigned_trip.section.
-    # (We may later need this to suggest leaders to assign to a trip.)
     preferred_sections = models.ManyToManyField('trip.Section', 
                                                 related_name='preferred_leaders', 
                                                 blank=True)
@@ -67,6 +64,15 @@ class LeaderApplication(DatabaseModel):
                                                 related_name='available_leaders', 
                                                 blank=True)
 
+    preferred_triptypes = models.ManyToManyField('trip.TripType', 
+                                                 related_name='preferred_leaders',
+                                                 blank=True, 
+                                                 verbose_name='Preferred types of trips')
+    available_triptypes = models.ManyToManyField('trip.TripType',
+                                                 related_name='available_triptypes',
+                                                 blank=True, 
+                                                 verbose_name='Available types of trips')
+    
     # TODO: should application questiosn and answers be hardcoded or dynamic?
 
     notes = models.CharField(max_length=255, blank=True) # not required in form

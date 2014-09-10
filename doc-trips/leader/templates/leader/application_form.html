@@ -1,6 +1,10 @@
 
 {% extends "base.html" %}
 
+{% load crispy_forms_tags %}
+
+
+
 {% block content %}
 
 {% if not object %}
@@ -11,14 +15,7 @@
 
 <p>This page will be available until ___leader_application_closed_date___ </p>
 
-<form action="" method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  {% if not object %}
-  <input type="submit" value="Submit"/>
-  {% else %}
-  <input type="submit" value="Update"/>
-  {% endif %}
-</form>
+{% crispy form %}
+
 
 {% endblock content %}

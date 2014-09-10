@@ -41,6 +41,7 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('leader:apply')
     fields = ['class_year', 'tshirt_size', 'gender', 'hinman_box', 'phone', 
               'offcampus_address', 'preferred_sections', 'available_sections', 
+              'preferred_triptypes', 'available_triptypes', 
               'notes']
 
     def get_object(self):
@@ -59,11 +60,23 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
     def get_form_class(self):
         """ Get form, restricting section choices to those of current TripsYear """
         widgets = {'available_sections': forms.CheckboxSelectMultiple(),
-                   'preferred_sections': forms.CheckboxSelectMultiple()}
-        return tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
-                                           fields=self.fields, widgets=widgets)
+                   'preferred_sections': forms.CheckboxSelectMultiple(), 
+                   'available_triptypes': forms.CheckboxSelectMultiple(),
+                   'preferred_triptypes': forms.CheckboxSelectMultiple()}
+        widgets=None 
+        form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
+                                            fields=self.fields, widgets=widgets)
 
-        
+        from crispy_forms.helper import FormHelper
+        from crispy_forms.layout import Submit
+        form.helper = FormHelper()
+        if self.object:
+            submit_text = 'Update'
+        else:
+            submit_text = 'Submit'
+        form.helper.add_input(Submit('submit', submit_text))
+        return form
+
     def form_valid(self, form):
         """ Attach creating user and current trips_year to Application. """
         if self.object is None:

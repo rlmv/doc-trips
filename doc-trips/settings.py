@@ -42,7 +42,7 @@ INSTALLED_APPS = (
 
     # third party
     'django_cas',
-    'django_behave',
+    'crispy_forms',
 
     # custom
     'db',
@@ -52,6 +52,9 @@ INSTALLED_APPS = (
     'trip',
     'permissions',
 )
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_FAIL_SILENTLY = not DEBUG
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
