@@ -1,7 +1,24 @@
 
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if not object %}
+<h2> Submit an application </h2>
+{% else %}
+<h2> Edit your application </h2>
+{% endif %}
+
+<p>This page will be available until ___leader_application_closed_date___ </p>
 
 <form action="" method="post">
   {% csrf_token %}
   {{ form.as_p }}
+  {% if not object %}
   <input type="submit" value="Submit"/>
+  {% else %}
+  <input type="submit" value="Update"/>
+  {% endif %}
 </form>
+
+{% endblock content %}
