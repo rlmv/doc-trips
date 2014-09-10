@@ -35,9 +35,10 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 
 
 class LeaderApply(LoginRequiredMixin, UpdateView):
+
     model = LeaderApplication
-    
     template_name = 'leader/application_form.html'
+    success_url = reverse_lazy('leader:apply')
     fields = ['class_year', 'tshirt_size', 'gender', 'hinman_box', 'phone', 
               'offcampus_address', 'preferred_sections', 'available_sections', 
               'notes']
@@ -68,10 +69,6 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
             form.instance.trips_year = TripsYear.objects.current()
         return super(LeaderApply, self).form_valid(form)
         
-    def get_success_url(self):
-        """ Redirect back to this page """
-        return reverse('leader:apply')
-
 
 class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
     
@@ -89,6 +86,7 @@ class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
 
 class NoApplicationToGrade(GraderPermissionRequired, TemplateView):
     """ Tell user there are no more applications for her to grade """
+
     template_name = 'leader/no_application.html'
 
 
@@ -112,15 +110,13 @@ class GradeApplication(GraderPermissionRequired, DetailView, FormView):
     context_object_name = 'leaderapplication'
 
     form_class = LeaderGradeForm
-    """ Must be a lazy - this is called before the urlconf is loaded.
-    See http://stackoverflow.com/a/22903110/3818777 """
     success_url = reverse_lazy('leader:grade_random')
 
     def get_context_data(self, **kwargs):
         """ Get context data to render in template.
 
         Because The DetailView is first in the MRO inheritance tree,
-        The super call retrives the LeaderaApplication object (saved as context_object      
+        The super call retrives the LeaderApplication object (saved as context_object      
         Then we manually add the form instance.
         """
         context = super(GradeApplication, self).get_context_data(**kwargs)
