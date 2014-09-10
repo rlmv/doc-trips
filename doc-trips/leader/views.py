@@ -51,10 +51,13 @@ class LeaderApply(LoginRequiredMixin, CreateView):
         """ Redirect target for CreateView. """
         return reverse('leader:edit_application', kwargs={'pk': self.object.pk})
 
+
 class EditLeaderApplication(LoginRequiredMixin, UpdateView):
     model = LeaderApplication
     template_name = 'leader/application_form.html'
-    fields = '__all__'
+    fields = LeaderApply.fields
+
+    # TODO: display more information about the user in here.
 
 
 class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
