@@ -11,43 +11,11 @@ from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
 from db.models import DatabaseModel
+from db.forms import tripsyear_modelform_factory
 from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
-
-def make_formfield_callback(trips_year):
-    """ 
-    Return a function responsible for making formfields. 
-    
-    Used to restrict field choices to matching trips_year.
-    """
-
-    def restrict_related_choices_by_year(model_field, **kwargs):
-        """ 
-        Formfield callback.
-        
-        If the field is a relational field, and the related object 
-        is a subclass of DatabaseModel, then we only display choices 
-        from the specified trips_year.
-        
-        This fixes an issue where the Section dropdown for 
-        /db/2014/trips/create was showing Sections objects from 2013.
-        """
-
-        formfield = model_field.formfield(**kwargs)
-        if ((isinstance(model_field, models.ForeignKey) or
-             isinstance(model_field, models.ManyToManyField) or
-             isinstance(model_field, models.OneToOneField)) and
-             issubclass(model_field.related.parent_model, DatabaseModel)):
-
-            formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
-            
-        return formfield
-
-    return restrict_related_choices_by_year
-
-    
 
 class DatabaseMixin(DatabasePermissionRequired):
     """ 
@@ -95,9 +63,8 @@ class DatabaseMixin(DatabasePermissionRequired):
 
         if self.model is not None:
             trips_year = self.kwargs['trips_year']
-            formfield_callback = make_formfield_callback(trips_year)
-            return modelform_factory(self.model, fields=self.fields, 
-                                     formfield_callback=formfield_callback)
+            return tripsyear_modelform_factory(self.model, trips_year,
+                                               fields=self.fields)
         
         msg = "'%s' must either define 'form_class' or 'model' " \
             "or CAREFULLY override 'get_form_class()'"

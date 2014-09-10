@@ -159,11 +159,9 @@ class FormFieldCallbackTestCase(TestCase):
         self.init_current_trips_year()
     
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
-        from db.views import make_formfield_callback
-        from django.forms.models import modelform_factory
-
-        callback = make_formfield_callback(self.current_trips_year)
-        modelform_factory(ExampleDatabaseModel, formfield_callback=callback)
+        from db.forms import tripsyear_modelform_factory
+        tripsyear_modelform_factory(ExampleDatabaseModel, self.current_trips_year)
+                                    
 
 class CalendarTestCase(TestCase):
 

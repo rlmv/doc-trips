@@ -7,7 +7,6 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
-from django.forms.models import modelform_factory
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
@@ -17,7 +16,7 @@ from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
 from db.models import TripsYear
-from db.views import make_formfield_callback 
+from db.forms import tripsyear_modelform_factory
 
 logger = logging.getLogger(__name__)
 
@@ -58,9 +57,9 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
 
     def get_form_class(self):
         """ Get form, restricting section choices to those of current TripsYear """
-        formfield_callback = make_formfield_callback(TripsYear.objects.current())
-        return modelform_factory(self.model, fields=self.fields, 
-                                 formfield_callback=formfield_callback)
+        return tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
+                                           fields=self.fields)
+
         
     def form_valid(self, form):
         """ Attach creating user and current trips_year to Application. """
