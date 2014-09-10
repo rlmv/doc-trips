@@ -1,6 +1,7 @@
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from test.fixtures import TestCase
@@ -90,6 +91,7 @@ class LeaderApplicationManagerTestCase(TestCase):
         self.assertIsNone(next, 'should not be able to grade apps from previous years')
 
 
+
 class ApplicationViewsTestCase(TestCase):
 
     # TODO: test that non-graders are redirected to login
@@ -115,14 +117,29 @@ class ApplicationViewsTestCase(TestCase):
         response = self.client.get(reverse('leader:grade_random'), follow=True)
         self.assertEquals(response.templates[0].name, 'leader/no_application.html')
 
+    def test_applying_adds_the_current_trips_year_and_user_to_model(self):
+        
+        self.mock_user_login()
+
+        data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)
+
+        response = self.client.post(reverse('leader:apply'), data)
+        
+        # TODO: test redirects
+        #self.assertEquals(response.status_code, 200)
+        
+        application = LeaderApplication.objects.all()[0]
+        # should add use and current trips_year
+        self.assertEquals(self.user, application.user)
+        self.assertEquals(self.trips_year, application.trips_year)
+        
+
     def test_grading_application_adds_trips_year_to_grade(self):
 
         self.mock_grader_login()
 
         application = mommy.make(LeaderApplication, status=LeaderApplication.PENDING,
                                  trips_year=self.trips_year)
-        application.save()
-
         response = self.client.post(reverse('leader:grade', kwargs={'pk': application.pk }), 
                                     {'grade': 3,
                                      'comment': 'test grade comment'})
@@ -131,21 +148,18 @@ class ApplicationViewsTestCase(TestCase):
         self.assertEquals(grade.trips_year, self.trips_year)
         
          
-    def test_apply(self):
+    def test_apply_flow(self):
 
         self.mock_user_login()
 
         response = self.client.get(reverse('leader:apply'))
         self.assertEquals(response.status_code, 200)
+    
+        app_data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)       
 
-        application = mommy.make(LeaderApplication)
-        from django.forms.models import model_to_dict
-        app_data = model_to_dict(application)
-        app_data.pop('status')
-        app_data.pop('assigned_trip')
-
-        response = self.client.post(reverse('leader:apply'), app_data)
+        response = self.client.post(reverse('leader:apply'), app_data, follow=True)
         self.assertEquals(response.status_code, 200)
+        
         
         
         

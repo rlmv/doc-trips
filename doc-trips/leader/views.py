@@ -37,13 +37,19 @@ class LeaderApply(LoginRequiredMixin, CreateView):
     model = LeaderApplication
     
     template_name = 'leader/application_form.html'
-    fields = '__all__'
+    fields = ['class_year', 'tshirt_size', 'gender', 'hinman_box', 'phone', 
+              'offcampus_address', 'preferred_sections', 'available_sections', 
+              'notes']
 
     def form_valid(self, form):
-        """ Attach creating user to Application. """
+        """ Attach creating user and current trips_year to Application. """
         form.instance.user = self.request.user
+        form.instance.trips_year = TripsYear.objects.current()
         return super(LeaderApply, self).form_valid(form)
-
+        
+    def get_success_url(self):
+        """ Redirect target for CreateView. """
+        return reverse('leader:edit_application', kwargs={'pk': self.object.pk})
 
 class EditLeaderApplication(LoginRequiredMixin, UpdateView):
     model = LeaderApplication
