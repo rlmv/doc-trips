@@ -10,6 +10,7 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
+from db.models import DatabaseModel
 from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
@@ -26,18 +27,21 @@ def make_formfield_callback(trips_year):
         """ 
         Formfield callback.
         
-        Only display related objects with trips_year==trips_year.
-        """
+        If the field is a relational field, and the related object 
+        is a subclass of DatabaseModel, then we only display choices 
+        from the specified trips_year.
         
-        formfield = model_field.formfield(**kwargs)
-        if isinstance(model_field, models.ForeignKey):
-            # TOOD: also m2m? 121?
-            formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
+        This fixes an issue where the Section dropdown for 
+        /db/2014/trips/create was showing Sections objects from 2013.
+        """
 
-        if isinstance(model_field, (models.ManyToManyField, models.OneToOneField)):
-            msg = ('Trips database formfield handling is not implemented for %s'
-                   'Please fix that!')
-            raise NotImplementedError(msg % model_field.__class__.__name__)
+        formfield = model_field.formfield(**kwargs)
+        if ((isinstance(model_field, models.ForeignKey) or
+             isinstance(model_field, models.ManyToManyField) or
+             isinstance(model_field, models.OneToOneField)) and
+             issubclass(model_field.related.parent_model, DatabaseModel)):
+
+            formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
             
         return formfield
 

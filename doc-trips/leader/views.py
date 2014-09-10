@@ -32,8 +32,6 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
-    fields = ['status']
-
 
 class LeaderApply(LoginRequiredMixin, CreateView):
     model = LeaderApplication

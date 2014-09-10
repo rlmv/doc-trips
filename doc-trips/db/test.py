@@ -1,9 +1,11 @@
+import unittest
 
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.test.utils import override_settings
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, FieldError
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
@@ -15,6 +17,7 @@ class ExampleDatabaseModel(DatabaseModel):
     """ Mock class inheriting DatabaseModel """
     some_field = models.CharField(max_length=255)
     related_field = models.ForeignKey('self', null=True)
+    non_database_related_field = models.ForeignKey(get_user_model(), null=True, blank=True)
 
 class DatabaseModelTestCase(TestCase):
 
@@ -87,6 +90,7 @@ class DatabaseMixinTestCase(TestCase):
                                                    self.current_trips_year), 
                                     {'some_field': phrase, 'related_field': ex.pk})
 
+
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))
 
@@ -128,7 +132,6 @@ class DatabaseMixinTestCase(TestCase):
                                                    'pk': ex2.pk}))
         self.assertEquals(response.status_code, 404, 'should not find ex2 because trips_year does not match ex2.trips_year')
 
-
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
         
         self.mock_director_login()
@@ -144,11 +147,23 @@ class DatabaseMixinTestCase(TestCase):
         choices = response.context['form'].fields['related_field'].queryset
 
         # should only show objects from current_trips_year
-        self.assertTrue(len(choices) == 2)
+        self.assertEquals(len(choices), 2)
         self.assertTrue(ex1 in choices)
         self.assertTrue(ex2 not in choices)
         self.assertTrue(ex3 in choices)
         
+    
+class FormFieldCallbackTestCase(TestCase):
+
+    def setUp(self):
+        self.init_current_trips_year()
+    
+    def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
+        from db.views import make_formfield_callback
+        from django.forms.models import modelform_factory
+
+        callback = make_formfield_callback(self.current_trips_year)
+        modelform_factory(ExampleDatabaseModel, formfield_callback=callback)
 
 class CalendarTestCase(TestCase):
 
