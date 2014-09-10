@@ -45,7 +45,8 @@ class LeaderApplication(DatabaseModel):
     )
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, blank=True, related_name='leaders')
+    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, 
+                                      blank=True, related_name='leaders')
 
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     class_year = models.PositiveIntegerField()
@@ -53,13 +54,18 @@ class LeaderApplication(DatabaseModel):
     gender = models.CharField(max_length=255)
     hinman_box = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
-    offcampus_address = models.CharField(max_length=255, blank=True)     # TODO: do we need this?
+    # TODO: do we need this?
+    offcampus_address = models.CharField(max_length=255, blank=True)  
 
     # reverse lookups from Section are not needed, hence the '+'
     # leaders for a section can be looked up via assigned_trip.section.
     # (We may later need this to suggest leaders to assign to a trip.)
-    preferred_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
-    available_sections = models.ManyToManyField('trip.Section', related_name='+', blank=True)
+    preferred_sections = models.ManyToManyField('trip.Section', 
+                                                related_name='preferred_leaders', 
+                                                blank=True)
+    available_sections = models.ManyToManyField('trip.Section', 
+                                                related_name='available_leaders', 
+                                                blank=True)
 
     # TODO: should application questiosn and answers be hardcoded or dynamic?
 

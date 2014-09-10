@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
+from django import forms
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
@@ -57,8 +58,10 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
 
     def get_form_class(self):
         """ Get form, restricting section choices to those of current TripsYear """
+        widgets = {'available_sections': forms.CheckboxSelectMultiple(),
+                   'preferred_sections': forms.CheckboxSelectMultiple()}
         return tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
-                                           fields=self.fields)
+                                           fields=self.fields, widgets=widgets)
 
         
     def form_valid(self, form):
