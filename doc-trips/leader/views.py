@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
+from django.forms.models import modelform_factory
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
@@ -16,7 +17,7 @@ from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
 from db.models import TripsYear
-
+from db.views import make_formfield_callback 
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,12 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
                                         trips_year=TripsYear.objects.current())
         except self.model.DoesNotExist:
             return None # causes self.object and context[object] to be None
+
+    def get_form_class(self):
+        """ Get form, restricting section choices to those of current TripsYear """
+        formfield_callback = make_formfield_callback(TripsYear.objects.current())
+        return modelform_factory(self.model, fields=self.fields, 
+                                 formfield_callback=formfield_callback)
         
     def form_valid(self, form):
         """ Attach creating user and current trips_year to Application. """
@@ -75,7 +82,6 @@ class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
         """ Return the url of the next LeaderApplication that needs grading """
         
         application = LeaderApplication.objects.next_to_grade(self.request.user)
-        # TODO: use template
         if not application:
             return reverse('leader:no_application')
         return reverse('leader:grade', kwargs={'pk': application.pk})

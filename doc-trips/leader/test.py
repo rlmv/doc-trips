@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from test.fixtures import TestCase
+from trip.models import Section
 from leader.models import LeaderGrade, LeaderApplication
 from leader.views import *
 
@@ -98,6 +99,7 @@ class ApplicationViewsTestCase(TestCase):
 
     def setUp(self):
         self.init_current_trips_year()
+        self.init_previous_trips_year()
 
     def test_redirects(self):
 
@@ -175,8 +177,22 @@ class ApplicationViewsTestCase(TestCase):
         # should see previous application
         self.assertIsNotNone(application)
         self.assertEquals(data['class_year'], application.class_year)
-        
 
+    
+    def test_available_sections_in_application_form_are_only_for_current_trips_year(self):
+        self.mock_user_login()
+
+        prev_section = mommy.make('Section', trips_year=self.previous_trips_year)
+        curr_section = mommy.make('Section', trips_year=self.current_trips_year)
+
+        response = self.client.get(reverse('leader:apply'))
+        form = response.context['form']
+
+        self.assertEquals(list(form.fields['available_sections'].queryset),
+                          list(Section.objects.filter(trips_year=self.current_trips_year)))
+        self.assertEquals(list(form.fields['preferred_sections'].queryset),
+                          list(Section.objects.filter(trips_year=self.current_trips_year)))
+        
 
 
 
