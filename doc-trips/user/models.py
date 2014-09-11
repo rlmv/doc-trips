@@ -10,6 +10,8 @@ class DartmouthUserModel(AbstractUser):
     objects = UserManager()
     net_id = models.CharField(max_length=40, unique=True)
 
+    USERNAME_FIELD = 'net_id'
+
     def __str__(self):
         return '{} ({})'.format(self.get_short_name(), self.net_id)
         
