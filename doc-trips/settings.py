@@ -12,16 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
-#HACK - add dartmouth django cas to path
-# change this once the submodule is stable and installable as
-# an external dependency or integrated as an app
-import sys
-CAS_DIR = os.path.join(BASE_DIR, 'django-dartmouth-cas')
-if CAS_DIR not in sys.path:
-    sys.path.append(CAS_DIR)
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -52,7 +42,6 @@ INSTALLED_APPS = (
 
     # third party
 #    'django_cas',
-    'django_cas',
     'crispy_forms',
 
     # custom
@@ -62,6 +51,7 @@ INSTALLED_APPS = (
     'leader',
     'trip',
     'permissions',
+    'webauth', 
 )
 
 AUTH_USER_MODEL = 'user.DartmouthUserModel'
