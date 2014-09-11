@@ -194,7 +194,8 @@ class ApplicationViewsTestCase(TestCase):
                           list(Section.objects.filter(trips_year=self.current_trips_year)))
         
 
-
+    def test_application_is_not_available_if_not_in_calendar_dates(self):
+        pass
 
 
 

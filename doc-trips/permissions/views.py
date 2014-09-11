@@ -40,6 +40,14 @@ class GraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = True
 
 
+class CalendarPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+    """ Access for users allowed to edit the calendar """
+    
+    redirect_unauthenticated_users = True
+    permission_required = 'permissions.can_edit_calendar'
+    raise_exception = True
+
+
 from dartdm.forms import DartmouthDirectoryLookupField
 
 class GroupForm(forms.Form):
@@ -57,14 +65,19 @@ class GroupForm(forms.Form):
     graders = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
                                              required=False)
-
     new_grader = DartmouthDirectoryLookupField(required=False)
+
+    from crispy_forms.helper import FormHelper
+    from crispy_forms.layout import Submit
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Update permissions'))
+    
 
     def __init__(self, *args, **kwargs):
         super(GroupForm, self).__init__(*args, **kwargs)
         
         print(dir(self.fields['directors']))
-        self.fields['directors'].queryset = directors().user_set
+        self.fields['directors'].queryset = directors().user_set.all()
         self.fields['directors'].initial = [u.pk for u in directors().user_set.all()]
         self.fields['graders'].queryset = get_user_model().objects.all()
         self.fields['graders'].initial = [u.pk for u in graders().user_set.all()]

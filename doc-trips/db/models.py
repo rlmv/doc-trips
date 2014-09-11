@@ -1,10 +1,11 @@
+from datetime import datetime
 
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 
-from db.managers import TripsYearManager, CalendarManager
+from db.managers import TripsYearManager
 
 
 class TripsYear(models.Model):
@@ -70,27 +71,54 @@ class DatabaseModel(models.Model):
         """ Return the app name of cls. """
         return cls._meta.app_label
 
-    
+class CalendarManager(models.Manager):
 
+    def calendar(self):
         
-class Calendar(DatabaseModel):
+        try:
+            return self.get(id=1)
+        except self.model.DoesNotExist:
+            return self.model(leader_application_open=datetime.min, 
+                              leader_application_closed=datetime.min,
+                              leader_assignment_posted=datetime.min,
+                              trippee_registration_open=datetime.min,
+                              trippee_registration_closed=datetime.min,
+                              trippee_assignment_posted=datetime.min,
+                              migration_date=datetime.min)
+            
 
-    # trips_year is inherited from DatabaseModel
+class Calendar(models.Model):
 
-    leader_application_available = models.DateTimeField()
-    leader_application_due = models.DateTimeField()
+    leader_application_open = models.DateTimeField()
+    leader_application_closed = models.DateTimeField()
 
     # TODO: ??? are we going to have leader recs?
     # leader_recommendation_due = models.DateTimeField()
 
     leader_assignment_posted = models.DateTimeField()
-    trippee_registration_available = models.DateTimeField()
+    trippee_registration_open = models.DateTimeField()
+    trippee_registration_closed = models.DateTimeField()
     trippee_assignment_posted = models.DateTimeField()
 
     migration_date = models.DateTimeField()
 
-    # override the default object manager
     objects = CalendarManager()
+
+    def save(self, *args, **kwargs):
+        self.id = 1
+        super(Calendar, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass
+
+
+    def is_leader_application_available(self):
+
+        now = datetime.now()
+        return (self.leader_application_open < now and
+                now < self.leader_application_closed)
+        
+         
 
 class Cost(DatabaseModel):
 

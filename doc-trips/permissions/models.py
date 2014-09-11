@@ -6,8 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 class SitePermissionManager(models.Manager):
     """ Manager class for SitePermission model. """
 
-    def get_query_set(self):
-        qs = super(SitePermissionManager, self).get_query_set()
+    def get_queryset(self):
+        qs = super(SitePermissionManager, self).get_queryset()
         return qs.filter(content_type__name='site_permission')
 
 

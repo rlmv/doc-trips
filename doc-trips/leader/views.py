@@ -16,7 +16,7 @@ from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
-from db.models import TripsYear
+from db.models import TripsYear, Calendar
 from db.forms import tripsyear_modelform_factory
 
 logger = logging.getLogger(__name__)
@@ -37,12 +37,21 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 class LeaderApply(LoginRequiredMixin, UpdateView):
 
     model = LeaderApplication
-    template_name = 'leader/application_form.html'
     success_url = reverse_lazy('leader:apply')
     fields = ['class_year', 'tshirt_size', 'gender', 'hinman_box', 'phone', 
               'offcampus_address', 'preferred_sections', 'available_sections', 
               'preferred_triptypes', 'available_triptypes', 
               'notes']
+
+    def get_template_names(self):
+        """
+        Only display the application form if the application is open.
+
+        """
+        if Calendar.objects.calendar().is_leader_application_available():
+            return ['leader/application_form.html']
+        else:
+            return ['leader/application_not_available.html']
 
     def get_object(self):
         """ 
@@ -63,7 +72,7 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
                    'preferred_sections': forms.CheckboxSelectMultiple(), 
                    'available_triptypes': forms.CheckboxSelectMultiple(),
                    'preferred_triptypes': forms.CheckboxSelectMultiple()}
-        widgets=None 
+        widgets = {}
         form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
                                             fields=self.fields, widgets=widgets)
 

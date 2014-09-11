@@ -10,9 +10,9 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
-from db.models import DatabaseModel
+from db.models import DatabaseModel, Calendar
 from db.forms import tripsyear_modelform_factory
-from permissions.views import DatabasePermissionRequired
+from permissions.views import DatabasePermissionRequired, CalendarPermissionRequired
 
 logger = logging.getLogger(__name__)
 
@@ -210,6 +210,12 @@ class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
     pass
     
 
+class CalendarEditView(CalendarPermissionRequired, UpdateView):
     
+    model = Calendar
+    template_name = 'db/calendar.html'
 
-
+    def get_object(self):
+        
+        return Calendar.objects.calendar()
+        

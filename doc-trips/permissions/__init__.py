@@ -27,6 +27,10 @@ def can_access_db():
     return get_permission('can_access_db',
                           'Can access trips database')
 
+def can_edit_calendar():
+    return get_permission('can_edit_calendar',
+                          'Can change critical dates in the calendar')
+
 
 """ # TODO: these might be useful for croos?
 can_edit_db, created = get_permission(
@@ -43,7 +47,8 @@ def directors():
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
                              can_grade_applications(), 
-                             can_access_db()]
+                             can_access_db(), 
+                             can_edit_calendar()]
     directors.save()
     return directors
 
