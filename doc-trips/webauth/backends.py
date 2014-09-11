@@ -6,12 +6,26 @@ from xml.etree import ElementTree
 import requests
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django_cas.models import Tgt
-from django_cas.utils import cas_response_callbacks
 
 from user.models import DartmouthUserModel as User
+from webauth.utils import cas_response_callbacks
+
 
 __all__ = ['CASBackend']
+
+
+def cas_response_callbacks(tree):
+    
+    callbacks = []
+    callbacks.extend(settings.CAS_RESPONSE_CALLBACKS)
+
+    for path in callbacks:
+        i = path.rfind('.')
+        module, callback = path[:i], path[i+1:]
+            
+        mod = __import__(module, fromlist=[callback])
+        func = getattr(mod, callback)
+        func(tree)
 
 
 def verify(ticket, service):
@@ -42,7 +56,7 @@ def verify(ticket, service):
         else:
             return None
     except Exception as e:
-        raise e
+        raise 
 
 
 class CASBackend(object):

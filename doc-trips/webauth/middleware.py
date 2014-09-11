@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 
-from django_cas.views import login as cas_login, logout as cas_logout
+from webauth.views import login as cas_login, logout as cas_logout
 
 __all__ = ['CASMiddleware']
 

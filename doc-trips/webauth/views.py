@@ -1,17 +1,10 @@
-# -*- coding: utf-8 -*-
 
-"""CAS login/logout replacement views"""
-from datetime import datetime
-# from urllib import urlencode
 from urllib.parse import urljoin, urlencode
-
-from operator import itemgetter
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
-from django_cas.models import SessionServiceTicket
 
 __all__ = ['login', 'logout']
 
