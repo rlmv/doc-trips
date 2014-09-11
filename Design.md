@@ -163,39 +163,6 @@ Testing
 Many key functions have Django TestCases. You usually need to call test.fixtures.init_trips_year in TestCase.setUp.
 
 
-Timeline
-========
-
-Immediate:
-[ ] leader applications, (leader application recommendations), 
-[ ] basic login, user permissions
-[ ] permission granting portal
-[x] grading leader applications
-[ ] application styling 
-[ ] basic trip information - trip types, section configuration
-[ ] 
-
-Midrange:
-[ ] all logistical capabilities: trip, campsite, transport scheduling
-[ ] leader portal: trip assignments
-[ ] front facing public pages
-[ ] trippee signup
-[ ] trippee login, view of trip assignments
-[ ] food, tshirt checklists
-[ ]
-
-Pre-trips:
-[ ] logistics checklists
-[ ] trippee checkin
-[ ] safety log
-[ ] raid blog
-
-
-2 year:
-[ ] archive view of information from previous years
-[ ] longterm stability and year-to-year migration 
-[ ]
-
 Big Questions
 =========
 * should crews be integrated into the site? this will add a fair amount of architecture, and probably not much utility since crews don't come into play with logistics. However, if WebAuth is being used exclusively for login there needs to be some way for crews to be given permissions for accessing the database, yes? This could be done by inputing a list of DIDs perhaps.

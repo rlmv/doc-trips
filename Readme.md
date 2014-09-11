@@ -9,6 +9,40 @@ Documentation:
 * database url schemes - derived from 'get_reference_name' and 'get_app_name'
 
 
+Timeline
+========
+
+#### Immediate:
+[x] leader applications, (leader application recommendations), 
+[ ] custom user model 
+[x] basic login, user permissions
+[x] permission granting portal
+[x] grading leader applications
+[ ] application styling 
+[ ] basic trip information - trip types, section configuration
+[ ] 
+
+#### Midrange:
+[ ] all logistical capabilities: trip, campsite, transport scheduling
+[ ] leader portal: trip assignments
+[ ] front facing public pages
+[ ] trippee registration
+[ ] trippee login, view of trip assignments
+[ ] food, tshirt checklists
+[ ]
+
+#### Pre-trips:
+[ ] logistics checklists
+[ ] trippee checkin
+[ ] safety log
+[ ] raid blog
+
+#### 2 year:
+[ ] archive view of information from previous years
+[ ] longterm stability and year-to-year migration 
+[ ]
+
+
 ### User models:
 
 We currently use the default django User model, setting the username field to be the Dartmouth NetId. Ideally we would implement a custom User model, but this will require revamping the CAS login workflow to use get_user_model and make fewer assumptions about accessing user objects.
