@@ -4,7 +4,6 @@ coverage
 #django-coverage
 
 django
-django_cas_sso
 
 #django-grappelli
 # need dev version for django 1.7 compatibility

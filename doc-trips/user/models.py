@@ -4,8 +4,9 @@ from django.db.models.signals import post_save
 
 from django.contrib.auth.models import AbstractUser, UserManager
 
+
 class DartmouthUserModel(AbstractUser):
-    
+
     objects = UserManager()
     net_id = models.CharField(max_length=40, unique=True)
 
