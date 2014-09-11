@@ -31,10 +31,12 @@ def cas_response_callbacks(tree):
 
 
 def verify(ticket, service):
-    """Verifies CAS 2.0+ XML-based authentication ticket.
+    """
+    Verifies CAS 2.0+ XML-based authentication ticket.
 
     Returns username on success and None on failure.
     """
+
     params = {'ticket': ticket, 'service': service}
 
     # TODO: ensure that url uses https
@@ -42,8 +44,7 @@ def verify(ticket, service):
     r = requests.get(url, params=params)
 
     try:
-        response = r.text
-        tree = ElementTree.fromstring(response)
+        tree = ElementTree.fromstring(r.text)
 
         #Useful for debugging
         #from xml.dom.minidom import parseString
@@ -61,15 +62,15 @@ def verify(ticket, service):
         raise 
 
 
-class CASBackend(object):
-    """CAS authentication backend"""
+class CASBackend():
+    """ CAS authentication backend """
 
     supports_object_permissions = False
     supports_inactive_user = False
 
     def authenticate(self, ticket, service):
-        """Verifies CAS ticket and gets or creates User object
-            NB: Use of PT to identify proxy
+        """
+        Verifies CAS ticket and gets or creates User object.
         """
 
         username = verify(ticket, service)
@@ -78,12 +79,8 @@ class CASBackend(object):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            if settings.CAS_USER_CREATION:
-                # user will have an "unusable" password
-                user = User.objects.create_user(username, '')
-                user.save()
-            else:
-                return None
+            return None
+        
         return user
 
     def get_user(self, user_id):

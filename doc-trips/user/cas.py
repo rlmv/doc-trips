@@ -3,8 +3,6 @@ import logging
 
 from django.contrib.auth import get_user_model
 
-from user import get_or_create_user_by_netid
-
 logger = logging.getLogger(__name__)
 
 """ 
@@ -35,7 +33,7 @@ def dartmouth_cas_callback(tree):
     # because it is guaranteed unique
     tree[0][0].text = netid
 
-    user, created = get_or_create_user_by_netid(netid, name)
+    user, created = get_user_model().objects.get_by_netid(netid, name)
     
     if created:
         ## TODO: hacky - hack - the CAS package only allows admin 
