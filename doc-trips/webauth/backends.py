@@ -8,21 +8,23 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from user.models import DartmouthUserModel as User
-from webauth.utils import cas_response_callbacks
 
 
 __all__ = ['CASBackend']
 
 
 def cas_response_callbacks(tree):
-    
-    callbacks = []
-    callbacks.extend(settings.CAS_RESPONSE_CALLBACKS)
+    """ 
+    Process CAS response. 
+
+    For each callback specified in CAS_RESPONSE_CALLBACKS, 
+    run the callback with the response ElementTree.
+    """
+
+    callbacks = getattr(settings, 'CAS_RESPONSE_CALLBACKS', [])
 
     for path in callbacks:
-        i = path.rfind('.')
-        module, callback = path[:i], path[i+1:]
-            
+        module, callback = path.rsplit('.', 1)
         mod = __import__(module, fromlist=[callback])
         func = getattr(mod, callback)
         func(tree)
