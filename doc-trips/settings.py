@@ -53,6 +53,8 @@ INSTALLED_APPS = (
     'permissions',
 )
 
+AUTH_USER_MODEL = 'user.DartmouthUserModel'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
 

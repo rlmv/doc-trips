@@ -14,10 +14,11 @@ def get_or_create_user_by_netid(net_id, name=None):
     different.
     """
 
-    user, created = get_user_model().objects.get_or_create(username=net_id)
+    user, created = get_user_model().objects.get_or_create(username=net_id, 
+                                                           net_id=net_id)
 
     if created:
-        logger.info("creating user %r, %r" % (net_id, name))
+        logger.info("creating user %r, %r" % (name, net_id))
         user.email = net_id + '@dartmouth.edu'
         if name:
             user.first_name = name

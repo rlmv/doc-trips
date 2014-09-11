@@ -3,13 +3,14 @@ import logging
 
 from django.contrib.auth import get_user_model
 
+from user import get_or_create_user_by_netid
+
 logger = logging.getLogger(__name__)
 
 """ 
 Note: the we are using the Dartmouth NetId as the username, 
 and setting first_name to the name of the person.
 """
-
 
 def dartmouth_cas_callback(tree):
     """ Callback function for parsing Dartmouth's CAS response.
@@ -43,15 +44,4 @@ def dartmouth_cas_callback(tree):
         # TODO: this gives all users admin priveleges, change this
         user.is_superuser = True; 
 
-        # TODO: remove userprofile?
-        profile = user.userprofile
-        profile.netid = netid
-        profile.did = findtext('did')
-        profile.uid = findtext('uid')
-        profile.affil = findtext('affil')
-
-        profile.alumni_id = findtext('alumniid')
-        profile.auth_type = findtext('authType')
-
         user.save()
-        profile.save()
