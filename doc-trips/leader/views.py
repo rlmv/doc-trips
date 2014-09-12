@@ -38,10 +38,8 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
 
     model = LeaderApplication
     success_url = reverse_lazy('leader:apply')
-    fields = ['class_year', 'tshirt_size', 'gender', 'hinman_box', 'phone', 
-              'offcampus_address', 'preferred_sections', 'available_sections', 
-              'preferred_triptypes', 'available_triptypes', 
-              'notes']
+
+    exclude = ['user', 'status', 'assigned_trip']
 
     def get_template_names(self):
         """
@@ -68,17 +66,11 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
 
     def get_form_class(self):
         """ Get form, restricting section choices to those of current TripsYear """
-        widgets = {'available_sections': forms.CheckboxSelectMultiple(),
-                   'preferred_sections': forms.CheckboxSelectMultiple(), 
-                   'available_triptypes': forms.CheckboxSelectMultiple(),
-                   'preferred_triptypes': forms.CheckboxSelectMultiple()}
-        widgets = {}
-        form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(), 
-                                            fields=self.fields, widgets=widgets)
-
-        from crispy_forms.helper import FormHelper
-        from crispy_forms.layout import Submit
-        form.helper = FormHelper()
+        form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
+                                            exclude=self.exclude)
+        
+        from leader.forms import LeaderApplicationFormHelper
+        form.helper = LeaderApplicationFormHelper()
         if self.object:
             submit_text = 'Update'
         else:

@@ -59,16 +59,14 @@ class LeaderApplication(DatabaseModel):
     phone = models.CharField(max_length=255)
     # TODO: do we need this?
     offcampus_address = CharField(max_length=255, blank=True, 
-                                  verbose_name='Where can we reach you this summer?')
+                                  verbose_name='Off-campus address (where can we reach you this summer?')
 
-    answer_from = CharField(max_length=255,
+    from_where = CharField(max_length=255,
                             verbose_name='Where are you from?')
-    answer_study = CharField(max_length=255,
-                             verbose_name='What do you like to study?')
-    answer_confidentiality = BooleanField(default=False)
-    answer_goodstanding = BooleanField(default=False)
-
-    
+    what_do_you_like_to_study = CharField(max_length=255,
+                                          verbose_name='What do you like to study?')
+    trippee_confidentiality = BooleanField(default=False, verbose_name="If selected to be a DOC Trips Leader, I understand that I will be given access to my Trippees' confidential medical information for safety purposes. I pledge to maintain the confidentiality of this information, except as is required by medical or legal concerns")
+    in_goodstanding_with_college = BooleanField(default=False, verbose_name="By applying to lead a DOC Trip, I acknowledge that I am in good standing with the College. This may be verified by DOC Trips through the Undergraduate Dean’s Office.")
 
     #  ------  trip and section information ------
     preferred_sections = ManyToManyField('trip.Section', blank=True,
@@ -81,7 +79,25 @@ class LeaderApplication(DatabaseModel):
     available_triptypes = ManyToManyField('trip.TripType', blank=True,
                                           related_name='available_triptypes',
                                           verbose_name='Available types of trips')
+    trip_preference_comments = TextField(blank=True, verbose_name='Comments')
+
     
+    # ---- application questions -----
+
+    personal_activities = TextField(blank=True, 
+                                  verbose_name='Please list your primary activities and involvements at Dartmouth and beyond')
+    personal_communities = TextField(blank=True)
+    
+    went_on_trip = BooleanField(default=False, 
+                               verbose_name='Did you go on a First Year Trip?')
+    applied_to_trips = BooleanField(default=False, 
+                                    verbose_name='Have you applied to lead a Trip before?')
+    is_in_hanover_this_fall = BooleanField(default=False,
+                                           verbose_name='Are you planning to be in Hanover this fall?')
+    
+    tell_us_about_yourself = TextField(blank=True)
+                                       
+
 
     notes = models.CharField(max_length=255, blank=True) # not required in form
 
