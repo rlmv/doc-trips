@@ -68,18 +68,17 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # enable Dartmouth WebAuth
-    'webauth.middleware.CASMiddleware',
+    'webauth.middleware.WebAuthMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # TODO: do we need this with CAS?
-    'webauth.backends.CASBackend',
+    'webauth.backends.WebAuthBackend',
 )
 
 # Dartmouth WebAuth settings 
 # TODO: move this to cas app?
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
-CAS_RESPONSE_CALLBACKS = [ 'user.cas.dartmouth_cas_callback' ]
 CAS_LOGOUT_COMPLETELY = True
 
 # login_required decorator redirects to here. This is webauth login.

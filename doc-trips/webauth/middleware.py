@@ -1,4 +1,3 @@
-"""CAS authentication middleware"""
 
 from urllib.parse import urlencode
 
@@ -8,10 +7,8 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 
 from webauth.views import login as cas_login, logout as cas_logout
 
-__all__ = ['CASMiddleware']
 
-
-class CASMiddleware(object):
+class WebAuthMiddleware(object):
     """Middleware that allows CAS authentication on admin pages"""
 
     def process_request(self, request):

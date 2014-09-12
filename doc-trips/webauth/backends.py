@@ -10,9 +10,6 @@ from django.contrib.auth import get_user_model
 UserModel = get_user_model()
 
 
-__all__ = ['CASBackend']
-
-
 def parse_cas_success(tree):
     """ 
     Callback function for parsing Dartmouth's CAS response.
@@ -52,6 +49,7 @@ def verify(ticket, service):
     url = urljoin(settings.CAS_SERVER_URL, 'serviceValidate')
     r = requests.get(url, params=params)
 
+    print(r.text)
     try:
         tree = ElementTree.fromstring(r.text)
         
@@ -66,7 +64,7 @@ def verify(ticket, service):
         raise 
 
 
-class CASBackend():
+class WebAuthBackend():
     """ CAS authentication backend """
 
     supports_object_permissions = False
