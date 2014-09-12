@@ -54,7 +54,7 @@ INSTALLED_APPS = (
     'webauth', 
 )
 
-AUTH_USER_MODEL = 'user.DartmouthUserModel'
+AUTH_USER_MODEL = 'user.DartmouthUser'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
