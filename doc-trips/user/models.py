@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractUser, UserManager
 
 logger = logging.getLogger(__name__)
 
+
 class DartmouthUserManager(UserManager):
 
     def get_by_netid(self, net_id, name=None):
@@ -20,14 +21,19 @@ class DartmouthUserManager(UserManager):
         different.
         """
 
-        user, created = self.get_or_create(net_id=net_id)
-
-        if created:
+        try:
+            user = self.get(net_id=net_id)
+            created = False
+        except self.model.DoesNotExist:
+            
             logger.info("creating user %r, %r" % (name, net_id))
-            user.email = net_id + '@dartmouth.edu'
+            user = self.model(net_id=net_id, 
+                              username=net_id, 
+                              email=net_id+'@dartmouth.edu')
             if name:
                 user.first_name = name
-                user.save()
+            user.save()
+            created = True
                 
         return (user, created)
     
