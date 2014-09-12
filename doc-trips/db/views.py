@@ -198,7 +198,6 @@ class DatabaseIndexView(DatabaseMixin, TemplateView):
     template_name = 'db/db_index.html'
 
 
-
 class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
     """ 
     Redirect to the trips database for the current year. 
@@ -210,10 +209,25 @@ class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
     pass
     
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django.forms import ModelForm
+
+class CalendarForm(ModelForm):
+    
+    class Meta:
+        model = Calendar
+
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Change calendar dates'))
+    
+
 class CalendarEditView(CalendarPermissionRequired, UpdateView):
     
     model = Calendar
     template_name = 'db/calendar.html'
+    
+    form_class = CalendarForm
 
     def get_object(self):
         

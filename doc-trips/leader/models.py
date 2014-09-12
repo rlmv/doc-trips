@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import models
+from django.db.models import ManyToManyField, CharField, ForeignKey, TextField, BooleanField
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
@@ -44,36 +45,43 @@ class LeaderApplication(DatabaseModel):
         (DISQUALIFIED, 'Disqualified'),
     )
 
+    # ---- administrative information. not seen by applicants ------
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
     assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, 
                                       blank=True, related_name='leaders')
-
-    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
+    
+    # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
     gender = models.CharField(max_length=255)
     hinman_box = models.CharField(max_length=255)
     phone = models.CharField(max_length=255)
     # TODO: do we need this?
-    offcampus_address = models.CharField(max_length=255, blank=True)  
+    offcampus_address = CharField(max_length=255, blank=True, 
+                                  verbose_name='Where can we reach you this summer?')
 
-    preferred_sections = models.ManyToManyField('trip.Section', 
-                                                related_name='preferred_leaders', 
-                                                blank=True)
-    available_sections = models.ManyToManyField('trip.Section', 
-                                                related_name='available_leaders', 
-                                                blank=True)
+    answer_from = CharField(max_length=255,
+                            verbose_name='Where are you from?')
+    answer_study = CharField(max_length=255,
+                             verbose_name='What do you like to study?')
+    answer_confidentiality = BooleanField(default=False)
+    answer_goodstanding = BooleanField(default=False)
 
-    preferred_triptypes = models.ManyToManyField('trip.TripType', 
-                                                 related_name='preferred_leaders',
-                                                 blank=True, 
-                                                 verbose_name='Preferred types of trips')
-    available_triptypes = models.ManyToManyField('trip.TripType',
-                                                 related_name='available_triptypes',
-                                                 blank=True, 
-                                                 verbose_name='Available types of trips')
     
-    # TODO: should application questiosn and answers be hardcoded or dynamic?
+
+    #  ------  trip and section information ------
+    preferred_sections = ManyToManyField('trip.Section', blank=True,
+                                         related_name='preferred_leaders')
+    available_sections = ManyToManyField('trip.Section', blank=True,
+                                         related_name='available_leaders')
+    preferred_triptypes = ManyToManyField('trip.TripType', blank=True,
+                                         related_name='preferred_leaders',
+                                         verbose_name='Preferred types of trips')
+    available_triptypes = ManyToManyField('trip.TripType', blank=True,
+                                          related_name='available_triptypes',
+                                          verbose_name='Available types of trips')
+    
 
     notes = models.CharField(max_length=255, blank=True) # not required in form
 
