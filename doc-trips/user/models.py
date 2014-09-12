@@ -34,13 +34,14 @@ class DartmouthUserManager(UserManager):
                 
         return (user, created)
 
-    def create_user(self, net_id_or_username, **kwargs):
+    def create_user(self, net_id_or_username, name=None, **kwargs):
         
         if not net_id_or_username:
             raise ValueError('DartmouthUser must have netid')
 
         password = kwargs.pop('password', None)
-        name = kwargs.pop('name', net_id_or_username)
+        if name is None:
+            name = net_id_or_username
 
         user = self.model(net_id=net_id_or_username, 
                           username=net_id_or_username, 
@@ -49,16 +50,12 @@ class DartmouthUserManager(UserManager):
         user.set_password(password)
         user.save()
         return user
-
-    def create_superuser(self, net_id_or_username, **kwargs):
         
-        user = self.create_user(net_id_or_username, **kwargs)
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
+    def create_superuser(self, **kwargs):
         
-        return user
-        
+        msg = ("create_superuser not implemented. "
+               "Use 'manage.py setsuperuser' instead.")
+        raise Exception(msg)
 
 
 class DartmouthUserModel(AbstractUser):
@@ -71,6 +68,6 @@ class DartmouthUserModel(AbstractUser):
     REQUIRED_FIELDS = ['name']
     
     def __str__(self):
-        return '{} ({})'.format(self.get_short_name(), self.net_id)
+        return '{} ({})'.format(self.name, self.net_id)
         
 

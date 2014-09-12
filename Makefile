@@ -27,7 +27,7 @@ migrate:
 	$(MANAGE) migrate
 
 superuser:
-	$(MANAGE) createsuperuser
+	$(MANAGE) setsuperuser d34898x
 
 test: 
 	$(MANAGE) test doc-trips

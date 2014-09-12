@@ -24,14 +24,6 @@ def parse_cas_success(tree):
     name = findtext('name')
     netid = findtext('netid')
     user, created = UserModel.objects.get_by_netid(netid, name)
-    
-    if created:
-        ## TODO: hacky - hack - the CAS package only allows admin 
-        ## login for staff, fix it.
-        user.is_staff = True
-        # TODO: this gives all users admin priveleges, change this
-        user.is_superuser = True; 
-        user.save()
 
     return user
 
