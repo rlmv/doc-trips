@@ -2,6 +2,7 @@
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
+from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from test.fixtures import TestCase
@@ -33,7 +34,7 @@ class LeaderApplicationManagerTestCase(TestCase):
         self.init_current_trips_year()
         self.init_previous_trips_year()
         
-        self.user = mommy.make('User')
+        self.user = mommy.make(get_user_model())
         self.user.save()
 
     def test_with_no_grades(self):

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class DartmouthUserManager(UserManager):
 
-    def get_by_netid(self, net_id, name=None):
+    def get_by_netid(self, net_id, name):
         """ 
         Return the user with net_id. 
 
@@ -27,24 +27,49 @@ class DartmouthUserManager(UserManager):
         except self.model.DoesNotExist:
             
             logger.info("creating user %r, %r" % (name, net_id))
-            user = self.model(net_id=net_id, 
-                              username=net_id, 
-                              email=net_id+'@dartmouth.edu')
-            if name:
-                user.first_name = name
-            user.save()
+            email = net_id + '@dartmouth.edu'
+            # sets 'unusable password':
+            user = self.create_user(net_id, name=name, email=email)
             created = True
                 
         return (user, created)
-    
+
+    def create_user(self, net_id_or_username, **kwargs):
+        
+        if not net_id_or_username:
+            raise ValueError('DartmouthUser must have netid')
+
+        password = kwargs.pop('password', None)
+        name = kwargs.pop('name', net_id_or_username)
+
+        user = self.model(net_id=net_id_or_username, 
+                          username=net_id_or_username, 
+                          name=name, **kwargs)
+
+        user.set_password(password)
+        user.save()
+        return user
+
+    def create_superuser(self, net_id_or_username, **kwargs):
+        
+        user = self.create_user(net_id_or_username, **kwargs)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
+        
+        return user
+        
+
 
 class DartmouthUserModel(AbstractUser):
 
     objects = DartmouthUserManager()
     net_id = models.CharField(max_length=40, unique=True)
+    name = models.CharField(max_length=255)
 
     USERNAME_FIELD = 'net_id'
-
+    REQUIRED_FIELDS = ['name']
+    
     def __str__(self):
         return '{} ({})'.format(self.get_short_name(), self.net_id)
         

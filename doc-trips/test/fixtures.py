@@ -41,7 +41,7 @@ class TestCase(TestCase):
         """
         username='user'
         password='password'
-        self.user = get_user_model().objects.create_user(username=username, 
+        self.user = get_user_model().objects.create_user(username, 
                                                          password=password)
         self.client.login(username=username, password=password)
 
@@ -52,8 +52,8 @@ class TestCase(TestCase):
         
         username='director'
         password='password'
-        self.director = get_user_model().objects.create_user(username=username,
-                                                              password=password)
+        self.director = get_user_model().objects.create_user(username, 
+                                                        password=password)
         self.director.groups.add(directors())
         self.director.save()
         
@@ -66,7 +66,7 @@ class TestCase(TestCase):
         
         username='grader'
         password='password'
-        self.grader = get_user_model().objects.create_user(username=username, 
+        self.grader = get_user_model().objects.create_user(username, 
                                                            password=password)
         self.grader.groups.add(graders())
         self.grader.save()

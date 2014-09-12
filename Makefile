@@ -26,6 +26,9 @@ migrations:
 migrate:
 	$(MANAGE) migrate
 
+superuser:
+	$(MANAGE) createsuperuser
+
 test: 
 	$(MANAGE) test doc-trips
 
