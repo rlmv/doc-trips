@@ -11,7 +11,6 @@ from django.contrib.auth.models import Group
 from permissions import directors, graders
 from permissions.models import SitePermission
 
-from user import get_or_create_user_by_netid
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +104,9 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             new_data = form.cleaned_data[new_data_form_key]
 
             if new_data:
-                new_member, _ = get_or_create_user_by_netid(new_data['net_id'],
-                                                             new_data['name_with_year'])
+                UserModel = get_user_model()
+                new_member, _ = UserModel.objects.get_by_netid(new_data['net_id'],
+                                                               new_data['name_with_year'])
                 if new_member not in members_list:
                     members_list = list(members_list)
                     members_list.append(new_member)
