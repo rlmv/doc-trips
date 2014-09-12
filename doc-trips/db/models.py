@@ -1,4 +1,3 @@
-from datetime import datetime
 
 from django.db import models
 from django.conf import settings
@@ -75,32 +74,27 @@ class CalendarManager(models.Manager):
 
     def calendar(self):
         
-        try:
-            return self.get(id=1)
-        except self.model.DoesNotExist:
-            return self.model(leader_application_open=datetime.min, 
-                              leader_application_closed=datetime.min,
-                              leader_assignment_posted=datetime.min,
-                              trippee_registration_open=datetime.min,
-                              trippee_registration_closed=datetime.min,
-                              trippee_assignment_posted=datetime.min,
-                              migration_date=datetime.min)
-            
+        calendar, created = self.get_or_create(id=1)
+        return calendar
+
+from django.utils import timezone
 
 class Calendar(models.Model):
-
-    leader_application_open = models.DateTimeField()
-    leader_application_closed = models.DateTimeField()
+    """ 
+    Singleton model for import dates
+    """
+    leader_application_open = models.DateTimeField(default=timezone.now)
+    leader_application_closed = models.DateTimeField(default=timezone.now)
 
     # TODO: ??? are we going to have leader recs?
     # leader_recommendation_due = models.DateTimeField()
 
-    leader_assignment_posted = models.DateTimeField()
-    trippee_registration_open = models.DateTimeField()
-    trippee_registration_closed = models.DateTimeField()
-    trippee_assignment_posted = models.DateTimeField()
+    leader_assignment_posted = models.DateTimeField(default=timezone.now)
+    trippee_registration_open = models.DateTimeField(default=timezone.now)
+    trippee_registration_closed = models.DateTimeField(default=timezone.now)
+    trippee_assignment_posted = models.DateTimeField(default=timezone.now)
 
-    migration_date = models.DateTimeField()
+    migration_date = models.DateTimeField(default=timezone.now)
 
     objects = CalendarManager()
 
@@ -114,7 +108,7 @@ class Calendar(models.Model):
 
     def is_leader_application_available(self):
 
-        now = datetime.now()
+        now = timezone.now()
         return (self.leader_application_open < now and
                 now < self.leader_application_closed)
         

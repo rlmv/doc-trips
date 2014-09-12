@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.conf.urls import url
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.forms.models import modelform_factory
@@ -228,6 +228,7 @@ class CalendarEditView(CalendarPermissionRequired, UpdateView):
     template_name = 'db/calendar.html'
     
     form_class = CalendarForm
+    success_url = reverse_lazy('db:calendar')
 
     def get_object(self):
         
