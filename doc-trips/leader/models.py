@@ -80,15 +80,14 @@ class LeaderApplication(DatabaseModel):
     def clean(self):
         """ Make sure that leaders can only be assigned to trips if status==ACCEPTED.
         
-        This is called by django to validate ModelForms and the like. See
-        https://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.clean
+        This is called by django to validate ModelForms and the like.
         """
         if self.status != self.ACCEPTED and self.assigned_trip:
             raise ValidationError("A '{}' LeaderApplication cannot be assigned to a trip. "
                                   "Change status to 'Accepted' or remove trip assignment.".format(self.get_status_display()))
 
     def __str__(self):
-        return self.user.username
+        return str(self.user)
         
 
 def validate_grade(grade):
