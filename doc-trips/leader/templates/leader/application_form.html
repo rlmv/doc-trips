@@ -13,7 +13,7 @@
 
 <p>Not <b>{{ user }}</b>? <a href="{% url 'user:logout' %}">logout</a></p>
 
-<p>This page will be available until ___leader_application_closed_date___ </p>
+<p>The application will be available until {{ timetable.leader_application_closed }}</p>
 
 {% crispy form %}
 

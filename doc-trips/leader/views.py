@@ -52,6 +52,11 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
         else:
             return ['leader/application_not_available.html']
 
+    def get_context_data(self, **kwargs):
+        context = super(LeaderApply, self).get_context_data(**kwargs)
+        context['timetable'] = Timetable.objects.timetable()
+        return context
+
     def get_object(self):
         """ 
         Return the application for this user.
