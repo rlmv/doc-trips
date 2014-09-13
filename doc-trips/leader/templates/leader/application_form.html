@@ -11,9 +11,10 @@
 <h2> Edit your application </h2>
 {% endif %}
 
+<p>Not <b>{{ user }}</b>? <a href="{% url 'user:logout' %}">logout</a></p>
+
 <p>This page will be available until ___leader_application_closed_date___ </p>
 
 {% crispy form %}
-
 
 {% endblock content %}

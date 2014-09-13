@@ -4,7 +4,7 @@ from django.conf.urls import patterns, url, include
 
 from trip.urls import * # TODO
 from leader.urls import *
-from db.views import DatabaseIndexView, CalendarEditView
+from db.views import DatabaseIndexView
 
 database_urlpatterns = patterns('', 
     url(r'^$', DatabaseIndexView.as_view(), name='db_index'),
@@ -19,7 +19,8 @@ database_urlpatterns = patterns('',
 urlpatterns = patterns('',
     # capture the 'trips_year' parameter which is passed to all db views           
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
-    url(r'^calendar/', CalendarEditView.as_view(), name='calendar'),                  )                       
+)
+
                                   
    
 def _reverse_db_url(db_object, urlpattern_suffix):

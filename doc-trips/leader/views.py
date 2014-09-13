@@ -16,8 +16,9 @@ from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
 from leader.models import LeaderApplication, LeaderGrade
 from db.views import *
-from db.models import TripsYear, Calendar
+from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
+from timetable.models import Timetable
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
         Only display the application form if the application is open.
 
         """
-        if Calendar.objects.calendar().is_leader_application_available():
+        if Timetable.objects.timetable().is_leader_application_available():
             return ['leader/application_form.html']
         else:
             return ['leader/application_not_available.html']
@@ -70,6 +71,7 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
                                             exclude=self.exclude)
         
         from leader.forms import LeaderApplicationFormHelper
+        from crispy_forms.layout import Submit
         form.helper = LeaderApplicationFormHelper()
         if self.object:
             submit_text = 'Update'

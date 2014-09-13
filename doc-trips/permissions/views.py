@@ -39,11 +39,11 @@ class GraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = True
 
 
-class CalendarPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     """ Access for users allowed to edit the calendar """
     
     redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_edit_calendar'
+    permission_required = 'permissions.can_edit_timetable'
     raise_exception = True
 
 

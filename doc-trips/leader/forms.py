@@ -1,6 +1,6 @@
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField, Row, Column
 from crispy_forms.bootstrap import Alert
 
 
@@ -23,19 +23,22 @@ class LeaderApplicationLayout(Layout):
             Fieldset(
                 'General information', 
                 Alert(content='Answers in this section will NOT be used in the grading process'),
-                'class_year',
-                'gender', 
-                'hinman_box', 
-                'phone', 
+                Div(
+                    Div('class_year', css_class='col-sm-2'),
+                    Div('gender', css_class='col-sm-2'),
+                    Div('hinman_box', css_class='col-sm-2'),
+                    Div('tshirt_size', css_class='col-sm-2'),
+                    Div('phone', css_class='col-sm-2'),
+                    css_class='row',
+                ),
                 'from_where', 
                 'what_do_you_like_to_study',
-                'tshirt_size', 
                 Fieldset(
                     'Dietary restrictions', 
                     'dietary_restrictions', 
                     'allergen_information', 
-                    'trippee_confidentiality', 
                 ),
+                'trippee_confidentiality', 
                 'in_goodstanding_with_college',
             ), 
             Fieldset(

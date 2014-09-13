@@ -10,9 +10,9 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
 
-from db.models import DatabaseModel, Calendar
+from db.models import DatabaseModel
 from db.forms import tripsyear_modelform_factory
-from permissions.views import DatabasePermissionRequired, CalendarPermissionRequired
+from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
@@ -209,28 +209,3 @@ class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
     pass
     
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-from django.forms import ModelForm
-
-class CalendarForm(ModelForm):
-    
-    class Meta:
-        model = Calendar
-
-    helper = FormHelper()
-    helper.add_input(Submit('submit', 'Change calendar dates'))
-    
-
-class CalendarEditView(CalendarPermissionRequired, UpdateView):
-    
-    model = Calendar
-    template_name = 'db/calendar.html'
-    
-    form_class = CalendarForm
-    success_url = reverse_lazy('db:calendar')
-
-    def get_object(self):
-        
-        return Calendar.objects.calendar()
-        

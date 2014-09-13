@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'leader',
     'trip',
     'permissions',
+    'timetable',
     'webauth', 
 )
 

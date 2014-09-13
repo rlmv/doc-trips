@@ -53,12 +53,12 @@ class LeaderApplication(DatabaseModel):
     
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
-    tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
-    gender = models.CharField(max_length=255)
-    hinman_box = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255)
+    gender = models.CharField(max_length=25)
+    hinman_box = models.CharField(max_length=10)
+    phone = models.CharField(max_length=255, verbose_name='Phone number')
     from_where = CharField(max_length=255, verbose_name='Where are you from?')
     what_do_you_like_to_study = CharField(max_length=255, verbose_name='What do you like to study?')
+    tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
     dietary_restrictions = TextField(blank=True, verbose_name="Do you have any dietary restrictions or allergies that we should know about? (We use this information for packing food for Trips and it will not affect your candidacy.)")
     allergen_information = TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I turn purple and squishy if I eat a grape!)?")

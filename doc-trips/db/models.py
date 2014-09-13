@@ -69,49 +69,6 @@ class DatabaseModel(models.Model):
     def get_app_name(cls):
         """ Return the app name of cls. """
         return cls._meta.app_label
-
-class CalendarManager(models.Manager):
-
-    def calendar(self):
-        
-        calendar, created = self.get_or_create(id=1)
-        return calendar
-
-from django.utils import timezone
-
-class Calendar(models.Model):
-    """ 
-    Singleton model for import dates
-    """
-    leader_application_open = models.DateTimeField(default=timezone.now)
-    leader_application_closed = models.DateTimeField(default=timezone.now)
-
-    # TODO: ??? are we going to have leader recs?
-    # leader_recommendation_due = models.DateTimeField()
-
-    leader_assignment_posted = models.DateTimeField(default=timezone.now)
-    trippee_registration_open = models.DateTimeField(default=timezone.now)
-    trippee_registration_closed = models.DateTimeField(default=timezone.now)
-    trippee_assignment_posted = models.DateTimeField(default=timezone.now)
-
-    migration_date = models.DateTimeField(default=timezone.now)
-
-    objects = CalendarManager()
-
-    def save(self, *args, **kwargs):
-        self.id = 1
-        super(Calendar, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        pass
-
-
-    def is_leader_application_available(self):
-
-        now = timezone.now()
-        return (self.leader_application_open < now and
-                now < self.leader_application_closed)
-        
          
 
 class Cost(DatabaseModel):
