@@ -72,8 +72,15 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
 
     def get_form_class(self):
         """ Get form, restricting section choices to those of current TripsYear """
+
+        widgets = {
+            'preferred_triptypes': forms.CheckboxSelectMultiple,
+            'available_triptypes': forms.CheckboxSelectMultiple, 
+            'preferred_sections': forms.CheckboxSelectMultiple,
+            'available_sections': forms.CheckboxSelectMultiple
+        }
         form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
-                                            exclude=self.exclude)
+                                            exclude=self.exclude, widgets=widgets)
         
         from leader.forms import LeaderApplicationFormHelper
         from crispy_forms.layout import Submit
