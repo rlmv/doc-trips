@@ -60,7 +60,7 @@ class LeaderApplication(DatabaseModel):
     what_do_you_like_to_study = CharField(max_length=255, verbose_name='What do you like to study?')
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
-    dietary_restrictions = TextField(blank=True, verbose_name="Do you have any dietary restrictions or allergies that we should know about? (We use this information for packing food for Trips and it will not affect your candidacy.)")
+    dietary_restrictions = TextField(blank=True, verbose_name="Do you have any dietary restrictions or allergies that we should know about?")
     allergen_information = TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I turn purple and squishy if I eat a grape!)?")
 
     trippee_confidentiality = BooleanField(default=False, verbose_name="If selected to be a DOC Trips Leader, I understand that I will be given access to my Trippees' confidential medical information for safety purposes. I pledge to maintain the confidentiality of this information, except as is required by medical or legal concerns")
