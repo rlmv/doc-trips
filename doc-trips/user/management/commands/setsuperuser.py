@@ -24,7 +24,6 @@ class Command(BaseCommand):
                 self.stderr.write(err % net_id)
             else:
                 user.is_superuser = True
-                user.is_staff = True
                 user.save()
                 msg = "User '%s' promoted to superuser"
                 self.stdout.write(msg % user)

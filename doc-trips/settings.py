@@ -73,7 +73,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # TODO: do we need this with CAS?
+#    'django.contrib.auth.backends.ModelBackend',  # TODO: do we need this with CAS?
     'webauth.backends.WebAuthBackend',
 )
 

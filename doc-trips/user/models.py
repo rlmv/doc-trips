@@ -4,12 +4,12 @@ from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
 
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 
 logger = logging.getLogger(__name__)
 
 
-class DartmouthUserManager(UserManager):
+class DartmouthUserManager(BaseUserManager):
 
     def get_by_netid(self, net_id, name):
         """ 
@@ -25,30 +25,19 @@ class DartmouthUserManager(UserManager):
             user = self.get(net_id=net_id)
             created = False
         except self.model.DoesNotExist:
-            
             logger.info("creating user %r, %r" % (name, net_id))
-            email = net_id + '@dartmouth.edu'
-            # sets 'unusable password':
-            user = self.create_user(net_id, name=name, email=email)
+            user = self.create_user(net_id, name=name)
             created = True
                 
         return (user, created)
 
-    def create_user(self, net_id_or_username, name=None, **kwargs):
-        
-        if not net_id_or_username:
-            raise ValueError('DartmouthUser must have netid')
+    def create_user(self, net_id, email=None, name=None):
 
-        password = kwargs.pop('password', None)
-        if name is None:
-            name = net_id_or_username
+        #email = ?
+        email = net_id + '@dartmouth.edu'
 
-        user = self.model(net_id=net_id_or_username, 
-                          username=net_id_or_username, 
-                          name=name, **kwargs)
+        user = self.create(net_id=net_id, email=email, name=name)
 
-        user.set_password(password)
-        user.save()
         return user
         
     def create_superuser(self, **kwargs):
@@ -58,14 +47,33 @@ class DartmouthUserManager(UserManager):
         raise Exception(msg)
 
 
-class DartmouthUser(AbstractUser):
+class DartmouthUser(PermissionsMixin):
 
     objects = DartmouthUserManager()
+
     net_id = models.CharField(max_length=40, unique=True)
+    email = models.EmailField('email address')
     name = models.CharField(max_length=255)
 
+    last_login = models.DateTimeField('last login', blank=True, null=True)
+
+    # used by Django Admin
+    is_active = models.BooleanField('active', default=True)
+    @property
+    def is_staff(self):
+        return self.is_superuser
+
     USERNAME_FIELD = 'net_id'
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['email', 'name']
+
+    def get_short_name(self):
+        return self.name
+
+    def get_full_name(self):
+        return self.name
+
+    def is_authenticated(self):
+        return True
     
     def __str__(self):
         return '{} ({})'.format(self.name, self.net_id)
