@@ -41,8 +41,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # third party
-#    'django_cas',
     'crispy_forms',
+    #'django_pdb',
 
     # custom
     'db',

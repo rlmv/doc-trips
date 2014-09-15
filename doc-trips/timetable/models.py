@@ -15,7 +15,7 @@ class TimetableManager(models.Manager):
 
 class Timetable(models.Model):
     """ 
-    Singleton model for import dates
+    Singleton model for important dates
     """
     leader_application_open = models.DateTimeField(default=timezone.now)
     leader_application_closed = models.DateTimeField(default=timezone.now)

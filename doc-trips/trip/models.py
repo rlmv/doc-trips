@@ -143,7 +143,8 @@ class TripType(DatabaseModel):
     name = models.CharField(max_length=255)
     leader_description = models.TextField()
     trippee_description = models.TextField()
-    packing_list = models.TextField() # TODO: this should be inherited, somehow.
+    packing_list = models.TextField(blank=True) 
+    # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
     def __str__(self):

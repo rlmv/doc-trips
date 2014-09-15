@@ -16,6 +16,19 @@ from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
+class CrispyFormMixin():
+    """ Transform the form into a crispy form. """
+
+    def get_form_class(self):
+        
+        from crispy_forms.helper import FormHelper
+        from crispy_forms.layout import Submit
+        
+        form_class = super(CrispyFormMixin, self).get_form_class()
+        form_class.helper = FormHelper()
+        form_class.helper.add_input(Submit('submit', 'Submit'))
+
+        return form_class
 
 class DatabaseMixin(DatabasePermissionRequired):
     """ 
@@ -101,7 +114,7 @@ class DatabaseMixin(DatabasePermissionRequired):
         raise ImproperlyConfigured(msg.format(cls))
 
 
-class DatabaseListView(DatabaseMixin, ListView):
+class DatabaseListView(CrispyFormMixin, DatabaseMixin, ListView):
 
     def get_template_names(self):
         """ Get the template for the ListView """
@@ -121,7 +134,7 @@ class DatabaseListView(DatabaseMixin, ListView):
         return url(r'^$', cls.as_view(), name=name)
     
 
-class DatabaseCreateView(DatabaseMixin, CreateView):
+class DatabaseCreateView(CrispyFormMixin, DatabaseMixin, CreateView):
     template_name = 'db/create.html'
 
     @classmethod
@@ -148,7 +161,7 @@ class DatabaseCreateView(DatabaseMixin, CreateView):
         return get_update_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseMixin, UpdateView):
+class DatabaseUpdateView(CrispyFormMixin, DatabaseMixin, UpdateView):
     template_name ='db/update.html'
 
     @classmethod
@@ -162,7 +175,7 @@ class DatabaseUpdateView(DatabaseMixin, UpdateView):
         return get_update_url(self.object)
     
 
-class DatabaseDeleteView(DatabaseMixin, DeleteView):
+class DatabaseDeleteView(CrispyFormMixin, DatabaseMixin, DeleteView):
     template_name = 'db/delete.html'
 
     success_url_pattern = None
