@@ -58,7 +58,9 @@ class DartmouthUser(PermissionsMixin):
     last_login = models.DateTimeField('last login', blank=True, null=True)
 
     # used by Django Admin
-    is_active = models.BooleanField('active', default=True)
+    @property 
+    def is_active(self):
+        return True 
     @property
     def is_staff(self):
         return self.is_superuser
