@@ -1,5 +1,11 @@
 
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3> Are you sure you want to delete {{ object.get_model_name }} {{ object }}? </h3>
 <form action="" method="post">{% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Delete">
+  <input class="btn btn-danger" type="submit" value="Delete">
 </form>
+
+{% endblock %}

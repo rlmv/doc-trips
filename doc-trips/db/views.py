@@ -9,6 +9,8 @@ from django.forms.models import modelform_factory
 from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
 from db.models import DatabaseModel
 from db.forms import tripsyear_modelform_factory
@@ -16,19 +18,7 @@ from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
-class CrispyFormMixin():
-    """ Transform the form into a crispy form. """
 
-    def get_form_class(self):
-        
-        from crispy_forms.helper import FormHelper
-        from crispy_forms.layout import Submit
-        
-        form_class = super(CrispyFormMixin, self).get_form_class()
-        form_class.helper = FormHelper()
-        form_class.helper.add_input(Submit('submit', 'Submit'))
-
-        return form_class
 
 class DatabaseMixin(DatabasePermissionRequired):
     """ 
@@ -80,7 +70,7 @@ class DatabaseMixin(DatabasePermissionRequired):
                                                fields=self.fields)
         
         msg = "'%s' must either define 'form_class' or 'model' " \
-            "or CAREFULLY override 'get_form_class()'"
+            "Or CAREFULLY override 'get_form_class()'"
         raise ImproperlyConfigured(msg % self.__class__.__name__)
 
     def form_valid(self, form):
@@ -114,7 +104,7 @@ class DatabaseMixin(DatabasePermissionRequired):
         raise ImproperlyConfigured(msg.format(cls))
 
 
-class DatabaseListView(CrispyFormMixin, DatabaseMixin, ListView):
+class DatabaseListView(DatabaseMixin, ListView):
 
     def get_template_names(self):
         """ Get the template for the ListView """
@@ -134,7 +124,7 @@ class DatabaseListView(CrispyFormMixin, DatabaseMixin, ListView):
         return url(r'^$', cls.as_view(), name=name)
     
 
-class DatabaseCreateView(CrispyFormMixin, DatabaseMixin, CreateView):
+class DatabaseCreateView(DatabaseMixin, CreateView):
     template_name = 'db/create.html'
 
     @classmethod
@@ -155,13 +145,21 @@ class DatabaseCreateView(CrispyFormMixin, DatabaseMixin, CreateView):
             return self.form_valid(form)
         return self.form_invalid(form)
 
+    def get_form(self, **kwargs):
+
+        form = super(DatabaseCreateView, self).get_form(**kwargs)
+        form.helper = FormHelper(form)
+        form.helper.add_input(Submit('submit', 'Create'))
+        
+        return form
+
     def get_success_url(self):
         """ TODO: for now... """
         from db.urls import get_update_url
         return get_update_url(self.object)
 
 
-class DatabaseUpdateView(CrispyFormMixin, DatabaseMixin, UpdateView):
+class DatabaseUpdateView(DatabaseMixin, UpdateView):
     template_name ='db/update.html'
 
     @classmethod
@@ -173,9 +171,24 @@ class DatabaseUpdateView(CrispyFormMixin, DatabaseMixin, UpdateView):
         """ Redirect to same update page for now. """
         from db.urls import get_update_url
         return get_update_url(self.object)
+
+    def get_form(self, **kwargs):
+        """ Add Submit and delete buttons to the form. """
+
+        from db.urls import get_delete_url
+        form = super(DatabaseUpdateView, self).get_form(**kwargs)
+        form.helper = FormHelper(form)
+        form.helper.layout.append(
+            ButtonHolder(
+                Submit('submit', 'Update'),
+                HTML('<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
+                    get_delete_url(self.object)))
+            )
+        )
+        return form 
     
 
-class DatabaseDeleteView(CrispyFormMixin, DatabaseMixin, DeleteView):
+class DatabaseDeleteView(DatabaseMixin, DeleteView):
     template_name = 'db/delete.html'
 
     success_url_pattern = None

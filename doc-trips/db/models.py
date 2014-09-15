@@ -66,6 +66,11 @@ class DatabaseModel(models.Model):
         return cls._meta.verbose_name.replace(' ', '')
 
     @classmethod
+    def get_model_name(cls):
+        """ Return the name of the model. """
+        return cls.__name__
+
+    @classmethod
     def get_app_name(cls):
         """ Return the app name of cls. """
         return cls._meta.app_label
