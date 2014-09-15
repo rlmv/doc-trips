@@ -44,10 +44,14 @@ class LeaderApplicationLayout(Layout):
             Fieldset(
                 'Trip availibility',
                 Alert(content='Answers in this section will NOT be used in the grading process'),
-                'preferred_sections',
-                'available_sections',
-                'preferred_triptypes',
-                'available_triptypes',
+                Row(
+                    Div('preferred_sections', css_class='col-sm-1'),
+                    Div('available_sections', css_class='col-sm-1'),
+                ),
+                Row(
+                    Div('preferred_triptypes', css_class='col-sm-1'),
+                    Div('available_triptypes', css_class='col-sm-1'),
+                ),
                 'trip_preference_comments',
             ),
             Fieldset(
