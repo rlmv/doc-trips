@@ -124,6 +124,21 @@ class DatabaseMixin(DatabasePermissionRequired):
         msg = 'Not implemented. Implement urlpattern() method on {}'
         raise ImproperlyConfigured(msg.format(cls))
 
+    def get_context_data(self, **kwargs):
+        """
+        Return context data.
+
+        Adds the 'model' of the modelview, and  the trips_year 
+        in this url path, eg. /db/2014/trips -> 2014
+
+        This is useful for adding 'create' links to templates.
+        """
+        
+        context = super(DatabaseMixin, self).get_context_data(**kwargs)
+        context['trips_year'] = self.kwargs['trips_year']
+        context['model'] = self.model
+        return context
+
 
 class DatabaseListView(DatabaseMixin, ListView):
 

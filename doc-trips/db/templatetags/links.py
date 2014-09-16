@@ -3,7 +3,8 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
-from db.urls import get_update_url, get_delete_url
+from db.models import TripsYear
+from db.urls import get_update_url, get_delete_url, get_create_url
 
 register = template.Library()
 
@@ -28,6 +29,15 @@ def delete_link(db_object, text=None):
         text = 'delete'
     return _make_link(get_delete_url(db_object), text)
 
+
+@register.simple_tag
+def create_url(model, trips_year_str):
+    """ Give the create url for the given model and trips_year """
+
+    trips_year = TripsYear.objects.get(pk=trips_year_str)
+
+    return get_create_url(model, trips_year)
+    
 
 @register.filter
 def absolute_link(db_object, text=None):
