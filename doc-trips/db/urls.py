@@ -28,7 +28,6 @@ def _reverse_db_url(db_object, urlpattern_suffix):
     
     name = db_object.get_reference_name()
     urlpattern = '{}:{}_{}'.format('db', name, urlpattern_suffix)
-    print(urlpattern)
     kwargs = {'trips_year': db_object.trips_year_id,
               'pk': db_object.pk}
               
