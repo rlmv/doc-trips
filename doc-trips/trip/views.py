@@ -48,7 +48,7 @@ class ScheduledTripCreateView(DatabaseCreateView):
         if 'section' in GET and 'template' in GET:
             data = {'section': GET['section'], 'template': GET['template']}
         
-        return cls(data=data, files=files, **kwargs)
+        return super(ScheduledTripCreateView, self).get_form(data=data, files=files, **kwargs)
         
 
 class ScheduledTripDeleteView(DatabaseDeleteView):

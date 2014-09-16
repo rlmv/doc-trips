@@ -19,6 +19,8 @@ from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
+from leader.forms import LeaderApplicationFormHelper
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +36,21 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
+    def get_form_helper(self, form):
+        """ 
+        Add submit button to form. 
 
-class LeaderApply(LoginRequiredMixin, UpdateView):
+        Different from the usual db/update.html form because
+        LeaderApplications cannot be deleted. 
+        """
+
+        helper = LeaderApplicationFormHelper()
+        helper.add_input(Submit('submit', 'Update'))
+        
+        return helper
+
+
+class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     model = LeaderApplication
     success_url = reverse_lazy('leader:apply')
@@ -81,16 +96,17 @@ class LeaderApply(LoginRequiredMixin, UpdateView):
         }
         form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
                                             exclude=self.exclude, widgets=widgets)
+        return form
         
-        from leader.forms import LeaderApplicationFormHelper
+    def get_form_helper(self, form):
         from crispy_forms.layout import Submit
-        form.helper = LeaderApplicationFormHelper()
+        helper = LeaderApplicationFormHelper()
         if self.object:
             submit_text = 'Update'
         else:
             submit_text = 'Submit'
-        form.helper.add_input(Submit('submit', submit_text))
-        return form
+        helper.add_input(Submit('submit', submit_text))
+        return helper
 
     def form_valid(self, form):
         """ Attach creating user and current trips_year to Application. """

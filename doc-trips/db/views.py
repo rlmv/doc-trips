@@ -18,6 +18,27 @@ from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
+class CrispyFormMixin():
+    """
+    Class view mixin which adds support for crispy_forms.
+
+    Requires the implementation of get_form_helper.
+
+    TODO: needs tests.
+    """
+    
+    def get_form_helper(self, form):
+        """ Return a configured crispy_form_helper. """
+
+        msg = '%s must implement get_form_helper'
+        raise ImproperlyConfigured(msg % self.__class__.__name__)
+
+    def get_form(self, **kwargs):
+        """ Attach a crispy form helper to the form. """
+        form = super(CrispyFormMixin, self).get_form(**kwargs)
+        form.helper = self.get_form_helper(form)
+
+        return form
 
 
 class DatabaseMixin(DatabasePermissionRequired):
@@ -124,7 +145,7 @@ class DatabaseListView(DatabaseMixin, ListView):
         return url(r'^$', cls.as_view(), name=name)
     
 
-class DatabaseCreateView(DatabaseMixin, CreateView):
+class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
     template_name = 'db/create.html'
 
     @classmethod
@@ -145,13 +166,12 @@ class DatabaseCreateView(DatabaseMixin, CreateView):
             return self.form_valid(form)
         return self.form_invalid(form)
 
-    def get_form(self, **kwargs):
-
-        form = super(DatabaseCreateView, self).get_form(**kwargs)
-        form.helper = FormHelper(form)
-        form.helper.add_input(Submit('submit', 'Create'))
+    def get_form_helper(self, form):
+        """ Add 'Create' button to crispy form. """
+        helper = FormHelper(form)
+        helper.add_input(Submit('submit', 'Create'))
         
-        return form
+        return helper
 
     def get_success_url(self):
         """ TODO: for now... """
@@ -159,7 +179,7 @@ class DatabaseCreateView(DatabaseMixin, CreateView):
         return get_update_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseMixin, UpdateView):
+class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
     template_name ='db/update.html'
 
     @classmethod
@@ -172,20 +192,19 @@ class DatabaseUpdateView(DatabaseMixin, UpdateView):
         from db.urls import get_update_url
         return get_update_url(self.object)
 
-    def get_form(self, **kwargs):
+    def get_form_helper(self, form):
         """ Add Submit and delete buttons to the form. """
 
         from db.urls import get_delete_url
-        form = super(DatabaseUpdateView, self).get_form(**kwargs)
-        form.helper = FormHelper(form)
-        form.helper.layout.append(
+        helper = FormHelper(form)
+        helper.layout.append(
             ButtonHolder(
                 Submit('submit', 'Update'),
                 HTML('<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
                     get_delete_url(self.object)))
             )
         )
-        return form 
+        return helper
     
 
 class DatabaseDeleteView(DatabaseMixin, DeleteView):
