@@ -1,7 +1,9 @@
-
+{% extends "base.html" %}
 {% load links %}
 
-<table>
+{% block content %}
+
+<table class="table">
   <tr>
     <th>Name</th>
     <th>Leaders Arrive</th>
@@ -28,3 +30,5 @@
   </tr>
   {% endfor %}
 </table
+
+{% endblock %}

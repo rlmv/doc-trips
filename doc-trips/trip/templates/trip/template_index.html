@@ -1,8 +1,9 @@
-
-
+{% extends "base.html" %}
 {% load links %}
 
-<table>
+{% block content %}
+
+<table class="table">
   <tr>
     <th> Template </th>
     <th> Description </th>
@@ -24,3 +25,5 @@
   <tr>
   {% endfor %}
 </table>
+
+{% endblock %}
