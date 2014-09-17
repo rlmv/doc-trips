@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.forms.models import modelform_factory
 from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
-from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView
+from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView, DetailView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
@@ -30,8 +30,7 @@ class CrispyFormMixin():
     def get_form_helper(self, form):
         """ Return a configured crispy_form_helper. """
 
-        msg = '%s must implement get_form_helper'
-        raise ImproperlyConfigured(msg % self.__class__.__name__)
+        return FormHelper(form)
 
     def get_form(self, **kwargs):
         """ Attach a crispy form helper to the form. """
@@ -246,6 +245,45 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
     def urlpattern(cls):
         name = '{}_delete'.format(cls.model.get_reference_name())
         return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
+
+
+class DatabaseDetailView(DatabaseMixin, CrispyFormMixin, DetailView):
+
+    template_name = 'db/detail.html'
+    
+    def get_context_data(self, **kwargs):
+        """
+        Add a 'disabled' crispy form to the context. 
+
+        This 'form' is identical to the form used by the update and
+        detail views, but cannot be edited.
+        """
+        
+        context = super(DatabaseDetailView, self).get_context_data(**kwargs)
+        form = self.get_form(instance=self.object)
+        context['disabled_form'] = form
+    
+        return context
+
+    def get_form(self, **kwargs):
+        """
+        Disable all form fields. 
+
+        This becomes a readonly form.
+        """
+
+        form = super(DatabaseDetailView, self).get_form(**kwargs)
+
+        for field in form.fields.values():
+            field.widget.attrs['disabled'] = 'disabled'
+            field.widget.attrs['cursor'] = 'default'
+        
+        return form
+
+    @classmethod
+    def urlpattern(cls):
+        name = '{}_detail'.format(cls.model.get_reference_name())
+        return url(r'^(?P<pk>[0-9]+)$', cls.as_view(), name=name)
         
 
 class DatabaseIndexView(DatabaseMixin, TemplateView):

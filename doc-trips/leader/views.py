@@ -49,6 +49,9 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         
         return helper
 
+class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
+    model = LeaderApplication
+
 
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
@@ -99,12 +102,14 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         return form
         
     def get_form_helper(self, form):
-        from crispy_forms.layout import Submit
+        from crispy_forms.layout import Submit, Field
         helper = LeaderApplicationFormHelper()
         if self.object:
             submit_text = 'Update'
         else:
             submit_text = 'Submit'
+        from crispy_forms.bootstrap import UneditableField
+        helper.filter(greedy=True).update_attributes(disabled="disabled")
         helper.add_input(Submit('submit', submit_text))
         return helper
 

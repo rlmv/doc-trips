@@ -31,14 +31,14 @@ class LeaderApplicationLayout(Layout):
                     Div('phone', css_class='col-sm-2'),
                     css_class='row',
                 ),
-                'from_where', 
+                'from_where',
                 'what_do_you_like_to_study',
                 Fieldset(
                     'Dietary restrictions', 
-                    'dietary_restrictions', 
+                    'dietary_restrictions',
                     'allergen_information', 
                 ),
-                'trippee_confidentiality', 
+                'trippee_confidentiality',
                 'in_goodstanding_with_college',
             ), 
             Fieldset(

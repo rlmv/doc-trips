@@ -46,5 +46,5 @@ def tripsyear_modelform_factory(model, trips_year, *args, **kwargs):
     callback = make_tripsyear_formfield_callback(trips_year)
     return modelform_factory(model, formfield_callback=callback, *args, **kwargs)
                              
-    
+
 
