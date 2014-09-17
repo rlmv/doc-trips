@@ -150,7 +150,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'WARNING',
+            'level': 'DEBUG',
         },
         '': { # all other namespaces
             'handlers': ['console'],

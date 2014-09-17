@@ -44,13 +44,15 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         LeaderApplications cannot be deleted. 
         """
 
-        helper = LeaderApplicationFormHelper()
+        helper = LeaderApplicationFormHelper(form)
         helper.add_input(Submit('submit', 'Update'))
         
         return helper
 
+
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
+#    template_name = 'leader/db_application_detail.html'
 
 
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
@@ -103,13 +105,11 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         
     def get_form_helper(self, form):
         from crispy_forms.layout import Submit, Field
-        helper = LeaderApplicationFormHelper()
+        helper = LeaderApplicationFormHelper(form)
         if self.object:
             submit_text = 'Update'
         else:
             submit_text = 'Submit'
-        from crispy_forms.bootstrap import UneditableField
-        helper.filter(greedy=True).update_attributes(disabled="disabled")
         helper.add_input(Submit('submit', submit_text))
         return helper
 
