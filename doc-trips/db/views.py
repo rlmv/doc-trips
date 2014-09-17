@@ -247,39 +247,10 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
         return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
 
 
-class DatabaseDetailView(DatabaseMixin, CrispyFormMixin, DetailView):
+class DatabaseDetailView(DatabaseMixin, DetailView):
 
     template_name = 'db/detail.html'
     
-    def get_context_data(self, **kwargs):
-        """
-        Add a 'disabled' crispy form to the context. 
-
-        This 'form' is identical to the form used by the update and
-        detail views, but cannot be edited.
-        """
-        
-        context = super(DatabaseDetailView, self).get_context_data(**kwargs)
-        form = self.get_form(instance=self.object)
-        context['disabled_form'] = form
-    
-        return context
-
-    def get_form(self, **kwargs):
-        """
-        Disable all form fields. 
-
-        This becomes a readonly form.
-        """
-
-        form = super(DatabaseDetailView, self).get_form(**kwargs)
-
-        for field in form.fields.values():
-            field.widget.attrs['disabled'] = 'disabled'
-            field.widget.attrs['cursor'] = 'default'
-        
-        return form
-
     @classmethod
     def urlpattern(cls):
         name = '{}_detail'.format(cls.model.get_reference_name())

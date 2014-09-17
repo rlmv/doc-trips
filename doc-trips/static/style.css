@@ -1,6 +1,0 @@
-
-/* don't show (x) on DetailView mouseovers */
-.form-control[disabled] {
-    cursor: default !important;
-}
-    
