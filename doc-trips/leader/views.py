@@ -11,6 +11,8 @@ from django import forms
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
+from crispy_forms.layout import Field
+
 
 from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
@@ -19,7 +21,7 @@ from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from leader.forms import LeaderApplicationFormHelper
+from leader.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +38,21 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
+    fields = ['class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
+              'from_where', 'what_do_you_like_to_study', 'in_goodstanding_with_college', 
+              'trippee_confidentiality', 'dietary_restrictions', 'allergen_information',
+              'preferred_sections', 'available_sections', 'preferred_triptypes', 
+              'available_triptypes', 'trip_preference_comments', 'personal_activities',
+              'personal_communities', 'went_on_trip', 'applied_to_trips', 
+              'is_in_hanover_this_fall', 'tell_us_about_yourself',
+              'comforting_experience', 'best_compliment', 'trip_leader_roles',
+              'what_to_change_about_trips', 'leadership_experience', 
+              'working_with_difference', 'coleader_qualities', 
+              'why_do_you_want_to_be_involved', 'medical_certifications', 
+              'relevant_experience', 'cannot_participate_in', 'spring_leader_training_ok', 
+              'summer_leader_training_ok', 'express_yourself', 'status']
 
+    
     def get_form_helper(self, form):
         """ 
         Add submit button to form. 
@@ -45,7 +61,12 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         LeaderApplications cannot be deleted. 
         """
 
-        helper = LeaderApplicationFormHelper(form)
+        helper = FormHelper(form)
+        # todo move this to extenal layout?
+        helper.layout = Layout(
+            Field('status'),
+            LeaderApplicationFormLayout(),
+        )
         helper.add_input(Submit('submit', 'Update'))
         return helper
 
