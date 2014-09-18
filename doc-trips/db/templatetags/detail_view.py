@@ -21,7 +21,7 @@ def detail(db_object, fields=None):
         
         field = db_object._meta.get_field_by_name(field_name)[0]
 
-        if field_name in ('id', 'trips_year', 'trips_year_id'):
+        if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
         if isinstance(field, models.related.RelatedObject):

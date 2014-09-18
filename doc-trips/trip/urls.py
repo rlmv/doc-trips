@@ -6,6 +6,7 @@ from trip.views import *
 trip_urlpatterns = patterns('', 
     ScheduledTripListView.urlpattern(),
     ScheduledTripCreateView.urlpattern(),                            
+    ScheduledTripDetailView.urlpattern(),                        
     ScheduledTripUpdateView.urlpattern(),                            
     ScheduledTripDeleteView.urlpattern(),                        
 )
@@ -13,6 +14,7 @@ trip_urlpatterns = patterns('',
 template_urlpatterns = patterns('',
     TripTemplateListView.urlpattern(),
     TripTemplateCreateView.urlpattern(),                            
+    TripTemplateDetailView.urlpattern(),                            
     TripTemplateUpdateView.urlpattern(),                            
     TripTemplateDeleteView.urlpattern(),                        
 )                                
@@ -27,7 +29,8 @@ triptype_urlpatterns = patterns('',
 
 campsite_urlpatterns = patterns('',
     CampsiteListView.urlpattern(),
-    CampsiteCreateView.urlpattern(),                            
+    CampsiteCreateView.urlpattern(),     
+    CampsiteDetailView.urlpattern(),                        
     CampsiteUpdateView.urlpattern(),                            
     CampsiteDeleteView.urlpattern(),                        
 )                                

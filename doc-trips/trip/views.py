@@ -25,6 +25,9 @@ class ScheduledTripUpdateView(DatabaseUpdateView):
     success_url_pattern = 'db:trip:trip_update'
     fields = ['section', 'template']
 
+class ScheduledTripDetailView(DatabaseDetailView):
+    model = ScheduledTrip
+
 class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip
     success_url_pattern = 'db:trip:trip_update'
@@ -62,6 +65,9 @@ class TripTemplateListView(DatabaseListView):
     template_name = 'trip/template_index.html'
 
 class TripTemplateCreateView(DatabaseCreateView):
+    model = TripTemplate
+
+class TripTemplateDetailView(DatabaseDetailView):
     model = TripTemplate
 
 class TripTemplateUpdateView(DatabaseUpdateView):
@@ -103,6 +109,9 @@ class CampsiteListView(DatabaseListView):
         return context
 
 class CampsiteCreateView(DatabaseCreateView):
+    model = Campsite
+
+class CampsiteDetailView(DatabaseDetailView):
     model = Campsite
 
 class CampsiteUpdateView(DatabaseUpdateView):
