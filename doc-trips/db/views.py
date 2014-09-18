@@ -280,7 +280,14 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
     @classmethod
     def urlpattern(cls):
         name = '{}_detail'.format(cls.model.get_reference_name())
-        return url(r'^(?P<pk>[0-9]+)$', cls.as_view(), name=name)
+        return url(r'^(?P<pk>[0-9]+)/$', cls.as_view(), name=name)
+
+    def get_context_data(self, **kwargs):
+        context = super(DatabaseDetailView, self).get_context_data(**kwargs)
+    
+#        print(self.object._meta.get_all_field_names())
+
+        return context
         
 
 class DatabaseIndexView(DatabaseMixin, TemplateView):
