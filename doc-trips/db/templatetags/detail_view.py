@@ -20,12 +20,13 @@ def detail(db_object, fields=None):
     for field_name in fields:
         
         field = db_object._meta.get_field_by_name(field_name)[0]
-        value = getattr(db_object, field_name)
 
         if isinstance(field, models.related.RelatedObject):
             continue
             # value = value.get_queryset()
             # field.verbose_name = field.var_name
+
+        value = getattr(db_object, field_name)
         
         if isinstance(field, models.ManyToManyField):
             t = template.Template(

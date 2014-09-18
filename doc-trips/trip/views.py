@@ -1,7 +1,7 @@
 
 from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                     DatabaseListView)
+                      DatabaseListView, DatabaseDetailView)
 
 
 class ScheduledTripListView(DatabaseListView):
@@ -80,6 +80,9 @@ class TripTypeListView(DatabaseListView):
 class TripTypeCreateView(DatabaseCreateView):
     model = TripType
 
+class TripTypeDetailView(DatabaseDetailView):
+    model = TripType
+
 class TripTypeUpdateView(DatabaseUpdateView):
     model = TripType
 
@@ -116,6 +119,9 @@ class SectionListView(DatabaseListView):
     template_name = 'trip/section_index.html'
 
 class SectionCreateView(DatabaseCreateView):
+    model = Section
+
+class SectionDetailView(DatabaseDetailView):
     model = Section
 
 class SectionUpdateView(DatabaseUpdateView):
