@@ -36,6 +36,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
+
     def get_form_helper(self, form):
         """ 
         Add submit button to form. 
@@ -44,9 +45,10 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         LeaderApplications cannot be deleted. 
         """
 
-        helper = LeaderApplicationFormHelper()
+        helper = LeaderApplicationFormHelper(form)
         helper.add_input(Submit('submit', 'Update'))
-        
+        print(dir(helper))
+        print(helper.all())
         return helper
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
@@ -97,7 +99,7 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
             'preferred_sections': forms.CheckboxSelectMultiple,
             'available_sections': forms.CheckboxSelectMultiple
         }
-        form =  tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
+        form = tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
                                             exclude=self.exclude, widgets=widgets)
         return form
         
@@ -108,8 +110,6 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
             submit_text = 'Update'
         else:
             submit_text = 'Submit'
-        from crispy_forms.bootstrap import UneditableField
-        helper.filter(greedy=True).update_attributes(disabled="disabled")
         helper.add_input(Submit('submit', submit_text))
         return helper
 

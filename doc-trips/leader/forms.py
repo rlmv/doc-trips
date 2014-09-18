@@ -4,22 +4,10 @@ from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, Mult
 from crispy_forms.bootstrap import Alert
 
 
+class LeaderApplicationFormLayout(Layout):
 
-class LeaderApplicationFormHelper(FormHelper):
-
-    def __init__(self, *args, **kwargs):
-        
-        super(LeaderApplicationFormHelper, self).__init__(*args, **kwargs)
-        self.layout = LeaderApplicationLayout()
-#        self.form_class = 'form-horizontal
-#        self.label_class = 'col-lg-2'
-#        self.field_class = 'col-lg-8'
-
-
-class LeaderApplicationLayout(Layout):
-    
-    def __init__(self, *args, **kwargs):
-        super(LeaderApplicationLayout, self).__init__(
+    def __init__(self):
+        super(LeaderApplicationFormLayout, self).__init__(
             Fieldset(
                 'General information', 
                 Alert(content='Answers in this section will NOT be used in the grading process'),
@@ -100,3 +88,12 @@ class LeaderApplicationLayout(Layout):
             ),
         )
         
+class LeaderApplicationFormHelper(FormHelper):
+
+    def __init__(self, *args, **kwargs):
+        
+        super(LeaderApplicationFormHelper, self).__init__(*args, **kwargs)
+        self.layout = LeaderApplicationFormLayout()
+#        self.form_class = 'form-horizontal
+#        self.label_class = 'col-lg-2'
+#        self.field_class = 'col-lg-8'

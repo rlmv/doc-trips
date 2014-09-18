@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 from django.conf.urls import url
+from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -113,6 +114,12 @@ class DatabaseMixin(DatabasePermissionRequired):
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
+
+    def form_invalid(self, form):
+        
+        messages.error(self.request, 'Uh oh! There seems to be an error in the form.')
+        return super(DatabaseMixin, self).form_invalid(form)
+        
 
     @classmethod
     def urlpattern(cls):

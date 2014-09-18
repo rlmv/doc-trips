@@ -2,32 +2,47 @@
 
 {% load staticfiles %}
 
+<!DOCTYPE html>
+<html>
+
 <head>
 
 </head>
 <body>
 
-<div class="container">
-{% block content %}
-{% endblock %}
-</div>
+  <div class="container">
+
+    {% block messages %}
+    <!----- django messages ----->  
+    {% if messages %}
+      {% for message in messages %}
+ 	<div class="alert alert-danger"> {{ message }} </div>
+       {% endfor %}
+    {% endif %}
+    {% endblock %}
+
+    {% block content %}
+    <!---- main page content goes here ----->
+    {% endblock %}
+  </div>
 
 
-{% block scripts %}
+  {% block scripts %}
 
-<!---- site-specific ---->
-<script src="{% static 'dartdm/lookup.js' %}"></script>
-<link rel="stylesheet" href="{% static 'style.css' %}"></script>
+  <!---- site-specific ---->
+  <script src="{% static 'dartdm/lookup.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'style.css' %}"></script>
 
-<!-- libraries -->
-<script src="{% static 'bower_components/jquery/dist/jquery.js' %}"></script>
-<script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.js' %}"></script>
-<link rel="stylesheet" href="{% static 'bower_components/typeahead.js-bootstrap-css/typeaheadjs.css' %}">
+  <!--- libraries -->
+  <script src="{% static 'bower_components/jquery/dist/jquery.js' %}"></script>
+  <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'bower_components/typeahead.js-bootstrap-css/typeaheadjs.css' %}">
 
-<script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-<link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap-theme.min.css' %}">
+  <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap-theme.min.css' %}">
 
-{% endblock %}
+  {% endblock %}
 
 </body>
+</html>
