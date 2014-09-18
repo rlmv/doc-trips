@@ -5,7 +5,7 @@
 
 <table class="table">
   <tr>
-    <th>Name</th>
+    <th>Section</th>
     <th>Leaders Arrive</th>
     <th>Local</th>
     <th>Exchange</th>
@@ -17,7 +17,7 @@
   
   {% for section in sections %}
   <tr>
-    <td>{{ section.name }}</td>
+    <td>{{ section | detail_link }}</td>
     <td>{{ section.leaders_arrive }}</td>
     <td>{{ section.is_local }}</td>
     <td>{{ section.is_exchange }}</td>
