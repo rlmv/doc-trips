@@ -73,9 +73,6 @@ class DatabaseMixin(DatabasePermissionRequired):
     Plugs into ModelViews. The url is a database url of the form
     /something/{{trips_year}}/something. The ListView will only display 
     objects for the specified trips_year.
-
-    TODO: handle requests for trips_years which are not in the database.
-    They should give 404s? This must not mess up ListViews with no results.
     """
 
     def dispatch(self, request, *args, **kwargs):
