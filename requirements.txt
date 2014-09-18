@@ -10,7 +10,8 @@ django
 #git+git://github.com/sehmaschine/django-grappelli.git@dev/2.6.x
 
 requests
-#django-braces>=1.4.0 # need Login/Permission compatibility in master
+#django-braces>1.4.0 # need Login/Permission compatibility in master
+# wait for version > 1.4.0
 -e git+git://github.com/brack3t/django-braces.git#egg=django-braces
 django-easyfilters
 django-vanilla-views
