@@ -32,7 +32,9 @@ def _reverse_db_url(db_object, urlpattern_suffix):
               'pk': db_object.pk}
               
     return reverse(urlpattern, kwargs=kwargs)
-        
+
+def get_detail_url(db_object):
+    return _reverse_db_url(db_object, 'detail')
 
 def get_delete_url(db_object):
     """ Reverse the url to delete db_object. """

@@ -65,6 +65,10 @@ class DatabaseModel(models.Model):
         """
         return cls._meta.verbose_name.replace(' ', '')
 
+    def get_absolute_url(self):
+        from db.urls import get_detail_url
+        return get_detail_url(self)
+
     @classmethod
     def get_model_name(cls):
         """ Return the name of the model. """

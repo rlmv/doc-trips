@@ -3,8 +3,8 @@
 {% for field in fields %}
 
 <div>
-  <div><h5>{{ field.0 | capfirst }}</h5></div>
-  <div class="bg-success"> {% if field.1 %} {{ field.1 }} {% else %} * {% endif %}</div>
+  <h5>{{ field.0 | capfirst }}</h5>
+  <p class="bg"> {% if field.1 %} {{ field.1 }} {% else %} * {% endif %}</p>
 </div>
 
 {% endfor %}

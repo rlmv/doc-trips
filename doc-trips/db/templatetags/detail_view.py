@@ -31,7 +31,7 @@ def detail(db_object, fields=None):
             t = template.Template(
                 """
                 {% for o in queryset %}
-                {{ o }}
+                <a href="{{ o.get_absolute_url }}"> {{ o }}</a>
                 {% endfor %}
                 """)
             print(value.get_queryset())
