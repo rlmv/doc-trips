@@ -25,6 +25,8 @@ class CrispyFormMixin():
 
     Requires the implementation of get_form_helper.
 
+    
+
     TODO: needs tests.
     """
     
@@ -46,14 +48,14 @@ class CrispyFormMixin():
         form.helper = self.get_form_helper(form)
         
         # all fields in the layout
-        layout_fields = map(lambda f: f[1], form.helper.layout.get_field_names())
+        layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
         # and in the form
-        form_fields = form.fields.keys()
+        form_fields = set(form.fields.keys())
 
-        if set(layout_fields) != set(form_fields):
+        if form_fields - layout_fields:
             msg = ('whoa there, make sure you include ALL fields specified by '
-                   '%s in the Crispy Form layout')
-            raise ImproperlyConfigured(msg % self.__class__.__name__)
+                   '%s in the Crispy Form layout. %r are missing')
+            raise ImproperlyConfigured(msg % (self.__class__.__name__, form_fields-layout_fields))
         
         return form
 
