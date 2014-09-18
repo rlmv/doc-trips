@@ -30,17 +30,19 @@
   {% block scripts %}
 
   <!---- site-specific ---->
-  <script src="{% static 'dartdm/lookup.js' %}"></script>
   <link rel="stylesheet" href="{% static 'style.css' %}"></script>
 
   <!--- libraries -->
-  <script src="{% static 'bower_components/jquery/dist/jquery.js' %}"></script>
-  <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.js' %}"></script>
-  <link rel="stylesheet" href="{% static 'bower_components/typeahead.js-bootstrap-css/typeaheadjs.css' %}">
+  <script src="{% static 'lib/jquery.js' %}"></script>
+  <script src="{% static 'lib/typeahead.bundle.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'lib/typeaheadjs.css' %}">
 
-  <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-  <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
-  <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap-theme.min.css' %}">
+  <script src="{% static 'lib/bootstrap.min.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'lib/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'lib/bootstrap-theme.min.css' %}">
+
+  <!--- must come after typeahead --->
+  <script src="{% static 'dartdm/lookup.js' %}"></script>
 
   {% endblock %}
 
