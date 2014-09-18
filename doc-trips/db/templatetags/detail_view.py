@@ -21,10 +21,11 @@ def detail(db_object, fields=None):
         
         field = db_object._meta.get_field_by_name(field_name)[0]
 
+        if field_name in ('id', 'trips_year', 'trips_year_id'):
+            continue
+
         if isinstance(field, models.related.RelatedObject):
             continue
-            # value = value.get_queryset()
-            # field.verbose_name = field.var_name
 
         value = getattr(db_object, field_name)
         
@@ -35,7 +36,6 @@ def detail(db_object, fields=None):
                 <a href="{{ o.get_absolute_url }}"> {{ o }}</a>
                 {% endfor %}
                 """)
-            print(value.get_queryset())
             c = template.Context({'queryset': value.get_queryset()})
             value = t.render(c)
 
