@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         except TripsYear.DoesNotExist:
             if len(args) == 1:
-                TripsYear.objects.create(trips_year=args[0], is_current=True)
+                TripsYear.objects.create(year=args[0], is_current=True)
 
             
 
