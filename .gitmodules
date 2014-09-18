@@ -1,6 +1,0 @@
-[submodule "doc-trips/django-dartmouth-cas"]
-	path = doc-trips/django-dartmouth-cas
-	url = git@github.com:rlmv/django-dartmouth-cas.git
-[submodule "doc-trips/cas/django-dartmouth-cas"]
-	path = doc-trips/cas/django-dartmouth-cas
-	url = git@github.com:rlmv/django-dartmouth-cas.git
