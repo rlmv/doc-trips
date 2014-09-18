@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+from django.http import Http404
 from django.conf.urls import url
 from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -13,7 +14,7 @@ from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView, 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
-from db.models import DatabaseModel
+from db.models import DatabaseModel, TripsYear
 from db.forms import tripsyear_modelform_factory
 from permissions.views import DatabasePermissionRequired
 
@@ -76,6 +77,24 @@ class DatabaseMixin(DatabasePermissionRequired):
     TODO: handle requests for trips_years which are not in the database.
     They should give 404s? This must not mess up ListViews with no results.
     """
+
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Make sure the request is for a valid trips year.
+        
+        Requesting trips_years that don't exist in the db will
+        cause problems. Block 'em here. 
+        
+        TODO: test cases.
+        """
+        
+        trips_year = self.kwargs['trips_year']
+        if not TripsYear.objects.filter(year=trips_year).exists():
+            msg = 'Trips %s does not exist in the database'
+            raise Http404(msg % trips_year)
+
+        return super(DatabaseMixin, self).dispatch(request, *args, **kwargs)
+            
 
     def get_queryset(self):
         """ Get objects for requested trips_year """
