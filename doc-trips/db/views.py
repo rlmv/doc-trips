@@ -34,10 +34,27 @@ class CrispyFormMixin():
         return FormHelper(form)
 
     def get_form(self, **kwargs):
-        """ Attach a crispy form helper to the form. """
+        """ 
+        Attach a crispy form helper to the form.
+        
+        Validates that all fields in the form appear in the crispy layout.
+        Catches a tricky bug wherein some required fields specified on the form
+        are accidentally left out of an explicit layout, causing POSTS to fail.
+        """
+
         form = super(CrispyFormMixin, self).get_form(**kwargs)
         form.helper = self.get_form_helper(form)
+        
+        # all fields in the layout
+        layout_fields = map(lambda f: f[1], form.helper.layout.get_field_names())
+        # and in the form
+        form_fields = form.fields.keys()
 
+        if set(layout_fields) != set(form_fields):
+            msg = ('whoa there, make sure you include ALL fields specified by '
+                   '%s in the Crispy Form layout')
+            raise ImproperlyConfigured(msg % self.__class__.__name__)
+        
         return form
 
 

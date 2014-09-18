@@ -47,8 +47,6 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 
         helper = LeaderApplicationFormHelper(form)
         helper.add_input(Submit('submit', 'Update'))
-        print(dir(helper))
-        print(helper.all())
         return helper
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
