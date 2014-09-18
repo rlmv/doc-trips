@@ -38,7 +38,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
-    fields = ['class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
+    fields = ('status', 'class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
               'from_where', 'what_do_you_like_to_study', 'in_goodstanding_with_college', 
               'trippee_confidentiality', 'dietary_restrictions', 'allergen_information',
               'preferred_sections', 'available_sections', 'preferred_triptypes', 
@@ -50,7 +50,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
               'working_with_difference', 'coleader_qualities', 
               'why_do_you_want_to_be_involved', 'medical_certifications', 
               'relevant_experience', 'cannot_participate_in', 'spring_leader_training_ok', 
-              'summer_leader_training_ok', 'express_yourself', 'status']
+              'summer_leader_training_ok', 'express_yourself')
 
     
     def get_form_helper(self, form):
@@ -73,7 +73,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
-#    template_name = 'leader/db_application_detail.html'
+    fields = ('user',) + LeaderApplicationDatabaseUpdateView.fields 
 
 
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):

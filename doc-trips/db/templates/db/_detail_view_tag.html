@@ -4,7 +4,7 @@
 
 <div>
   <div><h5>{{ field.0 | capfirst }}</h5></div>
-  <div class="well well-sm">{{ field.1 }}</div>
+  <div class="bg-success"> {% if field.1 %} {{ field.1 }} {% else %} * {% endif %}</div>
 </div>
 
 {% endfor %}

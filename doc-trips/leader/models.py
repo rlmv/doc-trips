@@ -46,8 +46,9 @@ class LeaderApplication(DatabaseModel):
     )
 
     # ---- administrative information. not seen by applicants ------
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Applicant")
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING, 
+                              verbose_name="Application status")
     assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, 
                                       blank=True, related_name='leaders')
     

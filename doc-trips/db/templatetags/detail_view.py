@@ -9,6 +9,9 @@ register = template.Library()
 
 @register.simple_tag
 def detail(db_object, fields=None):
+    """ 
+    Output a generic detail view of a database object.
+    """
     
     if not fields:
         fields = db_object._meta.get_all_field_names()
@@ -34,6 +37,12 @@ def detail(db_object, fields=None):
             print(value.get_queryset())
             c = template.Context({'queryset': value.get_queryset()})
             value = t.render(c)
+
+        if isinstance(field, models.BooleanField):
+            if value:
+                value = "yes"
+            else:
+                value = "no"
             
         display_fields.append((field.verbose_name, value))
         
