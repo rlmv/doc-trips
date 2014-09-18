@@ -1,7 +1,10 @@
+{% extends "base.html" %}
 
 {% load links %}
 
-<table>
+{% block content %}
+
+<table class="table">
   <tr>
     <th>Template</th>
     <th>Type</th>
@@ -13,14 +16,14 @@
   </tr>
   {% for template in templates %}
   <tr>
-    <td> {{ template.name }} </td>
+    <td> {{ template | detail_link }} </td>
     <td> {{ template.trip_type.name }} </td>
     <td> {{ template.description }} </td>
     <td> {{ template.max_trippees }} </td>
 
     {% for section, trip in template.get_scheduled_trips.items %}
     {% if trip %}
-    <td>{{ trip|edit_link:trip }}</td>
+    <td>{{ trip | detail_link }}</td>
     {% else %}
     <td><a href="{% url 'db:trip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
     {% endif %}
@@ -29,3 +32,5 @@
   </tr>
   {% endfor %}
 </table>
+
+{% endblock %}
