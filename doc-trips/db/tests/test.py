@@ -57,6 +57,7 @@ urlpatterns = patterns('',
     url(r'^(?P<trips_year>[0-9]+)/', include(example_urlpatterns, namespace='db'))
 )
 
+
 from user.permissions import *
 from db.urls import get_update_url, get_index_url
 
@@ -71,7 +72,6 @@ class DatabaseMixinTestCase(WebTestCase):
         self.init_current_trips_year()
         self.init_old_trips_year()
 
-
     def test_need_database_permissions_to_access_database_pages(self):
 
         ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
@@ -80,7 +80,6 @@ class DatabaseMixinTestCase(WebTestCase):
         
         response = self.client.get(db_url)
         # TODO: 
-        
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
  
@@ -90,7 +89,7 @@ class DatabaseMixinTestCase(WebTestCase):
         phrase = 'very specific phrase'
         response = self.app.post(get_create_url(ExampleDatabaseModel, 
                                                    self.current_trips_year), 
-                                    {'some_field': phrase, 'related_field': ex.pk}, user=self.director.netid)
+                                    {'some_field': phrase, 'related_field': ex.pk}, user=self.director.net_id)
 
 
         # should not display form error in page
@@ -110,7 +109,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.app.get(get_index_url(ex1))
+        response = self.app.get(get_index_url(ex1), user=self.director.net_id)
         
         objects = response.context[ExampleListView.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
@@ -145,7 +144,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex3 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex3.save()
         
-        response = self.client.get(get_update_url(ex1), user=self.director.net_id)
+        response = self.app.get(get_update_url(ex1), user=self.director.net_id)
         choices = response.context['form'].fields['related_field'].queryset
 
         # should only show objects from current_trips_year
