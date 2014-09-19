@@ -31,7 +31,7 @@ class DartmouthUserManager(BaseUserManager):
                 
         return (user, created)
 
-    def create_user(self, net_id, email=None, name=None):
+    def create_user(self, net_id, name, email=None):
 
         #email = ?
         email = net_id + '@dartmouth.edu'
@@ -76,6 +76,9 @@ class DartmouthUser(PermissionsMixin):
 
     def is_authenticated(self):
         return True
+
+    def is_anonymous(self):
+        return False
     
     def __str__(self):
         return '{} ({})'.format(self.name, self.net_id)

@@ -10,13 +10,15 @@ from db.urls import get_create_url, get_update_url
 from test.fixtures import TestCase
 
 class ScheduledTripTestCase(TestCase):
+    
+    csrf_checks = False
 
     def setUp(self):
         self.init_current_trips_year()
-        self.mock_director_login()
 
     def test_unique_validation_in_create_view(self):
         """ See the comment in DatabaseMixin.form_valid """
+        self.mock_director()
 
         section = mommy.make(Section, trips_year=self.trips_year)
         section.save()
@@ -27,9 +29,9 @@ class ScheduledTripTestCase(TestCase):
         t1.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.client.post(get_create_url(ScheduledTrip, self.trips_year), 
+        response = self.app.post(get_create_url(ScheduledTrip, self.trips_year), 
                                     {'template': template.pk, 
-                                     'section': section.pk})
+                                     'section': section.pk}, user=self.director.net_id)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
         # should not create the trip
@@ -38,6 +40,7 @@ class ScheduledTripTestCase(TestCase):
         self.assertEquals(scheduled_trips[0], t1)
 
     def test_unique_validation_in_update_view(self):
+        self.mock_director()
 
         section = mommy.make(Section, trips_year=self.trips_year)
         section.save()
@@ -51,9 +54,9 @@ class ScheduledTripTestCase(TestCase):
         t2.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.client.post(get_update_url(t2),
-                                    {'template': template.pk, 
-                                     'section': section.pk})
+        response = self.app.post(get_update_url(t2),
+                                 {'template': template.pk, 
+                                  'section': section.pk}, user=self.director.net_id)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 

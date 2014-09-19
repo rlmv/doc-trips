@@ -156,6 +156,7 @@ class ApplicationViewsTestCase(TestCase):
         self.mock_user_login()
 
         response = self.client.get(reverse('leader:apply'))
+        print(response.content)
         self.assertEquals(response.status_code, 200)
     
         app_data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)       

@@ -2,14 +2,14 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, LiveServerTestCase
 from model_mommy import mommy
-from splinter import Browser
+from django_webtest import WebTest
 
 from db.models import TripsYear
 from permissions import directors, graders
 
 
-class TestCase(TestCase):
-    
+class TripsYearTestCase(TestCase):
+
     def init_current_trips_year(self):
         """ 
         Initialize a current trips_year object in the test database.
@@ -33,55 +33,37 @@ class TestCase(TestCase):
         
     init_previous_trips_year = init_old_trips_year
 
-    def mock_user_login(self):
+
+class TestCase(WebTest, TripsYearTestCase):
+
+    def mock_user(self):
         """ 
         Create a mock user, and login to the test client
 
         Bypasses CAS authentication 
         """
-        username='user'
-        password='password'
-        self.user = get_user_model().objects.create_user(username, 
-                                                         password=password)
-        self.client.login(username=username, password=password)
+        net_id = 'user'
+        self.user = get_user_model().objects.create_user(net_id, net_id)
 
         return self.user
 
-    def mock_director_login(self):
+    def mock_director(self):
         """ Create a user with director permissions, and log the user in. """
-        
-        username='director'
-        password='password'
-        self.director = get_user_model().objects.create_user(username, 
-                                                        password=password)
+
+        net_id = 'director'
+        self.director = get_user_model().objects.create_user(net_id, net_id)
         self.director.groups.add(directors())
         self.director.save()
-        
-        self.client.login(username=username, password=password)
-        
+
         return self.director
 
-
-    def mock_grader_login(self):
+    def mock_grader(self):
         
-        username='grader'
-        password='password'
-        self.grader = get_user_model().objects.create_user(username, 
-                                                           password=password)
+        net_id = 'grader'
+        self.grader = get_user_model().objects.create_user(net_id, net_id)
+                 
         self.grader.groups.add(graders())
         self.grader.save()
-        
-        self.client.login(username=username, password=password)
-        
+
         return self.grader
-
-
-class LiveServerTestCase(LiveServerTestCase):
-
-    def setUp(self):
-        self.browser = Browser()
-    
-    def tearDown(self):
-        self.browser.quit()
-        
 
