@@ -26,8 +26,6 @@ class CrispyFormMixin():
 
     Requires the implementation of get_form_helper.
 
-    
-
     TODO: needs tests.
     """
     
@@ -61,14 +59,12 @@ class CrispyFormMixin():
         return form
 
 
-class DatabaseMixin(DatabasePermissionRequired):
-    """ 
-    Mixin for database view pages. 
 
-    Filters objects by the trips_year named group in the url, 
-    and restricts access to users. If the user is not logged in, redirect 
-    the login page. If the user is logged in, but does not have
-    database-viewing privileges, display a 403 Forbidden page.
+class TripsYearMixin():
+    """ 
+    Mixin for trips_year.
+
+    Filters objects by the trips_year named group in the url.
 
     Plugs into ModelViews. The url is a database url of the form
     /something/{{trips_year}}/something. The ListView will only display 
@@ -90,13 +86,13 @@ class DatabaseMixin(DatabasePermissionRequired):
             msg = 'Trips %s does not exist in the database'
             raise Http404(msg % trips_year)
 
-        return super(DatabaseMixin, self).dispatch(request, *args, **kwargs)
+        return super(TripsYearMixin, self).dispatch(request, *args, **kwargs)
             
 
     def get_queryset(self):
         """ Get objects for requested trips_year """
 
-        qs = super(DatabaseMixin, self).get_queryset()
+        qs = super(TripsYearMixin, self).get_queryset()
         return qs.filter(trips_year=self.kwargs['trips_year'])
 
 
@@ -145,20 +141,29 @@ class DatabaseMixin(DatabasePermissionRequired):
         """
         try:
             with transaction.atomic():
-                return super(DatabaseMixin, self).form_valid(form)
+                return super(TripsYearMixin, self).form_valid(form)
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
 
-    def form_invalid(self, form):
-        
-        messages.error(self.request, 'Uh oh! There seems to be an error in the form.')
-        return super(DatabaseMixin, self).form_invalid(form)
-        
+    def get_context_data(self, **kwargs):
+        """ Add the trips_year for this request to the context. """
+        context = super(TripsYearMixin, self).get_context_data(**kwargs)
+        context['trips_year'] = self.kwargs['trips_year']
+        return context
+
+
+class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
+    """
+    If the user is not logged in, redirect 
+    the login page. If the user is logged in, but does not have
+    database-viewing privileges, display a 403 Forbidden page.
+    """
 
     @classmethod
     def urlpattern(cls):
-        """ Return the default urlpattern for this view 
+        """ 
+        Return the default urlpattern for this view 
 
         Implemented on subclass, this is just an interface stub
         """
@@ -167,19 +172,20 @@ class DatabaseMixin(DatabasePermissionRequired):
 
     def get_context_data(self, **kwargs):
         """
-        Return context data.
+        Adds the 'model' of the modelview to the context.
 
-        Adds the 'model' of the modelview, and  the trips_year 
-        in this url path, eg. /db/2014/trips -> 2014
-
-        This is useful for adding 'create' links to templates.
+        This along with 'trips_year' add by TripsYearMixin, 
+        is useful for adding 'create' links to templates.
         """
         
         context = super(DatabaseMixin, self).get_context_data(**kwargs)
-        context['trips_year'] = self.kwargs['trips_year']
         context['model'] = self.model
         return context
 
+    def form_invalid(self, form):
+        
+        messages.error(self.request, 'Uh oh! There seems to be an error in the form.')
+        return super(DatabaseMixin, self).form_invalid(form)
 
 class DatabaseListView(DatabaseMixin, ListView):
 
