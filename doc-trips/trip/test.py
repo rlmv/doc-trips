@@ -7,9 +7,9 @@ from model_mommy import mommy
 from trip.models import ScheduledTrip, Section, TripTemplate
 from db.urls import get_create_url, get_update_url
 
-from test.fixtures import TestCase
+from test.fixtures import WebTestCase
 
-class ScheduledTripTestCase(TestCase):
+class ScheduledTripTestCase(WebTestCase):
     
     csrf_checks = False
 
@@ -20,18 +20,16 @@ class ScheduledTripTestCase(TestCase):
         """ See the comment in DatabaseMixin.form_valid """
         self.mock_director()
 
-        section = mommy.make(Section, trips_year=self.trips_year)
-        section.save()
-        template = mommy.make(TripTemplate, trips_year=self.trips_year)
-        template.save()
-        t1 = mommy.make(ScheduledTrip, trips_year=self.trips_year, section=section,
-                        template=template)
-        t1.save()
+        trip = mommy.make(ScheduledTrip, trips_year=self.trips_year, 
+                        template__trips_year=self.trips_year,
+                        section__trips_year=self.trips_year)
+        trip.save()
 
         #Posting will raise an IntegrityError if validation is not handled
         response = self.app.post(get_create_url(ScheduledTrip, self.trips_year), 
-                                    {'template': template.pk, 
-                                     'section': section.pk}, user=self.director.net_id)
+                                 {'template': trip.template.pk, 
+                                  'section': trip.section.pk}, 
+                                 user=self.director.net_id)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
         # should not create the trip
@@ -42,21 +40,19 @@ class ScheduledTripTestCase(TestCase):
     def test_unique_validation_in_update_view(self):
         self.mock_director()
 
-        section = mommy.make(Section, trips_year=self.trips_year)
-        section.save()
-        template = mommy.make(TripTemplate, trips_year=self.trips_year)
-        template.save()
-        t1 = mommy.make(ScheduledTrip, trips_year=self.trips_year, section=section,
-                        template=template)
-        t1.save()
+        trip = mommy.make(ScheduledTrip, trips_year=self.trips_year, 
+                        template__trips_year=self.trips_year,
+                        section__trips_year=self.trips_year)
+        trip.save()
 
-        t2 = mommy.make(ScheduledTrip, trips_year=self.trips_year)
-        t2.save()
+        trip2 = mommy.make(ScheduledTrip, trips_year=self.trips_year)
+        trip2.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(get_update_url(t2),
-                                 {'template': template.pk, 
-                                  'section': section.pk}, user=self.director.net_id)
+        response = self.app.post(get_update_url(trip2),
+                                 {'template': trip.template.pk, 
+                                  'section': trip.section.pk}, 
+                                 user=self.director.net_id)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 

@@ -8,7 +8,7 @@ from db.models import TripsYear
 from permissions import directors, graders
 
 
-class TripsYearTestCase(TestCase):
+class TripsYearTestCaseMixin():
 
     def init_current_trips_year(self):
         """ 
@@ -34,7 +34,11 @@ class TripsYearTestCase(TestCase):
     init_previous_trips_year = init_old_trips_year
 
 
-class TestCase(WebTest, TripsYearTestCase):
+class TripsYearTestCase(TestCase, TripsYearTestCaseMixin):
+    pass
+
+
+class WebTestCase(WebTest, TripsYearTestCaseMixin):
 
     def mock_user(self):
         """ 
@@ -66,4 +70,3 @@ class TestCase(WebTest, TripsYearTestCase):
         self.grader.save()
 
         return self.grader
-

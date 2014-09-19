@@ -10,7 +10,8 @@ from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
 from db.urls import get_update_url, get_create_url
-from test import TestCase
+
+from test.fixtures import WebTestCase, TripsYearTestCase
 
 
 class ExampleDatabaseModel(DatabaseModel):
@@ -19,11 +20,10 @@ class ExampleDatabaseModel(DatabaseModel):
     related_field = models.ForeignKey('self', null=True)
     non_database_related_field = models.ForeignKey(get_user_model(), null=True, blank=True)
 
-class DatabaseModelTestCase(TestCase):
+class DatabaseModelTestCase(TripsYearTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
-
 
     def test_trips_year_field_is_required(self):
         self.assertRaises(ValueError, mommy.make, ExampleDatabaseModel, trips_year=None)
@@ -61,9 +61,11 @@ from user.permissions import *
 from db.urls import get_update_url, get_index_url
 
 @override_settings(ROOT_URLCONF='db.test')
-class DatabaseMixinTestCase(TestCase):
+class DatabaseMixinTestCase(WebTestCase):
 
     """ Tests for DatabseMixin. """
+
+    csrf_checks = False
 
     def setUp(self):
         self.init_current_trips_year()
@@ -82,13 +84,13 @@ class DatabaseMixinTestCase(TestCase):
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
  
-        self.mock_director_login()
+        self.mock_director()
         ex = mommy.make(ExampleDatabaseModel, trips_year=self.current_trips_year)
 
         phrase = 'very specific phrase'
-        response = self.client.post(get_create_url(ExampleDatabaseModel, 
+        response = self.app.post(get_create_url(ExampleDatabaseModel, 
                                                    self.current_trips_year), 
-                                    {'some_field': phrase, 'related_field': ex.pk})
+                                    {'some_field': phrase, 'related_field': ex.pk}, user=self.director.netid)
 
 
         # should not display form error in page
@@ -101,14 +103,14 @@ class DatabaseMixinTestCase(TestCase):
         
     def test_trips_year_queryset_filtering(self):
 
-        self.mock_director_login()
+        self.mock_director()
 
         ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.client.get(get_index_url(ex1))
+        response = self.app.get(get_index_url(ex1))
         
         objects = response.context[ExampleListView.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
@@ -116,25 +118,25 @@ class DatabaseMixinTestCase(TestCase):
 
     def test_trips_year_update_view_filters_trips_year(self):
 
-        self.mock_director_login()
+        self.mock_director()
 
         ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.client.get(get_update_url(ex1))
+        response = self.app.get(get_update_url(ex1))
         object = response.context[ExampleUpdateView.context_object_name]
         self.assertEquals(object, ex1)
         
-        response = self.client.get(reverse('db:exampledatabasemodel_update', 
+        response = self.app.get(reverse('db:exampledatabasemodel_update', 
                                            kwargs={'trips_year': ex1.trips_year.year, 
                                                    'pk': ex2.pk}))
         self.assertEquals(response.status_code, 404, 'should not find ex2 because trips_year does not match ex2.trips_year')
 
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
         
-        self.mock_director_login()
+        self.mock_director()
 
         ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
@@ -143,7 +145,7 @@ class DatabaseMixinTestCase(TestCase):
         ex3 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex3.save()
         
-        response = self.client.get(get_update_url(ex1))
+        response = self.client.get(get_update_url(ex1), user=self.director.net_id)
         choices = response.context['form'].fields['related_field'].queryset
 
         # should only show objects from current_trips_year
@@ -153,7 +155,7 @@ class DatabaseMixinTestCase(TestCase):
         self.assertTrue(ex3 in choices)
         
     
-class FormFieldCallbackTestCase(TestCase):
+class FormFieldCallbackTestCase(TripsYearTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -161,9 +163,3 @@ class FormFieldCallbackTestCase(TestCase):
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
         from db.forms import tripsyear_modelform_factory
         tripsyear_modelform_factory(ExampleDatabaseModel, self.current_trips_year)
-                                    
-
-class CalendarTestCase(TestCase):
-
-    def setUp(self):
-        init_trips_year()
