@@ -14,7 +14,7 @@
   {% block navbar %}
   <nav class="navbar navbar-default" role="navigation">
     <div class="container">
-
+      
       <div class="navbar-header">
 	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
@@ -27,10 +27,30 @@
 
       <!---- collapses to a dropdown for small screens -->
       <div class="collapse navbar-collapse">
+
 	<ul class="nav navbar-nav">
 	  <li><a href="{% url 'leader:apply' %}">Leader Application</a></li>
 	  <li><a href="{% url 'db:db_redirect' %}">Database</a></li>
+	  <li><a href="{% url 'permissions:set_permissions' %}"> Access </a></li>
+	  <li><a href="{% url 'timetable:timetable' %}"> Calendar </a></li>
 	</ul>
+
+	<!--- user infor --->
+	<ul class="nav navbar-nav navbar-right">
+	  {% if user.is_authenticated %}
+	  <li class="dropdown">
+	    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	      {{ user }} <span class="caret">
+	    </a>
+	    <ul class="dropdown-menu" role="menu">
+	      <li><a href="{% url 'user:logout' %}"> Logout </a></li>
+	    </ul>
+	  </li>
+	  {% else %} 
+	  <li> <a class="navbar-link" href="{% url 'user:login' %}">Login</a></li>
+	  {% endif %}
+	</ul>
+
       </div>
     </div>
   </nav>
