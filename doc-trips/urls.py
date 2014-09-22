@@ -7,8 +7,10 @@ admin.autodiscover()
 from permissions import initialize_groups_and_permissions
 initialize_groups_and_permissions()
 
+from views import HomePage
+
 urlpatterns = patterns('',
-    url(r'^$', 'views.index', name='home'),                      
+    url(r'^$', HomePage.as_view(), name='home'),
     url(r'^user/', include('user.urls', namespace='user')),
     url(r'^dartdm/', include('dartdm.urls', namespace='dartdm')),                   
     url(r'^permissions/', include('permissions.urls', namespace='permissions')),
