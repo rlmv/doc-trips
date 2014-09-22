@@ -17,6 +17,7 @@ database_urlpatterns = patterns('',
 )
 
 urlpatterns = patterns('',
+    url(r'^$', RedirectToCurrentDatabase.as_view(), name='db_redirect'),
     # capture the 'trips_year' parameter which is passed to all db views           
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
 )

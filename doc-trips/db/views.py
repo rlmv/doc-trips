@@ -10,7 +10,8 @@ from django.utils.decorators import method_decorator
 from django.forms.models import modelform_factory
 from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
-from vanilla import ListView, UpdateView, CreateView, DeleteView, TemplateView, DetailView
+from vanilla import (ListView, UpdateView, CreateView, DeleteView, 
+                     TemplateView, DetailView, RedirectView)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
@@ -312,24 +313,26 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
         return context
         
 
-class DatabaseIndexView(DatabaseMixin, TemplateView):
+class DatabaseIndexView(DatabasePermissionRequired, TripsYearMixin, TemplateView):
     """ 
     Index page of a particular trips year. 
 
     TODO: should this display the ScheduledTrips index? 
     """
-    
     template_name = 'db/db_index.html'
 
 
-class DatabaseRedirectView(DatabasePermissionRequired, TemplateView):
+class RedirectToCurrentDatabase(DatabasePermissionRequired, RedirectView):
     """ 
     Redirect to the trips database for the current year. 
 
     This view is the target of database urls.
-
-    TODO: implement
     """
-    pass
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        
+        trips_year = TripsYear.objects.current()
+        return reverse('db:db_index', kwargs={'trips_year': trips_year.pk})
     
 
