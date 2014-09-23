@@ -9,27 +9,36 @@
 
 </head>
 <body>
-  
+
   {% block navbar %}
-    {% include "navigation.html" %}
+  {% include "navigation.html" %}
   {% endblock %}
 
+  {% block page %}
   <div class="container">
-    {% block messages %}
-    <!----- django messages ----->  
-    {% if messages %}
-      {% for message in messages %}
- 	<div class="alert alert-danger"> {{ message }} </div>
-       {% endfor %}
-    {% endif %}
-    {% endblock %}
-  
-    {% block content %}
-    <!---- main page content goes here ----->
-    {% endblock %}
+    <div class="row">
+      <div class="col-sm-2" id="left-column">
+	{% block left_column %}
+	{% endblock %}
+      </div>
+
+      <div class="col-sm-8">
+	{% block messages %}
+	{% include "messages.html" %}
+	{% endblock %}
+
+	{% block content %}
+	{% endblock %}
+      </div>
+
+      <div class="col-sm-2" id="right-column">
+	{% block right_column %}
+	{% endblock %}
+      </div>
+    </div>
   </div>
-
-
+  {% endblock %}
+  
   {% block scripts %}
 
   <!---- site-specific ---->
