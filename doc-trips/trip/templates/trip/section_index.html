@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load icons %}
 
 {% block content %}
 
@@ -19,12 +20,12 @@
   <tr>
     <td>{{ section | detail_link }}</td>
     <td>{{ section.leaders_arrive }}</td>
-    <td>{{ section.is_local }}</td>
-    <td>{{ section.is_exchange }}</td>
-    <td>{{ section.is_transfer }}</td>
-    <td>{{ section.is_international }}</td>
-    <td>{{ section.is_native }}</td>
-    <td>{{ section.is_fysep }}</td>
+    <td>{{ section.is_local | checkmark_if_true }}</td>
+    <td>{{ section.is_exchange | checkmark_if_true }}</td>
+    <td>{{ section.is_transfer | checkmark_if_true }}</td>
+    <td>{{ section.is_international | checkmark_if_true }}</td>
+    <td>{{ section.is_native | checkmark_if_true }}</td>
+    <td>{{ section.is_fysep | checkmark_if_true }}</td>
     <td>{{ section|edit_link }}</td>
     <td>{{ section|delete_link }}</td>
   </tr>
@@ -33,7 +34,7 @@
 
 <br>
 <a href="{% create_url model trips_year %}" class="btn btn-primary" role="button">
-  Add a section
+  Add another section
 </a>
 
 {% endblock %}
