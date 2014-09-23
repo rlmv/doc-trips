@@ -238,8 +238,8 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
 
     def get_success_url(self):
         """ TODO: for now... """
-        from db.urls import get_update_url
-        return get_update_url(self.object)
+        from db.urls import get_detail_url
+        return get_detail_url(self.object)
 
 
 class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
@@ -252,8 +252,8 @@ class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
 
     def get_success_url(self):
         """ Redirect to same update page for now. """
-        from db.urls import get_update_url
-        return get_update_url(self.object)
+        from db.urls import get_detail_url
+        return get_detail_url(self.object)
 
     def get_form_helper(self, form):
         """ Add Submit and delete buttons to the form. """
