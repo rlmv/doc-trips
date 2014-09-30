@@ -4,7 +4,8 @@ from django.conf.urls import patterns, url
 from trip.views import *
 
 trip_urlpatterns = patterns('', 
-    ScheduledTripListView.urlpattern(),
+    url(r'^$', ScheduledTripListView.as_view(), name='trip_index'),
+#    ScheduledTripListView.urlpattern(),
     ScheduledTripCreateView.urlpattern(),                            
     ScheduledTripDetailView.urlpattern(),                        
     ScheduledTripUpdateView.urlpattern(),                            

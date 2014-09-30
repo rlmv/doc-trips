@@ -3,10 +3,11 @@
 
 {% block left_column %}
 <ul class="list-group">
-  <a class="list-group-item" href="{% url 'db:template_index' trips_year=trips_year %}"> Trip templates </a>
+  <a class="list-group-item" href="{% url 'db:trip_index' trips_year=trips_year %}"> Scheduled trips </a>
   <a class="list-group-item" href="{% url 'db:section_index' trips_year=trips_year %}"> Sections </a> 
   <a class="list-group-item" href="{% url 'db:campsite_index' trips_year=trips_year %}"> Campsites </a>
-  <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
-  <a class="list-group-item" href="{% url 'db:leaderapplication_index' trips_year=trips_year %}"> Leaders </a>
+ <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
+  <a class="list-group-item" href="{% url 'db:template_index' trips_year=trips_year %}"> Trip templates </a>
+   <a class="list-group-item" href="{% url 'db:leaderapplication_index' trips_year=trips_year %}"> Leaders </a>
 </ul>
 {% endblock %}
