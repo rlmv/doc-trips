@@ -1,6 +1,7 @@
 
 from django.conf.urls import patterns, url
 
+from db.urls import DB_REGEX
 from leader.views import *
 
 urlpatterns = patterns('',
@@ -11,7 +12,7 @@ urlpatterns = patterns('',
 )
 
 leaderapplication_urlpatterns = patterns('', 
-    LeaderApplicationDatabaseListView.urlpattern(),
+    url(DB_REGEX['LIST'], LeaderApplicationDatabaseListView.as_view(), name='leaderapplication_index'),
     LeaderApplicationDatabaseUpdateView.urlpattern(),
     LeaderApplicationDatabaseDetailView.urlpattern(),
 )                                         

@@ -53,26 +53,19 @@ class DatabaseModel(models.Model):
 
         super(DatabaseModel, self).save(*args, **kwargs)
 
-    @classmethod
-    def get_reference_name(cls):
-        """ 
-        Return the canonical name by which to reference the model.
-        
-        Used to name urls and url namespaces. 
-
-        This is a class method so that it can be called on the Model
-        in addition to instances.
-        """
-        return cls._meta.verbose_name.replace(' ', '')
 
     def get_absolute_url(self):
         from db.urls import get_detail_url
         return get_detail_url(self)
 
     @classmethod
+    def get_reference_name(cls):
+        return cls.get_model_name()
+
+    @classmethod
     def get_model_name(cls):
-        """ Return the name of the model. """
-        return cls.__name__
+        """ Return the lowercase name of the model. """
+        return cls.__name__.lower()
 
     @classmethod
     def get_app_name(cls):

@@ -171,6 +171,12 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
         msg = 'Not implemented. Implement urlpattern() method on {}'
         raise ImproperlyConfigured(msg.format(cls))
 
+    @classmethod
+    def view_name(cls):
+        
+        msg = 'Not implemented'
+        raise ImproperlyConfigured(msg)
+
     def get_context_data(self, **kwargs):
         """
         Adds the 'model' of the modelview to the context.
@@ -206,7 +212,7 @@ class DatabaseListView(DatabaseMixin, ListView):
     def urlpattern(cls):
         name = '{}_index'.format(cls.model.get_reference_name())
         return url(r'^$', cls.as_view(), name=name)
-    
+
 
 class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
     template_name = 'db/create.html'
@@ -233,6 +239,7 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
         """ Add 'Create' button to crispy form. """
         helper = FormHelper(form)
         helper.add_input(Submit('submit', 'Create'))
+
         
         return helper
 

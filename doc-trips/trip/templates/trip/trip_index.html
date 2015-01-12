@@ -25,7 +25,7 @@
     {% if trip %}
     <td>{{ trip | detail_link }}</td>
     {% else %}
-    <td><a href="{% url 'db:trip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
+    <td><a href="{% url 'db:scheduledtrip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
     {% endif %}
     {% endfor %}
 
