@@ -24,7 +24,7 @@ Url names for db objects use the following pattern:
 def _reverse_db_url(db_object, urlpattern_suffix):
     """ Reverse a url for a database object instance. """ 
     
-    name = db_object.get_model_name()
+    name = db_object.get_model_name_lower()
     urlpattern = '{}:{}_{}'.format('db', name, urlpattern_suffix)
     kwargs = {'trips_year': db_object.trips_year_id,
               'pk': db_object.pk}
@@ -52,7 +52,7 @@ def reverse_index_url(db_object):
     TODO: change this to accept trips_year as an argument?
     """
 
-    name = db_object.get_model_name()
+    name = db_object.get_model_name_lower()
     urlpattern = '{}:{}_{}'.format('db', name, 'index')
     kwargs = {'trips_year': db_object.trips_year_id}
               
@@ -61,7 +61,7 @@ def reverse_index_url(db_object):
 
 def reverse_create_url(db_cls, trips_year):
 
-    name = db_cls.get_model_name()
+    name = db_cls.get_model_name_lower()
     urlpattern = '{}:{}_{}'.format('db', name, 'create')
     kwargs = {'trips_year': trips_year.pk}
     

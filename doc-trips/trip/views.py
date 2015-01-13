@@ -80,7 +80,7 @@ class TripTemplateDeleteView(DatabaseDeleteView):
 
 class TripTypeListView(DatabaseListView):
     model = TripType
-    context_object_name = '{}s'.format(TripType.get_reference_name())
+    context_object_name = '{}s'.format(TripType.get_model_name_lower())
     template_name = 'trip/triptype_index.html'
 
 class TripTypeCreateView(DatabaseCreateView):

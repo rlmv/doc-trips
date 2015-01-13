@@ -204,13 +204,13 @@ class DatabaseListView(DatabaseMixin, ListView):
         # auto-generate    TODO: use super() conventions?
         template_name = '{}/{}_index.html'.format(
             self.model.get_app_name(), 
-            self.model.get_reference_name()
+            self.model.get_model_name_lower()
         )
         return [template_name]
     
     @classmethod
     def urlpattern(cls):
-        name = '{}_index'.format(cls.model.get_reference_name())
+        name = '{}_index'.format(cls.model.get_model_name_lower())
         return url(r'^$', cls.as_view(), name=name)
 
 
@@ -219,7 +219,7 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
 
     @classmethod
     def urlpattern(cls):
-        name = '{}_create'.format(cls.model.get_reference_name())
+        name = '{}_create'.format(cls.model.get_model_name_lower())
         return url(r'^create$', cls.as_view(), name=name)
 
     def post(self, request, *args, **kwargs):
@@ -254,7 +254,7 @@ class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
 
     @classmethod
     def urlpattern(cls):
-        name = '{}_update'.format(cls.model.get_reference_name())
+        name = '{}_update'.format(cls.model.get_model_name_lower())
         return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
     def get_success_url(self):
@@ -299,7 +299,7 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
 
     @classmethod
     def urlpattern(cls):
-        name = '{}_delete'.format(cls.model.get_reference_name())
+        name = '{}_delete'.format(cls.model.get_model_name_lower())
         return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
 
 
@@ -309,7 +309,7 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
     
     @classmethod
     def urlpattern(cls):
-        name = '{}_detail'.format(cls.model.get_reference_name())
+        name = '{}_detail'.format(cls.model.get_model_name_lower())
         return url(r'^(?P<pk>[0-9]+)/$', cls.as_view(), name=name)
 
     def get_context_data(self, **kwargs):

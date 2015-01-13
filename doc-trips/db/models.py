@@ -59,14 +59,14 @@ class DatabaseModel(models.Model):
         return reverse_detail_url(self)
 
     @classmethod
-    def get_reference_name(cls):
-        # TODO: deprecate this
-        return cls.get_model_name()
+    def get_model_name(cls):
+        """ Return the name of the model. """
+        return cls.__name__
 
     @classmethod
-    def get_model_name(cls):
-        """ Return the lowercase name of the model. """
-        return cls.__name__.lower()
+    def get_model_name_lower(cls):
+        """ Lowercased name of the model. """
+        return cls.get_model_name().lower()
 
     @classmethod
     def get_app_name(cls):
