@@ -17,7 +17,7 @@
     <td>{{ application.user }}</td>
     <td>{{ application.status }}</td>
     {% if application.assigned_trip %}
-    <td>{{ application.assigned_trip|absolute_link }}</td>
+    <td>{{ application.assigned_trip|detail_link }}</td>
     {% else %}
     <td>TODO: assignment link</td>
     {% endif %}

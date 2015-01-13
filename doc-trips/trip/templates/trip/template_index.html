@@ -14,12 +14,12 @@
   </tr>
   {% for template in templates %}
   <tr>
-    <td>{{ template|absolute_link }}</td>
+    <td>{{ template|detail_link }}</td>
     <td>{{ template.description }}</td>
-    <td>{{ template.trip_type|absolute_link }}</td>
+    <td>{{ template.trip_type|detail_link }}</td>
     <td>{{ template.max_trippees }}</td>
-    <td>{{ template.campsite_1|absolute_link }}</td>
-    <td>{{ template.campsite_2|absolute_link }}</td>
+    <td>{{ template.campsite_1|detail_link }}</td>
+    <td>{{ template.campsite_2|detail_link }}</td>
     <td>{{ template|edit_link }}</td>
     <td>{{ template|delete_link }}</td>
   <tr>

@@ -40,14 +40,9 @@ def create_url(model, trips_year_str):
     
 
 @register.filter
-def absolute_link(db_object, text=None):
-
+def detail_link(db_object, text=None):
+    """ Html link to detailed view for object. """
     if text is None:
         text = str(db_object)
-    # TODO: use detail view here, if we ever implement it
     return _make_link(reverse_detail_url(db_object), text)
 
-
-@register.filter
-def detail_link(db_object, text=None):
-    return absolute_link(db_object, text)

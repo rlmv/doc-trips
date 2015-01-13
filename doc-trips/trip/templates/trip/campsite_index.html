@@ -14,7 +14,7 @@
   </tr>
   {% for campsite in campsites %}
   <tr>
-    <td> {{ campsite|absolute_link}} </td>
+    <td> {{ campsite|detail_link}} </td>
     <td> {{ campsite.capacity }} </td>
     
     {% for trips in campsite.get_occupancy_list %}
