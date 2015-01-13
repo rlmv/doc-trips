@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError, FieldError
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
-from db.urls import get_update_url, get_create_url
+from db.urls import reverse_update_url, reverse_create_url
 
 from test.fixtures import WebTestCase, TripsYearTestCase
 
@@ -59,7 +59,7 @@ urlpatterns = patterns('',
 
 
 from user.permissions import *
-from db.urls import get_update_url, get_index_url
+from db.urls import reverse_update_url, reverse_index_url
 
 @override_settings(ROOT_URLCONF='db.test')
 class DatabaseMixinTestCase(WebTestCase):
@@ -76,7 +76,7 @@ class DatabaseMixinTestCase(WebTestCase):
 
         ex1 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex1.save()
-        db_url = get_update_url(ex1)
+        db_url = reverse_update_url(ex1)
         
         response = self.client.get(db_url)
         # TODO: 
@@ -87,7 +87,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex = mommy.make(ExampleDatabaseModel, trips_year=self.current_trips_year)
 
         phrase = 'very specific phrase'
-        response = self.app.post(get_create_url(ExampleDatabaseModel, 
+        response = self.app.post(reverse_create_url(ExampleDatabaseModel, 
                                                    self.current_trips_year), 
                                     {'some_field': phrase, 'related_field': ex.pk}, user=self.director.net_id)
 
@@ -109,7 +109,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.app.get(get_index_url(ex1), user=self.director.net_id)
+        response = self.app.get(reverse_index_url(ex1), user=self.director.net_id)
         
         objects = response.context[ExampleListView.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
@@ -124,7 +124,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex2 = mommy.make(ExampleDatabaseModel, trips_year=self.old_trips_year)
         ex2.save()
 
-        response = self.app.get(get_update_url(ex1))
+        response = self.app.get(reverse_update_url(ex1))
         object = response.context[ExampleUpdateView.context_object_name]
         self.assertEquals(object, ex1)
         
@@ -144,7 +144,7 @@ class DatabaseMixinTestCase(WebTestCase):
         ex3 = mommy.make(ExampleDatabaseModel, trips_year=self.trips_year)
         ex3.save()
         
-        response = self.app.get(get_update_url(ex1), user=self.director.net_id)
+        response = self.app.get(reverse_update_url(ex1), user=self.director.net_id)
         choices = response.context['form'].fields['related_field'].queryset
 
         # should only show objects from current_trips_year

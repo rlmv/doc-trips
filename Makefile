@@ -33,7 +33,7 @@ test:
 	$(MANAGE) test doc-trips
 
 rm_emacs_locks:
-	@find $(FEATURES) -name ".#*" -delete # remove emacs lock files
+	@find . -name ".#*" -delete # remove emacs lock files
 
 behave: rm_emacs_locks
 	$(BEHAVE) $(FEATURES)
@@ -46,6 +46,6 @@ coverage:
 	$(COVERAGE) report -m
 	$(COVERAGE) html -d coverage
 
-clean:
+clean: 
 	rm -rf *.pyc
 	rm -rf *~

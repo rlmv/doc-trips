@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from trip.models import ScheduledTrip, Section, TripTemplate
-from db.urls import get_create_url, get_update_url
+from db.urls import reverse_create_url, reverse_update_url
 
 from test.fixtures import WebTestCase
 
@@ -26,7 +26,7 @@ class ScheduledTripTestCase(WebTestCase):
         trip.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(get_create_url(ScheduledTrip, self.trips_year), 
+        response = self.app.post(reverse_create_url(ScheduledTrip, self.trips_year), 
                                  {'template': trip.template.pk, 
                                   'section': trip.section.pk}, 
                                  user=self.director.net_id)
@@ -49,7 +49,7 @@ class ScheduledTripTestCase(WebTestCase):
         trip2.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(get_update_url(trip2),
+        response = self.app.post(reverse_update_url(trip2),
                                  {'template': trip.template.pk, 
                                   'section': trip.section.pk}, 
                                  user=self.director.net_id)

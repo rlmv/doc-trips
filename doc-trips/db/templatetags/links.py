@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
 from db.models import TripsYear
-from db.urls import get_update_url, get_delete_url, get_create_url, get_detail_url
+from db.urls import reverse_update_url, reverse_delete_url, reverse_create_url, reverse_detail_url
 
 register = template.Library()
 
@@ -19,7 +19,7 @@ def edit_link(db_object, text=None):
     """ Insert html link to edit db_object. """
     if text is None:
         text = 'edit'
-    return _make_link(get_update_url(db_object), text)
+    return _make_link(reverse_update_url(db_object), text)
 
         
 @register.filter
@@ -27,7 +27,7 @@ def delete_link(db_object, text=None):
     """ Insert html link to delete db_object. """
     if text is None:
         text = 'delete'
-    return _make_link(get_delete_url(db_object), text)
+    return _make_link(reverse_delete_url(db_object), text)
 
 
 @register.simple_tag
@@ -36,7 +36,7 @@ def create_url(model, trips_year_str):
 
     trips_year = TripsYear.objects.get(pk=trips_year_str)
 
-    return get_create_url(model, trips_year)
+    return reverse_create_url(model, trips_year)
     
 
 @register.filter
@@ -45,7 +45,7 @@ def absolute_link(db_object, text=None):
     if text is None:
         text = str(db_object)
     # TODO: use detail view here, if we ever implement it
-    return _make_link(get_detail_url(db_object), text)
+    return _make_link(reverse_detail_url(db_object), text)
 
 
 @register.filter
