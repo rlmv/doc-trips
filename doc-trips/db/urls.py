@@ -4,9 +4,12 @@ from django.conf.urls import patterns, url, include
 
 from trip.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                        campsite_urlpatterns, section_urlpatterns)
-from leader.urls import *
-from db.views import DatabaseIndexView
+from leader.urls import leaderapplication_urlpatterns
+from db.views import DatabaseIndexView, RedirectToCurrentDatabase
 
+"""
+All database urlpatterns take a trips_year param.
+"""
 database_urlpatterns = patterns('', 
     url(r'^$', DatabaseIndexView.as_view(), name='db_index'),
     url(r'^trips/', include(trip_urlpatterns)),
