@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from trip.models import ScheduledTrip, Section, TripTemplate
-from db.urls import reverse_create_url, reverse_update_url
+from db.urlhelpers import reverse_create_url, reverse_update_url
 
 from test.fixtures import WebTestCase
 

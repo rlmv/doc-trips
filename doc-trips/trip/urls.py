@@ -1,7 +1,7 @@
 
 from django.conf.urls import patterns, url
 
-from db.urls import DB_REGEX
+from db.urlhelpers import DB_REGEX
 
 from trip.views import *
 

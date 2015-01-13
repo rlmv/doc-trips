@@ -55,7 +55,7 @@ class DatabaseModel(models.Model):
 
 
     def get_absolute_url(self):
-        from db.urls import reverse_detail_url
+        from db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self)
 
     @classmethod

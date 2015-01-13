@@ -2,7 +2,6 @@
 
 from django.conf.urls import patterns, url, include
 
-from db.urlhelpers import *
 from trip.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                        campsite_urlpatterns, section_urlpatterns)
 from leader.urls import *

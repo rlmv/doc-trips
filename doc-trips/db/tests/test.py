@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError, FieldError
 from model_mommy import mommy
 
 from db.models import DatabaseModel, TripsYear
-from db.urls import reverse_update_url, reverse_create_url
+from db.urlhelpers import reverse_update_url, reverse_create_url
 
 from test.fixtures import WebTestCase, TripsYearTestCase
 
@@ -59,7 +59,7 @@ urlpatterns = patterns('',
 
 
 from user.permissions import *
-from db.urls import reverse_update_url, reverse_index_url
+from db.urlhelpers import reverse_update_url, reverse_index_url
 
 @override_settings(ROOT_URLCONF='db.test')
 class DatabaseMixinTestCase(WebTestCase):
