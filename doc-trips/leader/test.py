@@ -5,7 +5,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
-from test.fixtures import TripsYearTestCase as TripsTestCase
+from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
 from trip.models import Section
 from leader.models import LeaderGrade, LeaderApplication
 from leader.views import *
@@ -94,86 +94,100 @@ class LeaderApplicationManagerTestCase(TripsTestCase):
 
 
 
-class ApplicationViewsTestCase(TripsTestCase):
+class ApplicationGraderViewsTestCase(WebTestCase):
 
     # TODO: test that non-graders are redirected to login
+
+    csrf_checks = False
 
     def setUp(self):
         self.init_current_trips_year()
         self.init_old_trips_year()
 
-    def test_redirects(self):
+    def test_grader_redirects(self):
 
-        self.mock_grader_login()
+        self.mock_grader()
         
         app = mommy.make('LeaderApplication', status=LeaderApplication.PENDING,
                          trips_year=self.trips_year)
-        app.save()
-        response = self.client.get(reverse('leader:grade_random'), follow=True)
+
+        response = self.app.get(reverse('leader:grade_random'), user=self.grader)
+        response = response.follow()
         self.assertEquals(app, response.context['leaderapplication'])
 
         # grade the app
         grade = mommy.make('LeaderGrade', grader=self.grader, leader_application=app)
-        grade.save()
 
         # there should be no more applications to grade
-        response = self.client.get(reverse('leader:grade_random'), follow=True)
+        response = self.app.get(reverse('leader:grade_random'), user=self.grader)
+        response = response.follow()
         self.assertEquals(response.templates[0].name, 'leader/no_application.html')
+
+
+    def test_grading_application_adds_trips_year_to_grade(self):
+
+        self.mock_grader()
+
+        application = mommy.make(LeaderApplication, status=LeaderApplication.PENDING,
+                                 trips_year=self.trips_year)
+        response = self.app.post(reverse('leader:grade', kwargs={'pk': application.pk }), 
+                                 {'grade': 3,
+                                  'comment': 'test grade comment'}, 
+                                 user=self.grader)
+
+        grade = LeaderGrade.objects.get(leader_application=application)
+        self.assertEquals(grade.trips_year, self.trips_year)
+
+
+class LeaderApplicationViewsTestCase(WebTestCase):
+
+    # TODO: test that non-graders are redirected to login
+
+    csrf_checks = False
+
+    def setUp(self):
+        self.init_current_trips_year()
+        self.init_old_trips_year()
+
 
     def test_applying_adds_the_current_trips_year_and_user_to_model(self):
         
-        self.mock_user_login()
+        self.mock_user()
 
         data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)
-
-        response = self.client.post(reverse('leader:apply'), data)
+        response = self.app.post(reverse('leader:apply'), data, user=self.user)
         
         # TODO: test redirects
         #self.assertEquals(response.status_code, 200)
         
         application = LeaderApplication.objects.all()[0]
-        # should add use and current trips_year
+        # should add user and current trips_year
         self.assertEquals(self.user, application.user)
         self.assertEquals(self.trips_year, application.trips_year)
         
-
-    def test_grading_application_adds_trips_year_to_grade(self):
-
-        self.mock_grader_login()
-
-        application = mommy.make(LeaderApplication, status=LeaderApplication.PENDING,
-                                 trips_year=self.trips_year)
-        response = self.client.post(reverse('leader:grade', kwargs={'pk': application.pk }), 
-                                    {'grade': 3,
-                                     'comment': 'test grade comment'})
-
-        grade = LeaderGrade.objects.get(leader_application=application)
-        self.assertEquals(grade.trips_year, self.trips_year)
-
     
-    def test_apply_flow(self):
+    def test_application_flow(self):
 
-        self.mock_user_login()
+        self.mock_user()
 
-        response = self.client.get(reverse('leader:apply'))
-        print(response.content)
+        response = self.app.get(reverse('leader:apply'), user=self.user)
         self.assertEquals(response.status_code, 200)
     
         app_data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)       
-
-        response = self.client.post(reverse('leader:apply'), app_data, follow=True)
+        response = self.app.post(reverse('leader:apply'), app_data, user=self.user)
+        response = response.follow()
 
         self.assertEquals(response.status_code, 200)
 
     
     def test_applying_and_revisiting_pages_allows_user_to_edit_application(self):
         
-        self.mock_user_login()
+        self.mock_user()
 
         data = model_to_dict(mommy.prepare(LeaderApplication), 
                              fields=LeaderApply.fields)
-        response = self.client.post(reverse('leader:apply'), data, follow=True)
-        response = self.client.get(reverse('leader:apply'))
+        response = self.app.post(reverse('leader:apply'), data, user=self.user)
+        response = self.app.get(reverse('leader:apply'), user=self.user)
         application = response.context['object']
         
         # should see previous application
@@ -182,12 +196,12 @@ class ApplicationViewsTestCase(TripsTestCase):
 
     
     def test_available_sections_in_application_form_are_only_for_current_trips_year(self):
-        self.mock_user_login()
+        self.mock_user()
 
         prev_section = mommy.make('Section', trips_year=self.previous_trips_year)
         curr_section = mommy.make('Section', trips_year=self.current_trips_year)
 
-        response = self.client.get(reverse('leader:apply'))
+        response = self.app.get(reverse('leader:apply'), user=self.user)
         form = response.context['form']
 
         self.assertEquals(list(form.fields['available_sections'].queryset),
@@ -197,8 +211,20 @@ class ApplicationViewsTestCase(TripsTestCase):
         
 
     def test_application_is_not_available_if_not_in_calendar_dates(self):
-        pass
 
+        # close leader applications:
+        from timetable.models import Timetable
+        from datetime import timedelta
+        t = Timetable.objects.timetable()
+        t.leader_application_open += timedelta(-2)
+        t.leader_application_closed += timedelta(-1)
+        t.save()
+
+        self.mock_user()
+        response = self.app.get(reverse('leader:apply'), user=self.user)
+        self.assertTemplateUsed('leader/application_not_available.html')
+
+        
 
 
 
