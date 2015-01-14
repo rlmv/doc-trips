@@ -35,7 +35,7 @@ class ScheduledTripTestCase(WebTestCase):
         # should not create the trip
         scheduled_trips = ScheduledTrip.objects.all()
         self.assertEquals(len(scheduled_trips), 1)
-        self.assertEquals(scheduled_trips[0], t1)
+        self.assertEquals(scheduled_trips[0], trip)
 
     def test_unique_validation_in_update_view(self):
         self.mock_director()
