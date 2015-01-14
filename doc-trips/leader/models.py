@@ -50,7 +50,8 @@ class LeaderApplication(DatabaseModel):
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING, 
                               verbose_name="Application status")
     assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, 
-                                      blank=True, related_name='leaders')
+                                      blank=True, related_name='leaders',
+                                      on_delete=models.SET_NULL)
     
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
