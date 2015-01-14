@@ -74,6 +74,9 @@ class DartmouthUser(PermissionsMixin):
     def get_full_name(self):
         return self.name
 
+    def get_username(self):
+        return self.net_id
+
     def is_authenticated(self):
         return True
 

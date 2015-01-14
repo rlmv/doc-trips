@@ -5,12 +5,12 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
-from test.fixtures import TestCase
+from test.fixtures import TripsYearTestCase as TripsTestCase
 from trip.models import Section
 from leader.models import LeaderGrade, LeaderApplication
 from leader.views import *
 
-class GradeValidationTestCase(TestCase):
+class GradeValidationTestCase(TripsTestCase):
 
     def test_grade_validation(self):
 
@@ -28,7 +28,7 @@ class GradeValidationTestCase(TestCase):
         good_grade.clean_fields()
 
 
-class LeaderApplicationManagerTestCase(TestCase):
+class LeaderApplicationManagerTestCase(TripsTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -94,13 +94,13 @@ class LeaderApplicationManagerTestCase(TestCase):
 
 
 
-class ApplicationViewsTestCase(TestCase):
+class ApplicationViewsTestCase(TripsTestCase):
 
     # TODO: test that non-graders are redirected to login
 
     def setUp(self):
         self.init_current_trips_year()
-        self.init_previous_trips_year()
+        self.init_old_trips_year()
 
     def test_redirects(self):
 
