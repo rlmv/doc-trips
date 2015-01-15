@@ -19,12 +19,19 @@
 
       <ul class="nav navbar-nav">
 	<li><a href="{% url 'leader:apply' %}">Leader Application</a></li>
+
+	{% if perms.permissions.can_grade_applications %}
+	<li><a href="{% url 'leader:grade_random' %}">Graders</a></li>
+	{% endif %}
+
 	{% if perms.permissions.can_access_db %}
 	<li><a href="{% url 'db:db_redirect' %}">Database</a></li>
 	{% endif %}
+
 	{% if perms.permissions.can_set_access %}
 	<li><a href="{% url 'permissions:set_permissions' %}"> Access </a></li>
 	{% endif %}
+
 	{% if perms.permissions.can_edit_timetable %}
 	<li><a href="{% url 'timetable:timetable' %}"> Calendar </a></li>
 	{% endif %}
