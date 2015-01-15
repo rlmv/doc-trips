@@ -1,0 +1,11 @@
+
+
+{
+    "name": "doc-trips",
+    "dependencies": {
+	"jquery": "*",
+	"bootstrap": "*",
+	"typeahead.js": "*",
+	"typeahead.js-bootstrap-css": "bassjobsen/typeahead.js-bootstrap-css",
+    }
+}
