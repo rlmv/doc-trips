@@ -42,6 +42,7 @@ INSTALLED_APPS = (
 
     # third party
     'crispy_forms',
+    'bootstrap3_datetime',
     #'django_pdb',
 
     # custom

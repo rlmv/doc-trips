@@ -6,5 +6,15 @@
 {% block content %}
 <h2> Change important calendar dates </h2>
 {% crispy form %}
+{% endblock content %}
 
-{% endblock %}
+{# add DateTimePicker js #}
+{% block scripts %}
+{{ block.super }}
+{{ form.media }}
+{% endblock scripts %}
+
+
+
+
+

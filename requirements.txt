@@ -10,6 +10,7 @@ django-easyfilters
 django-vanilla-views
 django-crispy-forms
 django-bootstrap3
+-e git+git://github.com/nkunihiko/django-bootstrap3-datetimepicker.git#egg=django-bootstrap3-datetimepicker
 
 # heroku
 django-toolbelt 
