@@ -13,7 +13,6 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
     
     Contains one visible input field and two hidden input fields.
 
-    TODO: actually make the fields hidden
     TODO: save nameWithYear in the other hidden field instead of the affil?
     That will make it easier to  tell whether the autocompleted field was changed.
     """
@@ -23,8 +22,8 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
                                    
         widgets = [forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
-                   forms.TextInput(attrs={'class': 'netIdField'}), 
-                   forms.TextInput(attrs={'class': 'nameWithAffilField'})]
+                   forms.HiddenInput(attrs={'class': 'netIdField'}), 
+                   forms.HiddenInput(attrs={'class': 'nameWithAffilField'})]
 
         super(DartmouthDirectoryLookupWidget, self).__init__(widgets, attrs)
 
