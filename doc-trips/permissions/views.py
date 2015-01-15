@@ -58,17 +58,31 @@ class GroupForm(forms.Form):
 
     directors = forms.ModelMultipleChoiceField(queryset=None, 
                                                widget=forms.CheckboxSelectMultiple, 
-                                               required=False)
+                                               required=False, 
+                                               label='')
     new_director = DartmouthDirectoryLookupField(required=False)
     
     graders = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
-                                             required=False)
+                                             required=False, 
+                                             label='')
     new_grader = DartmouthDirectoryLookupField(required=False)
 
     from crispy_forms.helper import FormHelper
-    from crispy_forms.layout import Submit
+    from crispy_forms.layout import Layout, Submit, Fieldset, Field
+    from crispy_forms.bootstrap import Alert
     helper = FormHelper()
+    helper.layout = Layout(
+        Fieldset('Directors',
+                 Alert(content='Users in the Directors group can access and edit the database, edit the timetable, grade leader applications, and grant other users access to the database via this page. Use sparingly!', css_class='alert-warning', dismiss=False),
+                 'directors',
+                 'new_director'),
+        Fieldset('Graders', 
+                 Alert(content='Graders can grade leader applications, when available', css_class='alert-warning', dismiss=False),
+                 'graders',
+                 'new_grader')
+    )
+        
     helper.add_input(Submit('submit', 'Update permissions'))
     
 
@@ -77,7 +91,7 @@ class GroupForm(forms.Form):
         
         self.fields['directors'].queryset = directors().user_set.all()
         self.fields['directors'].initial = [u.pk for u in directors().user_set.all()]
-        self.fields['graders'].queryset = get_user_model().objects.all()
+        self.fields['graders'].queryset = graders().user_set.all()
         self.fields['graders'].initial = [u.pk for u in graders().user_set.all()]
 
 
