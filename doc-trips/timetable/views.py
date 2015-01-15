@@ -10,7 +10,9 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from timetable.models import Timetable
 from permissions.views import TimetablePermissionRequired
 
-OPTIONS = {'format': 'MM/DD/YYYY hh:mm a'}
+OPTIONS = {'format': 'MM/DD/YYYY HH:mm'} 
+# 'MM/DD/YYYY hh:mm a'} won't work without changing the 
+# DATETIME_INPUT_FORMATS setting
 
 class TimetableForm(ModelForm):
     
