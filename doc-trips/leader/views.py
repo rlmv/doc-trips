@@ -167,11 +167,12 @@ class LeaderGradeForm(ModelForm):
         model = LeaderGrade
         fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
 
-    helper = FormHelper
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Submit Grade'))
 
 
 # TODO: restrict this to those with grader permissions
-class GradeApplication(GraderPermissionRequired, CrispyFormMixin, DetailView, FormView):
+class GradeApplication(GraderPermissionRequired, DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
 
@@ -197,12 +198,6 @@ class GradeApplication(GraderPermissionRequired, CrispyFormMixin, DetailView, Fo
         context['form'] = self.get_form()
         return context
 
-    def get_form_helper(self, form):
-        
-        helper = FormHelper(form)
-        helper.add_input(Submit('submit', 'Submit Grade'))
-        return helper
-    
     def form_valid(self, form):
         """ Attach grader and application to the grade, save grade to database.
         
