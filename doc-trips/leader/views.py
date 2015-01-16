@@ -183,6 +183,15 @@ class GradeApplication(GraderPermissionRequired, DetailView, FormView):
     model = LeaderApplication
     template_name = 'leader/grade.html'
     context_object_name = 'leaderapplication'
+    # fields of the application which should be graded
+    fields_to_grade = ('personal_activities', 'personal_communities', 'went_on_trip',
+                       'applied_to_trips', 'is_in_hanover_this_fall', 
+                       'tell_us_about_yourself', 'comforting_experience', 
+                       'best_compliment', 'trip_leader_roles', 
+                       'what_to_change_about_trips', 'leadership_experience', 
+                       'working_with_difference', 'coleader_qualities', 
+                       'why_do_you_want_to_be_involved', 'medical_certifications', 
+                       'relevant_experience', 'express_yourself')
 
     form_class = LeaderGradeForm
     success_url = reverse_lazy('leader:grade_random')
@@ -195,6 +204,7 @@ class GradeApplication(GraderPermissionRequired, DetailView, FormView):
         Then we manually add the form instance.
         """
         context = super(GradeApplication, self).get_context_data(**kwargs)
+        context['fields_to_grade'] = self.fields_to_grade
         context['form'] = self.get_form()
         return context
 

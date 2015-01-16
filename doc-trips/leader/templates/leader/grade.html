@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load detail_view %}
 
 {% block content %}
-<p>{{ leaderapplication.hinman_box }}</p>
+<div>
 {% crispy form %}
+</div>
+<div>
+{% detail leaderapplication fields_to_grade %}
+</div>
 {% endblock content %}
