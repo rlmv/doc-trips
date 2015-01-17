@@ -3,12 +3,19 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 
+
+class SitePermissionStub(models.Model):
+
+    pass
+
+
 class SitePermissionManager(models.Manager):
     """ Manager class for SitePermission model. """
 
     def get_queryset(self):
         qs = super(SitePermissionManager, self).get_queryset()
-        return qs.filter(content_type__name='site_permission')
+        content_type = ContentType.objects.get_for_model(SitePermissionStub)
+        return qs.filter(content_type=content_type)
 
 
 class SitePermission(Permission):
@@ -23,9 +30,8 @@ class SitePermission(Permission):
         proxy = True # proxy models are cool!
 
     def save(self, *args, **kwargs):
-        ct, created = ContentType.objects.get_or_create(
-            name="site_permission", app_label=self._meta.app_label
-        )
-        self.content_type = ct
+        self.content_type = ContentType.objects.get_for_model(SitePermissionStub)
         super(SitePermission, self).save(*args, **kwargs)
+    
+    
 
