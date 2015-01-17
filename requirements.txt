@@ -10,7 +10,9 @@ django-easyfilters
 django-vanilla-views
 django-crispy-forms
 django-bootstrap3
+# need PR #14 which fixes an early jquery dependency
 -e git+git://github.com/nkunihiko/django-bootstrap3-datetimepicker.git#egg=django-bootstrap3-datetimepicker
+jsonfield
 
 # heroku
 django-toolbelt 

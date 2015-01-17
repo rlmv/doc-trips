@@ -31,6 +31,10 @@ def can_edit_timetable():
     return get_permission('can_edit_timetable',
                           'Can change critical dates in the timetable')
 
+def can_create_croo_application():
+    return get_permission('can_create_croo_application', 
+                          'Can add, delete, and edit questions in the croo app')
+
 
 """ # TODO: these might be useful for croos?
 can_edit_db, created = get_permission(
@@ -48,7 +52,8 @@ def directors():
     directors.permissions = [can_set_access(), 
                              can_grade_applications(), 
                              can_access_db(), 
-                             can_edit_timetable()]
+                             can_edit_timetable(), 
+                             can_create_croo_application()]
     directors.save()
     return directors
 

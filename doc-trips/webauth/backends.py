@@ -6,6 +6,7 @@ from xml.etree import ElementTree
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.backends import ModelBackend
 
 UserModel = get_user_model()
 
@@ -56,11 +57,8 @@ def verify(ticket, service):
         raise 
 
 
-class WebAuthBackend():
+class WebAuthBackend(ModelBackend):
     """ CAS authentication backend """
-
-    supports_object_permissions = False
-    supports_inactive_user = False
 
     def authenticate(self, ticket, service):
         """

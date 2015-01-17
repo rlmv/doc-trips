@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'user',
     'dartdm', 
     'leader',
+    'croos', 
     'trip',
     'permissions',
     'timetable',
