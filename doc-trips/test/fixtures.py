@@ -34,17 +34,9 @@ class TripsYearTestCaseUtils():
     init_previous_trips_year = init_old_trips_year
 
 
-class TripsYearTestCase(TestCase, TripsYearTestCaseUtils):
-    pass
-
-
-class WebTestCase(WebTest, TripsYearTestCaseUtils):
-
     def mock_user(self):
         """ 
-        Create a mock user, and login to the test client
-
-        Bypasses CAS authentication 
+        Create a mock user.
         """
         net_id = 'user'
         self.user = get_user_model().objects.create_user(net_id, net_id)
@@ -70,3 +62,16 @@ class WebTestCase(WebTest, TripsYearTestCaseUtils):
         self.grader.save()
 
         return self.grader
+
+
+
+class TripsYearTestCase(TestCase, TripsYearTestCaseUtils):
+    pass
+
+
+class WebTestCase(WebTest, TripsYearTestCaseUtils):
+    """ 
+    Can make requests without have to mock CAS 
+    authentication. See django_webtest for more details.
+    """ 
+    pass
