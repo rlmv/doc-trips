@@ -27,9 +27,15 @@ class CrooApplication(DatabaseModel):
 
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
     answers = JsonField()
-    assigned_croo = models.ForeignKey('Croo', blank=True, null=True, 
+
+    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
                                       related_name='croolings',
                                       on_delete=models.SET_NULL)
+    potential_croos = models.ManyToManyField(Croo, blank=True, 
+                                             related_name='potential_croolings')
+
+    safety_dork_qualified = models.BooleanField(default=False)
+    safety_dork = models.BooleanField(default=False)
 
 
 class CrooApplicationGrade(DatabaseModel):
