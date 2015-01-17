@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.db import models
+from jsonfield import JSONField
 
 from db.models import DatabaseModel
 
@@ -26,7 +27,7 @@ class Croo(DatabaseModel):
 class CrooApplication(DatabaseModel):
 
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
-    answers = JsonField()
+    answers = JSONField()
 
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
                                       related_name='croolings',
