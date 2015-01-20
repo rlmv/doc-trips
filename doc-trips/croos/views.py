@@ -4,27 +4,40 @@ from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 from vanilla import FormView, UpdateView
 from django.forms.models import modelformset_factory
 from django.core.urlresolvers import reverse_lazy
-from django.forms import ModelForm
+from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from db.views import TripsYearMixin, CrispyFormMixin
 from db.models import TripsYear
-from croos.models import CrooApplication
+from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer
 
 
-class CrooApplicationForm(ModelForm):
+class CrooApplicationAnswerForm(forms.ModelForm):
+
+    class Meta:
+        model = CrooApplicationAnswer
+
+
+class CrooApplicationForm(forms.ModelForm):
 
     class Meta:
         model = CrooApplication
         
-    helper = FormHelper()
-    helper.add_input(Submit('submit', 'Submit'))
+    def __init__(self, questions, *args, **kwargs):
+        """ questions are CrooApplicationQuestions """
+        super(CrooApplicationForm, self).__init__(*args, **kwargs)
+        for i, question in enumerate(questions):
+            self.fields['question%d' % i] = forms.CharField()
+
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Submit'))
+
 
 class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     """
     Application page.
-
+    
     This needs to reject users if the application is closed.
 
     No related items are selected in the app so we don't need to use the 
@@ -45,6 +58,27 @@ class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         except self.model.DoesNotExist:
             return None
 
+    def get_form(self, data=None, files=None, **kwargs):
+        trips_year = TripsYear.objects.current()
+        
+        if kwargs['instance'] is None:
+            # user has not applied yet. Instantiate blank application and answsers
+            application, created = CrooApplication.objects.get_or_create(applicant=self.request.user)
+            questions = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
+            for question in questions:
+                blank_answer = CrooApplicationAnswer(trips_year=trips_year, 
+                                                     question=question)
+                application.answers.add(blank_answer)
+                blank_answer.save()
+        
+            application.save()
+
+        ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
+                                                  form=CrooApplicationAnswerForm)
+        form = ApplicationFormset(queryset=CrooApplicationAnswer.objects.filter(application__applicant=self.request.user, trips_year=trips_year))
+        return form
+                        
+        
     def form_valid(self, form):
         if self.object is None: # newly created
             form.instance.applicant = self.request.user
