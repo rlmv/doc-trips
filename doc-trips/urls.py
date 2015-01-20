@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^timetable/', include('timetable.urls', namespace='timetable')),
     url(r'^db/', include('db.urls', namespace='db')),
     url(r'^leader/', include('leader.urls', namespace='leader')),
+    url(r'^croos/', include('croos.urls', namespace='croos')),                   
     url(r'^admin/', include(admin.site.urls)),
 )
 
