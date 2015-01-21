@@ -1,11 +1,14 @@
 
 
 from braces.views import PermissionRequiredMixin, LoginRequiredMixin
-from vanilla import FormView, UpdateView
-from django.forms.models import modelformset_factory, model_to_dict
+from vanilla import FormView, UpdateView, CreateView
+from django.forms.models import modelformset_factory, inlineformset_factory, model_to_dict
 from django.forms.formsets import BaseFormSet
-from django.core.urlresolvers import reverse_lazy
+from django.forms.models import BaseInlineFormSet
+from django.core.urlresolvers import reverse_lazy, reverse
 from django import forms
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
@@ -24,29 +27,67 @@ class CrooApplicationAnswerForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CrooApplicationAnswerForm, self).__init__(*args, **kwargs)
-        # label the answer field with the question. 
-        # question is passed as initial data to the form
-        question = self.initial['question']
-        self.fields['answer'].label = question.question
+
+        # Label the answer field with the question. 
+        # question is passed as initial data to the form, either as a pk
+        # or as an object
+        question =  self.initial.get('question', None)
+        if question:
+            # TODO: this is not v. efficient
+            if isinstance(question, int):
+                question = CrooApplicationQuestion.objects.get(pk=question)
+                
+            self.fields['answer'].label = question.question
+
+class CrooApplicationCreate(LoginRequiredMixin, CreateView):
+
+    model = CrooApplication
+    template_name = 'croos/crooapplication_form.html'
+
+    success_url = reverse_lazy('croos:apply')
+
+    def dispatch(self, request, *args, **kwargs):
         
-
-class BaseCrooApplicationFormset(BaseFormSet):
-    pass
-
-class CrooApplicationForm(forms.ModelForm):
-
-    class Meta:
-        model = CrooApplication
+        if self.get_queryset().filter(applicant=self.request.user, 
+                                      trips_year=TripsYear.objects.current()).exists():
+            return HttpResponseRedirect(reverse('croos:edit_application'))
         
-    def __init__(self, questions, *args, **kwargs):
-        """ questions are CrooApplicationQuestions """
-        super(CrooApplicationForm, self).__init__(*args, **kwargs)
-        for i, question in enumerate(questions):
-            self.fields['question%d' % i] = forms.CharField()
+        return super(CrooApplicationCreate, self).dispatch(request, *args, **kwargs)
 
-        self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Submit'))
+    def get_form(self, data=None, files=None, **kwargs):
 
+        trips_year = TripsYear.objects.current()
+        questions = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
+
+        if data is not None:
+            # POST
+            initial = None
+        else: 
+            # GET. Instantiate blank application and answsers
+            initial = list(map(lambda q: {'answer': '', 'question': q}, questions))  
+
+        ApplicationFormset = inlineformset_factory(CrooApplication,
+                                                   CrooApplicationAnswer, 
+                                                   form=CrooApplicationAnswerForm,
+                                                   max_num=len(questions))
+        form = ApplicationFormset(data, initial=initial)
+
+        # TODO: move this external - attach to formset, somehow?
+        form.helper = FormHelper()
+        form.helper.add_input(Submit('submit', 'Submit'))
+
+        return form
+
+    def form_valid(self, form):
+
+        application = CrooApplication.objects.create(
+            applicant=self.request.user, 
+            trips_year=TripsYear.objects.current())
+        form.instance = application
+        
+        return super(CrooApplicationCreate, self).form_valid(form)
+
+        
 
 class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     """
@@ -58,52 +99,32 @@ class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     tripsyear_modelform_factory. However, watch out if that changes!
     """
     model = CrooApplication
-    form_class = CrooApplicationForm
     template_name = 'croos/crooapplication_form.html'
 
     # TODO: add static detail page/"thanks for applying" landing page
-    success_url = reverse_lazy('croos:apply')
+    success_url = reverse_lazy('croos:edit_application')
 
     def get_object(self):
         
-        try:
-            return self.get_queryset().get(applicant=self.request.user, 
-                                           trips_year=TripsYear.objects.current())
-        except self.model.DoesNotExist:
-            return None
+        return get_object_or_404(self.model, 
+                                 applicant=self.request.user, 
+                                 trips_year=TripsYear.objects.current())
 
     def get_form(self, data=None, files=None, **kwargs):
         trips_year = TripsYear.objects.current()
 
-        if kwargs['instance'] is None:
-            # user has not applied yet. Instantiate blank application and answsers
-            questions = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
+        ApplicationFormset = inlineformset_factory(CrooApplication, 
+                                                   CrooApplicationAnswer, 
+                                                   form=CrooApplicationAnswerForm,                                                      extra=0)
 
-            ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
-                                                      form=CrooApplicationAnswerForm,
-                                                      extra=len(questions))
+        form = ApplicationFormset(instance=self.object)
 
-            initial_answers = list(map(lambda q: {'answer': '', 'question': q}, questions))
-            form = ApplicationFormset(initial=initial_answers)
-
-        else:
-            ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
-                                                      form=CrooApplicationAnswerForm,                                                      extra=0)
-
-            qs = queryset=CrooApplicationAnswer.objects.filter(application__applicant=self.request.user, trips_year=trips_year)
-            print(list(map(model_to_dict, qs.all())))
-            form = ApplicationFormset(queryset=qs)
+        # TODO: move this external - attach to formset, somehow?
+        form.helper = FormHelper()
+        form.helper.add_input(Submit('submit', 'Submit'))
 
         return form
-                        
         
-    def form_valid(self, form):
-        if self.object is None: # newly created
-            form.instance.applicant = self.request.user
-            form.instance.trips_year = TripsYear.objects.current()
-        return super(CrooApplicationView, self).form_valid(form)
-
-
 """
 Grading portal, redirects to next app to grade. 
 
