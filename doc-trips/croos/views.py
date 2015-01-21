@@ -48,8 +48,8 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         
-        if self.get_queryset().filter(applicant=self.request.user, 
-                                      trips_year=TripsYear.objects.current()).exists():
+        if self.model.objects.filter(applicant=self.request.user, 
+                                     trips_year=TripsYear.objects.current()).exists():
             return HttpResponseRedirect(reverse('croos:edit_application'))
         
         return super(CrooApplicationCreate, self).dispatch(request, *args, **kwargs)
@@ -60,7 +60,7 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
         questions = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
 
         if data is not None:
-            # POST
+           # POST
             initial = None
         else: 
             # GET. Instantiate blank application and answsers
@@ -69,7 +69,8 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
         ApplicationFormset = inlineformset_factory(CrooApplication,
                                                    CrooApplicationAnswer, 
                                                    form=CrooApplicationAnswerForm,
-                                                   max_num=len(questions))
+                                                   max_num=len(questions), 
+                                                   can_delete=False)
         form = ApplicationFormset(data, initial=initial)
 
         # TODO: move this external - attach to formset, somehow?
@@ -89,7 +90,7 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
 
         
 
-class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
+class CrooApplicationView(LoginRequiredMixin, UpdateView):
     """
     Application page.
     
@@ -112,19 +113,19 @@ class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     def get_form(self, data=None, files=None, **kwargs):
         trips_year = TripsYear.objects.current()
-
         ApplicationFormset = inlineformset_factory(CrooApplication, 
                                                    CrooApplicationAnswer, 
-                                                   form=CrooApplicationAnswerForm,                                                      extra=0)
+                                                   form=CrooApplicationAnswerForm,                                                      extra=0, 
+                                                   can_delete=False)
 
-        form = ApplicationFormset(instance=self.object)
+        form = ApplicationFormset(data, instance=self.object)
 
         # TODO: move this external - attach to formset, somehow?
         form.helper = FormHelper()
         form.helper.add_input(Submit('submit', 'Submit'))
 
         return form
-        
+
 """
 Grading portal, redirects to next app to grade. 
 
