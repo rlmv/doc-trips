@@ -15,14 +15,16 @@ class CrooApplicationQuestion(DatabaseModel):
 class CrooApplicationAnswer(DatabaseModel):
 
     answer = models.TextField()
+    # editable=False?
     question = models.ForeignKey(CrooApplicationQuestion)
+    application = models.ForeignKey('CrooApplication', 
+                                    related_name='answers', 
+                                    editable=False)
     
     
 class CrooApplication(DatabaseModel):
 
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
-    answers = models.ManyToManyField(CrooApplicationAnswer, null=True, blank=True,
-                                     related_name='application')
 
     assigned_croo = models.ForeignKey('Croo', blank=True, null=True, 
                                       related_name='croolings',

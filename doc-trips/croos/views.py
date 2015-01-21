@@ -2,7 +2,8 @@
 
 from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 from vanilla import FormView, UpdateView
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, model_to_dict
+from django.forms.formsets import BaseFormSet
 from django.core.urlresolvers import reverse_lazy
 from django import forms
 from crispy_forms.helper import FormHelper
@@ -17,7 +18,20 @@ class CrooApplicationAnswerForm(forms.ModelForm):
 
     class Meta:
         model = CrooApplicationAnswer
+        widgets = {
+            'question': forms.HiddenInput()
+        }
 
+    def __init__(self, *args, **kwargs):
+        super(CrooApplicationAnswerForm, self).__init__(*args, **kwargs)
+        # label the answer field with the question. 
+        # question is passed as initial data to the form
+        question = self.initial['question']
+        self.fields['answer'].label = question.question
+        
+
+class BaseCrooApplicationFormset(BaseFormSet):
+    pass
 
 class CrooApplicationForm(forms.ModelForm):
 
@@ -60,22 +74,26 @@ class CrooApplicationView(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     def get_form(self, data=None, files=None, **kwargs):
         trips_year = TripsYear.objects.current()
-        
+
         if kwargs['instance'] is None:
             # user has not applied yet. Instantiate blank application and answsers
-            application, created = CrooApplication.objects.get_or_create(applicant=self.request.user)
             questions = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
-            for question in questions:
-                blank_answer = CrooApplicationAnswer(trips_year=trips_year, 
-                                                     question=question)
-                application.answers.add(blank_answer)
-                blank_answer.save()
-        
-            application.save()
 
-        ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
-                                                  form=CrooApplicationAnswerForm)
-        form = ApplicationFormset(queryset=CrooApplicationAnswer.objects.filter(application__applicant=self.request.user, trips_year=trips_year))
+            ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
+                                                      form=CrooApplicationAnswerForm,
+                                                      extra=len(questions))
+
+            initial_answers = list(map(lambda q: {'answer': '', 'question': q}, questions))
+            form = ApplicationFormset(initial=initial_answers)
+
+        else:
+            ApplicationFormset = modelformset_factory(CrooApplicationAnswer, 
+                                                      form=CrooApplicationAnswerForm,                                                      extra=0)
+
+            qs = queryset=CrooApplicationAnswer.objects.filter(application__applicant=self.request.user, trips_year=trips_year)
+            print(list(map(model_to_dict, qs.all())))
+            form = ApplicationFormset(queryset=qs)
+
         return form
                         
         
