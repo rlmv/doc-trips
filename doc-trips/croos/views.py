@@ -112,7 +112,7 @@ class CrooApplicationView(LoginRequiredMixin, UpdateView):
                                  trips_year=TripsYear.objects.current())
 
     def get_form(self, data=None, files=None, **kwargs):
-        trips_year = TripsYear.objects.current()
+
         ApplicationFormset = inlineformset_factory(CrooApplication, 
                                                    CrooApplicationAnswer, 
                                                    form=CrooApplicationAnswerForm,                                                      extra=0, 
