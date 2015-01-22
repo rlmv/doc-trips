@@ -205,13 +205,9 @@ class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
     def get_context_data(self, **kwargs):
         
         context = super(GradeCrooApplication, self).get_context_data(**kwargs)
-        
         # only grade applications from this year
-        application = get_object_or_404(CrooApplication, 
-                                        trips_year=TripsYear.objects.current())
-        
-        context['application'] = application
-        
+        context['application'] = get_object_or_404(CrooApplication, 
+                                                   trips_year=TripsYear.objects.current())
         return context
 
     def form_valid(self, form):
@@ -219,7 +215,6 @@ class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
         form.instance.grader = self.request.user
         form.instance.application = get_object_or_404(CrooApplication, 
                                                       trips_year=TripsYear.objects.current())
-
         form.save()
         
         return super(GradeCrooApplication, self).form_valid(form)
