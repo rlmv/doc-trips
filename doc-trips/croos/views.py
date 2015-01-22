@@ -147,23 +147,31 @@ Used by directors to edit application questions.
 SHOULD be hidden once the application is open.
 """
 
-class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, TripsYearMixin, FormView):
+class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     
     permission_required = 'permission.can_create_croo_application'
     redirect_unauthenticate_users = True
     raise_exception = True 
 
-    def get_form_class(self):
-        
-        return modelformset_factory(CrooApplicationQuestion)
+    success_url = reverse_lazy('croos:create_application')
+    template_name = 'croos/create_crooapplication.html'
 
     def get_form(self, data=None, files=None, **kwargs):
         
-        FormClass = self.get_form_class()
+        FormSet = modelformset_factory(CrooApplicationQuestion)
+        trips_year = TripsYear.objects.current()
+        queryset = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
+        form = FormSet(data, queryset=queryset)
+        
+        # TODO: move this elsewhere.
+        form.helper = FormHelper()
+        form.helper.add_input(Submit('submit', 'Submit'))
+        
+        return form
 
-        return FormClass(data, files, **kwargs)
-
-
+    def form_valid(self, form):
+        form.save()
+        return super(CreateCrooApplication, self).form_valid(form)
 """
 Database views of croo apps
 
