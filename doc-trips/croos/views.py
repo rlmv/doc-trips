@@ -66,10 +66,11 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
             # GET. Instantiate blank application and answsers
             initial = list(map(lambda q: {'answer': '', 'question': q}, questions))  
 
+
         ApplicationFormset = inlineformset_factory(CrooApplication,
                                                    CrooApplicationAnswer, 
                                                    form=CrooApplicationAnswerForm,
-                                                   max_num=len(questions), 
+                                                   extra=len(questions),
                                                    can_delete=False)
         form = ApplicationFormset(data, initial=initial)
 
