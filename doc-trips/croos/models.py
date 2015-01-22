@@ -4,7 +4,7 @@ from django.db import models
 from jsonfield import JSONField
 from sortedm2m.fields import SortedManyToManyField
 
-from db.models import DatabaseModel
+from db.models import DatabaseModel, TripsYear
 
 
 class CrooApplicationQuestion(DatabaseModel):
@@ -20,9 +20,41 @@ class CrooApplicationAnswer(DatabaseModel):
     application = models.ForeignKey('CrooApplication', 
                                     related_name='answers', 
                                     editable=False)
+
+class CrooApplicationManager(models.Manager):
+
+    """ Directly translated from the LeaderApplicationManager. """
+
+    def next_to_grade(self, grader):
+
+        trips_year = TripsYear.objects.current()
+
+        # Each croo app is graded blind three times
+        application = self._get_random_application(grader, trips_year, 0)
+        if not application:
+            application = self._get_random_application(grader, trips_year, 1)
+        if not application:
+            application = self._get_random_application(grader, trips_year, 2)
+        
+        return application
+
+
+    def _get_random_application(self, grader, trips_year, num):
+        """ Return a random application, which 'grader' has not graded, 
+        and has only been graded by num people."""
+        
+        application = (self.filter(trips_year=trips_year)
+                       .annotate(models.Count('grades'))
+                       .filter(grades__count=num)
+                       .exclude(grades__grader=grader)
+                       .order_by('?')[:1]) # this may be expensive
+        
+        return application[0] if application else None
     
     
 class CrooApplication(DatabaseModel):
+
+    objects = CrooApplicationManager()
 
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
 
@@ -46,7 +78,9 @@ class Croo(DatabaseModel):
 class CrooApplicationGrade(DatabaseModel):
     
     grader = models.ForeignKey(settings.AUTH_USER_MODEL)
-    croo_application = models.ForeignKey(CrooApplication, related_name='grades')
+    application = models.ForeignKey(CrooApplication, related_name='grades')
+    grade = models.IntegerField()
+    comments = models.TextField()
 
 
 

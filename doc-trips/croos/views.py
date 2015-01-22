@@ -4,7 +4,7 @@ from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 from vanilla import FormView, UpdateView, CreateView, RedirectView, TemplateView
 from django.forms.models import modelformset_factory, inlineformset_factory, model_to_dict
 from django.forms.formsets import BaseFormSet
-from django.forms.models import BaseInlineFormSet
+from django.forms.models import BaseInlineFormSet, ModelForm
 from django.core.urlresolvers import reverse_lazy, reverse
 from django import forms
 from django.shortcuts import get_object_or_404
@@ -14,7 +14,7 @@ from crispy_forms.layout import Submit
 
 from db.views import TripsYearMixin, CrispyFormMixin
 from db.models import TripsYear
-from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer
+from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade
 from permissions.views import CrooGraderPermissionRequired
 
 
@@ -185,12 +185,49 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
             return reverse('croos:no_applications')
         return reverse('croos:grade', kwargs={'pk': application.pk})
 
+class CrooApplicationGradeForm(ModelForm):
+
+    class Meta:
+        model = CrooApplicationGrade
+        fields = ['grade', 'comments']
+        
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Submit Grade'))
+
 class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
 
-    pass
+    model = CrooApplicationGrade
+    form_class = CrooApplicationGradeForm
+    template_name = 'croos/grade.html'
 
+    success_url = reverse_lazy('croos:grade_next')
+
+    def get_context_data(self, **kwargs):
+        
+        context = super(GradeCrooApplication, self).get_context_data(**kwargs)
+        
+        # only grade applications from this year
+        application = get_object_or_404(CrooApplication, 
+                                        trips_year=TripsYear.objects.current())
+        
+        context['application'] = application
+        
+        return context
+
+    def form_valid(self, form):
+        
+        form.instance.grader = self.request.user
+        form.instance.application = get_object_or_404(CrooApplication, 
+                                                      trips_year=TripsYear.objects.current())
+
+        form.save()
+        
+        return super(GradeCrooApplication, self).form_valid(form)
+        
+    
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, TemplateView):
-    pass
+    
+    template_name = 'croos/no_applications.html'
 
 """ 
 Grade form - read and input. 
