@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 
 from permissions.models import SitePermission
 
+# Should these permission accessors be in a Manager?
 def get_permission(codename, name):
     """ Return a the requested SitePermission. """
     permission, created = SitePermission.objects.get_or_create(
@@ -35,6 +36,9 @@ def can_create_croo_application():
     return get_permission('can_create_croo_application', 
                           'Can add, delete, and edit questions in the croo app')
 
+def can_grade_croo_applications():
+    return get_permission('can_grade_croo_applications',
+                          'Can grade croo applicaions')
 
 """ # TODO: these might be useful for croos?
 can_edit_db, created = get_permission(
@@ -53,7 +57,8 @@ def directors():
                              can_grade_applications(), 
                              can_access_db(), 
                              can_edit_timetable(), 
-                             can_create_croo_application()]
+                             can_create_croo_application(), 
+                             can_grade_croo_applications()]
     directors.save()
     return directors
 

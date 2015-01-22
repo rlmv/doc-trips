@@ -1,7 +1,7 @@
 
 
 from braces.views import PermissionRequiredMixin, LoginRequiredMixin
-from vanilla import FormView, UpdateView, CreateView
+from vanilla import FormView, UpdateView, CreateView, RedirectView, TemplateView
 from django.forms.models import modelformset_factory, inlineformset_factory, model_to_dict
 from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseInlineFormSet
@@ -15,6 +15,7 @@ from crispy_forms.layout import Submit
 from db.views import TripsYearMixin, CrispyFormMixin
 from db.models import TripsYear
 from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer
+from permissions.views import CrooGraderPermissionRequired
 
 
 class CrooApplicationAnswerForm(forms.ModelForm):
@@ -127,29 +128,18 @@ class CrooApplicationView(LoginRequiredMixin, UpdateView):
 
         return form
 
-"""
-Grading portal, redirects to next app to grade. 
-
-Restricted to directorate.
-"""
-
-
-""" 
-Grade form - read and input. 
-
-Redirect to grading portal on successful post.
-"""
-
-
-"""
-Create/edit this year's application.
-
-Used by directors to edit application questions. 
-SHOULD be hidden once the application is open.
-"""
 
 class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-    
+
+    """
+    Create/edit this year's application.
+
+    Used by directors to edit application questions. 
+
+    TODO: SHOULD be hidden once the application is open.
+    TODO: shrink the text field question boxes.
+    """
+
     permission_required = 'permission.can_create_croo_application'
     redirect_unauthenticate_users = True
     raise_exception = True 
@@ -173,6 +163,41 @@ class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, FormVie
     def form_valid(self, form):
         form.save()
         return super(CreateCrooApplication, self).form_valid(form)
+
+
+
+class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired, 
+                                            RedirectView):
+    """ 
+    Grading portal, redirects to next app to grade. 
+    Identical to the corresponding LeaderGrade view 
+
+    Restricted to directorate members.
+    """
+
+    permanent = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        """ Redirect to next CrooApplication which needs grading """
+        
+        application = CrooApplication.objects.next_to_grade(self.request.user)
+        if not application:
+            return reverse('croos:no_applications')
+        return reverse('croos:grade', kwargs={'pk': application.pk})
+
+class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
+
+    pass
+
+class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, TemplateView):
+    pass
+
+""" 
+Grade form - read and input. 
+
+Redirect to grading portal on successful post.
+"""
+
 """
 Database views of croo apps
 

@@ -38,6 +38,13 @@ class GraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_grade_applications'
     raise_exception = True
 
+class CrooGraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+    """ ONly users with permission to grade crooapplications. """
+
+    redirect_unauthenticated_users = True
+    permission_required = 'permissions.can_grade_croo_applications'
+    raise_exception = True
+
 
 class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     """ Access for users allowed to edit the calendar """
