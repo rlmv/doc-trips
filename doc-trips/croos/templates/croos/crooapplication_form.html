@@ -3,5 +3,10 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+
+<h2> Croo Application </h2>
+
+<p>Not <b>{{ user }}</b>? <a href="{% url 'user:logout' %}">logout</a></p>
+
 {% crispy form %}
 {% endblock content %}
