@@ -38,7 +38,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
-    fields = ('status', 'class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
+    fields = ('status', 'assigned_trip', 'class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
               'from_where', 'what_do_you_like_to_study', 'in_goodstanding_with_college', 
               'trippee_confidentiality', 'dietary_restrictions', 'allergen_information',
               'preferred_sections', 'available_sections', 'preferred_triptypes', 
@@ -65,6 +65,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         # todo move this to extenal layout?
         helper.layout = Layout(
             Field('status'),
+            Field('assigned_trip'),
             LeaderApplicationFormLayout(),
         )
         helper.add_input(Submit('submit', 'Update'))

@@ -19,7 +19,7 @@
     {% if application.assigned_trip %}
     <td>{{ application.assigned_trip|detail_link }}</td>
     {% else %}
-    <td>TODO: assignment link</td>
+    <td>{{ application|edit_link:"assign trip" }}</td>
     {% endif %}
     <td>{{ application.gender }}</td>
     <td>{{ application.class_year }}</td>
