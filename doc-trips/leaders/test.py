@@ -6,9 +6,9 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
-from trip.models import Section
-from leader.models import LeaderGrade, LeaderApplication
-from leader.views import *
+from trips.models import Section
+from leaders.models import LeaderGrade, LeaderApplication
+from leaders.views import *
 
 class GradeValidationTestCase(TripsTestCase):
 

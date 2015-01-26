@@ -12,8 +12,7 @@ from model_mommy import mommy
 from test.fixtures import WebTestCase, TripsYearTestCase
 from db.models import DatabaseModel, TripsYear
 from db.urlhelpers import reverse_update_url, reverse_create_url, reverse_index_url
-from user.permissions import *
-from trip.models import Campsite, TripTemplate
+from trips.models import Campsite, TripTemplate
 
 
 class DatabaseModelTestCase(TripsYearTestCase):

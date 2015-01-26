@@ -1,5 +1,5 @@
 
-from trip.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                       DatabaseListView, DatabaseDetailView)
 

@@ -1,5 +1,5 @@
 """
-Django settings for doc_fyt project.
+Django settings for doc-trips project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -47,17 +47,17 @@ INSTALLED_APPS = (
 
     # custom
     'db',
-    'user',
+    'users',
     'dartdm', 
-    'leader',
+    'leaders',
     'croos', 
-    'trip',
+    'trips',
     'permissions',
     'timetable',
     'webauth', 
 )
 
-AUTH_USER_MODEL = 'user.DartmouthUser'
+AUTH_USER_MODEL = 'users.DartmouthUser'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG

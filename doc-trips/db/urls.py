@@ -2,9 +2,9 @@
 
 from django.conf.urls import patterns, url, include
 
-from trip.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
-                       campsite_urlpatterns, section_urlpatterns)
-from leader.urls import leaderapplication_urlpatterns
+from trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
+                        campsite_urlpatterns, section_urlpatterns)
+from leaders.urls import leaderapplication_urlpatterns
 from db.views import DatabaseIndexView, RedirectToCurrentDatabase
 
 """

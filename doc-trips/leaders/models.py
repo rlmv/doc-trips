@@ -7,7 +7,8 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from db.models import DatabaseModel
-from leader.managers import LeaderApplicationManager
+from leaders.managers import LeaderApplicationManager
+from trips.models import Section, TripType, ScheduledTrip
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (
@@ -49,7 +50,7 @@ class LeaderApplication(DatabaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Applicant")
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING, 
                               verbose_name="Application status")
-    assigned_trip = models.ForeignKey('trip.ScheduledTrip', null=True, 
+    assigned_trip = models.ForeignKey(ScheduledTrip, null=True, 
                                       blank=True, related_name='leaders',
                                       on_delete=models.SET_NULL)
     
@@ -69,14 +70,14 @@ class LeaderApplication(DatabaseModel):
     in_goodstanding_with_college = BooleanField(default=False, verbose_name="By applying to lead a DOC Trip, I acknowledge that I am in good standing with the College. This may be verified by DOC Trips through the Undergraduate Dean’s Office.")
 
     #  ------  trip and section information ------
-    preferred_sections = ManyToManyField('trip.Section', blank=True,
+    preferred_sections = ManyToManyField(Section, blank=True,
                                          related_name='preferred_leaders')
-    available_sections = ManyToManyField('trip.Section', blank=True,
+    available_sections = ManyToManyField(Section, blank=True,
                                          related_name='available_leaders')
-    preferred_triptypes = ManyToManyField('trip.TripType', blank=True,
+    preferred_triptypes = ManyToManyField(TripType, blank=True,
                                           related_name='preferred_leaders',
                                          verbose_name='Preferred types of trips')
-    available_triptypes = ManyToManyField('trip.TripType', blank=True, 
+    available_triptypes = ManyToManyField(TripType, blank=True, 
                                           related_name='available_triptypes', 
                                           verbose_name='Available types of trips')
     trip_preference_comments = TextField(blank=True, verbose_name="Looking at the Trips descriptions, please feel free to use this space to address any concerns or explain your availability. This will only be used to help us in Trip assignments, it will not be considered when your application is being read.")

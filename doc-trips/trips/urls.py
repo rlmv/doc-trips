@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 
 from db.urlhelpers import DB_REGEX
 
-from trip.views import *
+from trips.views import *
 
 # goal:
 # url(CREATE_REGEX, view.as_view(), name=view_name(view))

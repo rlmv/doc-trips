@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.db.models import Q
 
 from db.models import TripsYear
-from trip.models import Campsite, TripType, TripTemplate, ScheduledTrip, Section
+from trips.models import Campsite, TripType, TripTemplate, ScheduledTrip, Section
 
 
 class CampsiteAdmin(admin.ModelAdmin):

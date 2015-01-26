@@ -16,12 +16,12 @@ from crispy_forms.layout import Field
 
 from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
-from leader.models import LeaderApplication, LeaderGrade
+from leaders.models import LeaderApplication, LeaderGrade
 from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from leader.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout
+from leaders.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout
 
 
 logger = logging.getLogger(__name__)

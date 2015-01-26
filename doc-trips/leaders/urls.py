@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url
 
 from db.urlhelpers import DB_REGEX
-from leader.views import *
+from leaders.views import *
 
 urlpatterns = patterns('',
     url(r'^apply/$', LeaderApply.as_view(), name='apply'),
