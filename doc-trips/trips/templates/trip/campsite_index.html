@@ -4,11 +4,14 @@
 
 {% block content %}
 
-<h3> Campsites </h3>
+<div>
+  <h3> Campsites </h3>
+  <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. <strong>Todo:</strong> show when campsite capacity is exceeded.</p>
+</div>
 
 <table class="table">
   <tr>
-    <th>Name</th>
+    <th>Campsite</th>
     <th>Capacity</th>
     {% for date in camping_dates %}
     <th> {{ date }} </th>
@@ -22,7 +25,7 @@
     {% for trips in campsite.get_occupancy_list %}
     <td> 
       {% for trip in trips %}
-      {{ trip|edit_link:trip }}
+      {{ trip|detail_link:trip }}
       {% endfor %}
     </td>
     {% endfor %}
