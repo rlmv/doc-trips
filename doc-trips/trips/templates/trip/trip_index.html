@@ -6,26 +6,27 @@
 
 <div>
   <h3> Scheduled Trips </h3>
-  <p> All trips which are scheduled to go out this year. Each Scheduled Trip is identified by a <em>Section</em> and a <em>Trip Template</em> </p>
+  <p> All trips which are scheduled to go out this year. Each Scheduled Trip is identified by a <em>Section</em> and a <em>Trip Template</em>. To schedule a trip, click on the "add" link in the matrix. </p>
 </div>
 
 <table class="table">
   <tr>
     <th>Template</th>
     <th>Type</th>
-    <th>Description</th>
-    <th>Max trippees</th>
     {% for section in sections %}
     <th>{{ section }}</th>
     {% endfor %}
+
+    {% comment %} 
+    <th>Description</th>
+    <th>Max trippees</th> 
+    {% endcomment %}
+
   </tr>
   {% for template in templates %}
   <tr>
     <td> {{ template | detail_link }} </td>
     <td> {{ template.trip_type.name }} </td>
-    <td> {{ template.description }} </td>
-    <td> {{ template.max_trippees }} </td>
-
     {% for section, trip in template.get_scheduled_trips.items %}
     {% if trip %}
     <td>{{ trip | detail_link }}</td>
@@ -33,6 +34,11 @@
     <td><a href="{% url 'db:scheduledtrip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
     {% endif %}
     {% endfor %}
+    
+    {% comment %}
+    <td> {{ template.description }} </td>
+    <td> {{ template.max_trippees }} </td>
+    {% endcomment %}
 
   </tr>
   {% endfor %}
