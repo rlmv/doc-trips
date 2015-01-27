@@ -1,8 +1,17 @@
 {% extends "db/base.html" %}
 {% load detail_view %}
+{% load verbose_name %}
 
 {% block content %}
 
+{% block title %}
+<h3>{{ view.model | verbose_name | title }} </h3>
+<h4> {{ object }} </h4>
+{% endblock title %}
+
+{% block description %}
+{% endblock description %}
+
 {% detail object view.fields %}
 
-{% endblock %}
+{% endblock content %}

@@ -308,17 +308,13 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
 
     template_name = 'db/detail.html'
     
+    # Fields to display in the view. Passed in the template.
+    fields = None
+    
     @classmethod
     def urlpattern(cls):
         name = '{}_detail'.format(cls.model.get_model_name_lower())
         return url(r'^(?P<pk>[0-9]+)/$', cls.as_view(), name=name)
-
-    def get_context_data(self, **kwargs):
-        context = super(DatabaseDetailView, self).get_context_data(**kwargs)
-    
-#        print(self.object._meta.get_all_field_names())
-
-        return context
         
 
 class DatabaseIndexView(DatabasePermissionRequired, TripsYearMixin, TemplateView):

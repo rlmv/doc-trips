@@ -2,9 +2,14 @@
 
 {% load links %}
 {% load crispy_forms_tags %}
+{% load verbose_name %}
 
 {% block content %}
 
+{% block title %}
+<h3>Edit {{ view.model | verbose_name | title }} </h3>
+{% endblock title %}
+
 {% crispy form %}
 
-{% endblock %}p
+{% endblock %}
