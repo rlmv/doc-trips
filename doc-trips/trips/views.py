@@ -69,6 +69,7 @@ class TripTemplateCreateView(DatabaseCreateView):
 
 class TripTemplateDetailView(DatabaseDetailView):
     model = TripTemplate
+    fields = ['name', 'description', 'trip_type', 'max_trippees', 'non_swimmers_allowed', 'campsite_1', 'campsite_2']
 
 class TripTemplateUpdateView(DatabaseUpdateView):
     model = TripTemplate
@@ -113,6 +114,7 @@ class CampsiteCreateView(DatabaseCreateView):
 
 class CampsiteDetailView(DatabaseDetailView):
     model = Campsite
+    fields = ['name', 'capacity', 'directions', 'bugout', 'secret']
 
 class CampsiteUpdateView(DatabaseUpdateView):
     model = Campsite
@@ -132,6 +134,8 @@ class SectionCreateView(DatabaseCreateView):
 
 class SectionDetailView(DatabaseDetailView):
     model = Section
+    fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange', 
+              'is_transfer', 'is_international', 'is_native', 'is_fysep']
 
 class SectionUpdateView(DatabaseUpdateView):
     model = Section

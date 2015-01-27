@@ -4,6 +4,8 @@
 
 {% block content %}
 
+<h3> Campsites </h3>
+
 <table class="table">
   <tr>
     <th>Name</th>
@@ -31,7 +33,7 @@
   {% endfor %}
 </table>
 
-<a href="{% create_url model trips_year %}" class="btn btn-primary" role="button">
+<a href="{% create_url model trips_year %}" class="btn btn-link" role="button">
   Add a campsite
 </a>
 

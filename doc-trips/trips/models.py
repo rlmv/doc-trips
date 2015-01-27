@@ -33,7 +33,7 @@ class Section(DatabaseModel):
     
     """ Model to represent a trips section. """
 
-    name = models.CharField(max_length=1, help_text="A, B, C, etc.") 
+    name = models.CharField(max_length=1, help_text="A, B, C, etc.", verbose_name='Section') 
     leaders_arrive = models.DateField()
     
     is_local = models.BooleanField(default=False)
