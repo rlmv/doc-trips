@@ -14,7 +14,7 @@
 
   {% for application in leaderapplications %}
   <tr>
-    <td>{{ application.user }}</td>
+    <td>{{ application|detail_link:application.user }}</td>
     <td>{{ application.status }}</td>
     {% if application.assigned_trip %}
     <td>{{ application.assigned_trip|detail_link }}</td>

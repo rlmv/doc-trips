@@ -9,6 +9,21 @@
   <h4> Application for {{ object.user }} </h4>
 </div>
 
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h5> Preferred trips </h5>
+    <p> 
+      {% for pair in preferred_trips %} 
+      {{ pair.0 }}: 
+        {% for trip in pair.1 %}
+        {{ trip }}
+        {% endfor %}
+      {% endfor %}
+    </p>
+    <h5> Available trips </h5>
+    <p>  </p>
+  </div>
+</div>
 {% crispy form %}
 
 {% endblock %}

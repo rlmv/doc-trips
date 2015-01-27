@@ -15,5 +15,6 @@ leaderapplication_urlpatterns = patterns('',
     url(DB_REGEX['LIST'], LeaderApplicationDatabaseListView.as_view(), name='leaderapplication_index'),
     LeaderApplicationDatabaseUpdateView.urlpattern(),
     LeaderApplicationDatabaseDetailView.urlpattern(),
-)                                         
+    url(r'^(?P<pk>[0-9]+)/assign$', LeaderApplicationDatabaseAssignmentView.as_view(), name='leaderapplication_assignment'),
+ )                                         
                               

@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.db.models import ManyToManyField, CharField, ForeignKey, TextField, BooleanField
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -134,7 +135,37 @@ class LeaderApplication(DatabaseModel):
 
     def __str__(self):
         return str(self.user)
+
+
+    def get_preferred_trips(self):
+        """ All scheduled trips which this leader prefers to go lead. """
+
+        trips = (ScheduledTrip.objects
+                 .filter(trips_year=self.trips_year)
+                 .filter(Q(section__in=self.preferred_sections.all()) &
+                         Q(template__trip_type__in=self.preferred_triptypes.all())))
+
+        return trips
+
+
+    def get_available_trips(self):
+        """
+        Return all ScheduledTrips which this leader is available for. 
         
+        Contains all permutations of available and preferred sections and 
+        trips types, excluding the results of get_preferred_trips.
+        """
+        
+        trips = (ScheduledTrip.objects
+                 .filter(trips_year=self.trips_year)
+                 .filter(Q(section__in=self.preferred_sections.all()) |
+                         Q(section__in=self.available_sections.all()), 
+                         Q(template__trip_type__in=self.preferred_triptypes.all()) |
+                         Q(template__trip_type__in=self.available_triptypes.all()))
+                 .exclude(id__in=self.get_preferred_trips().all()))
+
+        return trips
+                 
 
 def validate_grade(grade):
     min = LeaderGrade.MIN_GRADE

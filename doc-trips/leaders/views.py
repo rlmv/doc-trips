@@ -1,5 +1,6 @@
 
 import logging
+from collections import defaultdict
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -38,6 +39,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
+    # we don't show the user in the form fields because the user is not editable
     fields = ('status', 'assigned_trip', 'class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
               'from_where', 'what_do_you_like_to_study', 'in_goodstanding_with_college', 
               'trippee_confidentiality', 'dietary_restrictions', 'allergen_information',
@@ -52,6 +54,24 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
               'relevant_experience', 'cannot_participate_in', 'spring_leader_training_ok', 
               'summer_leader_training_ok', 'express_yourself')
 
+
+    def get_context_data(self, **kwargs):
+        
+        context = super(LeaderApplicationDatabaseUpdateView, self).get_context_data(**kwargs)
+        preferred_trips = self.object.get_preferred_trips()
+        p_dict = defaultdict(list)
+        for trip in preferred_trips:
+            p_dict[trip.template.trip_type.name].append(trip)
+        context['preferred_trips'] = list(p_dict.items())
+        
+        available_trips = self.object.get_available_trips()
+        a_dict = defaultdict(list)
+        for trip in available_trips:
+            a_dict[trip.template.trip_type.name].append(trip)
+        context['available_trips'] = list(a_dict.items())
+        
+        return context
+        
     
     def get_form_helper(self, form):
         """ 
@@ -76,6 +96,11 @@ class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
     fields = ('user',) + LeaderApplicationDatabaseUpdateView.fields 
 
+class LeaderApplicationDatabaseAssignmentView(DatabaseDetailView):
+    model = LeaderApplication
+    fields = LeaderApplicationDatabaseDetailView.fields
+
+    
 
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
