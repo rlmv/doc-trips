@@ -1,6 +1,12 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
+{% load verbose_name %}
 
 {% block content %}
+
+{% block title %}
+<h3> Add a new {{ view.model | verbose_name | title }} </h3>
+{% endblock title %}
+
 {% crispy form %}
 {% endblock %}
