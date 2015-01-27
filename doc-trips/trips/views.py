@@ -37,16 +37,13 @@ class ScheduledTripCreateView(DatabaseCreateView):
         Used by the trip_index.html template to link to a create form 
         for a template-section pair
 
-        TODO: should this be simplified to 
-        if GET has items:
-           data = GET
-        ??
+        TODO: make the form fields uneditable.
         """
 
         cls = self.get_form_class()
-        
+
         GET = self.request.GET
-        if 'section' in GET and 'template' in GET:
+        if data is None and 'section' in GET and 'template' in GET:
             data = {'section': GET['section'], 'template': GET['template']}
         
         return super(ScheduledTripCreateView, self).get_form(data=data, files=files, **kwargs)
