@@ -21,7 +21,14 @@
       {% endfor %}
     </p>
     <h5> Available trips </h5>
-    <p>  </p>
+    <p> 
+      {% for pair in available_trips %} 
+      {{ pair.0 }}: 
+        {% for trip in pair.1 %}
+        {{ trip }}
+        {% endfor %}
+      {% endfor %}
+    </p>
   </div>
 </div>
 {% crispy form %}
