@@ -22,7 +22,6 @@ class ScheduledTripListView(DatabaseListView):
 
 class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip
-    success_url_pattern = 'db:trip:trip_update'
     fields = ['section', 'template']
 
 class ScheduledTripDetailView(DatabaseDetailView):
@@ -30,7 +29,6 @@ class ScheduledTripDetailView(DatabaseDetailView):
 
 class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip
-    success_url_pattern = 'db:trip:trip_update'
     fields = ['section', 'template']
 
     def get_form(self, data=None, files=None, **kwargs):
@@ -56,7 +54,7 @@ class ScheduledTripCreateView(DatabaseCreateView):
 
 class ScheduledTripDeleteView(DatabaseDeleteView):
     model = ScheduledTrip
-    success_url_pattern = 'db:trip:trip_index'
+    success_url_pattern = 'db:scheduledtrip_index'
 
 
 class TripTemplateListView(DatabaseListView):
