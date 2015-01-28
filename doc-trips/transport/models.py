@@ -10,6 +10,7 @@ TRANSPORT_CATEGORIES = (
 
 class Stop(DatabaseModel):
 
+    name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
     location = models.CharField(max_length=255, help_text='Plain text address, eg. Hanover, NH 03755. This must take you to the location in Google maps.')
     latitude = models.FloatField()
@@ -19,6 +20,10 @@ class Stop(DatabaseModel):
     # OR: get rid of category entirely?
     route = models.ForeignKey('Route')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
+
+    def __str__(self):
+        return self.name
+        
     
     
 class Route(DatabaseModel):
