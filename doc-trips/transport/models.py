@@ -23,19 +23,25 @@ class Stop(DatabaseModel):
 
     def __str__(self):
         return self.name
-        
     
     
 class Route(DatabaseModel):
     
+    name = models.CharField(max_length=255)
     vehicle = models.ForeignKey('Vehicle')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
+
+    def __str__(self):
+        return self.name
     
 
 class Vehicle(DatabaseModel):
     # eg. Internal Bus, Microbus, 
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.name
 
 
 class ScheduledTransportation(DatabaseModel):
