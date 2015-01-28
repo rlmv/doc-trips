@@ -1,0 +1,12 @@
+
+{% extends "db/detail.html" %}
+{% load links %}
+
+{% comment %}
+Special template for LeaderApplication details. Leader apps cannot be 
+deleted, so the delete_link cannot be generated.
+{% endcomment %}
+
+{% block links %}
+{{ object | edit_link }}
+{% endblock links %}
