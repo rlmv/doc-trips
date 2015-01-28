@@ -143,7 +143,7 @@ class LeaderApplication(DatabaseModel):
         trips = (ScheduledTrip.objects
                  .filter(trips_year=self.trips_year)
                  .filter(Q(section__in=self.preferred_sections.all()) &
-                         Q(template__trip_type__in=self.preferred_triptypes.all())))
+                         Q(template__triptype__in=self.preferred_triptypes.all())))
 
         return trips
 
@@ -160,8 +160,8 @@ class LeaderApplication(DatabaseModel):
                  .filter(trips_year=self.trips_year)
                  .filter(Q(section__in=self.preferred_sections.all()) |
                          Q(section__in=self.available_sections.all()), 
-                         Q(template__trip_type__in=self.preferred_triptypes.all()) |
-                         Q(template__trip_type__in=self.available_triptypes.all()))
+                         Q(template__triptype__in=self.preferred_triptypes.all()) |
+                         Q(template__triptype__in=self.available_triptypes.all()))
                  .exclude(id__in=self.get_preferred_trips().all()))
 
         return trips

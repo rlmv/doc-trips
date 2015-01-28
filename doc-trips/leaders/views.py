@@ -61,13 +61,13 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         preferred_trips = self.object.get_preferred_trips()
         p_dict = defaultdict(list)
         for trip in preferred_trips:
-            p_dict[trip.template.trip_type.name].append(trip)
+            p_dict[trip.template.triptype.name].append(trip)
         context['preferred_trips'] = list(p_dict.items())
         
         available_trips = self.object.get_available_trips()
         a_dict = defaultdict(list)
         for trip in available_trips:
-            a_dict[trip.template.trip_type.name].append(trip)
+            a_dict[trip.template.triptype.name].append(trip)
         context['available_trips'] = list(a_dict.items())
         
         return context

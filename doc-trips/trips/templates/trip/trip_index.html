@@ -26,7 +26,7 @@
   {% for template in templates %}
   <tr>
     <td> {{ template | detail_link }} </td>
-    <td> {{ template.trip_type.name }} </td>
+    <td> {{ template.triptype.name }} </td>
     {% for section, trip in template.get_scheduled_trips.items %}
     {% if trip %}
     <td>{{ trip | detail_link }}</td>

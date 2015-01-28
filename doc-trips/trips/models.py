@@ -83,7 +83,7 @@ class TripTemplate(DatabaseModel):
     name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
     description = models.CharField(max_length=255) # short info
 
-    trip_type = models.ForeignKey('TripType')
+    triptype = models.ForeignKey('TripType', verbose_name='trip type')
     max_trippees = models.PositiveSmallIntegerField()
     non_swimmers_allowed = models.BooleanField(default=True)
     

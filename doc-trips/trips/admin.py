@@ -136,7 +136,7 @@ class TripTypeAdmin(admin.ModelAdmin):
 
 class TripTemplateAdmin(admin.ModelAdmin):
 
-    list_display = ['name', 'description', 'trip_type']
+    list_display = ['name', 'description', 'triptype']
 
 
 admin.site.register(Campsite, CampsiteAdmin)
