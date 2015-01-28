@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'dartdm', 
     'leaders',
     'croos', 
+    'transport',
     'trips',
     'permissions',
     'timetable',
