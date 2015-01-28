@@ -94,6 +94,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
+    template_name = 'leader/leaderapplication_detail.html'
     fields = ('user',) + LeaderApplicationDatabaseUpdateView.fields 
 
 class LeaderApplicationDatabaseAssignmentView(DatabaseDetailView):
