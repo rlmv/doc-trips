@@ -1,7 +1,6 @@
 
 from django.conf import settings
 from django.db import models
-from sortedm2m.fields import SortedManyToManyField
 
 from db.models import DatabaseModel, TripsYear
 
