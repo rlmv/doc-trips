@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 
 from db.models import DatabaseModel
+from transport.models import Stop
 from trips.managers import SectionDatesManager
 
 
@@ -87,10 +88,8 @@ class TripTemplate(DatabaseModel):
     max_trippees = models.PositiveSmallIntegerField()
     non_swimmers_allowed = models.BooleanField(default=True)
     
-    """ TODO:
-    dropoff_transport_stop = models.ForeignKey('TransportStop')
-    pickup_transport_stop = models.ForeignKey('TransportStop')
-    """
+    dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips')
+    pickup = models.ForeignKey(Stop, related_name='picked_up_trips')
 
     # TODO: better related names
     campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
