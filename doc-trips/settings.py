@@ -98,8 +98,8 @@ DATABASES = {
 }
 # Enable Connection Pooling on Heroku databases
 # see https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
-if not DATABASES['default']['NAME'] == 'db.sqlite3':
-    DATABASES['default']['ENGINE'] = 'django_postgrespool'
+#if not DATABASES['default']['NAME'] == 'db.sqlite3':
+#DATABASES['default']['ENGINE'] = 'django_postgrespool'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
