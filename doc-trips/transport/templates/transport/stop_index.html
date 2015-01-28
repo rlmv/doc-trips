@@ -1,5 +1,6 @@
 
 {% extends "db/base.html" %}
+{% load links %}
 
 {% block content %}
 
@@ -8,8 +9,30 @@
 </div>
 
 <table class="table">
+  <tr> 
+    <th> Name </th>
+    <th> Address </th>
+    <th> Latitude </th>
+    <th> Longitude </th>
+    <th> Transportation Route </th>
+  </tr>
 
+  {% for stop in stops %}
+  <tr> 
+    <td> {{ stop | detail_link }} </td>
+    <td> {{ stop.location }} </td>
+    <td> {{ stop.longitude }} </td>
+    <td> {{ stop.latitude }} </td>
+    <td> {{ stop.route | detail_link }} </td>
+    <td> {{ stop | edit_link }} </td>
+    <td> {{ stop | delete_link }} </td>
+  </tr>
+  {% endfor %}
 
 </table>
+
+<a href="{% create_url model trips_year %}" class="btn btn-primary" role="button">
+  Add a transportation stop
+</a>
 
 {% endblock content %}

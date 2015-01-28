@@ -28,7 +28,7 @@ class StopDeleteView(DatabaseDeleteView):
 
 class RouteListView(DatabaseListView):
     model = Route
-    context_object_name = 'stops'
+    context_object_name = 'routes'
     template_name = 'transport/route_index.html'
 
 class RouteCreateView(DatabaseCreateView):
@@ -48,7 +48,7 @@ class RouteDeleteView(DatabaseDeleteView):
 
 class VehicleListView(DatabaseListView):
     model = Vehicle
-    context_object_name = 'stops'
+    context_object_name = 'vehicles'
     template_name = 'transport/vehicle_index.html'
 
 class VehicleCreateView(DatabaseCreateView):
