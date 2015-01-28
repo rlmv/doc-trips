@@ -16,6 +16,8 @@
     <th> Max trippees </th>
     <th> Campsite #1 </th>
     <th> Campsite #2 </th>
+    <th> Dropoff </th>
+    <th> Pickup </th>
   </tr>
   {% for template in templates %}
   <tr>
@@ -25,6 +27,8 @@
     <td>{{ template.max_trippees }}</td>
     <td>{{ template.campsite_1|detail_link }}</td>
     <td>{{ template.campsite_2|detail_link }}</td>
+    <td> {{ template.dropoff | detail_link }} </td>
+    <td> {{ template.pickup | detail_link }} </td>
     <td>{{ template|edit_link }}</td>
     <td>{{ template|delete_link }}</td>
   <tr>
