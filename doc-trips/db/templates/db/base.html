@@ -9,5 +9,8 @@
  <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
   <a class="list-group-item" href="{% url 'db:triptemplate_index' trips_year=trips_year %}"> Trip templates </a>
    <a class="list-group-item" href="{% url 'db:leaderapplication_index' trips_year=trips_year %}"> Leaders </a>
+   <a class="list-group-item" href="{% url 'db:stop_index' trips_year=trips_year %}">Transportation Stops </a>
+   <a class="list-group-item" href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a>
+   <a class="list-group-item" href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a>
 </ul>
 {% endblock %}
