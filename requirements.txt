@@ -16,6 +16,8 @@ django-location-field
 
 # heroku
 django-toolbelt 
+whitenoise
+django-postgrespool
 
 # testing
 model_mommy

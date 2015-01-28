@@ -91,10 +91,15 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 
+# used for local testing instead of Postgres
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
+# Enable Connection Pooling on Heroku databases
+# see https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
+if not DATABASES['default']['NAME'] == 'db.sqlite3':
+    DATABASES['default']['ENGINE'] = 'django_postgrespool'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -128,6 +133,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+# from https://devcenter.heroku.com/articles/django-app-configuration
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),

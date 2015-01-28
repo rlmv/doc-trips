@@ -11,7 +11,7 @@
 <table class="table">
   <tr>
     <th> Template </th>
-    <th> Description </th>
+    {% comment %} <th> Description </th> {% endcomment %}
     <th> Trip Type </th>
     <th> Max trippees </th>
     <th> Campsite #1 </th>
@@ -22,7 +22,7 @@
   {% for template in templates %}
   <tr>
     <td>{{ template|detail_link }}</td>
-    <td>{{ template.description }}</td>
+    {% comment %} <td>{{ template.description }}</td> {% endcomment %}
     <td>{{ template.triptype|detail_link }}</td>
     <td>{{ template.max_trippees }}</td>
     <td>{{ template.campsite_1|detail_link }}</td>
