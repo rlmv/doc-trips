@@ -16,6 +16,7 @@ class StopCreateView(DatabaseCreateView):
 
 class StopDetailView(DatabaseDetailView):
     model = Stop
+    fields = ['name', 'location', 'latitude', 'longitude', 'category', 'route']
 
 class StopUpdateView(DatabaseUpdateView):
     model = Stop
@@ -36,6 +37,7 @@ class RouteCreateView(DatabaseCreateView):
 
 class RouteDetailView(DatabaseDetailView):
     model = Route
+    fields = ['name', 'vehicle', 'category']
 
 class RouteUpdateView(DatabaseUpdateView):
     model = Route
@@ -56,6 +58,7 @@ class VehicleCreateView(DatabaseCreateView):
 
 class VehicleDetailView(DatabaseDetailView):
     model = Vehicle
+    fields = ['name', 'capacity']
 
 class VehicleUpdateView(DatabaseUpdateView):
     model = Vehicle
