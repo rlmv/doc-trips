@@ -3,6 +3,11 @@ from django.db import models
 
 from db.models import DatabaseModel
 
+TRANSPORT_CATEGORIES = (
+    ('INTERNAL', 'Internal'),
+    ('EXTERNAL', 'External'),
+)
+
 class Stop(DatabaseModel):
 
     # TODO: validate that lat and long are interdependet / location is there?
@@ -10,12 +15,16 @@ class Stop(DatabaseModel):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
-    primary_route = models.ForeignKey('Route')
+    #TODO: validate category against route's category.
+    # OR: get rid of category entirely?
+    route = models.ForeignKey('Route')
+    category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
     
     
 class Route(DatabaseModel):
     
     vehicle = models.ForeignKey('Vehicle')
+    category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
     
 
 class Vehicle(DatabaseModel):
@@ -24,9 +33,10 @@ class Vehicle(DatabaseModel):
     capacity = models.PositiveSmallIntegerField()
 
 
-class ScheduledTransport(DatabaseModel):
+class ScheduledTransportation(DatabaseModel):
 
     route = models.ForeignKey('Route')
+    date = models.DateField()
     
     
     
