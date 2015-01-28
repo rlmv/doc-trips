@@ -34,7 +34,7 @@ def can_edit_timetable():
 
 def can_create_croo_application():
     return get_permission('can_create_croo_application', 
-                          'Can add, delete, and edit questions in the croo app')
+                          'Can create and alter croo app questions')
 
 def can_grade_croo_applications():
     return get_permission('can_grade_croo_applications',
