@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from django.conf import settings
 from django.db import connections
 
-from trips.models import Campsite
+from trips.models import Campsite, TripType
 from transport.models import Vehicle, Route, Stop
 from db.models import TripsYear
 
@@ -143,6 +143,25 @@ def migrate_stops():
         print('Added stop ' + str(stop))
             
 
+def migrate_triptypes():
+
+    connection = setup_connection()
+    sql = 'SELECT * FROM ft2013_triptype;'
+    
+    for row in connection.execute(sql):
+
+        triptype = TripType(
+            id=row['id'],
+            name=row['name'],
+            leader_description=row['desc_leader'],
+            trippee_description=row['desc_trippee'],
+            packing_list=row['packing_list'],
+            trips_year=trips_year())
+
+        triptype.save()
+        print('Added triptype ' + str(triptype))
+    
+
 def migrate():
 
     migrate_vehicles()
@@ -150,3 +169,4 @@ def migrate():
     migrate_stops()
 
     migrate_campsites()
+    migrate_triptypes()
