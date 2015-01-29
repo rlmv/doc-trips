@@ -33,6 +33,14 @@ def trips_year():
     
     trips_year, created = TripsYear.objects.get_or_create(year=2015, is_current=True)
     return trips_year
+
+def walk_to_lodge_transport_stop():
+    
+    stop, created = Stop.objects.get_or_create(trips_year=trips_year(),
+                                               name='Walk To Lodge',
+                                               address='walk to lodge', 
+                                               category='INTERNAL')
+    return stop
     
 def migrate_campsites():
 
@@ -160,6 +168,75 @@ def migrate_triptypes():
 
         triptype.save()
         print('Added triptype ' + str(triptype))
+
+
+def migrate_triptemplates():
+
+    connection = setup_connection()
+    sql = 'SELECT * FROM ft2013_triptemplate;'
+
+    for row in connection.execute(sql):
+
+        pickup_id = row['pickup_transportationstop_id']
+        if pickup_id is None:
+            pickup_id = walk_to_lodge_transport_stop().id
+        
+        introduction = row['desc_introduction']
+        if introduction is None:
+            introduction = ''
+        
+        day1 = row['desc_day1']
+        if day1 is None:
+            day1 = ''
+        
+        day2 = row['desc_day2']
+        if day2 is None:
+            day2 = ''
+        
+        day3 = row['desc_day3']
+        if day3 is None:
+            day3 = ''
+        
+        conclusion = row['desc_conclusion']
+        if conclusion is None:
+            conclusion = ''
+
+        revision_notes = row['desc_revision']
+        if revision_notes is None:
+            revision_notes = ''
+
+        campsite1_id = row['night1_tripcampsite_id']
+        campsite2_id = row['night2_tripcampsite_id']
+
+        # template is missing campsite
+        if campsite1_id is None and campsite2_id is None and row['name'] == '939':
+            campsite = Campsite.objects.get(name='Beaver Brook Shelter')
+            print(campsite)
+            campsite1_id = campsite.id
+            campsite2_id = campsite.id
+
+        triptemplate = TripTemplate(
+            id=row['id'],
+            name=row['name'],
+            triptype_id=row['triptype_id'],
+            max_trippees=row['maximum_trippees'],
+            non_swimmers_allowed=row['non_swimmers_allowed'],
+            dropoff_id=row['dropoff_transportationstop_id'],
+            pickup_id=pickup_id,
+            return_route_id=row['return_transportationroute_id'],
+            campsite1_id=campsite1_id,
+            campsite2_id=campsite2_id,
+            description_summary=row['desc_summary'],
+            description_introduction=introduction,
+            description_day1=day1,
+            description_day2=day2,
+            description_day3=day3,
+            description_conclusion=conclusion,
+            revision_notes=revision_notes,
+            trips_year=trips_year())
+
+        triptemplate.save()
+        print('Added triptemplate ' + str(triptemplate))
     
 
 def migrate():
@@ -170,3 +247,4 @@ def migrate():
 
     migrate_campsites()
     migrate_triptypes()
+    migrate_triptemplates()

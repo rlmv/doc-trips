@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.core.urlresolvers import reverse
 
 from db.models import DatabaseModel
-from transport.models import Stop
+from transport.models import Stop, Route
 from trips.managers import SectionDatesManager
 
 
@@ -82,7 +82,7 @@ class Section(DatabaseModel):
 class TripTemplate(DatabaseModel):
 
     name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
-    description = models.CharField(max_length=255) # short info
+    description_summary = models.CharField(max_length=255) # short info
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type')
     max_trippees = models.PositiveSmallIntegerField()
@@ -90,10 +90,21 @@ class TripTemplate(DatabaseModel):
     
     dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips')
     pickup = models.ForeignKey(Stop, related_name='picked_up_trips')
+    # is this for returning from the lodge?
+    # TODO: remove null=True. All templates need a return route.
+    return_route = models.ForeignKey(Route, related_name='returning_trips', null=True)
 
     # TODO: better related names
-    campsite_1 = models.ForeignKey('Campsite', related_name='trip_night_1')
-    campsite_2 = models.ForeignKey('Campsite', related_name='trip_night_2')
+    campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1')
+    campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2')
+
+    description_introduction = models.TextField()
+    description_day1 = models.TextField()
+    description_day2 = models.TextField()
+    description_day3 = models.TextField()
+    description_conclusion = models.TextField()
+    
+    revision_notes = models.TextField(blank=True)
 
     class Meta:
         verbose_name = 'template'
@@ -133,7 +144,7 @@ class TripTemplate(DatabaseModel):
         return map(lambda k: trips_by_section[k], keys)
 
     def __str__(self):
-        return "{}: {}".format(self.name, self.description)
+        return "{}: {}".format(self.name, self.description_summary)
 
 
 class TripType(DatabaseModel):
@@ -172,8 +183,8 @@ class Campsite(DatabaseModel):
         # all trips which stay at campsite
         resident_trips = (ScheduledTrip.objects
                           .filter(trips_year=trips_year)
-                          .filter(Q(template__campsite_1=self) |
-                                  Q(template__campsite_2=self)))
+                          .filter(Q(template__campsite1=self) |
+                                  Q(template__campsite2=self)))
 
         # mapping of dates -> trips at this campsite
         trips_by_date = {date: [] for date in camping_dates}
