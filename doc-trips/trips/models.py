@@ -152,10 +152,11 @@ class TripType(DatabaseModel):
 class Campsite(DatabaseModel):
     
     name = models.CharField(max_length=255)
-    capacity = models.PositiveSmallIntegerField()
+    capacity = models.PositiveSmallIntegerField(null=True)
     directions = models.TextField()
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
+
     def get_occupancy(self):
         """ Get all ScheduledTrips staying at this campsite
         

@@ -39,8 +39,6 @@ def import_campsites():
     for row in connection.execute(sql):
         
         capacity = row['capacity']
-        if capacity is None:
-            capacity = 100
 
         directions = row['directions_to']
         if directions is None:
