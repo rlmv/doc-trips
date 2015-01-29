@@ -26,7 +26,7 @@ class Stop(DatabaseModel):
     
     
 class Route(DatabaseModel):
-    
+
     name = models.CharField(max_length=255)
     vehicle = models.ForeignKey('Vehicle')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
