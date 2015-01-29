@@ -94,14 +94,9 @@ WSGI_APPLICATION = 'wsgi.application'
 
 # used for local testing instead of Postgres
 import dj_database_url
+sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
-    'legacy': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': 'ft2013',
-        'HOST': '127.0.0.1',
-        'USER': 'django',
-    }
+    'default': dj_database_url.config(default=sqlite)
 }
 # Enable Connection Pooling on Heroku databases
 # see https://devcenter.heroku.com/articles/python-concurrency-and-database-connections

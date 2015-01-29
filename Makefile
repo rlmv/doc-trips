@@ -14,7 +14,7 @@ FEATURES=doc-trips/features/
 .PHONY: install migrations migrate behave behave_dry rm_emacs_locks test coverage clean
 
 all:
-	$(MANAGE) runserver
+	SECRET_KEY=secret $(MANAGE) runserver
 
 install:
 	pyvenv $(VENV)
