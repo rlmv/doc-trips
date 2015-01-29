@@ -64,7 +64,13 @@ class TripTemplateCreateView(DatabaseCreateView):
 
 class TripTemplateDetailView(DatabaseDetailView):
     model = TripTemplate
-    fields = ['name', 'description', 'triptype', 'max_trippees', 'non_swimmers_allowed', 'campsite_1', 'campsite_2', 'dropoff', 'pickup']
+    fields = ['name', 'description_summary', 'triptype', 
+              'max_trippees', 'non_swimmers_allowed', 'dropoff', 
+              'campsite1', 'campsite2', 'pickup', 'return_route',
+              'description_introduction', 'description_day1', 
+              'description_day2', 'description_day3', 
+              'description_conclusion', 'revision_notes']
+              
 
 class TripTemplateUpdateView(DatabaseUpdateView):
     model = TripTemplate

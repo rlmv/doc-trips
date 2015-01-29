@@ -82,7 +82,7 @@ class Section(DatabaseModel):
 class TripTemplate(DatabaseModel):
 
     name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
-    description_summary = models.CharField(max_length=255) # short info
+    description_summary = models.CharField(max_length=255, verbose_name='Summary') # short info
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type')
     max_trippees = models.PositiveSmallIntegerField()
@@ -98,16 +98,17 @@ class TripTemplate(DatabaseModel):
     campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1')
     campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2')
 
-    description_introduction = models.TextField()
-    description_day1 = models.TextField()
-    description_day2 = models.TextField()
-    description_day3 = models.TextField()
-    description_conclusion = models.TextField()
+    description_introduction = models.TextField(verbose_name='Introduction', blank=True)
+    description_day1 = models.TextField(verbose_name='Day 1', blank=True)
+    description_day2 = models.TextField(verbose_name='Day 2', blank=True)
+    description_day3 = models.TextField(verbose_name='Day 3', blank=True)
+    description_conclusion = models.TextField(verbose_name='Conclusion', blank=True)
     
     revision_notes = models.TextField(blank=True)
 
     class Meta:
         verbose_name = 'template'
+        ordering = ['name']
 
     @property
     def max_num_people(self):
