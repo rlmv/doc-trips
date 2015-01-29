@@ -13,7 +13,7 @@ class Stop(DatabaseModel):
 
     name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
-    location = models.CharField(max_length=255, help_text='Plain text address, eg. Hanover, NH 03755. This must take you to the location in Google maps.')
+    address = models.CharField(max_length=255, help_text='Plain text address, eg. Hanover, NH 03755. This must take you to the location in Google maps.')
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 

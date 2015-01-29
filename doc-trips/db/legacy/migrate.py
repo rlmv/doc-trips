@@ -129,7 +129,7 @@ def migrate_stops():
         stop = Stop(
             id=row['id'],
             name=row['name'],
-            location=row['name'],
+            address=row['name'],
             directions=directions,
             distance=row['distance'],
             cost=row['cost'],
