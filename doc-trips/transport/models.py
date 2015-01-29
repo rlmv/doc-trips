@@ -11,6 +11,9 @@ TRANSPORT_CATEGORIES = (
 
 class Stop(DatabaseModel):
 
+    class Meta:
+        ordering = ['category', 'name']
+
     name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
     address = models.CharField(max_length=255, help_text='Plain text address, eg. Hanover, NH 03755. This must take you to the location in Google maps.')
@@ -45,14 +48,21 @@ class Route(DatabaseModel):
     vehicle = models.ForeignKey('Vehicle')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
 
+    class Meta:
+        ordering = ['category', 'vehicle', 'name']
+
     def __str__(self):
         return self.name
     
 
 class Vehicle(DatabaseModel):
+
     # eg. Internal Bus, Microbus, 
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
+
+    class Meta:
+        ordering = ['name']
 
     def __str__(self):
         return self.name

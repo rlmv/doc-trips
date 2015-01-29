@@ -24,7 +24,7 @@ class StopUpdateView(DatabaseUpdateView):
 class StopDeleteView(DatabaseDeleteView):
     model = Stop
     success_url_pattern = 'db:stop_index'
-
+    
 
 
 class RouteListView(DatabaseListView):
