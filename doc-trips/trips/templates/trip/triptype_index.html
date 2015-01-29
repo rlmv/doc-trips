@@ -8,14 +8,14 @@
 <table class="table">
   <tr>
     <th>Trip type</th>
-    <th>Leader Description</th>
     <th>Trippee Description</th>
+    <th>Leader Description</th>
   </tr>
   {% for type in triptypes %}
   <tr> 
     <td>{{ type | detail_link }}</td>
-    <td>{{ type.leader_description }}</td>
     <td>{{ type.trippee_description }}</td>
+    <td>{{ type.leader_description }}</td>
     <td>{{ type | edit_link }}</td>
     <td>{{ type | delete_link }}</td>
   </tr>

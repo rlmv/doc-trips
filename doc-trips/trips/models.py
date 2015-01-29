@@ -145,6 +145,9 @@ class TripType(DatabaseModel):
     # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return self.name
 
