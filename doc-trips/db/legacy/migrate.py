@@ -145,8 +145,8 @@ def migrate_stops():
 
 def migrate():
 
-    #migrate_campsites()
-
     migrate_vehicles()
     migrate_routes()
     migrate_stops()
+
+    migrate_campsites()

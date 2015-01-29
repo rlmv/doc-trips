@@ -12,7 +12,7 @@ TRANSPORT_CATEGORIES = (
 class Stop(DatabaseModel):
 
     class Meta:
-        ordering = ['category', 'name']
+        ordering = ['category', 'route', 'name']
 
     name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
@@ -21,11 +21,11 @@ class Stop(DatabaseModel):
     longitude = models.FloatField(blank=True, null=True)
 
     # verbal directions, descriptions. migrated from legacy.
-    directions = models.TextField()
+    directions = models.TextField(blank=True)
 
     #TODO: validate category against route's category.
     # OR: get rid of category entirely?
-    route = models.ForeignKey('Route', null=True)
+    route = models.ForeignKey('Route', null=True, blank=True)
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
 
     # TODO: validate that this only is used if category==EXTERNAL
