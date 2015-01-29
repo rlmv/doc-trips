@@ -16,10 +16,23 @@ class Stop(DatabaseModel):
     latitude = models.FloatField()
     longitude = models.FloatField()
 
+    # verbal directions, descriptions. migrated from legacy.
+    directions = models.TextField()
+
     #TODO: validate category against route's category.
     # OR: get rid of category entirely?
     route = models.ForeignKey('Route')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
+
+    # TODO: validate that this only is used if category==EXTERNAL
+    cost = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    
+    # legacy data from old db - hide on site?
+    distance = models.IntegerField()
+
+    # mostly used for external routes
+    pickup_time = models.TimeField(blank=True, null=True)
+    dropoff_time = models.TimeField(blank=True, null=True)
 
     def __str__(self):
         return self.name

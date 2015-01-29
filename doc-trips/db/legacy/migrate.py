@@ -101,9 +101,34 @@ def migrate_routes():
         route.save()
         print('Added route ' + str(route))
 
+
+def migrate_stops():
+
+    connection = setup_connection()
+    sql = 'SELECT * FROM ft2013_transportationstops;'
+
+    for row in connection.execute(sql):
+        
+        category = row['category'].upper()
+        
+        stop = Stop(
+            id=row['id'],
+            name=row['name'],
+            location=
+            latitude=
+            longitude=
+            route_id=row['primary_transportationroute_id'],
+            category=category,
+            trips_year=trips_year())
+
+        stop.save()
+        print('Added stop ' + str(stop))
+            
+
 def migrate():
 
     #migrate_campsites()
 
     migrate_vehicles()
     migrate_routes()
+    migrate_stops()
