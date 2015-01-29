@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import connections
 
 from trips.models import Campsite
-from transport.models import Vehicle, Route
+from transport.models import Vehicle, Route, Stop
 from db.models import TripsYear
 
 """
@@ -105,18 +105,36 @@ def migrate_routes():
 def migrate_stops():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_transportationstops;'
+    sql = 'SELECT * FROM ft2013_transportationstop;'
 
     for row in connection.execute(sql):
+  
+        if row['category'] is not None:
+            category = row['category'].upper()
+        else:
+            category = 'BOTH'
+
+        directions = row['directions']
+        if directions is None:
+            directions = ''
         
-        category = row['category'].upper()
-        
+        pickup_time = row['timepickup']
+        if pickup_time is not None:
+            pickup_time = str(pickup_time)
+            
+        dropoff_time = row['timedropoff']
+        if dropoff_time is not None:
+            dropoff_time = str(dropoff_time)
+ 
         stop = Stop(
             id=row['id'],
             name=row['name'],
-            location=
-            latitude=
-            longitude=
+            location=row['name'],
+            directions=directions,
+            distance=row['distance'],
+            cost=row['cost'],
+            pickup_time=pickup_time,
+            dropoff_time=dropoff_time,
             route_id=row['primary_transportationroute_id'],
             category=category,
             trips_year=trips_year())

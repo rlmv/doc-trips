@@ -23,7 +23,7 @@
     <td> {{ stop.location }} </td>
     <td> {{ stop.longitude }} </td>
     <td> {{ stop.latitude }} </td>
-    <td> {{ stop.route | detail_link }} </td>
+    <td> {% if stop.route %} {{ stop.route | detail_link }} {% endif %} </td>
     <td> {{ stop | edit_link }} </td>
     <td> {{ stop | delete_link }} </td>
   </tr>
