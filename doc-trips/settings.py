@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     # third party
     'crispy_forms',
     'bootstrap3_datetime',
+    'django_extensions',
     #'django_pdb',
 
     # custom
@@ -94,7 +95,13 @@ WSGI_APPLICATION = 'wsgi.application'
 # used for local testing instead of Postgres
 import dj_database_url
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
+    'legacy': {
+        'ENGINE': 'mysql.connector.django',
+        'NAME': 'ft2013',
+        'HOST': '127.0.0.1',
+        'USER': 'django',
+    }
 }
 # Enable Connection Pooling on Heroku databases
 # see https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
