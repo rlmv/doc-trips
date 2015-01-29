@@ -28,6 +28,9 @@ def detail(db_object, fields=None):
             continue
 
         value = getattr(db_object, field_name)
+
+        if isinstance(field, models.ForeignKey):
+            value = detail_link(value)
         
         if isinstance(field, models.ManyToManyField):
             t = template.Template(
