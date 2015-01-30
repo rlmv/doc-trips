@@ -1,4 +1,9 @@
 
+from django.forms import ModelForm
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from bootstrap3_datetime.widgets import DateTimePicker
+
 from trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                       DatabaseListView, DatabaseDetailView)
@@ -132,8 +137,25 @@ class SectionListView(DatabaseListView):
     context_object_name = 'sections'
     template_name = 'trip/section_index.html'
 
+class SectionForm(ModelForm):
+    """ Form for Section Create and Update views. """
+    
+    class Meta:
+        model = Section
+        widgets = {
+            'leaders_arrive': DateTimePicker(options={'format': 'MM/DD/YYYY'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(SectionForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Submit'))
+    
+
 class SectionCreateView(DatabaseCreateView):
     model = Section
+    form_class = SectionForm
+    template_name = 'trip/section_create.html'
 
 class SectionDetailView(DatabaseDetailView):
     model = Section
@@ -142,6 +164,8 @@ class SectionDetailView(DatabaseDetailView):
 
 class SectionUpdateView(DatabaseUpdateView):
     model = Section
+    form_class = SectionForm
+    template_name = 'trip/section_update.html'
 
 class SectionDeleteView(DatabaseDeleteView):
     model = Section
