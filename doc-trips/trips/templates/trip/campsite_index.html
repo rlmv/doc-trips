@@ -23,11 +23,7 @@
     <td> {{ campsite.capacity }} </td>
     
     {% for trips in campsite.get_occupancy_list %}
-    <td> 
-      {% for trip in trips %}
-      {{ trip|detail_link:trip }}
-      {% endfor %}
-    </td>
+    <td> {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} </td>
     {% endfor %}
 
     <td> {{ campsite|edit_link }} </td>
