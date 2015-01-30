@@ -143,7 +143,8 @@ class SectionForm(ModelForm):
     class Meta:
         model = Section
         widgets = {
-            'leaders_arrive': DateTimePicker(options={'format': 'MM/DD/YYYY'})
+            'leaders_arrive': DateTimePicker(options={'format': 'MM/DD/YYYY', 
+                                                      'pickTime': False})
         }
 
     def __init__(self, *args, **kwargs):
