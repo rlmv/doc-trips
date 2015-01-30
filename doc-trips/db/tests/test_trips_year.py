@@ -105,7 +105,7 @@ class TripsYearMixinTestCase(WebTestCase):
         
         response = self.app.get(reverse_update_url(triptemplate), 
                                 user=self.director.net_id)
-        choices = response.context['form'].fields['campsite_1'].queryset
+        choices = response.context['form'].fields['campsite1'].queryset
 
         # should only show object from current_trips_year
         self.assertEquals(len(choices), 1)

@@ -53,17 +53,17 @@ class Section(DatabaseModel):
         return self.leaders_arrive + timedelta(days=1)
 
     @property
-    def at_campsite_1(self):
+    def at_campsite1(self):
         return self.leaders_arrive + timedelta(days=2)
 
     @property
-    def at_campsite_2(self):
+    def at_campsite2(self):
         return self.leaders_arrive + timedelta(days=3)
 
     @property
     def nights_camping(self):
         """ List of dates when trippees are camping out on the trail. """
-        return [self.at_campsite_1, self.at_campsite_2]
+        return [self.at_campsite1, self.at_campsite2]
 
     @property
     def arrive_at_lodge(self):
@@ -191,10 +191,10 @@ class Campsite(DatabaseModel):
         trips_by_date = {date: [] for date in camping_dates}
 
         for trip in resident_trips:
-            if trip.template.campsite_1 == self:
-                trips_by_date[trip.section.at_campsite_1].append(trip)
-            if trip.template.campsite_2 == self:
-                trips_by_date[trip.section.at_campsite_2].append(trip)
+            if trip.template.campsite1 == self:
+                trips_by_date[trip.section.at_campsite1].append(trip)
+            if trip.template.campsite2 == self:
+                trips_by_date[trip.section.at_campsite2].append(trip)
 
         return trips_by_date
 
