@@ -90,6 +90,8 @@ class TripTypeCreateView(DatabaseCreateView):
 
 class TripTypeDetailView(DatabaseDetailView):
     model = TripType
+    fields = ['name', 'trippee_description', 'leader_description', 
+              'packing_list']
 
 class TripTypeUpdateView(DatabaseUpdateView):
     model = TripType
