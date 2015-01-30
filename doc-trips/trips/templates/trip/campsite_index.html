@@ -9,7 +9,7 @@
   <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. <strong>Todo:</strong> show when campsite capacity is exceeded.</p>
 </div>
 
-<table class="table">
+<table class="table table-condensed">
   <tr>
     <th>Campsite</th>
     <th>Capacity</th>
@@ -32,7 +32,7 @@
   {% endfor %}
 </table>
 
-<a href="{% create_url model trips_year %}" class="btn btn-link" role="button">
+<a href="{% create_url model trips_year %}" class="btn btn-primary" role="button">
   Add a campsite
 </a>
 
