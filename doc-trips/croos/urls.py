@@ -7,7 +7,7 @@ from db.urlhelpers import DB_REGEX
 from croos.views import (CrooApplicationView, CrooApplicationCreate, 
                          CreateCrooApplication, RedirectToNextGradableCrooApplication, 
                          GradeCrooApplication, NoCrooApplicationsLeftToGrade,
-                         CrooApplicationDatabaseListView,)
+                         CrooApplicationDatabaseListView, CrooApplicationDatabaseDetailView)
 
 urlpatterns = patterns('', 
     url(r'^apply/$', CrooApplicationCreate.as_view(), name='apply'),
@@ -21,5 +21,6 @@ urlpatterns = patterns('',
 crooapplication_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], CrooApplicationDatabaseListView.as_view(), name='crooapplication_index'),
+    url(DB_REGEX['DETAIL'], CrooApplicationDatabaseDetailView.as_view(), name='crooapplication_detail')
 )
                         
