@@ -125,7 +125,7 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
             if new_data:
                 UserModel = get_user_model()
-                new_member, _ = UserModel.objects.get_by_netid(new_data['net_id'],
+                new_member, _ = UserModel.objects.get_by_netid(new_data['netid'],
                                                                new_data['name_with_year'])
                 if new_member not in members_list:
                     members_list = list(members_list)

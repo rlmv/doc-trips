@@ -18,22 +18,22 @@ def dartdm_lookup(query_string):
 class EmailLookupException(Exception):
     pass
 
-def lookup_email(net_id):
+def lookup_email(netid):
     """ 
     Lookup the email address of a user, given their NetId.
     """
 
-    params = {'lookup': net_id, 'fields': ['email', 'netid']}
+    params = {'lookup': netid, 'fields': ['email', 'netid']}
     r = requests.get('http://dndprofiles.dartmouth.edu/profile', params=params)
 
     # netid not found: {}
     if not r.json(): 
-        raise EmailLookupException('NetId lookup failed: %s not found' % net_id)
+        raise EmailLookupException('NetId lookup failed: %s not found' % netid)
     
     # mismatch, somehow...
-    if r.json()['netid'] != net_id:
+    if r.json()['netid'] != netid:
         raise EmailLookupException('NetId mismatch: %s != %s' % (r.json()['netid'], 
-                                                                 net_id))
+                                                                 netid))
 
     return r.json()['email']
     

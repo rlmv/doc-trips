@@ -29,7 +29,7 @@ class ScheduledTripTestCase(WebTestCase):
         response = self.app.post(reverse_create_url(ScheduledTrip, self.trips_year), 
                                  {'template': trip.template.pk, 
                                   'section': trip.section.pk}, 
-                                 user=self.director.net_id)
+                                 user=self.director.netid)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
         # should not create the trip
@@ -52,7 +52,7 @@ class ScheduledTripTestCase(WebTestCase):
         response = self.app.post(reverse_update_url(trip2),
                                  {'template': trip.template.pk, 
                                   'section': trip.section.pk}, 
-                                 user=self.director.net_id)
+                                 user=self.director.netid)
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 

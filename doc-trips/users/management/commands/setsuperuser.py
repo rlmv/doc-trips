@@ -10,18 +10,18 @@ class Command(BaseCommand):
     
     def add_arguments(self, parser):
         
-        parser.add_argument('net_id')
+        parser.add_argument('netid')
 
     def handle(self, *args, **options):
         
-        for net_id in args:
+        for netid in args:
             
             try:
-                user = UserModel.objects.get(net_id=net_id)
+                user = UserModel.objects.get(netid=netid)
             except UserModel.DoesNotExist:
-                err = ("User with net_id '%s' does not exist in the database "
+                err = ("User with netid '%s' does not exist in the database "
                        "Have them log in first, then retry this command")
-                self.stderr.write(err % net_id)
+                self.stderr.write(err % netid)
             else:
                 user.is_superuser = True
                 user.save()

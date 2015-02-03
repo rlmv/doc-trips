@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 
 class DartmouthUserManager(BaseUserManager):
 
-    def get_by_netid(self, net_id, name):
+    def get_by_netid(self, netid, name):
         """ 
-        Return the user with net_id. 
+        Return the user with netid. 
 
         Create the user if necesarry. If created, adds the optional name
         to the object as first_name. Does not search via name, since 
@@ -23,19 +23,19 @@ class DartmouthUserManager(BaseUserManager):
         """
 
         try:
-            user = self.get(net_id=net_id)
+            user = self.get(netid=netid)
             created = False
         except self.model.DoesNotExist:
-            logger.info("creating user %r, %r" % (name, net_id))
-            user = self.create_user(net_id, name=name)
+            logger.info("creating user %r, %r" % (name, netid))
+            user = self.create_user(netid, name=name)
             created = True
                 
         return (user, created)
 
-    def create_user(self, net_id, name, email=None):
+    def create_user(self, netid, name, email=None):
 
-        email = lookup_email(net_id)
-        user = self.create(net_id=net_id, email=email, name=name)
+        email = lookup_email(netid)
+        user = self.create(netid=netid, email=email, name=name)
 
         return user
         
@@ -50,7 +50,7 @@ class DartmouthUser(PermissionsMixin):
 
     objects = DartmouthUserManager()
 
-    net_id = models.CharField(max_length=40, unique=True)
+    netid = models.CharField(max_length=40, unique=True)
     email = models.EmailField('email address')
     aux_email = models.EmailField('auxiliary email address', null=True, blank=True)
     name = models.CharField(max_length=255)
@@ -65,7 +65,7 @@ class DartmouthUser(PermissionsMixin):
     def is_staff(self):
         return self.is_superuser
 
-    USERNAME_FIELD = 'net_id'
+    USERNAME_FIELD = 'netid'
     REQUIRED_FIELDS = ['email', 'name']
 
     def get_short_name(self):
@@ -75,7 +75,7 @@ class DartmouthUser(PermissionsMixin):
         return self.name
 
     def get_username(self):
-        return self.net_id
+        return self.netid
 
     def is_authenticated(self):
         return True
@@ -84,6 +84,6 @@ class DartmouthUser(PermissionsMixin):
         return False
     
     def __str__(self):
-        return '{} ({})'.format(self.name, self.net_id)
+        return '{} ({})'.format(self.name, self.netid)
         
 

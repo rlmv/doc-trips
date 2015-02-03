@@ -86,7 +86,7 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
                 raise ValidationError("Ambiguous name %r" % data_list[0])
                 
         object = {'name_with_year': data_list[0], 
-                  'net_id': data_list[1],
+                  'netid': data_list[1],
                   'name_with_affil': data_list[2]}
 
         return object

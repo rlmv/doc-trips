@@ -39,10 +39,10 @@ class DatabaseMixinTestCase(WebTestCase):
         url = reverse_update_url(campsite)
         
         self.mock_user()
-        self.app.get(url, user=self.user.net_id, expect_errors=True)
+        self.app.get(url, user=self.user.netid, expect_errors=True)
 
         self.mock_director()
-        response = self.app.get(url, user=self.director.net_id)
+        response = self.app.get(url, user=self.director.netid)
         self.assertEquals(response.status_code, 200)
 
     

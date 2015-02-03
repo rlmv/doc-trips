@@ -31,13 +31,13 @@ class TripsYearMixinTestCase(WebTestCase):
     def test_dispatch_for_trips_year(self):
         self.mock_director()
         year = self.init_current_trips_year()
-        response = self.app.get('/db/'+str(year.year)+'/', user=self.director.net_id)
+        response = self.app.get('/db/'+str(year.year)+'/', user=self.director.netid)
         self.assertEquals(response.status_code, 200)
 
 
     def test_dispatch_for_nonexistant_year(self):
         self.mock_director()
-        response = self.app.get('/db/2314124/', status=404, user=self.director.net_id)
+        response = self.app.get('/db/2314124/', status=404, user=self.director.netid)
         self.assertEquals(response.status_code, 404)
 
 
@@ -49,7 +49,7 @@ class TripsYearMixinTestCase(WebTestCase):
         data = model_to_dict(mommy.prepare(Campsite))
         response = self.app.post(reverse_create_url(Campsite, self.current_trips_year), 
                                  data, 
-                                 user=self.director.net_id)
+                                 user=self.director.netid)
 
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))
@@ -70,7 +70,7 @@ class TripsYearMixinTestCase(WebTestCase):
         ex1 = mommy.make(Campsite, trips_year=self.trips_year)
         ex2 = mommy.make(Campsite, trips_year=self.old_trips_year)
 
-        response = self.app.get(reverse_index_url(ex1), user=self.director.net_id)
+        response = self.app.get(reverse_index_url(ex1), user=self.director.netid)
         
         from trips.views import CampsiteListView
         objects = response.context[CampsiteListView.context_object_name]
@@ -84,7 +84,7 @@ class TripsYearMixinTestCase(WebTestCase):
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
         
         # good request - trips year in url matches trips year of c1
-        response = self.app.get(reverse_update_url(c1), user=self.director.net_id)
+        response = self.app.get(reverse_update_url(c1), user=self.director.netid)
         object = response.context['object']
         self.assertEquals(object, c1)
         
@@ -104,7 +104,7 @@ class TripsYearMixinTestCase(WebTestCase):
         triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
         
         response = self.app.get(reverse_update_url(triptemplate), 
-                                user=self.director.net_id)
+                                user=self.director.netid)
         choices = response.context['form'].fields['campsite1'].queryset
 
         # should only show object from current_trips_year
