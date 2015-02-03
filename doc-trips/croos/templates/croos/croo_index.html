@@ -6,11 +6,13 @@
 <table class="table">
   <tr>
     <th> Croo </th>
+    <th> Description </th>
   </tr>
   
   {% for croo in croos %}
   <tr>
     <td> {{ croo | detail_link }} </td>
+    <td> {{ croo.description }} </td>
   </tr>
   {% endfor %}
 
