@@ -8,7 +8,9 @@ from croos.views import (CrooApplicationView, CrooApplicationCreate,
                          CreateCrooApplication, RedirectToNextGradableCrooApplication, 
                          GradeCrooApplication, NoCrooApplicationsLeftToGrade,
                          CrooApplicationDatabaseListView, CrooApplicationDatabaseDetailView,
-                         CrooApplicationDatabaseUpdateView)
+                         CrooApplicationDatabaseUpdateView, CrooListView, 
+                         CrooCreateView, CrooUpdateView, CrooDetailView, 
+                         CrooDeleteView)
 
 urlpatterns = patterns('', 
     url(r'^apply/$', CrooApplicationCreate.as_view(), name='apply'),
@@ -24,5 +26,14 @@ crooapplication_urlpatterns = patterns(
     url(DB_REGEX['LIST'], CrooApplicationDatabaseListView.as_view(), name='crooapplication_index'),
     url(DB_REGEX['DETAIL'], CrooApplicationDatabaseDetailView.as_view(), name='crooapplication_detail'),
     url(DB_REGEX['UPDATE'], CrooApplicationDatabaseUpdateView.as_view(), name='crooapplication_update'),
+)
+
+croo_urlpatterns = patterns(
+    '',
+    url(DB_REGEX['LIST'], CrooListView.as_view(), name='croo_index'),
+    url(DB_REGEX['CREATE'], CrooCreateView.as_view(), name='croo_create'),
+    url(DB_REGEX['UPDATE'], CrooUpdateView.as_view(), name='croo_update'),
+    url(DB_REGEX['DETAIL'], CrooDetailView.as_view(), name='croo_detail'),
+    url(DB_REGEX['DELETE'], CrooDeleteView.as_view(), name='croo_delete')
 )
                         

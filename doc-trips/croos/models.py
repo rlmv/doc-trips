@@ -84,6 +84,8 @@ class Croo(DatabaseModel):
     Migrates each year.
     """
     name = models.CharField(max_length=255)
+    
+
 
 class CrooApplicationGrade(DatabaseModel):
     

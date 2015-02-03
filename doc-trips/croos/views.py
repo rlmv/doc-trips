@@ -12,9 +12,9 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
 
-from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView
+from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
 from db.models import TripsYear
-from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade
+from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade, Croo
 from permissions.views import CrooGraderPermissionRequired
 
 
@@ -263,3 +263,22 @@ class CrooApplicationDatabaseUpdateView(DatabaseUpdateView):
         )
         helper.add_input(Submit('submit', 'Update'))
         return helper
+
+
+class CrooListView(DatabaseListView):
+    model = Croo
+    template_name = 'croos/croo_index.html'
+    context_object_name = 'croos'
+
+class CrooCreateView(DatabaseCreateView):
+    model = Croo
+
+class CrooDetailView(DatabaseDetailView):
+    model = Croo
+    
+class CrooUpdateView(DatabaseUpdateView):
+    model = Croo
+
+class CrooDeleteView(DatabaseDeleteView):
+    model = Croo
+    success_url_pattern = 'db:croo_index'
