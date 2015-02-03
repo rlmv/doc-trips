@@ -10,7 +10,7 @@ from django import forms
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout, Field
 
 from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView
 from db.models import TripsYear
@@ -247,5 +247,19 @@ class CrooApplicationDatabaseListView(DatabaseListView):
 
 class CrooApplicationDatabaseDetailView(DatabaseDetailView):
     model = CrooApplication
+    template_name = 'croos/crooapplication_detail.html'
 
+class CrooApplicationDatabaseUpdateView(DatabaseUpdateView):
+    model = CrooApplication
+    template_name = 'croos/crooapplication_update.html'
+    
+    fields = ['status']
 
+    def get_form_helper(self, form):
+
+        helper = FormHelper(form)
+        helper.layout = Layout(
+            Field('status'),
+        )
+        helper.add_input(Submit('submit', 'Update'))
+        return helper

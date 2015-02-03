@@ -1,0 +1,12 @@
+
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div>
+  <h4> Croo application for {{ object.applicant }} </h4>
+</div>
+
+{% crispy form %}
+{% endblock content %}
