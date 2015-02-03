@@ -62,6 +62,26 @@ def directors():
     directors.save()
     return directors
 
+
+def directorate():
+    directorate, created = Group.objects.get_or_create(name='directorate')
+    directorate.permissions = [can_grade_applications(),
+                               can_grade_croo_application()]
+    directorate.save()
+    return directorate
+
+
+def tlts():
+    # trip leader trainers
+    tlts, created = Group.objects.get_or_create(name='tlts')
+    tlts.permissions = directorate().permissions + [
+                        # can assign trip leaders to trips
+                        # can edit leader apps?
+                        ]
+    tlts.save()
+    return tlts
+
+
 def graders():
     graders, created = Group.objects.get_or_create(name='graders')
     graders.permissions = [can_grade_applications()]
