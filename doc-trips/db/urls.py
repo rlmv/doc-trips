@@ -5,6 +5,7 @@ from django.conf.urls import patterns, url, include
 from trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                         campsite_urlpatterns, section_urlpatterns)
 from leaders.urls import leaderapplication_urlpatterns
+from croos.urls import crooapplication_urlpatterns
 from transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
                             vehicle_urlpatterns)
 from db.views import DatabaseIndexView, RedirectToCurrentDatabase
@@ -20,6 +21,7 @@ database_urlpatterns = patterns('',
     url(r'^campsites/', include(campsite_urlpatterns)),
     url(r'^sections/', include(section_urlpatterns)),
     url(r'^leaders/', include(leaderapplication_urlpatterns)),
+    url(r'^croos/', include(crooapplication_urlpatterns)),
     url(r'^stops/', include(transportstop_urlpatterns)),
     url(r'^routes/', include(route_urlpatterns)),
     url(r'^vehicles/', include(vehicle_urlpatterns)),                            

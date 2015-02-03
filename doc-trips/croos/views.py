@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
-from db.views import TripsYearMixin, CrispyFormMixin
+from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView
 from db.models import TripsYear
 from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade
 from permissions.views import CrooGraderPermissionRequired
@@ -224,11 +224,6 @@ class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, TemplateView):
     
     template_name = 'croos/no_applications.html'
 
-""" 
-Grade form - read and input. 
-
-Redirect to grading portal on successful post.
-"""
 
 """
 Database views of croo apps
@@ -244,6 +239,11 @@ Directorate (directors?) can approve applications/assign them to croos.
 Access/permissions page can link to here for removing/adding to the 'Croo' group.
 
 """
+
+class CrooApplicationDatabaseListView(DatabaseListView):
+    model = CrooApplication
+    context_object_name = 'crooapplications'
+    template_name = 'croos/crooapplication_index.html'
 
 
 

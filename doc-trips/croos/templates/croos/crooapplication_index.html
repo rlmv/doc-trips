@@ -1,0 +1,20 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block content %}
+
+<table class="table table-condensed">
+  <tr>
+    <th> Applicant </th>
+    <th> Status </th>
+  </tr
+
+  {% for application in crooapplications %}
+  <tr> 
+    <td> {{ application | detail_link:application.applicant }}</td>
+    <td> {{ application.status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}
