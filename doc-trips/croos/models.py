@@ -56,6 +56,17 @@ class CrooApplication(DatabaseModel):
 
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
 
+    PENDING = 'PENDING'
+    ACCEPTED = 'ACCEPTED'
+    CANCELED = 'CANCELED'
+    STATUS_CHOICES = (
+        (PENDING, 'Pending'),
+        (ACCEPTED, 'Accepted'),
+        (CANCELED, 'Cancelled')
+    )
+    status = models.CharField('Application status', max_length=10, 
+                              choices=STATUS_CHOICES, default=PENDING)
+
     assigned_croo = models.ForeignKey('Croo', blank=True, null=True, 
                                       related_name='croolings',
                                       on_delete=models.SET_NULL)
