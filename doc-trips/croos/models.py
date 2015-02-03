@@ -42,6 +42,7 @@ class CrooApplicationManager(models.Manager):
         and has only been graded by num people."""
         
         application = (self.filter(trips_year=trips_year)
+                       .filter(status=self.model.PENDING)
                        .annotate(models.Count('grades'))
                        .filter(grades__count=num)
                        .exclude(grades__grader=grader)
