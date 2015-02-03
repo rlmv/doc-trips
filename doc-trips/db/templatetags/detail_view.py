@@ -4,6 +4,7 @@ from django import template
 from django.shortcuts import render
 from django.db import models
 
+from django.contrib.auth import get_user_model
 from db.templatetags.links import *
 register = template.Library()
 
@@ -30,7 +31,11 @@ def detail(db_object, fields=None):
         value = getattr(db_object, field_name)
 
         if isinstance(field, models.ForeignKey):
-            if value is not None:
+            if isinstance(value, get_user_model()):
+                # no detail views for users.
+                value = str(value)
+
+            elif value is not None:
                 value = detail_link(value)
         
         if isinstance(field, models.ManyToManyField):
