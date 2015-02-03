@@ -3,8 +3,9 @@ import logging
 from django.db import models
 from django.conf import settings
 from django.db.models.signals import post_save
-
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
+
+from dartdm.lookup import lookup_email
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,7 @@ class DartmouthUserManager(BaseUserManager):
 
     def create_user(self, net_id, name, email=None):
 
-        #email = ?
-        email = net_id + '@dartmouth.edu'
-
+        email = lookup_email(net_id)
         user = self.create(net_id=net_id, email=email, name=name)
 
         return user

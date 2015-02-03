@@ -67,7 +67,7 @@ class WebAuthBackend(ModelBackend):
         return verify(ticket, service)
 
     def get_user(self, user_id):
-        """Retrieve the user's entry in the User model if it exists"""
+        """ Retrieve the user's entry in the User model if it exists """
 
         try:
             return UserModel.objects.get(pk=user_id)
