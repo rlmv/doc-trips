@@ -1,7 +1,7 @@
 import logging
 
 from django.db import models
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf.urls import url
 from django.contrib import messages
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -297,6 +297,18 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
             return reverse(self.success_url_pattern, kwargs=kwargs)
 
         return super(DatabaseDeleteView, self).get_success_url()
+
+    def post(self, request, *args, **kwargs):
+
+        try:
+            return super(DatabaseDeleteView, self).post(request, *args, **kwargs)
+
+        except models.ProtectedError as e:
+            msg = "Oops, you can't delete {} {} because the following objects reference it: {}." 
+            msg = msg.format(self.object._meta.model.__name__, self.object, e.protected_objects)
+            messages.error(request, msg)
+
+            return HttpResponseRedirect(request.path)
 
     @classmethod
     def urlpattern(cls):
