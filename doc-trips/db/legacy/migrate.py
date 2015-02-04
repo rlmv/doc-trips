@@ -31,6 +31,7 @@ Dump data to json:
 manage.py dumpdata > doc-trips/db/legacy/db.json
 
 Push to site, load data to production:
+manage.py migrate
 manage.py loaddata doc-trips/db/legacy/db.json
 
 Boom! Everything should be set.
