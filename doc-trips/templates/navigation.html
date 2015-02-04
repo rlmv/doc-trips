@@ -20,11 +20,13 @@
       <ul class="nav navbar-nav">
 	<li><a href="{% url 'leader:apply' %}">Leader Application</a></li>
 
+	{% comment %}
 	<li><a href="{% url 'croos:apply' %}">Croo Application</a></li>
-
+	
 	{% if perms.permissions.can_create_croo_application %}
 	<li><a href="{% url 'croos:create_application' %}">Create Croo Application</a></li>
 	{% endif %}
+	{% endcomment %}
 
 	{% if perms.permissions.can_grade_applications %}
 	<li><a href="{% url 'leader:grade_random' %}">Graders</a></li>
