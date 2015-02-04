@@ -14,8 +14,8 @@ from trips.managers import SectionDatesManager
 
 class ScheduledTrip(DatabaseModel):
 
-    template = models.ForeignKey('TripTemplate')
-    section = models.ForeignKey('Section')
+    template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
+    section = models.ForeignKey('Section', on_delete=models.PROTECT)
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
@@ -84,19 +84,19 @@ class TripTemplate(DatabaseModel):
     name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
     description_summary = models.CharField(max_length=255, verbose_name='Summary') # short info
 
-    triptype = models.ForeignKey('TripType', verbose_name='trip type')
+    triptype = models.ForeignKey('TripType', verbose_name='trip type', on_delete=models.PROTECT)
     max_trippees = models.PositiveSmallIntegerField()
     non_swimmers_allowed = models.BooleanField(default=True)
     
-    dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips')
-    pickup = models.ForeignKey(Stop, related_name='picked_up_trips')
+    dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips', on_delete=models.PROTECT)
+    pickup = models.ForeignKey(Stop, related_name='picked_up_trips', on_delete=models.PROTECT)
     # is this for returning from the lodge?
     # TODO: remove null=True. All templates need a return route.
-    return_route = models.ForeignKey(Route, related_name='returning_trips', null=True)
+    return_route = models.ForeignKey(Route, related_name='returning_trips', null=True, on_delete=models.PROTECT)
 
     # TODO: better related names
-    campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1')
-    campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2')
+    campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1', on_delete=models.PROTECT)
+    campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2', on_delete=models.PROTECT)
 
     description_introduction = models.TextField(verbose_name='Introduction', blank=True)
     description_day1 = models.TextField(verbose_name='Day 1', blank=True)
