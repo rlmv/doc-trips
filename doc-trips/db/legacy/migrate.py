@@ -7,22 +7,35 @@ from trips.models import Campsite, TripType, TripTemplate
 from transport.models import Vehicle, Route, Stop
 from db.models import TripsYear
 
-"""
-    'legacy': {
-        'ENGINE': 'mysql.connector.django',
-        'NAME': 'ft2014',
-        'HOST': '127.0.0.1',
-        'USER': 'django',
-    }
-"""
 
 """
-install 
-------
-sqlalchemy
-mysql-connector-python
-"""
+To build the new database from the old.
 
+Install: sqlalchemy, mysql-connector-python
+
+Login to mysql: 
+mysql -uroot
+
+Load the database dump file into a new mysql database, called 'doc':
+CREATE DATABASE doc;
+USE doc;
+
+Setup a user for django:
+CREATE USER django;
+GRANT ALL ON doc.* TO 'django'@'localhost';
+
+Migrate data to local dev database:
+manage.py runscript migrate_legacy
+
+Dump data to json:
+manage.py dumpdata > doc-trips/db/legacy/db.json
+
+Push to site, load data to production:
+manage.py loaddata doc-trips/db/legacy/db.json
+
+Boom! Everything should be set.
+
+"""
 
 def setup_connection():
     
