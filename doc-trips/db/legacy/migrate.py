@@ -10,7 +10,7 @@ from db.models import TripsYear
 """
     'legacy': {
         'ENGINE': 'mysql.connector.django',
-        'NAME': 'ft2013',
+        'NAME': 'ft2014',
         'HOST': '127.0.0.1',
         'USER': 'django',
     }
@@ -26,7 +26,7 @@ mysql-connector-python
 
 def setup_connection():
     
-    engine = create_engine('mysql+mysqlconnector://django@localhost/ft2013')
+    engine = create_engine('mysql+mysqlconnector://django@localhost/doc')
     return engine.connect()
 
 def trips_year():
@@ -45,7 +45,7 @@ def walk_to_lodge_transport_stop():
 def migrate_campsites():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_tripcampsite;'
+    sql = 'SELECT * FROM ft2014_tripcampsite;'
     for row in connection.execute(sql):
         
         capacity = row['capacity']
@@ -76,7 +76,7 @@ def migrate_campsites():
 def migrate_vehicles():
     
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_transportationtype;'
+    sql = 'SELECT * FROM ft2014_transportationtype;'
 
     for row in connection.execute(sql):
         
@@ -93,7 +93,7 @@ def migrate_vehicles():
 def migrate_routes():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_transportationroute;'
+    sql = 'SELECT * FROM ft2014_transportationroute;'
 
     for row in connection.execute(sql):
 
@@ -113,7 +113,7 @@ def migrate_routes():
 def migrate_stops():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_transportationstop;'
+    sql = 'SELECT * FROM ft2014_transportationstop;'
 
     for row in connection.execute(sql):
   
@@ -154,7 +154,7 @@ def migrate_stops():
 def migrate_triptypes():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_triptype;'
+    sql = 'SELECT * FROM ft2014_triptype;'
     
     for row in connection.execute(sql):
 
@@ -173,7 +173,7 @@ def migrate_triptypes():
 def migrate_triptemplates():
 
     connection = setup_connection()
-    sql = 'SELECT * FROM ft2013_triptemplate;'
+    sql = 'SELECT * FROM ft2014_triptemplate;'
 
     for row in connection.execute(sql):
 
