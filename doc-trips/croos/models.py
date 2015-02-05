@@ -87,7 +87,10 @@ class CrooApplication(DatabaseModel):
     safety_dork_qualified = models.BooleanField(default=False)
     safety_dork = models.BooleanField(default=False)
 
-
+    def average_grade(self):
+        r = self.grades.all().aggregate(models.Avg('grade'))
+        return r['grade__avg']
+    
     def clean(self):
         """ If app is not ACCEPTED it cannot be assigned to croo """
 

@@ -11,6 +11,8 @@
   <tr>
     <th> Applicant </th>
     <th> Status </th>
+    <th> Average Grade </th>
+    <th> Potential Croos </th>
     <th> Assignment </th>
   </tr
 
@@ -18,7 +20,20 @@
   <tr> 
     <td> {{ application | detail_link:application.applicant }} </td>
     <td> {{ application.status }} </td>
-    <td> {% if application.assigned_croo %} {{ application.assigned_croo | detail_link }} {% endif %}</td>
+    <td> {{ application.average_grade }} </td>
+
+    <td> 
+      {% for croo in application.potential_croos.all %}
+      {{ croo | detail_link }}
+      {% endfor %} 
+    </td>
+
+    <td> 
+      {% if application.assigned_croo %} 
+      {{ application.assigned_croo | detail_link }} 
+      {% endif %}
+    </td>
+
     <td> {{ application | edit_link }} </td>
   </tr>
   {% endfor %}
