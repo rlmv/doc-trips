@@ -253,13 +253,14 @@ class CrooApplicationDatabaseUpdateView(DatabaseUpdateView):
     model = CrooApplication
     template_name = 'croos/crooapplication_update.html'
     
-    fields = ['status']
+    fields = ['status', 'assigned_croo']
 
     def get_form_helper(self, form):
 
         helper = FormHelper(form)
         helper.layout = Layout(
             Field('status'),
+            Field('assigned_croo'),
         )
         helper.add_input(Submit('submit', 'Update'))
         return helper

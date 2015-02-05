@@ -78,6 +78,10 @@ class CrooApplication(DatabaseModel):
     safety_dork_qualified = models.BooleanField(default=False)
     safety_dork = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.applicant.name
+
+
 class Croo(DatabaseModel):
     """
     Represents a croo organization. 

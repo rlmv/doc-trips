@@ -4,19 +4,22 @@
 {% block content %}
 
 <div>
-  <h4> Croos </h4>
+  <h3> Croos </h3>
 </div>
 
 <table class="table">
   <tr>
     <th> Croo </th>
     <th> Description </th>
+    <th> Croolings </th>
   </tr>
   
   {% for croo in croos %}
   <tr>
     <td> {{ croo | detail_link }} </td>
     <td> {{ croo.description }} </td>
+    <td> {% for crooling in croo.croolings.all %} {{ crooling | detail_link }} <br>{% endfor %} </td>
+    <td> {{ croo | edit_link }} </td>
   </tr>
   {% endfor %}
 
