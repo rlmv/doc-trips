@@ -4,9 +4,8 @@
 
 {% block content %}
 
-<div>
-{% crispy form %}
-</div>
+<h3> Grade Croo Application </h3>
+<p> Read the app carefully and give it a grade. Grades from 1-6 </p>
 
 <table class="table table-condensed table-striped">
 {% for answer in application.answers.all %}
@@ -18,5 +17,9 @@
 
 {% endfor %}
 </table>
+
+<div>
+{% crispy form %}
+</div>
 
 {% endblock content %}

@@ -112,11 +112,22 @@ class Croo(DatabaseModel):
         return self.name
     
 
+def validate_grade(grade):
+    """ Validator for CrooApplicationGrade.grade """
+
+    if (grade < CrooApplicationGrade.MIN_GRADE or
+        grade > CrooApplicationGrade.MAX_GRADE):
+        raise ValidationError('grade must be in range {}-{}'.format(
+            CrooApplicationGrade.MIN_GRADE, CrooApplicationGrade.MAX_GRADE))
+
 class CrooApplicationGrade(DatabaseModel):
+
+    MIN_GRADE = 1
+    MAX_GRADE = 6
     
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL, )
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL)
     application = models.ForeignKey(CrooApplication, related_name='grades')
-    grade = models.IntegerField()
+    grade = models.IntegerField(validators=[validate_grade])
     comments = models.TextField()
 
 
