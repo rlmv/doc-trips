@@ -50,7 +50,7 @@ class TripsYearMixinTestCase(WebTestCase):
         response = self.app.post(reverse_create_url(Campsite, self.current_trips_year), 
                                  data, 
                                  user=self.director.netid)
-
+        print(response.content)
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))
 
