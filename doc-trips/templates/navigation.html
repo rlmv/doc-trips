@@ -27,6 +27,10 @@
 	<li><a href="{% url 'croos:create_application' %}">Create Croo Application</a></li>
 	{% endif %}
 
+	{% if perms.permissions.can_grade_croo_applications %}
+	<li><a href="{% url 'croos:grade_next' %}">Grade Croo Application</a></li>
+	{% endif %}
+
 	{% if perms.permissions.can_grade_applications %}
 	<li><a href="{% url 'leader:grade_random' %}">Graders</a></li>
 	{% endif %}
