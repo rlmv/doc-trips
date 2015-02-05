@@ -54,7 +54,8 @@ class CrooApplicationManager(models.Manager):
 class CrooApplication(DatabaseModel):
 
     objects = CrooApplicationManager()
-
+    
+    
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     PENDING = 'PENDING'
@@ -92,7 +93,7 @@ class Croo(DatabaseModel):
 
 class CrooApplicationGrade(DatabaseModel):
     
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL)
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, )
     application = models.ForeignKey(CrooApplication, related_name='grades')
     grade = models.IntegerField()
     comments = models.TextField()

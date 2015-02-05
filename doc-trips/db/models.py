@@ -36,7 +36,7 @@ class DatabaseModel(models.Model):
 
     # TODO: index on trips_year?
     # editable=False hides this field in all forms
-    trips_year = models.ForeignKey('TripsYear', editable=False) 
+    trips_year = models.ForeignKey('TripsYear', editable=False, on_delete=models.PROTECT) 
 
     class Meta:
         abstract = True

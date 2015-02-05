@@ -34,7 +34,8 @@ class DartmouthUserManager(BaseUserManager):
 
     def create_user(self, netid, name, email=None):
 
-        email = lookup_email(netid)
+        if email is None:
+            email = lookup_email(netid)
         user = self.create(netid=netid, email=email, name=name)
 
         return user
