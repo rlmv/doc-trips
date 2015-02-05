@@ -39,7 +39,8 @@ class TripsYearTestCaseUtils():
         Create a mock user.
         """
         netid = 'user'
-        self.user = get_user_model().objects.create_user(netid, netid)
+        email = netid + '@dartmouth.edu'
+        self.user = get_user_model().objects.create_user(netid, netid, email)
 
         return self.user
 
@@ -47,7 +48,8 @@ class TripsYearTestCaseUtils():
         """ Create a user with director permissions, and log the user in. """
 
         netid = 'director'
-        self.director = get_user_model().objects.create_user(netid, netid)
+        email = netid + '@dartmouth.edu'
+        self.director = get_user_model().objects.create_user(netid, netid, email)
         self.director.groups.add(directors())
         self.director.save()
 
@@ -56,7 +58,8 @@ class TripsYearTestCaseUtils():
     def mock_grader(self):
         
         netid = 'grader'
-        self.grader = get_user_model().objects.create_user(netid, netid)
+        email = 'netid' + '@dartmouth.edu'
+        self.grader = get_user_model().objects.create_user(netid, netid, email)
                  
         self.grader.groups.add(graders())
         self.grader.save()
