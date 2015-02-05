@@ -18,7 +18,7 @@
   <tr> 
     <td> {{ application | detail_link:application.applicant }} </td>
     <td> {{ application.status }} </td>
-    <td> {{ application.assigned_croo | detail_link }} </td>
+    <td> {% if application.assigned_croo %} {{ application.assigned_croo | detail_link }} {% endif %}</td>
     <td> {{ application | edit_link }} </td>
   </tr>
   {% endfor %}

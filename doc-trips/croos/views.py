@@ -259,6 +259,7 @@ class CrooApplicationDatabaseListView(DatabaseListView):
 
 class CrooApplicationDatabaseDetailView(DatabaseDetailView):
     model = CrooApplication
+    context_object_name = 'crooapplication'
     template_name = 'croos/crooapplication_detail.html'
 
 class CrooApplicationDatabaseUpdateView(DatabaseUpdateView):
