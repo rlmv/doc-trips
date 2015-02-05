@@ -8,7 +8,7 @@ from model_mommy import mommy
 
 from test.fixtures import WebTestCase
 from db.views import TripsYearMixin
-from trips.models import Campsite, TripTemplate
+from trips.models import Campsite, TripTemplate, Section
 
 from db.urlhelpers import reverse_create_url, reverse_update_url, reverse_index_url
 
@@ -42,21 +42,21 @@ class TripsYearMixinTestCase(WebTestCase):
 
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
-        """ Use Campsite as model, instead of hacking together an example"""
+        """ Use  as model, instead of hacking together an example"""
 
         self.mock_director()
        
-        data = model_to_dict(mommy.prepare(Campsite))
-        response = self.app.post(reverse_create_url(Campsite, self.current_trips_year), 
+        data = model_to_dict(mommy.prepare(Section))
+        response = self.app.post(reverse_create_url(Section, self.current_trips_year), 
                                  data, 
                                  user=self.director.netid)
-        print(response.content)
+
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))
 
         # should have object in the database
-        c = Campsite.objects.get(name=data['name'])
-        self.assertEquals(c.trips_year, self.current_trips_year)
+        s = Section.objects.get(name=data['name'])
+        self.assertEquals(s.trips_year, self.current_trips_year)
 
         
     def test_trips_year_queryset_filtering(self):
