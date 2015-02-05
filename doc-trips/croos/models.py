@@ -1,6 +1,7 @@
 
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ValidationError
 
 from db.models import DatabaseModel, TripsYear
 
@@ -85,6 +86,14 @@ class CrooApplication(DatabaseModel):
 
     safety_dork_qualified = models.BooleanField(default=False)
     safety_dork = models.BooleanField(default=False)
+
+
+    def clean(self):
+        """ If app is not ACCEPTED it cannot be assigned to croo """
+
+        if self.status != self.ACCEPTED and self.assigned_croo:
+            raise ValidationError("Croo Application cannot be assigned to a Croo. "
+                                  "Change status to 'Accepted' or remove Croo")
 
     def __str__(self):
         return self.applicant.name
