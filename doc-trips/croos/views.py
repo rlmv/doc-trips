@@ -23,7 +23,8 @@ class CrooApplicationAnswerForm(forms.ModelForm):
     class Meta:
         model = CrooApplicationAnswer
         widgets = {
-            'question': forms.HiddenInput()
+            'question': forms.HiddenInput(),
+            'answer': forms.Textarea(attrs={'rows': 7})
         }
 
     def __init__(self, *args, **kwargs):
