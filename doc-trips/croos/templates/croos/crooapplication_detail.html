@@ -1,11 +1,28 @@
 {% extends "db/detail.html" %}
 {% load links %}
 
-{% comment %}
-Special template for CrooApplication details.  apps cannot be 
-deleted, so the delete_link cannot be generated.
-{% endcomment %}
+{# Special template for CrooApplication details.  apps cannot be 
+deleted, so the delete_link cannot be generated. #}
 
 {% block links %}
 {{ object | edit_link }}
 {% endblock links %}
+
+{% block content %}
+{{ block.super }}
+
+<h4> Answers </h4>
+<table class="table table-condensed table-striped">
+{% for answer in object.answers.all %}
+
+<tr>
+  <td class="col-sm-3 text-right"><strong>{{ answer.question.question }}</strong></td>
+  <td>{{ answer.answer }}</td>
+</tr>
+
+{% endfor %}
+</table>
+
+
+{% endblock content %}
+
