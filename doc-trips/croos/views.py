@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
 
+from db.forms import tripsyear_modelform_factory
 from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
 from db.models import TripsYear
 from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade, Croo
@@ -266,6 +267,15 @@ class CrooApplicationDatabaseUpdateView(DatabaseUpdateView):
     
     fields = ['status', 'assigned_croo', 'potential_croos', 
               'safety_dork_qualified', 'safety_dork']
+
+    def get_form_class(self):
+        """ Use checkbox for potential croos """
+
+        widgets = {
+            'potential_croos': forms.CheckboxSelectMultiple,
+        }
+        return tripsyear_modelform_factory(self.model, self.kwargs['trips_year'],
+                                           fields=self.fields, widgets=widgets)
 
     def get_form_helper(self, form):
 
