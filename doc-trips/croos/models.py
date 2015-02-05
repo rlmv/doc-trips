@@ -6,11 +6,18 @@ from db.models import DatabaseModel, TripsYear
 
 
 class CrooApplicationQuestion(DatabaseModel):
+
+    class Meta: 
+        ordering = ['ordering']
     
     question = models.TextField()
     ordering = models.IntegerField()
 
+
 class CrooApplicationAnswer(DatabaseModel):
+
+    class Meta:
+        ordering = ['question__ordering']
 
     answer = models.TextField()
     # editable=False?
@@ -18,6 +25,7 @@ class CrooApplicationAnswer(DatabaseModel):
     application = models.ForeignKey('CrooApplication', 
                                     related_name='answers', 
                                     editable=False)
+
 
 class CrooApplicationManager(models.Manager):
 
