@@ -41,6 +41,7 @@ class CrooApplicationAnswerForm(forms.ModelForm):
                 
             self.fields['answer'].label = question.question
 
+
 class CrooApplicationCreate(LoginRequiredMixin, CreateView):
 
     model = CrooApplication
@@ -130,6 +131,14 @@ class CrooApplicationView(LoginRequiredMixin, UpdateView):
         return form
 
 
+class CrooApplicationQuestionForm(forms.ModelForm):
+
+    class Meta:
+        model = CrooApplicationQuestion
+        widgets = {
+            'question': forms.Textarea(attrs={'rows': 4})
+        }
+
 class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     """
@@ -150,14 +159,15 @@ class CreateCrooApplication(LoginRequiredMixin, PermissionRequiredMixin, FormVie
 
     def get_form(self, data=None, files=None, **kwargs):
         
-        FormSet = modelformset_factory(CrooApplicationQuestion)
+        FormSet = modelformset_factory(CrooApplicationQuestion, 
+                                       form=CrooApplicationQuestionForm)
         trips_year = TripsYear.objects.current()
         queryset = CrooApplicationQuestion.objects.filter(trips_year=trips_year)
         form = FormSet(data, queryset=queryset)
         
         # TODO: move this elsewhere.
         form.helper = FormHelper()
-        form.helper.add_input(Submit('submit', 'Submit'))
+        form.helper.add_input(Submit('submit', 'Update'))
         
         return form
 
