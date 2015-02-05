@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load icons %}
 
 {% block content %}
 
@@ -13,6 +14,7 @@
     <th> Status </th>
     <th> Average Grade </th>
     <th> Potential Croos </th>
+    <th> Safety Dork Qualified? </th>
     <th> Assignment </th>
   </tr
 
@@ -28,11 +30,14 @@
       {% endfor %} 
     </td>
 
+    <td> {{ application.safety_dork_qualified | checkmark_if_true }} </td>
+
     <td> 
       {% if application.assigned_croo %} 
       {{ application.assigned_croo | detail_link }} 
       {% endif %}
     </td>
+    
 
     <td> {{ application | edit_link }} </td>
   </tr>
