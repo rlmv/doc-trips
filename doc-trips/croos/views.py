@@ -43,7 +43,10 @@ class CrooApplicationAnswerForm(forms.ModelForm):
             self.fields['answer'].label = question.question
 
 
-class CrooApplicationCreate(LoginRequiredMixin, CreateView):
+class IfCrooApplicationAvailable(PassesTestMixin):
+    pass
+
+class NewCrooApplication(LoginRequiredMixin, IfCrooApplicationAvailable, CreateView):
 
     model = CrooApplication
     template_name = 'croos/crooapplication_form.html'
@@ -51,12 +54,15 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('croos:apply')
 
     def dispatch(self, request, *args, **kwargs):
-        
+        """ 
+        Redirect to edit CrooApplication for this user, if user
+        has already applied. 
+        """
         if self.model.objects.filter(applicant=self.request.user, 
                                      trips_year=TripsYear.objects.current()).exists():
             return HttpResponseRedirect(reverse('croos:edit_application'))
         
-        return super(CrooApplicationCreate, self).dispatch(request, *args, **kwargs)
+        return super(NewCrooApplication, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, data=None, files=None, **kwargs):
 
@@ -69,7 +75,6 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
         else: 
             # GET. Instantiate blank application and answsers
             initial = list(map(lambda q: {'answer': '', 'question': q}, questions))  
-
 
         ApplicationFormset = inlineformset_factory(CrooApplication,
                                                    CrooApplicationAnswer, 
@@ -95,7 +100,7 @@ class CrooApplicationCreate(LoginRequiredMixin, CreateView):
 
         
 
-class CrooApplicationView(LoginRequiredMixin, UpdateView):
+class EditCrooApplication(LoginRequiredMixin, UpdateView):
     """
     Application page.
     
@@ -120,7 +125,8 @@ class CrooApplicationView(LoginRequiredMixin, UpdateView):
 
         ApplicationFormset = inlineformset_factory(CrooApplication, 
                                                    CrooApplicationAnswer, 
-                                                   form=CrooApplicationAnswerForm,                                                      extra=0, 
+                                                   form=CrooApplicationAnswerForm, 
+                                                   extra=0, 
                                                    can_delete=False)
 
         form = ApplicationFormset(data, instance=self.object)

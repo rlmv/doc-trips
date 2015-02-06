@@ -20,6 +20,9 @@ class Timetable(models.Model):
     leader_application_open = models.DateTimeField(default=timezone.now)
     leader_application_closed = models.DateTimeField(default=timezone.now)
 
+    crooapplication_open = models.DateTimeField(default=timezone.now)
+    crooapplication_closed = models.DateTimeField(default=timezone.now)
+
     # TODO: ??? are we going to have leader recs?
     # leader_recommendation_due = models.DateTimeField()
 
@@ -45,3 +48,8 @@ class Timetable(models.Model):
         return (self.leader_application_open < now and
                 now < self.leader_application_closed)
         
+    def crooapplication_available(self):
+        
+        now = timezone.now()
+        return (self.crooapplication_open < now and
+                now < self.crooapplication_closed)

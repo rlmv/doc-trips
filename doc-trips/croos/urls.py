@@ -4,7 +4,7 @@
 from django.conf.urls import patterns, url, include
 
 from db.urlhelpers import DB_REGEX
-from croos.views import (CrooApplicationView, CrooApplicationCreate, 
+from croos.views import (EditCrooApplication, NewCrooApplication,
                          CreateCrooApplication, RedirectToNextGradableCrooApplication, 
                          GradeCrooApplication, NoCrooApplicationsLeftToGrade,
                          CrooApplicationDatabaseListView, CrooApplicationDatabaseDetailView,
@@ -13,8 +13,8 @@ from croos.views import (CrooApplicationView, CrooApplicationCreate,
                          CrooDeleteView)
 
 urlpatterns = patterns('', 
-    url(r'^apply/$', CrooApplicationCreate.as_view(), name='apply'),
-    url(r'^apply/edit$', CrooApplicationView.as_view(), name='edit_application'),
+    url(r'^apply/$', NewCrooApplication.as_view(), name='apply'),
+    url(r'^apply/edit$', EditCrooApplication.as_view(), name='edit_application'),
     url(r'^createapplication/$', CreateCrooApplication.as_view(), name='create_application'),                   
     url(r'^grade/$', RedirectToNextGradableCrooApplication.as_view(), name='grade_next'),
     url(r'^grade/(?P<pk>[0-9]+)$', GradeCrooApplication.as_view(), name='grade'),

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.forms.models import modelform_factory
 from django.db import IntegrityError, transaction
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, PermissionDenied
 from vanilla import (ListView, UpdateView, CreateView, DeleteView, 
                      TemplateView, DetailView, RedirectView)
 from crispy_forms.helper import FormHelper
@@ -20,6 +20,21 @@ from db.forms import tripsyear_modelform_factory
 from permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
+
+
+class PassesTestMixin():
+
+    def test_func(self):
+        msg = 'Implement test_func'
+        raise ImproperlyConfigured(msg)
+        
+    def dispatch(self, request, *args, **kwargs):
+        
+        if not self.test_func():
+            raise PermissionDenied
+        
+        return super(PassesTestMixin, self).dispatch(request, *args, **kwargs)
+            
 
 class CrispyFormMixin():
     """
