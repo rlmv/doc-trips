@@ -7,16 +7,19 @@ from django.forms.formsets import BaseFormSet
 from django.forms.models import BaseInlineFormSet, ModelForm
 from django.core.urlresolvers import reverse_lazy, reverse
 from django import forms
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
 
 from db.forms import tripsyear_modelform_factory
-from db.views import TripsYearMixin, CrispyFormMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
+from db.views import TripsYearMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
+from db.views import PassesTestMixin
+from db.views import CrispyFormMixin
 from db.models import TripsYear
 from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade, Croo
 from permissions.views import CrooGraderPermissionRequired
+from timetable.models import Timetable
 
 
 class CrooApplicationAnswerForm(forms.ModelForm):
@@ -43,8 +46,15 @@ class CrooApplicationAnswerForm(forms.ModelForm):
             self.fields['answer'].label = question.question
 
 
-class IfCrooApplicationAvailable(PassesTestMixin):
-    pass
+class IfCrooApplicationAvailable():
+    
+    def dispatch(self, request, *args, **kwargs):
+        
+        if Timetable.objects.timetable().crooapplication_available():
+            return super(IfCrooApplicationAvailable, self).dispatch(request, *args, **kwargs)
+            
+        return render(request, 'croos/not_available.html')
+            
 
 class NewCrooApplication(LoginRequiredMixin, IfCrooApplicationAvailable, CreateView):
 
@@ -100,7 +110,7 @@ class NewCrooApplication(LoginRequiredMixin, IfCrooApplicationAvailable, CreateV
 
         
 
-class EditCrooApplication(LoginRequiredMixin, UpdateView):
+class EditCrooApplication(LoginRequiredMixin, IfCrooApplicationAvailable, UpdateView):
     """
     Application page.
     
