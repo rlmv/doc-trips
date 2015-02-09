@@ -8,16 +8,18 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
+from django.forms.models import inlineformset_factory
 from django import forms
 
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
-from crispy_forms.layout import Field
+from crispy_forms.layout import Field, Submit
+from crispy_forms.helper import FormHelper
 
 
 from permissions.views import GraderPermissionRequired, LoginRequiredMixin
 
-from leaders.models import LeaderApplication, LeaderGrade
+from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationAnswer, LeaderApplicationQuestion
 from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
@@ -102,6 +104,29 @@ class LeaderApplicationDatabaseAssignmentView(DatabaseDetailView):
     model = LeaderApplication
     fields = LeaderApplicationDatabaseDetailView.fields
 
+
+class LeaderApplicationAnswerForm(forms.ModelForm):
+
+    class Meta: 
+        model = LeaderApplicationAnswer
+        widgets = {
+            'question': forms.HiddenInput(),
+            'answer': forms.Textarea(attrs={'rows': 7})
+        }
+        
+    def __init__(self, *args, **kwargs):
+        super(LeaderApplicationAnswerForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        
+        question = self.initial.get('question', None)
+        
+        if question:
+            if isinstance(question, int):
+                question = LeaderApplicationQuestion.objects.get(pk=question)
+            
+            self.fields['answer'].label = question.question
     
 
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
@@ -124,6 +149,7 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(LeaderApply, self).get_context_data(**kwargs)
         context['timetable'] = Timetable.objects.timetable()
+        context['formset'] = self.get_formset()
         return context
 
     def get_object(self):
@@ -134,7 +160,7 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         edit. Otherwise, display an empty application form. 
         """
         try:
-            return self.get_queryset().get(user=self.request.user, 
+            return self.get_queryset().get(applicant=self.request.user, 
                                         trips_year=TripsYear.objects.current())
         except self.model.DoesNotExist:
             return None # causes self.object and context[object] to be None
@@ -151,15 +177,36 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         form = tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
                                             exclude=self.exclude, widgets=widgets)
         return form
+
+    def get_formset(self):
+
+        trips_year = TripsYear.objects.current()
+        questions = LeaderApplicationQuestion.objects.filter(trips_year=trips_year)
+
+        FormSet = inlineformset_factory(LeaderApplication, 
+                                        LeaderApplicationAnswer,
+                                        form=LeaderApplicationAnswerForm,
+                                        extra=len(questions),
+                                        can_delete=False)
+
+        if self.request.method == 'POST':
+            initial = None
+            data = self.request.POST
+        else:
+            initial = list(map(lambda q: {'question': q, 'answer': ''}, questions))
+            data = None
+
+        formset = FormSet(data, initial=initial)
+        formset.helper = FormHelper()
+        formset.helper.form_tag = False
+        formset.helper.add_input(Submit('submit', 'Apply'))
+
+        return formset
+                           
         
     def get_form_helper(self, form):
-        from crispy_forms.layout import Submit, Field
-        helper = LeaderApplicationFormHelper(form)
-        if self.object:
-            submit_text = 'Update'
-        else:
-            submit_text = 'Submit'
-        helper.add_input(Submit('submit', submit_text))
+        helper = FormHelper(form)
+        helper.form_tag = False
         return helper
 
     def form_valid(self, form):

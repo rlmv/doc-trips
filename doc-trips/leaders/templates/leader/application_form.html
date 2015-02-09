@@ -14,6 +14,10 @@
 
 <p>The application will be available until {{ timetable.leader_application_closed }}</p>
 
-{% crispy form %}
+<form method="post" action="">
+  {% crispy form %}
+  {% crispy formset %}
+</form>
+
 
 {% endblock %}

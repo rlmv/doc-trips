@@ -19,6 +19,25 @@ TSHIRT_SIZE_CHOICES = (
     ('XL', 'Extra large'),
 )
 
+class LeaderApplicationQuestion(DatabaseModel):
+    
+    class Meta:
+        ordering = ['ordering']
+        
+    question = models.TextField()
+    ordering = models.IntegerField()
+
+class LeaderApplicationAnswer(DatabaseModel):
+
+    class Meta:
+        ordering = ['question__ordering']
+
+    answer = models.TextField()
+    question = models.ForeignKey(LeaderApplicationQuestion)
+    application = models.ForeignKey('LeaderApplication', 
+                                    related_name='answers', 
+                                    editable=False)
+
 
 class LeaderApplication(DatabaseModel):
 
@@ -28,14 +47,14 @@ class LeaderApplication(DatabaseModel):
 
     See https://docs.djangoproject.com/en/dev/ref/models/fields/#choices
     """
-    PENDING = 'PEND'
-    ACCEPTED = 'ACC'
-    WAITLISTED = 'WAIT'
-    REJECTED = 'REJ'
+    PENDING = 'PENDING'
+    ACCEPTED = 'ACCEPTED'
+    WAITLISTED = 'WAITLISTED'
+    REJECTED = 'REJECTED'
     CROO = 'CROO'
-    CANCELED = 'CANC'
-    DEPRECATED = 'DEP'
-    DISQUALIFIED = 'DISQ'
+    CANCELED = 'CANCELED'
+    DEPRECATED = 'DEPRECATED'
+    DISQUALIFIED = 'DISQUALIFIED'
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (ACCEPTED, 'Accepted'),
@@ -48,18 +67,25 @@ class LeaderApplication(DatabaseModel):
     )
 
     # ---- administrative information. not seen by applicants ------
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="Applicant")
-    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default=PENDING, 
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING, 
                               verbose_name="Application status")
     assigned_trip = models.ForeignKey(ScheduledTrip, null=True, 
                                       blank=True, related_name='leaders',
                                       on_delete=models.SET_NULL)
+
+    # ----- trainings -----
+    community_building = models.DateField(null=True, blank=True)
+    risk_management = models.DateField(null=True, blank=True)
+    wilderness_skills = models.DateField(null=True, blank=True)
+    first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
+
     
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
     gender = models.CharField(max_length=25)
     hinman_box = models.CharField(max_length=10)
-    phone = models.CharField(max_length=255, verbose_name='Phone number')
+    phone = models.CharField('Phone Number', max_length=255)
     from_where = CharField(max_length=255, verbose_name='Where are you from?')
     what_do_you_like_to_study = CharField(max_length=255, verbose_name='What do you like to study?')
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
@@ -81,48 +107,20 @@ class LeaderApplication(DatabaseModel):
     available_triptypes = ManyToManyField(TripType, blank=True, 
                                           related_name='available_triptypes', 
                                           verbose_name='Available types of trips')
+
     trip_preference_comments = TextField(blank=True, verbose_name="Looking at the Trips descriptions, please feel free to use this space to address any concerns or explain your availability. This will only be used to help us in Trip assignments, it will not be considered when your application is being read.")
 
-    
-    # ---- application questions -----
+    cannot_participate_in = TextField(blank=True, verbose_name="If applicable, please elaborate (to the extent you feel comfortable) on any particular trips or activities that you absolutely cannot participate in. This information will be used exclusively for trip assignments & co-leader pairings. All information in this application will remain confidential.")
 
     personal_activities = TextField(blank=True, verbose_name='Please list your primary activities and involvements at Dartmouth and beyond')
-    personal_communities = TextField(blank=True, verbose_name="Are there any communities with which you identify? You are welcome to list more than one, or leave this blank. Be as brief or detailed as you’d like.")
-    
+
     went_on_trip = BooleanField(default=False, verbose_name='Did you go on a First Year Trip?')
     applied_to_trips = BooleanField(default=False, verbose_name='Have you applied to lead a Trip before?')
-    is_in_hanover_this_fall = BooleanField(default=False, verbose_name='Are you planning to be in Hanover this fall?')
+    in_hanover_this_fall = BooleanField(default=False, verbose_name='Are you planning to be in Hanover this fall?')
     
-    tell_us_about_yourself = TextField(blank=True, verbose_name="Without simply listing activities, tell us about yourself. What are you passionate about? What identities are meaningful to you? Feel free to answer this question in the way most comfortable for you.")
-
-    comforting_experience = TextField(blank=True, verbose_name="Describe an experience in which someone else (a friend, roommate, classmate, etc.) felt uncomfortable. What did you do to make them feel more comfortable and welcome in that environment?")
-
-    best_compliment = TextField(blank=True, verbose_name="What is the best compliment (serious, funny, reflective, goofy, etc.) you have ever received (or wish you had received)?")
-
-    trip_leader_roles = TextField(blank=True, verbose_name="What role do trip leaders play in the broader purpose(s) of DOC Trips? How will you, as a trip leader, further these goals both during your trip as well as back on campus?")
-
-    what_to_change_about_trips = TextField(blank=True, verbose_name="If you have led a DOC Trip before, what would you change about the program (big or small)? If you have not led a DOC Trip before, what would you change about the program (big or small) OR what would you change about your introduction to Dartmouth?")
-
-    leadership_experience = TextField(blank=True, verbose_name="Describe a leadership experience you had (in high school, at Dartmouth, as a former trip leader, etc.). What specific skills and insights did you bring to that experience? How would you describe yourself as a leader?")
-
-    working_with_difference = TextField(blank=True, verbose_name="Discuss a situation (in high school, at Dartmouth, on an off-term, etc.) in which you had to work with someone who was very different from yourself. How did you respond to these differences?")
-
-    coleader_qualities = TextField(blank=True, verbose_name="Trip leaders work closely with their co-leader before, during, and after the trip. What qualities would you value in a co-leader that both balance your weaknesses AND complement your strengths?")
-
-    why_do_you_want_to_be_involved = TextField(blank=True, verbose_name="Why do you want to be involved in First-Year Trips as a trip leader?")
-
-    medical_certifications = TextField(blank=True, verbose_name="Current certifications in Standard First Aid and CPR are required for all DOC trip leaders. Please list any relevant medical certifications you hold or have held, along with the program that sponsored the certification and the dates they expire — for example, 'First Aid (American Red Cross), expires October 2013'.")
-
-    relevant_experience = TextField(blank=True, verbose_name="For each type of trip you are interested in leading, please describe your level of expertise and any amount of previous experience that might qualify you to lead that particular trip. Include any accomplishments, special skills, or certifications that you consider relevant (lifeguard training, yoga experience, mountain biking enthusiast, photography class, NOLS, skiing since you were a baby, etc.). No experience is completely fine! — our training will prepare you for just about anything you might encounter and you will be paired will a leader who complements your skill set.")
-
-    cannot_participate_in = TextField(blank=True, verbose_name="If applicable, please elaborate (to the extent you feel comfortable) on any particular trips or activities that you absolutely cannot participate in. This information will be used exclusively for trip assignments & co-leader pairings. *NOTE: All information in this application will remain confidential.")
-
     spring_leader_training_ok = BooleanField(default=False, verbose_name="I can attend Leader Training during the spring term.")
 
     summer_leader_training_ok = BooleanField(default=False, verbose_name="I can attend Leader Training during the summer term.")
-
-    express_yourself = TextField(blank=True, verbose_name="It’s always tough to say everything you want to in an application – so this is an opportunity to share any additional thoughts or information. If you’ve said enough, then feel free to leave this portion blank!")
-    
 
     def clean(self):
         """ Make sure that leaders can only be assigned to trips if status==ACCEPTED.
