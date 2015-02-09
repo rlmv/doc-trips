@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
 
+
 from db.forms import tripsyear_modelform_factory
 from db.views import TripsYearMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
 from db.views import PassesTestMixin
@@ -106,7 +107,7 @@ class NewCrooApplication(LoginRequiredMixin, IfCrooApplicationAvailable, CreateV
             trips_year=TripsYear.objects.current())
         form.instance = application
         
-        return super(CrooApplicationCreate, self).form_valid(form)
+        return super(NewCrooApplication, self).form_valid(form)
 
         
 

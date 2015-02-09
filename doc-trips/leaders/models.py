@@ -132,7 +132,7 @@ class LeaderApplication(DatabaseModel):
                                   "Change status to 'Accepted' or remove trip assignment.".format(self.get_status_display()))
 
     def __str__(self):
-        return str(self.user)
+        return str(self.applicant)
 
 
     def get_preferred_trips(self):

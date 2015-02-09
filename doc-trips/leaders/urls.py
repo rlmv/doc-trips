@@ -5,7 +5,8 @@ from db.urlhelpers import DB_REGEX
 from leaders.views import *
 
 urlpatterns = patterns('',
-    url(r'^apply/$', LeaderApply.as_view(), name='apply'),
+    url(r'^apply/$', NewLeaderApplication.as_view(), name='apply'),
+    url(r'^apply/edit/$', EditLeaderApplication.as_view(), name='edit_application'),                   
     url(r'^createapplication/$', CreateLeaderApplication.as_view(), name='create_application'),                   
     url(r'^grade/$', RedirectToNextGradableApplication.as_view(), name='grade_random'),
     url(r'^grade/(?P<pk>[0-9]+)$', GradeApplication.as_view(), name='grade'),
