@@ -8,17 +8,15 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.db.models import Count
 from django.forms import ModelForm
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, modelformset_factory
 from django import forms
-
 from vanilla import (ListView, CreateView, DetailView, UpdateView, 
                      FormView, RedirectView, TemplateView)
 from crispy_forms.layout import Field, Submit
 from crispy_forms.helper import FormHelper
-
+from braces.views import PermissionRequiredMixin
 
 from permissions.views import GraderPermissionRequired, LoginRequiredMixin
-
 from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationAnswer, LeaderApplicationQuestion
 from db.views import *
 from db.models import TripsYear
@@ -255,6 +253,33 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         context = self.get_context_data(form=form, formset=formset)
         return self.render_to_response(context)
 
+
+class CreateLeaderApplication(LoginRequiredMixin, PermissionRequiredMixin, FormView):
+
+    """
+    Create this year's leader application.
+    """
+    
+    permission_required = 'permission.can_create_leader_application'
+    redirect_unauthenticated_users = True
+    raise_exception = True
+
+    success_url = reverse_lazy('leader:create_application')
+    template_name = 'leader/create_leaderapplication.html'
+
+    def get_form(self, data=None, files=None, **kwargs):
+
+        FormSet = modelformset_factory(LeaderApplicationQuestion)
+        trips_year = TripsYear.objects.current()
+        queryset = LeaderApplicationQuestion.objects.filter(trips_year=trips_year)
+
+        form = FormSet(data, queryset=queryset)
+
+        return form
+
+    def form_valid(self, form):
+        form.save()
+        return super(CreateLeaderApplication, self).form_valid(form)
 
 class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
     
