@@ -129,28 +129,44 @@ class LeaderApplicationAnswerForm(forms.ModelForm):
             self.fields['answer'].label = question.question
     
 
+class IfLeaderApplicationAvailable():
+
+    def dispatch(self, request, *args, **kwargs):
+        if Timetable.objects.timetable.leaderapplication_available():
+            return super(IfLeaderApplicationAvailable, self).dispatch(request, *args, **kwargs)
+        
+        return render(request, 'leader/application_not_available.html')
+
+
 class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     model = LeaderApplication
     success_url = reverse_lazy('leader:apply')
-
-    exclude = ['user', 'status', 'assigned_trip']
-
-    def get_template_names(self):
-        """
-        Only display the application form if the application is open.
-
-        """
-        if Timetable.objects.timetable().is_leader_application_available():
-            return ['leader/application_form.html']
-        else:
-            return ['leader/application_not_available.html']
+    template_name = 'leader/application_form.html'
+    exclude = ['applicant', 'status', 'assigned_trip']
 
     def get_context_data(self, **kwargs):
         context = super(LeaderApply, self).get_context_data(**kwargs)
         context['timetable'] = Timetable.objects.timetable()
-        context['formset'] = self.get_formset()
         return context
+
+    def get(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        form = self.get_form()
+        formset = self.get_formset()
+        context = self.get_context_data(form=form, formset=formset)
+
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        
+        form = self.get_form(data=request.POST)
+        formset = self.get_formset(data=request.POST)
+        if form.is_valid() and formset.is_valid():
+            return self.form_valid(form, formset)
+
+        return self.form_invalid()
 
     def get_object(self):
         """ 
@@ -176,46 +192,69 @@ class LeaderApply(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         }
         form = tripsyear_modelform_factory(self.model, TripsYear.objects.current(),
                                             exclude=self.exclude, widgets=widgets)
+        
         return form
 
-    def get_formset(self):
+    def get_formset(self, data=None):
+        """ Return the dynamic q&a formset """
 
         trips_year = TripsYear.objects.current()
-        questions = LeaderApplicationQuestion.objects.filter(trips_year=trips_year)
 
-        FormSet = inlineformset_factory(LeaderApplication, 
-                                        LeaderApplicationAnswer,
-                                        form=LeaderApplicationAnswerForm,
-                                        extra=len(questions),
-                                        can_delete=False)
+        if self.object:
 
-        if self.request.method == 'POST':
-            initial = None
-            data = self.request.POST
+            questions = LeaderApplicationQuestion.objects.filter(trips_year=trips_year)
+
+            FormSet = inlineformset_factory(LeaderApplication, 
+                                            LeaderApplicationAnswer,
+                                            form=LeaderApplicationAnswerForm,
+                                            extra=len(questions),
+                                            can_delete=False)
+
+            if data is None:
+                initial = list(map(lambda q: {'question': q, 'answer': ''}, questions))
+            else:
+                initial = None
+                
+            formset = FormSet(data, initial=initial)
+
         else:
-            initial = list(map(lambda q: {'question': q, 'answer': ''}, questions))
-            data = None
+            
+            FormSet = inlineformset_factory(LeaderApplication, 
+                                            LeaderApplicationAnswer,
+                                            form=LeaderApplicationAnswerForm,
+                                            extra=0,
+                                            can_delete=False)
 
-        formset = FormSet(data, initial=initial)
+            formset = FormSet(data, instance=self.object)
+
         formset.helper = FormHelper()
         formset.helper.form_tag = False
         formset.helper.add_input(Submit('submit', 'Apply'))
 
         return formset
                            
-        
-    def get_form_helper(self, form):
-        helper = FormHelper(form)
-        helper.form_tag = False
-        return helper
-
-    def form_valid(self, form):
+    def form_valid(self, form, formset):
         """ Attach creating user and current trips_year to Application. """
+
         if self.object is None:
-            form.instance.user = self.request.user
+            form.instance.applicant = self.request.user
             form.instance.trips_year = TripsYear.objects.current()
-        return super(LeaderApply, self).form_valid(form)
-        
+
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+
+        else:
+            self.object = form.save()
+            formset.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, form, formset):
+
+        context = self.get_context_data(form=form, formset=formset)
+        return self.render_to_response(context)
+
 
 class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
     

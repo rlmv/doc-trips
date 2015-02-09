@@ -47,6 +47,9 @@ class Timetable(models.Model):
         now = timezone.now()
         return (self.leader_application_open < now and
                 now < self.leader_application_closed)
+
+    def leaderapplication_available(self):
+        return self.is_leader_application_available()
         
     def crooapplication_available(self):
         

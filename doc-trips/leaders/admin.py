@@ -7,7 +7,7 @@ from django.db import  models
 from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
 
-from leaders.models import LeaderApplication, LeaderGrade
+from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationQuestion, LeaderApplicationAnswer
 
 
 class LeaderGradeInline(admin.TabularInline):
@@ -36,3 +36,5 @@ class LeaderGradeAdmin(admin.ModelAdmin):
 
 admin.site.register(LeaderApplication, LeaderApplicationAdmin)
 admin.site.register(LeaderGrade, LeaderGradeAdmin)
+admin.site.register(LeaderApplicationQuestion)
+admin.site.register(LeaderApplicationAnswer)
