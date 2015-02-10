@@ -286,25 +286,21 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
         return self.form_invalid(form, formset)
 
-    def get_form_class(self):
-        """ Get form, restricting section choices to those of current TripsYear """
-        return make_leaderapplication_form()
-        
-    def get_form_helper(self, form):
-        
-        helper = FormHelper(form)
-        helper.form_tag = False
-        return helper
+    def get_form(self, **kwargs):
+
+        form = make_leaderapplication_form()(**kwargs)
+        form.helper = FormHelper(form)
+        form.helper.form_tag = False
+
+        self.validate_crispy_form(form)
+
+        return form
 
     def get_formset(self, data=None):
         """ Return the dynamic q&a formset """
 
-        trips_year = TripsYear.objects.current()
-
         FormSet = make_leaderapplication_formset(extra=0)
-
         formset = FormSet(data, instance=self.object)
-
         formset.helper = FormHelper()
         formset.helper.form_tag = False
         formset.helper.add_input(Submit('submit', 'Apply'))

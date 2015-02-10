@@ -84,14 +84,15 @@ class CrispyFormMixin():
         """
 
         form = super(CrispyFormMixin, self).get_form(**kwargs)
+
+        if not hasattr(form, 'helper'):
+            form.helper = self.get_form_helper(form)
+
         self.validate_crispy_form(form)
 
         return form
 
     def validate_crispy_form(self, form):
-
-        if not hasattr(form, 'helper'):
-            form.helper = self.get_form_helper(form)
         
         # all fields in the layout
         layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
