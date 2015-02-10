@@ -22,7 +22,7 @@ from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from leaders.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout
+from leaders.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout, LeaderApplicationForm
 
 
 logger = logging.getLogger(__name__)
@@ -152,6 +152,7 @@ def make_leaderapplication_form():
 
     form = tripsyear_modelform_factory(LeaderApplication, TripsYear.objects.current(),
                                        exclude=exclude, widgets=widgets)
+
 
     return form
 
@@ -288,11 +289,7 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     def get_form(self, **kwargs):
 
-        form = make_leaderapplication_form()(**kwargs)
-        form.helper = FormHelper(form)
-        form.helper.layout = LeaderApplicationFormLayout()
-        form.helper.form_tag = False
-
+        form = LeaderApplicationForm(**kwargs)
         self.validate_crispy_form(form)
 
         return form

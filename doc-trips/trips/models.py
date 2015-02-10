@@ -77,7 +77,14 @@ class Section(DatabaseModel):
 
     def __str__(self):
         return self.name
-
+        
+        
+    def date_range_str(self):
+        
+        fmt = '%b %d'
+        return (self.leaders_arrive.strftime(fmt) + ' to ' + 
+                self.return_to_campus.strftime(fmt))
+        
 
 class TripTemplate(DatabaseModel):
 
