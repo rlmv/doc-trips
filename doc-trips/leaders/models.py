@@ -32,7 +32,7 @@ class LeaderApplicationAnswer(DatabaseModel):
     class Meta:
         ordering = ['question__ordering']
 
-    answer = models.TextField()
+    answer = models.TextField(blank=True)
     question = models.ForeignKey(LeaderApplicationQuestion)
     application = models.ForeignKey('LeaderApplication', 
                                     related_name='answers', 

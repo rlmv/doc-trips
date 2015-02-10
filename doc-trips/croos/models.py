@@ -20,7 +20,7 @@ class CrooApplicationAnswer(DatabaseModel):
     class Meta:
         ordering = ['question__ordering']
 
-    answer = models.TextField()
+    answer = models.TextField(blank=True)
     # editable=False?
     question = models.ForeignKey(CrooApplicationQuestion)
     application = models.ForeignKey('CrooApplication', 
