@@ -290,6 +290,7 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
         form = make_leaderapplication_form()(**kwargs)
         form.helper = FormHelper(form)
+        form.helper.layout = LeaderApplicationFormLayout()
         form.helper.form_tag = False
 
         self.validate_crispy_form(form)
