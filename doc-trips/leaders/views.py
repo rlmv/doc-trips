@@ -2,6 +2,7 @@
 import logging
 from collections import defaultdict
 
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -246,6 +247,7 @@ class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
 
     def form_invalid(self, form, formset):
 
+        messages.error(self.request, 'Uh oh. Looks like there is an error in your application')
         context = self.get_context_data(form=form, formset=formset)
         return self.render_to_response(context)
 
@@ -315,6 +317,7 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     def form_invalid(self, form, formset):
 
+        messages.error(self.request, 'Uh oh. Looks like there is an error in your application')
         context = self.get_context_data(form=form, formset=formset)
         return self.render_to_response(context)
 
