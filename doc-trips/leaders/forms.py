@@ -15,7 +15,6 @@ class SectionChoiceField(forms.ModelMultipleChoiceField):
     """
     Custom field to display section information
     """
-
     widget = forms.CheckboxSelectMultiple()
     
     def label_from_instance(self, obj):
@@ -26,8 +25,8 @@ class SectionChoiceField(forms.ModelMultipleChoiceField):
 class LeaderApplicationForm(forms.ModelForm):
 
     # override ModelForm field defaults
-    preferred_sections = SectionChoiceField(queryset=None)
-    available_sections = SectionChoiceField(queryset=None)
+    preferred_sections = SectionChoiceField(queryset=None, required=False)
+    available_sections = SectionChoiceField(queryset=None, required=False)
 
     class Meta:
         model = LeaderApplication
