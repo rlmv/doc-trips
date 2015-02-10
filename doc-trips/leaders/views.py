@@ -170,6 +170,7 @@ class IfLeaderApplicationAvailable():
 class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
 
     model = LeaderApplication
+    form_class = LeaderApplicationForm
     success_url = reverse_lazy('leader:edit_application')
     template_name = 'leader/application_form.html'
 
@@ -201,17 +202,6 @@ class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
             return self.form_valid(form, formset)
 
         return self.form_invalid(form, formset)
-
-    def get_form_class(self):
-        """ Get form, restricting section choices to those of current TripsYear """
-
-        return make_leaderapplication_form()
-    
-    def get_form_helper(self, form):
-        
-        helper = FormHelper(form)
-        helper.form_tag = False
-        return helper
 
     def get_formset(self, data=None):
         """ Return the dynamic q&a formset """
@@ -256,6 +246,7 @@ class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
 class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     model = LeaderApplication
+    form_class = LeaderApplicationForm
     success_url = reverse_lazy('leader:edit_application')
     template_name = 'leader/application_form.html'
     exclude = ['applicant', 'status', 'assigned_trip']
@@ -288,13 +279,6 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
             return self.form_valid(form, formset)
 
         return self.form_invalid(form, formset)
-
-    def get_form(self, **kwargs):
-
-        form = LeaderApplicationForm(**kwargs)
-        self.validate_crispy_form(form)
-
-        return form
 
     def get_formset(self, data=None):
         """ Return the dynamic q&a formset """
