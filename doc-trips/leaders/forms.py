@@ -48,8 +48,13 @@ class LeaderApplicationForm(forms.ModelForm):
             'allergen_information': forms.Textarea(attrs={'rows': 2}),
             'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
             'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
+            'personal_activities': forms.Textarea(attrs={'rows': 4}),
         }
 
+        labels = {
+            'preferred_triptypes': 'Preferred types of trips:',
+            'available_triptypes': 'Available types of trips:',
+        }
 
     def __init__(self, *args, **kwargs):
         super(LeaderApplicationForm, self).__init__(*args, **kwargs)
@@ -73,7 +78,7 @@ class LeaderApplicationFormLayout(Layout):
         super(LeaderApplicationFormLayout, self).__init__(
             Fieldset(
                 'General information', 
-                Alert(content='Answers in this section will NOT be used in the grading process'),
+                HTML('<p>Answers in this section will NOT be used in the grading process</p>'),
                 Div(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -85,13 +90,6 @@ class LeaderApplicationFormLayout(Layout):
                 'from_where',
                 'what_do_you_like_to_study',
                 'personal_activities',
-                Fieldset(
-                    'Dietary restrictions', 
-                    'dietary_restrictions',
-                    'allergen_information', 
-                ),
-                'trippee_confidentiality',
-                'in_goodstanding_with_college',
             ), 
             Fieldset(
                 'Trip availibility',
@@ -105,20 +103,31 @@ class LeaderApplicationFormLayout(Layout):
                 ),
                 'trip_preference_comments',
                 'cannot_participate_in',
+                'went_on_trip', 
+                'applied_to_trips', 
+                'in_hanover_this_fall',
+            ),
+            Fieldset(
+                'Dietary restrictions', 
+                HTML('<p>(We use this information in packing food for Trips and it will not affect your candidacy)</p>'),
+                'dietary_restrictions',
+                'allergen_information', 
+            ),
+            Fieldset(
+                'Leader training', 
+                HTML("<p>If you are selected to be a DOC First-Year Trips leader, you must complete Trip Leader Training. These trainings are fun and aim to help you feel more comfortable as a leader and allow us to build Trips {{ trips_year }} together. You are required to complete these trainings in order to lead a Trip.</p><p>The training program includes 10-12 hours of training sessions (not necessarily all at once). Sessions are offered throughout the spring and summer terms. Training includes a community building session, a risk assessment session, and a wilderness skills session (which may be specific to the type of trip you are placed on and may be an overnight trip). Leader Training dates for each term will be announced in the spring and summer terms and will be posted on our schedule online.</p>"),
+                'spring_leader_training_ok', 
+                'summer_leader_training_ok', 
+            ),
+            Fieldset(
+                'Disclosure',
+                'trippee_confidentiality',
+                'in_goodstanding_with_college',
             ),
             Fieldset(
                 'Application',
                 Alert(content='Answers in this section WILL be used in grading',
                       dismiss=False, css_class='alert-warning'),
-                'went_on_trip', 
-                'applied_to_trips', 
-                'in_hanover_this_fall',
-                Fieldset(
-                    'Leader training', 
-                    HTML("<p>If you are selected to be a DOC First-Year Trips leader, you must complete Trip Leader Training. These trainings are fun and aim to help you feel more comfortable as a leader and allow us to build Trips {{ trips_year }} together. You are required to complete these trainings in order to lead a Trip.</p><p>The training program includes 10-12 hours of training sessions (not necessarily all at once). Sessions are offered throughout the spring and summer terms. Training includes a community building session, a risk assessment session, and a wilderness skills session (which may be specific to the type of trip you are placed on and may be an overnight trip). Leader Training dates for each term will be announced in the spring and summer terms and will be posted on our schedule online.</p>"),
-                    'spring_leader_training_ok', 
-                    'summer_leader_training_ok', 
-                ),
             ),
         )
 
