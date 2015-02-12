@@ -39,7 +39,8 @@ class LeaderApplicationForm(forms.ModelForm):
                   'trip_preference_comments', 'cannot_participate_in',
                   'personal_activities', 'went_on_trip',
                   'applied_to_trips', 'in_hanover_this_fall', 
-                  'spring_leader_training_ok', 'summer_leader_training_ok',]
+                  'spring_leader_training_ok', 'summer_leader_training_ok',
+                  'medical_certifications', 'relevant_experience',]
 
         widgets = {
             'preferred_triptypes': forms.CheckboxSelectMultiple,
@@ -101,8 +102,14 @@ class LeaderApplicationFormLayout(Layout):
                     Div('preferred_triptypes', css_class='col-sm-3'),
                     Div('available_triptypes', css_class='col-sm-3'),
                 ),
+                Fieldset(
+                    'Relevant experience',
+                    HTML('<p>For each type of trip you are interested in leading, please describe your level of expertise and any amount of previous experience that might qualify you to lead that particular trip. Include any accomplishments, special skills, or certifications that you consider relevant (lifeguard training, yoga experience, mountain biking enthusiast, photography class, NOLS, skiing since you were a baby, etc.)</p>'), 
+                    'relevant_experience',
+                ),
                 'trip_preference_comments',
                 'cannot_participate_in',
+                'medical_certifications',
                 'went_on_trip', 
                 'applied_to_trips', 
                 'in_hanover_this_fall',

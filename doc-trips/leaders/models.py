@@ -112,6 +112,9 @@ class LeaderApplication(DatabaseModel):
 
     cannot_participate_in = TextField(blank=True, verbose_name="If applicable, please elaborate (to the extent you feel comfortable) on any particular trips or activities that you absolutely cannot participate in. This information will be used exclusively for trip assignments & co-leader pairings. All information in this application will remain confidential.")
 
+    medical_certifications = TextField(blank=True)
+    relevant_experience = TextField(blank=True)
+
     personal_activities = TextField(blank=True, verbose_name='Please list your primary activities and involvements at Dartmouth and beyond')
 
     went_on_trip = BooleanField(default=False, verbose_name='Did you go on a First Year Trip?')
