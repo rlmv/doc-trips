@@ -111,7 +111,7 @@ class ApplicationGraderViewsTestCase(WebTestCase):
         app = mommy.make('LeaderApplication', status=LeaderApplication.PENDING,
                          trips_year=self.trips_year)
 
-        response = self.app.get(reverse('leader:grade_random'), user=self.grader)
+        response = self.app.get(reverse('leaders:grade_random'), user=self.grader)
         response = response.follow()
         self.assertEquals(app, response.context['leaderapplication'])
 
@@ -119,7 +119,7 @@ class ApplicationGraderViewsTestCase(WebTestCase):
         grade = mommy.make('LeaderGrade', grader=self.grader, leader_application=app)
 
         # there should be no more applications to grade
-        response = self.app.get(reverse('leader:grade_random'), user=self.grader)
+        response = self.app.get(reverse('leaders:grade_random'), user=self.grader)
         response = response.follow()
         self.assertEquals(response.templates[0].name, 'leader/no_application.html')
 
@@ -130,7 +130,7 @@ class ApplicationGraderViewsTestCase(WebTestCase):
 
         application = mommy.make(LeaderApplication, status=LeaderApplication.PENDING,
                                  trips_year=self.trips_year)
-        response = self.app.post(reverse('leader:grade', kwargs={'pk': application.pk }), 
+        response = self.app.post(reverse('leaders:grade', kwargs={'pk': application.pk }), 
                                  {'grade': 3,
                                   'comment': 'test grade comment'}, 
                                  user=self.grader)
@@ -155,7 +155,7 @@ class LeaderApplicationViewsTestCase(WebTestCase):
         self.mock_user()
 
         data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)
-        response = self.app.post(reverse('leader:apply'), data, user=self.user)
+        response = self.app.post(reverse('leaders:apply'), data, user=self.user)
         
         # TODO: test redirects
         #self.assertEquals(response.status_code, 200)
@@ -170,11 +170,11 @@ class LeaderApplicationViewsTestCase(WebTestCase):
 
         self.mock_user()
 
-        response = self.app.get(reverse('leader:apply'), user=self.user)
+        response = self.app.get(reverse('leaders:apply'), user=self.user)
         self.assertEquals(response.status_code, 200)
     
         app_data = model_to_dict(mommy.prepare(LeaderApplication), fields=LeaderApply.fields)       
-        response = self.app.post(reverse('leader:apply'), app_data, user=self.user)
+        response = self.app.post(reverse('leaders:apply'), app_data, user=self.user)
         response = response.follow()
 
         self.assertEquals(response.status_code, 200)
@@ -186,8 +186,8 @@ class LeaderApplicationViewsTestCase(WebTestCase):
 
         data = model_to_dict(mommy.prepare(LeaderApplication), 
                              fields=LeaderApply.fields)
-        response = self.app.post(reverse('leader:apply'), data, user=self.user)
-        response = self.app.get(reverse('leader:apply'), user=self.user)
+        response = self.app.post(reverse('leaders:apply'), data, user=self.user)
+        response = self.app.get(reverse('leaders:apply'), user=self.user)
         application = response.context['object']
         
         # should see previous application
@@ -201,7 +201,7 @@ class LeaderApplicationViewsTestCase(WebTestCase):
         prev_section = mommy.make('Section', trips_year=self.previous_trips_year)
         curr_section = mommy.make('Section', trips_year=self.current_trips_year)
 
-        response = self.app.get(reverse('leader:apply'), user=self.user)
+        response = self.app.get(reverse('leaders:apply'), user=self.user)
         form = response.context['form']
 
         self.assertEquals(list(form.fields['available_sections'].queryset),
@@ -221,7 +221,7 @@ class LeaderApplicationViewsTestCase(WebTestCase):
         t.save()
 
         self.mock_user()
-        response = self.app.get(reverse('leader:apply'), user=self.user)
+        response = self.app.get(reverse('leaders:apply'), user=self.user)
         self.assertTemplateUsed('leader/application_not_available.html')
 
         

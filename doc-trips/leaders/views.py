@@ -128,13 +128,13 @@ class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
 
     model = LeaderApplication
     form_class = LeaderApplicationForm
-    success_url = reverse_lazy('leader:edit_application')
+    success_url = reverse_lazy('leaders:edit_application')
     template_name = 'leaders/application_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         if self.model.objects.filter(applicant=self.request.user,
                                      trips_year=TripsYear.objects.current()).exists():
-            return HttpResponseRedirect(reverse('leader:edit_application'))
+            return HttpResponseRedirect(reverse('leaders:edit_application'))
         
         return super(NewLeaderApplication, self).dispatch(request, *args, **kwargs)
 
@@ -204,7 +204,7 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
 
     model = LeaderApplication
     form_class = LeaderApplicationForm
-    success_url = reverse_lazy('leader:edit_application')
+    success_url = reverse_lazy('leaders:edit_application')
     template_name = 'leaders/application_form.html'
     exclude = ['applicant', 'status', 'assigned_trip']
 
@@ -273,7 +273,7 @@ class CreateLeaderApplication(LoginRequiredMixin, PermissionRequiredMixin, FormV
     redirect_unauthenticated_users = True
     raise_exception = True
 
-    success_url = reverse_lazy('leader:create_application')
+    success_url = reverse_lazy('leaders:create_application')
     template_name = 'leaders/create_leaderapplication.html'
 
     def get_form(self, data=None, files=None, **kwargs):
@@ -300,8 +300,8 @@ class RedirectToNextGradableApplication(LeaderGraderPermissionRequired, Redirect
         
         application = LeaderApplication.objects.next_to_grade(self.request.user)
         if not application:
-            return reverse('leader:no_application')
-        return reverse('leader:grade', kwargs={'pk': application.pk})
+            return reverse('leaders:no_application')
+        return reverse('leaders:grade', kwargs={'pk': application.pk})
 
 
 class NoApplicationToGrade(LeaderGraderPermissionRequired, TemplateView):
@@ -342,7 +342,7 @@ class GradeApplication(LeaderGraderPermissionRequired, DetailView, FormView):
                        'relevant_experience', 'express_yourself')
 
     form_class = LeaderGradeForm
-    success_url = reverse_lazy('leader:grade_random')
+    success_url = reverse_lazy('leaders:grade_random')
 
     def get_context_data(self, **kwargs):
         """ Get context data to render in template.

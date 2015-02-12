@@ -19,7 +19,7 @@
 
       <ul class="nav navbar-nav">
 
-	<li><a href="{% url 'leader:apply' %}">Leader Application</a></li>
+	<li><a href="{% url 'leaders:apply' %}">Leader Application</a></li>
 
 	<li><a href="{% url 'croos:apply' %}">Croo Application</a></li>
 	
@@ -32,7 +32,7 @@
 	{% endif %}
 
 	{% if perms.permissions.can_grade_leader_applications %}
-	<li><a href="{% url 'leader:grade_random' %}">Graders</a></li>
+	<li><a href="{% url 'leaders:grade_random' %}">Graders</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_access_db %}
