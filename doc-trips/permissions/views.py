@@ -14,6 +14,7 @@ from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div
 
 from permissions import directors, graders, directorate
 from permissions.models import SitePermission
+from dartdm.forms import DartmouthDirectoryLookupField
 
 
 logger = logging.getLogger(__name__)
@@ -56,55 +57,6 @@ class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     redirect_unauthenticated_users = True
     permission_required = 'permissions.can_edit_timetable'
     raise_exception = True
-
-
-from dartdm.forms import DartmouthDirectoryLookupField
-
-
-class GroupForm(forms.Form):
-    """ 
-    Form for assigning users to groups. 
-
-    Used by the SetPermissions view.
-    """
-
-    directors = forms.ModelMultipleChoiceField(queryset=None, 
-                                               widget=forms.CheckboxSelectMultiple, 
-                                               required=False, 
-                                               label='')
-    new_director = DartmouthDirectoryLookupField(required=False)
-    
-    graders = forms.ModelMultipleChoiceField(queryset=None, 
-                                             widget=forms.CheckboxSelectMultiple, 
-                                             required=False, 
-                                             label='')
-    new_grader = DartmouthDirectoryLookupField(required=False)
-
-    from crispy_forms.helper import FormHelper
-    from crispy_forms.layout import Layout, Submit, Fieldset, Field
-    from crispy_forms.bootstrap import Alert
-    helper = FormHelper()
-    helper.layout = Layout(
-        Fieldset('Directors',
-                 Alert(content='Users in the Directors group can access and edit the database, edit the timetable, grade leader applications, and grant other users access to the database via this page. Use sparingly!', css_class='alert-warning', dismiss=False),
-                 'directors',
-                 'new_director'),
-        Fieldset('Graders', 
-                 Alert(content='Graders can grade leader applications, when available', css_class='alert-warning', dismiss=False),
-                 'graders',
-                 'new_grader')
-    )
-        
-    helper.add_input(Submit('submit', 'Update permissions'))
-    
-
-    def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
-        
-        self.fields['directors'].queryset = directors().user_set.all()
-        self.fields['directors'].initial = [u.pk for u in directors().user_set.all()]
-        self.fields['graders'].queryset = graders().user_set.all()
-        self.fields['graders'].initial = [u.pk for u in graders().user_set.all()]
 
 
 class GenericGroupForm(forms.Form):
