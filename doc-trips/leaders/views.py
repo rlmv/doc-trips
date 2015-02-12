@@ -115,28 +115,6 @@ def make_leaderapplication_formset(extra=0):
                                  extra=0,
                                  can_delete=False)        
     
-def make_leaderapplication_form():
-
-    widgets = {
-        'preferred_triptypes': forms.CheckboxSelectMultiple,
-        'available_triptypes': forms.CheckboxSelectMultiple, 
-        'preferred_sections': forms.CheckboxSelectMultiple,
-        'available_sections': forms.CheckboxSelectMultiple,
-        'dietary_restrictions': forms.Textarea(attrs={'rows': 2}),
-        'allergen_information': forms.Textarea(attrs={'rows': 2}),
-        'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
-        'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
-    }
-    exclude = ['applicant', 'status', 'assigned_trip', 'first_aid',
-               'community_building', 'risk_management', 'wilderness_skills']
-
-    form = tripsyear_modelform_factory(LeaderApplication, TripsYear.objects.current(),
-                                       exclude=exclude, widgets=widgets)
-
-
-    return form
-
-
 class IfLeaderApplicationAvailable():
 
     def dispatch(self, request, *args, **kwargs):

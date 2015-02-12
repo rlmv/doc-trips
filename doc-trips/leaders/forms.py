@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField, Row, Column
 from crispy_forms.bootstrap import Alert
+from bootstrap3_datetime.widgets import DateTimePicker
 
 from leaders.models import LeaderApplication
 from db.models import TripsYear
@@ -50,6 +51,7 @@ class LeaderApplicationForm(forms.ModelForm):
             'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
             'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
             'personal_activities': forms.Textarea(attrs={'rows': 4}),
+            'relevant_experience': forms.Textarea(attrs={'rows': 6}),
         }
 
         labels = {
@@ -73,6 +75,8 @@ class LeaderApplicationForm(forms.ModelForm):
         self.helper.form_tag = False
 
 
+DATEPICKER_OPTIONS={'format': 'MM/DD/YYYY'}
+
 class LeaderApplicationFormWithAdminData(LeaderApplicationForm):
     """ Form used by database views for editing LeaderApplications """
     
@@ -80,6 +84,13 @@ class LeaderApplicationFormWithAdminData(LeaderApplicationForm):
         fields = LeaderApplicationForm.Meta.fields + [
             'status', 'assigned_trip', 'community_building', 
             'risk_management', 'wilderness_skills', 'first_aid']
+
+        widgets = dict(list(LeaderApplicationForm.Meta.widgets.items()) + [
+            ('community_building', DateTimePicker(options=DATEPICKER_OPTIONS)),
+            ('risk_management', DateTimePicker(options=DATEPICKER_OPTIONS)),
+            ('wilderness_skills', DateTimePicker(options=DATEPICKER_OPTIONS)),
+            ('first_aid', DateTimePicker(options=DATEPICKER_OPTIONS)),
+        ])
 
     def __init__(self, *args, **kwargs):
         super(LeaderApplicationFormWithAdminData, self).__init__(*args, **kwargs)
@@ -97,14 +108,21 @@ class LeaderApplicationAdministrationLayout(Layout):
 
     def __init__(self):
         super(LeaderApplicationAdministrationLayout, self).__init__(
-            'status', 
-            'assigned_trip', 
             Fieldset(
                 '',
-                'community_building', 
-                'risk_management',
-                'wilderness_skills',
-                'first_aid',
+                Row(
+                    Div('status', css_class='col-sm-3'),
+                    Div('assigned_trip', css_class='col-sm-3'),
+                ),
+                Fieldset(
+                    'Trainings',
+                    Row(
+                        Div('community_building', css_class='col-sm-3'),
+                        Div('risk_management', css_class='col-sm-3'),
+                        Div('wilderness_skills', css_class='col-sm-3'),
+                        Div('first_aid', css_class='col-sm-3'),
+                    )
+                )
             )
         )
  
