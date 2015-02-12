@@ -57,11 +57,11 @@
 	    {{ user }} <span class="caret">
 	  </a>
 	  <ul class="dropdown-menu" role="menu">
-	    <li><a href="{% url 'user:logout' %}"> Logout </a></li>
+	    <li><a href="{% url 'users:logout' %}"> Logout </a></li>
 	  </ul>
 	</li>
 	{% else %} 
-	<li> <a class="navbar-link" href="{% url 'user:login' %}">Login</a></li>
+	<li> <a class="navbar-link" href="{% url 'users:login' %}">Login</a></li>
 	{% endif %}
       </ul>
 

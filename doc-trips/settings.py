@@ -86,7 +86,7 @@ CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 CAS_LOGOUT_COMPLETELY = True
 
 # login_required decorator redirects to here. This is webauth login.
-LOGIN_URL = '/user/login'
+LOGIN_URL = '/users/login'
 
 ROOT_URLCONF = 'urls'
 

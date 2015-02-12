@@ -11,7 +11,7 @@ from views import HomePage
 
 urlpatterns = patterns('',
     url(r'^$', HomePage.as_view(), name='home'),
-    url(r'^user/', include('users.urls', namespace='user')),
+    url(r'^users/', include('users.urls', namespace='users')),
     url(r'^dartdm/', include('dartdm.urls', namespace='dartdm')),                   
     url(r'^permissions/', include('permissions.urls', namespace='permissions')),
     url(r'^timetable/', include('timetable.urls', namespace='timetable')),

@@ -6,7 +6,7 @@
 
 <h2> Croo Application </h2>
 
-<p>Not <b>{{ user }}</b>? <a href="{% url 'user:logout' %}">logout</a></p>
+<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
 {% crispy form %}
 {% endblock content %}

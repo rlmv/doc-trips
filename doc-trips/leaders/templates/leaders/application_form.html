@@ -10,7 +10,7 @@
 <h2> Edit your application </h2>
 {% endif %}
 
-<p>Not <b>{{ user }}</b>? <a href="{% url 'user:logout' %}">logout</a></p>
+<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
 <p>The application will be available until {{ timetable.leader_application_closed }}. You can submit your application and return and edit it up until this date.</p>
 
