@@ -124,11 +124,17 @@ class GenericGroupForm(forms.Form):
         self.fields['members'].label = 'Current ' + group.name
         self.fields['new_member'].label = 'New ' + group.name
 
+        perms_text = ('The %s group has the following permissions: ' % group.name.capitalize() + 
+                      '<ul>' + 
+                      ''.join(['<li>{}</li>'.format(p.name) for p in group.permissions.all()]) + 
+                      '</ul>')
+        
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(
                 str(group).capitalize(),
+                HTML('<p>' + perms_text + '</p>'),
                 'members',
                 'new_member',
                 Submit('submit', 'Update'),
@@ -174,7 +180,7 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     def get_forms(self, *args, **kwargs):
         
-        groups = [directors(), graders(), directorate()]
+        groups = [directors(), directorate(), graders()]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
             
     def get(self, request, *args, **kwargs):
