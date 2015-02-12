@@ -73,6 +73,42 @@ class LeaderApplicationForm(forms.ModelForm):
         self.helper.form_tag = False
 
 
+class LeaderApplicationFormWithAdminData(LeaderApplicationForm):
+    """ Form used by database views for editing LeaderApplications """
+    
+    class Meta(LeaderApplicationForm.Meta):
+        fields = LeaderApplicationForm.Meta.fields + [
+            'status', 'assigned_trip', 'community_building', 
+            'risk_management', 'wilderness_skills', 'first_aid']
+
+    def __init__(self, *args, **kwargs):
+        super(LeaderApplicationFormWithAdminData, self).__init__(*args, **kwargs)
+        
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            LeaderApplicationAdministrationLayout(),
+            LeaderApplicationFormLayout(),
+            Submit('submit', 'Update'),
+        )
+
+
+class LeaderApplicationAdministrationLayout(Layout):
+    """ Layout for directorate's-eye's only application data """
+
+    def __init__(self):
+        super(LeaderApplicationAdministrationLayout, self).__init__(
+            'status', 
+            'assigned_trip', 
+            Fieldset(
+                '',
+                'community_building', 
+                'risk_management',
+                'wilderness_skills',
+                'first_aid',
+            )
+        )
+ 
+
 class LeaderApplicationFormLayout(Layout):
 
     def __init__(self):
@@ -137,15 +173,3 @@ class LeaderApplicationFormLayout(Layout):
                       dismiss=False, css_class='alert-warning'),
             ),
         )
-
-    
-        
-class LeaderApplicationFormHelper(FormHelper):
-
-    def __init__(self, *args, **kwargs):
-        
-        super(LeaderApplicationFormHelper, self).__init__(*args, **kwargs)
-        self.layout = LeaderApplicationFormLayout()
-#        self.form_class = 'form-horizontal
-#        self.label_class = 'col-lg-2'
-#        self.field_class = 'col-lg-8'

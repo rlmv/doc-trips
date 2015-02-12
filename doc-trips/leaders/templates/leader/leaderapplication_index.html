@@ -14,20 +14,20 @@
 
   {% for application in leaderapplications %}
   <tr>
-    <td>{{ application|detail_link:application.user }}</td>
-    <td>{{ application.status }}</td>
+    <td> {{ application | detail_link:application.applicant }} </td>
+    <td> {{ application.status }} </td>
     {% if application.assigned_trip %}
-    <td>{{ application.assigned_trip|detail_link }}</td>
+    <td> {{ application.assigned_trip | detail_link }} </td>
     {% else %}
-    <td>{{ application|edit_link:"assign trip" }}</td>
+    <td> {{ application | edit_link:"assign trip" }} </td>
     {% endif %}
-    <td>{{ application.gender }}</td>
-    <td>{{ application.class_year }}</td>
+    <td> {{ application.gender }} </td>
+    <td> {{ application.class_year }} </td>
     
-    <td>{{ application|edit_link }}</td>
-
+    <td> {{ application|edit_link }} </td>
   </tr>
   {% endfor %}
+
 </table>
   
 {% endblock %}

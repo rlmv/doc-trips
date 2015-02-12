@@ -23,7 +23,7 @@ from db.views import *
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from leaders.forms import LeaderApplicationFormHelper, LeaderApplicationFormLayout, LeaderApplicationForm
+from leaders.forms import LeaderApplicationFormLayout, LeaderApplicationForm, LeaderApplicationFormWithAdminData
 
 
 logger = logging.getLogger(__name__)
@@ -40,20 +40,18 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     # custom template to handle trip assignment
     template_name = 'leader/db_application_update.html'
 
+    form_class = LeaderApplicationFormWithAdminData
     # we don't show the user in the form fields because the user is not editable
     fields = ('status', 'assigned_trip', 'class_year', 'gender', 'hinman_box', 'tshirt_size', 'phone', 
               'from_where', 'what_do_you_like_to_study', 'in_goodstanding_with_college', 
               'trippee_confidentiality', 'dietary_restrictions', 'allergen_information',
               'preferred_sections', 'available_sections', 'preferred_triptypes', 
               'available_triptypes', 'trip_preference_comments', 'personal_activities',
-              'personal_communities', 'went_on_trip', 'applied_to_trips', 
-              'is_in_hanover_this_fall', 'tell_us_about_yourself',
-              'comforting_experience', 'best_compliment', 'trip_leader_roles',
-              'what_to_change_about_trips', 'leadership_experience', 
-              'working_with_difference', 'coleader_qualities', 
-              'why_do_you_want_to_be_involved', 'medical_certifications', 
+              'went_on_trip', 'applied_to_trips', 
+              'in_hanover_this_fall',
+              'medical_certifications', 
               'relevant_experience', 'cannot_participate_in', 'spring_leader_training_ok', 
-              'summer_leader_training_ok', 'express_yourself')
+              'summer_leader_training_ok')
 
 
     def get_context_data(self, **kwargs):
@@ -72,31 +70,12 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
         context['available_trips'] = list(a_dict.items())
         
         return context
-        
-    
-    def get_form_helper(self, form):
-        """ 
-        Add submit button to form. 
-
-        Different from the usual db/update.html form because
-        LeaderApplications cannot be deleted. 
-        """
-
-        helper = FormHelper(form)
-        # todo move this to extenal layout?
-        helper.layout = Layout(
-            Field('status'),
-            Field('assigned_trip'),
-            LeaderApplicationFormLayout(),
-        )
-        helper.add_input(Submit('submit', 'Update'))
-        return helper
 
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
     template_name = 'leader/leaderapplication_detail.html'
-    fields = ('user',) + LeaderApplicationDatabaseUpdateView.fields 
+    fields = ('applicant',) + LeaderApplicationDatabaseUpdateView.fields 
 
 
 class LeaderApplicationDatabaseAssignmentView(DatabaseDetailView):
