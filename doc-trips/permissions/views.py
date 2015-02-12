@@ -56,6 +56,7 @@ class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
 
 from dartdm.forms import DartmouthDirectoryLookupField
 
+
 class GroupForm(forms.Form):
     """ 
     Form for assigning users to groups. 
@@ -100,6 +101,27 @@ class GroupForm(forms.Form):
         self.fields['directors'].initial = [u.pk for u in directors().user_set.all()]
         self.fields['graders'].queryset = graders().user_set.all()
         self.fields['graders'].initial = [u.pk for u in graders().user_set.all()]
+
+
+
+class GenericGroupForm(forms.Form):
+    
+    members = forms.ModelMultipleChoiceField(queryset=None, 
+                                             widget=forms.CheckboxSelectMultiple, 
+                                             required=False, 
+                                             label='')
+    new_member = DartmouthDirectoryLookupField(required=False)
+
+    def __init__(self, group, *args, **kwargs):
+        super(GenericGroupForm, self).__init__(*args, **kwargs)
+
+        self.fields['members'].queryset = group.user_set.all()
+        self.fields['members'].initial = [u.pk for u in group.user_set.all()]
+
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Update'))
+        
+
 
 
 class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
