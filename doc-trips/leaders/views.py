@@ -32,13 +32,13 @@ logger = logging.getLogger(__name__)
 class LeaderApplicationDatabaseListView(DatabaseListView):
     model = LeaderApplication
     context_object_name = 'leaderapplications'
-    template_name = 'leader/leaderapplication_index.html'
+    template_name = 'leaders/leaderapplication_index.html'
 
 
 class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     model = LeaderApplication
     # custom template to handle trip assignment
-    template_name = 'leader/db_application_update.html'
+    template_name = 'leaders/db_application_update.html'
 
     form_class = LeaderApplicationFormWithAdminData
     # we don't show the user in the form fields because the user is not editable
@@ -74,7 +74,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
 
 class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     model = LeaderApplication
-    template_name = 'leader/leaderapplication_detail.html'
+    template_name = 'leaders/leaderapplication_detail.html'
     fields = ('applicant',) + LeaderApplicationDatabaseUpdateView.fields 
 
 
@@ -129,7 +129,7 @@ class NewLeaderApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
     model = LeaderApplication
     form_class = LeaderApplicationForm
     success_url = reverse_lazy('leader:edit_application')
-    template_name = 'leader/application_form.html'
+    template_name = 'leaders/application_form.html'
 
     def dispatch(self, request, *args, **kwargs):
         if self.model.objects.filter(applicant=self.request.user,
@@ -205,7 +205,7 @@ class EditLeaderApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     model = LeaderApplication
     form_class = LeaderApplicationForm
     success_url = reverse_lazy('leader:edit_application')
-    template_name = 'leader/application_form.html'
+    template_name = 'leaders/application_form.html'
     exclude = ['applicant', 'status', 'assigned_trip']
 
     def get_object(self):
@@ -274,7 +274,7 @@ class CreateLeaderApplication(LoginRequiredMixin, PermissionRequiredMixin, FormV
     raise_exception = True
 
     success_url = reverse_lazy('leader:create_application')
-    template_name = 'leader/create_leaderapplication.html'
+    template_name = 'leaders/create_leaderapplication.html'
 
     def get_form(self, data=None, files=None, **kwargs):
 
@@ -307,7 +307,7 @@ class RedirectToNextGradableApplication(LeaderGraderPermissionRequired, Redirect
 class NoApplicationToGrade(LeaderGraderPermissionRequired, TemplateView):
     """ Tell user there are no more applications for her to grade """
 
-    template_name = 'leader/no_application.html'
+    template_name = 'leaders/no_application.html'
 
 
 class LeaderGradeForm(ModelForm):
@@ -329,7 +329,7 @@ class GradeApplication(LeaderGraderPermissionRequired, DetailView, FormView):
     """
 
     model = LeaderApplication
-    template_name = 'leader/grade.html'
+    template_name = 'leaders/grade.html'
     context_object_name = 'leaderapplication'
     # fields of the application which should be graded
     fields_to_grade = ('personal_activities', 'personal_communities', 'went_on_trip',
