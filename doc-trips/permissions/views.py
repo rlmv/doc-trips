@@ -10,7 +10,7 @@ from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div
 
 from permissions import directors, graders, directorate
 from permissions.models import SitePermission
@@ -138,7 +138,7 @@ class GenericGroupForm(forms.Form):
                 'members',
                 'new_member',
                 Submit('submit', 'Update'),
-                HTML('<br>'),
+                style="padding-bottom: 1em;",
             )
         )
         
