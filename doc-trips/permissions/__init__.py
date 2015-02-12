@@ -21,8 +21,8 @@ def can_set_access():
     return get_permission('can_set_access', 
                           'Can assign users permissions and groups')
 
-def can_grade_applications():
-    return get_permission('can_grade_applications', 
+def can_grade_leader_applications():
+    return get_permission('can_grade_leader_applications', 
                           'Can grade leader applications')
 
 def can_create_leader_application():
@@ -59,7 +59,7 @@ name='Can edit items in the trips database')
 def directors():    
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
-                             can_grade_applications(), 
+                             can_grade_leader_applications(), 
                              can_create_leader_application(),
                              can_access_db(), 
                              can_edit_timetable(), 
@@ -71,7 +71,7 @@ def directors():
 
 def directorate():
     directorate, created = Group.objects.get_or_create(name='directorate')
-    directorate.permissions = [can_grade_applications(),
+    directorate.permissions = [can_grade_leader_applications(),
                                can_grade_croo_applications()]
     directorate.save()
     return directorate
@@ -90,6 +90,6 @@ def tlts():
 
 def graders():
     graders, created = Group.objects.get_or_create(name='graders')
-    graders.permissions = [can_grade_applications()]
+    graders.permissions = [can_grade_leader_applications()]
     graders.save()
     return graders

@@ -17,7 +17,7 @@ from crispy_forms.layout import Field, Submit
 from crispy_forms.helper import FormHelper
 from braces.views import PermissionRequiredMixin
 
-from permissions.views import GraderPermissionRequired, LoginRequiredMixin
+from permissions.views import LeaderGraderPermissionRequired, LoginRequiredMixin
 from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationAnswer, LeaderApplicationQuestion
 from db.views import *
 from db.models import TripsYear
@@ -290,7 +290,7 @@ class CreateLeaderApplication(LoginRequiredMixin, PermissionRequiredMixin, FormV
         form.save()
         return super(CreateLeaderApplication, self).form_valid(form)
 
-class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
+class RedirectToNextGradableApplication(LeaderGraderPermissionRequired, RedirectView):
     
     # from RedirectView
     permanent = False 
@@ -304,7 +304,7 @@ class RedirectToNextGradableApplication(GraderPermissionRequired, RedirectView):
         return reverse('leader:grade', kwargs={'pk': application.pk})
 
 
-class NoApplicationToGrade(GraderPermissionRequired, TemplateView):
+class NoApplicationToGrade(LeaderGraderPermissionRequired, TemplateView):
     """ Tell user there are no more applications for her to grade """
 
     template_name = 'leader/no_application.html'
@@ -320,7 +320,7 @@ class LeaderGradeForm(ModelForm):
 
 
 # TODO: restrict this to those with grader permissions
-class GradeApplication(GraderPermissionRequired, DetailView, FormView):
+class GradeApplication(LeaderGraderPermissionRequired, DetailView, FormView):
 
     """ Grade a LeaderApplication object. 
 

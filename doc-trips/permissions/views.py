@@ -31,11 +31,11 @@ class DatabasePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = True
 
 
-class GraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class LeaderGraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     """ Only allow access to users with permission to grade leaderapplications. """
 
     redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_grade_applications'
+    permission_required = 'permissions.can_grade_leader_applications'
     raise_exception = True
 
 class CrooGraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
