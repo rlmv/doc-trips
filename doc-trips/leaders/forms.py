@@ -95,6 +95,10 @@ class LeaderApplicationFormWithAdminData(LeaderApplicationForm):
     def __init__(self, *args, **kwargs):
         super(LeaderApplicationFormWithAdminData, self).__init__(*args, **kwargs)
         
+        # can only be assigned in the current trips year
+        self.fields['assigned_trip'].queryset = (
+            self.fields['assigned_trip'].queryset.filter(trips_year=TripsYear.objects.current()))
+        
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             LeaderApplicationAdministrationLayout(),
