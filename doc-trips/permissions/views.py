@@ -2,13 +2,17 @@
 import logging
 
 from django import forms
+from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import get_user_model
 from vanilla import TemplateView, UpdateView, FormView
 from braces.views import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.models import Group
+from django.http import HttpResponseRedirect
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML
 
-from permissions import directors, graders
+from permissions import directors, graders, directorate
 from permissions.models import SitePermission
 
 
@@ -103,27 +107,62 @@ class GroupForm(forms.Form):
         self.fields['graders'].initial = [u.pk for u in graders().user_set.all()]
 
 
-
 class GenericGroupForm(forms.Form):
     
     members = forms.ModelMultipleChoiceField(queryset=None, 
                                              widget=forms.CheckboxSelectMultiple, 
-                                             required=False, 
-                                             label='')
+                                             required=False)
     new_member = DartmouthDirectoryLookupField(required=False)
 
     def __init__(self, group, *args, **kwargs):
         super(GenericGroupForm, self).__init__(*args, **kwargs)
 
+        self.group = group
         self.fields['members'].queryset = group.user_set.all()
         self.fields['members'].initial = [u.pk for u in group.user_set.all()]
 
+        self.fields['members'].label = 'Current ' + group.name
+        self.fields['new_member'].label = 'New ' + group.name
+
         self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Update'))
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            Fieldset(
+                str(group).capitalize(),
+                'members',
+                'new_member',
+                Submit('submit', 'Update'),
+                HTML('<br>'),
+            )
+        )
         
+    def update_group_with_form_data(self):
+        """ 
+        Update the group with submitted form information.
 
+        Should only be called once the form is cleaned.
+        """
 
+        members_list = self.cleaned_data['members']
+        new_member_data = self.cleaned_data['new_member']
 
+        if new_member_data:
+            UserModel = get_user_model()
+            new_member, _ = UserModel.objects.get_by_netid(
+                new_member_data['netid'],
+                new_member_data['name_with_year']
+            )
+
+            if new_member not in members_list:
+                members_list = list(members_list)
+                members_list.append(new_member)
+
+        self.group.user_set = members_list
+        self.group.save()
+
+        logger.info('Updating group %s to be %r' % (self.group, members_list))
+
+    
 class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     
     redirect_unauthenticated_users = True
@@ -131,40 +170,37 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     raise_exception = True
 
     template_name = 'permissions/set_permissions.html'
-    form_class = GroupForm
     success_url = reverse_lazy('permissions:set_permissions')
 
-    def form_valid(self, form):
-        """ 
-        Save updated director and grader groups.
+    def get_forms(self, *args, **kwargs):
         
-        Called with a valid form submission.
-        """
+        groups = [directors(), graders(), directorate()]
+        return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
+            
+    def get(self, request, *args, **kwargs):
         
-        def _update_group_with_form_data(group, list_data_form_key, new_data_form_key):
-            members_list = form.cleaned_data[list_data_form_key]
-            new_data = form.cleaned_data[new_data_form_key]
+        forms = self.get_forms()
+        return self.render_to_response(self.get_context_data(forms=forms))
 
-            if new_data:
-                UserModel = get_user_model()
-                new_member, _ = UserModel.objects.get_by_netid(new_data['netid'],
-                                                               new_data['name_with_year'])
-                if new_member not in members_list:
-                    members_list = list(members_list)
-                    members_list.append(new_member)
-
-            group.user_set = members_list
-            group.save()
-
-            logger.info('Updating group %s to be %r' % (group, members_list))
-
-
-        _update_group_with_form_data(directors(), 'directors', 'new_director')
+    def post(self, request, *args, **kwargs):
         
-        _update_group_with_form_data(graders(), 'graders', 'new_grader')
+        forms = self.get_forms(data=request.POST)
+        if all(form.is_valid() for form in forms):
+            return self.form_valid(forms)
+            
+        return self.form_invalid(forms)
 
-        return super(SetPermissions, self).form_valid(form)
+    def form_valid(self, forms):
+        """ Save updated groups """
+
+        for form in forms:
+            form.update_group_with_form_data()
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def form_invalid(self, forms):
         
+        messages.error(self.request, 'Uh oh. Looks like there is an error in the form.')
+        return self.render_to_response(self.get_context_data(forms=forms))
 
 
 
