@@ -1,0 +1,23 @@
+
+
+
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2> Continue application </h2>
+
+<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
+
+<p>The application will be available until {{ timetable.leader_application_closed }}. You can submit your application and return and edit it up until this date.</p>
+
+<form action="" method="post">
+{% crispy croo_form %}
+{% crispy leader_form %}
+{% crispy form %}
+<input type="submit" name="submit" value="Update" class="btn btn-primary" id="submit-id-submit"/> 
+</form>
+
+
+{% endblock %}
