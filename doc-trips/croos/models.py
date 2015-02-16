@@ -78,11 +78,11 @@ class CrooApplication(DatabaseModel):
     status = models.CharField('Application status', max_length=10, 
                               choices=STATUS_CHOICES, default=PENDING)
 
-    assigned_croo = models.ForeignKey('Croo', blank=True, null=True, 
-                                      related_name='croolings',
-                                      on_delete=models.SET_NULL)
-    potential_croos = models.ManyToManyField('Croo', blank=True, 
-                                             related_name='potential_croolings')
+#    assigned_croo = models.ForeignKey('Croo', blank=True, null=True, 
+#                                      related_name='croolings',
+#                                      on_delete=models.SET_NULL)
+#    potential_croos = models.ManyToManyField('Croo', blank=True, 
+#                                             related_name='potential_croolings')
 
     safety_dork_qualified = models.BooleanField(default=False)
     safety_dork = models.BooleanField(default=False)
