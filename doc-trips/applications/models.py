@@ -42,9 +42,9 @@ class GeneralApplication(DatabaseModel):
     allergen_information = models.TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I turn purple and squishy if I eat a grape!)?")
 
     # ------ certs -------
-    medical_certifications = models.TextField(blank=True)
+    medical_certifications = models.TextField(blank=True, verbose_name="Current trainings in First Aid and CPR are required for all DOC trip leaders and croo members. Please list any relevant medical certifications (eg. First Aid, CPR, Wilderness First Aid, Wilderness First Responder, Emergency Medical Technician (EMT), Wilderness Emergency Medical Technician (W-EMT), Outdoor Emergency Care (OEC)) you currently hold, the program that sponsored the certification and the dates they expire. If you do not currently have such a certification (or if your certification will expire before Trips ends), we will be in touch about how you can get trained before trips begin. DOC Trips will offer several First Aid & CPR courses in the spring and summer.)", help_text="eg. 'First Aid - American Red Cross, expires October 2013.'")
     medical_experience = models.TextField(blank=True, verbose_name="Briefly describe your experience with your safety certifications. How frequently do you use your certification and in what circumstances?")
-    peer_training = models.TextField(blank=True, verbose_name="If you have participated in or lead a peer training program, such as DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc. please list them here, and briefly describe them.")
+    peer_training = models.TextField(blank=True, verbose_name="List and briefly describe any peer training program (DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc.) that you have lead or participated in.")
 
     # ------- notices -------
     trippee_confidentiality = models.BooleanField(default=False, verbose_name="If selected to be a DOC Trips Leader, I understand that I will be given access to my Trippees' confidential medical information for safety purposes. I pledge to maintain the confidentiality of this information, except as is required by medical or legal concerns")
@@ -56,8 +56,8 @@ class GeneralApplication(DatabaseModel):
 
 class LeaderSupplement(DatabaseModel):
 
-    application = models.OneToOneField('GeneralApplication')
-    file = models.FileField()
+    application = models.OneToOneField('GeneralApplication', related_name='leader_supplement')
+    supplement = models.FileField('Leader supplement', blank=True)
 
     #  ------  trip and section information ------
     preferred_sections = models.ManyToManyField(Section, blank=True,
@@ -74,7 +74,7 @@ class LeaderSupplement(DatabaseModel):
     # ------- availibilty and experience --------
     trip_preference_comments = models.TextField(blank=True, verbose_name="Looking at the Trips descriptions, please feel free to use this space to address any concerns or explain your availability. This will only be used to help us in Trip assignments, it will not be considered when your application is being read.")
     cannot_participate_in = models.TextField(blank=True, verbose_name="If applicable, please elaborate (to the extent you feel comfortable) on any particular trips or activities that you absolutely cannot participate in. This information will be used exclusively for trip assignments & co-leader pairings. All information in this application will remain confidential.")
-    experience = models.TextField(blank=True, verbose_name="For each type of trip you are interested in leading, please describe your level of expertise and any amount of previous experience that might qualify you to lead that particular trip (DOC Wilderness Leader, lifeguard training, yoga experience, mountain biking enthusiast, photography class, NOLS, etc.).")
+    relevant_experience = models.TextField(blank=True, verbose_name="For each type of trip you are interested in leading, please describe your level of expertise and any amount of previous experience that might qualify you to lead that particular trip (DOC Wilderness Leader, lifeguard training, yoga experience, mountain biking enthusiast, photography class, NOLS, etc.).")
     
     # ----- trainings -----
     community_building = models.DateField(null=True, blank=True)
@@ -85,15 +85,21 @@ class LeaderSupplement(DatabaseModel):
 
 class CrooSupplement(DatabaseModel):
 
-    application = models.OneToOneField('GeneralApplication')
-    file = models.FileField()
+    application = models.OneToOneField('GeneralApplication', related_name='croo_supplement')
+    document = models.FileField(blank=True)
 
+    # --- Croo positions ------
+    safety_lead_willing = models.BooleanField(default=False)
+    kitchen_lead_willing = models.BooleanField(default=False)
+
+    # -------- driving -------
+
+    # ----- backend fields -------
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
                                       related_name='croolings',
                                       on_delete=models.SET_NULL)
     potential_croos = models.ManyToManyField(Croo, blank=True, 
                                              related_name='potential_croolings')
-
-    safety_dork_qualified = models.BooleanField(default=False)
-    safety_dork = models.BooleanField(default=False)
+    safety_lead_qualified = models.BooleanField(default=False)
+    safety_lead = models.BooleanField(default=False)
     

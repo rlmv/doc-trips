@@ -6,11 +6,14 @@ from crispy_forms.layout import Submit
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 
 from db.views import CrispyFormMixin
 from db.models import TripsYear
+from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from applications.models import GeneralApplication
+from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement
+from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
 
 
 class NewApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
@@ -22,24 +25,31 @@ class NewApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         """ If user has already applied, redirect to edit existing application """
 
-        if self.models.objects.filter(applicant=self.request.user, 
+        if self.model.objects.filter(applicant=self.request.user, 
                                       trips_year=TripsYear.objects.current()).exists():
             return HttpResponseRedirect(self.get_success_url())
 
         return super(NewApplication, self).dispatch(request, *args, **kwargs)
 
-    def get_form_helper(self, form):
-        # layout = GeneralApplicationLayout
-        helper = FormHelper(form)
-        helper.add_input(Submit('submit', 'Continue'))
-        return helper
+    def get_form(self, **kwargs):
+
+        form = ApplicationForm(**kwargs)
+        form.helper.form_tag = True
+        form.helper.add_input(Submit('submit', 'Continue'))
+        
+        return form
 
     def form_valid(self, form):
         
+        trips_year = TripsYear.objects.current()
         form.instance.applicant = self.request.user
-        form.instance.trips_year = TripsYear.objects.current()
+        form.instance.trips_year = trips_year
         # form.status??
-        form.save()
+        application = form.save()
+
+        # create blank croo and leader supplements for the application
+        LeaderSupplement.objects.create(trips_year=trips_year, application=application)
+        CrooSupplement.objects.create(trips_year=trips_year, application=application)
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -52,39 +62,51 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     
     def get_object(self):
         return get_object_or_404(self.model, 
-                                 applicant=self.request.user, 
+                                 applicant=self.request.user,
                                  trips_year=TripsYear.objects.current())
-
     
     def get(self, request, *args, **kwargs):
         
         self.object = self.get_object()
         form = self.get_form(instance=self.object)
         # pass instance args??
-        leader_form = self.get_leader_form()
-        croo_form = self.get_croo_form()
+        # if self.object.leader_supplement doesnotexist:
+        #    instance = None
+        croo_form = self.get_croo_form(instance=self.object.croo_supplement)
+        leader_form = self.get_leader_form(instance=self.object.leader_supplement)
 
-        context = get_context_data(form=form, leader_form=leader_form, 
+        context = self.get_context_data(form=form, leader_form=leader_form, 
                                    croo_form=croo_form)
         return self.render_to_response(context)
 
-    def post(self, request, **args, **kwargs):
+    def post(self, request, *args, **kwargs): 
         
         self.object = self.get_object()
         form = self.get_form(data=request.POST, instance=self.object)
-        croo_form = self.get_croo_form(data=request.POST, files=request.FILES)
-        leader_form = self.get_leader_form(data=request.POST, files=request.FILES)
+        croo_form = self.get_croo_form(data=request.POST, 
+                                       files=request.FILES,
+                                       instance=self.object.croo_supplement)
+        leader_form = self.get_leader_form(data=request.POST, 
+                                           files=request.FILES, 
+                                           instance=self.object.leader_supplement)
 
-        if all(form.is_valid(), leader_form.is_valid(), croo_form.is_valid()):
+        valid = map(lambda x: x.is_valid(), [form, leader_form, croo_form])
+        if all(valid):
             return self.form_valid(form, croo_form, leader_form)
 
         return self.form_invalid(form, croo_form, leader_form)
-            
-    def get_leader_form(self, data=None, files=None):
-        pass
 
-    def get_croo_form(self, data=None, files=None):
-        pass
+    def get_form(self, **kwargs):
+        
+        return ApplicationForm(**kwargs)
+
+    def get_leader_form(self, **kwargs):
+        
+        return LeaderSupplementForm(**kwargs)
+
+    def get_croo_form(self, **kwargs):
+        
+        return CrooSupplementForm(**kwargs)
 
     def form_valid(self, form, croo_form, leader_form):
 
