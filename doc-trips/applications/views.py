@@ -69,9 +69,6 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         
         self.object = self.get_object()
         form = self.get_form(instance=self.object)
-        # pass instance args??
-        # if self.object.leader_supplement doesnotexist:
-        #    instance = None
         croo_form = self.get_croo_form(instance=self.object.croo_supplement)
         leader_form = self.get_leader_form(instance=self.object.leader_supplement)
 
@@ -111,7 +108,9 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     def form_valid(self, form, croo_form, leader_form):
 
         form.save()
-        croo_form.save()
+        print(croo_form.instance.document)
+        croo_supplement = croo_form.save()
+        print(croo_supplement.document)
         leader_form.save()
         
         return HttpResponseRedirect(self.get_success_url())

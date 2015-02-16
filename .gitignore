@@ -1,4 +1,7 @@
 
+# dev configurations
+config.sh
+
 # python virtual environment
 venv/
 

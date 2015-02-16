@@ -20,6 +20,10 @@ django-toolbelt
 whitenoise
 django-postgrespool
 
+# s3
+django-storages-redux
+boto
+
 # testing
 model_mommy
 coverage

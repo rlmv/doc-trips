@@ -12,7 +12,7 @@
 
 <p>The application will be available until {{ timetable.leader_application_closed }}. You can submit your application and return and edit it up until this date.</p>
 
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
 {% crispy croo_form %}
 {% crispy leader_form %}
 {% crispy form %}
