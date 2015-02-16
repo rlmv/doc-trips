@@ -33,13 +33,7 @@ TEMPLATE_DEBUG = DEBUG
 ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Application definition
-
 INSTALLED_APPS = (
-
-    # must be before admin
-#    'grappelli',
-#    'suit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,9 +45,8 @@ INSTALLED_APPS = (
     'crispy_forms',
     'bootstrap3_datetime',
     'django_extensions',
-    #'django_pdb',
 
-    # custom
+    # site apps
     'db',
     'users',
     'dartdm', 
@@ -122,17 +115,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = False
-
 USE_L10N = False
-
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -152,7 +139,6 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
-
 
 LOGGING = {
     'version': 1,
