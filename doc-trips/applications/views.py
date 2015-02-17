@@ -122,7 +122,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable,
         croo_form.save()
         leader_form.save()
 
-        msg = "You've successfully saved your application"
+        msg = "Your application has been saved"
         messages.success(self.request, msg)
         
         return HttpResponseRedirect(self.get_success_url())

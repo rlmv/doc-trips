@@ -10,7 +10,7 @@
 
 <p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
-<p>The application will be available until {{ timetable.leader_application_closed }}. You can submit your application and return and edit it up until this date.</p>
+<p>The applications will be available until {{ timetable.applications_open }} You can return and edit your application up until this date.</p>
 
 <p> 
 {% if application.has_completed_leader_supplement %}
