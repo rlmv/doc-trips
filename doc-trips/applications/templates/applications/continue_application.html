@@ -3,7 +3,10 @@
 
 {% block content %}
 
-<h2>Trips {{ trips_year }} Leader and Croo Application</h2>
+
+<div class="page-header">
+  <h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
+</div>
 
 <p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
