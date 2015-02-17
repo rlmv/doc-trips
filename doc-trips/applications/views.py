@@ -4,7 +4,7 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
@@ -15,8 +15,17 @@ from timetable.models import Timetable
 from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation
 from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
 
+class IfApplicationsAvailable():
 
-class NewApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
+    def dispatch(self, request, *args, **kwargs):
+        if Timetable.objects.timetable().applications_available():
+            return super(IfApplicationsAvailable, self).dispatch(request, *args, **kwargs)
+        
+        return render(request, 'applications/not_available.html')
+
+
+class NewApplication(LoginRequiredMixin, IfApplicationsAvailable, 
+                     CrispyFormMixin, CreateView):
 
     model = GeneralApplication
     template_name = 'applications/new_application.html'
@@ -54,7 +63,8 @@ class NewApplication(LoginRequiredMixin, CrispyFormMixin, CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
+class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable, 
+                          CrispyFormMixin, UpdateView):
 
     model = GeneralApplication
     template_name = 'applications/continue_application.html'

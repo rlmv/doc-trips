@@ -17,14 +17,9 @@ class Timetable(models.Model):
     """ 
     Singleton model for important dates
     """
-    leader_application_open = models.DateTimeField(default=timezone.now)
-    leader_application_closed = models.DateTimeField(default=timezone.now)
 
-    crooapplication_open = models.DateTimeField(default=timezone.now)
-    crooapplication_closed = models.DateTimeField(default=timezone.now)
-
-    # TODO: ??? are we going to have leader recs?
-    # leader_recommendation_due = models.DateTimeField()
+    applications_open = models.DateTimeField(default=timezone.now)
+    applications_close = models.DateTimeField(default=timezone.now)
 
     leader_assignment_posted = models.DateTimeField(default=timezone.now)
     trippee_registration_open = models.DateTimeField(default=timezone.now)
@@ -42,17 +37,8 @@ class Timetable(models.Model):
     def delete(self, *args, **kwargs):
         pass
 
-    def is_leader_application_available(self):
+    def applications_available(self):
 
         now = timezone.now()
-        return (self.leader_application_open < now and
-                now < self.leader_application_closed)
-
-    def leaderapplication_available(self):
-        return self.is_leader_application_available()
-        
-    def crooapplication_available(self):
-        
-        now = timezone.now()
-        return (self.crooapplication_open < now and
-                now < self.crooapplication_closed)
+        return (self.applications_open < now and
+                now < self.applications_close)
