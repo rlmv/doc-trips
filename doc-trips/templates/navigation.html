@@ -19,20 +19,18 @@
 
       <ul class="nav navbar-nav">
 
-	<li><a href="{% url 'leaders:apply' %}">Leader Application</a></li>
-
-	<li><a href="{% url 'croos:apply' %}">Croo Application</a></li>
+	<li><a href="{% url 'applications:apply' %}">Applications</a></li>
 	
-	{% if perms.permissions.can_create_croo_application %}
-	<li><a href="{% url 'croos:create_application' %}">Create Croo Application</a></li>
+	{% if perms.permissions.can_create_applications %}
+	<li><a href="{% url 'applications:setup' %}">Setup Applications</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_grade_croo_applications %}
-	<li><a href="{% url 'croos:grade_next' %}">Grade Croo Application</a></li>
+	<li><a href="{% url 'croos:grade_next' %}">Grade Croo Apps</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_grade_leader_applications %}
-	<li><a href="{% url 'leaders:grade_random' %}">Graders</a></li>
+	<li><a href="{% url 'leaders:grade_random' %}">Grade Leader Apps</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_access_db %}
