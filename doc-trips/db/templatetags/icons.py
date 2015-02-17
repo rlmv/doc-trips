@@ -14,5 +14,3 @@ def checkmark_if_true(condition):
 
     return ''
     
-    
-    

@@ -69,6 +69,18 @@ class GeneralApplication(DatabaseModel):
     summer_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the summer term.")
 
 
+    # Croo and Leader applications are considered complete if the questionaire
+    # document answers have been uploaded.
+
+    def has_completed_leader_supplement(self):
+        return (hasattr(self, 'leader_supplement') and 
+                self.leader_supplement.supplement != '')
+
+    def has_completed_croo_supplement(self):
+        return (hasattr(self, 'croo_supplement') and 
+                self.croo_supplement.document != '')
+
+
 class LeaderSupplement(DatabaseModel):
 
     application = models.OneToOneField('GeneralApplication', related_name='leader_supplement')

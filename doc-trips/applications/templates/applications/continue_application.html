@@ -3,20 +3,56 @@
 
 {% block content %}
 
-<h2>Trip Leader and Croo Application</h2>
+<h2>Trips {{ trips_year }} Leader and Croo Application</h2>
 
 <p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
 <p>The application will be available until {{ timetable.leader_application_closed }}. You can submit your application and return and edit it up until this date.</p>
+
+<p> 
+{% if application.has_completed_leader_supplement %}
+Your Trip Leader application is complete.
+{% else %}
+You have not completed a Trip Leader application.
+{% endif %}
+</p>
+
+<p> 
+{% if application.has_completed_croo_supplement %}
+Your Croo application is complete.
+{% else %}
+You have not completed a Croo application. 
+{% endif %}
+</p>
+
 
 <form action="" method="post" enctype="multipart/form-data">
 <div role="tabpanel">
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General Information</a></li>
-    <li role="presentation"><a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">Trip Leader Application</a></li>
-    <li role="presentation"><a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">Croo Application</a></li>
+
+    <li role="presentation" class="active">
+      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
+	<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+	General Information
+      </a>
+    </li>
+
+    <li role="presentation">
+      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
+	{% if application.has_completed_leader_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	Trip Leader Application
+      </a>
+    </li>
+
+    <li role="presentation">
+      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
+	{% if application.has_completed_croo_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	Croo Application
+      </a>
+    </li>
+
   </ul>
 
   <!-- Tab panes -->

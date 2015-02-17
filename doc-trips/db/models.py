@@ -22,6 +22,9 @@ class TripsYear(models.Model):
 
     objects = TripsYearManager()
 
+    def __str__(self):
+        return str(self.year)
+
 
 class DatabaseModel(models.Model):
 

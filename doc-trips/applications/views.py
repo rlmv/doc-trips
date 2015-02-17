@@ -59,6 +59,7 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     model = GeneralApplication
     template_name = 'applications/continue_application.html'
     success_url = reverse_lazy('applications:continue')
+    context_object_name = 'application'
     
     def get_object(self):
         return get_object_or_404(self.model, 
@@ -108,10 +109,11 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
     def form_valid(self, form, croo_form, leader_form):
 
         form.save()
-        print(croo_form.instance.document)
-        croo_supplement = croo_form.save()
-        print(croo_supplement.document)
+        croo_form.save()
         leader_form.save()
+
+        msg = "You've successfully saved your application"
+        messages.success(self.request, msg)
         
         return HttpResponseRedirect(self.get_success_url())
 
@@ -126,7 +128,10 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         
     def get_context_data(self, **kwargs):
         context = super(ContinueApplication, self).get_context_data(**kwargs)
+        trips_year = TripsYear.objects.current()
         context['timetable'] = Timetable.objects.timetable()
+        context['information'] = ApplicationInformation.objects.get(trips_year=trips_year)
+        context['trips_year'] = trips_year
         return context
         
 
