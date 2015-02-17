@@ -21,62 +21,60 @@ You have not completed a Croo application.
 {% endif %}
 </p>
 
-
-<form action="" method="post" enctype="multipart/form-data">
 <div role="tabpanel">
+  <form action="" method="post" enctype="multipart/form-data">
+    
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active">
+	<a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
+	  <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+	  General Information
+	</a>
+      </li>
 
-    <li role="presentation" class="active">
-      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-	General Information
-      </a>
-    </li>
+      <li role="presentation">
+	<a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
+	  {% if application.has_completed_leader_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	  Trip Leader Application
+	</a>
+      </li>
 
-    <li role="presentation">
-      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{% if application.has_completed_leader_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
-	Trip Leader Application
-      </a>
-    </li>
+      <li role="presentation">
+	<a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
+	  {% if application.has_completed_croo_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	  Croo Application
+	</a>
+      </li>
 
-    <li role="presentation">
-      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{% if application.has_completed_croo_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
-	Croo Application
-      </a>
-    </li>
+    </ul>
 
-  </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
 
-  <!-- Tab panes -->
-  <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="general">
+	<br>
+	<div class="expand-whitespace"><p> {{ information.general_info }} </p></div>
+	{% crispy form %}
+      </div>
 
-    <div role="tabpanel" class="tab-pane active" id="general">
-      <br>
-      <div class="expand-whitespace"><p> {{ information.general_info }} </p></div>
-      {% crispy form %}
+      <div role="tabpanel" class="tab-pane" id="croo">
+	<br>
+	<div class="expand-whitespace"><p> {{ information.croo_info }} </p></div>
+	{% crispy croo_form %}
+      </div>
+
+      <div role="tabpanel" class="tab-pane" id="leader">
+	<br>
+	<div class="expand-whitespace"><p> {{ information.leader_info }} </p></div>
+	{% crispy leader_form %}      
+      </div>
+
     </div>
 
-    <div role="tabpanel" class="tab-pane" id="croo">
-      <br>
-      <div class="expand-whitespace"><p> {{ information.croo_info }} </p></div>
-      {% crispy croo_form %}
-    </div>
-
-    <div role="tabpanel" class="tab-pane" id="leader">
-      <br>
-      <div class="expand-whitespace"><p> {{ information.leader_info }} </p></div>
-      {% crispy leader_form %}      
-    </div>
-
-  </div>
+    <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/> 
+  </form>
 </div>
-
-<input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/> 
-</form>
-
 
 {% endblock %}
