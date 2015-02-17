@@ -166,11 +166,12 @@ class LeaderSupplementLayout(Layout):
             'supplement',
             Fieldset(
                 'Trip Leader Availability',
-                HTML('<p>Please indicate your availibity for each section and type of trip.</p><p> {% include "applications/triptype_modal.html" %}</p>'),
+                HTML('<p>Please indicate your availibity for each section and type of trip.</p>'),
                 Row(
                     Div('preferred_sections', css_class='col-sm-3'),
                     Div('available_sections', css_class='col-sm-3'),
                 ),
+                HTML('<p> {% include "applications/triptype_modal.html" %}</p>'),
                 Row(
                     Div('preferred_triptypes', css_class='col-sm-3'),
                     Div('available_triptypes', css_class='col-sm-3'),
