@@ -12,6 +12,7 @@ from db.views import CrispyFormMixin
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
+from trips.models import TripType
 from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation
 from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
 
@@ -151,6 +152,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable,
         trips_year = TripsYear.objects.current()
         context['timetable'] = Timetable.objects.timetable()
         context['information'] = ApplicationInformation.objects.get(trips_year=trips_year)
+        context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
         context['trips_year'] = trips_year
         return context
         
