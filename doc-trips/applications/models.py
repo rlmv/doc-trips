@@ -54,7 +54,7 @@ class GeneralApplication(DatabaseModel):
 
     # ------ dietary --------
     dietary_restrictions = models.TextField(blank=True, verbose_name="Do you have any dietary restrictions or allergies that we should know about?")
-    allergen_information = models.TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I turn purple and squishy if I eat a grape!)?")
+    allergen_information = models.TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I get hives, I go into anaphylactic shock)?")
 
     # ------ certs -------
     medical_certifications = models.TextField(blank=True, verbose_name="Current trainings in First Aid and CPR are required for all DOC trip leaders and croo members. Please list any relevant medical certifications (eg. First Aid, CPR, Wilderness First Aid, Wilderness First Responder, Emergency Medical Technician (EMT), Wilderness Emergency Medical Technician (W-EMT), Outdoor Emergency Care (OEC)) you currently hold, the program that sponsored the certification and the dates they expire. If you do not currently have such a certification (or if your certification will expire before Trips ends), we will be in touch about how you can get trained before trips begin. DOC Trips will offer several First Aid & CPR courses in the spring and summer.)", help_text="eg. 'First Aid - American Red Cross, expires October 2013.'")
@@ -62,9 +62,9 @@ class GeneralApplication(DatabaseModel):
     peer_training = models.TextField(blank=True, verbose_name="List and briefly describe any peer training program (DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc.) that you have lead or participated in.")
 
     # ------- notices -------
-    trippee_confidentiality = models.BooleanField(default=False, verbose_name="If selected to be a DOC Trips Leader, I understand that I will be given access to my Trippees' confidential medical information for safety purposes. I pledge to maintain the confidentiality of this information, except as is required by medical or legal concerns")
+    trippee_confidentiality = models.BooleanField(default=False, verbose_name="If selected to be a Trips Leader or Crooling, I understand that I will be given access to Trippees' confidential medical information for safety purposes. I pledge to maintain the confidentiality of this information, except as is required by medical or legal concerns")
     in_goodstanding_with_college = models.BooleanField(default=False, verbose_name="By applying to lead a DOC Trip, I acknowledge that I am in good standing with the College. This may be verified by DOC Trips through the Undergraduate Dean’s Office.")
-    trainings = models.BooleanField(default=False, verbose_name="I understand that if I am accepted as a crooling or trip leader I will be required to get First Aid and CPR training, as well as attend croo and leader specific training. I understand that if I do not meet these requirements, I will not be able to be on a croo/lead a trip.")
+    trainings = models.BooleanField(default=False, verbose_name="I understand that if I am accepted as a Crooling or Trip Leader I will be required to get First Aid and CPR training, as well as attend croo and leader specific training. I understand that if I do not meet these requirements, I will not be able to be on a Croo/lead a trip.")
     spring_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the spring term.")
     summer_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the summer term.")
 
@@ -84,7 +84,7 @@ class GeneralApplication(DatabaseModel):
 class LeaderSupplement(DatabaseModel):
 
     application = models.OneToOneField('GeneralApplication', related_name='leader_supplement')
-    supplement = models.FileField('Leader supplement', blank=True)
+    supplement = models.FileField('leader application answers', blank=True)
 
     #  ------  trip and section information ------
     preferred_sections = models.ManyToManyField(Section, blank=True,
@@ -113,11 +113,13 @@ class LeaderSupplement(DatabaseModel):
 class CrooSupplement(DatabaseModel):
 
     application = models.OneToOneField('GeneralApplication', related_name='croo_supplement')
-    document = models.FileField(blank=True)
+    document = models.FileField('Croo Application Answers', blank=True)
 
     # --- Croo positions ------
-    safety_lead_willing = models.BooleanField(default=False)
-    kitchen_lead_willing = models.BooleanField(default=False)
+    safety_lead_willing = models.BooleanField('Yes, I am willing to be a Safety Lead',
+                                              default=False)
+    kitchen_lead_willing = models.BooleanField('Yes, I am willing to be a Kitchen Witch/Wizard',
+                                               default=False)
 
     # -------- driving -------
 

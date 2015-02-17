@@ -93,7 +93,7 @@ class LeaderSupplementForm(forms.ModelForm):
             'available_triptypes': forms.CheckboxSelectMultiple, 
             'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
             'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
-            'relevant_experience': forms.Textarea(attrs={'rows': 2}),
+            'relevant_experience': forms.Textarea(attrs={'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -116,8 +116,7 @@ class ApplicationLayout(Layout):
     def __init__(self):
         
         super(ApplicationLayout, self).__init__(
-            Fieldset(
-                HTML('<p>Answers in this section will NOT be used in the grading process</p>'),
+                HTML('<br><p>Answers in this section will NOT be used in the grading process</p>'),
                 Row(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -148,17 +147,14 @@ class ApplicationLayout(Layout):
                 'allergen_information', 
             ), 
             Fieldset(
-                'Disclosure',
+                'Notices',
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
                 'trainings', 
                 'spring_training_ok',
                 'summer_training_ok',
             ),
-
         )
-        )
-
 
 
 class LeaderSupplementLayout(Layout):
@@ -166,11 +162,8 @@ class LeaderSupplementLayout(Layout):
     def __init__(self):
 
         super(LeaderSupplementLayout, self).__init__(
-            Fieldset(
-                '',
-                HTML('<p> Download the <a>Leader Application Supplement</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
-                'supplement',
-            ),
+            HTML('<br><p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
+            'supplement',
             Fieldset(
                 'Trip Leader Availability',
                 HTML("<p>Please indicate your availibity for each section and type of trip.</p>"),
@@ -193,13 +186,15 @@ class CrooSupplementLayout(Layout):
     def __init__(self):
 
         super(CrooSupplementLayout, self).__init__(
+            HTML('<br><p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
+            'document',
             Fieldset(
-            
-                HTML("<p> Upload your answers </p>"),
-                'document',
-            ),
-            'safety_lead_willing',
-            'kitchen_lead_willing',
+                'Croo Positions',
+                HTML("<p>Every croo has at least one (or more) <strong>Safety Leads</strong> who are responsible for medical care & evacuations at their respective location (Hanover, the Grant, etc). Safety Leads are an integral part of each croo and, in addition to their medical responsibilities, are included in all other croo activities.  If you have a WFR, EMT, W-EMT, OEC, or equivalent medical certification, you are qualified to be a Safety Leads. We will prioritize people who have higher safety certifications (EMT, W-EMT) and extensive safety experience.</p>"),
+                'safety_lead_willing',
+                HTML("<p>Lodj Croo has one <strong>Kitchen Witch/Wizard</strong> who is responsible for ordering, preparing, and cooking all the food at the Lodj during Trips. This role includes a significant amount of responsibility and requires some additional time before Trips begins to assist in ordering all the necessary food items for the Lodj. You are eligible to be the Kitchen Witch/Wizard if you have worked at the Moosilauke Ravine Lodge during its normal operations (non-Trips).</p>"),
+                'kitchen_lead_willing',
+            )
         )
 
     
