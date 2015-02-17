@@ -15,6 +15,7 @@ from timetable.models import Timetable
 from trips.models import TripType
 from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation
 from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
+from permissions.views import CreateApplicationsPermissionRequired
 
 class IfApplicationsAvailable():
 
@@ -157,7 +158,8 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable,
         return context
         
 
-class SetupApplication(LoginRequiredMixin, PermissionRequiredMixin, CrispyFormMixin, UpdateView):
+class SetupApplication(CreateApplicationsPermissionRequired, 
+                       CrispyFormMixin, UpdateView):
     """
     Create/edit this year's application
 
@@ -169,11 +171,6 @@ class SetupApplication(LoginRequiredMixin, PermissionRequiredMixin, CrispyFormMi
     model = ApplicationInformation
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
-
-    # user must have permission to change application
-    permission_required = 'permissions.can_create_applications'
-    redirect_unauthenticated_users = True
-    raise_exception = True
 
     def get_object(self):
         """ There is only one configuration object for each trips year. """

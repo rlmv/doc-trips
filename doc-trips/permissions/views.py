@@ -59,6 +59,14 @@ class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception = True
 
 
+class CreateApplicationsPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+    """ Access for users allowed to create/edit croo and leader applications """
+    
+    permission_required = 'permissions.can_create_applications'
+    redirect_unauthenticated_users = True
+    raise_exception = True
+
+
 class GenericGroupForm(forms.Form):
     
     members = forms.ModelMultipleChoiceField(queryset=None, 
