@@ -171,7 +171,7 @@ class SetupApplication(LoginRequiredMixin, PermissionRequiredMixin, CrispyFormMi
     success_url = reverse_lazy('applications:setup')
 
     # user must have permission to change application
-    permission_required = 'can_create_applications'
+    permission_required = 'permissions.can_create_applications'
     redirect_unauthenticated_users = True
     raise_exception = True
 
