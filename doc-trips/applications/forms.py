@@ -162,8 +162,11 @@ class LeaderSupplementLayout(Layout):
     def __init__(self):
 
         super(LeaderSupplementLayout, self).__init__(
-            HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
-            'supplement',
+            Fieldset(
+                'Application',
+                HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
+                'supplement',
+            ),
             Fieldset(
                 'Trip Leader Availability',
                 HTML('<p>Please indicate your availibity for each section and type of trip.</p>'),
@@ -187,8 +190,11 @@ class CrooSupplementLayout(Layout):
     def __init__(self):
 
         super(CrooSupplementLayout, self).__init__(
-            HTML('<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
-            'document',
+            Fieldset(
+                'Application',
+                HTML('<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
+                'document',
+            ),
             Fieldset(
                 'Croo Positions',
                 HTML("<p>Every croo has at least one (or more) <strong>Safety Leads</strong> who are responsible for medical care & evacuations at their respective location (Hanover, the Grant, etc). Safety Leads are an integral part of each croo and, in addition to their medical responsibilities, are included in all other croo activities.  If you have a WFR, EMT, W-EMT, OEC, or equivalent medical certification, you are qualified to be a Safety Leads. We will prioritize people who have higher safety certifications (EMT, W-EMT) and extensive safety experience.</p>"),
