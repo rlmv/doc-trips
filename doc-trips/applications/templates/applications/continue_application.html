@@ -3,14 +3,7 @@
 
 {% block content %}
 
-
-<div class="page-header">
-  <h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
-</div>
-
-<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
-
-<p>The applications will be available until {{ timetable.applications_open }} You can return and edit your application up until this date.</p>
+{% include "applications/application_header.html" %}
 
 <p> 
 {% if application.has_completed_leader_supplement %}
@@ -60,16 +53,22 @@ You have not completed a Croo application.
 
   <!-- Tab panes -->
   <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="general">{% crispy form %}</div>
+
+    <div role="tabpanel" class="tab-pane active" id="general">
+      <br>
+      <div class="expand-whitespace"><p> {{ information.general_info }} </p></div>
+      {% crispy form %}
+    </div>
+
     <div role="tabpanel" class="tab-pane" id="croo">
       <br>
-      <div class="expand-whitespace"> {{ information.croo_application_information }} </div>
+      <div class="expand-whitespace"><p> {{ information.croo_info }} </p></div>
       {% crispy croo_form %}
     </div>
 
     <div role="tabpanel" class="tab-pane" id="leader">
       <br>
-      <div class="expand-whitespace"> {{ information.leader_application_information }}</div>
+      <div class="expand-whitespace"><p> {{ information.leader_info }} </p></div>
       {% crispy leader_form %}      
     </div>
 

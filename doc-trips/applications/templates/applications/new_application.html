@@ -4,11 +4,7 @@
 
 {% block content %}
 
-<h2> Submit an application </h2>
-
-<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
-
-<p>The applications will be available until {{ timetable.applications_open }} You can return and edit your application up until this date.</p>
+{% include "applications/application_header.html" %}
 
 {% crispy form %}
 

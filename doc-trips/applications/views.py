@@ -62,6 +62,16 @@ class NewApplication(LoginRequiredMixin, IfApplicationsAvailable,
 
         return HttpResponseRedirect(self.get_success_url())
 
+    def get_context_data(self, **kwargs):
+        trips_year=TripsYear.objects.current()
+        return super(NewApplication, self).get_context_data(
+            trips_year=trips_year,
+            timetable=Timetable.objects.timetable(),
+            information=ApplicationInformation.objects.get(trips_year=trips_year),
+            **kwargs
+        )
+        
+
 
 class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable, 
                           CrispyFormMixin, UpdateView):

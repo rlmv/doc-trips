@@ -116,7 +116,7 @@ class ApplicationLayout(Layout):
     def __init__(self):
         
         super(ApplicationLayout, self).__init__(
-                HTML('<br><p>Answers in this section will NOT be used in the grading process</p>'),
+                HTML('<p>Answers in this section will NOT be used in the grading process</p>'),
                 Row(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -162,7 +162,7 @@ class LeaderSupplementLayout(Layout):
     def __init__(self):
 
         super(LeaderSupplementLayout, self).__init__(
-            HTML('<br><p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
+            HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
             'supplement',
             Fieldset(
                 'Trip Leader Availability',
@@ -186,7 +186,7 @@ class CrooSupplementLayout(Layout):
     def __init__(self):
 
         super(CrooSupplementLayout, self).__init__(
-            HTML('<br><p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
+            HTML('<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
             'document',
             Fieldset(
                 'Croo Positions',
