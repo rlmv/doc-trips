@@ -29,6 +29,9 @@ class ApplicationInformation(DatabaseModel):
     croo_supplement_questions = models.FileField('Croo Application questions',
                                                  help_text='.docx file')
 
+    leader_application_information = models.TextField(blank=True, help_text="This will be displayed at the top of the Leader Application tab")
+    croo_application_information = models.TextField(blank=True, help_text="This will be displayed at the top of Croo Application tab")
+
 
 class GeneralApplication(DatabaseModel):
 

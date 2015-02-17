@@ -58,8 +58,18 @@ You have not completed a Croo application.
   <!-- Tab panes -->
   <div class="tab-content">
     <div role="tabpanel" class="tab-pane active" id="general">{% crispy form %}</div>
-    <div role="tabpanel" class="tab-pane" id="croo">{% crispy croo_form %}</div>
-    <div role="tabpanel" class="tab-pane" id="leader">{% crispy leader_form %}</div>
+    <div role="tabpanel" class="tab-pane" id="croo">
+      <br>
+      <div class="expand-whitespace"> {{ information.croo_application_information }} </div>
+      {% crispy croo_form %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="leader">
+      <br>
+      <div class="expand-whitespace"> {{ information.leader_application_information }}</div>
+      {% crispy leader_form %}      
+    </div>
+
   </div>
 </div>
 
