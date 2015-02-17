@@ -45,6 +45,11 @@ def can_grade_croo_applications():
     return get_permission('can_grade_croo_applications',
                           'Can grade croo applicaions')
 
+def can_create_applications():
+    return get_permission('can_create_applications',
+                          'Can create leader and croo applications')
+
+
 """ # TODO: these might be useful for croos?
 can_edit_db, created = get_permission(
 codename='can_edit_db',
@@ -60,11 +65,10 @@ def directors():
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
                              can_grade_leader_applications(), 
-                             can_create_leader_application(),
                              can_access_db(), 
                              can_edit_timetable(), 
-                             can_create_croo_application(), 
-                             can_grade_croo_applications()]
+                             can_grade_croo_applications(), 
+                             can_create_applications()]
     directors.save()
     return directors
 

@@ -1,6 +1,6 @@
 
 from vanilla import CreateView, UpdateView
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.core.urlresolvers import reverse_lazy
@@ -12,7 +12,7 @@ from db.views import CrispyFormMixin
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
-from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement
+from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation
 from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
 
 
@@ -129,5 +129,53 @@ class ContinueApplication(LoginRequiredMixin, CrispyFormMixin, UpdateView):
         context['timetable'] = Timetable.objects.timetable()
         return context
         
+
+class SetupApplication(LoginRequiredMixin, PermissionRequiredMixin, CrispyFormMixin, UpdateView):
+    """
+    Create/edit this year's application
+
+    Used by directors to edit application questions, general information.
+
+    TOOD: show previous year's application documents??? 
+    """
+
+    model = ApplicationInformation
+    template_name = 'applications/setup.html'
+    success_url = reverse_lazy('applications:setup')
+
+    # user must have permission to change application
+    permission_required = 'can_create_applications'
+    redirect_unauthenticated_users = True
+    raise_exception = True
+
+    def get_object(self):
+        """ There is only one configuration object for each trips year. """
+        trips_year = TripsYear.objects.current()
+        obj, created = self.model.objects.get_or_create(trips_year=trips_year)
+        
+        return obj
+
+    def get_form(self, **kwargs):
+
+        form = super(SetupApplication, self).get_form(**kwargs)
+        form.helper = FormHelper(form)
+        form.helper.add_input(Submit('submit', 'Update'))
+
+        return form
+
+    def get_context_data(self, **kwargs):
+        """ Add current tripsyear to template context """
+        context = super(SetupApplication, self).get_context_data(**kwargs)
+        context['trips_year'] = TripsYear.objects.current()
+        return context
+        
+        
+        
+    
+    
+
+    
+
+    
         
         

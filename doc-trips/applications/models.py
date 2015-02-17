@@ -14,6 +14,21 @@ TSHIRT_SIZE_CHOICES = (
     ('XL', 'Extra large'),
 )
 
+class ApplicationInformation(DatabaseModel):
+    """
+    Model to contain the information for croo and leader applications.
+
+    """
+
+    class Meta:
+        # one object per year 
+        unique_together = ('trips_year',)
+
+    leader_supplement_questions = models.FileField('Leader Application questions',
+                                                   help_text='.docx file')
+    croo_supplement_questions = models.FileField('Croo Application questions',
+                                                 help_text='.docx file')
+
 
 class GeneralApplication(DatabaseModel):
 
