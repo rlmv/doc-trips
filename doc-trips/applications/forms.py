@@ -106,6 +106,37 @@ class LeaderSupplementForm(forms.ModelForm):
         
         self.helper = FormHelper(self)
         self.helper.form_tag = False
+        self.helper.layout = LeaderSupplementLayout()
+
+
+class LeaderSupplementLayout(Layout):
+
+    def __init__(self):
+
+        super(LeaderSupplementLayout, self).__init__(
+            Fieldset(
+                'Leader Supplement',
+                HTML('<p> Download the <a>Leader Application Supplement</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
+                'supplement',
+            ),
+            Fieldset(
+                'Trip Leader Availability',
+                HTML("<p>Please indicate your availibity for each section and type of trip.</p>"),
+                Row(
+                    Div('preferred_sections', css_class='col-sm-3'),
+                    Div('available_sections', css_class='col-sm-3'),
+                ),
+                Row(
+                    Div('preferred_triptypes', css_class='col-sm-3'),
+                    Div('available_triptypes', css_class='col-sm-3'),
+                ),
+                'relevant_experience',
+                'trip_preference_comments',
+                'cannot_participate_in',
+            ),
+        )
+
+    
         
 
         
