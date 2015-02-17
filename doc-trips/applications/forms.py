@@ -41,6 +41,7 @@ class ApplicationForm(forms.ModelForm):
         
         self.helper = FormHelper(self)
         self.helper.form_tag = False
+        self.helper.layout = ApplicationLayout()
         
 
 class CrooSupplementForm(forms.ModelForm):
@@ -57,6 +58,7 @@ class CrooSupplementForm(forms.ModelForm):
         
         self.helper = FormHelper(self)
         self.helper.form_tag = False
+        self.helper.layout = CrooSupplementLayout()
 
 
 class SectionChoiceField(forms.ModelMultipleChoiceField):
@@ -109,13 +111,63 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper.layout = LeaderSupplementLayout()
 
 
+class ApplicationLayout(Layout):
+
+    def __init__(self):
+        
+        super(ApplicationLayout, self).__init__(
+            Fieldset(
+                HTML('<p>Answers in this section will NOT be used in the grading process</p>'),
+                Row(
+                    Div('class_year', css_class='col-sm-3'),
+                    Div('gender', css_class='col-sm-3'),
+                    Div('race_ethnicity', css_class='col-sm-3'),
+                ),
+                Row(
+                    Div('hinman_box', css_class='col-sm-3'),
+                    Div('phone', css_class='col-sm-3'),
+                    Div('summer_address', css_class='col-sm-5'),
+                ),
+                Row(
+                    Div('tshirt_size', css_class='col-sm-3'),
+                ),
+                'from_where',
+                'what_do_you_like_to_study',
+                'personal_activities',
+                'feedback',
+            Fieldset(
+                'Trainings',
+                'medical_certifications', 
+                'medical_experience', 
+                'peer_training',
+            ),
+            Fieldset(
+                'Dietary restrictions', 
+                HTML('<p>(We use this information in packing food for Trips and it will not affect your candidacy)</p>'),
+                'dietary_restrictions',
+                'allergen_information', 
+            ), 
+            Fieldset(
+                'Disclosure',
+                'trippee_confidentiality',
+                'in_goodstanding_with_college',
+                'trainings', 
+                'spring_training_ok',
+                'summer_training_ok',
+            ),
+
+        )
+        )
+
+
+
 class LeaderSupplementLayout(Layout):
 
     def __init__(self):
 
         super(LeaderSupplementLayout, self).__init__(
             Fieldset(
-                'Leader Supplement',
+                '',
                 HTML('<p> Download the <a>Leader Application Supplement</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
                 'supplement',
             ),
@@ -134,6 +186,20 @@ class LeaderSupplementLayout(Layout):
                 'trip_preference_comments',
                 'cannot_participate_in',
             ),
+        )
+
+class CrooSupplementLayout(Layout):
+
+    def __init__(self):
+
+        super(CrooSupplementLayout, self).__init__(
+            Fieldset(
+            
+                HTML("<p> Upload your answers </p>"),
+                'document',
+            ),
+            'safety_lead_willing',
+            'kitchen_lead_willing',
         )
 
     
