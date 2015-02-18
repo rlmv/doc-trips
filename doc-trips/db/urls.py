@@ -9,6 +9,7 @@ from croos.urls import crooapplication_urlpatterns, croo_urlpatterns
 from transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
                             vehicle_urlpatterns)
 from db.views import DatabaseIndexView, RedirectToCurrentDatabase
+from applications.urls import application_urlpatterns
 
 """
 All database urlpatterns take a trips_year param.
@@ -26,6 +27,7 @@ database_urlpatterns = patterns('',
     url(r'^stops/', include(transportstop_urlpatterns)),
     url(r'^routes/', include(route_urlpatterns)),
     url(r'^vehicles/', include(vehicle_urlpatterns)),                            
+    url(r'^applications/', include(application_urlpatterns)),
 )
 
 urlpatterns = patterns('',

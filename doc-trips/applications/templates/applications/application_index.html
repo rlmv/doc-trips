@@ -1,0 +1,46 @@
+
+{% extends "db/base.html" %}
+{% load links %}
+{% load icons %}
+
+{% block content %}
+
+<div>
+  <h3> Applications </h3>
+  <h4> Under construction! </h4>
+</div>
+
+<table class="table table-condensed">
+  <tr>
+    <th> Applicant </th>
+    <th> Leader Application </th>
+    <th> Croo Application </th>
+  </tr>
+  
+  {% for application in applications %}
+  <tr> 
+    <td> {{ application.applicant }} </td>
+
+    <td>
+      {% if application.leader_supplement.supplement %}
+      <a href="{{ application.leader_supplement.supplement.url }}">
+	{{ application.leader_supplement.supplement }}
+      </a> 
+      {% endif %}
+    </td>
+
+    <td> 
+      {% if application.croo_supplement.document %}
+      <a href="{{ application.croo_supplement.document.url }}">
+	{{ application.croo_supplement.document }}
+      </a> 
+      {% endif %}
+    </td>
+
+  </tr>
+  {% endfor %}
+
+</table>
+
+{% endblock content %}
+  

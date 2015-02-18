@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 
 from db.views import CrispyFormMixin
+from db.views import DatabaseListView
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
@@ -192,6 +193,15 @@ class SetupApplication(CreateApplicationsPermissionRequired,
         context = super(SetupApplication, self).get_context_data(**kwargs)
         context['trips_year'] = TripsYear.objects.current()
         return context
+
+
+class ApplicationDatabaseListView(DatabaseListView):
+    model = GeneralApplication
+    context_object_name = 'applications'
+    template_name = 'applications/application_index.html'
+
+    
+
         
         
         
