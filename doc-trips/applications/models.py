@@ -38,7 +38,7 @@ class ApplicationInformation(DatabaseModel):
 class GeneralApplication(DatabaseModel):
 
     # ---- administrative information. not seen by applicants ------
-    applicant = models.ForeignKey(settings.AUTH_USER_MODEL)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 #    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING#, 
 #                              verbose_name="Application status")
 
@@ -88,7 +88,7 @@ class GeneralApplication(DatabaseModel):
 
 class LeaderSupplement(DatabaseModel):
 
-    application = models.OneToOneField('GeneralApplication', related_name='leader_supplement')
+    application = models.OneToOneField(GeneralApplication, editable=False, related_name='leader_supplement')
     supplement = models.FileField('leader application answers', blank=True)
 
     #  ------  trip and section information ------
@@ -117,7 +117,7 @@ class LeaderSupplement(DatabaseModel):
 
 class CrooSupplement(DatabaseModel):
 
-    application = models.OneToOneField('GeneralApplication', related_name='croo_supplement')
+    application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
     document = models.FileField('Croo Application Answers', blank=True)
 
     # --- Croo positions ------
