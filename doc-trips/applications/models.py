@@ -125,6 +125,7 @@ class CrooSupplement(DatabaseModel):
                                               default=False)
     kitchen_lead_willing = models.BooleanField('Yes, I am willing to be a Kitchen Witch/Wizard',
                                                default=False)
+    kitchen_lead_qualifications = models.TextField(blank=True, verbose_name='If you are willing to be a Kitchen Witch/Wizard, please briefly describe your qualifications for the position (eg. on Moosilauke Lodge crew spring 2014, experience working in industrial kitchens, experience preparing and organizing food for large groups.)')
 
     # -------- driving -------
 

@@ -50,8 +50,12 @@ class CrooSupplementForm(forms.ModelForm):
         model = CrooSupplement
         fields = (
             'document', 
-            'safety_lead_willing', 'kitchen_lead_willing'
+            'safety_lead_willing', 
+            'kitchen_lead_willing', 'kitchen_lead_qualifications',
         )
+        widgets = {
+            'kitchen_lead_qualifications': forms.Textarea(attrs={'rows': 2}),
+        }
 
     def __init__(self, *args, **kwargs):
         super(CrooSupplementForm, self).__init__(*args, **kwargs)
@@ -139,6 +143,9 @@ class ApplicationLayout(Layout):
                 'medical_certifications', 
                 'medical_experience', 
                 'peer_training',
+                HTML("<p><strong>If selected to be a DOC trip leader, you must complete various trainings before Trips begins. These trainings are important in providing leaders with the proper skills to lead a fun and safe trip. The training program includes 10-12 hours (not necessarily all at once) of training sessions covering First Aid/CPR, Community Building, Wilderness Skills, Risk Management, and Trip-specific outdoor experience. Leaders can get PE credit for the trainings. Croo members are also required to complete First Aid and CPR training, as well as attend Croo specific trainings. Sessions are offered throughout the spring and summer terms.</strong></p>"),
+                'spring_training_ok',
+                'summer_training_ok',
             ),
             Fieldset(
                 'Dietary restrictions', 
@@ -148,11 +155,10 @@ class ApplicationLayout(Layout):
             ), 
             Fieldset(
                 'Notices',
+                HTML("<p>You must agree to the following statements in order to lead a Trip or participate on a Croo. Checking each box indicates your acceptance of the conditions for your participation in DOC Trips.</p>"),
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
                 'trainings', 
-                'spring_training_ok',
-                'summer_training_ok',
             ),
         )
 
@@ -164,7 +170,7 @@ class LeaderSupplementLayout(Layout):
         super(LeaderSupplementLayout, self).__init__(
             Fieldset(
                 'Application',
-                HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. </p>'),
+                HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. Be sure to save your application after uploading.</p>'),
                 'supplement',
             ),
             Fieldset(
@@ -192,7 +198,7 @@ class CrooSupplementLayout(Layout):
         super(CrooSupplementLayout, self).__init__(
             Fieldset(
                 'Application',
-                HTML('<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. </p>'),
+                HTML("""<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
                 'document',
             ),
             Fieldset(
@@ -201,6 +207,7 @@ class CrooSupplementLayout(Layout):
                 'safety_lead_willing',
                 HTML("<p>Lodj Croo has one <strong>Kitchen Witch/Wizard</strong> who is responsible for ordering, preparing, and cooking all the food at the Lodj during Trips. This role includes a significant amount of responsibility and requires some additional time before Trips begins to assist in ordering all the necessary food items for the Lodj. You are eligible to be the Kitchen Witch/Wizard if you have worked at the Moosilauke Ravine Lodge during its normal operations (non-Trips).</p>"),
                 'kitchen_lead_willing',
+                'kitchen_lead_qualifications',
             )
         )
 
