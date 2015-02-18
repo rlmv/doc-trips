@@ -79,14 +79,22 @@ class GeneralApplication(DatabaseModel):
 
     def has_completed_leader_supplement(self):
         return (hasattr(self, 'leader_supplement') and 
-                self.leader_supplement.supplement != '')
+                self.leader_supplement.supplement)
 
     def has_completed_croo_supplement(self):
         return (hasattr(self, 'croo_supplement') and 
-                self.croo_supplement.document != '')
+                self.croo_supplement.document)
 
+
+class LeaderSupplementManager(models.Manager):
+    
+    def completed_applications(self, trips_year):
+        return self.filter(trips_year=trips_year).exclude(supplement='')
+        
 
 class LeaderSupplement(DatabaseModel):
+
+    objects = LeaderSupplementManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='leader_supplement')
     supplement = models.FileField('leader application answers', blank=True)

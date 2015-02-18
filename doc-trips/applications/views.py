@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 
 from db.views import CrispyFormMixin
-from db.views import DatabaseListView
+from db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
@@ -200,8 +200,35 @@ class ApplicationDatabaseListView(DatabaseListView):
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
 
-    
 
+class LeaderApplicationDatabaseListView(DatabaseListView):
+    model = LeaderSupplement
+    context_object_name = 'applications'
+    template_name = 'applications/leaderapplication_index.html'
+
+    def get_queryset(self):
+        return self.model.objects.completed_applications(self.kwargs['trips_year'])
+
+
+class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
+    model = LeaderSupplement
+    template_name = 'applications/leaderapplication_detail.html'
+    fields = ('trip_preference_comments', 'cannot_participate_in')
+
+
+class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
+    model = LeaderSupplement
+    template_name = 'applications/leaderapplication_update.html'
+
+    def get_form_helper(self, form):
+        
+        helper = FormHelper(form)
+        helper.add_input(Submit('submit', 'Update'))
+        
+        return helper
+
+
+    
         
         
         
