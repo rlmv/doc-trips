@@ -117,6 +117,19 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper.layout = LeaderSupplementLayout()
 
 
+class LeaderSupplementAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = LeaderSupplement
+        fields = ('community_building', 'risk_management', 
+                  'wilderness_skills', 'first_aid')
+
+    def __init__(self, *args, **kwargs):
+        super(LeaderSupplementAdminForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+
+
 class ApplicationLayout(Layout):
 
     def __init__(self):
