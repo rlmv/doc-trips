@@ -11,7 +11,7 @@ MANAGE=$(PYTHON) doc-trips/manage.py
 BEHAVE=$(VENV)/bin/behave
 FEATURES=doc-trips/features/
 
-.PHONY: install migrations migrate behave behave_dry rm_emacs_locks test coverage clean
+.PHONY: install migrations migrate behave behave_dry rm_emacs_locks test coverage clean deploy
 
 all:
 	SECRET_KEY=secret DEBUG=True $(MANAGE) runserver
@@ -19,6 +19,12 @@ all:
 install:
 	pyvenv $(VENV)
 	$(PIP) install -r requirements.txt
+
+deploy: 
+	heroku maintenance:on
+	git push heroku master
+	heroku run migrate
+	heroku maintenance:off
 
 migrations:
 	$(MANAGE) makemigrations
