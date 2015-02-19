@@ -4,6 +4,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField, Row, Column
+from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from applications.models import GeneralApplication, CrooSupplement, LeaderSupplement
@@ -24,6 +25,7 @@ class ApplicationForm(forms.ModelForm):
             'medical_certifications', 'medical_experience', 'peer_training',
             'trippee_confidentiality', 'in_goodstanding_with_college',
             'trainings', 'spring_training_ok', 'summer_training_ok',
+            'hanover_in_fall', 'role_preference',
         )
         
         widgets = {
@@ -120,7 +122,10 @@ class ApplicationLayout(Layout):
     def __init__(self):
         
         super(ApplicationLayout, self).__init__(
-                HTML('<p>Answers in this section will NOT be used in the grading process</p>'),
+
+                Alert(content='Answers in this section will NOT be used in the grading process',
+                      dismiss=False, css_class='alert-info'),
+
                 Row(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -146,6 +151,11 @@ class ApplicationLayout(Layout):
                 HTML("<p><strong>If selected to be a DOC trip leader, you must complete various trainings before Trips begins. These trainings are important in providing leaders with the proper skills to lead a fun and safe trip. The training program includes 10-12 hours (not necessarily all at once) of training sessions covering First Aid/CPR, Community Building, Wilderness Skills, Risk Management, and Trip-specific outdoor experience. Leaders can get PE credit for the trainings. Croo members are also required to complete First Aid and CPR training, as well as attend Croo specific trainings. Sessions are offered throughout the spring and summer terms.</strong></p>"),
                 'spring_training_ok',
                 'summer_training_ok',
+            ),
+            Fieldset(
+                'Additional Information',
+                'hanover_in_fall',
+                'role_preference',
             ),
             Fieldset(
                 'Dietary restrictions', 

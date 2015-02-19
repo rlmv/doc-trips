@@ -7,7 +7,11 @@
 
 <p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
 
-<p>The application will be available until {{ timetable.applications_close }} You can return and edit your application up until this date.</p>
+<div>
+<div class="alert alert-info" role="alert">
+The application will be available until <strong>{{ timetable.applications_close }}</strong>
+</div
+</div>
 
 <div class="expand-whitespace"><p> {{ information.application_header }}</p></div>
 

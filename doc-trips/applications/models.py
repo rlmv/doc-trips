@@ -14,6 +14,11 @@ TSHIRT_SIZE_CHOICES = (
     ('XL', 'Extra large'),
 )
 
+YES_NO_CHOICES = (
+    ('YES', 'yes'),
+    ('NO', 'no'),
+)
+
 class ApplicationInformation(DatabaseModel):
     """
     Model to contain the information for croo and leader applications.
@@ -54,9 +59,18 @@ class GeneralApplication(DatabaseModel):
     # ------- -------
     from_where = models.CharField('Where are you from?', max_length=255)
     what_do_you_like_to_study = models.CharField('What do you like to study?', max_length=255)
-    personal_activities = models.TextField(blank=True, verbose_name='Please list your primary activities and involvements at Dartmouth and beyond')
+    personal_activities = models.TextField(blank=True, verbose_name="In order of importance to you, please list your activities and involvements at Dartmouth and beyond (e.g. greek affiliation, affinity group, campus organization, team, etc)")
     feedback = models.TextField(blank=True, verbose_name="If you have any experience with Trips, what would you change about the program (big or small)?  If you do not have experience with Trips, what would you change about the program OR what would you change about your introduction to Dartmouth?")
 
+    hanover_in_fall = models.CharField('Are you planning to be in Hanover this fall?',
+                                       choices=YES_NO_CHOICES, max_length=5)
+    LEADER_CROO_PREFERENCE = (
+        ('PREFER_LEADER', 'Prefer Trip Leader'),
+        ('PREFER_CROO', 'Prefer Croo'),
+        ('N/A', 'N/A'),
+    )
+    role_preference = models.CharField("While Trips Directorate will ultimately decide where we think you will be most successful in the program, we would like to know your preferences. If you are submitting a Trip Leader application and a Croo application, please indicate which position you prefer. If you are only applying to one position, please choose 'N/A'", choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20)
+    
     # ------ dietary --------
     dietary_restrictions = models.TextField(blank=True, verbose_name="Do you have any dietary restrictions or allergies that we should know about?")
     allergen_information = models.TextField(blank=True, verbose_name="What happens if you come into contact with this allergen (e.g. I get hives, I go into anaphylactic shock)?")
@@ -139,10 +153,10 @@ class CrooSupplement(DatabaseModel):
 
     # ----- backend fields -------
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings',
-                                      on_delete=models.SET_NULL)
+                                      related_name='croolings')
     potential_croos = models.ManyToManyField(Croo, blank=True, 
                                              related_name='potential_croolings')
     safety_lead_qualified = models.BooleanField(default=False)
     safety_lead = models.BooleanField(default=False)
+    
     
