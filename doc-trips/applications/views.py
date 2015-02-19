@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 
 from db.views import CrispyFormMixin
-from db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView
+from db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
 from db.models import TripsYear
 from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
@@ -18,16 +18,17 @@ from applications.models import GeneralApplication, LeaderSupplement, CrooSupple
 from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
 from permissions.views import CreateApplicationsPermissionRequired
 
-class IfApplicationsAvailable():
+
+class IfApplicationAvailable():
 
     def dispatch(self, request, *args, **kwargs):
         if Timetable.objects.timetable().applications_available():
-            return super(IfApplicationsAvailable, self).dispatch(request, *args, **kwargs)
+            return super(IfApplicationAvailable, self).dispatch(request, *args, **kwargs)
         
         return render(request, 'applications/not_available.html')
 
 
-class NewApplication(LoginRequiredMixin, IfApplicationsAvailable, 
+class NewApplication(LoginRequiredMixin, IfApplicationAvailable, 
                      CrispyFormMixin, CreateView):
 
     model = GeneralApplication
@@ -75,10 +76,12 @@ class NewApplication(LoginRequiredMixin, IfApplicationsAvailable,
         )
         
 
+class ApplicationBaseUpdateView(CrispyFormMixin, UpdateView):
+    """ 
+    Base view to edit applications.
 
-class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable, 
-                          CrispyFormMixin, UpdateView):
-
+    Used by the public facing application, as well as the backend database view
+    """
     model = GeneralApplication
     template_name = 'applications/continue_application.html'
     success_url = reverse_lazy('applications:continue')
@@ -117,6 +120,27 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable,
 
         return self.form_invalid(form, croo_form, leader_form)
 
+    def get_forms(self, instances=None,  **kwargs):
+        
+        if instances is None:
+            instances = {}
+            
+        form_classes = self.get_form_classes()
+        
+        forms = {}
+        for key in form_classes.keys():
+            forms[key] = form_classes[key](instance=instances.get(key), **kwargs)
+            
+        return forms
+
+    def get_form_classes(self):
+
+        return {
+            'form': ApplicationForm,
+            'leader_form': LeaderSupplementForm,
+            'croo_form': CrooSupplementForm,
+        }
+
     def get_form(self, **kwargs):
         
         return ApplicationForm(**kwargs)
@@ -150,14 +174,16 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationsAvailable,
         return self.render_to_response(context)
         
     def get_context_data(self, **kwargs):
-        context = super(ContinueApplication, self).get_context_data(**kwargs)
+        context = super(ApplicationBaseUpdateView, self).get_context_data(**kwargs)
         trips_year = TripsYear.objects.current()
         context['timetable'] = Timetable.objects.timetable()
         context['information'] = ApplicationInformation.objects.get(trips_year=trips_year)
         context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
         context['trips_year'] = trips_year
         return context
-        
+
+class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,  ApplicationBaseUpdateView):
+    pass
 
 class SetupApplication(CreateApplicationsPermissionRequired, 
                        CrispyFormMixin, UpdateView):
@@ -216,8 +242,7 @@ class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     fields = ('trip_preference_comments', 'cannot_participate_in')
 
 
-class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
-    model = LeaderSupplement
+class LeaderApplicationDatabaseUpdateView(DatabaseMixin, ApplicationBaseUpdateView):
     template_name = 'applications/leaderapplication_update.html'
 
     def get_form_helper(self, form):
