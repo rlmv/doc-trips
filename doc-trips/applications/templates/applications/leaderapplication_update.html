@@ -1,0 +1,24 @@
+
+{% extends "db/base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div>
+  <h4> Leader application for {{ object.applicant }} </h4>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+  </div>
+</div>
+{% crispy form %}
+
+{% endblock %}
+
+{# add DateTimePicker js #}
+{% block scripts %}
+{{ block.super }}
+{{ form.media }}
+{% endblock scripts %}

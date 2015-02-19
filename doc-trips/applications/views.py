@@ -221,7 +221,7 @@ class LeaderApplicationDatabaseUpdateView(DatabaseUpdateView):
     template_name = 'applications/leaderapplication_update.html'
 
     def get_form_helper(self, form):
-        
+        """ Override default form helper. """
         helper = FormHelper(form)
         helper.add_input(Submit('submit', 'Update'))
         

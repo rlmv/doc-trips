@@ -1,0 +1,24 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+
+{% block content %}
+
+<div>
+  <h3> Applications </h3>
+  <h4> Under construction! </h4>
+</div>
+
+<table class="table table-condensed">
+  <tr>
+  <tr>
+    
+  {% for application in applications %}
+  <tr>
+    <td> {{ application | detail_link }} </td>
+  </tr>
+  {% endfor %}
+
+</table>
+
+{% endblock %}  
