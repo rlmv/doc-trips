@@ -243,3 +243,12 @@ class CrooApplicationGradeForm(forms.ModelForm):
         
     helper = FormHelper()
     helper.add_input(Submit('submit', 'Submit Grade'))
+
+
+class LeaderApplicationGradeForm(forms.ModelForm):
+    class Meta:
+        model = LeaderApplicationGrade
+        fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
+
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Submit Grade'))

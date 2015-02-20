@@ -11,14 +11,20 @@ from applications.views.application import (NewApplication, ContinueApplication,
 
 from applications.views.grading import(RedirectToNextGradableCrooApplication,
                                        GradeCrooApplication,
-                                       NoCrooApplicationsLeftToGrade)
+                                       NoCrooApplicationsLeftToGrade,
+                                       RedirectToNextGradableLeaderApplication,
+                                       GradeLeaderApplication,
+                                       NoLeaderApplicationsLeftToGrade,)
 
   
 grade_urlpatterns = patterns(
     '',
     url(r'^croos/$', RedirectToNextGradableCrooApplication.as_view(), name='next_croo'),
     url(r'^croos/(?P<pk>[0-9]+)$', GradeCrooApplication.as_view(), name='croo'),
-    url(r'^croos/none/$', NoCrooApplicationsLeftToGrade.as_view(), name='no_croo_left'),
+    url(r'^croos/none/$', NoCrooApplicationsLeftToGrade.as_view(), name='no_croo_left'),    
+    url(r'^leaders/$', RedirectToNextGradableLeaderApplication.as_view(), name='next_leader'),
+    url(r'^leaders/(?P<pk>[0-9]+)$', GradeLeaderApplication.as_view(), name='leader'),
+    url(r'^leaders/none/$', NoLeaderApplicationsLeftToGrade.as_view(), name='no_leaders_left'),
 )
 
 urlpatterns = patterns(
