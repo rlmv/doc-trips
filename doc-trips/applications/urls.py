@@ -2,15 +2,17 @@
 from django.conf.urls import patterns, url, include
 
 from db.urlhelpers import DB_REGEX
-from applications.views import (NewApplication, ContinueApplication, SetupApplication,
-                                ApplicationDatabaseListView, 
-                                LeaderApplicationDatabaseListView, 
-                                LeaderApplicationDatabaseDetailView, 
-                                LeaderApplicationDatabaseUpdateView, 
-                                RedirectToNextGradableCrooApplication,
-                                GradeCrooApplication,
-                                NoCrooApplicationsLeftToGrade,
-                                )
+from applications.views.application import (NewApplication, ContinueApplication, 
+                                            SetupApplication,
+                                            ApplicationDatabaseListView, 
+                                            LeaderApplicationDatabaseListView, 
+                                            LeaderApplicationDatabaseDetailView, 
+                                            LeaderApplicationDatabaseUpdateView,)
+
+from applications.views.grading import(RedirectToNextGradableCrooApplication,
+                                       GradeCrooApplication,
+                                       NoCrooApplicationsLeftToGrade)
+
   
 grade_urlpatterns = patterns(
     '',
