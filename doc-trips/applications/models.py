@@ -241,4 +241,36 @@ class CrooSupplement(DatabaseModel):
     safety_lead_qualified = models.BooleanField(default=False)
     safety_lead = models.BooleanField(default=False)
     
+
+
+def validate_grade(grade):
+    min = Grade.MIN_GRADE
+    max = Grade.MAX_GRADE
+    if grade < min or grade > max:
+        raise ValidationError('grade is not in required range [{}, {}]'
+                              .format(min, max))
+
+class Grade(DatabaseModel):
+
+    MIN_GRADE = 1
+    MAX_GRADE = 6
+
+    class Meta:
+        abstract = True
+
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL)
+    grade = models.DecimalField(max_digits=3, decimal_places=1, 
+                                validators=[ validate_grade ])
+    comment = models.CharField(max_length=255)
+
     
+class LeaderGrade(Grade):
+
+    # application
+    hard_skills = models.BooleanField(default=False)
+    soft_skills = models.BooleanField(default=False)
+
+
+class CrooGrade(Grade):
+    # application
+    pass
