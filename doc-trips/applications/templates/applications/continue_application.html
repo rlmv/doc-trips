@@ -6,7 +6,7 @@
 {% include "applications/application_header.html" %}
 
 <p> 
-  {% if application.has_completed_leader_supplement %}
+  {% if application.leader_application_complete %}
   Your Trip Leader application is complete.
   {% else %}
   You have not completed a Trip Leader application.
@@ -14,7 +14,7 @@
 </p>
 
 <p> 
-  {% if application.has_completed_croo_supplement %}
+  {% if application.croo_application_complete %}
   Your Croo application is complete.
   {% else %}
   You have not completed a Croo application. 
@@ -35,14 +35,14 @@
 
     <li role="presentation">
       <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{% if application.has_completed_leader_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	{% if application.leader_application_complete %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
 	Trip Leader Application
       </a>
     </li>
 
     <li role="presentation">
       <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{% if application.has_completed_croo_supplement %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	{% if application.croo_application_complete %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
 	Croo Application
       </a>
     </li>

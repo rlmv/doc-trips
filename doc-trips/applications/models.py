@@ -44,6 +44,7 @@ class GeneralApplication(DatabaseModel):
     """ 
     Contains shared information for Croo and Leader applications.
 
+    TODO: rename to Application? 
     """
     
     STATUS_CHOICES = (
@@ -105,11 +106,11 @@ class GeneralApplication(DatabaseModel):
     # Croo and Leader applications are considered complete if the questionaire
     # document answers have been uploaded.
 
-    def has_completed_leader_supplement(self):
+    def leader_application_complete(self):
         return (hasattr(self, 'leader_supplement') and 
                 self.leader_supplement.supplement)
 
-    def has_completed_croo_supplement(self):
+    def croo_application_complete(self):
         return (hasattr(self, 'croo_supplement') and 
                 self.croo_supplement.document)
 
