@@ -2,7 +2,7 @@
 from django.db import models
 from django.conf import settings
 
-from db.models import DatabaseModel
+from db.models import DatabaseModel, TripsYear
 from trips.models import ScheduledTrip, Section, TripType
 from croos.models import Croo
 
@@ -219,6 +219,7 @@ class LeaderSupplement(DatabaseModel):
 class CrooSupplement(DatabaseModel):
 
     NUMBER_OF_GRADES = 3
+    objects = CrooSupplementManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
     document = models.FileField('Croo Application Answers', blank=True)
@@ -244,8 +245,8 @@ class CrooSupplement(DatabaseModel):
 
 
 def validate_grade(grade):
-    min = Grade.MIN_GRADE
-    max = Grade.MAX_GRADE
+    min = AbstractGrade.MIN_GRADE
+    max = AbstractGrade.MAX_GRADE
     if grade < min or grade > max:
         raise ValidationError('grade is not in required range [{}, {}]'
                               .format(min, max))
@@ -263,7 +264,7 @@ class AbstractGrade(DatabaseModel):
     comment = models.TextField()
 
     
-class LeaderGrade(AbstractGrade):
+class LeaderApplicationGrade(AbstractGrade):
 
     application = models.ForeignKey(LeaderSupplement, related_name='grades',
                                     editable=False)
@@ -271,7 +272,7 @@ class LeaderGrade(AbstractGrade):
     soft_skills = models.BooleanField(default=False)
 
 
-class CrooGrade(AbstractGrade):
+class CrooApplicationGrade(AbstractGrade):
 
     application = models.ForeignKey(CrooSupplement, related_name='grades',
                                     editable=False)

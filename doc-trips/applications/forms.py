@@ -7,7 +7,8 @@ from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, Mult
 from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from applications.models import GeneralApplication, CrooSupplement, LeaderSupplement
+from applications.models import (GeneralApplication, CrooSupplement, LeaderSupplement,
+                                 CrooApplicationGrade, LeaderApplicationGrade)
 from db.models import TripsYear
 from trips.models import Section, TripType
 
@@ -234,8 +235,11 @@ class CrooSupplementLayout(Layout):
             )
         )
 
-    
-        
 
-        
+class CrooApplicationGradeForm(forms.ModelForm):
 
+    class Meta:
+        model = CrooApplicationGrade
+        
+    helper = FormHelper()
+    helper.add_input(Submit('submit', 'Submit Grade'))

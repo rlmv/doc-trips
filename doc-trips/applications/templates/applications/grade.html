@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load detail_view %}
+
+{% block content %}
+
+<h3> Grade Croo Application </h3>
+<p> Read the app carefully, give it a grade, and add any pertinent comments. Grades from 1-6. </p>
+
+<div>
+{% crispy form %}
+</div>
+
+{% endblock content %}

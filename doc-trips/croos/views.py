@@ -18,7 +18,7 @@ from db.views import TripsYearMixin, DatabaseListView, DatabaseUpdateView, Datab
 from db.views import PassesTestMixin
 from db.views import CrispyFormMixin
 from db.models import TripsYear
-from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, CrooApplicationGrade, Croo
+from croos.models import CrooApplication, CrooApplicationQuestion, CrooApplicationAnswer, Croo, _CrooApplicationGrade as CrooApplicationGrade
 from permissions.views import CrooGraderPermissionRequired
 from timetable.models import Timetable
 

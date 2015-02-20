@@ -123,7 +123,7 @@ def validate_grade(grade):
         raise ValidationError('grade must be in range {}-{}'.format(
             CrooApplicationGrade.MIN_GRADE, CrooApplicationGrade.MAX_GRADE))
 
-class CrooApplicationGrade(DatabaseModel):
+class _CrooApplicationGrade(DatabaseModel):
 
     MIN_GRADE = 1
     MAX_GRADE = 6
