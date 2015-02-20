@@ -16,7 +16,7 @@ from db.forms import tripsyear_modelform_factory
 from timetable.models import Timetable
 from trips.models import TripType
 from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation
-from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm
+from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm, LeaderSupplementAdminForm
 from permissions.views import CreateApplicationsPermissionRequired
 from utils.views import MultipleFormMixin
 

@@ -41,11 +41,25 @@ class ApplicationInformation(DatabaseModel):
 
 
 class GeneralApplication(DatabaseModel):
+    """ 
+    Contains shared information for Croo and Leader applications.
+
+    """
+    
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('CROO', 'Croo'),
+        # croo waitlist? - probably not a thing
+        ('LEADER', 'Leader'),
+        ('LEADER_WAITLIST', 'Leader Waitlist'),
+        ('REJECTED', 'Rejected'),
+        ('CANCELED', 'Canceled'),
+    )
 
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-#    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING#, 
-#                              verbose_name="Application status")
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='PENDING',
+                              verbose_name="Application status")
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
@@ -153,7 +167,8 @@ class CrooSupplement(DatabaseModel):
 
     # ----- backend fields -------
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings')
+                                      related_name='croolings' ,
+                                      on_delete=models.SET_NULL)
     potential_croos = models.ManyToManyField(Croo, blank=True, 
                                              related_name='potential_croolings')
     safety_lead_qualified = models.BooleanField(default=False)
