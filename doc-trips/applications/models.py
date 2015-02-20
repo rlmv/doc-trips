@@ -46,20 +46,26 @@ class GeneralApplication(DatabaseModel):
 
     TODO: rename to Application? 
     """
-    
+
+    PENDING = 'PENDING'
+    CROO = 'CROO'
+    LEADER = 'LEADER'
+    LEADER_WAITLIST = 'LEADER_WAITLIST'
+    REJECTED = 'REJECTED'
+    CANCELED = 'CANCELED'
     STATUS_CHOICES = (
-        ('PENDING', 'Pending'),
-        ('CROO', 'Croo'),
+        (PENDING, 'Pending'),
+        (CROO, 'Croo'),
         # croo waitlist? - probably not a thing
-        ('LEADER', 'Leader'),
-        ('LEADER_WAITLIST', 'Leader Waitlist'),
-        ('REJECTED', 'Rejected'),
-        ('CANCELED', 'Canceled'),
+        (LEADER, 'Leader'),
+        (LEADER_WAITLIST, 'Leader Waitlist'),
+        (REJECTED, 'Rejected'),
+        (CANCELED, 'Canceled'),
     )
 
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='PENDING',
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
                               verbose_name="Application status")
 
     # ----- general information, not shown to graders ------
@@ -115,13 +121,71 @@ class GeneralApplication(DatabaseModel):
                 self.croo_supplement.document)
 
 
-class LeaderSupplementManager(models.Manager):
+class GenericApplicationGradeManager(models.Manager):
+    """
+    Shared manager for Leader and Croo grades 
+    """
+    
+    def next_to_grade(self, user):
+        """ Find the next application to grade for user.
+
+        This is an application which meets the following conditions:
+        (0) is for the current trips_year
+        (1) has not yet been graded if there are apps in the database
+        which have not been graded, otherwise an application with only 
+        one grade.
+        (2) has not already been graded by this user
+        (3) the application is not qualified, deprecated, etc. See
+        GeneralApplication status field. It should be PENDING.
+
+        Return None if no applications need to be graded.
+        """
+
+        trips_year = TripsYear.objects.current()
+
+        for i in range(self.model.NUMBER_OF_GRADES):
+            application = self._get_random_application(user, trips_year, i)
+            if application:
+                return application
+
+        return None
+
+
+    def _get_random_application(self, user, trips_year, num):
+        """ 
+        Return a random PENDING application that user has not graded, 
+        which has only been graded by num people. 
+
+        Note that the status lives on the parent GeneralApplication object.
+        """
+        
+        application = (self.filter(application__status=GeneralApplication.PENDING)
+                       .filter(trips_year=trips_year)
+                       .annotate(models.Count('grades'))
+                       .filter(grades__count__lte=num)
+                       .exclude(grades__grader=user)
+                       # random database-level ordering. 
+                       # TODO: this may be expensive?
+                       .order_by('?')[:1])
+        
+        return application[0] if application else None
+
+    
+
+class LeaderSupplementManager(GenericApplicationGradeManager):
     
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(supplement='')
-        
 
+
+class CrooSupplementManager(GenericApplicationGradeManager):
+
+    pass
+        
+    
 class LeaderSupplement(DatabaseModel):
+
+    NUMBER_OF_GRADES = 2
 
     objects = LeaderSupplementManager()
 
@@ -153,6 +217,8 @@ class LeaderSupplement(DatabaseModel):
 
 
 class CrooSupplement(DatabaseModel):
+
+    NUMBER_OF_GRADES = 3
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
     document = models.FileField('Croo Application Answers', blank=True)
