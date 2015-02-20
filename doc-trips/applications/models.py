@@ -5,6 +5,7 @@ from django.conf import settings
 from db.models import DatabaseModel, TripsYear
 from trips.models import ScheduledTrip, Section, TripType
 from croos.models import Croo
+from applications.managers import LeaderSupplementManager, CrooSupplementManager
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (
@@ -121,68 +122,6 @@ class GeneralApplication(DatabaseModel):
                 self.croo_supplement.document)
 
 
-class GenericApplicationGradeManager(models.Manager):
-    """
-    Shared manager for Leader and Croo grades 
-    """
-    
-    def next_to_grade(self, user):
-        """ Find the next application to grade for user.
-
-        This is an application which meets the following conditions:
-        (0) is for the current trips_year
-        (1) has not yet been graded if there are apps in the database
-        which have not been graded, otherwise an application with only 
-        one grade.
-        (2) has not already been graded by this user
-        (3) the application is not qualified, deprecated, etc. See
-        GeneralApplication status field. It should be PENDING.
-
-        Return None if no applications need to be graded.
-        """
-
-        trips_year = TripsYear.objects.current()
-
-        for i in range(self.model.NUMBER_OF_GRADES):
-            application = self._get_random_application(user, trips_year, i)
-            if application:
-                return application
-
-        return None
-
-
-    def _get_random_application(self, user, trips_year, num):
-        """ 
-        Return a random PENDING application that user has not graded, 
-        which has only been graded by num people. 
-
-        Note that the status lives on the parent GeneralApplication object.
-        """
-        
-        application = (self.filter(application__status=GeneralApplication.PENDING)
-                       .filter(trips_year=trips_year)
-                       .annotate(models.Count('grades'))
-                       .filter(grades__count__lte=num)
-                       .exclude(grades__grader=user)
-                       # random database-level ordering. 
-                       # TODO: this may be expensive?
-                       .order_by('?')[:1])
-        
-        return application[0] if application else None
-
-    
-
-class LeaderSupplementManager(GenericApplicationGradeManager):
-    
-    def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(supplement='')
-
-
-class CrooSupplementManager(GenericApplicationGradeManager):
-
-    pass
-        
-    
 class LeaderSupplement(DatabaseModel):
 
     NUMBER_OF_GRADES = 2

@@ -106,6 +106,6 @@ class GradeLeaderApplication(LeaderGraderPermissionRequired, CreateView):
 class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired, TemplateView):
     """ Tell user there are no more applications for her to grade """
 
-    template_name = 'applications/no_application.html'
+    template_name = 'applications/no_applications.html'
 
         
