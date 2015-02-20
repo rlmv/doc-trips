@@ -16,6 +16,9 @@ db.sqlite3
 *#
 .#*
 
+node_modules
+bower_components
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

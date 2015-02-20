@@ -1,0 +1,12 @@
+
+
+{
+    "name": "doc-trips",
+    "devDependencies": {
+	"gulp": "*",
+	"gulp-util": "*",
+	"gulp-bower": "*",
+	"gulp-bower-files": "*"
+    }
+}
+	
