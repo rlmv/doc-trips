@@ -250,7 +250,7 @@ def validate_grade(grade):
         raise ValidationError('grade is not in required range [{}, {}]'
                               .format(min, max))
 
-class Grade(DatabaseModel):
+class AbstractGrade(DatabaseModel):
 
     MIN_GRADE = 1
     MAX_GRADE = 6
@@ -258,19 +258,20 @@ class Grade(DatabaseModel):
     class Meta:
         abstract = True
 
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL)
-    grade = models.DecimalField(max_digits=3, decimal_places=1, 
-                                validators=[ validate_grade ])
-    comment = models.CharField(max_length=255)
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    grade = models.PositiveSmallIntegerField(validators=[validate_grade])
+    comment = models.TextField()
 
     
-class LeaderGrade(Grade):
+class LeaderGrade(AbstractGrade):
 
-    # application
+    application = models.ForeignKey(LeaderSupplement, related_name='grades',
+                                    editable=False)
     hard_skills = models.BooleanField(default=False)
     soft_skills = models.BooleanField(default=False)
 
 
-class CrooGrade(Grade):
-    # application
-    pass
+class CrooGrade(AbstractGrade):
+
+    application = models.ForeignKey(CrooSupplement, related_name='grades',
+                                    editable=False)
