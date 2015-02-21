@@ -92,7 +92,7 @@ class LeaderSupplementForm(forms.ModelForm):
             'preferred_sections', 'available_sections', 
             'preferred_triptypes', 'available_triptypes',
             'trip_preference_comments', 'cannot_participate_in',
-            'relevant_experience', 'supplement'
+            'relevant_experience', 'document'
         )
 
         widgets = {
@@ -195,7 +195,7 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Application',
                 HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application Questions</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. Be sure to save your application after uploading.</p>'),
-                'supplement',
+                'document',
             ),
             Fieldset(
                 'Trip Leader Availability',

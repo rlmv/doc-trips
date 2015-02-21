@@ -115,7 +115,7 @@ class GeneralApplication(DatabaseModel):
 
     def leader_application_complete(self):
         return (hasattr(self, 'leader_supplement') and 
-                self.leader_supplement.supplement)
+                self.leader_supplement.document)
 
     def croo_application_complete(self):
         return (hasattr(self, 'croo_supplement') and 
@@ -129,7 +129,7 @@ class LeaderSupplement(DatabaseModel):
     objects = LeaderSupplementManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='leader_supplement')
-    supplement = models.FileField('leader application answers', blank=True)
+    document = models.FileField('leader application answers', blank=True)
 
     #  ------  trip and section information ------
     preferred_sections = models.ManyToManyField(Section, blank=True,

@@ -6,6 +6,9 @@ from db.models import TripsYear
 class GenericApplicationGradeManager(models.Manager):
     """
     Shared manager for Leader and Croo grades 
+
+    Requires model to have a NUMBER_OF_GRADES property which 
+    specifies how many times the application should be graded. 
     """
     
     def next_to_grade(self, user):
@@ -60,7 +63,7 @@ class GenericApplicationGradeManager(models.Manager):
 class LeaderSupplementManager(GenericApplicationGradeManager):
     
     def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(supplement='')
+        return self.filter(trips_year=trips_year).exclude(document='')
 
 
 class CrooSupplementManager(GenericApplicationGradeManager):
