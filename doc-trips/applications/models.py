@@ -5,7 +5,7 @@ from django.conf import settings
 from db.models import DatabaseModel, TripsYear
 from trips.models import ScheduledTrip, Section, TripType
 from croos.models import Croo
-from applications.managers import LeaderSupplementManager, CrooSupplementManager
+from applications.managers import ApplicationManager
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (
@@ -126,7 +126,7 @@ class LeaderSupplement(DatabaseModel):
 
     NUMBER_OF_GRADES = 2
 
-    objects = LeaderSupplementManager()
+    objects = ApplicationManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='leader_supplement')
     document = models.FileField('leader application answers', blank=True)
@@ -158,7 +158,7 @@ class LeaderSupplement(DatabaseModel):
 class CrooSupplement(DatabaseModel):
 
     NUMBER_OF_GRADES = 3
-    objects = CrooSupplementManager()
+    objects = ApplicationManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
     document = models.FileField('Croo Application Answers', blank=True)

@@ -3,7 +3,7 @@ from django.db import models
 
 from db.models import TripsYear
 
-class GenericApplicationGradeManager(models.Manager):
+class ApplicationManager(models.Manager):
     """
     Shared manager for Leader and Croo grades 
 
@@ -58,16 +58,9 @@ class GenericApplicationGradeManager(models.Manager):
         
         return application[0] if application else None
 
-    
 
-class LeaderSupplementManager(GenericApplicationGradeManager):
-    
     def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(document='')
+        return self.filter(trips_year=trips_year).exclude(document='')    
 
 
-class CrooSupplementManager(GenericApplicationGradeManager):
-
-    pass
-        
     
