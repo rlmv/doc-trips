@@ -137,7 +137,7 @@ class ApplicationLayout(Layout):
         
         super(ApplicationLayout, self).__init__(
 
-                Alert(content='Answers in this section will NOT be used in the grading process',
+                Alert(content='Answers in this section will NOT be used in the scoring process',
                       dismiss=False, css_class='alert-info'),
 
                 Row(
@@ -199,6 +199,8 @@ class LeaderSupplementLayout(Layout):
             ),
             Fieldset(
                 'Trip Leader Availability',
+                Alert(content='Answers in this section will NOT be used in the scoring process',
+                      dismiss=False, css_class='alert-info'),
                 HTML('<p>Please indicate your availibity for each section and type of trip.</p>'),
                 Row(
                     Div('preferred_sections', css_class='col-sm-3'),
@@ -229,7 +231,7 @@ class CrooSupplementLayout(Layout):
                 'Croo Positions',
                 HTML("<p>Every croo has at least one (or more) <strong>Safety Leads</strong> who are responsible for medical care & evacuations at their respective location (Hanover, the Grant, etc). Safety Leads are an integral part of each croo and, in addition to their medical responsibilities, are included in all other croo activities.  If you have a WFR, EMT, W-EMT, OEC, or equivalent medical certification, you are qualified to be a Safety Leads. We will prioritize people who have higher safety certifications (EMT, W-EMT) and extensive safety experience.</p>"),
                 'safety_lead_willing',
-                HTML("<p>Lodj Croo has one <strong>Kitchen Witch/Wizard</strong> who is responsible for ordering, preparing, and cooking all the food at the Lodj during Trips. This role includes a significant amount of responsibility and requires some additional time before Trips begins to assist in ordering all the necessary food items for the Lodj. You are eligible to be the Kitchen Witch/Wizard if you have worked at the Moosilauke Ravine Lodge during its normal operations (non-Trips).</p>"),
+                HTML("<p>Lodj Croo has two <strong>Kitchen Witches/Wizards</strong> who are responsible for ordering, preparing, and cooking all the food at the Lodj during Trips. This role includes a significant amount of responsibility and requires some additional time before Trips begins to assist in ordering all the necessary food items for the Lodj. You are eligible to be a Kitchen Witch/Wizard if you have worked at the Moosilauke Ravine Lodge during its normal operations (non-Trips).</p>"),
                 'kitchen_lead_willing',
                 'kitchen_lead_qualifications',
             )
