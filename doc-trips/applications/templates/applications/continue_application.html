@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load icons %}
 
 {% block content %}
 
 {% include "applications/application_header.html" %}
 
 <p> 
+  <strong>
   {% if application.leader_application_complete %}
   Your Trip Leader application is complete.
   {% else %}
   You have not completed a Trip Leader application.
   {% endif %}
+  </strong>
 </p>
 
 <p> 
+  <strong>
   {% if application.croo_application_complete %}
   Your Croo application is complete.
   {% else %}
   You have not completed a Croo application. 
   {% endif %}
+  </strong>
 </p>
 
 <div role="tabpanel">
@@ -28,21 +33,21 @@
 
     <li role="presentation" class="active">
       <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+	<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
 	General Information
       </a>
     </li>
 
     <li role="presentation">
       <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{% if application.leader_application_complete %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	{{ application.leader_application_complete | checkmark_if_true }}
 	Trip Leader Application
       </a>
     </li>
 
     <li role="presentation">
       <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{% if application.croo_application_complete %} <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> {% endif %}
+	{{ application.croo_application_complete | checkmark_if_true }} 
 	Croo Application
       </a>
     </li>

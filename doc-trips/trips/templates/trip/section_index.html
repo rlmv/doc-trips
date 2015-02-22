@@ -25,12 +25,12 @@
   <tr>
     <td>{{ section | detail_link }}</td>
     <td>{{ section.leaders_arrive }}</td>
-    <td>{{ section.is_local | checkmark_if_true }}</td>
-    <td>{{ section.is_exchange | checkmark_if_true }}</td>
-    <td>{{ section.is_transfer | checkmark_if_true }}</td>
-    <td>{{ section.is_international | checkmark_if_true }}</td>
-    <td>{{ section.is_native | checkmark_if_true }}</td>
-    <td>{{ section.is_fysep | checkmark_if_true }}</td>
+    <td>{{ section.is_local | ok_if_true }}</td>
+    <td>{{ section.is_exchange | ok_if_true }}</td>
+    <td>{{ section.is_transfer | ok_if_true }}</td>
+    <td>{{ section.is_international | ok_if_true }}</td>
+    <td>{{ section.is_native | ok_if_true }}</td>
+    <td>{{ section.is_fysep | ok_if_true }}</td>
     <td>{{ section|edit_link }}</td>
     <td>{{ section|delete_link }}</td>
   </tr>
