@@ -5,7 +5,18 @@
 {% block content %}
 <div>
 <h3> Set up Croo and Trip Leader application for Trips {{ trips_year.year }} </h3>
-<p> </p>
+
+{# TODO: show last year's application questions? #}
+
+<p> Hi directors! This is where you set up the Leader and Croo application. You need to do a few things:
+<ol>
+  <li> Upload the Leader application questions and Croo application questions. They should be .docx format. </li>
+  <li> Go into the database and add this year's <a href="{% url 'db:section_index' trips_year=trips_year.year %}">Sections</a>. </li> 
+  <li> Make any changes to this year's <a href="{% url 'db:triptype_index' trips_year=trips_year.year %}">Trip Types</a>. Applicants see the 'Leader description' of each trip type.</li>
+  <li> Edit the information below, as needed. </li>
+</ol>
+</p>
+
 </div>
 
 {% crispy form %}
