@@ -30,22 +30,30 @@ class IfApplicationAvailable():
         return render(request, 'applications/not_available.html')
 
 
+class ContinueIfAlreadyApplied():
+    """ 
+    If user has already applied, redirect to edit existing application.
+    
+    This lives in a mixin instead of in the NewApplication view because if
+    has to go after LoginRequired in the MRO. An AnonymousUser causes the 
+    query to throw an error.
+    """
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if self.model.objects.filter(applicant=self.request.user, 
+                                     trips_year=TripsYear.objects.current().year).exists():
+            return HttpResponseRedirect(reverse('applications:continue'))
+
+        return super(ContinueIfAlreadyApplied, self).dispatch(request, *args, **kwargs)
+
+
 class NewApplication(LoginRequiredMixin, IfApplicationAvailable, 
-                     CrispyFormMixin, CreateView):
+                     ContinueIfAlreadyApplied, CrispyFormMixin, CreateView):
 
     model = GeneralApplication
     template_name = 'applications/new_application.html'
     success_url = reverse_lazy('applications:continue')
-
-    def dispatch(self, request, *args, **kwargs):
-        """ If user has already applied, redirect to edit existing application """
-
-        if (self.request.user.is_authenticated() and
-            self.model.objects.filter(applicant=self.request.user, 
-                                      trips_year=TripsYear.objects.current().year).exists()):
-            return HttpResponseRedirect(self.get_success_url())
-
-        return super(NewApplication, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, **kwargs):
 
