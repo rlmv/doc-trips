@@ -1,5 +1,6 @@
 
 from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpResponseRedirect
 
 class MultipleFormMixin():
     """ 
