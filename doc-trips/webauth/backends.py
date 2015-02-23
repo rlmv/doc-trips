@@ -42,7 +42,7 @@ def verify(ticket, service):
     url = urljoin(settings.CAS_SERVER_URL, 'serviceValidate')
     r = requests.get(url, params=params)
 
-    print(r.text)
+    # print(r.text)
     try:
         tree = ElementTree.fromstring(r.text)
         

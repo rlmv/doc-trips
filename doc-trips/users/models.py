@@ -26,7 +26,6 @@ class DartmouthUserManager(BaseUserManager):
             user = self.get(netid=netid)
             created = False
         except self.model.DoesNotExist:
-            logger.info("creating user %r, %r" % (name, netid))
             user = self.create_user(netid, name=name)
             created = True
                 
@@ -36,6 +35,8 @@ class DartmouthUserManager(BaseUserManager):
 
         if email is None:
             email = lookup_email(netid)
+        
+        logger.info("Creating user %r, %r, %r" % (name, email, netid))
         user = self.create(netid=netid, email=email, name=name)
 
         return user
