@@ -1,6 +1,8 @@
 
 {# common header information for Trip and Croo application #}
 
+{% load tz %}
+
 <div class="page-header">
   <h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
 </div>
@@ -9,7 +11,7 @@
 
 <div>
 <div class="alert alert-info" role="alert">
-The application will be available until <strong>{{ timetable.applications_close }}</strong>
+The application will be available until <strong>{{ timetable.applications_close | localtime}}</strong>
 </div
 </div>
 
