@@ -40,8 +40,9 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
     def dispatch(self, request, *args, **kwargs):
         """ If user has already applied, redirect to edit existing application """
 
-        if self.model.objects.filter(applicant=self.request.user, 
-                                      trips_year=TripsYear.objects.current().year).exists():
+        if (self.request.user.is_authenticated() and
+            self.model.objects.filter(applicant=self.request.user, 
+                                      trips_year=TripsYear.objects.current().year).exists()):
             return HttpResponseRedirect(self.get_success_url())
 
         return super(NewApplication, self).dispatch(request, *args, **kwargs)
