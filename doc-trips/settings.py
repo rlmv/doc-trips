@@ -37,7 +37,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
 MANAGERS = ADMINS
 
-SERVER_EMAIL = 'django@doc-trips.herokuapp.com'
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'root@localhost')
 EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
 EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
 EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', '')
