@@ -22,6 +22,7 @@ from utils.views import MultipleFormMixin
 
 
 class IfApplicationAvailable():
+    """ Restrict application availability based on Timetable dates """
 
     def dispatch(self, request, *args, **kwargs):
         if Timetable.objects.timetable().applications_available():
@@ -35,7 +36,7 @@ class ContinueIfAlreadyApplied():
     If user has already applied, redirect to edit existing application.
     
     This lives in a mixin instead of in the NewApplication view because if
-    has to go after LoginRequired in the MRO. An AnonymousUser causes the 
+    has to follow LoginRequired in the MRO. An AnonymousUser causes the 
     query to throw an error.
     """
 
