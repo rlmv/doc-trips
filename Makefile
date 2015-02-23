@@ -1,17 +1,11 @@
 
-
 VENV=venv
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
-FAB=$(VENV)/bin/fab
 COVERAGE=$(VENV)/bin/coverage
-
 MANAGE=$(PYTHON) doc-trips/manage.py
 
-BEHAVE=$(VENV)/bin/behave
-FEATURES=doc-trips/features/
-
-.PHONY: install migrations migrate behave behave_dry rm_emacs_locks test coverage clean deploy
+.PHONY: install migrations migrate test coverage clean deploy
 
 all:
 	$(MANAGE) runserver
