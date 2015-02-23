@@ -34,9 +34,15 @@ DEBUG = os.environ.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
+MANAGERS = ADMINS
+
+EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
+EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
+EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', '')
+EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', '')
 
 # heroku settings
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['doc-trips.herokuapp.com']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = (
@@ -66,11 +72,6 @@ INSTALLED_APPS = (
     'webauth', 
 )
 
-AUTH_USER_MODEL = 'users.DartmouthUser'
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,12 +84,11 @@ MIDDLEWARE_CLASSES = (
     'webauth.middleware.WebAuthMiddleware',
 )
 
+AUTH_USER_MODEL = 'users.DartmouthUser'
 AUTHENTICATION_BACKENDS = (
     'webauth.backends.WebAuthBackend',
 )
-
-# Dartmouth WebAuth settings 
-# TODO: move this to cas app?
+# Dartmouth WebAuth settings. TODO: move this to cas app?
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 CAS_LOGOUT_COMPLETELY = True
 
@@ -119,8 +119,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_FAIL_SILENTLY = not DEBUG
+
 # Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = False
@@ -128,8 +130,6 @@ USE_L10N = False
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 

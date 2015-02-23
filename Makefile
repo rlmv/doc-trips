@@ -38,15 +38,6 @@ superuser:
 test: 
 	$(MANAGE) test doc-trips
 
-rm_emacs_locks:
-	@find . -name ".#*" -delete # remove emacs lock files
-
-behave: rm_emacs_locks
-	$(BEHAVE) $(FEATURES)
-
-behave_dry: rm_emacs_locks
-	$(BEHAVE) -d $(FEATURES)
-
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
 	$(COVERAGE) report -m
