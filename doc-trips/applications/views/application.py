@@ -40,9 +40,6 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
     def dispatch(self, request, *args, **kwargs):
         """ If user has already applied, redirect to edit existing application """
 
-        from django.core.mail import send_mail
-        send_mail('Subject here', 'Here is the message.', 'from@example.com',
-                  ['bo.marchman@gmail.com'], fail_silently=False)
         if self.model.objects.filter(applicant=self.request.user, 
                                       trips_year=TripsYear.objects.current()).exists():
             return HttpResponseRedirect(self.get_success_url())

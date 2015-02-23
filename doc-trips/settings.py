@@ -43,8 +43,6 @@ EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
 EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
 EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 # heroku settings
 ALLOWED_HOSTS = ['doc-trips.herokuapp.com']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
