@@ -40,8 +40,10 @@ MANAGERS = ADMINS
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'root@localhost')
 EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
 EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
-EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', '')
-EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', '')
+EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
+EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # heroku settings
 ALLOWED_HOSTS = ['doc-trips.herokuapp.com']
