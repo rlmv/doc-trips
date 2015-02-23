@@ -194,7 +194,7 @@ class LeaderSupplementLayout(Layout):
         super(LeaderSupplementLayout, self).__init__(
             Fieldset(
                 'Application',
-                HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. Be sure to save your application after uploading.</p>'),
+                HTML('<p> Download the <a href="{{ information.leader_supplement_questions.url }}">Trip Leader Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. Be sure to save your application after uploading.</p>'),
                 'document',
             ),
             Fieldset(
@@ -224,7 +224,7 @@ class CrooSupplementLayout(Layout):
         super(CrooSupplementLayout, self).__init__(
             Fieldset(
                 'Application',
-                HTML("""<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
+                HTML("""<p> Download the <a href="{{ information.croo_supplement_questions.url }}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
                 'document',
             ),
             Fieldset(
