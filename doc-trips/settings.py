@@ -44,7 +44,7 @@ EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
 EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
 
 # heroku settings
-ALLOWED_HOSTS = ['doc-trips.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = (
