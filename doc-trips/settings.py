@@ -34,18 +34,20 @@ FILE_STORAGE_PREFIX = 'uploads'
 DEBUG = os.environ.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
+# monitoring
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN', ''),
 }
 
-ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
-MANAGERS = ADMINS
+# Don't need this because we're using Raven/Sentry
+# ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
+# MANAGERS = ADMINS
 
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'root@localhost')
-EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
-EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
-EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
-EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
+# SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'root@localhost')
+# EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
+# EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
+# EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
+# EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
 
 # heroku settings
 ALLOWED_HOSTS = ['*']
