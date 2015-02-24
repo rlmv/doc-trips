@@ -107,6 +107,9 @@ class LeaderSupplementForm(forms.ModelForm):
         super(LeaderSupplementForm, self).__init__(*args, **kwargs)
 
         # restrict querysets to current trips year
+        # TODO: since this form is used by the database update view, 
+        # pass the trips year in explicitly to support previous years, 
+        # OR don't allow editing of old trips_years.
         trips_year = TripsYear.objects.current()
         self.fields['preferred_sections'].queryset = Section.objects.filter(trips_year=trips_year)
         self.fields['available_sections'].queryset = Section.objects.filter(trips_year=trips_year)

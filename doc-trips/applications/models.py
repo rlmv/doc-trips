@@ -121,6 +121,9 @@ class GeneralApplication(DatabaseModel):
         return (hasattr(self, 'croo_supplement') and 
                 self.croo_supplement.document)
 
+    def __str__(self):
+        return str(self.applicant)
+
 
 class LeaderSupplement(DatabaseModel):
 

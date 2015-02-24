@@ -11,7 +11,7 @@ class MultipleFormMixin():
     """
     
     def get(self, request, *args, **kwargs):
-        print(kwargs)
+
         forms = self.get_forms(instances=self.get_instances())
         context = self.get_context_data(**forms)
 

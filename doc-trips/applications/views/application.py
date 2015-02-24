@@ -69,7 +69,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin, CrispyFormMixi
     def get_context_data(self, **kwargs):
         """ Lots o' goodies for the template """
 
-        trips_year=TripsYear.objects.current()
+        trips_year = TripsYear.objects.current()
         return super(ApplicationFormsMixin, self).get_context_data(
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
@@ -197,7 +197,8 @@ class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin,
     
     # TODO : debug, pull applications from kwargs.
     
-    template_name = 'applications/leaderapplication_update.html'
+    template_name = 'applications/application_update.html'
+    context_object_name = 'application'
 
     def get_instances(self):
 
@@ -207,5 +208,15 @@ class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin,
             'leader_form': self.object.leader_supplement,
             'croo_form': self.object.croo_supplement,
         }
-    
+
+
+    def get_context_data(self, **kwargs):
+        """ Override ApplicationFormsMixin get_context_data """
+        trips_year = self.kwargs['trips_year']
+        return super(ApplicationFormsMixin, self).get_context_data(
+            trips_year=trips_year,
+            information=ApplicationInformation.objects.get(trips_year=trips_year),
+            triptypes=TripType.objects.filter(trips_year=trips_year),
+            **kwargs
+        )    
         
