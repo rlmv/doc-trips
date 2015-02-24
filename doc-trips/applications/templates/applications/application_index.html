@@ -22,15 +22,15 @@
     <td> {{ application.applicant }} </td>
 
     <td>
-      {% if application.leader_supplement.supplement %}
-      <a href="{{ application.leader_supplement.supplement.url }}">
-	{{ application.leader_supplement.supplement }}
+      {% if application.leader_application_complete %}
+      <a href="{{ application.leader_supplement.document.url }}">
+	{{ application.leader_supplement.document }}
       </a> 
       {% endif %}
     </td>
 
     <td> 
-      {% if application.croo_supplement.document %}
+      {% if application.croo_application_complete %}
       <a href="{{ application.croo_supplement.document.url }}">
 	{{ application.croo_supplement.document }}
       </a> 
