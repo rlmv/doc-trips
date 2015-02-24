@@ -34,6 +34,10 @@ FILE_STORAGE_PREFIX = 'uploads'
 DEBUG = os.environ.get('DEBUG', False)
 TEMPLATE_DEBUG = DEBUG
 
+RAVEN_CONFIG = {
+    'dsn': os.environ.get('SENTRY_DSN', ''),
+}
+
 ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
 MANAGERS = ADMINS
 
@@ -59,6 +63,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'bootstrap3_datetime',
     'django_extensions',
+    'raven.contrib.django.raven_compat',
 
     # site apps
     'db',

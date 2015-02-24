@@ -20,6 +20,9 @@ django-toolbelt
 whitenoise
 django-postgrespool
 
+# monitoring
+raven 
+
 # s3
 django-storages-redux
 boto
