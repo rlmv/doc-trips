@@ -11,8 +11,8 @@ class MultipleFormMixin():
     """
     
     def get(self, request, *args, **kwargs):
-        
-        forms = self.get_forms(instances=self.get_instances(), **kwargs)
+        print(kwargs)
+        forms = self.get_forms(instances=self.get_instances())
         context = self.get_context_data(**forms)
 
         return self.render_to_response(context)
@@ -21,8 +21,7 @@ class MultipleFormMixin():
         
         forms = self.get_forms(instances=self.get_instances(), 
                                data=request.POST, 
-                               files=request.FILES,
-                               **kwargs)
+                               files=request.FILES)
         
         valid = map(lambda f: f.is_valid(), forms.values())
         if all(valid):

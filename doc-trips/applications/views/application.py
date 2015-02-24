@@ -185,8 +185,15 @@ class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     fields = ('trip_preference_comments', 'cannot_participate_in')
 
 
-class LeaderApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
-                                          UpdateView):
+class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
+    """ Edit admin data - trainings, application status """
+    model = LeaderSupplement
+    form_class = LeaderSupplementAdminForm
+    template_name = 'applications/leaderapplication_admin_update.html'
+
+
+class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
+                                    UpdateView):
     
     # TODO : debug, pull applications from kwargs.
     
@@ -200,11 +207,5 @@ class LeaderApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin,
             'leader_form': self.object.leader_supplement,
             'croo_form': self.object.croo_supplement,
         }
-
-class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
-    """ Edit admin data - trainings, application status """
-    model = LeaderSupplement
-    form_class = LeaderSupplementAdminForm
-    template_name = 'applications/leaderapplication_admin_update.html'
     
         

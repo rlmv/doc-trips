@@ -5,9 +5,10 @@ from db.urlhelpers import DB_REGEX
 from applications.views.application import (NewApplication, ContinueApplication, 
                                             SetupApplication,
                                             ApplicationDatabaseListView, 
+                                            ApplicationDatabaseUpdateView,
                                             LeaderApplicationDatabaseListView, 
-                                            LeaderApplicationDatabaseDetailView, 
-                                            LeaderApplicationDatabaseUpdateView,)
+                                            LeaderApplicationDatabaseDetailView,)
+ 
 
 from applications.views.grading import(RedirectToNextGradableCrooApplication,
                                        GradeCrooApplication,
@@ -41,12 +42,12 @@ _leaderapplication_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], LeaderApplicationDatabaseListView.as_view(), name='leaderapplication_index'),
     url(DB_REGEX['DETAIL'], LeaderApplicationDatabaseDetailView.as_view(), name='leadersupplement_detail'),
-    url(DB_REGEX['UPDATE'], LeaderApplicationDatabaseUpdateView.as_view(), name='leadersupplement_update'),
 )
 
 application_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], ApplicationDatabaseListView.as_view(), name='application_index'),
+    url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(), name='generalapplication_update'),
     url(r'^leaders/', include(_leaderapplication_urlpatterns)),
 )
 

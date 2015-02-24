@@ -19,7 +19,7 @@
   
   {% for application in applications %}
   <tr> 
-    <td> {{ application.applicant }} </td>
+    <td> {{ application }}</td>
 
     <td>
       {% if application.leader_application_complete %}
@@ -36,6 +36,8 @@
       </a> 
       {% endif %}
     </td>
+
+    <td> {{ application | edit_link }} </td>
 
   </tr>
   {% endfor %}
