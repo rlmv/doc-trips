@@ -50,13 +50,13 @@ class ContinueIfAlreadyApplied():
         return super(ContinueIfAlreadyApplied, self).dispatch(request, *args, **kwargs)
 
 
-class NewApplication(LoginRequiredMixin, IfApplicationAvailable, 
-                     ContinueIfAlreadyApplied, MultipleFormMixin, 
-                     CrispyFormMixin, CreateView):
+class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin, CrispyFormMixin):
 
     model = GeneralApplication
-    template_name = 'applications/continue_application.html'
-    success_url = reverse_lazy('applications:continue')
+    template_name = 'applications/application.html'
+
+    form_valid_message = "Your application has been saved"
+    form_invalid_message = "Uh oh. Looks like there's a problem somewhere in your application"
 
     def get_form_classes(self):
 
@@ -66,9 +66,27 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
             'croo_form': CrooSupplementForm,
         }
 
+    def get_context_data(self, **kwargs):
+        """ Lots o' goodies for the template """
+
+        trips_year=TripsYear.objects.current()
+        return super(ApplicationFormsMixin, self).get_context_data(
+            trips_year=trips_year,
+            timetable=Timetable.objects.timetable(),
+            information=ApplicationInformation.objects.get(trips_year=trips_year),
+            triptypes=TripType.objects.filter(trips_year=trips_year),
+            **kwargs
+        )
+    
+
+class NewApplication(LoginRequiredMixin, IfApplicationAvailable, 
+                     ContinueIfAlreadyApplied, ApplicationFormsMixin, CreateView):
+                     
+    success_url = reverse_lazy('applications:continue')
 
     def form_valid(self, forms):
-
+        """ Connect the application instances """
+        
         trips_year = TripsYear.objects.current()
         forms['form'].instance.applicant = self.request.user
         forms['form'].instance.trips_year = trips_year
@@ -85,32 +103,17 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
 
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_context_data(self, **kwargs):
-        trips_year=TripsYear.objects.current()
-        return super(NewApplication, self).get_context_data(
-            trips_year=trips_year,
-            timetable=Timetable.objects.timetable(),
-            information=ApplicationInformation.objects.get(trips_year=trips_year),
-            **kwargs
-        )
 
-
-class ApplicationBaseUpdateView(FormMessagesMixin, MultipleFormMixin, 
-                                CrispyFormMixin, UpdateView):
+class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,  
+                          ApplicationFormsMixin, UpdateView):
     """ 
-    Base view to edit applications.
-
-    Used by the public facing application, as well as the backend database view
+    View to edit applications, for applicants.
     """
-    model = GeneralApplication
-    template_name = 'applications/continue_application.html'
     success_url = reverse_lazy('applications:continue')
     context_object_name = 'application'
-
-    form_valid_message = "Your application has been saved"
-    form_invalid_message = "Uh oh. Looks like there's a problem somewhere in your application"
     
     def get_object(self):
+        """ TODO: perhaps redirect to NewApplication instead of 404? """
         return get_object_or_404(self.model, 
                                  applicant=self.request.user,
                                  trips_year=TripsYear.objects.current())
@@ -124,30 +127,7 @@ class ApplicationBaseUpdateView(FormMessagesMixin, MultipleFormMixin,
             'croo_form': self.object.croo_supplement,
         }
 
-    def get_form_classes(self):
-
-        return {
-            'form': ApplicationForm,
-            'leader_form': LeaderSupplementForm,
-            'croo_form': CrooSupplementForm,
-        }
-
-    def get_context_data(self, **kwargs):
-        context = super(ApplicationBaseUpdateView, self).get_context_data(**kwargs)
-        trips_year = TripsYear.objects.current()
-        context['timetable'] = Timetable.objects.timetable()
-        context['information'] = ApplicationInformation.objects.get(trips_year=trips_year)
-        context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
-        context['trips_year'] = trips_year
-        return context
-
-
-class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,  
-                          ApplicationBaseUpdateView):
-    """ Protect the ApplicationBaseView logic with login """
-    pass
-
-
+    
 class SetupApplication(CreateApplicationsPermissionRequired, 
                        CrispyFormMixin, UpdateView):
     """
@@ -205,9 +185,21 @@ class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
     fields = ('trip_preference_comments', 'cannot_participate_in')
 
 
-class LeaderApplicationDatabaseUpdateView(DatabaseMixin, ApplicationBaseUpdateView):
+class LeaderApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
+                                          UpdateView):
+    
+    # TODO : debug, pull applications from kwargs.
+    
     template_name = 'applications/leaderapplication_update.html'
 
+    def get_instances(self):
+
+        self.object = self.get_object()
+        return {
+            'form': self.object,
+            'leader_form': self.object.leader_supplement,
+            'croo_form': self.object.croo_supplement,
+        }
 
 class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
     """ Edit admin data - trainings, application status """

@@ -7,11 +7,11 @@
   <h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
 </div>
 
-<p>Not <b>{{ user }}</b>? <a href="{% url 'users:logout' %}">logout</a></p>
+<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
 <div>
 <div class="alert alert-info" role="alert">
-The application will be available until <strong>{{ timetable.applications_close | localtime}}</strong> You can return at any time up until this date to complete your application. Trip Leader and Croo applications are found on the next page.
+The application will be available until <strong>{{ timetable.applications_close | localtime}}</strong> You can return at any time up until this date to complete your application.
 </div
 </div>
 
