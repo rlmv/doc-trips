@@ -46,7 +46,7 @@ class MultipleFormMixin():
         raise ImproperlyConfigured()
 
     def get_instances(self):
-        raise ImproperlyConfigured()
+        return {}
 
     def form_valid(self, forms):
         """ TODO: to make this really general, don't assume we're dealing 

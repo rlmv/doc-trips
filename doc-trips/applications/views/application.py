@@ -22,6 +22,7 @@ from utils.views import MultipleFormMixin
 
 
 class IfApplicationAvailable():
+
     """ Restrict application availability based on Timetable dates """
 
     def dispatch(self, request, *args, **kwargs):
@@ -50,31 +51,37 @@ class ContinueIfAlreadyApplied():
 
 
 class NewApplication(LoginRequiredMixin, IfApplicationAvailable, 
-                     ContinueIfAlreadyApplied, CrispyFormMixin, CreateView):
+                     ContinueIfAlreadyApplied, MultipleFormMixin, 
+                     CrispyFormMixin, CreateView):
 
     model = GeneralApplication
-    template_name = 'applications/new_application.html'
+    template_name = 'applications/continue_application.html'
     success_url = reverse_lazy('applications:continue')
 
-    def get_form(self, **kwargs):
+    def get_form_classes(self):
 
-        form = ApplicationForm(**kwargs)
-        form.helper.form_tag = True
-        form.helper.add_input(Submit('submit', 'Continue'))
-        
-        return form
+        return {
+            'form': ApplicationForm,
+            'leader_form': LeaderSupplementForm,
+            'croo_form': CrooSupplementForm,
+        }
 
-    def form_valid(self, form):
-        
+
+    def form_valid(self, forms):
+
         trips_year = TripsYear.objects.current()
-        form.instance.applicant = self.request.user
-        form.instance.trips_year = trips_year
+        forms['form'].instance.applicant = self.request.user
+        forms['form'].instance.trips_year = trips_year
         # form.status??
-        application = form.save()
+        application = forms['form'].save()
 
-        # create blank croo and leader supplements for the application
-        LeaderSupplement.objects.create(trips_year=trips_year, application=application)
-        CrooSupplement.objects.create(trips_year=trips_year, application=application)
+        forms['leader_form'].instance.application = application
+        forms['leader_form'].instance.trips_year = trips_year
+        forms['leader_form'].save()
+
+        forms['croo_form'].instance.application = application
+        forms['croo_form'].instance.trips_year = trips_year
+        forms['croo_form'].save()
 
         return HttpResponseRedirect(self.get_success_url())
 
