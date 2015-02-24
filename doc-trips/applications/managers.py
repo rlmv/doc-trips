@@ -3,6 +3,7 @@ from django.db import models
 
 from db.models import TripsYear
 
+
 class ApplicationManager(models.Manager):
     """
     Shared manager for Leader and Croo grades 
@@ -61,6 +62,7 @@ class ApplicationManager(models.Manager):
 
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(document='')    
+
 
 
     

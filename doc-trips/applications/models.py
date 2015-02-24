@@ -48,6 +48,9 @@ class GeneralApplication(DatabaseModel):
     TODO: rename to Application? 
     """
 
+    class Meta:
+        ordering = ('applicant',)
+
     PENDING = 'PENDING'
     CROO = 'CROO'
     LEADER = 'LEADER'

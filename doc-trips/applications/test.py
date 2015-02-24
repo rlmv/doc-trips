@@ -9,6 +9,7 @@ from model_mommy import mommy
 
 from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
 from applications.models import LeaderSupplement, CrooSupplement
+from timetable.models import Timetable
 
 
 class ApplicationAccessTestCase(WebTestCase):
@@ -29,28 +30,19 @@ class ApplicationFormTestCase(WebTestCase):
         self.init_current_trips_year()
 
     def test_file_uploads_dont_overwrite_each_other(self):
-
+        # TODO / scrap
+        
         self.mock_user()
+        mommy.make('ApplicationInformation', trips_year=self.current_trips_year)
 
         timetable = Timetable.objects.timetable()
         timetable.applications_open = datetime.min
         timetable.applications_close = datetime.max
         timetable.save()
 
-        application = mommy.make('GeneralApplication', applicant=self.user
-)
-        leader_app = mommy.make('LeaderSupplement', application=application, document='')
-        croo_app = mommy.make('CrooSupplement', application=application, document='')
-        
-        res = self.app.get(reverse('applications:continue'), user=self.user)
+        res = self.app.get(reverse('applications:apply'), user=self.user)
         print(res)
-        from webtest import Upload
-        res.form['document'] = Upload('test.py')
-        
-        res = res.form.submit()
-        
-        self.assertNotEquals(LeaderSupplement.objects.get(pk=leader_app.pk).document, 
-                             CrooSupplement.objects.get(pk=croo_app.pk).document)
+        print(res.form)
                              
         
         
