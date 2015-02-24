@@ -37,7 +37,8 @@ class MultipleFormMixin():
             
         forms = {}
         for (name, form_class) in self.get_form_classes().items():
-            forms[name] = form_class(instance=instances.get(name), **kwargs)
+            forms[name] = form_class(instance=instances.get(name), 
+                                     prefix=name, **kwargs)
             
         return forms
 
@@ -59,3 +60,7 @@ class MultipleFormMixin():
         
         context = self.get_context_data(**forms)
         return self.render_to_response(context)
+
+    
+
+    
