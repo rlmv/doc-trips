@@ -34,6 +34,9 @@ class Section(DatabaseModel):
     
     """ Model to represent a trips section. """
 
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=1, help_text="A, B, C, etc.", verbose_name='Section') 
     leaders_arrive = models.DateField()
     
