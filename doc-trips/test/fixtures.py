@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, LiveServerTestCase
 from model_mommy import mommy
@@ -76,5 +77,19 @@ class WebTestCase(WebTest, TripsYearTestCaseUtils):
     """ 
     Can make requests without have to mock CAS 
     authentication. See django_webtest for more details.
+
+    For some reason whitenoise's GzipManifestStaticFilesStorage doesn't
+    work with WebTest. We patch it here back to the django default storage.
     """ 
-    pass
+    
+    def _patch_settings(self):
+        super(WebTestCase, self)._patch_settings()
+
+        self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
+        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+        
+    def _unpatch_settings(self):
+        super(WebTestCase, self)._unpatch_settings()
+        
+        settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
+        
