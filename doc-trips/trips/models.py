@@ -30,6 +30,7 @@ class ScheduledTrip(DatabaseModel):
         # return '{}{}- {}'.format(self.section.name, self.template.name, self.template.description)
         return '{}{}'.format(self.section.name, self.template.name)
 
+
 class Section(DatabaseModel):
     
     """ Model to represent a trips section. """
@@ -181,6 +182,9 @@ class Campsite(DatabaseModel):
     directions = models.TextField()
     bugout = models.TextField() # directions for quick help/escape
     secret = models.TextField() # door codes, hidden things, other secret information
+
+    class Meta:
+        ordering = ['name']
 
     def get_occupancy(self):
         """ Get all ScheduledTrips staying at this campsite
