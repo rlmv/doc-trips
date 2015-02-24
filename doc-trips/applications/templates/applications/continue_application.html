@@ -33,7 +33,7 @@
 
     <li role="presentation" class="active">
       <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	<span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+	{{ application | checkmark_if_true }}
 	General Information
       </a>
     </li>
