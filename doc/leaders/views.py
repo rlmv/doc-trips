@@ -21,7 +21,7 @@ from doc.permissions.views import LeaderGraderPermissionRequired, LoginRequiredM
 from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationAnswer, LeaderApplicationQuestion
 from doc.db.views import *
 from doc.db.models import TripsYear
-from doc.db.forms import doc.tripsyear_modelform_factory
+from doc.db.forms import tripsyear_modelform_factory
 from doc.timetable.models import Timetable
 from leaders.forms import LeaderApplicationFormLayout, LeaderApplicationForm, LeaderApplicationFormWithAdminData
 

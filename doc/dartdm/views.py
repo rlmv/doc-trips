@@ -1,6 +1,6 @@
 
 from django.http import JsonResponse
-from doc.dartdm.lookup import doc.dartdm_lookup
+from doc.dartdm.lookup import dartdm_lookup
 
 def dartdm_lookup_view(request):
     """ 

@@ -16,7 +16,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
 from doc.db.models import DatabaseModel, TripsYear
-from doc.db.forms import doc.tripsyear_modelform_factory
+from doc.db.forms import tripsyear_modelform_factory
 from doc.permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
