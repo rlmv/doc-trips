@@ -1,7 +1,7 @@
 
-web: gunicorn doc-trips.wsgi --log-file - 
+web: gunicorn doc.wsgi --log-file - 
 
-migrate: python doc-trips/manage.py migrate
-manage: python doc-trips/manage.py 
+migrate: python manage.py migrate
+manage: python manage.py 
 
 
