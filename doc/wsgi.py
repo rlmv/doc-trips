@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "doc-trips.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "doc.settings")
 
 import sys
 from django.conf import settings
