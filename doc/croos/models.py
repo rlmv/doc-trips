@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from db.models import DatabaseModel, TripsYear
+from doc.db.models import DatabaseModel, TripsYear
 
 
 class CrooApplicationQuestion(DatabaseModel):

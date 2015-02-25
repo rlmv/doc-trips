@@ -5,8 +5,8 @@ from django.test import TestCase, LiveServerTestCase
 from model_mommy import mommy
 from django_webtest import WebTest
 
-from db.models import TripsYear
-from permissions import directors, graders
+from doc.db.models import TripsYear
+from doc.permissions import directors, graders
 
 
 class TripsYearTestCaseUtils():

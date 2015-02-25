@@ -8,8 +8,8 @@ from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from leaders.models import LeaderApplication
-from db.models import TripsYear
-from trips.models import Section, TripType
+from doc.db.models import TripsYear
+from doc.trips.models import Section, TripType
 
 
 class SectionChoiceField(forms.ModelMultipleChoiceField):

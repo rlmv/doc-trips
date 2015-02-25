@@ -2,7 +2,7 @@
 from django.db import models
 from django.forms.models import modelform_factory
 
-from db.models import DatabaseModel
+from doc.db.models import DatabaseModel
 
 
 def make_tripsyear_formfield_callback(trips_year):

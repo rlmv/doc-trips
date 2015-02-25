@@ -10,9 +10,9 @@ from django.core.exceptions import ValidationError, FieldError
 from model_mommy import mommy
 
 from test.fixtures import WebTestCase, TripsYearTestCase
-from db.models import DatabaseModel, TripsYear
-from db.urlhelpers import reverse_update_url, reverse_create_url, reverse_index_url
-from trips.models import Campsite, TripTemplate
+from doc.db.models import DatabaseModel, TripsYear
+from doc.db.urlhelpers import reverse_update_url, reverse_create_url, reverse_index_url
+from doc.trips.models import Campsite, TripTemplate
 
 
 class DatabaseModelTestCase(TripsYearTestCase):
@@ -52,7 +52,7 @@ class FormFieldCallbackTestCase(TripsYearTestCase):
         self.init_current_trips_year()
     
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
-        from db.forms import tripsyear_modelform_factory
+        from doc.db.forms import tripsyear_modelform_factory
         tripsyear_modelform_factory(Campsite, self.current_trips_year)
 
 

@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib import auth
 
-from dartdm.lookup import EmailLookupException
+from doc.dartdm.lookup import EmailLookupException
 
 
 __all__ = ['login', 'logout']

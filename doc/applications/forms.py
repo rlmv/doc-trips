@@ -7,10 +7,10 @@ from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, Mult
 from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from applications.models import (GeneralApplication, CrooSupplement, LeaderSupplement,
+from doc.applications.models import (GeneralApplication, CrooSupplement, LeaderSupplement,
                                  CrooApplicationGrade, LeaderApplicationGrade)
-from db.models import TripsYear
-from trips.models import Section, TripType
+from doc.db.models import TripsYear
+from doc.trips.models import Section, TripType
 
 
 class ApplicationForm(forms.ModelForm):

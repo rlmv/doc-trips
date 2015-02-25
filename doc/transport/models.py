@@ -1,7 +1,7 @@
 
 from django.db import models
 
-from db.models import DatabaseModel
+from doc.db.models import DatabaseModel
 
 TRANSPORT_CATEGORIES = (
     ('INTERNAL', 'Internal'),

@@ -9,16 +9,16 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
-from db.views import CrispyFormMixin
-from db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
-from db.models import TripsYear
-from db.forms import tripsyear_modelform_factory
-from timetable.models import Timetable
-from trips.models import TripType
-from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation, CrooApplicationGrade, LeaderApplicationGrade
-from applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm, LeaderSupplementAdminForm, CrooApplicationGradeForm
-from permissions.views import CreateApplicationsPermissionRequired, CrooGraderPermissionRequired
-from utils.views import MultipleFormMixin
+from doc.db.views import CrispyFormMixin
+from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
+from doc.db.models import TripsYear
+from doc.db.forms import tripsyear_modelform_factory
+from doc.timetable.models import Timetable
+from doc.trips.models import TripType
+from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation, CrooApplicationGrade, LeaderApplicationGrade
+from doc.applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm, LeaderSupplementAdminForm, CrooApplicationGradeForm
+from doc.permissions.views import CreateApplicationsPermissionRequired, CrooGraderPermissionRequired
+from doc.utils.views import MultipleFormMixin
 
 
 class IfApplicationAvailable():

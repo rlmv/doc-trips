@@ -3,8 +3,8 @@
 
 from django.conf.urls import patterns, url, include
 
-from db.urlhelpers import DB_REGEX
-from croos.views import (EditCrooApplication, NewCrooApplication,
+from doc.db.urlhelpers import DB_REGEX
+from doc.croos.views import (EditCrooApplication, NewCrooApplication,
                          CreateCrooApplication, RedirectToNextGradableCrooApplication, 
                          GradeCrooApplication, NoCrooApplicationsLeftToGrade,
                          CrooApplicationDatabaseListView, CrooApplicationDatabaseDetailView,

@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
-from trips.models import Section
+from doc.trips.models import Section
 from leaders.models import LeaderGrade, LeaderApplication
 from leaders.views import *
 
@@ -213,7 +213,7 @@ class LeaderApplicationViewsTestCase(WebTestCase):
     def test_application_is_not_available_if_not_in_calendar_dates(self):
 
         # close leader applications:
-        from timetable.models import Timetable
+        from doc.timetable.models import Timetable
         from datetime import timedelta
         t = Timetable.objects.timetable()
         t.leader_application_open += timedelta(-2)

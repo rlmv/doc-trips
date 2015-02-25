@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ImproperlyConfigured
 
-from db.managers import TripsYearManager
+from doc.db.managers import TripsYearManager
 
 
 class TripsYear(models.Model):
@@ -58,7 +58,7 @@ class DatabaseModel(models.Model):
 
 
     def get_absolute_url(self):
-        from db.urlhelpers import reverse_detail_url
+        from doc.db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self)
 
     @classmethod

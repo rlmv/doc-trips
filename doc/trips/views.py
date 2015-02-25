@@ -4,8 +4,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
-from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                       DatabaseListView, DatabaseDetailView)
 
 

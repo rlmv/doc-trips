@@ -6,14 +6,6 @@ if __name__ == "__main__":
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "doc.settings")
 
-    # TODO: this can be removed once all imports are moved to
-    # the doc namespace
-    import sys
-    from django.conf import settings
-    BASE_DIR = settings.BASE_DIR
-    if BASE_DIR not in sys.path:
-        sys.path.append(BASE_DIR)
-
     from django.core.management import execute_from_command_line
 
     execute_from_command_line(sys.argv)

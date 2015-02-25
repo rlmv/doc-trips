@@ -2,7 +2,7 @@
 
 from django.conf.urls import patterns, url
 
-from timetable.views import TimetableEditView
+from doc.timetable.views import TimetableEditView
 
 
 urlpatterns = patterns('', 

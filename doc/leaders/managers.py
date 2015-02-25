@@ -1,7 +1,7 @@
 
 from django.db import models
 
-from db.models import TripsYear
+from doc.db.models import TripsYear
 
 class LeaderApplicationManager(models.Manager):
     

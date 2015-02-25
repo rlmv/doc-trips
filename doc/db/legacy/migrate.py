@@ -3,9 +3,9 @@ from sqlalchemy import create_engine
 from django.conf import settings
 from django.db import connections
 
-from trips.models import Campsite, TripType, TripTemplate
-from transport.models import Vehicle, Route, Stop
-from db.models import TripsYear
+from doc.trips.models import Campsite, TripType, TripTemplate
+from doc.transport.models import Vehicle, Route, Stop
+from doc.db.models import TripsYear
 
 
 """

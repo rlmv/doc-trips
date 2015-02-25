@@ -4,8 +4,8 @@ from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from trips.models import ScheduledTrip, Section, TripTemplate
-from db.urlhelpers import reverse_create_url, reverse_update_url
+from doc.trips.models import ScheduledTrip, Section, TripTemplate
+from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 
 from test.fixtures import WebTestCase
 

@@ -68,17 +68,17 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
 
     # site apps
-    'db',
-    'users',
-    'dartdm', 
-    'applications',
+    'doc.db',
+    'doc.users',
+    'doc.dartdm', 
+    'doc.applications',
 #    'leaders',
-    'croos', 
-    'transport',
-    'trips',
-    'permissions',
-    'timetable',
-    'webauth', 
+    'doc.croos', 
+    'doc.transport',
+    'doc.trips',
+    'doc.permissions',
+    'doc.timetable',
+    'doc.webauth', 
 )
 
 MIDDLEWARE_CLASSES = (

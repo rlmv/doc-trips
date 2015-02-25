@@ -7,8 +7,8 @@ from crispy_forms.layout import Submit
 from vanilla import UpdateView
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from timetable.models import Timetable
-from permissions.views import TimetablePermissionRequired
+from doc.timetable.models import Timetable
+from doc.permissions.views import TimetablePermissionRequired
 
 OPTIONS = {'format': 'MM/DD/YYYY HH:mm'} 
 # 'MM/DD/YYYY hh:mm a'} won't work without changing the 

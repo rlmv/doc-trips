@@ -7,9 +7,9 @@ from django.db.models import ManyToManyField, CharField, ForeignKey, TextField, 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from db.models import DatabaseModel
+from doc.db.models import DatabaseModel
 from leaders.managers import LeaderApplicationManager
-from trips.models import Section, TripType, ScheduledTrip
+from doc.trips.models import Section, TripType, ScheduledTrip
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (

@@ -1,9 +1,9 @@
 
 from django.conf.urls import patterns, url
 
-from db.urlhelpers import DB_REGEX
+from doc.db.urlhelpers import DB_REGEX
 
-from trips.views import *
+from doc.trips.views import *
 
 # goal:
 # url(CREATE_REGEX, view.as_view(), name=view_name(view))

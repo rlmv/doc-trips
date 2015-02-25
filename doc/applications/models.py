@@ -2,10 +2,10 @@
 from django.db import models
 from django.conf import settings
 
-from db.models import DatabaseModel, TripsYear
-from trips.models import ScheduledTrip, Section, TripType
-from croos.models import Croo
-from applications.managers import ApplicationManager
+from doc.db.models import DatabaseModel, TripsYear
+from doc.trips.models import ScheduledTrip, Section, TripType
+from doc.croos.models import Croo
+from doc.applications.managers import ApplicationManager
 
 # TODO: move to globals and reuse for trippees
 TSHIRT_SIZE_CHOICES = (

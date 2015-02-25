@@ -4,10 +4,10 @@ from django.conf.urls import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-from permissions import initialize_groups_and_permissions
+from doc.permissions import initialize_groups_and_permissions
 initialize_groups_and_permissions()
 
-from views import HomePage
+from doc.views import HomePage
 
 urlpatterns = patterns('',
     url(r'^$', HomePage.as_view(), name='home'),

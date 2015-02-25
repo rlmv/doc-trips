@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from test.fixtures import TripsYearTestCase as TripsTestCase
-from croos.models import CrooApplication, Croo
+from doc.croos.models import CrooApplication, Croo
 
 class CrooApplicationModelTestCase(TripsTestCase):
 

@@ -7,10 +7,10 @@ from vanilla import DetailView, TemplateView, View
 from model_mommy import mommy
 
 from test.fixtures import WebTestCase
-from db.views import TripsYearMixin
-from trips.models import Campsite, TripTemplate, Section
+from doc.db.views import TripsYearMixin
+from doc.trips.models import Campsite, TripTemplate, Section
 
-from db.urlhelpers import reverse_create_url, reverse_update_url, reverse_index_url
+from doc.db.urlhelpers import reverse_create_url, reverse_update_url, reverse_index_url
 
 
 class TripsYearMixinTestCase(WebTestCase):
@@ -72,7 +72,7 @@ class TripsYearMixinTestCase(WebTestCase):
 
         response = self.app.get(reverse_index_url(ex1), user=self.director.netid)
         
-        from trips.views import CampsiteListView
+        from doc.trips.views import CampsiteListView
         objects = response.context[CampsiteListView.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object with matching trips_year')

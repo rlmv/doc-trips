@@ -1,7 +1,7 @@
 
 from django.conf.urls import patterns, url
 
-from db.urlhelpers import DB_REGEX
+from doc.db.urlhelpers import DB_REGEX
 from leaders.views import *
 
 urlpatterns = patterns('',

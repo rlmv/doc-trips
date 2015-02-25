@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 
-from croos.models import *
+from doc.croos.models import *
 
 admin.site.register(CrooApplicationQuestion)
 admin.site.register(CrooApplicationAnswer)

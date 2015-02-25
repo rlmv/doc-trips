@@ -1,5 +1,5 @@
 
-from db.legacy.migrate import migrate
+from doc.db.legacy.migrate import migrate
 
 """
 manage.py runscript migrate_legacy

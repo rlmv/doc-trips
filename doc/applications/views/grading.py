@@ -3,10 +3,10 @@ from vanilla import RedirectView, TemplateView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 
-from db.models import TripsYear
-from applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, CrooApplicationGrade, LeaderApplicationGrade
-from applications.forms import CrooApplicationGradeForm, LeaderApplicationGradeForm
-from permissions.views import (CrooGraderPermissionRequired, 
+from doc.db.models import TripsYear
+from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, CrooApplicationGrade, LeaderApplicationGrade
+from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGradeForm
+from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
 
         

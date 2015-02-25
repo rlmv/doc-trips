@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db import models
 
 from django.contrib.auth import get_user_model
-from db.templatetags.links import *
+from doc.db.templatetags.links import *
 register = template.Library()
 
 @register.simple_tag

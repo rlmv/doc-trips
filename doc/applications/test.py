@@ -8,8 +8,8 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
-from applications.models import LeaderSupplement, CrooSupplement
-from timetable.models import Timetable
+from doc.applications.models import LeaderSupplement, CrooSupplement
+from doc.timetable.models import Timetable
 
 
 class ApplicationAccessTestCase(WebTestCase):

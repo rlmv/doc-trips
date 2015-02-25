@@ -1,8 +1,8 @@
 
 from django.conf.urls import patterns, url, include
 
-from db.urlhelpers import DB_REGEX
-from applications.views.application import (NewApplication, ContinueApplication, 
+from doc.db.urlhelpers import DB_REGEX
+from doc.applications.views.application import (NewApplication, ContinueApplication, 
                                             SetupApplication,
                                             ApplicationDatabaseListView, 
                                             ApplicationDatabaseUpdateView,
@@ -10,7 +10,7 @@ from applications.views.application import (NewApplication, ContinueApplication,
                                             LeaderApplicationDatabaseDetailView,)
  
 
-from applications.views.grading import(RedirectToNextGradableCrooApplication,
+from doc.applications.views.grading import(RedirectToNextGradableCrooApplication,
                                        GradeCrooApplication,
                                        NoCrooApplicationsLeftToGrade,
                                        RedirectToNextGradableLeaderApplication,

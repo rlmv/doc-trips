@@ -1,9 +1,9 @@
 
 
-from db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                       DatabaseListView, DatabaseDetailView)
 
-from transport.models import Stop, Route, Vehicle
+from doc.transport.models import Stop, Route, Vehicle
 
 
 class StopListView(DatabaseListView):

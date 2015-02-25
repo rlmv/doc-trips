@@ -2,9 +2,9 @@
 
 from django.conf.urls import patterns, url
 
-from db.urlhelpers import DB_REGEX
+from doc.db.urlhelpers import DB_REGEX
 
-from transport.views import *
+from doc.transport.views import *
 
 transportstop_urlpatterns = patterns('', 
     url(DB_REGEX['LIST'], StopListView.as_view(), name='stop_index'),

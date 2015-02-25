@@ -1,7 +1,7 @@
 
 from django.contrib import admin
 
-from applications.models import GeneralApplication, CrooSupplement, LeaderSupplement, CrooApplicationGrade, LeaderApplicationGrade
+from doc.applications.models import GeneralApplication, CrooSupplement, LeaderSupplement, CrooApplicationGrade, LeaderApplicationGrade
 
 admin.site.register(GeneralApplication)
 admin.site.register(CrooSupplement)

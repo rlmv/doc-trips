@@ -2,7 +2,7 @@
 
 from django.core.management.base import BaseCommand
 
-from db.models import TripsYear
+from doc.db.models import TripsYear
 
 class Command(BaseCommand):
 

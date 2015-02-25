@@ -2,14 +2,14 @@
 
 from django.conf.urls import patterns, url, include
 
-from trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
+from doc.trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                         campsite_urlpatterns, section_urlpatterns)
 from leaders.urls import leaderapplication_urlpatterns
-from croos.urls import crooapplication_urlpatterns, croo_urlpatterns
-from transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
+from doc.croos.urls import crooapplication_urlpatterns, croo_urlpatterns
+from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
                             vehicle_urlpatterns)
-from db.views import DatabaseIndexView, RedirectToCurrentDatabase
-from applications.urls import application_urlpatterns
+from doc.db.views import DatabaseIndexView, RedirectToCurrentDatabase
+from doc.applications.urls import application_urlpatterns
 
 """
 All database urlpatterns take a trips_year param.

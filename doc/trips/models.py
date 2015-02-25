@@ -7,9 +7,9 @@ from django.db import models
 from django.db.models import Q
 from django.core.urlresolvers import reverse
 
-from db.models import DatabaseModel
-from transport.models import Stop, Route
-from trips.managers import SectionDatesManager
+from doc.db.models import DatabaseModel
+from doc.transport.models import Stop, Route
+from doc.trips.managers import SectionDatesManager
 
 
 class ScheduledTrip(DatabaseModel):

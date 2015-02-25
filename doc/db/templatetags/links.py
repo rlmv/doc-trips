@@ -4,8 +4,8 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 
-from db.models import TripsYear
-from db.urlhelpers import reverse_update_url, reverse_delete_url, reverse_create_url, reverse_detail_url
+from doc.db.models import TripsYear
+from doc.db.urlhelpers import reverse_update_url, reverse_delete_url, reverse_create_url, reverse_detail_url
 
 register = template.Library()
 

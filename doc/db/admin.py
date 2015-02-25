@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 
-from db.models import TripsYear
+from doc.db.models import TripsYear
 
 
 # TODO: remove this

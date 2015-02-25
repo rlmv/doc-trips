@@ -1,7 +1,7 @@
 
 from django.contrib.auth.models import Group
 
-from permissions.models import SitePermission
+from doc.permissions.models import SitePermission
 
 # Should these permission accessors be in a Manager?
 def get_permission(codename, name):

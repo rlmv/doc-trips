@@ -15,9 +15,9 @@ from vanilla import (ListView, UpdateView, CreateView, DeleteView,
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
-from db.models import DatabaseModel, TripsYear
-from db.forms import tripsyear_modelform_factory
-from permissions.views import DatabasePermissionRequired
+from doc.db.models import DatabaseModel, TripsYear
+from doc.db.forms import tripsyear_modelform_factory
+from doc.permissions.views import DatabasePermissionRequired
 
 logger = logging.getLogger(__name__)
 
@@ -289,7 +289,7 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
 
     def get_success_url(self):
         """ TODO: for now... """
-        from db.urlhelpers import reverse_detail_url
+        from doc.db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self.object)
 
 
@@ -303,13 +303,13 @@ class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
 
     def get_success_url(self):
         """ Redirect to same update page for now. """
-        from db.urlhelpers import reverse_detail_url
+        from doc.db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self.object)
 
     def get_form_helper(self, form):
         """ Add Submit and delete buttons to the form. """
 
-        from db.urlhelpers import reverse_delete_url
+        from doc.db.urlhelpers import reverse_delete_url
         helper = FormHelper(form)
         helper.layout.append(
             ButtonHolder(

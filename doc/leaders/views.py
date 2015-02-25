@@ -17,12 +17,12 @@ from crispy_forms.layout import Field, Submit
 from crispy_forms.helper import FormHelper
 from braces.views import PermissionRequiredMixin
 
-from permissions.views import LeaderGraderPermissionRequired, LoginRequiredMixin
+from doc.permissions.views import LeaderGraderPermissionRequired, LoginRequiredMixin
 from leaders.models import LeaderApplication, LeaderGrade, LeaderApplicationAnswer, LeaderApplicationQuestion
-from db.views import *
-from db.models import TripsYear
-from db.forms import tripsyear_modelform_factory
-from timetable.models import Timetable
+from doc.db.views import *
+from doc.db.models import TripsYear
+from doc.db.forms import tripsyear_modelform_factory
+from doc.timetable.models import Timetable
 from leaders.forms import LeaderApplicationFormLayout, LeaderApplicationForm, LeaderApplicationFormWithAdminData
 
 

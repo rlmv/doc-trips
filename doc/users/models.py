@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 
-from dartdm.lookup import lookup_email
+from doc.dartdm.lookup import lookup_email
 
 logger = logging.getLogger(__name__)
 

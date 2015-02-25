@@ -12,9 +12,9 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Row, Column
 
-from permissions import directors, graders, directorate
-from permissions.models import SitePermission
-from dartdm.forms import DartmouthDirectoryLookupField
+from doc.permissions import directors, graders, directorate
+from doc.permissions.models import SitePermission
+from doc.dartdm.forms import DartmouthDirectoryLookupField
 
 
 logger = logging.getLogger(__name__)

@@ -3,7 +3,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from dartdm.lookup import dartdm_lookup
+from doc.dartdm.lookup import dartdm_lookup
 
 logger = logging.getLogger(__name__)
 
