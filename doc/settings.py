@@ -106,7 +106,7 @@ LOGIN_URL = '/users/login'
 
 ROOT_URLCONF = 'urls'
 
-WSGI_APPLICATION = 'wsgi.application'
+WSGI_APPLICATION = 'doc.wsgi.application'
 
 # used for local testing instead of Postgres
 import dj_database_url

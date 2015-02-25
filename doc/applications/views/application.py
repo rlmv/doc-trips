@@ -12,7 +12,7 @@ from django.contrib import messages
 from doc.db.views import CrispyFormMixin
 from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
 from doc.db.models import TripsYear
-from doc.db.forms import tripsyear_modelform_factory
+from doc.db.forms import doc.tripsyear_modelform_factory
 from doc.timetable.models import Timetable
 from doc.trips.models import TripType
 from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation, CrooApplicationGrade, LeaderApplicationGrade

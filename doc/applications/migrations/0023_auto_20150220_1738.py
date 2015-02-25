@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import applications.models
+import doc.applications.models
 from django.conf import settings
 
 
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='croograde',
             name='grade',
-            field=models.PositiveSmallIntegerField(validators=[applications.models.validate_grade]),
+            field=models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade]),
         ),
         migrations.AlterField(
             model_name='croograde',
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='leadergrade',
             name='grade',
-            field=models.PositiveSmallIntegerField(validators=[applications.models.validate_grade]),
+            field=models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade]),
         ),
         migrations.AlterField(
             model_name='leadergrade',

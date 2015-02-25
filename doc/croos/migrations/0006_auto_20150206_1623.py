@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import croos.models
+import doc.croos.models
 
 
 class Migration(migrations.Migration):
@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='crooapplicationgrade',
             name='grade',
-            field=models.IntegerField(validators=[croos.models.validate_grade]),
+            field=models.IntegerField(validators=[doc.croos.models.validate_grade]),
         ),
     ]

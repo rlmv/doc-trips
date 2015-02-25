@@ -9,7 +9,7 @@ from doc.croos.urls import crooapplication_urlpatterns, croo_urlpatterns
 from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
                             vehicle_urlpatterns)
 from doc.db.views import DatabaseIndexView, RedirectToCurrentDatabase
-from doc.applications.urls import application_urlpatterns
+from doc.applications.urls import doc.application_urlpatterns
 
 """
 All database urlpatterns take a trips_year param.

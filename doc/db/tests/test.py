@@ -52,7 +52,7 @@ class FormFieldCallbackTestCase(TripsYearTestCase):
         self.init_current_trips_year()
     
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
-        from doc.db.forms import tripsyear_modelform_factory
+        from doc.db.forms import doc.tripsyear_modelform_factory
         tripsyear_modelform_factory(Campsite, self.current_trips_year)
 
 

@@ -13,7 +13,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
 
 
-from doc.db.forms import tripsyear_modelform_factory
+from doc.db.forms import doc.tripsyear_modelform_factory
 from doc.db.views import TripsYearMixin, DatabaseListView, DatabaseUpdateView, DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView
 from doc.db.views import PassesTestMixin
 from doc.db.views import CrispyFormMixin

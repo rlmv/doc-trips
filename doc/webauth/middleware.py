@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 
-from webauth.views import login as cas_login, logout as cas_logout
+from doc.webauth.views import login as cas_login, logout as cas_logout
 
 
 class WebAuthMiddleware(object):
