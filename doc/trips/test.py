@@ -7,7 +7,7 @@ from model_mommy import mommy
 from doc.trips.models import ScheduledTrip, Section, TripTemplate
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 
-from test.fixtures import WebTestCase
+from doc.test.fixtures import WebTestCase
 
 class ScheduledTripTestCase(WebTestCase):
     

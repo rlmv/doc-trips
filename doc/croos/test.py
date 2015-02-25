@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
-from test.fixtures import TripsYearTestCase as TripsTestCase
+from doc.test.fixtures import TripsYearTestCase as TripsTestCase
 from doc.croos.models import CrooApplication, Croo
 
 class CrooApplicationModelTestCase(TripsTestCase):

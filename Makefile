@@ -30,7 +30,7 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test: 
-	$(MANAGE) test doc-trips
+	$(MANAGE) test doc
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test

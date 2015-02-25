@@ -19,7 +19,7 @@ from xml.dom import minidom
 
 # Add in a separate test_config file if you wish of the following format
 try:
-    from test_config import *
+    from doc.test_config import *
 except:
     # Please edit these urls to match your cas server, proxy and app server urls
     CAS_SERVER_URL = 'https://signin.k-state.edu/WebISO/login'

@@ -7,7 +7,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
-from test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
+from doc.test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
 from doc.applications.models import LeaderSupplement, CrooSupplement
 from doc.timetable.models import Timetable
 
