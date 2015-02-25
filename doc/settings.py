@@ -27,7 +27,7 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
 # TODO: change this if we move static files to S3!
 # - will need to implement custom storage classes for STATIC and MEDIA
 AWS_S3_FILE_OVERWRITE = False
-DEFAULT_FILE_STORAGE = 'utils.storages.S3FileStorage'
+DEFAULT_FILE_STORAGE = 'doc.utils.storages.S3FileStorage'
 FILE_STORAGE_PREFIX = 'uploads'
 
 # SECURITY WARNING: don't run with debug turned on in production!
