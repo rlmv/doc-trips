@@ -28,11 +28,11 @@ def lookup_email(netid):
 
     # netid not found: {}
     if not r.json(): 
-        raise EmailLookupException('NetId lookup failed: %s not found' % netid)
+        raise EmailLookupException('Email lookup failed: NetId %s not found' % netid)
     
     # mismatch, somehow...
     if r.json()['netid'] != netid:
-        raise EmailLookupException('NetId mismatch: %s != %s' % (r.json()['netid'], 
+        raise EmailLookupException('Email lookup failed: NetId mismatch: %s != %s' % (r.json()['netid'], 
                                                                  netid))
 
     return r.json()['email']

@@ -4,6 +4,9 @@ from urllib.parse import urljoin, urlencode
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib import auth
+
+from dartdm.lookup import EmailLookupException
 
 
 __all__ = ['login', 'logout']
@@ -76,9 +79,12 @@ def login(request, next_page=None):
     ticket = request.GET.get('ticket')
 
     if ticket:
-
-        from django.contrib import auth
-        user = auth.authenticate(ticket=ticket, service=service)
+        
+        # catch exception thrown by dartdm.lookup.email_lookup
+        try:
+            user = auth.authenticate(ticket=ticket, service=service)
+        except EmailLookupException as e:
+            return render('webauth/email_lookup_error.html', {exception: e})
 
         if user is not None:
             #Has ticket, logs in fine
