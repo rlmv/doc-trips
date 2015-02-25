@@ -3,7 +3,7 @@ VENV=venv
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 COVERAGE=$(VENV)/bin/coverage
-MANAGE=$(PYTHON) doc/manage.py
+MANAGE=$(PYTHON) manage.py
 
 .PHONY: install migrations migrate test coverage clean deploy
 
