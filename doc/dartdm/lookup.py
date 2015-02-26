@@ -1,12 +1,15 @@
 
 
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def dartdm_lookup(query_string):
     """ 
     Search in the DartDm for a user.
-
+    
     TODO: catch requests library errors
     """
     payload = {'term': query_string}
@@ -28,7 +31,9 @@ def lookup_email(netid):
 
     # netid not found: {}
     if not r.json(): 
-        raise EmailLookupException('Email lookup failed: NetId %s not found' % netid)
+        msg = 'Email lookup failed: NetId %s not found' % netid
+        logger.error(msg)
+        raise EmailLookupException(msg)
     
     # mismatch, somehow...
     if r.json()['netid'] != netid:

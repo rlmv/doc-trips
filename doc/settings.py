@@ -176,14 +176,18 @@ LOGGING = {
             'formatter': 'simple',
             'level': 'INFO',
         },
+        'sentry': {
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'level': 'ERROR',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'sentry'],
             'level': 'WARNING',
         },
-        '': { # all other namespaces
-            'handlers': ['console'],
+        'doc': { # project namespace
+            'handlers': ['console', 'sentry'],
             'level': 'INFO',
         },
     },
