@@ -30,6 +30,11 @@ def detail(db_object, fields=None):
 
         value = getattr(db_object, field_name)
 
+        if isinstance(field, models.FileField):
+            t = template.Template("""<a href="{{ file.url }}">{{ file }}</a>""")
+            c = template.Context({'file': value})
+            value = t.render(c)
+
         if isinstance(field, models.ForeignKey):
             if isinstance(value, get_user_model()):
                 # no detail views for users.
