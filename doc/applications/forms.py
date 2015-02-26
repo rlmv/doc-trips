@@ -156,8 +156,8 @@ class ApplicationLayout(Layout):
                 Row(
                     Div('tshirt_size', css_class='col-sm-3'),
                 ),
-                'from_where',
-                'what_do_you_like_to_study',
+                Field('from_where'), #disabled=True),
+                Field('what_do_you_like_to_study'), # disabled=True),
                 'personal_activities',
                 'feedback',
             Fieldset(

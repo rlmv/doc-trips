@@ -175,9 +175,23 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
 
-    generalapplication_fields = []
-    leaderapplication_fields = []
-    crooapplication_fields = []
+    generalapplication_fields = ['class_year', 'gender', 'race_ethnicity', 
+                                 'hinman_box', 'phone', 'summer_address', 
+                                 'tshirt_size', 'from_where', 
+                                 'what_do_you_like_to_study', 'personal_activities',
+                                 'feedback', 'medical_certifications',
+                                 'medical_experience', 'peer_training',
+                                 'spring_training_ok', 'summer_training_ok',
+                                 'hanover_in_fall', 'role_preference',
+                                 'dietary_restrictions', 'allergen_information',
+                                 'trippee_confidentiality', 
+                                 'in_goodstanding_with_college', 'trainings']
+    leaderapplication_fields = ['document', 'preferred_sections', 'available_sections',
+                                'preferred_triptypes', 'available_triptypes',
+                                'relevant_experience', 'trip_preference_comments',
+                                'cannot_participate_in']
+    crooapplication_fields = ['document', 'safety_lead_willing', 
+                              'kitchen_lead_willing', 'kitchen_lead_qualifications']
 
     def get_context_data(self, **kwargs):
         
