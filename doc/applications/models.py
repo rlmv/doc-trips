@@ -160,6 +160,9 @@ class LeaderSupplement(DatabaseModel):
     wilderness_skills = models.DateField(null=True, blank=True)
     first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
 
+    def __str__(self):
+        return str(self.application.applicant)
+
 
 class CrooSupplement(DatabaseModel):
 
@@ -186,7 +189,9 @@ class CrooSupplement(DatabaseModel):
                                              related_name='potential_croolings')
     safety_lead_qualified = models.BooleanField(default=False)
     safety_lead = models.BooleanField(default=False)
-    
+
+    def __str__(self):
+        return str(self.application.applicant)
 
 
 def validate_grade(grade):

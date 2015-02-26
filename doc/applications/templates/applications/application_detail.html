@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load links %}
+{% load detail_view %}
+
+{% block content %}
+
+{% detail application generalapplication_fields %}
+
+{% detail application.leader_supplement leaderapplication_fields %}
+
+{% detail application.croo_supplement crooapplication_fields %}
+
+{% endblock content %}

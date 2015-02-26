@@ -170,26 +170,26 @@ class ApplicationDatabaseListView(DatabaseListView):
     template_name = 'applications/application_index.html'
 
 
-class LeaderApplicationDatabaseListView(DatabaseListView):
-    model = LeaderSupplement
-    context_object_name = 'applications'
-    template_name = 'applications/leaderapplication_index.html'
+class ApplicationDatabaseDetailView(DatabaseDetailView):
+    model = GeneralApplication
+    context_object_name = 'application'
+    template_name = 'applications/application_detail.html'
 
-    def get_queryset(self):
-        return self.model.objects.completed_applications(self.kwargs['trips_year'])
+    generalapplication_fields = []
+    leaderapplication_fields = []
+    crooapplication_fields = []
 
+    def get_context_data(self, **kwargs):
+        
+        context = super(ApplicationDatabaseDetailView, self).get_context_data(**kwargs)
+        trips_year = self.kwargs['trips_year']
+        context['trips_year'] = trips_year
 
-class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
-    model = LeaderSupplement
-    template_name = 'applications/leaderapplication_detail.html'
-    fields = ('trip_preference_comments', 'cannot_participate_in')
-
-
-class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
-    """ Edit admin data - trainings, application status """
-    model = LeaderSupplement
-    form_class = LeaderSupplementAdminForm
-    template_name = 'applications/leaderapplication_admin_update.html'
+        context['generalapplication_fields'] = self.generalapplication_fields
+        context['leaderapplication_fields'] = self.leaderapplication_fields
+        context['crooapplication_fields'] = self.crooapplication_fields
+        
+        return context
 
 
 class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
@@ -219,4 +219,27 @@ class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin,
             triptypes=TripType.objects.filter(trips_year=trips_year),
             **kwargs
         )    
+
+
+class LeaderApplicationDatabaseListView(DatabaseListView):
+    model = LeaderSupplement
+    context_object_name = 'applications'
+    template_name = 'applications/leaderapplication_index.html'
+
+    def get_queryset(self):
+        return self.model.objects.completed_applications(self.kwargs['trips_year'])
+
+
+class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
+    model = LeaderSupplement
+    template_name = 'applications/leaderapplication_detail.html'
+    fields = ('trip_preference_comments', 'cannot_participate_in')
+
+
+class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
+    """ Edit admin data - trainings, application status """
+    model = LeaderSupplement
+    form_class = LeaderSupplementAdminForm
+    template_name = 'applications/leaderapplication_admin_update.html'
+
         

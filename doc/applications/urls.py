@@ -5,6 +5,7 @@ from doc.db.urlhelpers import DB_REGEX
 from doc.applications.views.application import (NewApplication, ContinueApplication, 
                                             SetupApplication,
                                             ApplicationDatabaseListView, 
+                                            ApplicationDatabaseDetailView,
                                             ApplicationDatabaseUpdateView,
                                             LeaderApplicationDatabaseListView, 
                                             LeaderApplicationDatabaseDetailView,)
@@ -47,6 +48,7 @@ _leaderapplication_urlpatterns = patterns(
 application_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], ApplicationDatabaseListView.as_view(), name='application_index'),
+    url(DB_REGEX['DETAIL'], ApplicationDatabaseDetailView.as_view(), name='generalapplication_detail'),
     url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(), name='generalapplication_update'),
     url(r'^leaders/', include(_leaderapplication_urlpatterns)),
 )
