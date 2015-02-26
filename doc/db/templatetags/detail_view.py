@@ -30,7 +30,7 @@ def detail(db_object, fields=None):
 
         value = getattr(db_object, field_name)
 
-        if isinstance(field, models.FileField):
+        if isinstance(field, models.FileField) and value:
             t = template.Template("""<a href="{{ file.url }}">{{ file }}</a>""")
             c = template.Context({'file': value})
             value = t.render(c)
