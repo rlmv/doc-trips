@@ -32,7 +32,7 @@ def lookup_email(netid):
     # netid not found: {}
     if not r.json(): 
         msg = 'Email lookup failed: NetId %s not found' % netid
-        logger.error(msg)
+        logger.error(msg, extra={'request': request})
         raise EmailLookupException(msg)
     
     # mismatch, somehow...
