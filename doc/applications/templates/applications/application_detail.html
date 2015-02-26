@@ -5,11 +5,9 @@
 
 {% block content %}
 
-<div class="page-header">
-  <h3> Application for {{ application.applicant }} </h3>
-</div>
+  <h3> Application for {{ application.applicant }} {{ application | edit_link }}
+</h3>
 
-{{ application | edit_link }}
 
 {# TODO: share layout with application_body.html? #}
 
