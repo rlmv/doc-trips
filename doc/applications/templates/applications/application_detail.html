@@ -2,6 +2,7 @@
 {% load links %}
 {% load detail_view %}
 {% load icons %}
+{% load convert %}
 
 {% block content %}
 
@@ -52,7 +53,7 @@
 	<div class="expand-whitespace"><p> {{ information.leader_info }} </p></div>
 	{% detail application.leader_supplement leaderapplication_fields %}
 	<div>
-	  {{ leader_doc }}
+	  {% display_docx_filefield_as_html application.leader_supplement.document %}
 	</div>
       </div>
 
@@ -61,7 +62,7 @@
 	<div class="expand-whitespace"><p> {{ information.croo_info }} </p></div>
 	{% detail application.croo_supplement crooapplication_fields %}
 	<div>
-	  {{ croo_doc }}
+	  {% display_docx_filefield_as_html application.croo_supplement.document %}
 	</div>
       </div>
       
