@@ -1,5 +1,6 @@
 
 from datetime import datetime
+from datetime import timedelta
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -22,6 +23,18 @@ class ApplicationAccessTestCase(WebTestCase):
     def test_anonymous_user_does_not_crash_application(self):
         
         self.app.get(reverse('applications:apply'))
+
+    def test_application_not_visible_if_not_available(self):
+        
+        # close leader applications:
+        t = Timetable.objects.timetable()
+        t.applications_open += timedelta(-2)
+        t.applications_close += timedelta(-1)
+        t.save()
+
+        self.mock_user()
+        response = self.app.get(reverse('applications:apply'), user=self.user)
+        self.assertTemplateUsed('applications/not_available.html')
 
 
 class ApplicationFormTestCase(WebTestCase):
