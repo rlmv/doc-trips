@@ -9,6 +9,7 @@ from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGr
 from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
 
+
         
 class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired, 
                                             RedirectView):

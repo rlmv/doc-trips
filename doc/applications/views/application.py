@@ -73,10 +73,12 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin, CrispyFormMixi
         """ Lots o' goodies for the template """
 
         trips_year = TripsYear.objects.current()
+        # just in case AppInfo hasn't been setup yet
+        information, _ = ApplicationInformation.objects.get_or_create(trips_year=trips_year)        
         return super(ApplicationFormsMixin, self).get_context_data(
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
-            information=ApplicationInformation.objects.get(trips_year=trips_year),
+            information=information,
             triptypes=TripType.objects.filter(trips_year=trips_year),
             **kwargs
         )
