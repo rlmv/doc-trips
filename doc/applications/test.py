@@ -8,7 +8,9 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
-from doc.applications.models import LeaderSupplement, CrooSupplement
+from doc.applications.models import (LeaderSupplement as LeaderApplication, 
+                                     CrooSupplement, 
+                                     GeneralApplication, LeaderApplicationGrade)
 from doc.timetable.models import Timetable
 
 
@@ -41,10 +43,104 @@ class ApplicationFormTestCase(WebTestCase):
         timetable.save()
 
         res = self.app.get(reverse('applications:apply'), user=self.user)
-        print(res)
-        print(res.form)
+       # print(res)
+      #  print(res.form)
                              
+
+
+class ApplicationManagerTestCase(TripsTestCase):
+
+    """ 
+    Tested against the LeaderApplication model only; 
+    there should be no difference with the CrooApplciation model.
+    """
+    
+    def setUp(self):
+        self.init_current_trips_year()
+        self.init_previous_trips_year()
+        self.mock_user()
+
+    def make_application(self, status=GeneralApplication.PENDING, trips_year=None):
+
+        if trips_year is None:
+            trips_year = self.current_trips_year
+
+        application = mommy.make(GeneralApplication, 
+                                 status=status,
+                                 trips_year=trips_year)
+        leader_app = mommy.make(LeaderApplication, 
+                                application=application, 
+                                trips_year=trips_year)
+        croo_app = mommy.make(CrooSupplement, 
+                              application=application, 
+                              trips_year=trips_year)
         
+        return application
+
+    def test_with_no_grades(self):
+        
+        application = self.make_application()
+
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertEqual(application.leader_supplement, next)
+
+
+    def test_graded_ungraded_priority(self):
+        
+        app1 = self.make_application()
+        grade = mommy.make(LeaderApplicationGrade, trips_year=self.current_trips_year,
+                           application=app1.leader_supplement)
+        app2 = self.make_application()
+
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertEqual(next, app2.leader_supplement, 'app with no grades should have priority')
+
+
+    def test_user_can_only_grade_application_once(self):
+
+        application = self.make_application()
+        grade = mommy.make(LeaderApplicationGrade, grader=self.user,
+                           application=application.leader_supplement,
+                           trips_year=self.trips_year)
+
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertIsNone(next, 'no applications should be available')
+
+
+    def test_only_grade_pending_applications(self):
+        
+        application = self.make_application(status=GeneralApplication.LEADER)
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertIsNone(next, 'only PENDING apps should be gradable')
+
+
+    def test_can_only_grade_applications_for_the_current_trips_year(self):
+        
+        application = self.make_application(trips_year=self.previous_trips_year)
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertIsNone(next, 'should not be able to grade apps from previous years')
+
+    
+    def test_correct_number_of_grades(self):
+
+        application = self.make_application()
+
+        for i in range(LeaderApplication.NUMBER_OF_GRADES):
+
+            # works because we are not actually grading with self.user
+            next = LeaderApplication.objects.next_to_grade(self.user)
+            self.assertEquals(next, application.leader_supplement)
+            
+            grade = mommy.make(LeaderApplicationGrade, trips_year=self.trips_year,
+                               application=application.leader_supplement)
+           
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
+        
+
+
+                           
+    
         
         
 
