@@ -19,7 +19,7 @@
   
   {% for application in applications %}
   <tr> 
-    <td> {{ application }}</td>
+    <td> {{ application | detail_link }}</td>
 
     <td>
       {% if application.leader_application_complete %}
