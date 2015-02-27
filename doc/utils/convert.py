@@ -19,6 +19,7 @@ BLEACH_WHITELIST = {
 }
 
 def sanitize_html(html):
+    """ Escape all unapproved tags from the html string """
 
     return bleach.clean(html, **BLEACH_WHITELIST)
 
@@ -28,6 +29,13 @@ class ConversionError(Exception):
 
 
 def convert_docx_to_html(file_obj):
+    """ 
+    Convert a docx file-like object to html.
+
+    Return a sanitized, django-safe html string, or raise a 
+    ConversionError if something went wrong.
+    """
+    
     try:
         result = mammoth.convert_to_html(file_obj)
     except BadZipFile as exc:
@@ -40,6 +48,12 @@ def convert_docx_to_html(file_obj):
     
 
 def convert_docx_filefield_to_html(filefield):
+    """
+    Convert a django FileField containing a docx file to html.
+
+    This doesn't perform a file type check. If the conversion fails, 
+    return a failure string.
+    """
 
     if filefield: 
         with filefield as docx_file:
