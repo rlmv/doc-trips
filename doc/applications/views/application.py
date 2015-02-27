@@ -1,5 +1,5 @@
 
-import mammoth
+
 from vanilla import CreateView, UpdateView, RedirectView, TemplateView
 from braces.views import FormMessagesMixin
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
@@ -21,6 +21,7 @@ from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSu
 from doc.applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm, LeaderSupplementAdminForm, CrooApplicationGradeForm
 from doc.permissions.views import CreateApplicationsPermissionRequired, CrooGraderPermissionRequired
 from doc.utils.views import MultipleFormMixin
+from doc.utils.convert import convert_docx_filefield_to_html
 
 
 class IfApplicationAvailable():
@@ -195,26 +196,16 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
     crooapplication_fields = ['document', 'safety_lead_willing', 
                               'kitchen_lead_willing', 'kitchen_lead_qualifications']
 
-    def convert_docx_filefield_to_html(self, filefield):
-
-        if filefield:
-            with filefield as docx_file:
-                result = mammoth.convert_to_html(docx_file)
-                print(result.messages)
-                html = result.value
-        else:
-            html = ''
-        
-        # ooo dangerous...
-        return mark_safe(html)
-
     def get_context_data(self, **kwargs):
         
         context = super(ApplicationDatabaseDetailView, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
         context['trips_year'] = trips_year
 
-        context['leader_doc'] = self.convert_docx_filefield_to_html(self.object.leader_supplement.document)
+        context['leader_doc'] = convert_docx_filefield_to_html(
+            self.object.leader_supplement.document)
+        context['croo_doc'] = convert_docx_filefield_to_html(
+            self.object.croo_supplement.document)
 
         context['generalapplication_fields'] = self.generalapplication_fields
         context['leaderapplication_fields'] = self.leaderapplication_fields

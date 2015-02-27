@@ -4,6 +4,7 @@ requests
 django-extensions
 pytz
 mammoth
+bleach
 
 #django-braces>1.4.0 # need Login/Permission compatibility in master
 # wait for version > 1.4.0
