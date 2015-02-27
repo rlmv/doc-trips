@@ -106,13 +106,26 @@ class ApplicationManagerTestCase(TripsTestCase):
                                  trips_year=trips_year)
         leader_app = mommy.make(LeaderApplication, 
                                 application=application, 
-                                trips_year=trips_year)
+                                trips_year=trips_year, 
+                                document='some/file')
         croo_app = mommy.make(CrooSupplement, 
                               application=application, 
-                              trips_year=trips_year)
+                              trips_year=trips_year, 
+                              document='some/file')
         
         return application
 
+
+    def test_dont_grade_incomplete_application(self):
+        
+        application = self.make_application()
+        application.leader_supplement.document = ''
+        application.leader_supplement.save()
+
+        next = LeaderApplication.objects.next_to_grade(self.user)
+        self.assertIsNone(next)
+
+        
     def test_with_no_grades(self):
         
         application = self.make_application()

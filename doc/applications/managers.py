@@ -48,8 +48,8 @@ class ApplicationManager(models.Manager):
         # grab the value of GeneralApplication.PENDING
         PENDING = self.model.application.field.related_field.model.PENDING
 
-        application = (self.filter(application__status=PENDING)
-                       .filter(trips_year=trips_year)
+        application = (self.completed_applications(trips_year=trips_year).
+                       filter(application__status=PENDING)
                        .annotate(models.Count('grades'))
                        .filter(grades__count__lte=num)
                        .exclude(grades__grader=user)
