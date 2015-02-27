@@ -203,6 +203,8 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
         trips_year = self.kwargs['trips_year']
         context['trips_year'] = trips_year
 
+        # TODO: mv these to a templatetag?
+        # this would allow simpler formatting, simplify convert function.
         context['leader_doc'] = convert_docx_filefield_to_html(
             self.object.leader_supplement.document)
         context['croo_doc'] = convert_docx_filefield_to_html(

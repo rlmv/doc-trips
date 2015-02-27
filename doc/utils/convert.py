@@ -55,11 +55,14 @@ def convert_docx_filefield_to_html(filefield):
     return a failure string.
     """
 
-    if filefield: 
-        with filefield as docx_file:
-            try:
-                return convert_docx_to_html(docx_file)
-            except ConversionError as exc:
-                return 'File Conversion Error. Try downloading the document instead.'
+    # empty filefield
+    if not filefield: 
+        return None
 
-    return None
+    with filefield as docx_file:
+        try:
+            return convert_docx_to_html(docx_file)
+        # TODO: handle this in view?
+        except ConversionError as exc:
+            return 'docx to HTML conversion failed. Try downloading the document instead.'
+
