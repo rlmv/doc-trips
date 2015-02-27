@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load detail_view %}
+{% load convert %}
+
+{# generic grading view for both Croo and Leader applications #}
 
 {% block content %}
 
-<h3> Grade Croo Application </h3>
+<h3> {{ title }} </h3>
 <p> Read the app carefully, give it a grade, and add any pertinent comments. Grades from 1-6. </p>
+
+{% display_docx_filefield_as_html application.document %}
 
 <div>
 {% crispy form %}

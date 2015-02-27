@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     'doc.trips',
     'doc.permissions',
     'doc.timetable',
+    'doc.utils',
     'doc.webauth', 
 )
 

@@ -63,6 +63,7 @@ class GradeCrooApplication(CrooGraderPermissionRequired,
         
         context = super(GradeCrooApplication, self).get_context_data(**kwargs)
         context['application'] = self.get_application()
+        context['title'] = 'Grade Croo Application #%s' % self.kwargs['pk']
 
         return context
 
@@ -112,6 +113,7 @@ class GradeLeaderApplication(LeaderGraderPermissionRequired,
         
         context = super(GradeLeaderApplication, self).get_context_data(**kwargs)
         context['application'] = self.get_application()
+        context['title'] = 'Grade Trip Leader Application #%s' % self.kwargs['pk']
         return context
 
     def form_valid(self, form):
