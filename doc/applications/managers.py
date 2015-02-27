@@ -46,7 +46,7 @@ class ApplicationManager(models.Manager):
         """
 
         # grab the value of GeneralApplication.PENDING
-        PENDING = self.model.application.field.related_field.model
+        PENDING = self.model.application.field.related_field.model.PENDING
 
         application = (self.filter(application__status=PENDING)
                        .filter(trips_year=trips_year)
