@@ -22,6 +22,11 @@ class IfGradingAvailable():
         return render(request, 'applications/grading_not_available.html')
 
 
+class GraderLandingPage(TemplateView):
+
+    template_name = 'applications/graders.html'
+
+
 class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired, 
                                             IfGradingAvailable, RedirectView):
     """ 

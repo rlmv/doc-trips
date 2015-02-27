@@ -4,23 +4,25 @@ from django.conf.urls import patterns, url, include
 from doc.db.urlhelpers import DB_REGEX
 from doc.applications.views.application import (NewApplication, ContinueApplication, 
                                             SetupApplication,
-                                            ApplicationDatabaseListView, 
-                                            ApplicationDatabaseDetailView,
-                                            ApplicationDatabaseUpdateView,
-                                            LeaderApplicationDatabaseListView, 
-                                            LeaderApplicationDatabaseDetailView,)
- 
+                                                ApplicationDatabaseListView, 
+                                                ApplicationDatabaseDetailView,
+                                                ApplicationDatabaseUpdateView,
+                                                LeaderApplicationDatabaseListView, 
+                                                LeaderApplicationDatabaseDetailView,)
+
 
 from doc.applications.views.grading import(RedirectToNextGradableCrooApplication,
-                                       GradeCrooApplication,
-                                       NoCrooApplicationsLeftToGrade,
-                                       RedirectToNextGradableLeaderApplication,
-                                       GradeLeaderApplication,
-                                       NoLeaderApplicationsLeftToGrade,)
+                                           GradeCrooApplication,
+                                           NoCrooApplicationsLeftToGrade,
+                                           RedirectToNextGradableLeaderApplication,
+                                           GradeLeaderApplication,
+                                           NoLeaderApplicationsLeftToGrade,
+                                           GraderLandingPage)
 
   
 grade_urlpatterns = patterns(
     '',
+    url(r'^$', GraderLandingPage.as_view(), name='graders'),
     url(r'^croos/$', RedirectToNextGradableCrooApplication.as_view(), name='next_croo'),
     url(r'^croos/(?P<pk>[0-9]+)$', GradeCrooApplication.as_view(), name='croo'),
     url(r'^croos/none/$', NoCrooApplicationsLeftToGrade.as_view(), name='no_croo_left'),    

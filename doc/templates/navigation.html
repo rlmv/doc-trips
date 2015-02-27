@@ -25,15 +25,9 @@
 	<li><a href="{% url 'applications:setup' %}">Setup Applications</a></li>
 	{% endif %}
 
-	{% comment %}
-	{% if perms.permissions.can_grade_croo_applications %}
-	<li><a href="{% url 'croos:grade_next' %}">Grade Croo Apps</a></li>
+	{% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
+	<li><a href="{% url 'applications:grade:graders' %}">Grade Applications</a></li>
 	{% endif %}
-
-	{% if perms.permissions.can_grade_leader_applications %}
-	<li><a href="{% url 'leaders:grade_random' %}">Grade Leader Apps</a></li>
-	{% endif %}
-	{% endcomment %}
 
 	{% if perms.permissions.can_access_db %}
 	<li><a href="{% url 'db:db_redirect' %}">Database</a></li>

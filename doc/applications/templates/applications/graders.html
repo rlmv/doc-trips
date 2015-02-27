@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+  <h2> Grade Croo and Leader Applications </h2>
+</div>
+
+<p> Sweet! You're helping us grade applications. Boy are there a lot of them... </p>
+
+<h4><a href="{% url 'applications:grade:next_leader' %}"> Grade Trip Leader Applications </a></h4>
+<h4><a href="{% url 'applications:grade:next_croo' %}"> Grade Croo Applications </a></h4>
+
+{% endblock content %}
