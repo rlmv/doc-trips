@@ -17,11 +17,19 @@ from doc.timetable.models import Timetable
 from doc.trips.models import Section
 
 
-def open_application(trips_year):
-
+def open_application():
+    """" open leader applications """
     t = Timetable.objects.timetable()
     t.applications_open += timedelta(-1)
     t.applications_close += timedelta(1)
+    t.save()
+
+
+def close_application():
+    """ close leader applications """
+    t = Timetable.objects.timetable()
+    t.applications_open += timedelta(-2)
+    t.applications_close += timedelta(-1)
     t.save()
 
 
@@ -33,15 +41,9 @@ class ApplicationAccessTestCase(WebTestCase):
     def test_anonymous_user_does_not_crash_application(self):
         
         self.app.get(reverse('applications:apply'))
-
     def test_application_not_visible_if_not_available(self):
         
-        # close leader applications:
-        t = Timetable.objects.timetable()
-        t.applications_open += timedelta(-2)
-        t.applications_close += timedelta(-1)
-        t.save()
-
+        close_application()
         self.mock_user()
         response = self.app.get(reverse('applications:apply'), user=self.user)
         self.assertTemplateUsed('applications/not_available.html')
@@ -59,7 +61,7 @@ class ApplicationFormTestCase(WebTestCase):
         # TODO / scrap
         
         self.mock_user()
-        open_application(self.current_trips_year)
+        open_application()
 
         res = self.app.get(reverse('applications:apply'), user=self.user)
         # print(res)
@@ -71,7 +73,7 @@ class ApplicationFormTestCase(WebTestCase):
         prev_section = mommy.make(Section, trips_year=self.previous_trips_year)
         curr_section = mommy.make(Section, trips_year=self.current_trips_year)
 
-        open_application(self.current_trips_year)
+        open_application()
         self.mock_user()
 
         response = self.app.get(reverse('applications:apply'), user=self.user)
@@ -172,8 +174,33 @@ class ApplicationManagerTestCase(TripsTestCase):
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
         
 
+class GradeViewsTestCase(WebTestCase):
 
-                           
+    def setUp(self):
+        self.init_current_trips_year()
+        self.mock_director()
+        self.mock_user()
+
+    grade_views = ['applications:grade:next_leader', 
+                   #'applications:grade:leader',
+                   'applications:grade:no_leaders_left',
+                   'applications:grade:next_croo',
+                   #'applications:grade:croo',
+                   'applications:grade:no_croo_left']
+
+    def test_not_gradeable_before_application_deadline(self):
+        
+        open_application()
+        for view in self.grade_views:
+            res = self.app.get(reverse(view), user=self.director)
+            self.assertTemplateUsed('applications/grading_not_available.html')
+    
+    def test_gradable_after_application_deadline(self):
+        
+        close_application() # puts deadline in the past 
+        for view in self.grade_views:
+            res = self.app.get(reverse(view), user=self.director)
+            self.assertTemplateNotUsed('applications/grading_not_available.html')
     
         
         

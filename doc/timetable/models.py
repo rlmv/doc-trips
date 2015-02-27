@@ -42,3 +42,7 @@ class Timetable(models.Model):
         now = timezone.now()
         return (self.applications_open < now and
                 now < self.applications_close)
+
+    def grading_available(self):
+        """ After the application deadline? """
+        return self.applications_close < timezone.now()
