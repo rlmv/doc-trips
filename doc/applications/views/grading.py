@@ -8,11 +8,22 @@ from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSu
 from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGradeForm
 from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
+from doc.timetable.models import Timetable
 
 
-        
+class IfGradingAvailable():
+    
+    """ Only allow grading once applications are closed """
+
+    def dispatch(self, request, *args, **kwargs):
+        if Timetable.objects.timetable().grading_available():
+            return super(IfGradingAvailable, self).dispatch(request, *args, **kwargs)
+
+        return render(request, 'applications/grading_not_available.html')
+
+
 class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired, 
-                                            RedirectView):
+                                            IfGradingAvailable, RedirectView):
     """ 
     Grading portal, redirects to next app to grade. 
     Identical to the corresponding LeaderGrade view 
@@ -31,7 +42,8 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
         return reverse('applications:grade:croo', kwargs={'pk': application.pk})
 
 
-class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
+class GradeCrooApplication(CrooGraderPermissionRequired, 
+                           IfGradingAvailable, CreateView):
 
     model = CrooApplicationGrade
     form_class = CrooApplicationGradeForm
@@ -58,13 +70,14 @@ class GradeCrooApplication(CrooGraderPermissionRequired, CreateView):
         return super(GradeCrooApplication, self).form_valid(form)
         
     
-class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, TemplateView):
+class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
+                                    IfGradingAvailable, TemplateView):
     
     template_name = 'applications/no_applications.html'
     
 
 class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired, 
-                                              RedirectView):
+                                              IfGradingAvailable, RedirectView):
     
     # from RedirectView
     permanent = False 
@@ -78,7 +91,8 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
         return reverse('applications:grade:leader', kwargs={'pk': application.pk})
 
 
-class GradeLeaderApplication(LeaderGraderPermissionRequired, CreateView):
+class GradeLeaderApplication(LeaderGraderPermissionRequired, 
+                             IfGradingAvailable, CreateView):
 
     model = LeaderApplicationGrade
     form_class = LeaderApplicationGradeForm
@@ -104,7 +118,8 @@ class GradeLeaderApplication(LeaderGraderPermissionRequired, CreateView):
         return super(GradeLeaderApplication, self).form_valid(form)
 
 
-class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired, TemplateView):
+class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired, 
+                                      IfGradingAvailable, TemplateView):
     """ Tell user there are no more applications for her to grade """
 
     template_name = 'applications/no_applications.html'
