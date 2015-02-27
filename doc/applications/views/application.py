@@ -189,12 +189,13 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
                                  'dietary_restrictions', 'allergen_information',
                                  'trippee_confidentiality', 
                                  'in_goodstanding_with_college', 'trainings']
-    leaderapplication_fields = ['document', 'preferred_sections', 'available_sections',
+    leaderapplication_fields = ['preferred_sections', 'available_sections',
                                 'preferred_triptypes', 'available_triptypes',
                                 'relevant_experience', 'trip_preference_comments',
-                                'cannot_participate_in']
-    crooapplication_fields = ['document', 'safety_lead_willing', 
-                              'kitchen_lead_willing', 'kitchen_lead_qualifications']
+                                'cannot_participate_in', 'document']
+    crooapplication_fields = ['safety_lead_willing', 
+                              'kitchen_lead_willing', 'kitchen_lead_qualifications', 
+                              'document']
 
     def get_context_data(self, **kwargs):
         

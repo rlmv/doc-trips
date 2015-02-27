@@ -12,7 +12,7 @@
 
 <table class="table table-condensed">
   <tr>
-    <th> Applicant </th>
+    <th> Application </th>
     <th> Leader Application </th>
     <th> Croo Application </th>
   </tr>
@@ -37,6 +37,7 @@
       {% endif %}
     </td>
 
+    <td> {{ application | detail_link:"view" }}</td>
     <td> {{ application | edit_link }} </td>
 
   </tr>

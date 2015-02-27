@@ -46,6 +46,6 @@ def convert_docx_filefield_to_html(filefield):
             try:
                 return convert_docx_to_html(docx_file)
             except ConversionError as exc:
-                return 'File Conversion Error'
+                return 'File Conversion Error. Try downloading the document instead.'
 
     return None
