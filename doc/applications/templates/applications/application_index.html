@@ -13,29 +13,19 @@
 <table class="table table-condensed">
   <tr>
     <th> Application </th>
+    <th> Status </th>
     <th> Leader Application </th>
     <th> Croo Application </th>
   </tr>
   
   {% for application in applications %}
   <tr> 
-    <td> {{ application | detail_link }}</td>
+    <td> {{ application | detail_link }} </td>
 
-    <td>
-      {% if application.leader_application_complete %}
-      <a href="{{ application.leader_supplement.document.url }}">
-	{{ application.leader_supplement.document }}
-      </a> 
-      {% endif %}
-    </td>
+    <td> {{ application | edit_link:application.status }} </td>
 
-    <td> 
-      {% if application.croo_application_complete %}
-      <a href="{{ application.croo_supplement.document.url }}">
-	{{ application.croo_supplement.document }}
-      </a> 
-      {% endif %}
-    </td>
+    <td> {{ application.leader_application_complete | ok_if_true }} </td>
+    <td> {{ application.croo_application_complete | ok_if_true }} </td>
 
     <td> {{ application | detail_link:"view" }}</td>
     <td> {{ application | edit_link }} </td>
