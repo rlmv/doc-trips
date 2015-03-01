@@ -10,23 +10,21 @@
 
 {% for section, trips in trips_by_section %}
 
-<div class="panel panel-success">
-  <div class="panel-heading"><strong>Section {{ section }}</strong></div>
+<table class="table">
+  <tr class="bg-info">
+    <th> Section {{ section }}</th>
+    <th/>
+    <th> Leaders </th>
+  </tr>
+  {% for trip in trips %}
+  <tr> 
+    <td> {{ trip }} </td>
+    <td> {{ trip.template.description_summary }} </td>
+    <td> {{ trip.leaders.all }} </td>
+  </tr>
+  {% endfor %}
+</table>
 
-  <table class="table">
-    <tr>
-      <td/>
-      <td/>
-      <td> Leaders </td>
-    </tr>
-    {% for trip in trips %}
-    <tr> 
-      <td> {{ trip }} </td>
-      <td> {{ trip.template.description_summary }} </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div>
 
 {% endfor %}
 
