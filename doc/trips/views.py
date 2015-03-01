@@ -193,7 +193,7 @@ class TripLeaderIndexView(DatabaseListView):
         for trip in self.object_list:
             trips_by_section[trip.section].append(trip)
         # value lists in trips_by_section will by sorted by trip #
-
+        # give a tuple (section, [trips]) to the template
         context['trips_by_section'] = list(trips_by_section.items())
         
         return context
