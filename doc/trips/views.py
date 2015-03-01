@@ -187,7 +187,6 @@ class TripLeaderIndexView(DatabaseListView):
     def get_context_data(self, **kwargs):
 
         context = super(TripLeaderIndexView, self).get_context_data(**kwargs)
-        context['sections'] = Section.objects.filter(trips_year=self.kwargs['trips_year'])
 
         trips_by_section = defaultdict(list)
         for trip in self.object_list:
