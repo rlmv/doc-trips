@@ -160,6 +160,11 @@ class LeaderSupplement(DatabaseModel):
     wilderness_skills = models.DateField(null=True, blank=True)
     first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
 
+    # ----- admin ---------
+    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
+                                      related_name='leaders',
+                                      on_delete=models.SET_NULL)
+
     def __str__(self):
         return str(self.application.applicant)
 
