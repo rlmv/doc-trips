@@ -11,15 +11,55 @@
 </div>
 
 {# administrative info #}
+<h4> Administrative Info </h4>
 <table class="table table-condensed table-striped">
-<tr>
-  <td class="col-sm-3 text-right"><strong>Status</strong></td>
-  <td> {{ application.status }} </td>
-</tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong>Status</strong></td>
+    <td> {{ application.status }} </td>
+  </tr>
 </table>
+
+{# grades #}
+<h4> Trip Leader Grades </h4>
+<table class="table table-condensed table-striped">
+  <tr>
+    <th> Grade </th>
+    <th> Hard skills </th>
+    <th> Soft skills </th>
+    <th> Comment </th>
+    <th> Grader </th>
+  </tr>
+  {% for grade in application.leader_supplement.grades.all %}
+  <tr>
+    <td> {{ grade.grade }} </td>
+    <td> {{ grade.hard_skills | ok_if_true }} </td>
+    <td> {{ grade.soft_skills | ok_if_true }} </td>
+    <td> {{ grade.comment }} </td>
+    <td> {{ grade.grader }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h4> Croo Grades </h4>
+<table class="table table-condensed table-striped">
+  <tr>
+    <th> Grade </th>
+    <th> Comment </th>
+    <th> Grader </th>
+  </tr>
+  {% for grade in application.croo_supplement.grades.all %}
+  <tr>
+    <td> {{ grade.grade }} </td>
+    <td> {{ grade.comment }} </td>
+    <td> {{ grade.grader }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
 
 {# application body #}
 {# TODO: share layout with application_body.html? #}
+<h4> Application </h4>
 <div role="tabpanel">
 
   <!-- Nav tabs -->
