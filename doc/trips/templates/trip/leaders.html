@@ -1,0 +1,33 @@
+
+{% extends "db/base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+  <h3> Trip Leaders </h3>
+</div>
+
+
+{% for section, trips in trips_by_section %}
+
+<div class="panel panel-success">
+  <div class="panel-heading"><strong>Section {{ section }}</strong></div>
+
+  <table class="table">
+    <tr>
+      <td/>
+      <td/>
+      <td> Leaders </td>
+    </tr>
+    {% for trip in trips %}
+    <tr> 
+      <td> {{ trip }} </td>
+      <td> {{ trip.template.description_summary }} </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endfor %}
+
+{% endblock content %}

@@ -4,22 +4,18 @@
 {% block left_column %}
 <ul class="list-group">
   <a class="list-group-item" href="{% url 'db:scheduledtrip_index' trips_year=trips_year %}"> Scheduled trips </a>
+  <a class="list-group-item" href="{% url 'db:leader_index' trips_year=trips_year %}"> Trip Leaders </a>
   <a class="list-group-item" href="{% url 'db:section_index' trips_year=trips_year %}"> Sections </a> 
   <a class="list-group-item" href="{% url 'db:campsite_index' trips_year=trips_year %}"> Campsites </a>
- <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
+  <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
   <a class="list-group-item" href="{% url 'db:triptemplate_index' trips_year=trips_year %}"> Trip templates </a>
   
-  {% comment %}
-   <a class="list-group-item" href="{% url 'db:leaderapplication_index' trips_year=trips_year %}"> Leader Applications </a>
-   <a class="list-group-item" href="{% url 'db:crooapplication_index' trips_year=trips_year %}"> Croo Applications </a>
-   {% endcomment %}
+  <a class="list-group-item" href="{% url 'db:application_index' trips_year=trips_year %}"> Applications </a>
+  
+  <a class="list-group-item" href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a>
 
-   <a class="list-group-item" href="{% url 'db:application_index' trips_year=trips_year %}"> Applications </a>
-
-   <a class="list-group-item" href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a>
-
-   <a class="list-group-item" href="{% url 'db:stop_index' trips_year=trips_year %}">Transportation Stops </a>
-   <a class="list-group-item" href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a>
-   <a class="list-group-item" href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a>
+  <a class="list-group-item" href="{% url 'db:stop_index' trips_year=trips_year %}">Transportation Stops </a>
+  <a class="list-group-item" href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a>
+  <a class="list-group-item" href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a>
 </ul>
 {% endblock %}

@@ -1,4 +1,6 @@
 
+from collections import defaultdict
+
 from django.forms import ModelForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -172,3 +174,29 @@ class SectionDeleteView(DatabaseDeleteView):
     model = Section
     success_url_pattern = 'db:section_index'
                                
+
+class TripLeaderIndexView(DatabaseListView):
+    """ Show all ScheduledTrips and assigned leaders + links to assign leaders """
+    model = ScheduledTrip
+    template_name = 'trip/leaders.html'
+    
+    def get_queryset(self):
+        qs = super(TripLeaderIndexView, self).get_queryset()
+        return qs.order_by('section', 'template')
+
+    def get_context_data(self, **kwargs):
+
+        context = super(TripLeaderIndexView, self).get_context_data(**kwargs)
+        context['sections'] = Section.objects.filter(trips_year=self.kwargs['trips_year'])
+
+        trips_by_section = defaultdict(list)
+        for trip in self.object_list:
+            trips_by_section[trip.section].append(trip)
+        # value lists in trips_by_section will by sorted by trip #
+
+        context['trips_by_section'] = list(trips_by_section.items())
+        
+        return context
+        
+        
+    

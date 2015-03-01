@@ -4,6 +4,7 @@ from django.conf.urls import patterns, url
 from doc.db.urlhelpers import DB_REGEX
 
 from doc.trips.views import *
+from doc.trips.views import TripLeaderIndexView
 
 # goal:
 # url(CREATE_REGEX, view.as_view(), name=view_name(view))
@@ -61,4 +62,10 @@ section_urlpatterns = patterns('',
     SectionUpdateView.urlpattern(),                            
     SectionDeleteView.urlpattern(),                        
 )                                
+
+leader_urlpatterns = patterns(
+    '', 
+    url(r'^$', TripLeaderIndexView.as_view(), name='leader_index'),
+)
+                              
 
