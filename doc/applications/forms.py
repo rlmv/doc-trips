@@ -121,6 +121,17 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper.layout = LeaderSupplementLayout()
 
 
+class ApplicationAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = GeneralApplication
+        fields = ('status',)
+
+    def __init__(self, *args, **kwargs):
+        super(ApplicationAdminForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        
+
 class LeaderSupplementAdminForm(forms.ModelForm):
 
     class Meta:

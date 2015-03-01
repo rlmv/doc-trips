@@ -214,8 +214,6 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
 class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
                                     UpdateView):
     
-    # TODO : debug, pull applications from kwargs.
-    
     template_name = 'applications/application_update.html'
     context_object_name = 'application'
 
