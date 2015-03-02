@@ -8,8 +8,18 @@
   <h3> Add Leader to {{ trip }} </h3>
 </div>
 
-<table class="table table-condensed table=striped">
+<p><strong>Summary:</strong> {{ trip.template.description_summary }} </p>
 
+<p><strong>Current Assigned Leaders:</strong>
+  {% for leader in trip.leaders.all %}
+  {{ leader.application | detail_link }}
+  {% endfor %}
+</p>
+
+<h4> Prospective Leaders </h4>
+
+This list shows all Accepted and Waitlisted leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and Section {{ trip.section | detail_link }}.
+<table class="table table-condensed table=striped">
 {% for leader, add_form in leader_applications %}
 <tr>
   <td> {{ leader }} </td>
