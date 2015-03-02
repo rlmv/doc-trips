@@ -89,7 +89,8 @@ class LeaderApplicationManager(ApplicationManager):
                 .filter(Q(preferred_sections=trip.section) | 
                         Q(available_sections=trip.section))
                 .filter(Q(preferred_triptypes=trip.template.triptype) | 
-                        Q(available_triptypes=trip.template.triptype)))
+                        Q(available_triptypes=trip.template.triptype))
+                .distinct())
                            
         
         

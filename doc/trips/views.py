@@ -225,7 +225,7 @@ class AssignTripLeaderView(DatabaseListView):
     Assign a leader to a ScheduledTrip. 
 
     Takes the trip pk as a url arg. The template is passed 
-    a (LeaderApplication, assignment_form) tuple in context_object_name.
+    a (LeaderApplication, assignment_form) tuple in context_object_name. assignment_form will be None if the leader is already assigned to a trip.
     """
 
     model = LeaderSupplement
@@ -238,20 +238,32 @@ class AssignTripLeaderView(DatabaseListView):
 
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
-        # add forms to each object 
-        context['trip'] = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
-        context[self.context_object_name] = self.get_forms_for_leaders(self.object_list, 
-                                                                       self.kwargs['trip'])
+
+        trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+        context['trip'] = trip
+
+        def process_leader(leader):
+
+            if leader.assigned_trip:
+                form = None
+            else:
+                form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
+                                                instance=leader)
+
+            if trip.template.triptype in leader.preferred_triptypes.all():
+                triptype_preferrence = 'prefer'
+            elif trip.template.triptype in leader.available_triptypes.all():
+                triptype_preferrence = 'available'
+
+            if trip.section in leader.preferred_sections.all():
+                section_preferrence = 'prefer'
+            elif trip.section in leader.available_sections.all():
+                section_preferrence = 'available'
+                
+            return (leader, form, triptype_preferrence, section_preferrence)
+        
+        context[self.context_object_name] = map(process_leader, self.object_list)
         return context
-
-    def get_forms_for_leaders(self, leaders, trip):
-
-        def assign_form(leader):
-            form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
-                                            instance=leader)
-            return (leader, form)
-
-        return map(assign_form, leaders)
         
         
 class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):

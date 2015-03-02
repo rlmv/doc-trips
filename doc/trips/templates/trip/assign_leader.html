@@ -20,13 +20,27 @@
 
 This list shows all Accepted and Waitlisted leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and Section {{ trip.section | detail_link }}.
 <table class="table table-condensed table=striped">
-{% for leader, add_form in leader_applications %}
-<tr>
-  <td> {{ leader }} </td>
-  <td> {% crispy add_form %} </td>
-</tr>
-{% endfor %}
-
+  <tr>
+    <th/>
+    <th> Trip Assignment </th>
+    <th> Status </th>
+    <th> {{ trip.template.triptype }} </th>
+    <th> {{ trip.section }} </th>
+  </tr>
+  {% for leader, assign_form, triptype_pref, section_pref in leader_applications %}
+  <tr>
+    <td> {{ leader }} </td>
+    <td> 
+      {% if assign_form %}
+      {% crispy add_form %}
+      {% else %} 
+      {{ leader.assigned_trip | detail_link }}
+      {% endif %}</td>
+    <td> {{ leader.application.status }} </td>
+    <td> {{ triptype_pref }} </td>
+    <td> {{ section_pref }} </td>
+  </tr>
+  {% endfor %}
 </table>
 
 

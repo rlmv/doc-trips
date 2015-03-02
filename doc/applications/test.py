@@ -220,7 +220,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app.leader_supplement])
 
-    def test_with_pending(self):
+    def test_with_pending_status(self):
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
         
         # otherwise available
@@ -254,6 +254,22 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
 
         prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
+
+    def test_prospective_leaders_are_distinct(self):
+
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+       
+        # set up a situation where JOINS will return the same app multiple times
+        app = self.make_application(status=GeneralApplication.LEADER)
+        app.leader_supplement.preferred_sections.add(trip.section)
+        app.leader_supplement.available_sections.add(trip.section)
+        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        app.leader_supplement.available_triptypes.add(trip.template.triptype)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(len(prospects), 1)
+        self.assertEquals(list(prospects), [app.leader_supplement])
        
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
