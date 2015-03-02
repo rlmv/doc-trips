@@ -7,8 +7,9 @@
 {% block content %}
 
 <div class="page-header">
-  <h3> Application for {{ application.applicant }} {{ application | edit_link }} </h3>
+  <h3> Application for {{ application.applicant }} </h3>
 </div>
+
 
 {# administrative info #}
 <h4> Administrative Info </h4>
@@ -16,8 +17,18 @@
   <tr>
     <td class="col-sm-3 text-right"><strong>Status</strong></td>
     <td> {{ application.status }} </td>
+    <td>  <a href="{% url 'db:update_application_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
   </tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong>Assigned Trip</strong></td>
+    <td> {{ application.leader_supplement.assigned_trip }}</td>
+    <td> TODO: edit </td>
 </table>
+
+
+<h4> Trainings <a href="{% url 'db:update_application_trainings' trips_year=application.trips_year pk=application.leader_supplement.pk %}">edit</a></h4>
+{% detail application.leader_supplement trainings_fields %}
+
 
 {# grades #}
 <h4> Trip Leader Grades </h4>
@@ -59,7 +70,7 @@
 
 {# application body #}
 {# TODO: share layout with application_body.html? #}
-<h4> Application </h4>
+<h4> Application {{ application | edit_link }} </h4>
 <div role="tabpanel">
 
   <!-- Nav tabs -->

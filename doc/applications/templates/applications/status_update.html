@@ -1,0 +1,12 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="page-header">
+  <h3> Update {{ object.applicant }}'s application status </h3>
+</div>
+
+{% crispy form %}
+
+{% endblock content %}

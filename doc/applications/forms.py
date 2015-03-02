@@ -130,6 +130,7 @@ class ApplicationAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ApplicationAdminForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Update'))
         
 
 class LeaderSupplementAdminForm(forms.ModelForm):
@@ -141,8 +142,8 @@ class LeaderSupplementAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(LeaderSupplementAdminForm, self).__init__(*args, **kwargs)
-
         self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Update'))
 
 
 class ApplicationLayout(Layout):

@@ -3,14 +3,12 @@ from django.conf.urls import patterns, url, include
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.applications.views.application import (NewApplication, ContinueApplication, 
-                                            SetupApplication,
+                                                SetupApplication,
                                                 ApplicationDatabaseListView, 
                                                 ApplicationDatabaseDetailView,
                                                 ApplicationDatabaseUpdateView,
-                                                LeaderApplicationDatabaseListView, 
-                                                LeaderApplicationDatabaseDetailView,)
-
-
+                                                ApplicationAdminUpdateView,
+                                                LeaderApplicationAdminUpdateView)
 from doc.applications.views.grading import(RedirectToNextGradableCrooApplication,
                                            GradeCrooApplication,
                                            NoCrooApplicationsLeftToGrade,
@@ -41,17 +39,12 @@ urlpatterns = patterns(
 
 # TODO: fix leaderapplication, leadersupplement mismatch
 
-_leaderapplication_urlpatterns = patterns(
-    '',
-    url(DB_REGEX['LIST'], LeaderApplicationDatabaseListView.as_view(), name='leaderapplication_index'),
-    url(DB_REGEX['DETAIL'], LeaderApplicationDatabaseDetailView.as_view(), name='leadersupplement_detail'),
-)
-
 application_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], ApplicationDatabaseListView.as_view(), name='application_index'),
     url(DB_REGEX['DETAIL'], ApplicationDatabaseDetailView.as_view(), name='generalapplication_detail'),
     url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(), name='generalapplication_update'),
-    url(r'^leaders/', include(_leaderapplication_urlpatterns)),
+    url(r'^(?P<pk>[0-9]+)/update/status', ApplicationAdminUpdateView.as_view(), name='update_application_status'),
+    url(r'^(?P<pk>[0-9]+)/update/trainings', LeaderApplicationAdminUpdateView.as_view(), name='update_application_trainings'),
 )
 

@@ -17,9 +17,14 @@ from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.timetable.models import Timetable
 from doc.trips.models import TripType
-from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, ApplicationInformation, CrooApplicationGrade, LeaderApplicationGrade
-from doc.applications.forms import ApplicationForm, CrooSupplementForm, LeaderSupplementForm, LeaderSupplementAdminForm, CrooApplicationGradeForm
-from doc.permissions.views import CreateApplicationsPermissionRequired, CrooGraderPermissionRequired
+from doc.applications.models import (GeneralApplication, LeaderSupplement, 
+                                     CrooSupplement, ApplicationInformation, 
+                                     CrooApplicationGrade, LeaderApplicationGrade)
+from doc.applications.forms import (ApplicationForm, CrooSupplementForm, 
+                                    LeaderSupplementForm, LeaderSupplementAdminForm, 
+                                    ApplicationAdminForm)
+from doc.permissions.views import (CreateApplicationsPermissionRequired, 
+                                   CrooGraderPermissionRequired)
 from doc.utils.views import MultipleFormMixin
 from doc.utils.convert import convert_docx_filefield_to_html
 
@@ -195,6 +200,8 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
                                 'preferred_triptypes', 'available_triptypes',
                                 'relevant_experience', 'trip_preference_comments',
                                 'cannot_participate_in', 'document']
+    trainings_fields = ['community_building', 'risk_management', 'wilderness_skills',
+                        'first_aid']
     crooapplication_fields = ['safety_lead_willing', 
                               'kitchen_lead_willing', 'kitchen_lead_qualifications', 
                               'document']
@@ -206,6 +213,7 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
         context['trips_year'] = trips_year
         context['generalapplication_fields'] = self.generalapplication_fields
         context['leaderapplication_fields'] = self.leaderapplication_fields
+        context['trainings_fields'] = self.trainings_fields
         context['crooapplication_fields'] = self.crooapplication_fields
         
         return context
@@ -247,16 +255,17 @@ class LeaderApplicationDatabaseListView(DatabaseListView):
         return self.model.objects.completed_applications(self.kwargs['trips_year'])
 
 
-class LeaderApplicationDatabaseDetailView(DatabaseDetailView):
-    model = LeaderSupplement
-    template_name = 'applications/leaderapplication_detail.html'
-    fields = ('trip_preference_comments', 'cannot_participate_in')
+class ApplicationAdminUpdateView(DatabaseUpdateView):
+    """ Edit Application status """
+    model = GeneralApplication
+    form_class = ApplicationAdminForm
+    template_name = 'applications/status_update.html'
 
 
-class LeaderApplicationAdminDatabaseUpdateView(DatabaseUpdateView):
-    """ Edit admin data - trainings, application status """
+class LeaderApplicationAdminUpdateView(DatabaseUpdateView):
+    """ Edit leader admin data - trainings """
     model = LeaderSupplement
     form_class = LeaderSupplementAdminForm
-    template_name = 'applications/leaderapplication_admin_update.html'
+    template_name = 'applications/trainings_update.html'
 
         
