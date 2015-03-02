@@ -14,87 +14,27 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      GeneralApplication, LeaderApplicationGrade, 
                                      ApplicationInformation)
 from doc.timetable.models import Timetable
-from doc.trips.models import Section
+from doc.trips.models import Section, ScheduledTrip
 
 
-def open_application():
-    """" open leader applications """
-    t = Timetable.objects.timetable()
-    t.applications_open += timedelta(-1)
-    t.applications_close += timedelta(1)
-    t.save()
+class ApplicationTestMixin():
+
+    """ Common utilities for testing applications """
+
+    def open_application(self):
+        """" open leader applications """
+        t = Timetable.objects.timetable()
+        t.applications_open += timedelta(-1)
+        t.applications_close += timedelta(1)
+        t.save()
 
 
-def close_application():
-    """ close leader applications """
-    t = Timetable.objects.timetable()
-    t.applications_open += timedelta(-2)
-    t.applications_close += timedelta(-1)
-    t.save()
-
-
-class ApplicationAccessTestCase(WebTestCase):
-
-    def setUp(self):
-        self.init_current_trips_year()
-
-    def test_anonymous_user_does_not_crash_application(self):
-        
-        self.app.get(reverse('applications:apply'))
-    def test_application_not_visible_if_not_available(self):
-        
-        close_application()
-        self.mock_user()
-        response = self.app.get(reverse('applications:apply'), user=self.user)
-        self.assertTemplateUsed('applications/not_available.html')
-
-
-class ApplicationFormTestCase(WebTestCase):
-
-    csrf_checks = False
-    
-    def setUp(self):
-        self.init_current_trips_year()
-        self.init_previous_trips_year()
-
-    def test_file_uploads_dont_overwrite_each_other(self):
-        # TODO / scrap
-        
-        self.mock_user()
-        open_application()
-
-        res = self.app.get(reverse('applications:apply'), user=self.user)
-        # print(res)
-        #  print(res.form)
-                             
-
-    def test_available_sections_in_leader_form_are_for_current_trips_year(self):
-
-        prev_section = mommy.make(Section, trips_year=self.previous_trips_year)
-        curr_section = mommy.make(Section, trips_year=self.current_trips_year)
-
-        open_application()
-        self.mock_user()
-
-        response = self.app.get(reverse('applications:apply'), user=self.user)
-        form = response.context['leader_form']
-        self.assertEquals(list(form.fields['available_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
-        self.assertEquals(list(form.fields['preferred_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
-
-
-class ApplicationManagerTestCase(TripsTestCase):
-
-    """ 
-    Tested against the LeaderApplication model only; 
-    there should be no difference with the CrooApplciation model.
-    """
-    
-    def setUp(self):
-        self.init_current_trips_year()
-        self.init_previous_trips_year()
-        self.mock_user()
+    def close_application(self):
+        """ close leader applications """
+        t = Timetable.objects.timetable()
+        t.applications_open += timedelta(-2)
+        t.applications_close += timedelta(-1)
+        t.save()
 
     def make_application(self, status=GeneralApplication.PENDING, trips_year=None):
 
@@ -114,6 +54,70 @@ class ApplicationManagerTestCase(TripsTestCase):
                               document='some/file')
         
         return application
+
+
+class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
+
+    def setUp(self):
+        self.init_current_trips_year()
+
+    def test_anonymous_user_does_not_crash_application(self):
+        
+        self.app.get(reverse('applications:apply'))
+    def test_application_not_visible_if_not_available(self):
+        
+        self.close_application()
+        self.mock_user()
+        response = self.app.get(reverse('applications:apply'), user=self.user)
+        self.assertTemplateUsed('applications/not_available.html')
+
+
+class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
+
+    csrf_checks = False
+    
+    def setUp(self):
+        self.init_current_trips_year()
+        self.init_previous_trips_year()
+
+    def test_file_uploads_dont_overwrite_each_other(self):
+        # TODO / scrap
+        
+        self.mock_user()
+        self.open_application()
+
+        res = self.app.get(reverse('applications:apply'), user=self.user)
+        # print(res)
+        #  print(res.form)
+                             
+
+    def test_available_sections_in_leader_form_are_for_current_trips_year(self):
+
+        prev_section = mommy.make(Section, trips_year=self.previous_trips_year)
+        curr_section = mommy.make(Section, trips_year=self.current_trips_year)
+
+        self.open_application()
+        self.mock_user()
+
+        response = self.app.get(reverse('applications:apply'), user=self.user)
+        form = response.context['leader_form']
+        self.assertEquals(list(form.fields['available_sections'].queryset),
+                          list(Section.objects.filter(trips_year=self.current_trips_year)))
+        self.assertEquals(list(form.fields['preferred_sections'].queryset),
+                          list(Section.objects.filter(trips_year=self.current_trips_year)))
+
+
+class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
+
+    """ 
+    Tested against the LeaderApplication model only; 
+    there should be no difference with the CrooApplciation model.
+    """
+    
+    def setUp(self):
+        self.init_current_trips_year()
+        self.init_previous_trips_year()
+        self.mock_user()
 
 
     def test_dont_grade_incomplete_application(self):
@@ -187,11 +191,25 @@ class ApplicationManagerTestCase(TripsTestCase):
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
 
 
-class LeaderApplicationManagerTestCase(TripsTestCase):
+class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
 
-    pass
+    def setUp(self):
+        self.init_current_trips_year()
 
-class GradeViewsTestCase(WebTestCase):
+    def test_with_valid_prospective_leader(self):
+
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        
+        app = self.make_application(status=GeneralApplication.LEADER)
+        app.leader_supplement.preferred_sections.add(trip.section)
+        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [trip])
+    
+
+class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -207,14 +225,14 @@ class GradeViewsTestCase(WebTestCase):
 
     def test_not_gradeable_before_application_deadline(self):
         
-        open_application()
+        self.open_application()
         for view in self.grade_views:
             res = self.app.get(reverse(view), user=self.director)
             self.assertTemplateUsed('applications/grading_not_available.html')
     
     def test_gradable_after_application_deadline(self):
         
-        close_application() # puts deadline in the past 
+        self.close_application() # puts deadline in the past 
         for view in self.grade_views:
             res = self.app.get(reverse(view), user=self.director)
             self.assertTemplateNotUsed('applications/grading_not_available.html')
