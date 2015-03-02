@@ -66,6 +66,9 @@ section_urlpatterns = patterns('',
 leader_urlpatterns = patterns(
     '', 
     url(r'^$', TripLeaderIndexView.as_view(), name='leader_index'),
+    url(r'^assign/(?P<trip>[0-9]+)$', AssignTripLeaderView.as_view(), name='assign_leader'),
+    url(r'^assign/post/(?P<leader_pk>[0-9]+)$', 
+        UpdateLeaderWithAssignedTrip.as_view(), name='assign_trip_to_leader'),
 )
                               
 

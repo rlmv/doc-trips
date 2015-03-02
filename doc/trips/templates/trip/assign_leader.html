@@ -1,0 +1,24 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+{% load links %}
+
+{% block content %}
+
+<div class="page-heading">
+  <h3> Add Leader to {{ trip }} </h3>
+</div>
+
+<table class="table table-condensed table=striped">
+
+{% for leader, add_form in leader_applications %}
+<tr>
+  <td> {{ leader }} </td>
+  <td> {% crispy add_form %} </td>
+</tr>
+{% endfor %}
+
+</table>
+
+
+
+{% endblock content %}

@@ -1,14 +1,18 @@
 
 from collections import defaultdict
 
+from django import forms
 from django.forms import ModelForm
+from django.core.urlresolvers import reverse_lazy, reverse
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from bootstrap3_datetime.widgets import DateTimePicker
+from vanilla import FormView
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from doc.applications.models import LeaderSupplement
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                      DatabaseListView, DatabaseDetailView)
+                          DatabaseListView, DatabaseDetailView, DatabaseMixin)
 
 
 class ScheduledTripListView(DatabaseListView):
@@ -197,5 +201,62 @@ class TripLeaderIndexView(DatabaseListView):
         
         return context
         
-        
+
+class TripLeaderAssignmentForm(forms.ModelForm):
     
+    class Meta:
+        model = LeaderSupplement
+        fields = ['assigned_trip']
+        widgets = {
+            'assigned_trip': forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(TripLeaderAssignmentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_action = reverse('db:assign_trip_to_leader', 
+                                          kwargs={'trips_year': kwargs['instance'].trips_year.year,
+                                                  'leader_pk': kwargs['instance'].pk})
+        self.helper.add_input(Submit('submit', 'Add'))
+
+    
+class AssignTripLeaderView(DatabaseListView):
+    """ 
+    Assign a leader to a ScheduledTrip. 
+
+    Takes the trip pk as a url arg. The template is passed 
+    a (LeaderApplication, assignment_form tuple in context_object_name.
+    """
+    model = LeaderSupplement
+    template_name = 'trip/assign_leader.html'
+    context_object_name = 'leader_applications'
+
+    def get_context_data(self, **kwargs):
+        context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
+        # add forms to each object 
+        context['trip'] = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+        context[self.context_object_name] = self.get_forms_for_leaders(self.object_list, 
+                                                                       self.kwargs['trip'])
+        return context
+
+    def get_forms_for_leaders(self, leaders, trip):
+
+        def assign_form(leader):
+            form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
+                                            instance=leader)
+            return (leader, form)
+
+        return map(leaders, assign_form)
+        
+        
+class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
+    """ 
+    Add an assigned_trip to a leader. 
+
+    POST target for AssignTripLeaderView 
+    """
+    model = LeaderSupplement
+    form_class = TripLeaderAssignmentForm
+    success_url = reverse_lazy('db:leader_index')
+    lookup_url_kwarg = 'leader_pk'
+        

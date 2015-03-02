@@ -155,19 +155,19 @@ class TripsYearMixin():
         """
 
         if self.form_class is not None:
-            msg = ('Specifying form_class on %s means that ForeignKey querysets will'
-                   'contain objects for ALL trips_years. You must explicitly restrict'
+            msg = ('Specifying form_class on %s means that ForeignKey querysets will '
+                   'contain objects for ALL trips_years. You must explicitly restrict '
                    'the querysets for these fields, or bad things will happen')
             logger.warn(msg % self.__class__.__name__)
             return self.form_class
 
-        if self.model is not None:
+        if hasattr(self, 'model') and self.model is not None:
             trips_year = self.kwargs['trips_year']
             return tripsyear_modelform_factory(self.model, trips_year,
                                                fields=self.fields)
         
-        msg = "'%s' must either define 'form_class' or 'model' " \
-            "Or CAREFULLY override 'get_form_class()'"
+        msg = ("'%s' must either define 'form_class' or 'model' " 
+            "Or CAREFULLY override 'get_form_class()'")
         raise ImproperlyConfigured(msg % self.__class__.__name__)
 
     def form_valid(self, form):
@@ -230,7 +230,8 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
         """
         
         context = super(DatabaseMixin, self).get_context_data(**kwargs)
-        context['model'] = self.model
+        if hasattr(self, 'model'):
+            context['model'] = self.model
         return context
 
     def form_invalid(self, form):
