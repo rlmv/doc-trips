@@ -206,7 +206,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.save()
 
         prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [trip])
+        self.assertEquals(list(prospects), [app.leader_supplement])
     
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
