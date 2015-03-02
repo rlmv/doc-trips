@@ -267,5 +267,11 @@ class LeaderApplicationAdminUpdateView(DatabaseUpdateView):
     model = LeaderSupplement
     form_class = LeaderSupplementAdminForm
     template_name = 'applications/trainings_update.html'
+    
+    def get_success_url(self):
+        """ Redirect back to GeneralApplication """
+        return reverse('db:generalapplication_detail', 
+                       kwargs={'trips_year': self.kwargs['trips_year'], 
+                               'pk': self.object.application.pk})
 
         

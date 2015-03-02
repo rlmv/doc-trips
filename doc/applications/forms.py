@@ -133,6 +133,8 @@ class ApplicationAdminForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Update'))
         
 
+TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
+
 class LeaderSupplementAdminForm(forms.ModelForm):
 
     class Meta:
@@ -140,9 +142,18 @@ class LeaderSupplementAdminForm(forms.ModelForm):
         fields = ('community_building', 'risk_management', 
                   'wilderness_skills', 'first_aid')
 
+        widgets = {
+            'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),
+            'risk_management': DateTimePicker(options=TIMEPICKER_OPTIONS),
+            'wilderness_skills': DateTimePicker(options=TIMEPICKER_OPTIONS),
+            'first_aid': DateTimePicker(options=TIMEPICKER_OPTIONS),
+        }
+
     def __init__(self, *args, **kwargs):
         super(LeaderSupplementAdminForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
+        self.helper.all().wrap(Div, css_class='col-sm-3')
+        self.helper.all().wrap(Row)
         self.helper.add_input(Submit('submit', 'Update'))
 
 

@@ -10,3 +10,12 @@
 {% crispy form %}
 
 {% endblock content %}
+
+{# add DateTimePicker js #}
+{% block scripts %}
+{{ block.super }}
+{{ form.media }}
+{% endblock scripts %}
+
+
+
