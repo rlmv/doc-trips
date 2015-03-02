@@ -18,13 +18,12 @@
   </tr>
   {% for trip in trips %}
   <tr> 
-    <td> {{ trip }} </td>
-    <td> {{ trip.template.description_summary }} </td>
-    <td> {{ trip.leaders.all }} </td>
+    <td class="col-sm-3"> {{ trip }} </td>
+    <td class="col-sm-6"> {{ trip.template.description_summary }} </td>
+    <td class="col-sm-3"> {{ trip.leaders.all }} </td>
   </tr>
   {% endfor %}
 </table>
-
 
 {% endfor %}
 
