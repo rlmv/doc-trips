@@ -206,7 +206,9 @@ def validate_grade(grade):
         raise ValidationError('grade is not in required range [{}, {}]'
                               .format(min, max))
 
+
 class AbstractGrade(DatabaseModel):
+    """ Abstract model for shared grade information """
 
     MIN_GRADE = 1
     MAX_GRADE = 6
@@ -220,7 +222,7 @@ class AbstractGrade(DatabaseModel):
 
     
 class LeaderApplicationGrade(AbstractGrade):
-
+    """ Grade for LeaderApplications """
     application = models.ForeignKey(LeaderSupplement, related_name='grades',
                                     editable=False)
     hard_skills = models.BooleanField(default=False)
@@ -228,6 +230,6 @@ class LeaderApplicationGrade(AbstractGrade):
 
 
 class CrooApplicationGrade(AbstractGrade):
-
+    """ Grade for CrooApplications """
     application = models.ForeignKey(CrooSupplement, related_name='grades',
                                     editable=False)
