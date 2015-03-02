@@ -10,7 +10,7 @@
 
 {% for section, trips in trips_by_section %}
 
-<table class="table">
+<table class="table table-condensed">
   <tr class="bg-info">
     <th> Section {{ section }}</th>
     <th/>
@@ -20,7 +20,7 @@
   <tr> 
     <td class="col-sm-3"> {{ trip }} </td>
     <td class="col-sm-6"> {{ trip.template.description_summary }} </td>
-    <td class="col-sm-3"> {{ trip.leaders.all }} </td>
+    <td class="col-sm-3"> {{ trip.leaders.all }} <a href="{% url 'db:assign_leader' trips_year=trips_year trip=trip.pk %}">add</a></td>
   </tr>
   {% endfor %}
 </table>

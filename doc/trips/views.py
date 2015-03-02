@@ -217,7 +217,7 @@ class TripLeaderAssignmentForm(forms.ModelForm):
         self.helper.form_action = reverse('db:assign_trip_to_leader', 
                                           kwargs={'trips_year': kwargs['instance'].trips_year.year,
                                                   'leader_pk': kwargs['instance'].pk})
-        self.helper.add_input(Submit('submit', 'Add'))
+        self.helper.add_input(Submit('submit', 'Add', css_class='btn-xs'))
 
     
 class AssignTripLeaderView(DatabaseListView):
@@ -225,8 +225,9 @@ class AssignTripLeaderView(DatabaseListView):
     Assign a leader to a ScheduledTrip. 
 
     Takes the trip pk as a url arg. The template is passed 
-    a (LeaderApplication, assignment_form tuple in context_object_name.
+    a (LeaderApplication, assignment_form) tuple in context_object_name.
     """
+
     model = LeaderSupplement
     template_name = 'trip/assign_leader.html'
     context_object_name = 'leader_applications'
@@ -246,7 +247,7 @@ class AssignTripLeaderView(DatabaseListView):
                                             instance=leader)
             return (leader, form)
 
-        return map(leaders, assign_form)
+        return map(assign_form, leaders)
         
         
 class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
@@ -257,6 +258,11 @@ class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
     """
     model = LeaderSupplement
     form_class = TripLeaderAssignmentForm
-    success_url = reverse_lazy('db:leader_index')
     lookup_url_kwarg = 'leader_pk'
+
+    def get_success_url(self):
+        """ Override DatabaseUpdateView default """
+        return reverse('db:leader_index', 
+                       kwargs={'trips_year': self.kwargs['trips_year']})
+
         
