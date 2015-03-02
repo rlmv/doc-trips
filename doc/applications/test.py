@@ -185,7 +185,11 @@ class ApplicationManagerTestCase(TripsTestCase):
            
         next = LeaderApplication.objects.next_to_grade(self.user)
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
-        
+
+
+class LeaderApplicationManagerTestCase(TripsTestCase):
+
+    pass
 
 class GradeViewsTestCase(WebTestCase):
 

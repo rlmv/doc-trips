@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.db.models import Q
 
 from doc.db.models import TripsYear
 
@@ -64,5 +65,33 @@ class ApplicationManager(models.Manager):
         return self.filter(trips_year=trips_year).exclude(document='')    
 
 
+
+class LeaderApplicationManager(ApplicationManager):
+
+    def prospective_leaders_for_trip(self, trip):
+        """ 
+        Get prospective leaders who can lead ScheduledTrip trip.
+        
+        Returns all LeaderApplications which 
+        (1) are for the same trips_year as trip
+        (2) are Accepted or Waitlisted as leaders
+        (3) prefer or are available for trip's TripType and Section
+
+        We don't exclude leaders already assigned to a trip.
+        """
+
+        LEADER = self.model.application.field.related_field.model.LEADER
+        LEADER_WAITLIST = self.model.application.field.related_field.model.LEADER_WAITLIST
+
+        return (self.filter(trips_year=trip.trips_year)
+                .filter(Q(application__status=LEADER) |
+                        Q(application__status=LEADER_WAITLIST))
+                .filter(Q(preferred_sections=trip.section) | 
+                        Q(available_sections=trip.section))
+                .filter(Q(preferred_triptypes=trip.template.triptype) | 
+                        Q(available_triptypes=trip.template.triptype)))
+                           
+        
+        
 
     
