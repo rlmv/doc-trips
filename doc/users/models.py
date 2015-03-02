@@ -86,6 +86,7 @@ class DartmouthUser(PermissionsMixin):
         return False
     
     def __str__(self):
-        return '{} ({})'.format(self.name, self.netid)
+        #return '{} ({})'.format(self.name, self.netid)
+        return str(self.name)
         
 
