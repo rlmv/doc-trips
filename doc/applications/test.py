@@ -196,7 +196,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
     def setUp(self):
         self.init_current_trips_year()
 
-    def test_with_valid_prospective_leader(self):
+    def test_prospective_leader_with_preferred_choices(self):
 
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
         
@@ -207,7 +207,54 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
 
         prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app.leader_supplement])
-    
+
+    def test_prospective_leader_with_available_choices(self):
+
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        
+        app = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
+        app.leader_supplement.available_sections.add(trip.section)
+        app.leader_supplement.available_triptypes.add(trip.template.triptype)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [app.leader_supplement])
+
+    def test_with_pending(self):
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        
+        # otherwise available
+        app = self.make_application(status=GeneralApplication.PENDING)
+        app.leader_supplement.preferred_sections.add(trip.section)
+        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [])
+
+    def test_without_section_preference(self):
+        
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        
+        # otherwise available
+        app = self.make_application(status=GeneralApplication.LEADER)
+        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [])
+
+    def test_without_triptype_preference(self):
+
+        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+       
+        app = self.make_application(status=GeneralApplication.LEADER)
+        app.leader_supplement.preferred_sections.add(trip.section)
+        app.save()
+
+        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [])
+       
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 
