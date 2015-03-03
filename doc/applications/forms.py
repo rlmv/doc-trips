@@ -265,7 +265,7 @@ class CrooSupplementLayout(Layout):
 
 
 class CrooApplicationGradeForm(forms.ModelForm):
-
+    """ Form for scoring Croo applications """
     class Meta:
         model = CrooApplicationGrade
         widgets = {
@@ -273,6 +273,7 @@ class CrooApplicationGradeForm(forms.ModelForm):
         }
 
 class LeaderApplicationGradeForm(forms.ModelForm):
+    """ Form for scoring Leader applications """
     class Meta:
         model = LeaderApplicationGrade
 
