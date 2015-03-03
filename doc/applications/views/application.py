@@ -174,10 +174,25 @@ class SetupApplication(CreateApplicationsPermissionRequired,
         return context
 
 
+from django_easyfilters import FilterSet
+
+class GeneralApplicationFilterSet(FilterSet):
+    fields = ['status']
+
 class ApplicationDatabaseListView(DatabaseListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
+
+    def get_context_data(self, **kwargs):
+        
+        context = super(ApplicationDatabaseListView, self).get_context_data(**kwargs)
+        applications_filter = GeneralApplicationFilterSet(self.object_list, 
+                                                         self.request.GET)
+        context[self.context_object_name] = applications_filter.qs
+        context['applications_filter'] = applications_filter
+        print(applications_filter)
+        return context
 
 
 class ApplicationDatabaseDetailView(DatabaseDetailView):
