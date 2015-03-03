@@ -165,6 +165,35 @@ class LeaderSupplement(DatabaseModel):
                                       related_name='leaders',
                                       on_delete=models.SET_NULL)
 
+    def get_preferred_trips(self):
+        """ All scheduled trips which this leader prefers to go lead. """
+
+        trips = (ScheduledTrip.objects
+                 .filter(trips_year=self.trips_year)
+                 .filter(Q(section__in=self.preferred_sections.all()) &
+                         Q(template__triptype__in=self.preferred_triptypes.all())))
+
+        return trips
+
+
+    def get_available_trips(self):
+        """
+        Return all ScheduledTrips which this leader is available for. 
+        
+        Contains all permutations of available and preferred sections and 
+        trips types, excluding the results of get_preferred_trips.
+        """
+        
+        trips = (ScheduledTrip.objects
+                 .filter(trips_year=self.trips_year)
+                 .filter(Q(section__in=self.preferred_sections.all()) |
+                         Q(section__in=self.available_sections.all()), 
+                         Q(template__triptype__in=self.preferred_triptypes.all()) |
+                         Q(template__triptype__in=self.available_triptypes.all()))
+                 .exclude(id__in=self.get_preferred_trips().all()))
+
+        return trips
+
     def __str__(self):
         return str(self.application.applicant)
 
