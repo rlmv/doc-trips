@@ -265,4 +265,5 @@ class CrooApplicationGrade(AbstractGrade):
     application = models.ForeignKey(CrooSupplement, related_name='grades',
                                     editable=False)
     potential_croos = models.ManyToManyField(Croo, blank=True, verbose_name="I think this applicant is qualified for, and would do well on, the following Croos:")
-
+    
+    # TODO: kitchen lead qualified, safety_lead_qualified?
