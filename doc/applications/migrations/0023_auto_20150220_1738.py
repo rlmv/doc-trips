@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='croograde',
             name='grade',
-            field=models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade]),
+            field=models.PositiveSmallIntegerField(validators=[]),
         ),
         migrations.AlterField(
             model_name='croograde',
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='leadergrade',
             name='grade',
-            field=models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade]),
+            field=models.PositiveSmallIntegerField(validators=[]),
         ),
         migrations.AlterField(
             model_name='leadergrade',

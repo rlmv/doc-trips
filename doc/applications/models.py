@@ -228,7 +228,7 @@ class CrooSupplement(DatabaseModel):
         return str(self.application.applicant)
 
 
-def validate_grade(grade):
+def _validate_grade(grade):
     min = AbstractGrade.MIN_GRADE
     max = AbstractGrade.MAX_GRADE
     if grade < min or grade > max:

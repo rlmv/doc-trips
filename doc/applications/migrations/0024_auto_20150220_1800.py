@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='CrooApplicationGrade',
             fields=[
                 ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('grade', models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade])),
+                ('grade', models.PositiveSmallIntegerField(validators=[])),
                 ('comment', models.TextField()),
                 ('application', models.ForeignKey(editable=False, to='applications.CrooSupplement', related_name='grades')),
                 ('grader', models.ForeignKey(to=settings.AUTH_USER_MODEL, editable=False)),
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
             name='LeaderApplicationGrade',
             fields=[
                 ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('grade', models.PositiveSmallIntegerField(validators=[doc.applications.models.validate_grade])),
+                ('grade', models.PositiveSmallIntegerField(validators=[])),
                 ('comment', models.TextField()),
                 ('hard_skills', models.BooleanField(default=False)),
                 ('soft_skills', models.BooleanField(default=False)),
