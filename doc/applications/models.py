@@ -228,14 +228,6 @@ class CrooSupplement(DatabaseModel):
         return str(self.application.applicant)
 
 
-def _validate_grade(grade):
-    min = AbstractGrade.MIN_GRADE
-    max = AbstractGrade.MAX_GRADE
-    if grade < min or grade > max:
-        raise ValidationError('grade is not in required range [{}, {}]'
-                              .format(min, max))
-
-
 class AbstractGrade(DatabaseModel):
     """ Abstract model for shared grade information """
 
