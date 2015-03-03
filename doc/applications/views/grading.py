@@ -1,4 +1,5 @@
 
+from braces.views import FormMessagesMixin
 from vanilla import RedirectView, TemplateView, CreateView
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
@@ -20,6 +21,39 @@ class IfGradingAvailable():
             return super(IfGradingAvailable, self).dispatch(request, *args, **kwargs)
 
         return render(request, 'applications/grading_not_available.html')
+
+
+class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
+    """ 
+    Shared logic for grading Croo and Leader applications.
+    """
+
+    model = None
+    application_model = None
+    form_class = None
+    success_url = None
+    verbose_application_name = None # eg. Trip Leader Application
+    template_name = 'applications/grade.html'
+    form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
+
+    def get_application(self):
+        return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs):
+         
+        context = super(GenericGradingView, self).get_context_data(**kwargs)
+        context['application'] = self.get_application()
+        context['title'] = 'Grade %s #%s' % (self.verbose_application_name, self.kwargs['pk'])
+        context['score_choices'] = map(lambda c: c[1], self.model.SCORE_CHOICES)
+        return context
+
+    def form_valid(self, form):
+        
+        form.instance.grader = self.request.user
+        form.instance.application = self.get_application()
+        form.save()
+        
+        return super(GenericGradingView, self).form_valid(form)
 
 
 class GraderLandingPage(TemplateView):
@@ -47,33 +81,13 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
         return reverse('applications:grade:croo', kwargs={'pk': application.pk})
 
 
-class GradeCrooApplication(CrooGraderPermissionRequired, 
-                           IfGradingAvailable, CreateView):
+class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
 
     model = CrooApplicationGrade
+    application_model = CrooSupplement
     form_class = CrooApplicationGradeForm
-    template_name = 'applications/grade.html'
-
     success_url = reverse_lazy('applications:grade:next_croo')
-
-    def get_application(self):
-        return get_object_or_404(CrooSupplement, pk=self.kwargs['pk'])
-
-    def get_context_data(self, **kwargs):
-        
-        context = super(GradeCrooApplication, self).get_context_data(**kwargs)
-        context['application'] = self.get_application()
-        context['title'] = 'Grade Croo Application #%s' % self.kwargs['pk']
-
-        return context
-
-    def form_valid(self, form):
-        
-        form.instance.grader = self.request.user
-        form.instance.application = self.get_application()
-        form.save()
-        
-        return super(GradeCrooApplication, self).form_valid(form)
+    verbose_application_name = 'Croo Application'
         
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
@@ -97,32 +111,13 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
         return reverse('applications:grade:leader', kwargs={'pk': application.pk})
 
 
-class GradeLeaderApplication(LeaderGraderPermissionRequired, 
-                             IfGradingAvailable, CreateView):
+class GradeLeaderApplication(LeaderGraderPermissionRequired, GenericGradingView):
 
     model = LeaderApplicationGrade
+    application_model = LeaderSupplement
     form_class = LeaderApplicationGradeForm
-    template_name = 'applications/grade.html'
-
     success_url = reverse_lazy('applications:grade:next_leader')
-
-    def get_application(self):
-        return get_object_or_404(LeaderSupplement, pk=self.kwargs['pk'])
-
-    def get_context_data(self, **kwargs):
-        
-        context = super(GradeLeaderApplication, self).get_context_data(**kwargs)
-        context['application'] = self.get_application()
-        context['title'] = 'Grade Trip Leader Application #%s' % self.kwargs['pk']
-        return context
-
-    def form_valid(self, form):
-        
-        form.instance.grader = self.request.user
-        form.instance.application = self.get_application()
-        form.save()
-        
-        return super(GradeLeaderApplication, self).form_valid(form)
+    verbose_application_name = 'Trip Leader Application'
 
 
 class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired, 

@@ -7,13 +7,24 @@
 
 {% block content %}
 
-<h3> {{ title }} </h3>
-<p> Read the app carefully, give it a grade, and add any pertinent comments. Scores from 1-6 where 1 is the lowest and 6 is the highest. </p>
+<div class="page-heading">
+  <h3> {{ title }} </h3>
+</div>
+
+<p> Read an application completely before assigning it a score:
+  <ul class="list-unstyled">
+    {% for score in score_choices %}
+    <li> {{ score }} </li>
+    {% endfor %}
+  </ul>
+</p>
+
+<p> Justify your score in the comments section. Specifically articulate why you gave the score you did and list important hard/soft skills that set this applicant apart. Details and examples are way more important than generalizations. <p>
 
 {% display_docx_filefield_as_html application.document %}
 
 <div>
-{% crispy form %}
+  {% crispy form %}
 </div>
 
 {% endblock content %}

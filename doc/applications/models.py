@@ -234,7 +234,7 @@ class AbstractGrade(DatabaseModel):
     class Meta:
         abstract = True
 
-    GRADE_CHOICES = (
+    SCORE_CHOICES = (
         (1, "1 -- Bad application -- I really don't want this person to be a volunteer and I have serious concerns"),
         (2, "2 -- Poor application -- I have some concerns about this person being a Trips volunteer"),
         (3, "3 -- Fine application -- This person might work well as a volunteer but I have some questions"),
@@ -244,7 +244,7 @@ class AbstractGrade(DatabaseModel):
     )
 
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    grade = models.PositiveSmallIntegerField('score', choices=GRADE_CHOICES)
+    grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     comment = models.TextField()
 
     
