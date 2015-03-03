@@ -1,18 +1,17 @@
 
 from collections import defaultdict
 
-from django import forms
-from django.forms import ModelForm
 from django.core.urlresolvers import reverse_lazy, reverse
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-from bootstrap3_datetime.widgets import DateTimePicker
 from vanilla import FormView
+from crispy_forms.layout import Submit
+from crispy_forms.helper import FormHelper
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
 from doc.applications.models import LeaderSupplement
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                           DatabaseListView, DatabaseDetailView, DatabaseMixin)
+from doc.db.urlhelpers import reverse_detail_url
 
 
 class ScheduledTripListView(DatabaseListView):
@@ -143,21 +142,6 @@ class SectionListView(DatabaseListView):
     context_object_name = 'sections'
     template_name = 'trip/section_index.html'
 
-class SectionForm(ModelForm):
-    """ Form for Section Create and Update views. """
-    
-    class Meta:
-        model = Section
-        widgets = {
-            'leaders_arrive': DateTimePicker(options={'format': 'MM/DD/YYYY', 
-                                                      'pickTime': False})
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(SectionForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Submit'))
-    
 
 class SectionCreateView(DatabaseCreateView):
     model = Section
@@ -201,24 +185,6 @@ class TripLeaderIndexView(DatabaseListView):
         
         return context
         
-
-class TripLeaderAssignmentForm(forms.ModelForm):
-    
-    class Meta:
-        model = LeaderSupplement
-        fields = ['assigned_trip']
-        widgets = {
-            'assigned_trip': forms.HiddenInput(),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super(TripLeaderAssignmentForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_action = reverse('db:assign_trip_to_leader', 
-                                          kwargs={'trips_year': kwargs['instance'].trips_year.year,
-                                                  'leader_pk': kwargs['instance'].pk})
-        self.helper.add_input(Submit('submit', 'Add', css_class='btn-xs'))
-
     
 class AssignTripLeaderView(DatabaseListView):
     """ 
@@ -288,4 +254,27 @@ class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
         return reverse('db:leader_index', 
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
+
+class RemoveAssignedTrip(DatabaseUpdateView):
+    """ Remove a leader's assigned trip """
+
+    model = LeaderSupplement
+    lookup_url_kwarg = 'leader_pk'
+    template_name = 'trip/remove_leader_assignment.html'
+
+    def get_form(self, **kwargs):
+        form = TripLeaderAssignmentForm(initial={'assigned_trip': None}, **kwargs)
+        
+        form.helper = FormHelper(form)
+        form.helper.add_input(Submit('submit', 'Remove', css_class="btn-danger"))
+        return form
+
+    def get_success_url(self):
+        return reverse_detail_url(self.object.application)
+        
+        
+    
+    
+    
+    
         

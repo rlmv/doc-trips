@@ -32,7 +32,7 @@ This list shows all Accepted and Waitlisted leaders who indicated that they pref
     <td> {{ leader.application | detail_link:leader }} </td>
     <td> 
       {% if assign_form %}
-      {% crispy add_form %}
+      {% crispy assign_form %}
       {% else %} 
       {{ leader.assigned_trip | detail_link }}
       {% endif %}</td>
@@ -42,7 +42,6 @@ This list shows all Accepted and Waitlisted leaders who indicated that they pref
   </tr>
   {% endfor %}
 </table>
-
 
 
 {% endblock content %}
