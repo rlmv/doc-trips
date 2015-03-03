@@ -48,12 +48,12 @@
 </table>
 
 
-<h4> Trainings <a href="{% url 'db:update_application_trainings' trips_year=application.trips_year pk=application.leader_supplement.pk %}">edit</a></h4>
+<h4> Trip Leader Trainings <a href="{% url 'db:update_application_trainings' trips_year=application.trips_year pk=application.leader_supplement.pk %}">edit</a></h4>
 {% detail application.leader_supplement trainings_fields %}
 
 
 {# grades #}
-<h4> Trip Leader Grades </h4>
+<h4> Trip Leader Grades {% if application.leader_application_complete %}<a href="{% url 'applications:grade:leader' pk=application.leader_supplement.pk %}">add</a>{% endif %}</h4>
 <table class="table table-condensed table-striped">
   <tr>
     <th> Grade </th>
@@ -73,7 +73,7 @@
   {% endfor %}
 </table>
 
-<h4> Croo Grades </h4>
+<h4> Croo Grades {% if application.croo_application_complete %}<a href="{% url 'applications:grade:croo' pk=application.croo_supplement.pk %}">add</a>{% endif %}</h4>
 <table class="table table-condensed table-striped">
   <tr>
     <th> Grade </th>
