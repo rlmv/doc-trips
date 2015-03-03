@@ -249,7 +249,7 @@ class AssignTripLeaderView(DatabaseListView):
             else:
                 form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
                                                 instance=leader)
-
+                
             if trip.template.triptype in leader.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
             elif trip.template.triptype in leader.available_triptypes.all():
@@ -262,10 +262,17 @@ class AssignTripLeaderView(DatabaseListView):
                 
             return (leader, form, triptype_preferrence, section_preferrence)
         
-        context[self.context_object_name] = map(process_leader, self.object_list)
+        # prefetch M2M fields
+        leaders = (self.object_list
+                   .prefetch_related('preferred_triptypes')
+                   .prefetch_related('available_triptypes')
+                   .prefetch_related('preferred_sections')
+                   .prefetch_related('available_sections'))
+        context[self.context_object_name] = map(process_leader, leaders)
+        
         return context
-        
-        
+
+
 class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
     """ 
     Add an assigned_trip to a leader. 
