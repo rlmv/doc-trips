@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from vanilla import FormView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
+from braces.views import FormValidMessageMixin
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
@@ -190,7 +191,9 @@ class AssignTripLeaderView(DatabaseListView):
     Assign a leader to a ScheduledTrip. 
 
     Takes the trip pk as a url arg. The template is passed 
-    a (LeaderApplication, assignment_form) tuple in context_object_name. assignment_form will be None if the leader is already assigned to a trip.
+    a list of (LeaderApplication, assignment_form, triptype_preference, section_pref) 
+    tuples in context_object_name. assignment_form will be None if the leader 
+    is already assigned to a trip.
     """
 
     model = LeaderSupplement
@@ -238,7 +241,7 @@ class AssignTripLeaderView(DatabaseListView):
         return context
 
 
-class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
+class UpdateLeaderWithAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
     """ 
     Add an assigned_trip to a leader. 
 
@@ -247,6 +250,11 @@ class UpdateLeaderWithAssignedTrip(DatabaseUpdateView):
     model = LeaderSupplement
     form_class = TripLeaderAssignmentForm
     lookup_url_kwarg = 'leader_pk'
+
+    def get_form_valid_message(self):
+        """ Flash success message """
+        return '{} assigned to lead {}'.format(self.object.application.applicant, 
+                                               self.object.assigned_trip)
 
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
