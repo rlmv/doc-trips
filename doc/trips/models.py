@@ -80,7 +80,7 @@ class Section(DatabaseModel):
         return self.leaders_arrive + timedelta(days=5)
 
     def __str__(self):
-        return self.name
+        return 'Section ' + self.name
         
         
     def date_range_str(self):
