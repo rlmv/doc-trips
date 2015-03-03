@@ -268,9 +268,12 @@ class CrooApplicationGradeForm(forms.ModelForm):
 
     class Meta:
         model = CrooApplicationGrade
+        widgets = {
+            'potential_croos': forms.CheckboxSelectMultiple(),
+        }
 
 class LeaderApplicationGradeForm(forms.ModelForm):
     class Meta:
         model = LeaderApplicationGrade
-        fields = ['grade', 'comment', 'hard_skills', 'soft_skills']
+
 

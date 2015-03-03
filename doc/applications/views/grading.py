@@ -62,7 +62,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         return super(GenericGradingView, self).form_valid(form)
 
     def get_form(self, **kwargs):
-
+        """ Add a Skip button to the form """
         form = super(GenericGradingView, self).get_form(**kwargs)
         form.helper = FormHelper(form)
         form.helper.layout.append(

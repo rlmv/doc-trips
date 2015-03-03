@@ -216,6 +216,7 @@ class CrooSupplement(DatabaseModel):
     # -------- driving -------
 
     # ----- backend fields -------
+    # only seen by directors in the database.
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
                                       related_name='croolings' ,
                                       on_delete=models.SET_NULL)
@@ -223,6 +224,9 @@ class CrooSupplement(DatabaseModel):
                                              related_name='potential_croolings')
     safety_lead_qualified = models.BooleanField(default=False)
     safety_lead = models.BooleanField(default=False)
+
+    kitchen_lead_qualified = models.BooleanField(default=False)
+    kitchen_lead = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.application.applicant)
@@ -260,3 +264,5 @@ class CrooApplicationGrade(AbstractGrade):
     """ Grade for CrooApplications """
     application = models.ForeignKey(CrooSupplement, related_name='grades',
                                     editable=False)
+    potential_croos = models.ManyToManyField(Croo, blank=True, verbose_name="I think this applicant is qualified for, and would do well on, the following Croos:")
+
