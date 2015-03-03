@@ -49,6 +49,10 @@ def can_create_applications():
     return get_permission('can_create_applications',
                           'Can create leader and croo applications')
 
+def can_edit_applications_and_assign_trip_leaders():
+    return get_permission('can_edit_applications_and_assign_leaders', 
+                          'Can change leader and croo applications in DB')
+
 
 """ # TODO: these might be useful for croos?
 can_edit_db, created = get_permission(
@@ -64,11 +68,12 @@ name='Can edit items in the trips database')
 def directors():    
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
-                             can_grade_leader_applications(), 
                              can_access_db(), 
                              can_edit_timetable(), 
-                             can_grade_croo_applications(), 
-                             can_create_applications()]
+                             can_grade_croo_applications(),
+                             can_grade_leader_applications(), 
+                             can_create_applications(), 
+                             can_edit_applications_and_assign_trip_leaders(),]
     directors.save()
     return directors
 
@@ -84,10 +89,9 @@ def directorate():
 def tlts():
     # trip leader trainers
     tlts, created = Group.objects.get_or_create(name='tlts')
-    tlts.permissions = directorate().permissions + [
-                        # can assign trip leaders to trips
-                        # can edit leader apps?
-                        ]
+    tlts.permissions = [can_grade_leader_applications(),
+                        can_edit_applications_and_assign_trip_leaders(),]
+
     tlts.save()
     return tlts
 
