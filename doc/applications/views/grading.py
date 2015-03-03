@@ -1,6 +1,8 @@
 
 from braces.views import FormMessagesMixin
 from vanilla import RedirectView, TemplateView, CreateView
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, HTML, ButtonHolder
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 
@@ -36,6 +38,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
     template_name = 'applications/grade.html'
     form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
 
+    def get_form_valid_message(self):
+        return 'Score submitted for {} #{}'.format(self.verbose_application_name,
+                                                   self.kwargs['pk'])
+
     def get_application(self):
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
@@ -43,7 +49,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
          
         context = super(GenericGradingView, self).get_context_data(**kwargs)
         context['application'] = self.get_application()
-        context['title'] = 'Grade %s #%s' % (self.verbose_application_name, self.kwargs['pk'])
+        context['title'] = 'Score %s #%s' % (self.verbose_application_name, self.kwargs['pk'])
         context['score_choices'] = map(lambda c: c[1], self.model.SCORE_CHOICES)
         return context
 
@@ -54,6 +60,18 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         form.save()
         
         return super(GenericGradingView, self).form_valid(form)
+
+    def get_form(self, **kwargs):
+
+        form = super(GenericGradingView, self).get_form(**kwargs)
+        form.helper = FormHelper(form)
+        form.helper.layout.append(
+            ButtonHolder(
+                Submit('submit', 'Submit Score'),
+                HTML('<a href="%s" class="btn btn-warning" role="button">Skip this Application</a>' % self.get_success_url()),
+            )
+        )
+        return form
 
 
 class GraderLandingPage(TemplateView):
