@@ -163,7 +163,7 @@ class LeaderSupplement(DatabaseModel):
     # ----- admin ---------
     assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
                                       related_name='leaders',
-                                      on_delete=models.SET_NULL)
+                                      on_delete=models.PROTECT)
 
     def get_preferred_trips(self):
         """ All scheduled trips which this leader prefers to go lead. """
