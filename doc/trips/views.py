@@ -262,7 +262,7 @@ class UpdateLeaderWithAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
-class RemoveAssignedTrip(DatabaseUpdateView):
+class RemoveAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
     """ Remove a leader's assigned trip """
 
     model = LeaderSupplement
@@ -270,12 +270,20 @@ class RemoveAssignedTrip(DatabaseUpdateView):
     template_name = 'trip/remove_leader_assignment.html'
 
     def get_form(self, **kwargs):
+
+        # save the old assigned trip so we can show it in a message after deletion
+        self._assigned_trip = kwargs['instance'].assigned_trip
+
         form = TripLeaderAssignmentForm(initial={'assigned_trip': None}, **kwargs)
         
         form.helper = FormHelper(form)
         form.helper.add_input(Submit('submit', 'Remove', css_class="btn-danger"))
         return form
 
+    def get_form_valid_message(self):
+        return 'Leader {} removed from Trip {}'.format(self.object.application.applicant,
+                                                       self._assigned_trip)
+        
     def get_success_url(self):
         return reverse_detail_url(self.object.application)
         
