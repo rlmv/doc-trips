@@ -129,12 +129,11 @@ class TripTemplate(DatabaseModel):
     def get_scheduled_trips(self):
         """ Get all scheduled trips which use this template 
 
-        Returns a dictionary of section:scheduledtrip/None
+        Returns a dictionary of section:scheduledtrip/None. This is used by
+        the ScheduledTripListView to compute the scheduled trip table.
 
         TODO: optimize this. Calling this for every row means a lot
-        of redundant queries. 
-
-        Can we compute the entire table with a constant number of queries? 
+        of redundant queries. Can we compute the entire table with a constant number of queries? 
         """
         scheduled_trips = (ScheduledTrip.objects
                  .filter(trips_year=self.trips_year)

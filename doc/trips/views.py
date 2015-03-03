@@ -26,7 +26,6 @@ class ScheduledTripListView(DatabaseListView):
         """ Add sections to template context """
         context = super(ScheduledTripListView, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
-        # TODO: optimize this using .only? vv
         context['sections'] = Section.objects.filter(trips_year=trips_year)
         return context
 
