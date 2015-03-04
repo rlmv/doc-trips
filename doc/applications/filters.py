@@ -1,5 +1,8 @@
-import django_filters
+
 from collections import namedtuple
+
+import django_filters
+from django.db.models import Q
 
 from doc.applications.models import GeneralApplication
 
@@ -21,7 +24,8 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
         ('any', '--', None),
         ('croo', 'Croo Applications', 'croo_applications'),
         ('leader', 'Leader Applications', 'leader_applications'),
-        ('both', 'Croo and Leader Applications', 'both_applications'),
+        ('either', 'Leader OR Croo Applications', 'either_applications'),
+        ('both', 'Leader AND Croo Applications', 'both_applications'),
     ]
 
     def croo_applications(self, qs):
@@ -30,9 +34,13 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
     def leader_applications(self, qs):
         return qs.exclude(leader_supplement__document='')
 
+    def either_applications(self, qs):
+        return qs.exclude(Q(leader_supplement__document='') &
+                          Q(croo_supplement__document=''))
+
     def both_applications(self, qs):
-        return (qs.exclude(leader_supplement__document='')
-                .exclude(croo_supplement__document=''))
+        return qs.exclude(Q(leader_supplement__document='') |
+                          Q(croo_supplement__document=''))
 
     def filter(self, qs, value):
         if not value or not self.actions[value]:
@@ -48,6 +56,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
     class Meta:
         model = GeneralApplication
         fields = ['status', 'applicant']
+        order_by = [('applicant__name', 'Name'),]
 
     applicant = django_filters.MethodFilter(action='lookup_user')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
@@ -61,7 +70,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
         super(ApplicationFilterSet, self).__init__(*args, **kwargs)
         # add a blank choice
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
-        
+        self.filters['status'].field.label = 'Status'
+        self.ordering_field.label = 'Order by'
         self.form.helper = FilterSetFormHelper(self.form)
 
 
@@ -78,10 +88,11 @@ class FilterSetFormHelper(FormHelper):
         print(self.layout)
         self.layout = Layout(
             Row(
-                Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
                 Div('complete', css_class='col-sm-4'),
                 Div('status', css_class='col-sm-3'),
-                Div('applicant', css_class='col-sm-3'),
+                Div('applicant', css_class='col-sm-2'),
+                Div('o', css_class='col-sm-2'),
+                Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
             )
         )
 
