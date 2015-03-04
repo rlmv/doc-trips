@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.safestring import mark_safe
+from django.db import models
 
 from doc.db.views import CrispyFormMixin
 from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
@@ -179,6 +180,11 @@ class ApplicationDatabaseListView(DatabaseListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
+
+    def get_queryset(self):
+        return (super(ApplicationDatabaseListView, self).get_queryset()
+                .annotate(avg_croo_grade=models.Avg('croo_supplement__grades__grade'))
+                .annotate(avg_leader_grade=models.Avg('leader_supplement__grades__grade')))
 
     def get_context_data(self, **kwargs):
         

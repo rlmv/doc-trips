@@ -85,7 +85,6 @@ class FilterSetFormHelper(FormHelper):
         super(FilterSetFormHelper, self).__init__(*args, **kwargs)
 
         self.form_method = 'GET'
-        print(self.layout)
         self.layout = Layout(
             Row(
                 Div('complete', css_class='col-sm-4'),
