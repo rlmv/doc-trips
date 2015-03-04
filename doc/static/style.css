@@ -6,3 +6,9 @@ body {
 .expand-whitespace {
     white-space: pre-line;
 }
+
+/* push 'Filter' button inline with input boxes */
+.filter-submit {
+    position: absolute;
+    top: 1.7em;
+}
