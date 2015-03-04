@@ -23,6 +23,7 @@ from doc.applications.models import (GeneralApplication, LeaderSupplement,
 from doc.applications.forms import (ApplicationForm, CrooSupplementForm, 
                                     LeaderSupplementForm, LeaderSupplementAdminForm, 
                                     ApplicationAdminForm)
+from doc.applications.filters import ApplicationFilterSet
 from doc.permissions.views import (CreateApplicationsPermissionRequired, 
                                    CrooGraderPermissionRequired)
 from doc.utils.views import MultipleFormMixin
@@ -178,6 +179,14 @@ class ApplicationDatabaseListView(DatabaseListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
+
+    def get_context_data(self, **kwargs):
+        
+        context = super(ApplicationDatabaseListView, self).get_context_data(**kwargs)
+        applications_filter = ApplicationFilterSet(self.request.GET, queryset=self.object_list)
+        context[self.context_object_name] = applications_filter.qs
+        context['applications_filter'] = applications_filter
+        return context
 
 
 class ApplicationDatabaseDetailView(DatabaseDetailView):

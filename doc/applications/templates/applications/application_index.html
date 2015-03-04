@@ -2,6 +2,7 @@
 {% extends "db/base.html" %}
 {% load links %}
 {% load icons %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -9,6 +10,10 @@
   <h3> Applications </h3>
   <h4> Under construction! </h4>
 </div>
+
+
+{% crispy applications_filter.form %}
+  
 
 <table class="table table-condensed">
   <tr>
