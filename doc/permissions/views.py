@@ -76,7 +76,7 @@ class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_edit_timetable'
 
 
-class CreateApplicationsPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+class CreateApplicationPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to create/edit croo and leader applications """
     permission_required = 'permissions.can_create_applications'
 

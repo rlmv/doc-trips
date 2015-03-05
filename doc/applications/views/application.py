@@ -1,6 +1,6 @@
 
 
-from vanilla import CreateView, UpdateView, RedirectView, TemplateView
+from vanilla import DetailView, CreateView, UpdateView, RedirectView, TemplateView, ListView
 from braces.views import FormMessagesMixin
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from crispy_forms.helper import FormHelper
@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.db import models
 
 from doc.db.views import CrispyFormMixin
-from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin
+from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin, TripsYearMixin
 from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.timetable.models import Timetable
@@ -25,8 +25,10 @@ from doc.applications.forms import (ApplicationForm, CrooSupplementForm,
                                     LeaderSupplementForm, LeaderSupplementAdminForm, 
                                     ApplicationAdminForm)
 from doc.applications.filters import ApplicationFilterSet
-from doc.permissions.views import (CreateApplicationsPermissionRequired, 
-                                   CrooGraderPermissionRequired)
+from doc.permissions.views import (CreateApplicationPermissionRequired, 
+                                   CrooGraderPermissionRequired, 
+                                   DatabaseReadPermissionRequired, 
+                                   DatabaseEditPermissionRequired)
 from doc.utils.views import MultipleFormMixin
 from doc.utils.convert import convert_docx_filefield_to_html
 
@@ -140,7 +142,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         }
 
     
-class SetupApplication(CreateApplicationsPermissionRequired, 
+class SetupApplication(CreateApplicationPermissionRequired, 
                        CrispyFormMixin, UpdateView):
     """
     Create/edit this year's application
@@ -176,7 +178,8 @@ class SetupApplication(CreateApplicationsPermissionRequired,
         return context
 
 
-class ApplicationDatabaseListView(DatabaseListView):
+class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
+                                  TripsYearMixin, ListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
@@ -188,6 +191,7 @@ class ApplicationDatabaseListView(DatabaseListView):
 
     def get_context_data(self, **kwargs):
         
+        # TODO: use/make a generic FilterView mixin?
         context = super(ApplicationDatabaseListView, self).get_context_data(**kwargs)
         applications_filter = ApplicationFilterSet(self.request.GET, queryset=self.object_list,
                                                    trips_year=self.kwargs['trips_year'])
@@ -196,7 +200,8 @@ class ApplicationDatabaseListView(DatabaseListView):
         return context
 
 
-class ApplicationDatabaseDetailView(DatabaseDetailView):
+class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
+                                    TripsYearMixin, DetailView):
     model = GeneralApplication
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
@@ -235,8 +240,8 @@ class ApplicationDatabaseDetailView(DatabaseDetailView):
         return context
 
 
-class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin, 
-                                    UpdateView):
+class ApplicationDatabaseUpdateView(DatabaseEditPermissionRequired, 
+                                    ApplicationFormsMixin, TripsYearMixin, UpdateView):
     
     template_name = 'applications/application_update.html'
     context_object_name = 'application'
@@ -262,23 +267,16 @@ class ApplicationDatabaseUpdateView(DatabaseMixin, ApplicationFormsMixin,
         )    
 
 
-class LeaderApplicationDatabaseListView(DatabaseListView):
-    model = LeaderSupplement
-    context_object_name = 'applications'
-    template_name = 'applications/leaderapplication_index.html'
-
-    def get_queryset(self):
-        return self.model.objects.completed_applications(self.kwargs['trips_year'])
-
-
-class ApplicationAdminUpdateView(DatabaseUpdateView):
+class ApplicationAdminUpdateView(DatabaseEditPermissionRequired, TripsYearMixin,
+                                 UpdateView):
     """ Edit Application status """
     model = GeneralApplication
     form_class = ApplicationAdminForm
     template_name = 'applications/status_update.html'
 
 
-class LeaderApplicationAdminUpdateView(DatabaseUpdateView):
+class LeaderApplicationAdminUpdateView(DatabaseEditPermissionRequired, 
+                                       TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
     model = LeaderSupplement
     form_class = LeaderSupplementAdminForm

@@ -11,6 +11,11 @@ Fortunately this doesn't seem to be an issue since permissions
 for any given user are tied to groups, not the specific 
 SitePermission.
 
+TODO: should we consolidate the create_application, edit_timetable, 
+and possibly even the set_access permissions into edit_db? This would 
+be simpler, but less flexible. However, only directors currently have 
+the edit_db permission.
+
 """
 
 # Should these permission accessors be in a Manager?
