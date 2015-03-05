@@ -3,8 +3,10 @@ from collections import namedtuple
 
 import django_filters
 from django.db.models import Q
+from django import forms
 
 from doc.applications.models import GeneralApplication
+from doc.croos.models import Croo
 
 ArbitraryChoice = namedtuple('ArbitraryChoice', ['value', 'display', 'action'])
 
@@ -51,13 +53,16 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
         return action(qs)
         
 
+SUGGESTED_CROOS = 'croo_supplement__grades__potential_croos'
+
 class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status', 'applicant']
-        order_by = [('applicant__name', 'Name'),]
+        fields = ['status', 'applicant', SUGGESTED_CROOS]
 
+        order_by = [('applicant__name', 'Name'),]
+            
     applicant = django_filters.MethodFilter(action='lookup_user')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
 
@@ -67,17 +72,30 @@ class ApplicationFilterSet(django_filters.FilterSet):
         )
 
     def __init__(self, *args, **kwargs):
+        
+        trips_year = kwargs.pop('trips_year')
+        
         super(ApplicationFilterSet, self).__init__(*args, **kwargs)
         # add a blank choice
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
         self.filters['status'].field.label = 'Status'
+
+        # add the suggested croos filter. we have to restrict the queryset, 
+        # and use the widget
+        self.filters[SUGGESTED_CROOS] = django_filters.ModelMultipleChoiceFilter(
+            name=SUGGESTED_CROOS, 
+            label='Suggested Croos',
+            queryset=Croo.objects.filter(trips_year=trips_year), 
+            widget=forms.CheckboxSelectMultiple
+        )
+        
         self.ordering_field.label = 'Order by'
         self.form.helper = FilterSetFormHelper(self.form)
 
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Div
-from crispy_forms.bootstrap import FormActions, FieldWithButtons
+from crispy_forms.bootstrap import FormActions, FieldWithButtons, InlineCheckboxes
     
 class FilterSetFormHelper(FormHelper):
 
@@ -86,6 +104,9 @@ class FilterSetFormHelper(FormHelper):
 
         self.form_method = 'GET'
         self.layout = Layout(
+            Row(
+                Div(InlineCheckboxes(SUGGESTED_CROOS), css_class='col-sm-12'),
+            ),
             Row(
                 Div('complete', css_class='col-sm-4'),
                 Div('status', css_class='col-sm-3'),

@@ -189,7 +189,8 @@ class ApplicationDatabaseListView(DatabaseListView):
     def get_context_data(self, **kwargs):
         
         context = super(ApplicationDatabaseListView, self).get_context_data(**kwargs)
-        applications_filter = ApplicationFilterSet(self.request.GET, queryset=self.object_list)
+        applications_filter = ApplicationFilterSet(self.request.GET, queryset=self.object_list,
+                                                   trips_year=self.kwargs['trips_year'])
         context[self.context_object_name] = applications_filter.qs
         context['applications_filter'] = applications_filter
         return context
