@@ -227,7 +227,7 @@ class LeaderSupplementLayout(Layout):
                 'Trip Leader Availability',
                 Alert(content='Answers in this section will NOT be used in the scoring process',
                       dismiss=False, css_class='alert-info'),
-                HTML('<p>Please indicate your availibity for each section and type of trip.</p>'),
+                HTML('<p>Please indicate your availibity for each section and type of trip. <strong>Preferred</strong> means you will be most satisfied with this option; you can prefer more than one option. <strong>Available</strong> means you could do it. If you leave a choice blank it means you absolutely cannot participate on those dates or in that activity.</p>'),
                 Row(
                     Div('preferred_sections', css_class='col-sm-3'),
                     Div('available_sections', css_class='col-sm-3'),

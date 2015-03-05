@@ -76,6 +76,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         trips_year = kwargs.pop('trips_year')
         
         super(ApplicationFilterSet, self).__init__(*args, **kwargs)
+
         # add a blank choice
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
         self.filters['status'].field.label = 'Status'
