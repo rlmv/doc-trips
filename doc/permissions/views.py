@@ -61,6 +61,15 @@ class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixi
     permission_required = 'permissions.can_view_db'
 
 
+class ApplicationEditPermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
+    permissions = {
+        'any': (
+            'permissions.can_edit_db', 
+            'permissions.can_edit_applications_and_assign_leaders'
+        )
+    }
+
+
 class LeaderGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Only allow access to users with permission to grade leaderapplications. """
     permission_required = 'permissions.can_grade_leader_applications'

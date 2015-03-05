@@ -28,7 +28,8 @@ from doc.applications.filters import ApplicationFilterSet
 from doc.permissions.views import (CreateApplicationPermissionRequired, 
                                    CrooGraderPermissionRequired, 
                                    DatabaseReadPermissionRequired, 
-                                   DatabaseEditPermissionRequired)
+                                   DatabaseEditPermissionRequired, 
+                                   ApplicationEditPermissionRequired)
 from doc.utils.views import MultipleFormMixin
 from doc.utils.convert import convert_docx_filefield_to_html
 
@@ -240,7 +241,7 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
         return context
 
 
-class ApplicationDatabaseUpdateView(DatabaseEditPermissionRequired, 
+class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired, 
                                     ApplicationFormsMixin, TripsYearMixin, UpdateView):
     
     template_name = 'applications/application_update.html'
@@ -267,7 +268,7 @@ class ApplicationDatabaseUpdateView(DatabaseEditPermissionRequired,
         )    
 
 
-class ApplicationAdminUpdateView(DatabaseEditPermissionRequired, TripsYearMixin,
+class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, TripsYearMixin,
                                  UpdateView):
     """ Edit Application status """
     model = GeneralApplication
@@ -275,7 +276,7 @@ class ApplicationAdminUpdateView(DatabaseEditPermissionRequired, TripsYearMixin,
     template_name = 'applications/status_update.html'
 
 
-class LeaderApplicationAdminUpdateView(DatabaseEditPermissionRequired, 
+class LeaderApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
                                        TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
     model = LeaderSupplement
