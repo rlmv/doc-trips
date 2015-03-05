@@ -15,7 +15,7 @@ django-filter
 django-bootstrap3
 # Need version>2.2.3. need PR #14 which fixes an early jquery dependency:
 -e git+git://github.com/nkunihiko/django-bootstrap3-datetimepicker.git#egg=django-bootstrap3-datetimepicker
-
+#-e git+git://github.com/furious-luke/django-address.git#egg=django-address
 # heroku
 django-toolbelt 
 whitenoise

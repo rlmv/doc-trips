@@ -5,20 +5,9 @@ from django.conf import settings
 from doc.db.models import DatabaseModel, TripsYear
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.croos.models import Croo
+from doc.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
 from doc.applications.managers import ApplicationManager, LeaderApplicationManager
 
-# TODO: move to globals and reuse for trippees
-TSHIRT_SIZE_CHOICES = (
-    ('S', 'Small'), 
-    ('M', 'Medium'), 
-    ('L', 'Large'), 
-    ('XL', 'Extra large'),
-)
-
-YES_NO_CHOICES = (
-    ('YES', 'yes'),
-    ('NO', 'no'),
-)
 
 class ApplicationInformation(DatabaseModel):
     """

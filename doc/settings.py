@@ -62,22 +62,23 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # third party
+#    'address',
     'crispy_forms',
     'bootstrap3_datetime',
     'django_extensions',
     'raven.contrib.django.raven_compat',
 
-    # site apps
-    'doc.db',
-    'doc.users',
-    'doc.dartdm', 
+    # doc apps
     'doc.applications',
-#    'leaders',
     'doc.croos', 
-    'doc.transport',
-    'doc.trips',
+    'doc.dartdm', 
+    'doc.db',
     'doc.permissions',
     'doc.timetable',
+    'doc.transport',
+    'doc.trippees',
+    'doc.trips',
+    'doc.users',
     'doc.utils',
     'doc.webauth', 
 )
