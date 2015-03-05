@@ -268,8 +268,8 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
         )    
 
 
-class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, TripsYearMixin,
-                                 UpdateView):
+class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
+                                 TripsYearMixin, UpdateView):
     """ Edit Application status """
     model = GeneralApplication
     form_class = ApplicationAdminForm

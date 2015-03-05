@@ -2,7 +2,7 @@
 from collections import defaultdict
 
 from django.core.urlresolvers import reverse_lazy, reverse
-from vanilla import FormView
+from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin
@@ -11,7 +11,9 @@ from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Se
 from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
 from doc.applications.models import LeaderSupplement
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                          DatabaseListView, DatabaseDetailView, DatabaseMixin)
+                          DatabaseListView, DatabaseDetailView, DatabaseMixin, 
+                          TripsYearMixin)
+from doc.permissions.views import ApplicationEditPermissionRequired
 from doc.db.urlhelpers import reverse_detail_url
 
 
@@ -241,7 +243,8 @@ class AssignTripLeaderView(DatabaseListView):
         return context
 
 
-class UpdateLeaderWithAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
+class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixin, 
+                                   TripsYearMixin, UpdateView):
     """ 
     Add an assigned_trip to a leader. 
 
@@ -262,7 +265,8 @@ class UpdateLeaderWithAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
-class RemoveAssignedTrip(FormValidMessageMixin, DatabaseUpdateView):
+class RemoveAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixin, 
+                         TripsYearMixin, UpdateView):
     """ Remove a leader's assigned trip """
 
     model = LeaderSupplement
