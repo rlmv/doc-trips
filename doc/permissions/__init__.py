@@ -3,6 +3,16 @@ from django.contrib.auth.models import Group
 
 from doc.permissions.models import SitePermission
 
+"""
+Be careful changing the names of these permissions -- there can
+be Unique constraint issues. You may need to add a data migration
+to delete the offending historic permissions if this happens. 
+Fortunately this doesn't seem to be an issue since permissions
+for any given user are tied to groups, not the specific 
+SitePermission.
+
+"""
+
 # Should these permission accessors be in a Manager?
 def get_permission(codename, name):
     """ Return a the requested SitePermission. """
@@ -21,44 +31,36 @@ def can_set_access():
     return get_permission('can_set_access', 
                           'Can assign users permissions and groups')
 
-def can_grade_leader_applications():
-    return get_permission('can_grade_leader_applications', 
-                          'Can grade leader applications')
+def can_view_database():
+    return get_permission('can_view_db',
+                          'Can view the trips database')
 
-def can_create_leader_application():
-    return get_permission('can_create_leader_application',
-                          'Can create and alter leader app questions')
-
-def can_access_db():
-    return get_permission('can_access_db',
-                          'Can access trips database')
+def can_edit_database():
+    return get_permission('can_edit_db',
+                          'Can edit objects in the trips database')
 
 def can_edit_timetable():
     return get_permission('can_edit_timetable',
                           'Can change critical dates in the timetable')
 
-def can_create_croo_application():
-    return get_permission('can_create_croo_application', 
-                          'Can create and alter croo app questions')
+def can_create_applications():
+    return get_permission('can_create_applications',
+                          'Can create leader and croo applications')
+
+def can_grade_leader_applications():
+    return get_permission('can_grade_leader_applications', 
+                          'Can grade leader applications')
 
 def can_grade_croo_applications():
     return get_permission('can_grade_croo_applications',
                           'Can grade croo applicaions')
 
-def can_create_applications():
-    return get_permission('can_create_applications',
-                          'Can create leader and croo applications')
-
 def can_edit_applications_and_assign_trip_leaders():
+    """ Permission specific to TLTs so they can tweak leader applications """
     return get_permission('can_edit_applications_and_assign_leaders', 
-                          'Can change leader and croo applications in DB')
+                          'Can change apps in DB and assign leaders')
 
 
-""" # TODO: these might be useful for croos?
-can_edit_db, created = get_permission(
-codename='can_edit_db',
-name='Can edit items in the trips database')
-"""
 # TODO: can_edit_safety_log
 
 
@@ -68,7 +70,8 @@ name='Can edit items in the trips database')
 def directors():    
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [can_set_access(), 
-                             can_access_db(), 
+                             can_view_database(),
+                             can_edit_database(),
                              can_edit_timetable(), 
                              can_grade_croo_applications(),
                              can_grade_leader_applications(), 
@@ -80,7 +83,8 @@ def directors():
 
 def directorate():
     directorate, created = Group.objects.get_or_create(name='directorate')
-    directorate.permissions = [can_grade_leader_applications(),
+    directorate.permissions = [can_view_database(),
+                               can_grade_leader_applications(),
                                can_grade_croo_applications()]
     directorate.save()
     return directorate
@@ -89,7 +93,8 @@ def directorate():
 def tlts():
     # trip leader trainers
     tlts, created = Group.objects.get_or_create(name='tlts')
-    tlts.permissions = [can_grade_leader_applications(),
+    tlts.permissions = [can_view_database(),
+                        can_grade_leader_applications(),
                         can_edit_applications_and_assign_trip_leaders(),]
 
     tlts.save()

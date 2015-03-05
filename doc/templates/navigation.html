@@ -29,7 +29,7 @@
 	<li><a href="{% url 'applications:grade:graders' %}">Grade Applications</a></li>
 	{% endif %}
 
-	{% if perms.permissions.can_access_db %}
+	{% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
 	<li><a href="{% url 'db:db_redirect' %}">Database</a></li>
 	{% endif %}
 

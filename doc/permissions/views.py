@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import get_user_model
 from vanilla import TemplateView, UpdateView, FormView
-from braces.views import PermissionRequiredMixin, LoginRequiredMixin
+from braces.views import (PermissionRequiredMixin, LoginRequiredMixin,
+                          MultiplePermissionsRequiredMixin)
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
@@ -20,51 +21,64 @@ from doc.dartdm.forms import DartmouthDirectoryLookupField
 logger = logging.getLogger(__name__)
 
 
+class BasePermissionMixin(LoginRequiredMixin):
+    """
+    Utility mixin for setting up other permissions.
+    
+    >>> class SomePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    >>>     permission_required = 'some_permission'
+
+    Users who are not logged in are redirected to the login page.
+    Authenticated users without proper permissions are shown a 403 error.
+
+    Since this includes the LoginRequired it should go first in the MRO.
+    """
+
+    redirect_unauthenticated_users = True
+    raise_exception = True
+
+
 # TODO: can we set permission_required with an imported permission() call ?
 
-class DatabasePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class DatabasePermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
     """ 
     Allow access to logged in users with database-level permissions.
 
     These are directors, croo members, etc.
-    Users who are not logged in are redirected to the login page.
-    Authenticated users without proper permissions are shown a 403 error.
+
+    # TODO: this should be deprecated in favor of Edit and View perms
     """
+    permissions = {
+        'any': ('permissions.can_edit_db', 'permissions.can_view_db')
+    }
 
-    redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_access_db'
-    raise_exception = True
+
+class DatabaseEditPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    permission_required = 'permissions.can_edit_db'
 
 
-class LeaderGraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    permission_required = 'permissions.can_view_db'
+
+
+class LeaderGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Only allow access to users with permission to grade leaderapplications. """
-
-    redirect_unauthenticated_users = True
     permission_required = 'permissions.can_grade_leader_applications'
-    raise_exception = True
 
-class CrooGraderPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+
+class CrooGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ ONly users with permission to grade crooapplications. """
-
-    redirect_unauthenticated_users = True
     permission_required = 'permissions.can_grade_croo_applications'
-    raise_exception = True
 
 
-class TimetablePermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to edit the calendar """
-    
-    redirect_unauthenticated_users = True
     permission_required = 'permissions.can_edit_timetable'
-    raise_exception = True
 
 
-class CreateApplicationsPermissionRequired(LoginRequiredMixin, PermissionRequiredMixin):
+class CreateApplicationsPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to create/edit croo and leader applications """
-    
     permission_required = 'permissions.can_create_applications'
-    redirect_unauthenticated_users = True
-    raise_exception = True
 
 
 class GenericGroupForm(forms.Form):
