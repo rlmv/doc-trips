@@ -41,6 +41,11 @@ def can_view_database():
                           'Can view the trips database')
 
 def can_edit_database():
+    """ 
+    Implies can_view_db permissions. It's assumed that if you can edit, 
+    you can also view an object. 
+    """
+    
     return get_permission('can_edit_db',
                           'Can edit objects in the trips database')
 
