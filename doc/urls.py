@@ -1,13 +1,13 @@
+
 from django.conf.urls import patterns, include, url
-
-# default Django admin interface
 from django.contrib import admin
-admin.autodiscover()
-
-from doc.permissions import initialize_groups_and_permissions
-initialize_groups_and_permissions()
 
 from doc.views import HomePage
+from doc.permissions import initialize_groups_and_permissions
+
+admin.autodiscover()
+initialize_groups_and_permissions()
+handler403 = 'doc.views.permission_denied'
 
 urlpatterns = patterns('',
     url(r'^$', HomePage.as_view(), name='home'),
