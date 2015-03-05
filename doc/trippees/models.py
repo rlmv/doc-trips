@@ -1,15 +1,66 @@
 from django.db import models
+from django.conf import settings
 
 from doc.transport.models import Stop
+from doc.trips.models import ScheduledTrip
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 
 def YesNoField(*args, **kwargs):
-    return models.CharField(max_length=2, choices=YES_NO_CHOICES)
+    kwargs['choices'] = YES_NO_CHOICES
+    kwargs['max_length'] = 2
+    return models.CharField(*args, **kwargs)
     
 
 class Address(models.Model):
-
+    # TODO, or use django-address
     pass
+
+class Trippee(models.Model):
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    info = models.ForeignKey('TrippeeInfo', editable=False)
+    registration = models.ForeignKey('TrippeeRegistration', editable=False)
+    trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT)
+
+    # TODO:
+    # bus assignment
+    # gear requested
+    
+    # TODO: decline_choices: sports, no responses, etc.
+    decline_reason = models.CharField(max_length=50)
+
+    notes = models.TextField(blank=True)
+    
+
+class TrippeeInfo(models.Model):
+    """
+    Trippee information provided by the college.
+    """
+    
+    name = models.CharField(max_length=255)
+    did = models.CharField(max_length=30)
+
+    # hmmmm no netid provided?
+    # We may need to save did on the UserModel for matching registrations
+    #    netid = models.CharField(max_len
+
+    # address - related model ? or abstract.
+
+    ethnicity_code = models.CharField(max_length=1)
+    gender_code = models.CharField(max_length=1)
+    
+    INCOMING_STATUS_CHOICES = (
+        ('EXCHANGE', 'Exchange'),
+        ('TRANSFER', 'Transfer'),
+        ('FIRSTYEAR', 'First Year'),
+    )
+    incoming_status = models.CharField(max_length=20, choices=INCOMING_STATUS_CHOICES)
+
+    # TODO: there is a lot of redundant email information floating around. 
+    # can we get rid of some of it?
+    email = models.EmailField(max_length=254)
+    dartmouth_email = models.EmailField(max_length=254)
+    
 
 class TrippeeRegistration(models.Model):
 
