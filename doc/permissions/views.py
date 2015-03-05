@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Row, Column
 
-from doc.permissions import directors, graders, directorate
+from doc.permissions import directors, graders, directorate, trip_leader_trainers
 from doc.permissions.models import SitePermission
 from doc.dartdm.forms import DartmouthDirectoryLookupField
 
@@ -170,7 +170,8 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     def get_forms(self, *args, **kwargs):
         
-        groups = [directors(), directorate(), graders()]
+        groups = [directors(), trip_leader_trainers(), 
+                  directorate(), graders()]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
             
     def get(self, request, *args, **kwargs):

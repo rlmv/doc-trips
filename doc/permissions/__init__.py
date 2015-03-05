@@ -100,9 +100,9 @@ def directorate():
     return directorate
 
 
-def tlts():
+def trip_leader_trainers():
     # trip leader trainers
-    tlts, created = Group.objects.get_or_create(name='tlts')
+    tlts, created = Group.objects.get_or_create(name='trip leader trainers')
     tlts.permissions = [can_view_database(),
                         can_grade_leader_applications(),
                         can_edit_applications_and_assign_trip_leaders(),]
