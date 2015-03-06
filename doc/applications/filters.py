@@ -54,12 +54,15 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
         
 
 SUGGESTED_CROOS = 'croo_supplement__grades__potential_croos'
+KITCHEN_LEAD = 'croo_supplement__kitchen_lead_willing'
+SAFETY_LEAD = 'croo_supplement__safety_lead_willing'
 
 class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status', 'applicant', SUGGESTED_CROOS]
+        fields = ['status', 'applicant', SUGGESTED_CROOS,
+                  KITCHEN_LEAD, SAFETY_LEAD]
 
         order_by = [('applicant__name', 'Name'),]
             
@@ -81,11 +84,17 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
         self.filters['status'].field.label = 'Status'
 
+        self.filters[KITCHEN_LEAD].field.label = 'Kitchen Witch/Wizard'
+        self.filters[KITCHEN_LEAD].field.widget = forms.CheckboxInput()
+
+        self.filters[SAFETY_LEAD].field.label = 'Safety Lead'
+        self.filters[SAFETY_LEAD].field.widget = forms.CheckboxInput()
+
         # add the suggested croos filter. we have to restrict the queryset, 
         # and use the widget
         self.filters[SUGGESTED_CROOS] = django_filters.ModelMultipleChoiceFilter(
             name=SUGGESTED_CROOS, 
-            label='Suggested Croos',
+            label='',
             queryset=Croo.objects.filter(trips_year=trips_year), 
             widget=forms.CheckboxSelectMultiple
         )
@@ -95,7 +104,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Div
+from crispy_forms.layout import Submit, Layout, Row, Div, HTML
 from crispy_forms.bootstrap import FormActions, FieldWithButtons, InlineCheckboxes
     
 class FilterSetFormHelper(FormHelper):
@@ -106,15 +115,23 @@ class FilterSetFormHelper(FormHelper):
         self.form_method = 'GET'
         self.layout = Layout(
             Row(
-                Div(InlineCheckboxes(SUGGESTED_CROOS), css_class='col-sm-12'),
-            ),
-            Row(
                 Div('complete', css_class='col-sm-4'),
                 Div('status', css_class='col-sm-3'),
                 Div('applicant', css_class='col-sm-2'),
                 Div('o', css_class='col-sm-2'),
                 Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
-            )
+            ),
+            Row(
+                Div(HTML('<strong>Suggested Croos:</strong>'), css_class='col-sm-3 text-right'),
+                Div(InlineCheckboxes(SUGGESTED_CROOS), css_class='col-sm-9'),
+                css_class='filter-croos',
+            ),
+            Row(
+                Div(HTML('<strong>Roles:</strong>'), css_class='col-sm-3 text-right'),
+                Div(KITCHEN_LEAD, css_class='col-sm-3 filter-checkbox'),
+                Div(SAFETY_LEAD, css_class='col-sm-2 filter-checkbox'),
+                css_class='filter-roles',
+            ),
         )
 
 

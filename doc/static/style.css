@@ -12,3 +12,14 @@ body {
     position: absolute;
     top: 1.7em;
 }
+
+/* line roles checkboxes up with text */
+.filter-checkbox {
+    position: absolute;
+    top: -.7em;
+}
+
+/* shrink suggested croos filter */
+.filter-croos div {
+    margin-bottom: 0;
+}
