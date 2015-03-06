@@ -122,7 +122,7 @@ class FilterSetFormHelper(FormHelper):
                 Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
             ),
             Row(
-                Div(HTML('<strong>Suggested Croos:</strong>'), css_class='col-sm-3 text-right'),
+                Div(HTML('<strong>Suggested Croos (ANY):</strong>'), css_class='col-sm-3 text-right'),
                 Div(InlineCheckboxes(SUGGESTED_CROOS), css_class='col-sm-9'),
                 css_class='filter-croos',
             ),
