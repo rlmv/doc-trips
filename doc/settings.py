@@ -135,7 +135,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 USE_I18N = False
 USE_L10N = False
 USE_TZ = True
