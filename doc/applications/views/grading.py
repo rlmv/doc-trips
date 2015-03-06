@@ -112,12 +112,18 @@ class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApp
     Only redirects to apps which other graders have tagged with a specific 
     potential croo. This view is intended for Croo heads to use to do 
     once-over grading for all potential people on their croos. 
+
+    TODO: include kitchen lead self selected apps in the Lodge Croo query.
     """
 
     def get_redirect_url(self, *args, **kwargs):
         
         croo_pk = self.kwargs['croo_pk']
         croo = Croo.objects.get(pk=croo_pk)
+    
+        # let user know which croo they are in
+        msg = 'You are currently scoring potential %s applications' 
+        messages.info(self.request, msg % croo)
         
         # we're just serving apps for the specified croo
         # and don't care about limits to the total number of grades
@@ -128,10 +134,9 @@ class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApp
                        .filter(application__status=GeneralApplication.PENDING)
                        .exclude(grades__grader=self.request.user)
                        .order_by('?')[:1])
-        msg = 'You are currently scoring potential %s applications' 
-        messages.info(self.request, msg % croo)
         if not application: 
             return reverse('applications:grade:no_croo_left')
+        # pass along the croo's pk so that we can keep grading for this croo
         return reverse('applications:grade:croo', kwargs={'pk': application.pk,
                                                           'croo_pk': croo_pk})
 
@@ -151,7 +156,11 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
         return super(GradeCrooApplication, self).get_context_data(**kwargs)
 
     def get_success_url(self):
-
+        """ 
+        If we are grading for a specific croo, continue doing so 
+        
+        Should we separate this logic out into an another view?
+        """
         name = 'applications:grade:next_croo'
         croo_pk = self.kwargs.get('croo_pk')
         if croo_pk:
