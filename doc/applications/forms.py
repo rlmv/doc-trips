@@ -270,11 +270,15 @@ class CrooApplicationGradeForm(forms.ModelForm):
         model = CrooApplicationGrade
         widgets = {
             'potential_croos': forms.CheckboxSelectMultiple(),
+            'scratchpad': forms.Textarea(attrs=dict(rows=3)),
         }
 
 class LeaderApplicationGradeForm(forms.ModelForm):
     """ Form for scoring Leader applications """
     class Meta:
         model = LeaderApplicationGrade
+        widgets = {
+            'scratchpad': forms.Textarea(attrs=dict(rows=3)),
+        }
 
 

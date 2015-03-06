@@ -11,6 +11,12 @@
   <h3> {{ title }} </h3>
 </div>
 
+{% if already_graded_by %}
+<div>
+  <p><strong>Already graded by</strong> {{ already_graded_by|join:", " }} </p>
+</div>
+{% endif %}
+
 <p> Read the application completely before assigning it a score:
   <ul class="list-unstyled">
     {% for score in score_choices %}
@@ -19,7 +25,7 @@
   </ul>
 </p>
 
-<p> Justify your score in the comments section. Specifically articulate why you gave the score you did and list important hard/soft skills that set this applicant apart. Details and examples are way more important than generalizations. <p>
+<p> Justify your score in the <strong>comments</strong> section. Specifically articulate why you gave the score you did and list important hard/soft skills that set this applicant apart. Details and examples are way more important than generalizations. You should use the <strong>scratchpad</strong> to take notes on/score specific questions. Although we may come back to read these scratchpad notes when we're finalizing Leaders and Croos, we're primarily going to look at the <strong>comments</strong> section.</p>
 
 {% display_docx_filefield_as_html application.document %}
 

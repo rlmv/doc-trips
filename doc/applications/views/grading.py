@@ -106,6 +106,13 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
     form_class = CrooApplicationGradeForm
     success_url = reverse_lazy('applications:grade:next_croo')
     verbose_application_name = 'Croo Application'
+
+    def get_context_data(self, **kwargs):
+        
+        application = self.get_application()
+        graders = list(map(lambda g: g.grader, application.grades.all()))
+        kwargs['already_graded_by'] = graders
+        return super(GradeCrooApplication, self).get_context_data(**kwargs)
         
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 

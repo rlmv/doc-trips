@@ -226,6 +226,13 @@ class CrooSupplement(DatabaseModel):
     kitchen_lead_qualified = models.BooleanField(default=False)
     kitchen_lead = models.BooleanField(default=False)
 
+
+    def average_grade(self):
+        """ Average grade for the croo application """
+        r = self.grades.all().aggregate(models.Avg('grade'))
+        return r['grade__avg']
+
+
     def __str__(self):
         return str(self.application.applicant)
 
@@ -246,6 +253,7 @@ class AbstractGrade(DatabaseModel):
     )
 
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    scratchpad = models.TextField('scratchpad for question-specific notes', blank=True)
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     comment = models.TextField()
 

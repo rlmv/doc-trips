@@ -71,6 +71,12 @@
     <td> {{ grade.grader }} </td>
   </tr>
   {% endfor %}
+  {% if application.leader_supplement.average_grade %}
+  <tr class="info">
+    <td> {{ application.leader_supplement.average_grade }} </td>
+    <td> AVERAGE </td> <td/> <td/> <td/>
+  </tr>
+  {% endif %}
 </table>
 
 <h4> Croo Grades {% if application.croo_application_complete %}<a href="{% url 'applications:grade:croo' pk=application.croo_supplement.pk %}">add</a>{% endif %}</h4>
@@ -89,6 +95,12 @@
     <td> {{ grade.grader }} </td>
   </tr>
   {% endfor %}
+  {% if application.croo_supplement.average_grade %}
+  <tr class="info">
+    <td> {{ application.croo_supplement.average_grade }} </td>
+    <td> AVERAGE </td> <td/> <td/> <td/>  
+  </tr>
+  {% endif %}
 </table>
 
 
