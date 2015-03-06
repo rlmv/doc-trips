@@ -217,7 +217,7 @@ class CrooSupplement(DatabaseModel):
     # only seen by directors in the database.
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
                                       related_name='croolings' ,
-                                      on_delete=models.SET_NULL)
+                                      on_delete=models.PROTECT)
     potential_croos = models.ManyToManyField(Croo, blank=True, 
                                              related_name='potential_croolings')
     safety_lead_qualified = models.BooleanField(default=False)
