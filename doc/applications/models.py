@@ -183,6 +183,15 @@ class LeaderSupplement(DatabaseModel):
 
         return trips
 
+
+    def average_grade(self):
+        """ 
+        Average grade for the leader application.
+        """
+        r = self.grades.all().aggregate(models.Avg('grade'))
+        return r['grade__avg']
+
+
     def __str__(self):
         return str(self.application.applicant)
 
