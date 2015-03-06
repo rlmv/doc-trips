@@ -5,6 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
 
 from doc.db.models import TripsYear
 from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, CrooApplicationGrade, LeaderApplicationGrade
@@ -12,6 +13,16 @@ from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGr
 from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
 from doc.timetable.models import Timetable
+from doc.croos.models import Croo
+
+
+class GraderLandingPage(TemplateView):
+
+    template_name = 'applications/graders.html'
+    
+    def get_context_data(self, **kwargs):
+        kwargs['croos'] = Croo.objects.filter(trips_year=TripsYear.objects.current())
+        return super(GraderLandingPage, self).get_context_data(**kwargs)
 
 
 class IfGradingAvailable():
@@ -74,11 +85,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         return form
 
 
-class GraderLandingPage(TemplateView):
-
-    template_name = 'applications/graders.html'
-
-
 class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired, 
                                             IfGradingAvailable, RedirectView):
     """ 
@@ -92,12 +98,42 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
 
     def get_redirect_url(self, *args, **kwargs):
         """ Redirect to next CrooApplication which needs grading """
-        
+
         application = CrooSupplement.objects.next_to_grade(self.request.user)
         if not application:
             return reverse('applications:grade:no_croo_left')
         return reverse('applications:grade:croo', kwargs={'pk': application.pk})
 
+
+class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApplication):
+    """ 
+    View for returning croo-specific apps to grade. 
+
+    Only redirects to apps which other graders have tagged with a specific 
+    potential croo. This view is intended for Croo heads to use to do 
+    once-over grading for all potential people on their croos. 
+    """
+
+    def get_redirect_url(self, *args, **kwargs):
+        
+        croo_pk = self.kwargs['croo_pk']
+        croo = Croo.objects.get(pk=croo_pk)
+        
+        # we're just serving apps for the specified croo
+        # and don't care about limits to the total number of grades
+        # TODO: stick this on the manager?
+        application = (CrooSupplement.objects
+                       .completed_applications(trips_year=TripsYear.objects.current())
+                       .filter(grades__potential_croos=croo_pk)
+                       .filter(application__status=GeneralApplication.PENDING)
+                       .exclude(grades__grader=self.request.user)
+                       .order_by('?')[:1])
+        msg = 'You are currently scoring potential %s applications' 
+        messages.info(self.request, msg % croo)
+        if not application: 
+            return reverse('applications:grade:no_croo_left')
+        return reverse('applications:grade:croo', kwargs={'pk': application.pk,
+                                                          'croo_pk': croo_pk})
 
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
 
@@ -113,7 +149,15 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
         graders = list(map(lambda g: g.grader, application.grades.all()))
         kwargs['already_graded_by'] = graders
         return super(GradeCrooApplication, self).get_context_data(**kwargs)
-        
+
+    def get_success_url(self):
+
+        name = 'applications:grade:next_croo'
+        croo_pk = self.kwargs.get('croo_pk')
+        if croo_pk:
+            return reverse(name, kwargs=dict(croo_pk=croo_pk))
+        return reverse(name)
+
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
                                     IfGradingAvailable, TemplateView):
