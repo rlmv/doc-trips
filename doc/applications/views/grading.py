@@ -79,6 +79,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         form.helper.layout.append(
             ButtonHolder(
                 Submit('submit', 'Submit Score'),
+                Submit('skip', 'Skip Application'),
                 HTML('<a href="%s" class="btn btn-warning" role="button">Skip this Application</a>' % self.get_success_url()),
             )
         )
@@ -144,6 +145,7 @@ class RedirectToNextGradableCrooApplicationForCroo(CrooGraderPermissionRequired,
         return reverse('applications:grade:croo', kwargs={'pk': application.pk,
                                                           'croo_pk': croo_pk})
 
+
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
 
     model = CrooApplicationGrade
@@ -159,17 +161,21 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
         kwargs['already_graded_by'] = graders
         return super(GradeCrooApplication, self).get_context_data(**kwargs)
 
+
+class GradeCrooApplicationForCroo(GradeCrooApplication):
+    """
+    Grade a croo application.
+
+    Used if we are grading applications for a specific Croo. 
+    This view passes along the target croo to the redirect dispatch
+    view. 
+    """
+
     def get_success_url(self):
-        """ 
-        If we are grading for a specific croo, continue doing so 
-        
-        Should we separate this logic out into an another view?
-        """
-        name = 'applications:grade:next_croo'
+
         croo_pk = self.kwargs.get('croo_pk')
-        if croo_pk:
-            return reverse(name, kwargs=dict(croo_pk=croo_pk))
-        return reverse(name)
+        return reverse('applications:grade:next_croo', 
+                       kwargs=dict(croo_pk=croo_pk))
 
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
