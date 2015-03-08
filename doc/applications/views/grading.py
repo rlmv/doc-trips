@@ -105,7 +105,8 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
         return reverse('applications:grade:croo', kwargs={'pk': application.pk})
 
 
-class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApplication):
+class RedirectToNextGradableCrooApplicationForCroo(CrooGraderPermissionRequired, 
+                                                   IfGradingAvailable, RedirectView):
     """ 
     View for returning croo-specific apps to grade. 
 
@@ -115,6 +116,8 @@ class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApp
 
     TODO: include kitchen lead self selected apps in the Lodge Croo query.
     """
+
+    permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
         
@@ -128,6 +131,7 @@ class RedirectToNextGradableCrooApplicationForCroo(RedirectToNextGradableCrooApp
         # we're just serving apps for the specified croo
         # and don't care about limits to the total number of grades
         # TODO: stick this on the manager?
+        # TODO: pass in the trips year? - tie grading to a trips_year url?
         application = (CrooSupplement.objects
                        .completed_applications(trips_year=TripsYear.objects.current())
                        .filter(grades__potential_croos=croo_pk)
