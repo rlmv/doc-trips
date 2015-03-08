@@ -153,7 +153,7 @@ class RedirectToNextGradableCrooApplicationForCroo(CrooGraderPermissionRequired,
                        .filter(grades__potential_croos=croo_pk)
                        .filter(application__status=GeneralApplication.PENDING)
                        .exclude(grades__grader=self.request.user)
-                       .order_by('?')[:1])
+                       .order_by('?').first())
         if not application: 
             return reverse('applications:grade:no_croo_left')
         # pass along the croo's pk so that we can keep grading for this croo
