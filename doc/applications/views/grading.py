@@ -70,9 +70,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         if (grades_by_user.count() % SHOW_GRADE_AVG_INTERVAL == 0 and 
                 grades_by_user.count() != 0):
             avg_grade = grades_by_user.aggregate(models.Avg('grade'))['grade__avg']
-            msg = ("Hey, just FYI your average %s is %s. "
-                   "We'll show you the average every %s grades.")
-            self.messages.info(msg % (ct.name, avg_grade, SHOW_GRADE_AVG_INTERVAL))
+            msg = ("Hey, just FYI your average awarded %s is %s. "
+                   "We'll show you your average score every %s grades.")
+            self.messages.info(msg % (self.model._meta.verbose_name, 
+                                      avg_grade, SHOW_GRADE_AVG_INTERVAL))
             
         context = super(GenericGradingView, self).get_context_data(**kwargs)
         context['application'] = self.get_application()

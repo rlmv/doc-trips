@@ -3,8 +3,10 @@
 {% if messages %} 
 {% for message in messages %}
 
-{% if message.level = DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
 <div class="alert alert-success"> {{ message }} </div>
+{% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+<div class="alert alert-info"> {{ message }} </div>
 {% else %}
 <div class="alert alert-danger"> {{ message }} </div>
 {% endif %}
