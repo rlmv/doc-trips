@@ -45,7 +45,7 @@ def detail(db_object, fields=None):
         
         if isinstance(field, models.ManyToManyField):
             t = template.Template(
-                """{% for o in queryset %} <a href="{{ o.get_absolute_url }}"> {{ o }}</a> {% endfor %}""")
+                """{% for o in queryset %} <a href="{{ o.get_absolute_url }}"> {{ o }}</a>{% if not forloop.last %},{% endif %}{% endfor %}""")
             c = template.Context({'queryset': value.get_queryset()})
             value = t.render(c)
 
