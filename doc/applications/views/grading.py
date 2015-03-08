@@ -66,7 +66,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         ct = ContentType.objects.get_for_model(self.model)
         grades_by_user = (getattr(self.request.user, ct.model + 's')
                           .filter(trips_year=TripsYear.objects.current()))
-        print(grades_by_user)
         if (grades_by_user.count() % SHOW_GRADE_AVG_INTERVAL == 0 and 
                 grades_by_user.count() != 0):
             avg_grade = grades_by_user.aggregate(models.Avg('grade'))['grade__avg']
@@ -96,7 +95,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         form.helper.layout.append(
             ButtonHolder(
                 Submit('submit', 'Submit Score'),
-                Submit('skip', 'Skip Application'),
                 HTML('<a href="%s" class="btn btn-warning" role="button">Skip this Application</a>' % self.get_success_url()),
             )
         )
