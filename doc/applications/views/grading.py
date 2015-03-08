@@ -6,6 +6,8 @@ from crispy_forms.layout import Submit, HTML, ButtonHolder
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 from doc.db.models import TripsYear
 from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, CrooApplicationGrade, LeaderApplicationGrade
@@ -15,6 +17,7 @@ from doc.permissions.views import (CrooGraderPermissionRequired,
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
 
+SHOW_GRADE_AVG_INTERVAL = 10
 
 class GraderLandingPage(TemplateView):
 
@@ -57,7 +60,20 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
-         
+
+        # Every SHOW_GRADE_AVG_INTERVAL tell the grade what their 
+        # average grade has been (for this year, of course)
+        ct = ContentType.objects.get_for_model(self.model)
+        grades_by_user = (getattr(self.request.user, ct.model + 's')
+                          .filter(trips_year=TripsYear.objects.current()))
+        print(grades_by_user)
+        if (grades_by_user.count() % SHOW_GRADE_AVG_INTERVAL == 0 and 
+                grades_by_user.count() != 0):
+            avg_grade = grades_by_user.aggregate(models.Avg('grade'))['grade__avg']
+            msg = ("Hey, just FYI your average %s is %s. "
+                   "We'll show you the average every %s grades.")
+            self.messages.info(msg % (ct.name, avg_grade, SHOW_GRADE_AVG_INTERVAL))
+            
         context = super(GenericGradingView, self).get_context_data(**kwargs)
         context['application'] = self.get_application()
         context['title'] = 'Score %s #%s' % (self.verbose_application_name, self.kwargs['pk'])
@@ -147,6 +163,7 @@ class RedirectToNextGradableCrooApplicationForCroo(CrooGraderPermissionRequired,
 
 
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
+    """ Grade a croo application """
 
     model = CrooApplicationGrade
     application_model = CrooSupplement

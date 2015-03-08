@@ -251,8 +251,10 @@ class AbstractGrade(DatabaseModel):
         (5, "5 -- Great application -- I think this person would be a fantastic volunteer"),
         (6, "6 -- Incredible application -- I think this person should be one of the first to be selected to be a volunteer. I would be very frustrated/angry if this person is not selected"),
     )
-
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    
+    # related_name will be leader_application_grades or croo_application_grades. Sweet.
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False,
+                               related_name='%(class)ss') 
     scratchpad = models.TextField('scratchpad for question-specific notes', blank=True)
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     comment = models.TextField()
