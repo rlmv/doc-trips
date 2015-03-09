@@ -12,9 +12,10 @@ from doc.test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
 from doc.applications.models import (LeaderSupplement as LeaderApplication, 
                                      CrooSupplement, 
                                      GeneralApplication, LeaderApplicationGrade, 
-                                     ApplicationInformation)
+                                     ApplicationInformation, CrooApplicationGrade)
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
+from doc.croos.models import Croo
 
 
 class ApplicationTestMixin():
@@ -300,10 +301,25 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
         for view in self.grade_views:
             res = self.app.get(reverse(view), user=self.director)
             self.assertTemplateNotUsed('applications/grading_not_available.html')
-    
-        
-        
 
-        
 
+class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
     
+    def setUp(self):
+        self.init_current_trips_year()
+        self.mock_director()
+
+    def test_redirect_to_next_for_croo_does_not_break(self):
+        
+        self.close_application() # open grading
+        app = self.make_application()
+        croo = mommy.make(Croo, trips_year=self.trips_year)
+        grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement, 
+                           potential_croos=[croo], trips_year=self.trips_year)
+
+        res = self.app.get(reverse('applications:grade:next_croo',
+                                   kwargs={'croo_pk': croo.pk}),
+                           user=self.director)
+        
+        
+                           
