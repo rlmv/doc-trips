@@ -312,11 +312,14 @@ class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
     def test_redirect_to_next_for_croo_does_not_break(self):
         
         self.close_application() # open grading
+
+        # setup application with one grade suggesting a Croo
         app = self.make_application()
         croo = mommy.make(Croo, trips_year=self.trips_year)
         grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement, 
                            potential_croos=[croo], trips_year=self.trips_year)
-
+    
+        # try and grade only for that croo
         res = self.app.get(reverse('applications:grade:next_croo',
                                    kwargs={'croo_pk': croo.pk}),
                            user=self.director)
