@@ -49,17 +49,14 @@ class ApplicationManager(models.Manager):
         # grab the value of GeneralApplication.PENDING
         PENDING = self.model.application.field.related_field.model.PENDING
 
-        application = (self.completed_applications(trips_year=trips_year).
-                       filter(application__status=PENDING)
-                       .annotate(models.Count('grades'))
-                       .filter(grades__count__lte=num)
-                       .exclude(grades__grader=user)
-                       # random database-level ordering. 
-                       # TODO: this may be expensive?
-                       .order_by('?')[:1])
-        
-        return application[0] if application else None
-
+        return (self.completed_applications(trips_year=trips_year).
+                filter(application__status=PENDING)
+                .annotate(models.Count('grades'))
+                .filter(grades__count__lte=num)
+                .exclude(grades__grader=user)
+                # random database-level ordering. 
+                # TODO: this may be expensive?
+                .order_by('?').first())
 
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(document='')    

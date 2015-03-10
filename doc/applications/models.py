@@ -274,5 +274,13 @@ class CrooApplicationGrade(AbstractGrade):
                                     editable=False)
     # TODO: rename to suggested_croos?
     potential_croos = models.ManyToManyField(Croo, blank=True, verbose_name="I think this applicant is qualified for, and would do well on, the following Croos:")
+
+    qualifications = models.ManyToManyField('QualificationTag', blank=True)
     
-    # TODO: kitchen lead qualified, safety_lead_qualified
+
+class QualificationTag(DatabaseModel):
+    """ Used to mark Croo apps with hard skills relevant to different Croos """
+    name = models.CharField('I think this applicant is qualified for the following roles:', max_length=30)
+    
+    def __str__(self):
+        return self.name

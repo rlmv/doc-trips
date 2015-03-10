@@ -269,7 +269,7 @@ class CrooApplicationGradeForm(forms.ModelForm):
     class Meta:
         model = CrooApplicationGrade
         widgets = {
-            'potential_croos': forms.CheckboxSelectMultiple(),
+            'qualifications': forms.CheckboxSelectMultiple(),
             'scratchpad': forms.Textarea(attrs=dict(rows=3)),
         }
 

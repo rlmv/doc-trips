@@ -61,7 +61,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
 
     def get_context_data(self, **kwargs):
 
-        # Every SHOW_GRADE_AVG_INTERVAL tell the grade what their 
+        # Every SHOW_GRADE_AVG_INTERVAL tell the grader what their 
         # average grade has been (for this year, of course)
         ct = ContentType.objects.get_for_model(self.model)
         grades_by_user = (getattr(self.request.user, ct.model + 's')
