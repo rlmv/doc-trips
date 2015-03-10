@@ -276,7 +276,11 @@ class CrooApplicationGrade(AbstractGrade):
     
 
 class QualificationTag(DatabaseModel):
-    """ Used to mark Croo apps with hard skills relevant to different Croos """
+    """ 
+    Used to mark Croo apps with hard skills relevant to different Croos 
+
+    TODO: do we need views for adding/editing more tags? Or just a management command?
+    """
     name = models.CharField('I think this applicant is qualified for the following roles:', max_length=30)
     
     def __str__(self):
