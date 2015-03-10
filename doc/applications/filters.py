@@ -83,7 +83,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         # and use the widget
         self.filters[CROO_QUALIFICATIONS] = django_filters.ModelMultipleChoiceFilter(
             name=CROO_QUALIFICATIONS, 
-            label='',
+            label='Croo Qualifications',
             queryset=QualificationTag.objects.filter(trips_year=trips_year), 
             widget=forms.CheckboxSelectMultiple
         )
@@ -111,9 +111,7 @@ class FilterSetFormHelper(FormHelper):
                 Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
             ),
             Row(
-                Div(HTML('<strong>Croo Qualifications (ANY):</strong>'), css_class='col-sm-3 text-right'),
-                Div(InlineCheckboxes(CROO_QUALIFICATIONS), css_class='col-sm-9'),
-                css_class='filter-croos',
+                Div(InlineCheckboxes(CROO_QUALIFICATIONS), css_class='col-sm-12'),
             ),
         )
 
