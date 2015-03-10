@@ -73,6 +73,10 @@ class Croo(DatabaseModel):
 
     Migrates each year.
     """
+    
+    class Meta:
+        ordering = ['name']
+    
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
 
