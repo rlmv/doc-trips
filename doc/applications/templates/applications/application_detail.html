@@ -83,14 +83,14 @@
 <table class="table table-condensed table-striped">
   <tr>
     <th> Grade </th>
-    <th> Suggested Croos </th>
+    <th> Qualifications </th>
     <th> Comment </th>
     <th> Grader </th>
   </tr>
   {% for grade in application.croo_supplement.grades.all %}
   <tr>
     <td> {{ grade.grade }} </td>
-    <td> {% for croo in grade.potential_croos.all %} {{ croo | detail_link }} {% endfor %} </td>
+    <td> {{ grade.qualifications.all|join:", " }} </td>
     <td> {{ grade.comment }} </td>
     <td> {{ grade.grader }} </td>
   </tr>
