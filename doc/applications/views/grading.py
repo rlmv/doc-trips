@@ -10,7 +10,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from doc.db.models import TripsYear
-from doc.applications.models import GeneralApplication, LeaderSupplement, CrooSupplement, CrooApplicationGrade, LeaderApplicationGrade
+from doc.applications.models import (GeneralApplication, LeaderSupplement, CrooSupplement,
+                                     CrooApplicationGrade, LeaderApplicationGrade,
+                                     QualificationTag)
 from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGradeForm
 from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
@@ -24,7 +26,7 @@ class GraderLandingPage(TemplateView):
     template_name = 'applications/graders.html'
     
     def get_context_data(self, **kwargs):
-        kwargs['croos'] = Croo.objects.filter(trips_year=TripsYear.objects.current())
+        kwargs['qualifications'] = QualificationTag.objects.filter(trips_year=TripsYear.objects.current())
         return super(GraderLandingPage, self).get_context_data(**kwargs)
 
 
@@ -121,44 +123,42 @@ class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
         return reverse('applications:grade:croo', kwargs={'pk': application.pk})
 
 
-class RedirectToNextGradableCrooApplicationForCroo(CrooGraderPermissionRequired, 
-                                                   IfGradingAvailable, RedirectView):
+class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermissionRequired, 
+                                                            IfGradingAvailable, RedirectView):
     """ 
-    View for returning croo-specific apps to grade. 
+    View for returning qualification-specific apps to grade. 
 
     Only redirects to apps which other graders have tagged with a specific 
-    potential croo. This view is intended for Croo heads to use to do 
+    qualification. This view is intended for Croo heads to use to do 
     once-over grading for all potential people on their croos. 
-
-    TODO: include kitchen lead self selected apps in the Lodge Croo query.
     """
 
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
         
-        croo_pk = self.kwargs['croo_pk']
-        croo = Croo.objects.get(pk=croo_pk)
+        qual_pk = self.kwargs['qualification_pk']
+        qualification = QualificationTag.objects.get(pk=qual_pk)
     
         # let user know which croo they are in
         msg = 'You are currently scoring potential %s applications' 
-        messages.info(self.request, msg % croo)
+        messages.info(self.request, msg % qualification)
         
-        # we're just serving apps for the specified croo
+        # we're just serving apps for the specified qualification
         # and don't care about limits to the total number of grades
         # TODO: stick this on the manager?
         # TODO: pass in the trips year? - tie grading to a trips_year url?
         application = (CrooSupplement.objects
                        .completed_applications(trips_year=TripsYear.objects.current())
-                       .filter(grades__potential_croos=croo_pk)
+                       .filter(grades__qualifications=qual_pk)
                        .filter(application__status=GeneralApplication.PENDING)
                        .exclude(grades__grader=self.request.user)
                        .order_by('?').first())
         if not application: 
             return reverse('applications:grade:no_croo_left')
-        # pass along the croo's pk so that we can keep grading for this croo
+        # pass along the croo's pk so that we can keep grading for this qualification
         return reverse('applications:grade:croo', kwargs={'pk': application.pk,
-                                                          'croo_pk': croo_pk})
+                                                          'qualification_pk': qual_pk})
 
 
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
@@ -178,7 +178,7 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
         return super(GradeCrooApplication, self).get_context_data(**kwargs)
 
 
-class GradeCrooApplicationForCroo(GradeCrooApplication):
+class GradeCrooApplicationForQualification(GradeCrooApplication):
     """
     Grade a croo application.
 
@@ -189,9 +189,9 @@ class GradeCrooApplicationForCroo(GradeCrooApplication):
 
     def get_success_url(self):
 
-        croo_pk = self.kwargs.get('croo_pk')
+        qual_pk = self.kwargs.get('qualification_pk')
         return reverse('applications:grade:next_croo', 
-                       kwargs=dict(croo_pk=croo_pk))
+                       kwargs=dict(qual_pk=qual_pk))
 
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
