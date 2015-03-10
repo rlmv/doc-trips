@@ -20,7 +20,8 @@ class Trippee(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     info = models.ForeignKey('TrippeeInfo', editable=False)
     registration = models.ForeignKey('TrippeeRegistration', editable=False)
-    trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT)
+    trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
+                                        related_name='trippees')
 
     # TODO:
     # bus assignment

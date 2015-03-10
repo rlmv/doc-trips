@@ -41,7 +41,7 @@ class ScheduledTripDetailView(DatabaseDetailView):
     model = ScheduledTrip
     template_name = 'trip/trip_detail.html'
 
-    fields = ['section', 'template', 'leaders']
+    fields = ['section', 'template', 'leaders', 'trippees']
 
     triptemplate_fields = [
         'triptype', 'max_trippees', 'non_swimmers_allowed', 
