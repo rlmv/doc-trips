@@ -4,12 +4,10 @@
 {% load crispy_forms_tags %}
 {% load verbose_name %}
 
-{% block content %}
-
-{% block title %}
+{% block header %}
 <h3>Edit {{ view.model | verbose_name | title }} </h3>
-{% endblock title %}
+{% endblock header %}
 
+{% block content %}
 {% crispy form %}
-
 {% endblock %}
