@@ -25,9 +25,6 @@ def detail(db_object, fields=None):
         if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
-        if isinstance(field, models.related.RelatedObject):
-            continue
-
         value = getattr(db_object, field_name)
 
         if isinstance(field, models.FileField) and value:
@@ -42,8 +39,14 @@ def detail(db_object, fields=None):
 
             elif value is not None:
                 value = detail_link(value)
+
+        if isinstance(field, models.related.RelatedObject):
+            # related objects don't have a verbose_name
+            field.verbose_name = field.get_accessor_name()
         
-        if isinstance(field, models.ManyToManyField):
+        if (isinstance(field, models.ManyToManyField) or 
+            isinstance(field, models.related.RelatedObject)):
+
             t = template.Template(
                 """{% for o in queryset %} <a href="{{ o.get_absolute_url }}"> {{ o }}</a>{% if not forloop.last %},{% endif %}{% endfor %}""")
             c = template.Context({'queryset': value.get_queryset()})

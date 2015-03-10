@@ -192,6 +192,10 @@ class LeaderSupplement(DatabaseModel):
         return r['grade__avg']
 
 
+    def get_absolute_url(self):
+        return self.application.get_absolute_url()
+
+
     def __str__(self):
         return str(self.application.applicant)
 
@@ -231,6 +235,10 @@ class CrooSupplement(DatabaseModel):
         """ Average grade for the croo application """
         r = self.grades.all().aggregate(models.Avg('grade'))
         return r['grade__avg']
+
+
+    def get_absolute_url(self):
+        return self.application.get_absolute_url()
 
 
     def __str__(self):
