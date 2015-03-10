@@ -31,6 +31,15 @@
 
 {% display_docx_filefield_as_html application.document %}
 
+{% if extra_fields %}
+<div class="well">
+  {% for label, field in extra_fields %}
+  <p><strong>{{ label }}:</strong> {{ field }} </p>
+  {% endfor %}
+</div>
+{% endif %}
+
+
 <div>
   {% crispy form %}
 </div>

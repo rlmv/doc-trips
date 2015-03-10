@@ -175,6 +175,16 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
         application = self.get_application()
         graders = list(map(lambda g: g.grader, application.grades.all()))
         kwargs['already_graded_by'] = graders
+        # display extra fields regarding qualifications 
+
+        yes_no = lambda field: 'yes' if field else 'no'
+        kwargs['extra_fields'] = [
+            ('Willing to be a Safety Lead?', yes_no(application.safety_lead_willing)),
+            ('Medical Certifications', application.application.medical_certifications),
+            ('Experience with medical certifications', application.application.medical_experience),
+            ('Kitchen Witch/Kitchen Wizard willing?', yes_no(application.kitchen_lead_willing)),
+            ('Kitchen Witch/Kitchen Wizard qualifications', application.kitchen_lead_qualifications)
+        ]
         return super(GradeCrooApplication, self).get_context_data(**kwargs)
 
 
