@@ -36,8 +36,23 @@ class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip
     fields = ['section', 'template']
 
+
 class ScheduledTripDetailView(DatabaseDetailView):
     model = ScheduledTrip
+    template_name = 'trip/trip_detail.html'
+
+    fields = ['section', 'template', 'leaders']
+
+    triptemplate_fields = [
+        'triptype', 'max_trippees', 'non_swimmers_allowed', 
+        'description_introduction', 
+        'dropoff', 'description_day1', 'campsite1',
+        'description_day2', 'campsite2',
+        'description_day3', 'pickup',
+        'description_conclusion', 
+        'return_route', 
+        'revision_notes']
+    
 
 class ScheduledTripCreateView(DatabaseCreateView):
     model = ScheduledTrip

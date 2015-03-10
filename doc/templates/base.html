@@ -24,12 +24,21 @@
       </div>
 
       <div class="col-sm-8">
+	<div>
 	{% block messages %}
 	{% include "messages.html" %}
 	{% endblock %}
+	</div>
 
+	<div class="page-header">
+	{% block header %}
+	{% endblock header %}
+	</div>
+
+	<div>
 	{% block content %}
 	{% endblock %}
+	</div>
       </div>
 
       <div class="col-sm-2" id="right-column">

@@ -97,7 +97,7 @@ class TripTemplate(DatabaseModel):
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type', on_delete=models.PROTECT)
     max_trippees = models.PositiveSmallIntegerField()
-    non_swimmers_allowed = models.BooleanField(default=True)
+    non_swimmers_allowed = models.BooleanField("non-swimmers allowed", default=True)
     
     dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips', on_delete=models.PROTECT)
     pickup = models.ForeignKey(Stop, related_name='picked_up_trips', on_delete=models.PROTECT)
@@ -106,8 +106,8 @@ class TripTemplate(DatabaseModel):
     return_route = models.ForeignKey(Route, related_name='returning_trips', null=True, on_delete=models.PROTECT)
 
     # TODO: better related names
-    campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1', on_delete=models.PROTECT)
-    campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2', on_delete=models.PROTECT)
+    campsite1 = models.ForeignKey('Campsite', related_name='trip_night_1', on_delete=models.PROTECT, verbose_name='campsite 1')
+    campsite2 = models.ForeignKey('Campsite', related_name='trip_night_2', on_delete=models.PROTECT, verbose_name='campsite 2')
 
     description_introduction = models.TextField(verbose_name='Introduction', blank=True)
     description_day1 = models.TextField(verbose_name='Day 1', blank=True)
