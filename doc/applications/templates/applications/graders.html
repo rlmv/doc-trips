@@ -13,7 +13,7 @@
 <h4><a href="{% url 'applications:grade:next_croo' %}"> Grade Croo Applications </a></h4>
 
 <h3> Croo Heads </h3>
-<p> Use the following links if you are a Croo head and are trying to grade applications for your Croo. You will only be shown applications which other graders have indicated are a good match for your Croo. Everyone else, stay away!</p>
+<p> Use the following links if you are a Croo head. Everyone else, stay away! You will only be shown applications which other graders believe have the following qualifications:</p>
 {% for qual in qualifications %}
 <h5><a href="{% url 'applications:grade:next_croo' qualification_pk=qual.pk %}"> Grade {{ qual }} Applications </a><h5>
 {% endfor %}
