@@ -1,0 +1,42 @@
+[
+    { 
+	"model": "applications.qualificationtag",
+	"pk": 1,
+	"fields": {
+	    "name": "Safety Lead",
+	    "trips_year": 2015
+	}
+    },
+    { 
+	"model": "applications.qualificationtag",
+	"pk": 2,
+	"fields": {
+	    "name": "Kitchen Witch/Wizard",
+	    "trips_year": 2015
+	}
+    },
+    { 
+	"model": "applications.qualificationtag",
+	"pk": 3,
+	"fields": {
+	    "name": "Oak Hill Croo",
+	    "trips_year": 2015
+	}
+    },    
+    { 
+	"model": "applications.qualificationtag",
+	"pk": 4,
+	"fields": {
+	    "name": "Climbing Croo",
+	    "trips_year": 2015
+	}
+    },
+    { 
+	"model": "applications.qualificationtag",
+	"pk": 5,
+	"fields": {
+	    "name": "Grant Croo",
+	    "trips_year": 2015
+	}
+    }
+]
