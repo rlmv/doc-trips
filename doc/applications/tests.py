@@ -12,10 +12,10 @@ from doc.test.fixtures import TripsYearTestCase as TripsTestCase, WebTestCase
 from doc.applications.models import (LeaderSupplement as LeaderApplication, 
                                      CrooSupplement, 
                                      GeneralApplication, LeaderApplicationGrade, 
-                                     ApplicationInformation, CrooApplicationGrade)
+                                     ApplicationInformation, CrooApplicationGrade,
+                                     QualificationTag)
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
-from doc.croos.models import Croo
 
 
 class ApplicationTestMixin():
@@ -309,19 +309,19 @@ class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
         self.init_current_trips_year()
         self.mock_director()
 
-    def test_redirect_to_next_for_croo_does_not_break(self):
+    def test_redirect_to_next_for_qualification_does_not_break(self):
         
         self.close_application() # open grading
 
         # setup application with one grade suggesting a Croo
         app = self.make_application()
-        croo = mommy.make(Croo, trips_year=self.trips_year)
+        qualification = mommy.make(QualificationTag, trips_year=self.trips_year)
         grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement, 
-                           potential_croos=[croo], trips_year=self.trips_year)
+                           qualifications=[qualification], trips_year=self.trips_year)
     
         # try and grade only for that croo
         res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'croo_pk': croo.pk}),
+                                   kwargs={'qualification_pk': qualification.pk}),
                            user=self.director)
         
         
