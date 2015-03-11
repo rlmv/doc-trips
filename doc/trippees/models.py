@@ -8,6 +8,7 @@ from django.conf import settings
 from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
+from doc.db.models import DatabaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -21,13 +22,21 @@ class Address(models.Model):
     # TODO, or use django-address
     pass
 
-class Trippee(models.Model):
+class Trippee(DatabaseModel):
+    """
+    Model to aggregate trippee information.
+
+    Includes trippee input registration, college incoming student data, 
+    database notes, and trip assignment.
+
+    Created by the the post_save signal on TrippeeRegistration.
+    """
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     registration = models.OneToOneField('TrippeeRegistration', editable=False,
                                         related_name='trippee')
     info = models.OneToOneField('TrippeeInfo', editable=False,
-                                related_name='trippee', null=True)
+                                        related_name='trippee', null=True)
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
                                         related_name='trippees', null=True)
 
@@ -41,7 +50,7 @@ class Trippee(models.Model):
     notes = models.TextField(blank=True)
     
 
-class TrippeeInfo(models.Model):
+class TrippeeInfo(DatabaseModel):
     """
     Trippee information provided by the college.
     """
@@ -71,7 +80,7 @@ class TrippeeInfo(models.Model):
     dartmouth_email = models.EmailField(max_length=254)
     
 
-class TrippeeRegistration(models.Model):
+class TrippeeRegistration(DatabaseModel):
 
     # used to populate the related Trippee.user field.
     # see the post_save signal vvvv
@@ -167,7 +176,8 @@ def connect_to_trippee(instance=None, **kwargs):
     if kwargs.get('created', False):
         trippee, _ = Trippee.objects.get_or_create(
             user=instance.user,
-            registration=instance
+            registration=instance,
+            trips_year=instance.trips_year
         )
     else:
         trippee = instance.trippee

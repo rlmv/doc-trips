@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'django_extensions',
     'raven.contrib.django.raven_compat',
+    'test_without_migrations',
 
     # doc apps
     'doc.applications',

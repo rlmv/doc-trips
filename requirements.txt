@@ -36,4 +36,5 @@ coverage
 #django-coverage
 webtest
 django-webtest
+django-test-without-migrations
 

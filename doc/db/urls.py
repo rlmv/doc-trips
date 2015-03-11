@@ -5,7 +5,7 @@ from django.conf.urls import patterns, url, include
 from doc.trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                             campsite_urlpatterns, section_urlpatterns, leader_urlpatterns)
 #from doc.leaders.urls import leaderapplication_urlpatterns
-from doc.croos.urls import crooapplication_urlpatterns, croo_urlpatterns
+from doc.croos.urls import croo_urlpatterns
 from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
                                 vehicle_urlpatterns)
 from doc.db.views import DatabaseIndexView, RedirectToCurrentDatabase

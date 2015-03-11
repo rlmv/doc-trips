@@ -30,7 +30,7 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test: 
-	$(MANAGE) test doc
+	$(MANAGE) test --nomigrations doc
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
