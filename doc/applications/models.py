@@ -214,7 +214,7 @@ class CrooSupplement(DatabaseModel):
     kitchen_lead_willing = models.BooleanField('Yes, I am willing to be a Kitchen Witch/Wizard',
                                                default=False)
     kitchen_lead_qualifications = models.TextField(blank=True, verbose_name='If you are willing to be a Kitchen Witch/Wizard, please briefly describe your qualifications for the position (eg. on Moosilauke Lodge crew spring 2014, experience working in industrial kitchens, experience preparing and organizing food for large groups.)')
-
+    
     # -------- driving -------
 
     # ----- backend fields -------
@@ -265,15 +265,15 @@ class AbstractGrade(DatabaseModel):
                                related_name='%(class)ss') 
     scratchpad = models.TextField('scratchpad for question-specific notes', blank=True)
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
+    hard_skills = models.CharField(max_length=255, blank=True)
+    soft_skills = models.CharField(max_length=255, blank=True)
     comment = models.TextField()
 
-    
+
 class LeaderApplicationGrade(AbstractGrade):
     """ Grade for LeaderApplications """
     application = models.ForeignKey(LeaderSupplement, related_name='grades',
                                     editable=False)
-    hard_skills = models.BooleanField(default=False)
-    soft_skills = models.BooleanField(default=False)
 
 
 class CrooApplicationGrade(AbstractGrade):
