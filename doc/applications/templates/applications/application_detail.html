@@ -65,8 +65,8 @@
   {% for grade in application.leader_supplement.grades.all %}
   <tr>
     <td> {{ grade.grade }} </td>
-    <td> {{ grade.hard_skills | ok_if_true }} </td>
-    <td> {{ grade.soft_skills | ok_if_true }} </td>
+    <td> {{ grade.hard_skills }} </td>
+    <td> {{ grade.soft_skills }} </td>
     <td> {{ grade.comment }} </td>
     <td> {{ grade.grader }} </td>
   </tr>
@@ -92,8 +92,8 @@
   {% for grade in application.croo_supplement.grades.all %}
   <tr>
     <td> {{ grade.grade }} </td>
-    <td> {{ grade.hard_skills | ok_if_true }} </td>
-    <td> {{ grade.soft_skills | ok_if_true }} </td>
+    <td> {{ grade.hard_skills }} </td>
+    <td> {{ grade.soft_skills }} </td>
     <td> {{ grade.qualifications.all|join:", " }} </td>
     <td> {{ grade.comment }} </td>
     <td> {{ grade.grader }} </td>

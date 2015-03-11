@@ -9,7 +9,7 @@ class TrippeeModelsTestCase(TripsYearTestCase):
     def setUp(self):
         pass
     
-    def test_signal_creates_Trippee_for_TrippeeRegistration(self):
+    def test_creating_Registration_automatically_creates_Trippee(self):
         
         user = self.mock_user()
         trips_year = self.init_current_trips_year()
@@ -20,4 +20,4 @@ class TrippeeModelsTestCase(TripsYearTestCase):
         self.assertEqual(created_trippee.user, user)
         self.assertEqual(created_trippee.registration, reg)
         
-        
+    
