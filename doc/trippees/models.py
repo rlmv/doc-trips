@@ -13,6 +13,7 @@ from doc.db.models import DatabaseModel
 logger = logging.getLogger(__name__)
 
 def YesNoField(*args, **kwargs):
+    # Use a boolean field instead?
     kwargs['choices'] = YES_NO_CHOICES
     kwargs['max_length'] = 2
     return models.CharField(*args, **kwargs)
