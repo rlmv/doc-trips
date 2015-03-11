@@ -4,17 +4,14 @@
 {% load icons %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+<h3> Applications </h3>
+{% endblock %}
+
 {% block content %}
-
-<div>
-  <h3> Applications </h3>
-  <h4> Under construction! </h4>
-</div>
-
 
 {% crispy applications_filter.form %}
   
-
 <table class="table table-condensed">
   <tr>
     <th> Application </th>

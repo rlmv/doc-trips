@@ -4,12 +4,11 @@
 {% load icons %}
 {% load convert %}
 
+{% block header %}
+<h3> Application for {{ application.applicant }} </h3>
+{% endblock %}
+
 {% block content %}
-
-<div class="page-header">
-  <h3> Application for {{ application.applicant }} </h3>
-</div>
-
 
 {# administrative info #}
 <h4> Administrative Info </h4>

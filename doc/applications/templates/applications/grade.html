@@ -5,11 +5,11 @@
 
 {# generic grading view for both Croo and Leader applications #}
 
-{% block content %}
-
-<div class="page-heading">
+{% block header %}
   <h3> {{ title }} </h3>
-</div>
+{% endblock %}
+
+{% block content %}
 
 {% if already_graded_by %}
 <div>
