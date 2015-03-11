@@ -1,9 +1,15 @@
+import logging
+
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.conf import settings
 
 from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
+
+logger = logging.getLogger(__name__)
 
 def YesNoField(*args, **kwargs):
     kwargs['choices'] = YES_NO_CHOICES
@@ -18,17 +24,19 @@ class Address(models.Model):
 class Trippee(models.Model):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    info = models.ForeignKey('TrippeeInfo', editable=False)
-    registration = models.ForeignKey('TrippeeRegistration', editable=False)
+    registration = models.OneToOneField('TrippeeRegistration', editable=False,
+                                        related_name='trippee')
+    info = models.OneToOneField('TrippeeInfo', editable=False,
+                                related_name='trippee', null=True)
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
-                                        related_name='trippees')
+                                        related_name='trippees', null=True)
 
     # TODO:
     # bus assignment
     # gear requested
     
     # TODO: decline_choices: sports, no responses, etc.
-    decline_reason = models.CharField(max_length=50)
+    decline_reason = models.CharField(max_length=50, blank=True)
 
     notes = models.TextField(blank=True)
     
@@ -64,6 +72,10 @@ class TrippeeInfo(models.Model):
     
 
 class TrippeeRegistration(models.Model):
+
+    # used to populate the related Trippee.user field.
+    # see the post_save signal vvvv
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 
     # name not just from netid / college info?
     name = models.CharField(max_length=255)
@@ -137,8 +149,9 @@ class TrippeeRegistration(models.Model):
 
     # ----- other deets ----
 
-    # TODO: limit choices in the form to current trip_year and EXTERNAL stops
-    bus_stop = models.ForeignKey(Stop, verbose_name="Where would you like to be bussed from/to?")
+    # TODO: limit choices in the form to current trip_year and EXTRNAL stops
+    bus_stop = models.ForeignKey(Stop, on_delete=models.PROTECT, 
+                                 verbose_name="Where would you like to be bussed from/to?")
 
     financial_assistance = YesNoField("Are you requesting financial assistance from DOC Trips? If 'yes' we will contact you in July with more information about your financial assistance.")
     waiver = YesNoField("I certify that I have read this assumption of risk and the accompanying registration materials. I approve participation for the student indicated above and this serves as my digital signature of this release, waiver & acknowledgement.")
@@ -147,8 +160,24 @@ class TrippeeRegistration(models.Model):
     final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers - anything goes! All responses will be remain anonymous.")
     
 
+@receiver(post_save, sender=TrippeeRegistration)
+def connect_to_trippee(instance=None, **kwargs):
 
-    
+    # create a master trippee object, if it doesnt' already exist
+    if kwargs.get('created', False):
+        trippee, _ = Trippee.objects.get_or_create(
+            user=instance.user,
+            registration=instance
+        )
+    else:
+        trippee = instance.trippee
+
+    # try and find college-provided info for this student
+    if trippee.info is None:
+        logger.warning('TODO: match trippee to college info')
+        
+        
+        
     
     
     

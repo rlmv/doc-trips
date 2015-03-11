@@ -10,6 +10,8 @@ from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns,
                                 vehicle_urlpatterns)
 from doc.db.views import DatabaseIndexView, RedirectToCurrentDatabase
 from doc.applications.urls import application_urlpatterns
+from doc.trippees.urls import trippee_urlpatterns
+
 
 """
 All database urlpatterns take a trips_year param.
@@ -23,7 +25,6 @@ database_urlpatterns = patterns(
     url(r'^types/', include(triptype_urlpatterns)),
     url(r'^campsites/', include(campsite_urlpatterns)),
     url(r'^sections/', include(section_urlpatterns)),
-    url(r'^croosapplications/', include(crooapplication_urlpatterns)),
     url(r'^croos/', include(croo_urlpatterns)),                            
     url(r'^stops/', include(transportstop_urlpatterns)),
     url(r'^routes/', include(route_urlpatterns)),

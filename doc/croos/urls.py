@@ -1,32 +1,9 @@
 
-
-
 from django.conf.urls import patterns, url, include
 
 from doc.db.urlhelpers import DB_REGEX
-from doc.croos.views import (EditCrooApplication, NewCrooApplication,
-                         CreateCrooApplication, RedirectToNextGradableCrooApplication, 
-                         GradeCrooApplication, NoCrooApplicationsLeftToGrade,
-                         CrooApplicationDatabaseListView, CrooApplicationDatabaseDetailView,
-                         CrooApplicationDatabaseUpdateView, CrooListView, 
-                         CrooCreateView, CrooUpdateView, CrooDetailView, 
-                         CrooDeleteView)
-
-urlpatterns = patterns('', 
-    url(r'^apply/$', NewCrooApplication.as_view(), name='apply'),
-    url(r'^apply/edit$', EditCrooApplication.as_view(), name='edit_application'),
-    url(r'^createapplication/$', CreateCrooApplication.as_view(), name='create_application'),                   
-    url(r'^grade/$', RedirectToNextGradableCrooApplication.as_view(), name='grade_next'),
-    url(r'^grade/(?P<pk>[0-9]+)$', GradeCrooApplication.as_view(), name='grade'),
-    url(r'^grade/none/$', NoCrooApplicationsLeftToGrade.as_view(), name='no_applications'),
-)
-
-crooapplication_urlpatterns = patterns(
-    '',
-    url(DB_REGEX['LIST'], CrooApplicationDatabaseListView.as_view(), name='crooapplication_index'),
-    url(DB_REGEX['DETAIL'], CrooApplicationDatabaseDetailView.as_view(), name='crooapplication_detail'),
-    url(DB_REGEX['UPDATE'], CrooApplicationDatabaseUpdateView.as_view(), name='crooapplication_update'),
-)
+from doc.croos.views import (CrooListView, CrooCreateView, CrooUpdateView, 
+                             CrooDetailView, CrooDeleteView)
 
 croo_urlpatterns = patterns(
     '',
