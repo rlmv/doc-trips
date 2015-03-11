@@ -1,14 +1,31 @@
 
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404
-from vanilla import CreateView, UpdateView, DetailView
+from django.http import HttpResponseRedirect
+from vanilla import CreateView, UpdateView, DetailView, TemplateView
 from braces.views import LoginRequiredMixin
 
 from doc.trippees.models import TrippeeRegistration
 from doc.trippees.forms import RegistrationForm
 from doc.db.models import TripsYear
+from doc.timetable.models import Timetable
 
-class Register(LoginRequiredMixin, CreateView):
+
+class IfRegistrationAvailable():
+    """ Redirect if trippee registration is not currently available """
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        if not Timetable.objects.timetable().registration_available():
+            return HttpResponseRedirect(reverse('trippees:registration_not_available'))
+        return super(IfRegistrationAvailable, self).dispatch(request, *args, **kwargs)
+
+
+class RegistrationNotAvailable(TemplateView):
+    template_name = 'trippees/not_available.html'
+
+
+class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
     """ 
     Register for trips 
     """
@@ -28,7 +45,7 @@ class Register(LoginRequiredMixin, CreateView):
         return super(Register, self).form_valid(form, **kwargs)
 
 
-class EditRegistration(LoginRequiredMixin, UpdateView):
+class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, UpdateView):
     """
     Edit a trippee registration.
     """
@@ -45,7 +62,7 @@ class EditRegistration(LoginRequiredMixin, UpdateView):
         )
            
  
-class ViewRegistration(LoginRequiredMixin, DetailView):
+class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
     """
     View a complete registration 
     """
