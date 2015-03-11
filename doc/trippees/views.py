@@ -1,10 +1,12 @@
 
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import get_object_or_404
 from vanilla import CreateView, UpdateView, DetailView
 from braces.views import LoginRequiredMixin
 
 from doc.trippees.models import TrippeeRegistration
 from doc.trippees.forms import RegistrationForm
+from doc.db.models import TripsYear
 
 class Register(LoginRequiredMixin, CreateView):
     """ 
@@ -36,9 +38,10 @@ class EditRegistration(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('trippees:view_registration')
 
     def get_object(self):
-        return self.model.objects.filter(
-            trips_year=TripsYear.objects.current(),
-            user=self.request.user
+        """ Get registration for user """        
+        return get_object_or_404(
+            self.model, user=self.request.user,
+            trips_year=TripsYear.objects.current()
         )
            
  
@@ -48,13 +51,15 @@ class ViewRegistration(LoginRequiredMixin, DetailView):
     """
     model = TrippeeRegistration
     template_name = 'trippees/completed_registration.html'
-    fields = ['name']
+    fields = ['name'] # TODO
     
     def get_object(self):
-        return self.model.objects.filter(
-            trips_year=TripsYear.objects.current(),
-            user=self.request.user
+        """ Get registration for user """
+        return get_object_or_404(
+            self.model, user=self.request.user,
+            trips_year=TripsYear.objects.current()
         )
+           
          
     
     
