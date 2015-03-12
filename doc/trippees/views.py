@@ -8,7 +8,7 @@ from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, 
 from braces.views import LoginRequiredMixin
 
 from doc.trippees.models import TrippeeRegistration, Trippee
-from doc.trippees.forms import RegistrationForm
+from doc.trippees.forms import RegistrationForm, IncomingStudentsForm
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
@@ -97,11 +97,6 @@ class TrippeeIndexView(DatabaseReadPermissionRequired,
     
     model = Trippee
     template_name = 'trippees/trippee_index.html'
-
-
-class IncomingStudentsForm(forms.Form):
-
-    csv_file = forms.FileField()
     
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
@@ -115,9 +110,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     form_class = IncomingStudentsForm
     template_name = 'trippees/upload_incoming_students.html'
-    
-    
-    
+
  
 
     

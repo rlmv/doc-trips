@@ -1,7 +1,7 @@
 
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout
 
 from doc.trippees.models import TrippeeRegistration
 
@@ -28,4 +28,6 @@ class IncomingStudentsForm(forms.Form):
 
         super(IncomingStudentsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Upload'))
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+
