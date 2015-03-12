@@ -33,11 +33,11 @@ class Trippee(DatabaseModel):
     Created by the the post_save signal on TrippeeRegistration.
     """
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+#    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     registration = models.OneToOneField('TrippeeRegistration', editable=False,
-                                        related_name='trippee')
-    info = models.OneToOneField('TrippeeInfo', editable=False,
                                         related_name='trippee', null=True)
+    info = models.OneToOneField('TrippeeInfo', editable=False,
+                                related_name='trippee')
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
                                         related_name='trippees', null=True)
 
@@ -188,7 +188,11 @@ def connect_to_trippee(instance=None, **kwargs):
         logger.warning('TODO: match trippee to college info')
         
         
-        
+@receiver(post_save, sender=TrippeeInfo)
+def create_trippee_for_college_info(instance=None, **kwargs):
     
-    
-    
+    if kwargs.get('created', False):
+        trippee, _ = Trippee.objects.get_or_create(
+            trips_year=instance.trips_year,
+            info=instance
+        )
