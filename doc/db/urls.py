@@ -10,7 +10,7 @@ from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns,
                                 vehicle_urlpatterns)
 from doc.db.views import DatabaseIndexView, RedirectToCurrentDatabase
 from doc.applications.urls import application_urlpatterns
-from doc.trippees.urls import trippee_urlpatterns
+from doc.trippees.urls import trippee_urlpatterns, registration_urlpatterns
 
 
 """
@@ -30,6 +30,8 @@ database_urlpatterns = patterns(
     url(r'^routes/', include(route_urlpatterns)),
     url(r'^vehicles/', include(vehicle_urlpatterns)),                            
     url(r'^applications/', include(application_urlpatterns)),
+    url(r'^trippees/', include(trippee_urlpatterns)),
+    url(r'^registrations/', include(registration_urlpatterns)),
 )
 
 urlpatterns = patterns('',

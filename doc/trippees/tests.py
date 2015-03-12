@@ -38,3 +38,19 @@ class TrippeeModelsTestCase(TripsYearTestCase):
             reg.trippee
 
 
+    def test_creating_IncomingStudent_connects_to_existing_registration(self):
+        
+        user = self.mock_incoming_student()
+        trips_year = self.init_current_trips_year()
+        reg = mommy.make(TrippeeRegistration, trips_year=trips_year, user=user)
+
+        info = mommy.make(CollegeInfo, did=user.did, trips_year=trips_year)
+        # refresh registration
+        reg = TrippeeRegistration.objects.get(pk=reg.pk)
+        
+        self.assertEqual(info.trippee, reg.trippee)
+
+        
+
+
+

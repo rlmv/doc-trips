@@ -1,8 +1,12 @@
 
 from django.conf.urls import patterns, url, include
 
+from doc.db.urlhelpers import DB_REGEX
 from doc.trippees.views import (Register, EditRegistration, ViewRegistration, 
-                                RegistrationNotAvailable)
+                                RegistrationNotAvailable,
+                                RegistrationIndexView,
+                                TrippeeIndexView, 
+                                UploadIncomingStudentData)
 
 urlpatterns = patterns(
     '',
@@ -15,5 +19,13 @@ urlpatterns = patterns(
 
 trippee_urlpatterns = patterns(
     '',
+    url(DB_REGEX['LIST'], TrippeeIndexView.as_view(), name='trippee_index'),
+    url(r'^upload/$', UploadIncomingStudentData.as_view(), name='upload_incoming'),
+)
+
+registration_urlpatterns = patterns(
+    '',
+    url(DB_REGEX['LIST'], RegistrationIndexView.as_view(), name='registration_index'),
+
 )
                             

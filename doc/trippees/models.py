@@ -165,7 +165,7 @@ class TrippeeRegistration(DatabaseModel):
     doc_membership = YesNoField()
     green_fund_donation = models.PositiveSmallIntegerField()
     final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers - anything goes! All responses will be remain anonymous.")
-    
+
 
 @receiver(post_save, sender=TrippeeRegistration)
 def connect_registration_to_trippee(instance=None, **kwargs):
@@ -178,7 +178,10 @@ def connect_registration_to_trippee(instance=None, **kwargs):
     """
     if kwargs.get('created', False):
         try:
-            instance.trippee = Trippee.objects.get(info__did=instance.user.did)
+            instance.trippee = Trippee.objects.get(
+                info__did=instance.user.did,
+                trips_year=instance.trips_year
+            )
             instance.save()
         except Trippee.DoesNotExist as e:
             msg = 'Incoming student info not found for registration %s'
@@ -187,9 +190,26 @@ def connect_registration_to_trippee(instance=None, **kwargs):
         
 @receiver(post_save, sender=CollegeInfo)
 def create_trippee_for_college_info(instance=None, **kwargs):
+    """ 
+    When incoming student info is added to the database, 
+    connect an administrative Trippee object.
+
+    If the incoming student has somehow already submitted a 
+    registration, attach the registration to the new Trippee
+    object.
+    """
     
     if kwargs.get('created', False):
-        trippee, _ = Trippee.objects.get_or_create(
+        trippee = Trippee.objects.create(
             trips_year=instance.trips_year,
             info=instance
         )
+        try:
+            existing_reg = TrippeeRegistration.objects.get(
+                trips_year=instance.trips_year,
+                user__did=instance.did
+            )
+            trippee.registration = existing_reg
+            trippee.save()
+        except TrippeeRegistration.DoesNotExist:
+            pass

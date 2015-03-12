@@ -1,15 +1,19 @@
 
+
+from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
-from vanilla import CreateView, UpdateView, DetailView, TemplateView
+from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin
 
-from doc.trippees.models import TrippeeRegistration
+from doc.trippees.models import TrippeeRegistration, Trippee
 from doc.trippees.forms import RegistrationForm
 from doc.db.models import TripsYear
+from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
-
+from doc.permissions.views import (DatabaseReadPermissionRequired,
+                                   DatabaseEditPermissionRequired)
 
 class IfRegistrationAvailable():
     """ Redirect if trippee registration is not currently available """
@@ -80,6 +84,38 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
         )
            
          
+
+class RegistrationIndexView(DatabaseReadPermissionRequired, 
+                            TripsYearMixin, ListView):
+    
+    model = TrippeeRegistration
+    template_name = 'trippees/registration_index.html'
+
+    
+class TrippeeIndexView(DatabaseReadPermissionRequired,
+                       TripsYearMixin, ListView):
+    
+    model = Trippee
+    template_name = 'trippees/trippee_index.html'
+
+
+class IncomingStudentsForm(forms.Form):
+
+    csv_file = forms.FileField()
+    
+
+class UploadIncomingStudentData(DatabaseEditPermissionRequired,
+                                TripsYearMixin, FormView):
+    """
+    Accept an upload of CSV file of incoming students. 
+
+    Parses the CSV file and adds the data to the database as
+    CollegeInfo objects.
+    """
+
+    form_class = IncomingStudentsForm
+    template_name = 'trippees/upload_incoming_students.html'
+    
     
     
  
