@@ -33,7 +33,6 @@ class Trippee(DatabaseModel):
     Created by the the post_save signal on TrippeeRegistration.
     """
 
-#    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     registration = models.OneToOneField('TrippeeRegistration', editable=False,
                                         related_name='trippee', null=True)
     info = models.OneToOneField('CollegeInfo', editable=False,
@@ -83,8 +82,6 @@ class CollegeInfo(DatabaseModel):
 
 class TrippeeRegistration(DatabaseModel):
 
-    # used to populate the related Trippee.user field.
-    # see the post_save signal vvvv
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 
     # name not just from netid / college info?

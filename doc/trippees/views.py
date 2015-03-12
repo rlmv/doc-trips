@@ -36,10 +36,12 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
 
     def form_valid(self, form, **kwargs):
         """ 
-        Add the registering user to the registration
+        Add the registering user to the registration 
 
-        The Registration creates a Trippee object automagically.
+        The registration will be automagically matched with a 
+        corresponding Trippee model if it exists.
         """
+
         form.instance.trips_year = TripsYear.objects.current()
         form.instance.user = self.request.user
         return super(Register, self).form_valid(form, **kwargs)
