@@ -24,7 +24,8 @@ def parse_cas_success(tree):
 
     name = findtext('name')
     netid = findtext('netid')
-    user, created = UserModel.objects.get_by_netid(netid, name)
+    did = findtext('did')
+    user, created = UserModel.objects.get_or_create_by_netid(netid, name, did=did)
 
     return user
 

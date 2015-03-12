@@ -144,7 +144,7 @@ class GenericGroupForm(forms.Form):
 
         if new_member_data:
             UserModel = get_user_model()
-            new_member, _ = UserModel.objects.get_by_netid(
+            new_member, _ = UserModel.objects.get_or_create_by_netid(
                 new_member_data['netid'],
                 new_member_data['name_with_year']
             )
