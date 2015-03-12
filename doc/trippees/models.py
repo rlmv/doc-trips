@@ -36,7 +36,7 @@ class Trippee(DatabaseModel):
 #    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     registration = models.OneToOneField('TrippeeRegistration', editable=False,
                                         related_name='trippee', null=True)
-    info = models.OneToOneField('TrippeeInfo', editable=False,
+    info = models.OneToOneField('CollegeInfo', editable=False,
                                 related_name='trippee')
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
                                         related_name='trippees', null=True)
@@ -51,7 +51,7 @@ class Trippee(DatabaseModel):
     notes = models.TextField(blank=True)
     
 
-class TrippeeInfo(DatabaseModel):
+class CollegeInfo(DatabaseModel):
     """
     Trippee information provided by the college.
     """
@@ -171,24 +171,24 @@ class TrippeeRegistration(DatabaseModel):
     
 
 @receiver(post_save, sender=TrippeeRegistration)
-def connect_to_trippee(instance=None, **kwargs):
+def connect_registration_to_trippee(instance=None, **kwargs):
+    """
+    When an incoming student submits a registration, try and 
+    find the student's college-provided information and attach to 
+    the registration.
 
-    # create a master trippee object, if it doesnt' already exist
+    If the info cannot be found, the registration is left to sit.
+    """
     if kwargs.get('created', False):
-        trippee, _ = Trippee.objects.get_or_create(
-            user=instance.user,
-            registration=instance,
-            trips_year=instance.trips_year
-        )
-    else:
-        trippee = instance.trippee
-
-    # try and find college-provided info for this student
-    if trippee.info is None:
-        logger.warning('TODO: match trippee to college info')
+        try:
+            instance.trippee = Trippee.objects.get(info__did=instance.user.did)
+            instance.save()
+        except Trippee.DoesNotExist as e:
+            msg = 'Incoming student info not found for registration %s'
+            logger.info(msg % instance)
         
         
-@receiver(post_save, sender=TrippeeInfo)
+@receiver(post_save, sender=CollegeInfo)
 def create_trippee_for_college_info(instance=None, **kwargs):
     
     if kwargs.get('created', False):

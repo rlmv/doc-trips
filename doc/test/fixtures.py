@@ -44,6 +44,15 @@ class TripsYearTestCaseUtils():
         self.user = get_user_model().objects.create_user(netid, netid, email)
 
         return self.user
+        
+    def mock_incoming_student(self):
+        netid = 'incoming'
+        name = 'incoming'
+        email = netid + '@dartmouth.edu'
+        did = 'incoming DID'
+        self.user = get_user_model().objects.create_user(netid, name, email, did)
+        
+        return self.user
 
     def mock_director(self):
         """ Create a user with director permissions, and log the user in. """
