@@ -22,7 +22,7 @@ class RegistrationForm(forms.ModelForm):
 
 class IncomingStudentsForm(forms.Form):
 
-    csv_file = forms.FileField()
+    csv_file = forms.FileField(label='CSV file')
 
     def __init__(self, *args, **kwargs):
 

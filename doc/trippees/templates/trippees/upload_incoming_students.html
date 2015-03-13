@@ -6,6 +6,8 @@
 {% endblock %}
 
 {% block content %}
+<p> Uploaded student data must be in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
+
 <form enctype="multipart/form-data" method="post" action="">
 {% crispy form %}
 </form>
