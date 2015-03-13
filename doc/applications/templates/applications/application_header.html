@@ -1,10 +1,6 @@
 
 {# common header information for Trip and Croo application #}
 
-{% block header %}
-  <h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
-{% endblock header %}
-
 <p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
 <div>

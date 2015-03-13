@@ -2,9 +2,11 @@
 {% load crispy_forms_tags %}
 {% load icons %}
 
-{% block content %}
+{% block header %}
+<h1>Trip Leader and Croo Applications <small>Trips {{ trips_year }}</small></h1>
+{% endblock header %}
 
+{% block content %}
 {% include "applications/application_header.html" %}
 {% include "applications/application_body.html" %}
-
 {% endblock %}

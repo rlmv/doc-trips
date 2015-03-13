@@ -1,9 +1,10 @@
 {% extends "db/base.html" %}
 
-{% block content %}
-<div class="page-header">
+{% block header %}
   <h3> Edit Application for {{ application.applicant }} </h3>
-</div>
+{% endblock header %}
+
+{% block content %}
 
 {% include "applications/application_body.html" %}
 
