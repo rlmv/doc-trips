@@ -122,11 +122,11 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
         (created, ignored) = CollegeInfo.objects.create_from_csv_file(file, self.kwargs['trips_year'])
 
-        msg = 'Created incoming students with NetIds %s' % list(created)
+        msg = 'Created incoming students with NetIds %s' % created
         logger.info(msg)
         messages.info(self.request, msg)
         
-        msg = 'Ignored existing incoming students with NetIds %s' % list(ignored)
+        msg = 'Ignored existing incoming students with NetIds %s' % ignored
         logger.info(msg)
         messages.warning(self.request, msg)
 

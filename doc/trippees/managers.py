@@ -47,6 +47,6 @@ class CollegeInfoManager(models.Manager):
         self.model.objects.bulk_create(to_create)
 
         ignored_netids = existing_netids & netids
-        return (netids_to_create, ignored_netids)
+        return (list(netids_to_create), list(ignored_netids))
         
        
