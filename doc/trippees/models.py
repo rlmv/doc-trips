@@ -56,7 +56,8 @@ class CollegeInfo(DatabaseModel):
     """
     
     name = models.CharField(max_length=255)
-    did = models.CharField(max_length=30)
+    #    did = models.CharField(max_length=30)
+    netid = models.CharField(max_length=20)
 
     # hmmmm no netid provided?
     # We may need to save did on the UserModel for matching registrations
@@ -64,8 +65,8 @@ class CollegeInfo(DatabaseModel):
 
     # address - related model ? or abstract.
 
-    ethnicity_code = models.CharField(max_length=1)
-    gender_code = models.CharField(max_length=1)
+    ethnic_code = models.CharField(max_length=1)
+    gender = models.CharField(max_length=10)
     
     INCOMING_STATUS_CHOICES = (
         ('EXCHANGE', 'Exchange'),

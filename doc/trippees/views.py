@@ -1,4 +1,6 @@
-
+import csv
+import codecs
+import io
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -110,6 +112,29 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     form_class = IncomingStudentsForm
     template_name = 'trippees/upload_incoming_students.html'
+
+    def form_valid(self, form):
+        
+        file = io.TextIOWrapper(form.files['csv_file'].file, 
+                                encoding='utf-8', errors='replace')
+
+        reader = csv.DictReader(file)
+        for row in reader:
+
+            kwargs = {
+                'netid': row['Id'],
+                'name': row['Formatted Fml Name'],
+                'class_year': row['Class Year'],
+                'gender': row['Gender'],
+                'ethnic_code': row['Fine Ethnic Code'],
+                'email': row['Email'],
+                'dartmouth_email': row['Blitz'],
+            }
+            
+        
+        
+        
+
 
  
 
