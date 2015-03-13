@@ -20,6 +20,7 @@ from doc.permissions.views import (DatabaseReadPermissionRequired,
 
 logger = logging.getLogger(__name__)
 
+
 class IfRegistrationAvailable():
     """ Redirect if trippee registration is not currently available """
 
@@ -50,7 +51,6 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
         The registration will be automagically matched with a 
         corresponding Trippee model if it exists.
         """
-
         form.instance.trips_year = TripsYear.objects.current()
         form.instance.user = self.request.user
         return super(Register, self).form_valid(form, **kwargs)
@@ -88,7 +88,6 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
             trips_year=TripsYear.objects.current()
         )
            
-         
 
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
@@ -118,10 +117,13 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     def form_valid(self, form):
         
+        trips_year = TripsYear.objects.get(pk=self.kwargs['trips_year'])
+
         file = io.TextIOWrapper(form.files['csv_file'].file, 
                                 encoding='utf-8', errors='replace')
-
         reader = csv.DictReader(file)
+ 
+        info = []
         for row in reader:
 
             kwargs = {
@@ -133,32 +135,34 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                 'email': row['EMail'],
                 'dartmouth_email': row['Blitz'],
             }
-            
-            kwargs['trips_year'] = self.kwargs['trips_year']
-            
-            try:
-                netid = kwargs['netid']
-                CollegeInfo.objects.get(netid=netid, trips_year=self.kwargs['trips_year'])
-                msg = 'Incoming student with NetId %s already exists. Ignoring'
-                logger.warn(msg % netid)
-                messages.warning(self.request, msg % netid)
-                continue
+            kwargs['trips_year'] = trips_year
 
-            except CollegeInfo.DoesNotExist:
-                msg = 'Creating incoming student %s'
-                logger.info(msg % kwargs['name'])
-                messages.info(self.request, msg % kwargs['name'])
-                CollegeInfo.objects.create(**kwargs)
-                
-        return super(UploadIncomingStudentData, self).form_valid(form)
-                
+            info.append(CollegeInfo(**kwargs))
+
+        def get_netids(incoming_students):
+            return set(map(lambda x: x.netid), incoming_students)
+
+        netids = get_netids(info)
+        existing = CollegeInfo.objects.filter(trips_year=trips_year)
+        existing_netids = get_netids(existing)
+
+        netids_to_create = netids - existing_netids
+        to_create = filter(lambda x: x.netid in netids_to_create, info)
+        CollegeInfo.objects.bulk_create(to_create)
+        
+        msg = 'Created incoming students with NetIds %s' % list(netids_to_create)
+        logger.info(msg)
+        messages.info(self.request, msg)
+        
+        msg = 'Ignored existing incoming students with NetIds %s' % list(existing_netids)
+        logger.info(msg)
+        messages.warning(self.request, msg)
+
+        return super(UploadIncomingStudentData, self).form_valid(form)        
 
     def get_success_url(self):
         return self.request.path
         
-        
-
-
  
 
     
