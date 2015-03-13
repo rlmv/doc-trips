@@ -21,8 +21,8 @@ class TrippeeModelsTestCase(TripsYearTestCase):
         
         user = self.mock_incoming_student()
         trips_year = self.init_current_trips_year()
-        # make existing info for user with did
-        info = mommy.make(CollegeInfo, did=user.did, trips_year=trips_year)
+        # make existing info for user with netid
+        info = mommy.make(CollegeInfo, netid=user.netid, trips_year=trips_year)
         
         reg = mommy.make(TrippeeRegistration, trips_year=trips_year, user=user)
         self.assertEqual(reg.trippee.info, info)
@@ -44,7 +44,7 @@ class TrippeeModelsTestCase(TripsYearTestCase):
         trips_year = self.init_current_trips_year()
         reg = mommy.make(TrippeeRegistration, trips_year=trips_year, user=user)
 
-        info = mommy.make(CollegeInfo, did=user.did, trips_year=trips_year)
+        info = mommy.make(CollegeInfo, netid=user.netid, trips_year=trips_year)
         # refresh registration
         reg = TrippeeRegistration.objects.get(pk=reg.pk)
         

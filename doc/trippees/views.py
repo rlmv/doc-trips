@@ -1,21 +1,24 @@
 import csv
-import codecs
 import io
+import logging
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin
 
-from doc.trippees.models import TrippeeRegistration, Trippee
+from doc.trippees.models import TrippeeRegistration, Trippee, CollegeInfo
 from doc.trippees.forms import RegistrationForm, IncomingStudentsForm
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
+
+logger = logging.getLogger(__name__)
 
 class IfRegistrationAvailable():
     """ Redirect if trippee registration is not currently available """
@@ -127,11 +130,30 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                 'class_year': row['Class Year'],
                 'gender': row['Gender'],
                 'ethnic_code': row['Fine Ethnic Code'],
-                'email': row['Email'],
+                'email': row['EMail'],
                 'dartmouth_email': row['Blitz'],
             }
             
-        
+            
+            try:
+                netid = kwargs['netid']
+                CollegeInfo.objects.get(netid=netid)
+                msg = 'Incoming student with NetId %s already exists. Ignoring'
+                logger.warn(msg % netid)
+                messages.warning(self.request, msg % netid)
+                continue
+
+            except CollegeInfo.DoesNotExist:
+                msg = 'Creating incoming student %s'
+                logger.info(msg % kwargs['name'])
+                messages.info(self.request, msg % kwargs['name'])
+                CollegeInfo.objects.create(**kwargs)
+                
+        return super(UploadIncomingStudentData, self).form_valid(form)
+                
+
+    def get_success_url(self):
+        return self.request.path
         
         
 

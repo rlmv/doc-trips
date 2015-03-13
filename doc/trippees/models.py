@@ -58,6 +58,7 @@ class CollegeInfo(DatabaseModel):
     name = models.CharField(max_length=255)
     #    did = models.CharField(max_length=30)
     netid = models.CharField(max_length=20)
+    class_year = models.CharField(max_length=10)
 
     # hmmmm no netid provided?
     # We may need to save did on the UserModel for matching registrations
@@ -180,7 +181,7 @@ def connect_registration_to_trippee(instance=None, **kwargs):
     if kwargs.get('created', False):
         try:
             instance.trippee = Trippee.objects.get(
-                info__did=instance.user.did,
+                info__netid=instance.user.netid,
                 trips_year=instance.trips_year
             )
             instance.save()
@@ -208,7 +209,7 @@ def create_trippee_for_college_info(instance=None, **kwargs):
         try:
             existing_reg = TrippeeRegistration.objects.get(
                 trips_year=instance.trips_year,
-                user__did=instance.did
+                user__netid=instance.netid
             )
             trippee.registration = existing_reg
             trippee.save()
