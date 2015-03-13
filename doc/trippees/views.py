@@ -100,6 +100,7 @@ class TrippeeIndexView(DatabaseReadPermissionRequired,
     
     model = Trippee
     template_name = 'trippees/trippee_index.html'
+    context_object_name = 'trippees'
     
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,

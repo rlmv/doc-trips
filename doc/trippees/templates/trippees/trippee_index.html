@@ -6,4 +6,15 @@
 
 {% block content %}
 
+<table class="table table-condensed">
+  <tr>
+    <th></th>
+  </tr>
+  {% for trippee in trippees %}
+  <tr> 
+    <td>{{ trippee }}</td>
+  </tr>
+  {% endfor %}
+  <tr>
+
 {% endblock content %}

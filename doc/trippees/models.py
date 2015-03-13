@@ -49,6 +49,9 @@ class Trippee(DatabaseModel):
     decline_reason = models.CharField(max_length=50, blank=True)
 
     notes = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.info.name
     
 
 class CollegeInfo(DatabaseModel):
