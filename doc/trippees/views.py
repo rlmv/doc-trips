@@ -134,10 +134,11 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                 'dartmouth_email': row['Blitz'],
             }
             
+            kwargs['trips_year'] = self.kwargs['trips_year']
             
             try:
                 netid = kwargs['netid']
-                CollegeInfo.objects.get(netid=netid)
+                CollegeInfo.objects.get(netid=netid, trips_year=self.kwargs['trips_year'])
                 msg = 'Incoming student with NetId %s already exists. Ignoring'
                 logger.warn(msg % netid)
                 messages.warning(self.request, msg % netid)

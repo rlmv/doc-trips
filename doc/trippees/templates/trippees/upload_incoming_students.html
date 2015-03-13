@@ -8,6 +8,8 @@
 {% block content %}
 <p> Uploaded student data must be in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
 
+<p> If an incoming student already exists in the database for this trips year (determined by comparing NetIds) we do nothing. </p>
+
 <form enctype="multipart/form-data" method="post" action="">
 {% crispy form %}
 </form>
