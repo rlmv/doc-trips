@@ -9,6 +9,7 @@ from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
+from doc.trippees.managers import CollegeInfoManager
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,8 @@ class CollegeInfo(DatabaseModel):
     """
     Trippee information provided by the college.
     """
+    
+    objects = CollegeInfoManager()
     
     name = models.CharField(max_length=255)
     #    did = models.CharField(max_length=30)

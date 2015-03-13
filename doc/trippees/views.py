@@ -1,4 +1,3 @@
-import csv
 import io
 import logging
 
@@ -116,45 +115,17 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     template_name = 'trippees/upload_incoming_students.html'
 
     def form_valid(self, form):
-        
-        trips_year = TripsYear.objects.get(pk=self.kwargs['trips_year'])
 
         file = io.TextIOWrapper(form.files['csv_file'].file, 
                                 encoding='utf-8', errors='replace')
-        reader = csv.DictReader(file)
- 
-        info = []
-        for row in reader:
 
-            kwargs = {
-                'netid': row['Id'],
-                'name': row['Formatted Fml Name'],
-                'class_year': row['Class Year'],
-                'gender': row['Gender'],
-                'ethnic_code': row['Fine Ethnic Code'],
-                'email': row['EMail'],
-                'dartmouth_email': row['Blitz'],
-            }
-            kwargs['trips_year'] = trips_year
+        (created, ignored) = CollegeInfo.objects.create_from_csv_file(file, self.kwargs['trips_year'])
 
-            info.append(CollegeInfo(**kwargs))
-
-        def get_netids(incoming_students):
-            return set(map(lambda x: x.netid), incoming_students)
-
-        netids = get_netids(info)
-        existing = CollegeInfo.objects.filter(trips_year=trips_year)
-        existing_netids = get_netids(existing)
-
-        netids_to_create = netids - existing_netids
-        to_create = filter(lambda x: x.netid in netids_to_create, info)
-        CollegeInfo.objects.bulk_create(to_create)
-        
-        msg = 'Created incoming students with NetIds %s' % list(netids_to_create)
+        msg = 'Created incoming students with NetIds %s' % list(created)
         logger.info(msg)
         messages.info(self.request, msg)
         
-        msg = 'Ignored existing incoming students with NetIds %s' % list(existing_netids)
+        msg = 'Ignored existing incoming students with NetIds %s' % list(ignored)
         logger.info(msg)
         messages.warning(self.request, msg)
 
