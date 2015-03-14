@@ -14,7 +14,7 @@
     <th>Campsite</th>
     <th>Capacity</th>
     {% for date in camping_dates %}
-    <th> {{ date }} </th>
+    <th> {{ date|date:"M j" }} </th>
     {% endfor %}
   </tr>
   {% for campsite in campsites %}
@@ -22,9 +22,15 @@
     <td> {{ campsite|detail_link}} </td>
     <td> {{ campsite.capacity }} </td>
     
-    {% for trips in campsite.get_occupancy_list %}
-    <td> {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} </td>
+    {% for trips, total_occupants in campsite.get_occupancy_list %}
+    <td> 
+      {% if total_occupants > campsite.capacity %}
+      <span class="glyphicon glyphicon-warning-sign warning" aria-hidden="true"></span>
+      {% endif %}
+      {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} 
+    </td>
     {% endfor %}
+
 
     <td> {{ campsite|edit_link }} </td>
     <td> {{ campsite|delete_link }} </td>

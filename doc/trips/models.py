@@ -191,7 +191,8 @@ class Campsite(DatabaseModel):
         ordering = ['name']
 
     def get_occupancy(self):
-        """ Get all ScheduledTrips staying at this campsite
+        """ 
+        Get all ScheduledTrips staying at this campsite
         
         Returns a dictionary of date:list(trips) pairs. 
         """
@@ -224,7 +225,14 @@ class Campsite(DatabaseModel):
         
         occupancy = self.get_occupancy()
         keys = sorted(occupancy.keys())
-        return map(lambda k: occupancy[k], keys)
+
+        def total_occupants(trips):
+            total = 0
+            for trip in trips: 
+                total += trip.template.max_trippees
+            return total
+
+        return map(lambda k: (occupancy[k], total_occupants(occupancy[k])), keys)
     
     def __str__(self):
         return self.name
