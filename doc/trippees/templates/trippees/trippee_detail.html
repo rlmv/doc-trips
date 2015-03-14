@@ -1,13 +1,16 @@
 {% extends "db/base.html" %}
 {% load detail_view %}
+{% load links %}
 
 {% block header %}
-<h2> {{ trippee }} <small> Trippee </small></h2>
+<h2> {{ trippee }} <small> Trippee {{ object|edit_link }} </small></h2>
 {% endblock %}
 
 {% block content %}
 
+<h4> Admin Info </h4>
 {% detail trippee view.admin_fields %}
+<h4> College Data </h4>
 {% detail trippee view.college_fields %}
 
 {% endblock content %}

@@ -133,7 +133,7 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
                                 TripsYearMixin, UpdateView):
     model = IncomingStudent
-    template_name = 'trippees/trippee_update.html'
+    template_name = 'db/update.html'
     context_object_name = 'trippee'
     
 
