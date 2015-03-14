@@ -88,6 +88,9 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
         )
            
 
+""" The remaining views are for database internals. """
+
+
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
     

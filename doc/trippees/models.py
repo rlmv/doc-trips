@@ -200,11 +200,10 @@ def create_trippee_for_college_info(instance=None, **kwargs):
     
     if kwargs.get('created', False):
         try:
-            existing_reg = Registration.objects.get(
+            instance.registration = Registration.objects.get(
                 trips_year=instance.trips_year,
                 user__netid=instance.netid
             )
-            instance.registration = existing_reg
             instance.save()
         except Registration.DoesNotExist:
             pass
