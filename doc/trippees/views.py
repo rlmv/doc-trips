@@ -101,7 +101,8 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
 
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
-    
+    """ All trippee registrations """
+
     model = Registration
     template_name = 'trippees/registration_index.html'
     context_object_name = 'registrations'
@@ -109,6 +110,8 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
     
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,
                                TripsYearMixin, ListView):
+    """ All incoming students """
+
     model = IncomingStudent
     template_name = 'trippees/trippee_index.html'
     context_object_name = 'trippees'
