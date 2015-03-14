@@ -1,12 +1,14 @@
 {% extends "db/base.html" %}
-
 {% load links %}
+
+{% block header %}
+ <h2> Campsites </h2>
+{% endblock %}
 
 {% block content %}
 
 <div>
-  <h3> Campsites </h3>
-  <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. <strong>Todo:</strong> show when campsite capacity is exceeded.</p>
+  <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. If the total number of people staying in a campsite on any given night is greater than the capacity of the campsite, this will be shown in the table. </p>
 </div>
 
 <table class="table table-condensed">
@@ -14,20 +16,24 @@
     <th>Campsite</th>
     <th>Capacity</th>
     {% for date in camping_dates %}
-    <th> {{ date|date:"M j" }} </th>
+    <th> {{ date|date:"n/j" }} </th>
     {% endfor %}
   </tr>
   {% for campsite in campsites %}
   <tr>
     <td> {{ campsite|detail_link}} </td>
-    <td> {{ campsite.capacity }} </td>
+    <td> {{ campsite.capacity|default:"" }} </td>
     
     {% for trips, total_occupants in campsite.get_occupancy_list %}
-    <td> 
+    
+    <td>
       {% if total_occupants > campsite.capacity %}
-      <span class="glyphicon glyphicon-warning-sign warning" aria-hidden="true"></span>
+      <span data-toggle="tooltip" data-placement="left" title="Exceeds capacity: {{ total_occupants }}/{{ campsite.capacity }}" class="bg-warning">
+	<span class="glyphicon glyphicon-warning-sign warning" aria-hidden="true">
+      </span>
       {% endif %}
       {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} 
+	</span>
     </td>
     {% endfor %}
 
@@ -41,5 +47,16 @@
 <a href="{% create_url model trips_year %}" class="btn btn-primary" role="button">
   Add a campsite
 </a>
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
 
 {% endblock %}
