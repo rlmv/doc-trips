@@ -5,7 +5,8 @@ from doc.db.urlhelpers import DB_REGEX
 from doc.trippees.views import (Register, EditRegistration, ViewRegistration, 
                                 RegistrationNotAvailable,
                                 RegistrationIndexView,
-                                TrippeeIndexView, TrippeeDetailView, TrippeeUpdateView,
+                                IncomingStudentIndexView, IncomingStudentDetailView, 
+                                IncomingStudentUpdateView,
                                 UploadIncomingStudentData)
 
 urlpatterns = patterns(
@@ -21,9 +22,9 @@ urlpatterns = patterns(
 
 trippee_urlpatterns = patterns(
     '',
-    url(DB_REGEX['LIST'], TrippeeIndexView.as_view(), name='trippee_index'),
-    url(DB_REGEX['DETAIL'], TrippeeDetailView.as_view(), name='trippee_detail'),
-    url(DB_REGEX['UPDATE'], TrippeeUpdateView.as_view(), name='trippee_update'),
+    url(DB_REGEX['LIST'], IncomingStudentIndexView.as_view(), name='trippee_index'),
+    url(DB_REGEX['DETAIL'], IncomingStudentDetailView.as_view(), name='trippee_detail'),
+    url(DB_REGEX['UPDATE'], IncomingStudentUpdateView.as_view(), name='trippee_update'),
     url(r'^upload/$', UploadIncomingStudentData.as_view(), name='upload_incoming'),
 )
 

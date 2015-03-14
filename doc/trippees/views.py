@@ -9,7 +9,7 @@ from django.contrib import messages
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin
 
-from doc.trippees.models import TrippeeRegistration, Trippee, CollegeInfo
+from doc.trippees.models import Registration, IncomingStudent
 from doc.trippees.forms import RegistrationForm, IncomingStudentsForm
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
@@ -38,7 +38,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
     """ 
     Register for trips 
     """
-    model = TrippeeRegistration
+    model = Registration
     template_name = 'trippees/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
@@ -48,7 +48,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
         Add the registering user to the registration 
 
         The registration will be automagically matched with a 
-        corresponding Trippee model if it exists.
+        corresponding IncomingStudent model if it exists.
         """
         form.instance.trips_year = TripsYear.objects.current()
         form.instance.user = self.request.user
@@ -59,7 +59,7 @@ class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, UpdateView):
     """
     Edit a trippee registration.
     """
-    model = TrippeeRegistration
+    model = Registration
     template_name = 'trippees/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
@@ -76,7 +76,7 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
     """
     View a complete registration 
     """
-    model = TrippeeRegistration
+    model = Registration
     template_name = 'trippees/completed_registration.html'
     fields = ['name'] # TODO
     
@@ -91,32 +91,29 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
     
-    model = TrippeeRegistration
+    model = Registration
     template_name = 'trippees/registration_index.html'
     context_object_name = 'registrations'
 
     
-class TrippeeIndexView(DatabaseReadPermissionRequired,
-                       TripsYearMixin, ListView):
-    
-    model = Trippee
+class IncomingStudentIndexView(DatabaseReadPermissionRequired,
+                               TripsYearMixin, ListView):
+    model = IncomingStudent
     template_name = 'trippees/trippee_index.html'
     context_object_name = 'trippees'
 
 
-class TrippeeDetailView(DatabaseReadPermissionRequired,
-                        TripsYearMixin, DetailView):
-
-    model = Trippee
+class IncomingStudentDetailView(DatabaseReadPermissionRequired,
+                                TripsYearMixin, DetailView):
+    model = IncomingStudent
     template_name = 'trippees/trippee_detail.html'
     context_object_name = 'trippee'
     fields = ['decline_reason', 'notes'] # TODO
 
 
-class TrippeeUpdateView(DatabaseEditPermissionRequired,
-                        TripsYearMixin, UpdateView):
-
-    model = Trippee
+class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
+                                TripsYearMixin, UpdateView):
+    model = IncomingStudent
     template_name = 'trippees/trippee_update.html'
     context_object_name = 'trippee'
     

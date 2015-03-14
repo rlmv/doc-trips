@@ -3,7 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout
 
-from doc.trippees.models import TrippeeRegistration
+from doc.trippees.models import Registration
 
 
 class RegistrationForm(forms.ModelForm):
@@ -12,7 +12,7 @@ class RegistrationForm(forms.ModelForm):
     # (and any other ForeignKeys
     
     class Meta:
-        model = TrippeeRegistration
+        model = Registration
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)

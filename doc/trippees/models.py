@@ -24,22 +24,20 @@ class Address(models.Model):
     # TODO, or use django-address
     pass
 
-class Trippee(DatabaseModel):
+class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
 
     Includes trippee input registration, college incoming student data, 
     database notes, and trip assignment.
 
-    Created by the the post_save signal on TrippeeRegistration.
+    Created by the the post_save signal on Registration.
 
     TODO: call this IncomingStudent?
     """
 
-    registration = models.OneToOneField('TrippeeRegistration', editable=False,
+    registration = models.OneToOneField('Registration', editable=False,
                                         related_name='trippee', null=True)
-    info = models.OneToOneField('CollegeInfo', editable=False,
-                                related_name='trippee')
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
                                         related_name='trippees', null=True)
 
@@ -49,17 +47,9 @@ class Trippee(DatabaseModel):
     
     # TODO: decline_choices: sports, no responses, etc.
     decline_reason = models.CharField(max_length=50, blank=True)
-
     notes = models.TextField(blank=True)
 
-    def __str__(self):
-        return self.info.name
-    
-
-class CollegeInfo(DatabaseModel):
-    """
-    Trippee information provided by the college.
-    """
+    # --- information provided by the college ----
     
     objects = CollegeInfoManager()
     
@@ -88,9 +78,12 @@ class CollegeInfo(DatabaseModel):
     # can we get rid of some of it?
     email = models.EmailField(max_length=254)
     dartmouth_email = models.EmailField(max_length=254)
+
+    def __str__(self):
+        return self.name
     
 
-class TrippeeRegistration(DatabaseModel):
+class Registration(DatabaseModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 
@@ -177,7 +170,7 @@ class TrippeeRegistration(DatabaseModel):
     final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers - anything goes! All responses will be remain anonymous.")
 
 
-@receiver(post_save, sender=TrippeeRegistration)
+@receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
     """
     When an incoming student submits a registration, try and 
@@ -188,38 +181,30 @@ def connect_registration_to_trippee(instance=None, **kwargs):
     """
     if kwargs.get('created', False):
         try:
-            instance.trippee = Trippee.objects.get(
-                info__netid=instance.user.netid,
+            instance.trippee = IncomingStudent.objects.get(
+                netid=instance.user.netid,
                 trips_year=instance.trips_year
             )
             instance.save()
-        except Trippee.DoesNotExist as e:
+        except IncomingStudent.DoesNotExist as e:
             msg = 'Incoming student info not found for registration %s'
             logger.info(msg % instance)
         
         
-@receiver(post_save, sender=CollegeInfo)
+@receiver(post_save, sender=IncomingStudent)
 def create_trippee_for_college_info(instance=None, **kwargs):
     """ 
-    When incoming student info is added to the database, 
-    connect an administrative Trippee object.
-
     If the incoming student has somehow already submitted a 
-    registration, attach the registration to the new Trippee
-    object.
+    registration, attach the registration to the new object.
     """
     
     if kwargs.get('created', False):
-        trippee = Trippee.objects.create(
-            trips_year=instance.trips_year,
-            info=instance
-        )
         try:
-            existing_reg = TrippeeRegistration.objects.get(
+            existing_reg = Registration.objects.get(
                 trips_year=instance.trips_year,
                 user__netid=instance.netid
             )
-            trippee.registration = existing_reg
-            trippee.save()
-        except TrippeeRegistration.DoesNotExist:
+            instance.registration = existing_reg
+            instance.save()
+        except Registration.DoesNotExist:
             pass
