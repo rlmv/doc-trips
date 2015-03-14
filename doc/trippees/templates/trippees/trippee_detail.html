@@ -1,0 +1,12 @@
+{% extends "db/base.html" %}
+{% load detail_view %}
+
+{% block header %}
+<h2> {{ trippee }} <small> Trippee </small></h2>
+{% endblock %}
+
+{% block content %}
+
+{% detail trippee view.fields %}
+
+{% endblock content %}

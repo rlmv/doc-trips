@@ -32,6 +32,8 @@ class Trippee(DatabaseModel):
     database notes, and trip assignment.
 
     Created by the the post_save signal on TrippeeRegistration.
+
+    TODO: call this IncomingStudent?
     """
 
     registration = models.OneToOneField('TrippeeRegistration', editable=False,

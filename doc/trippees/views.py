@@ -93,6 +93,7 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
     
     model = TrippeeRegistration
     template_name = 'trippees/registration_index.html'
+    context_object_name = 'registrations'
 
     
 class TrippeeIndexView(DatabaseReadPermissionRequired,
@@ -101,6 +102,23 @@ class TrippeeIndexView(DatabaseReadPermissionRequired,
     model = Trippee
     template_name = 'trippees/trippee_index.html'
     context_object_name = 'trippees'
+
+
+class TrippeeDetailView(DatabaseReadPermissionRequired,
+                        TripsYearMixin, DetailView):
+
+    model = Trippee
+    template_name = 'trippees/trippee_detail.html'
+    context_object_name = 'trippee'
+    fields = ['decline_reason', 'notes'] # TODO
+
+
+class TrippeeUpdateView(DatabaseEditPermissionRequired,
+                        TripsYearMixin, UpdateView):
+
+    model = Trippee
+    template_name = 'trippees/trippee_update.html'
+    context_object_name = 'trippee'
     
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
@@ -110,6 +128,9 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     Parses the CSV file and adds the data to the database as
     CollegeInfo objects.
+
+    TODO: parse or input the status of the incoming student 
+    (eg first year, transfer, etc.)
     """
 
     form_class = IncomingStudentsForm

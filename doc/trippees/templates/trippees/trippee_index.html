@@ -1,7 +1,8 @@
 {% extends "db/base.html" %}
+{% load links %}
 
 {% block header %}
-<h3> Trippees </h3>
+<h3> Incoming Students </h3>
 {% endblock %}
 
 {% block content %}
@@ -9,10 +10,15 @@
 <table class="table table-condensed">
   <tr>
     <th></th>
+    <th></th>
   </tr>
   {% for trippee in trippees %}
   <tr> 
-    <td>{{ trippee }}</td>
+    <td>{{ trippee|detail_link }}</td>
+    <td>{% if trippee.trip_assignment %}{{ trippee.trip_assignment|detail_link }}{% endif %}</td>
+
+    <td>{{ trippee|detail_link:"view" }}</td>
+    <td>{{ trippee|edit_link:"edit" }}</td>
   </tr>
   {% endfor %}
   <tr>
