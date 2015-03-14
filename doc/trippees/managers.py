@@ -40,7 +40,7 @@ class IncomingStudentManager(models.Manager):
                 gender=row['Gender'],
                 ethnic_code=row['Fine Ethnic Code'],
                 email=row['EMail'],
-                dartmouth_email=row['Blitz'],
+                blitz=row['Blitz'],
             )
 
         incoming = list(map(parse_to_object, reader))

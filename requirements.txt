@@ -33,7 +33,6 @@ boto
 # testing
 model_mommy
 coverage
-#django-coverage
 webtest
 django-webtest
 django-test-without-migrations

@@ -77,7 +77,7 @@ class IncomingStudent(DatabaseModel):
     # TODO: there is a lot of redundant email information floating around. 
     # can we get rid of some of it?
     email = models.EmailField(max_length=254)
-    dartmouth_email = models.EmailField(max_length=254)
+    blitz = models.EmailField(max_length=254)
 
     def __str__(self):
         return self.name

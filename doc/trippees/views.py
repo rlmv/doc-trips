@@ -115,7 +115,7 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
                     'decline_reason', 'notes']
     college_fields = ['name', 'netid', 'class_year', 'gender',
                       'ethnic_code', 'incoming_status', 'email', 
-                      'dartmouth_email']
+                      'blitz']
 
 
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,

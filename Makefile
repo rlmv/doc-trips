@@ -30,12 +30,12 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test: 
-	$(MANAGE) test --nomigrations doc
+	$(MANAGE) test --nomigrations
 
 coverage:
-	$(COVERAGE) run --omit "$(VENV)/*" $(MANAGE) test
+	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations
 	$(COVERAGE) report -m
-	$(COVERAGE) html -d coverage
+	$(COVERAGE) html 
 
 clean: 
 	rm -rf *.pyc
