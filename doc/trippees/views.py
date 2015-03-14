@@ -17,6 +17,15 @@ from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
 
+""" 
+Views for incoming students.
+
+The first set of views are public facing and allow incoming 
+students to register for trips. The second set handle manipulation of
+registrations and trippees in the database.
+
+"""
+
 logger = logging.getLogger(__name__)
 
 
