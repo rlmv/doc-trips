@@ -22,9 +22,9 @@ urlpatterns = patterns(
 
 trippee_urlpatterns = patterns(
     '',
-    url(DB_REGEX['LIST'], IncomingStudentIndexView.as_view(), name='trippee_index'),
-    url(DB_REGEX['DETAIL'], IncomingStudentDetailView.as_view(), name='trippee_detail'),
-    url(DB_REGEX['UPDATE'], IncomingStudentUpdateView.as_view(), name='trippee_update'),
+    url(DB_REGEX['LIST'], IncomingStudentIndexView.as_view(), name='incomingstudent_index'),
+    url(DB_REGEX['DETAIL'], IncomingStudentDetailView.as_view(), name='incomingstudent_detail'),
+    url(DB_REGEX['UPDATE'], IncomingStudentUpdateView.as_view(), name='incomingstudent_update'),
     url(r'^upload/$', UploadIncomingStudentData.as_view(), name='upload_incoming'),
 )
 
