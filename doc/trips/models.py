@@ -58,10 +58,12 @@ class Section(DatabaseModel):
 
     @property
     def at_campsite1(self):
+        """ Date that section is at first campsite """
         return self.leaders_arrive + timedelta(days=2)
 
     @property
     def at_campsite2(self):
+        """ Date the section is at the second campsite """
         return self.leaders_arrive + timedelta(days=3)
 
     @property
@@ -76,15 +78,18 @@ class Section(DatabaseModel):
 
     @property
     def return_to_campus(self):
-        """ Date section returns to campus. """
+        """ Date section returns to campus from the lodge """
         return self.leaders_arrive + timedelta(days=5)
 
     def __str__(self):
         return 'Section ' + self.name
         
-        
     def date_range_str(self):
+        """ 
+        Return a string of dates that this section covers.
         
+        Looks like 'Aug 10th to Aug 15th'
+        """
         fmt = '%b %d'
         return (self.leaders_arrive.strftime(fmt) + ' to ' + 
                 self.return_to_campus.strftime(fmt))
