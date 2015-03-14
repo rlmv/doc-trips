@@ -1,7 +1,71 @@
 {% extends "db/base.html" %}
 
+{% block header %}
+<h1> Welcome to the database <small>Trips {{ trips_year }}</small></h1>
+{% endblock %}
+
 {% block content %}
 
-<h3>This is the database for Trips {{ trips_year }}</h3>
+<p> You're here because you are special. You can see things, you can do things. Don't break things. Every user has varying levels of access; for example Trip Leader Trainers can assign leaders to trips and edit leader applications, but can't Schedule Trips or change the dates of Sections. If you try and edit something in the database which you don't have permission to change you will see a <strong>403 Forbidden</strong> page. If you are seeing these pages&mdash;and think they are in error and you should be able to make changes&mdash;check in with the omnipotent Directors.
+</p>
+
+<div id="numbering">
+  <p>The following numbering convention was adopted in 2005 to make the trip numbers more consistent.</p>
+
+  <h3>Hundreds Digit (Nxx)</h4>
+
+  <p>The <b>hundreds digit</b> is the type of trip (blank for zero/Hiking):</p>
+  <ul class='compact'>
+    <li> xx = Hiking</li>
+    <li>1xx = Paddling</li>
+    <li>2xx = Climbing</li>
+    <li>3xx = Biking</li>
+    <li>4xx = Fishing</li>
+    <li>5xx = Horseback Riding</li>
+    <li>7xx = Nature Appreciation</li>
+    <li>9xx = Special</li>
+  </ul>
+
+  <h4>Tens Digit (xNx)</h4>
+
+  <p>The <b>tens digit</b> is the distance from Hanover (roughly &mdash; you can ignore this if you need to):</p>
+  <ul class='compact'>
+    <li>x0x = Hanover</li>
+    <li>x1x-x3x = Local (southwest of Whites)
+      <ul class='compact' style='margin-top: 0;'>
+	<li>for trips based at a cabin: x2x = Hinman Cabin</li>
+      </ul>
+    </li>
+    <li>x4x-x6x = Whites
+      <ul class='compact' style='margin-top: 0;'>
+	<li>for trips based at a cabin: x4x = John Rand Cabin, x5x = Ritchie Smith Cabin, x6x = Billings Lodge</li>
+      </ul>
+    </li>
+    <li>x7x-x9x = Second College Grant
+      <ul class='compact' style='margin-top: 0;'>
+	<li>for trips based at a cabin: x7x = Peaks Cabin, x8x = Alder Brook Cabin, x9x = Stoddard Cabin</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h4>Ones Digit (xxN)</h4>
+
+  <p>The <b>ones digit</b> is usually difficulty, but more generally it breaks the type of trip into more categories. In this sense it might make more sense to put this digit in the tens spot, next to the type of trip digit, but since it&rsquo;s usually difficulty, putting it in the ones spot down-plays the difficulty levels of the trip.</p>
+  <p>For Hiking trips (and roughly for other types of trips), difficulty:</p>
+  <ul class='compact'>
+    <li>xx0-xx1 = Leisurely &mdash; no effort neccessary</li>
+    <li>xx2-xx3 = Easy &mdash; minor effort neccessary</li>
+    <li>xx4-xx5 = Moderate &mdash; some effort neccessary</li>
+    <li>xx6-xx7 = Strenuous &mdash; more effort neccessary</li>
+    <li>xx8-xx9 = Advanced &mdash; most effort neccessary</li>
+  </ul>
+  <p>For Nature Appreciation trips, type:
+    <ul class='compact'>
+      <li>xx0 = Writing</li>
+      <li>xx1 = Painting</li>
+      <li>xx2 = Photography</li>
+    </ul>
+
+</div>
 
 {% endblock %}
