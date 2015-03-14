@@ -88,8 +88,7 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
         )
            
 
-""" The remaining views are for database internals. """
-
+# ----- database internal views --------
 
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
@@ -111,7 +110,12 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
     model = IncomingStudent
     template_name = 'trippees/trippee_detail.html'
     context_object_name = 'trippee'
-    fields = ['decline_reason', 'notes'] # TODO
+
+    admin_fields = ['registration', 'trip_assignment', 
+                    'decline_reason', 'notes']
+    college_fields = ['name', 'netid', 'class_year', 'gender',
+                      'ethnic_code', 'incoming_status', 'email', 
+                      'dartmouth_email']
 
 
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
