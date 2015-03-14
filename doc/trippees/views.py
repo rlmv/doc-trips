@@ -138,7 +138,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
         file = io.TextIOWrapper(form.files['csv_file'].file, 
                                 encoding='utf-8', errors='replace')
 
-        (created, ignored) = CollegeInfo.objects.create_from_csv_file(file, self.kwargs['trips_year'])
+        (created, ignored) = IncomingStudent.objects.create_from_csv_file(file, self.kwargs['trips_year'])
 
         msg = 'Created incoming students with NetIds %s' % created
         logger.info(msg)

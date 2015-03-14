@@ -6,7 +6,12 @@ from django.db import models
 from doc.db.models import TripsYear
 
 
-class CollegeInfoManager(models.Manager):
+def get_netids(incoming_students):
+    """ Return a set of incoming_students' netids """
+    return set(map(lambda x: x.netid, incoming_students))
+
+
+class IncomingStudentManager(models.Manager):
 
     def create_from_csv_file(self, file, trips_year):
         """
@@ -15,8 +20,8 @@ class CollegeInfoManager(models.Manager):
         If a student already exists in the database for this year, 
         ignore. We compare entries via netid. 
         
-        trips_year is a string
-        Returns a tuple (created_students, already_existing_students).
+        Param trips_year is a string
+        Returns a tuple (created_students, existing_students).
 
         TODO: parse/input incoming_status. How should this work?
         """
@@ -39,11 +44,8 @@ class CollegeInfoManager(models.Manager):
             )
 
         incoming = list(map(parse_to_object, reader))
-
-        def get_netids(incoming_students):
-            return set(map(lambda x: x.netid, incoming_students))
-
         incoming_netids = get_netids(incoming)
+
         existing = self.model.objects.filter(trips_year=trips_year)
         existing_netids = get_netids(existing)
 

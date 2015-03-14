@@ -9,7 +9,7 @@ from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
-from doc.trippees.managers import CollegeInfoManager
+from doc.trippees.managers import IncomingStudentManager
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +36,8 @@ class IncomingStudent(DatabaseModel):
     TODO: call this IncomingStudent?
     """
 
+    objects = IncomingStudentManager()
+
     registration = models.OneToOneField('Registration', editable=False,
                                         related_name='trippee', null=True)
     trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
@@ -50,8 +52,6 @@ class IncomingStudent(DatabaseModel):
     notes = models.TextField(blank=True)
 
     # --- information provided by the college ----
-    
-    objects = CollegeInfoManager()
     
     name = models.CharField(max_length=255)
     #    did = models.CharField(max_length=30)
