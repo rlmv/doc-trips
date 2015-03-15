@@ -321,13 +321,13 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
     fields = None
         
 
-class DatabaseIndexView(DatabasePermissionRequired, TripsYearMixin, TemplateView):
+class DatabaseLandingPage(DatabasePermissionRequired, TripsYearMixin, TemplateView):
     """ 
-    Index page of a particular trips year. 
+    Landing page of a particular trips_year in the database
 
     TODO: should this display the ScheduledTrips index? 
     """
-    template_name = 'db/db_index.html'
+    template_name = 'db/landing_page.html'
 
 
 class RedirectToCurrentDatabase(DatabasePermissionRequired, RedirectView):
@@ -341,6 +341,6 @@ class RedirectToCurrentDatabase(DatabasePermissionRequired, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         
         trips_year = TripsYear.objects.current()
-        return reverse('db:db_index', kwargs={'trips_year': trips_year.pk})
+        return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
     
 
