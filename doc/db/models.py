@@ -44,19 +44,6 @@ class DatabaseModel(models.Model):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
-        """
-        Attach the current trips_year to new database objects.
-        
-        If trips_year is explicitly specified, use that year instead. 
-        This overrides the default model save method.
-        """
-        if self.pk is None and not hasattr(self, 'trips_year'):
-            self.trips_year = TripsYear.objects.current()
-
-        super(DatabaseModel, self).save(*args, **kwargs)
-
-
     def get_absolute_url(self):
         from doc.db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self)

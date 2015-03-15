@@ -86,6 +86,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         
         form.instance.grader = self.request.user
         form.instance.application = self.get_application()
+        form.instance.trips_year = TripsYear.objects.current()
         form.save()
         
         return super(GenericGradingView, self).form_valid(form)
