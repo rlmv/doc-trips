@@ -205,22 +205,6 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
     database-viewing privileges, display a 403 Forbidden page.
     """
 
-    @classmethod
-    def urlpattern(cls):
-        """ 
-        Return the default urlpattern for this view 
-
-        Implemented on subclass, this is just an interface stub
-        """
-        msg = 'Not implemented. Implement urlpattern() method on {}'
-        raise ImproperlyConfigured(msg.format(cls))
-
-    @classmethod
-    def view_name(cls):
-        
-        msg = 'Not implemented'
-        raise ImproperlyConfigured(msg)
-
     def get_context_data(self, **kwargs):
         """
         Adds the 'model' of the modelview to the context.
@@ -241,31 +225,10 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
 
 class DatabaseListView(DatabaseMixin, ListView):
 
-    def get_template_names(self):
-        """ Get the template for the ListView """
-        if self.template_name:
-            return [self.template_name]
-        
-        # auto-generate    TODO: use super() conventions?
-        template_name = '{}/{}_index.html'.format(
-            self.model.get_app_name(), 
-            self.model.get_model_name_lower()
-        )
-        return [template_name]
-    
-    @classmethod
-    def urlpattern(cls):
-        name = '{}_index'.format(cls.model.get_model_name_lower())
-        return url(r'^$', cls.as_view(), name=name)
-
+    pass
 
 class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
     template_name = 'db/create.html'
-
-    @classmethod
-    def urlpattern(cls):
-        name = '{}_create'.format(cls.model.get_model_name_lower())
-        return url(r'^create$', cls.as_view(), name=name)
 
     def post(self, request, *args, **kwargs):
         """ 
@@ -296,11 +259,6 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
 
 class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
     template_name ='db/update.html'
-
-    @classmethod
-    def urlpattern(cls):
-        name = '{}_update'.format(cls.model.get_model_name_lower())
-        return url(r'^(?P<pk>[0-9]+)/update', cls.as_view(), name=name)
 
     def get_success_url(self):
         """ Redirect to same update page for now. """
@@ -354,11 +312,6 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
 
             return HttpResponseRedirect(request.path)
 
-    @classmethod
-    def urlpattern(cls):
-        name = '{}_delete'.format(cls.model.get_model_name_lower())
-        return url(r'^(?P<pk>[0-9]+)/delete', cls.as_view(), name=name)
-
 
 class DatabaseDetailView(DatabaseMixin, DetailView):
 
@@ -366,11 +319,6 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
     
     # Fields to display in the view. Passed in the template.
     fields = None
-    
-    @classmethod
-    def urlpattern(cls):
-        name = '{}_detail'.format(cls.model.get_model_name_lower())
-        return url(r'^(?P<pk>[0-9]+)/$', cls.as_view(), name=name)
         
 
 class DatabaseIndexView(DatabasePermissionRequired, TripsYearMixin, TemplateView):
