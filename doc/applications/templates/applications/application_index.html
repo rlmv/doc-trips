@@ -11,6 +11,27 @@
 {% block content %}
 
 {% crispy applications_filter.form %}
+
+
+<div class="panel panel-success">
+  <div class="panel-heading" role="tab" id="emailsHeading">
+    <h4 class="panel-title">
+      <a class="collapsed" data-toggle="collapse" href="#collapsedEmails" aria-expanded="false" aria-controls="collapsedEmails">
+	<span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+	Show Filtered Email List
+      </a>
+    </h4>
+  </div>
+  <div id="collapsedEmails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="emailsHeading">
+    <div class="panel-body">
+      <div id="emails">
+	{{ emails|join:", " }}
+      </div>
+    </div>
+  </div>
+</div>
+
+
   
 <table class="table table-condensed">
   <tr>

@@ -188,7 +188,9 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
     def get_queryset(self):
         return (super(ApplicationDatabaseListView, self).get_queryset()
                 .annotate(avg_croo_grade=models.Avg('croo_supplement__grades__grade'))
-                .annotate(avg_leader_grade=models.Avg('leader_supplement__grades__grade')))
+                .annotate(avg_leader_grade=models.Avg('leader_supplement__grades__grade'))
+                .select_related('applicant'))
+
 
     def get_context_data(self, **kwargs):
         
@@ -198,6 +200,7 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
                                                    trips_year=self.kwargs['trips_year'])
         context[self.context_object_name] = applications_filter.qs
         context['applications_filter'] = applications_filter
+        context['emails'] = map(lambda x: x.applicant.email, applications_filter.qs)
         return context
 
 
