@@ -22,7 +22,7 @@
   {% for campsite in campsites %}
   <tr>
     <td> {{ campsite|detail_link}} </td>
-    <td> {{ campsite.capacity|default:"" }} </td>
+    <td> {{ campsite.capacity|default:"&mdash;" }} </td>
     
     {% for trips, total_occupants in campsite.get_occupancy_list %}
     
