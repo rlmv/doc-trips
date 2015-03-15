@@ -28,10 +28,12 @@
     
     <td>
       {% if total_occupants > campsite.capacity %}
-      <span data-toggle="tooltip" data-placement="left" title="Exceeds capacity: {{ total_occupants }}/{{ campsite.capacity }}" class="bg-warning">
+      <span data-toggle="tooltip" data-placement="top" title="Occupants exceed capacity: {{ total_occupants }}/{{ campsite.capacity }}" class="bg-warning">
 	<span class="glyphicon glyphicon-warning-sign warning" aria-hidden="true">
       </span>
-      {% endif %}
+      {% else %}
+	<span data-toggle="tooltip" data-placement="top" title="Occupancy: {{ total_occupants }}/{{ campsite.capacity|default:'&mdash;' }}"> 
+       {% endif %}
       {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} 
 	</span>
     </td>
@@ -50,13 +52,13 @@
 
 {% endblock %}
 
+{# enable tootips: #}
+
 {% block scripts %}
 {{ block.super }}
-
 <script type="text/javascript">
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
-
 {% endblock %}
