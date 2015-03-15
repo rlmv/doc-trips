@@ -39,7 +39,7 @@ class RouteCreateView(DatabaseCreateView):
 
 class RouteDetailView(DatabaseDetailView):
     model = Route
-    fields = ['name', 'vehicle', 'category']
+    fields = ['name', 'vehicle', 'category', 'stops']
 
 class RouteUpdateView(DatabaseUpdateView):
     model = Route

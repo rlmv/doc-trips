@@ -25,7 +25,7 @@ class Stop(DatabaseModel):
 
     #TODO: validate category against route's category.
     # OR: get rid of category entirely?
-    route = models.ForeignKey('Route', null=True, blank=True, on_delete=models.PROTECT)
+    route = models.ForeignKey('Route', null=True, blank=True, on_delete=models.PROTECT, related_name='stops')
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
 
     # TODO: validate that this only is used if category==EXTERNAL
@@ -56,7 +56,7 @@ class Route(DatabaseModel):
     
 
 class Vehicle(DatabaseModel):
-
+    
     # eg. Internal Bus, Microbus, 
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
