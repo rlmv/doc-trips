@@ -260,7 +260,7 @@ class AbstractGrade(DatabaseModel):
         (6, "6 -- Incredible application -- I think this person should be one of the first to be selected to be a volunteer. I would be very frustrated/angry if this person is not selected"),
     )
     
-    # related_name will be leader_application_grades or croo_application_grades. Sweet.
+    # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False,
                                related_name='%(class)ss') 
     scratchpad = models.TextField('scratchpad for question-specific notes', blank=True)

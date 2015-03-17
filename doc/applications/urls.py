@@ -18,6 +18,7 @@ from doc.applications.views.grading import(RedirectToNextGradableCrooApplication
                                            GradeLeaderApplication,
                                            NoLeaderApplicationsLeftToGrade,
                                            GraderLandingPage)
+from doc.applications.views.graders import GraderListView
 
   
 grade_urlpatterns = patterns(
@@ -41,6 +42,8 @@ urlpatterns = patterns(
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
 )
 
+
+# ----- protected database views ----------
 # TODO: fix leaderapplication, leadersupplement mismatch
 
 application_urlpatterns = patterns(
@@ -52,3 +55,7 @@ application_urlpatterns = patterns(
     url(r'^(?P<pk>[0-9]+)/update/trainings', LeaderApplicationAdminUpdateView.as_view(), name='update_application_trainings'),
 )
 
+grader_urlpatterns = patterns(
+    '',
+    url(DB_REGEX['LIST'], GraderListView.as_view(), name='graders_index'),
+)

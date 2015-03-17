@@ -16,6 +16,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      QualificationTag)
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
+from doc.applications.views.graders import get_graders
 
 
 class ApplicationTestMixin():
@@ -326,3 +327,21 @@ class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
         
         
                            
+class GradersDatabaseListViewTestCase(TripsTestCase):
+
+    def test_get_graders_returns_only_people_who_have_submitted_grades(self):
+
+        trips_year = self.init_current_trips_year()
+        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
+
+        grader = grade.grader
+        random_other_user = self.mock_user()
+        
+        graders = get_graders(trips_year)
+        self.assertIn(grader, graders)
+        self.assertNotIn(random_other_user, graders)
+        
+        
+        
+
+        
