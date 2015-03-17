@@ -70,6 +70,9 @@ class DartmouthUser(PermissionsMixin):
 
     last_login = models.DateTimeField('last login', blank=True, null=True)
 
+    class Meta:
+        ordering = ['name']
+
     # used by Django Admin
     @property 
     def is_active(self):
