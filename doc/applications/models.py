@@ -263,7 +263,6 @@ class AbstractGrade(DatabaseModel):
     # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False,
                                related_name='%(class)ss') 
-    scratchpad = models.TextField('scratchpad for question-specific notes', blank=True)
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     hard_skills = models.CharField(max_length=255, blank=True)
     soft_skills = models.CharField(max_length=255, blank=True)
