@@ -74,7 +74,8 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
             logger.info('%s skipped %s %s' % (self.request.user, 
                                               self.verbose_application_name, 
                                               self.kwargs['pk']))
-            return self.skip_application()
+            self.skip_application()
+            return HttpResponseRedirect(self.get_success_url())
 
         return super(GenericGradingView, self).post(request, *args, **kwargs)
 
@@ -99,7 +100,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
             application=application,
             grader=self.request.user,
         )
-        return HttpResponseRedirect(self.get_success_url())
 
 
     def get_context_data(self, **kwargs):
