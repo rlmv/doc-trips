@@ -68,6 +68,7 @@ class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
     def test_anonymous_user_does_not_crash_application(self):
         
         self.app.get(reverse('applications:apply'))
+
     def test_application_not_visible_if_not_available(self):
         
         self.close_application()
@@ -206,25 +207,6 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertIsNone(next)
 
 
-class GradingViewsTestCase(ApplicationTestMixin, WebTestCase):
-    
-    def test_skips_applications_adds_skip_object_to_database(self):
-
-        trips_year = self.init_current_trips_year()
-        application = self.make_application(trips_year=trips_year)
-        grader = self.mock_grader()
-
-        res = self.app.get(reverse('applications:grade:leader', 
-                                   kwargs={'pk': application.leader_supplement.pk}), user=grader)
-        res2 = res.form.submit(SKIP)
-        
-        skips = SkippedLeaderGrade.objects.all()
-        self.assertEqual(len(skips), 1)
-        skip = skips[0]
-        self.assertEqual(skip.grader, grader)
-        self.assertEqual(skip.application, application.leader_supplement)
-
-
 class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
 
     def setUp(self):
@@ -336,7 +318,26 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
             self.assertTemplateNotUsed('applications/grading_not_available.html')
 
 
-class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
+class GradingViewSkipTestCase(ApplicationTestMixin, WebTestCase):
+    
+    def test_skips_applications_adds_skip_object_to_database(self):
+
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        grader = self.mock_grader()
+
+        res = self.app.get(reverse('applications:grade:leader', 
+                                   kwargs={'pk': application.leader_supplement.pk}), user=grader)
+        res2 = res.form.submit(SKIP)
+        
+        skips = SkippedLeaderGrade.objects.all()
+        self.assertEqual(len(skips), 1)
+        skip = skips[0]
+        self.assertEqual(skip.grader, grader)
+        self.assertEqual(skip.application, application.leader_supplement)
+
+
+class GradeForSpecificCrooViewsTestCase(ApplicationTestMixin, WebTestCase):
     
     def setUp(self):
         self.init_current_trips_year()
@@ -356,8 +357,7 @@ class GradeForSpecificCrooTestCase(ApplicationTestMixin, WebTestCase):
         res = self.app.get(reverse('applications:grade:next_croo',
                                    kwargs={'qualification_pk': qualification.pk}),
                            user=self.director)
-        
-        
+
                            
 class GradersDatabaseListViewTestCase(TripsTestCase):
 
