@@ -373,9 +373,8 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
                                    kwargs={'pk': application.croo_supplement.pk}), user=grader)
         res2 = res.form.submit(SKIP)
 
-        # make a qualification
+        # make a qualification and stick the tag on this qualification
         qualification = mommy.make(QualificationTag, trips_year=trips_year)
-        # and stick the tag on this application
         grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement, 
                            qualifications=[qualification], trips_year=trips_year)
         
@@ -436,7 +435,7 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
                            user=grader).follow()
         res.form.submit(SKIP)
 
-        # the
+        
         res = self.app.get(reverse('applications:grade:next_croo', 
                                    kwargs={'qualification_pk': qualification.pk}),
                            user=grader).follow()
