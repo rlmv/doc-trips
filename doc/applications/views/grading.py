@@ -1,3 +1,4 @@
+import logging
 
 from braces.views import FormMessagesMixin
 from vanilla import RedirectView, TemplateView, CreateView
@@ -8,6 +9,7 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.http import HttpResponseRedirect
 
 from doc.db.models import TripsYear
 from doc.applications.models import (GeneralApplication, LeaderSupplement, CrooSupplement,
@@ -22,6 +24,9 @@ from doc.croos.models import Croo
 
 
 SHOW_GRADE_AVG_INTERVAL = 10
+SKIP = 'skip'
+
+logger = logging.getLogger(__name__)
 
 
 class GraderLandingPage(TemplateView):
@@ -63,14 +68,42 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
                                                    self.kwargs['pk'])
 
     def post(self, request, *args, **kwargs):
+        """ Check whether the grader is skipping this application """
+        
+        if SKIP in request.POST:
+            logger.info('%s skipped %s %s' % (self.request.user, 
+                                              self.verbose_application_name, 
+                                              self.kwargs['pk']))
+            return self.skip_application()
 
         return super(GenericGradingView, self).post(request, *args, **kwargs)
 
+
     def get_application(self):
+        """ Return the Croo or Leader application to grade """
+
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
-    def get_context_data(self, **kwargs):
 
+    def skip_application(self):
+        """ 
+        Skip this application.
+
+        Creates a skipped grade object so that this grader won't see
+        this application again.
+        """
+        
+        application = self.get_application()
+        skip = self.skipped_grade_model.objects.create(
+            trips_year=application.trips_year,
+            application=application,
+            grader=self.request.user,
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+
+    def get_context_data(self, **kwargs):
+        
         # Every SHOW_GRADE_AVG_INTERVAL tell the grader what their 
         # average grade has been (for this year, of course)
         ct = ContentType.objects.get_for_model(self.model)
@@ -92,8 +125,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         context['score_choices'] = map(lambda c: c[1], self.model.SCORE_CHOICES)
         return context
 
+
     def form_valid(self, form):
-        
+        """ Add the grader and application to the grade """
+
         form.instance.grader = self.request.user
         form.instance.application = self.get_application()
         form.instance.trips_year = TripsYear.objects.current()
@@ -101,14 +136,16 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         
         return super(GenericGradingView, self).form_valid(form)
 
+
     def get_form(self, **kwargs):
         """ Add a Skip button to the form """
+
         form = super(GenericGradingView, self).get_form(**kwargs)
         form.helper = FormHelper(form)
         form.helper.layout.append(
             ButtonHolder(
                 Submit('submit', 'Submit Score'),
-                HTML('<a href="%s" class="btn btn-warning" role="button">Skip this Application</a>' % self.get_success_url()),
+                Submit('skip', 'Skip this Application', css_class='btn-warning'),
             )
         )
         return form
@@ -177,6 +214,7 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
 
     model = CrooApplicationGrade
     application_model = CrooSupplement
+    skipped_grade_model = SkippedCrooGrade
     form_class = CrooApplicationGradeForm
     success_url = reverse_lazy('applications:grade:next_croo')
     verbose_application_name = 'Croo Application'
@@ -240,6 +278,7 @@ class GradeLeaderApplication(LeaderGraderPermissionRequired, GenericGradingView)
 
     model = LeaderApplicationGrade
     application_model = LeaderSupplement
+    skipped_grade_model = SkippedLeaderGrade
     form_class = LeaderApplicationGradeForm
     success_url = reverse_lazy('applications:grade:next_leader')
     verbose_application_name = 'Trip Leader Application'

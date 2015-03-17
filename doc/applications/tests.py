@@ -194,7 +194,7 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
 
 
-    def test_skipped_applications_are_not_seen(self):
+    def test_skipped_applications_are_not_returned(self):
 
         application = self.make_application()
         grader = self.mock_grader()
