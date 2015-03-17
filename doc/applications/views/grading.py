@@ -22,6 +22,38 @@ from doc.permissions.views import (CrooGraderPermissionRequired,
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
 
+"""
+These views contain all the logic for grading Croo and Leader applications.
+
+Both sets of applications follow the same general pattern:
+(1) Redirect page: finds the next application for this grader, 
+    and redirects to 
+(2) the Grading page, which accepts a grade form submission and 
+    returns the grader to the Redirect view.
+
+However, there are some subtleties which complicate matters:
+
+(1) Croo graders tag Croo applications with qualifications for
+certian croos. There is a special provision which lets Croo heads
+grade ONLY applications which have a certain qualification. This
+allows Croo heads to do a once-over of their potential croo members.
+(2) In order to accomodate this there is a subclass of Croo Redirect and 
+Grading Views which pass around the pk of the targeted Qualification.
+ 
+(3) Skipping. Graders can skip grades which they recognize. When 
+they do so, an appropriate SkippedGrade object is created which links
+the grader to the skipped application. Once a grader has skipped an 
+application they will not see it again, UNLESS:
+(4) the grader is a Croo Head. If a Croo Head skips a Croo application in 
+the normal grading process, and this application has been tagged as
+qualified for this Head's Croo, the Croo head will see the application 
+again in the Qualification-specific grading view. However, if the Croo head
+then skips the application (eg. because the Head sees that a co-head has
+already graded it) then the application will not be shown to the Head again.
+
+Whew.
+
+"""
 
 SHOW_GRADE_AVG_INTERVAL = 10
 SKIP = 'skip'
