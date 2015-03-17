@@ -340,8 +340,22 @@ class GradersDatabaseListViewTestCase(TripsTestCase):
         graders = get_graders(trips_year)
         self.assertIn(grader, graders)
         self.assertNotIn(random_other_user, graders)
+
+
+    def test_get_graders_returns_distinct_queryset(self):
+
+        trips_year = self.init_current_trips_year()
+        grader = self.mock_grader()
+        
+        grade = mommy.make(LeaderApplicationGrade, grader=grader, trips_year=trips_year)
+        grade2 = mommy.make(LeaderApplicationGrade, grader=grader, trips_year=trips_year)
+        
+        graders = get_graders(trips_year)
+        self.assertIn(grader, graders)
+        self.assertEqual(len(graders), 1)
         
         
-        
+    # TODO test that grades from previous trips years are not included
+    # in avgs, grader list
 
         

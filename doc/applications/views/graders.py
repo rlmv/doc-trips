@@ -23,7 +23,8 @@ def get_graders(trips_year):
     users = (DartmouthUser.objects
              .filter(Q(leaderapplicationgrades__trips_year=trips_year) |
                      Q(crooapplicationgrades__trips_year=trips_year))
-         )
+             .distinct())
+
     for user in users:
         leader_grades = user.leaderapplicationgrades.filter(trips_year=trips_year)
         user.avg_leader_grade = leader_grades.aggregate(Avg('grade'))['grade__avg']
