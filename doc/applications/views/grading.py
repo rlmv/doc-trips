@@ -77,8 +77,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
                                       avg_grade, SHOW_GRADE_AVG_INTERVAL))
             
         context = super(GenericGradingView, self).get_context_data(**kwargs)
-        context['application'] = self.get_application()
-        context['title'] = 'Score %s #%s' % (self.verbose_application_name, self.kwargs['pk'])
+
+        application = self.get_application()
+        context['application'] = application
+        context['title'] = 'Score %s #%s: NetId %s' % (self.verbose_application_name, self.kwargs['pk'], application.application.applicant.netid)
         context['score_choices'] = map(lambda c: c[1], self.model.SCORE_CHOICES)
         return context
 
