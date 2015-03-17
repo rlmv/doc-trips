@@ -26,10 +26,12 @@ def get_graders(trips_year):
          )
     for user in users:
         leader_grades = user.leaderapplicationgrades.filter(trips_year=trips_year)
-        user.avg_leader_grade = leader_grades.aggregate(avg=Avg('grade'))['avg']
+        user.avg_leader_grade = leader_grades.aggregate(Avg('grade'))['grade__avg']
+        user.leader_grade_count = leader_grades.count()
 
         croo_grades = user.crooapplicationgrades.filter(trips_year=trips_year)
-        user.avg_croo_grade = croo_grades.aggregate(avg=Avg('grade'))['avg']
+        user.avg_croo_grade = croo_grades.aggregate(Avg('grade'))['grade__avg']
+        user.croo_grade_count = croo_grades.count()
 
     return users
 

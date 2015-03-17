@@ -6,20 +6,24 @@
 
 {% block content %}
 
-<p> List of everyone who has scored applications this year, along with their average grades.</p>
+<p> List of everyone who has scored applications this year, along with the number of grades they have scored and their average grade.</p>
 
 <table class="table table-condensed">
 
 <tr>
   <th> Grader </th>
+  <th> Number of Leader Grades </th>
   <th> Average Leader Grade </th>
+  <th> Number of Croo Grades </th>
   <th> Average Croo Grade </th>
 </tr>
 
 {% for grader in graders %}
 <tr>
   <td> {{ grader }} </td>
+  <td> {{ grader.leader_grade_count }} </td>
   <td> {{ grader.avg_leader_grade }} </td>
+  <td> {{ grader.croo_grade_count }} </td>
   <td> {{ grader.avg_croo_grade }} </td>
 </tr>
 
