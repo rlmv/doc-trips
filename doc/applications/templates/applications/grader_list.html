@@ -1,0 +1,23 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h2> Graders </h2>
+{% endblock %}
+
+{% block content %}
+
+<table class="table table-condensed">
+
+<tr>
+</tr>
+
+{% for grader in graders %}
+<tr>
+  <td> {{ grader }} </td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+{% endblock content %}
