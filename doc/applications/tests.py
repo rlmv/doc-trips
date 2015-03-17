@@ -74,7 +74,7 @@ class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
         self.close_application()
         self.mock_user()
         response = self.app.get(reverse('applications:apply'), user=self.user)
-        self.assertTemplateUsed('applications/not_available.html')
+        self.assertTemplateUsed(response, 'applications/not_available.html')
 
 
 class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
@@ -307,15 +307,15 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
         
         self.open_application()
         for view in self.grade_views:
-            res = self.app.get(reverse(view), user=self.director)
-            self.assertTemplateUsed('applications/grading_not_available.html')
+            res = self.app.get(reverse(view), user=self.director).maybe_follow()
+            self.assertTemplateUsed(res, 'applications/grading_not_available.html')
     
     def test_gradable_after_application_deadline(self):
         
         self.close_application() # puts deadline in the past 
         for view in self.grade_views:
-            res = self.app.get(reverse(view), user=self.director)
-            self.assertTemplateNotUsed('applications/grading_not_available.html')
+            res = self.app.get(reverse(view), user=self.director).maybe_follow()
+            self.assertTemplateNotUsed(res, 'applications/grading_not_available.html')
 
 
 class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
@@ -356,8 +356,8 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
 
         # and we shouldn't see the application anymore
         res = self.app.get(reverse('applications:grade:next_leader'), 
-                           user=grader)
-        self.assertTemplateUsed('applications/no_applications.html')
+                           user=grader).follow()
+        self.assertTemplateUsed(res, 'applications/no_applications.html')
 
   
     def test_skipped_app_in_normal_view_is_shown_again_in_qualification_specific_view(self):
@@ -412,8 +412,8 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
 
         # and we shouldn't see the application anymore
         res = self.app.get(reverse('applications:grade:next_croo'), 
-                           user=grader)
-        self.assertTemplateUsed('applications/no_applications.html')
+                           user=grader).follow()
+        self.assertTemplateUsed(res, 'applications/no_applications.html')
 
 
     def test_skipped_app_for_qualification_is_not_shown_again_in_qualification_grading(self):
