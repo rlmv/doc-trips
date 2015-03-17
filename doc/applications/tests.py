@@ -18,6 +18,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
+from doc.applications.views.grading import SKIP
 
 
 class ApplicationTestMixin():
@@ -203,6 +204,25 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
 
         next = LeaderApplication.objects.next_to_grade(grader)
         self.assertIsNone(next)
+
+
+class GradingViewsTestCase(ApplicationTestMixin, WebTestCase):
+    
+    def test_skips_applications_adds_skip_object_to_database(self):
+
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        grader = self.mock_grader()
+
+        res = self.app.get(reverse('applications:grade:leader', 
+                                   kwargs={'pk': application.leader_supplement.pk}), user=grader)
+        res2 = res.form.submit(SKIP)
+        
+        skips = SkippedLeaderGrade.objects.all()
+        self.assertEqual(len(skips), 1)
+        skip = skips[0]
+        self.assertEqual(skip.grader, grader)
+        self.assertEqual(skip.application, application.leader_supplement)
 
 
 class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):

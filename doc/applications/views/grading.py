@@ -81,7 +81,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
 
     def get_application(self):
         """ Return the Croo or Leader application to grade """
-
+        
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
 
