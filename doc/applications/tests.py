@@ -13,7 +13,8 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      CrooSupplement, 
                                      GeneralApplication, LeaderApplicationGrade, 
                                      ApplicationInformation, CrooApplicationGrade,
-                                     QualificationTag)
+                                     QualificationTag, 
+                                     SkippedLeaderGrade, SkippedCrooGrade)
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
@@ -191,6 +192,17 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
            
         next = LeaderApplication.objects.next_to_grade(self.user)
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
+
+
+    def test_skipped_applications_are_not_seen(self):
+
+        application = self.make_application()
+        grader = self.mock_grader()
+        skip = mommy.make(SkippedLeaderGrade, application=application.leader_supplement,
+                          trips_year=self.trips_year, grader=grader)
+
+        next = LeaderApplication.objects.next_to_grade(grader)
+        self.assertIsNone(next)
 
 
 class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):

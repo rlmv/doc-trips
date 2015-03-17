@@ -54,6 +54,7 @@ class ApplicationManager(models.Manager):
                 .annotate(models.Count('grades'))
                 .filter(grades__count__lte=num)
                 .exclude(grades__grader=user)
+                .exclude(skips__grader=user)
                 # random database-level ordering. 
                 # TODO: this may be expensive?
                 .order_by('?').first())

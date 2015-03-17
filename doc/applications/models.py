@@ -292,3 +292,32 @@ class QualificationTag(DatabaseModel):
     
     def __str__(self):
         return self.name
+
+
+class AbstractSkippedGrade(DatabaseModel):
+    """ 
+    Abstract model to mark an application as skipped by a grader 
+
+    Graders are not shown applications that they have skipped again.
+    """
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+
+    class Meta:
+        abstract = True
+
+
+class SkippedLeaderGrade(AbstractSkippedGrade):    
+    # skipped application
+    application = models.ForeignKey(LeaderSupplement, editable=False,
+                                    related_name='skips')
+
+
+class SkippedCrooGrade(AbstractSkippedGrade):
+    application = models.ForeignKey(CrooSupplement, editable=False,
+                                    related_name='skips')
+    # TODO: skip for qualification
+    
+    
+    
+    
+    

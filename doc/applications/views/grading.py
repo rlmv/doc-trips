@@ -12,14 +12,17 @@ from django.db import models
 from doc.db.models import TripsYear
 from doc.applications.models import (GeneralApplication, LeaderSupplement, CrooSupplement,
                                      CrooApplicationGrade, LeaderApplicationGrade,
-                                     QualificationTag)
+                                     QualificationTag, 
+                                     SkippedLeaderGrade, SkippedCrooGrade)
 from doc.applications.forms import CrooApplicationGradeForm, LeaderApplicationGradeForm
 from doc.permissions.views import (CrooGraderPermissionRequired, 
                                LeaderGraderPermissionRequired)
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
 
+
 SHOW_GRADE_AVG_INTERVAL = 10
+
 
 class GraderLandingPage(TemplateView):
 
@@ -48,6 +51,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
 
     model = None
     application_model = None
+    skipped_grade_model = None
     form_class = None
     success_url = None
     verbose_application_name = None # eg. Trip Leader Application
@@ -57,6 +61,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
     def get_form_valid_message(self):
         return 'Score submitted for {} #{}'.format(self.verbose_application_name,
                                                    self.kwargs['pk'])
+
+    def post(self, request, *args, **kwargs):
+
+        return super(GenericGradingView, self).post(request, *args, **kwargs)
 
     def get_application(self):
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
