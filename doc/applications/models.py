@@ -315,7 +315,11 @@ class SkippedLeaderGrade(AbstractSkippedGrade):
 class SkippedCrooGrade(AbstractSkippedGrade):
     application = models.ForeignKey(CrooSupplement, editable=False,
                                     related_name='skips')
-    # TODO: skip for qualification
+
+    # marks whether the grader was grading for a particular
+    # qualification when they skipped the application
+    for_qualification = models.ForeignKey(QualificationTag, 
+                                          null=True, editable=False)
     
     
     

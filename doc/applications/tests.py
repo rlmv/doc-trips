@@ -318,8 +318,26 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
             self.assertTemplateNotUsed('applications/grading_not_available.html')
 
 
-class GradingViewSkipTestCase(ApplicationTestMixin, WebTestCase):
+class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
     
+    def test_redirect_to_next_for_qualification_does_not_break(self):
+
+        self.init_current_trips_year()
+        self.mock_director()
+        
+        self.close_application() # open grading
+
+        # setup application with one grade suggesting a Croo
+        app = self.make_application()
+        qualification = mommy.make(QualificationTag, trips_year=self.trips_year)
+        grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement, 
+                           qualifications=[qualification], trips_year=self.trips_year)
+    
+        # try and grade only for that croo
+        res = self.app.get(reverse('applications:grade:next_croo',
+                                   kwargs={'qualification_pk': qualification.pk}),
+                           user=self.director)
+
     def test_skips_applications_adds_skip_object_to_database(self):
 
         trips_year = self.init_current_trips_year()
@@ -336,27 +354,93 @@ class GradingViewSkipTestCase(ApplicationTestMixin, WebTestCase):
         self.assertEqual(skip.grader, grader)
         self.assertEqual(skip.application, application.leader_supplement)
 
+        # and we shouldn't see the application anymore
+        res = self.app.get(reverse('applications:grade:next_leader'), 
+                           user=grader)
+        self.assertTemplateUsed('applications/no_applications.html')
 
-class GradeForSpecificCrooViewsTestCase(ApplicationTestMixin, WebTestCase):
-    
-    def setUp(self):
-        self.init_current_trips_year()
-        self.mock_director()
-
-    def test_redirect_to_next_for_qualification_does_not_break(self):
+  
+    def test_skipped_app_in_normal_view_is_shown_again_in_qualification_specific_view(self):
         
-        self.close_application() # open grading
+        trips_year = self.init_current_trips_year()
+        self.close_application()
+        application = self.make_application(trips_year=trips_year)
+        # directors have permission to grade croo apps
+        grader = self.mock_director()
 
-        # setup application with one grade suggesting a Croo
-        app = self.make_application()
-        qualification = mommy.make(QualificationTag, trips_year=self.trips_year)
-        grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement, 
-                           qualifications=[qualification], trips_year=self.trips_year)
-    
-        # try and grade only for that croo
-        res = self.app.get(reverse('applications:grade:next_croo',
+        # skip an application in normal grading
+        res = self.app.get(reverse('applications:grade:croo', 
+                                   kwargs={'pk': application.croo_supplement.pk}), user=grader)
+        res2 = res.form.submit(SKIP)
+
+        # make a qualification
+        qualification = mommy.make(QualificationTag, trips_year=trips_year)
+        # and stick the tag on this application
+        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement, 
+                           qualifications=[qualification], trips_year=trips_year)
+        
+        res = self.app.get(reverse('applications:grade:next_croo', 
                                    kwargs={'qualification_pk': qualification.pk}),
-                           user=self.director)
+                           user=grader).follow()
+        self.assertEqual(res.context['view'].get_application(), application.croo_supplement)
+
+
+    def test_skiping_application_in_qualification_grading_adds_skip_object_to_database(self):
+
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        grader = self.mock_director()
+
+        # make a qualification and tag this application
+        qualification = mommy.make(QualificationTag, trips_year=trips_year)
+        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement, 
+                           qualifications=[qualification], trips_year=trips_year)
+
+        res = self.app.get(reverse('applications:grade:next_croo', 
+                                   kwargs={'qualification_pk': qualification.pk}), 
+                           user=grader).follow()
+        res = res.form.submit(SKIP)
+        
+        # skip now exists,
+        skips = SkippedCrooGrade.objects.all()
+        self.assertEqual(len(skips), 1)
+        skip = skips[0]
+        self.assertEqual(skip.grader, grader)
+        self.assertEqual(skip.application, application.croo_supplement)
+        # and was added for this qualification:
+        self.assertEqual(skip.for_qualification, qualification)
+
+        # and we shouldn't see the application anymore
+        res = self.app.get(reverse('applications:grade:next_croo'), 
+                           user=grader)
+        self.assertTemplateUsed('applications/no_applications.html')
+
+
+    def test_skipped_app_for_qualification_is_not_shown_again_in_qualification_grading(self):
+
+        trips_year = self.init_current_trips_year()
+        self.close_application()
+        application = self.make_application(trips_year=trips_year)
+        # directors have permission to grade croo apps
+        grader = self.mock_director()
+
+        # make a qualification
+        qualification = mommy.make(QualificationTag, trips_year=trips_year)
+
+        # and stick the qualification on this application
+        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement, 
+                           qualifications=[qualification], trips_year=trips_year)
+
+        res = self.app.get(reverse('applications:grade:next_croo', 
+                                   kwargs={'qualification_pk': qualification.pk}),
+                           user=grader).follow()
+        res.form.submit(SKIP)
+
+        # the
+        res = self.app.get(reverse('applications:grade:next_croo', 
+                                   kwargs={'qualification_pk': qualification.pk}),
+                           user=grader).follow()
+        self.assertTemplateUsed(res, 'applications/no_applications.html')
 
                            
 class GradersDatabaseListViewTestCase(TripsTestCase):

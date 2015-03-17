@@ -33,14 +33,14 @@ Both sets of applications follow the same general pattern:
 
 However, there are some subtleties which complicate matters:
 
-(1) Croo graders tag Croo applications with qualifications for
+(1) Croo graders tag Croo applications with Qualifications for
 certian croos. There is a special provision which lets Croo heads
 grade ONLY applications which have a certain qualification. This
 allows Croo heads to do a once-over of their potential croo members.
 (2) In order to accomodate this there is a subclass of Croo Redirect and 
 Grading Views which pass around the pk of the targeted Qualification.
  
-(3) Skipping. Graders can skip grades which they recognize. When 
+(3) Skipping. Graders can skip applications which they recognize. When 
 they do so, an appropriate SkippedGrade object is created which links
 the grader to the skipped application. Once a grader has skipped an 
 application they will not see it again, UNLESS:
@@ -225,13 +225,20 @@ class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermission
         messages.info(self.request, msg % qualification)
         
         # we're just serving apps for the specified qualification
-        # and don't care about limits to the total number of grades
+        # and don't care about limits to the total number of grades.
+        # If the grader skipped an app in regular grading we still 
+        # include if.
+        # However, if the grader skipped an app while grading for
+        # this qualification we exclude it from the the query.
         # TODO: stick this on the manager?
         # TODO: pass in the trips year? - tie grading to a trips_year url?
         application = (CrooSupplement.objects
                        .completed_applications(trips_year=TripsYear.objects.current())
                        .filter(grades__qualifications=qual_pk)
                        .filter(application__status=GeneralApplication.PENDING)
+                       # satisfy BOTH condifions for the same skip:
+                       .exclude(skips__grader=self.request.user,
+                                skips__for_qualification=qual_pk)
                        .exclude(grades__grader=self.request.user)
                        .order_by('?').first())
         if not application: 
@@ -278,11 +285,29 @@ class GradeCrooApplicationForQualification(GradeCrooApplication):
     view. 
     """
 
+    def skip_application(self):
+        """ 
+        Skip this application.
+
+        Creates a skipped grade object so that this grader won't see
+        this application again. Since we are grading for a particular
+        qualification, add the qualification to the Skip.
+        """
+        
+        application = self.get_application()
+        skip = self.skipped_grade_model.objects.create(
+            trips_year=application.trips_year,
+            application=application,
+            grader=self.request.user,
+            for_qualification_id=self.kwargs['qualification_pk']
+        )
+
+
     def get_success_url(self):
 
         qual_pk = self.kwargs.get('qualification_pk')
         return reverse('applications:grade:next_croo', 
-                       kwargs=dict(qual_pk=qual_pk))
+                       kwargs=dict(qualification_pk=qual_pk))
 
     
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
