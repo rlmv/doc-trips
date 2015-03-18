@@ -166,7 +166,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         form.instance.trips_year = TripsYear.objects.current()
         form.save()
         
-        return super(GenericGradingView, self).form_valid(form)
+        return return HttpResponseRedirect(self.get_success_url())
 
 
     def get_form(self, **kwargs):
