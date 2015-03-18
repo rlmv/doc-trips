@@ -9,6 +9,7 @@ django-extensions
 django-filter
 django-vanilla-views
 django-crispy-forms
+django-pipeline
 
 #django-braces>1.4.0 # need Login/Permission compatibility in master
 # wait for version > 1.4.0

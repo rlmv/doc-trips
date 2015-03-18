@@ -63,6 +63,7 @@ INSTALLED_APPS = (
 
     # third party
 #    'address',
+    'pipeline',
     'crispy_forms',
     'bootstrap3_datetime',
     'django_extensions',
@@ -152,7 +153,31 @@ STATICFILES_DIRS = (
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 # from https://devcenter.heroku.com/articles/django-app-configuration
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'doc.utils.storages.GzipManifestPipelineStorage'
+
+PIPELINE_CSS = {
+    'base': {
+        'source_filenames': (
+            'style.css',
+            'lib/typeaheadjs.css',
+            'lib/bootstrap.min.css',
+            'lib/bootstrap-theme.min.css',
+        ),
+        'output_filename': 'base.css'
+    }
+}
+
+PIPELINE_JS = {
+    'base': {
+        'source_filenames': (
+            'lib/jquery.js',
+            'lib/typeahead.bundle.js',
+            'lib/bootstrap.min.js',
+            'dartdm/lookup.js', # must come after typeahead
+        ),
+        'output_filename': 'base.js'
+    }
+}
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
@@ -165,6 +190,7 @@ if not DEBUG:
             'django.template.loaders.app_directories.Loader',
         )),
     )
+
 
 LOGGING = {
     'version': 1,
