@@ -14,7 +14,6 @@
 
 {% block content %}
 
-
 <div class="panel panel-info">
   <div class="panel-heading" role="tab" id="emailsHeading">
     <h4 class="panel-title">
@@ -32,15 +31,16 @@
   </div>
 </div>
 
-
 <table class="table table-condensed">
   <tr>
-    <th> Application </th>
+    <th> Applications <span class="badge"> {{ applications.count }}</th>
     <th> Status </th>
     <th> Leader Grade </th>
     <th> Croo Grade </th>
     <th> Leader Application </th>
     <th> Croo Application </th>
+    <th/>
+    <th/>
   </tr>
   
   {% for application in applications %}
