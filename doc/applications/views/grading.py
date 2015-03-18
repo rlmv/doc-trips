@@ -91,7 +91,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
     skipped_grade_model = None
     form_class = None
     success_url = None
-    verbose_application_name = None # eg. Trip Leader Application
+    verbose_application_name = None # eg. "Trip Leader Application"
     template_name = 'applications/grade.html'
     form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
 
@@ -101,8 +101,9 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
 
 
     def get(self, request, *args, **kwargs):
+        """ Message the grader their average grade """
 
-        self.check_and_message_average_grade(request.user)
+        self.check_and_show_average_grade(request.user)
         return super(GenericGradingView, self).get(request, *args, **kwargs)
 
 
@@ -152,7 +153,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         return context
 
 
-    def check_and_message_average_grade(self, grader):
+    def check_and_show_average_grade(self, grader):
         """
         Show grader their average grade.
 
@@ -235,7 +236,7 @@ class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermission
         qual_pk = self.kwargs['qualification_pk']
         qualification = QualificationTag.objects.get(pk=qual_pk)
     
-        # let user know which croo they are in
+        # let user know which qualification they are scoring
         msg = 'You are currently scoring potential %s applications' 
         messages.info(self.request, msg % qualification)
         
@@ -247,18 +248,23 @@ class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermission
         # this qualification we exclude it from the the query.
         # TODO: stick this on the manager?
         # TODO: pass in the trips year? - tie grading to a trips_year url?
-        application = (CrooSupplement.objects
-                       .completed_applications(trips_year=TripsYear.objects.current())
-                       .filter(grades__qualifications=qual_pk)
-                       .filter(application__status=GeneralApplication.PENDING)
-                       # satisfy BOTH condifions for the same skip:
-                       .exclude(skips__grader=self.request.user,
-                                skips__for_qualification=qual_pk)
-                       .exclude(grades__grader=self.request.user)
-                       .order_by('?').first())
+        application = (
+            CrooSupplement.objects
+            .completed_applications(trips_year=TripsYear.objects.current())
+            .filter(grades__qualifications=qual_pk)
+            .filter(application__status=GeneralApplication.PENDING)
+            # satisfy BOTH condifions for the same skip:
+            .exclude(skips__grader=self.request.user,
+                     skips__for_qualification=qual_pk)
+            .exclude(grades__grader=self.request.user)
+            .order_by('?').first()
+        )
+
         if not application: 
             return reverse('applications:grade:no_croo_left')
-        # pass along the croo's pk so that we can keep grading for this qualification
+
+        # pass along the qualifications's pk so that we can keep 
+        # grading for this qualification
         return reverse('applications:grade:croo', kwargs={'pk': application.pk,
                                                           'qualification_pk': qual_pk})
 
