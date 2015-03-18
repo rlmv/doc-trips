@@ -150,10 +150,13 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-# Simplified static file serving.
-# https://warehouse.python.org/project/whitenoise/
-# from https://devcenter.heroku.com/articles/django-app-configuration
 STATICFILES_STORAGE = 'doc.utils.storages.GzipManifestPipelineStorage'
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
 
 PIPELINE_CSS = {
     'base': {
@@ -178,6 +181,10 @@ PIPELINE_JS = {
         'output_filename': 'base.js'
     }
 }
+
+# only concatenate
+PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
