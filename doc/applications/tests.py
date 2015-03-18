@@ -18,7 +18,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
 from doc.timetable.models import Timetable
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
-from doc.applications.views.grading import SKIP
+from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
 
 
 class ApplicationTestMixin():
@@ -319,6 +319,23 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 
 
 class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
+
+    def test_show_average_grade_every_interval_in_messages(self):
+        
+        trips_year = self.init_current_trips_year()
+        grader = self.mock_grader()
+        self.close_application()
+
+        application = self.make_application(trips_year=trips_year).leader_supplement
+
+        for i in range(SHOW_GRADE_AVG_INTERVAL):
+            mommy.make(LeaderApplicationGrade, trips_year=trips_year, grader=grader)
+        
+        res = self.app.get(reverse('applications:grade:next_leader'), user=grader).follow()
+        messages = list(res.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('average', messages[0].message)
+        
     
     def test_redirect_to_next_for_qualification_does_not_break(self):
 

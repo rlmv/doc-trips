@@ -99,6 +99,13 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         return 'Score submitted for {} #{}'.format(self.verbose_application_name,
                                                    self.kwargs['pk'])
 
+
+    def get(self, request, *args, **kwargs):
+
+        self.check_and_message_average_grade(request.user)
+        return super(GenericGradingView, self).get(request, *args, **kwargs)
+
+
     def post(self, request, *args, **kwargs):
         """ Check whether the grader is skipping this application """
         
@@ -135,9 +142,25 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
 
 
     def get_context_data(self, **kwargs):
-        
-        # Every SHOW_GRADE_AVG_INTERVAL tell the grader what their 
-        # average grade has been (for this year, of course)
+            
+        context = super(GenericGradingView, self).get_context_data(**kwargs)
+
+        application = self.get_application()
+        context['application'] = application
+        context['title'] = 'Score %s #%s: NetId %s' % (self.verbose_application_name, self.kwargs['pk'], application.application.applicant.netid)
+        context['score_choices'] = map(lambda c: c[1], self.grade_model.SCORE_CHOICES)
+        return context
+
+
+    def check_and_message_average_grade(self, grader):
+        """
+        Show grader their average grade.
+
+        Every SHOW_GRADE_AVG_INTERVAL tell the grader what their 
+        average grade has been (for this year, of course). Displayed 
+        in a message.
+        """
+
         ct = ContentType.objects.get_for_model(self.grade_model)
         grades_by_user = (getattr(self.request.user, ct.model + 's')
                           .filter(trips_year=TripsYear.objects.current()))
@@ -148,14 +171,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
                    "We'll show you your average score every %s grades.")
             self.messages.info(msg % (self.grade_model._meta.verbose_name, 
                                       avg_grade, SHOW_GRADE_AVG_INTERVAL))
-            
-        context = super(GenericGradingView, self).get_context_data(**kwargs)
-
-        application = self.get_application()
-        context['application'] = application
-        context['title'] = 'Score %s #%s: NetId %s' % (self.verbose_application_name, self.kwargs['pk'], application.application.applicant.netid)
-        context['score_choices'] = map(lambda c: c[1], self.grade_model.SCORE_CHOICES)
-        return context
 
 
     def form_valid(self, form):
