@@ -182,7 +182,7 @@ PIPELINE_JS = {
     }
 }
 
-# only concatenate
+# concatenate assets only -- GzipManifest deals with compression
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
