@@ -14,7 +14,8 @@ class ApplicationManager(models.Manager):
     """
     
     def next_to_grade(self, user):
-        """ Find the next application to grade for user.
+        """ 
+        Find the next application to grade for user.
 
         This is an application which meets the following conditions:
         (0) is for the current trips_year
@@ -59,9 +60,9 @@ class ApplicationManager(models.Manager):
                 # TODO: this may be expensive?
                 .order_by('?').first())
 
+
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(document='')    
-
 
 
 class LeaderApplicationManager(ApplicationManager):
@@ -91,6 +92,42 @@ class LeaderApplicationManager(ApplicationManager):
                 .distinct())
                            
         
-        
 
+class CrooApplicationManager(ApplicationManager):
+
+      def next_to_grade_for_qualification(self, user, qualification):
+        """ 
+        Find the next croo application which has qualification
+        for user to grade.
+
+        We're just serving apps for the specified qualification
+        and don't care about limits to the total number of grades.
+        If the grader skipped an app in regular grading we still 
+        include if.
+        However, if the grader skipped an app while grading for
+        this qualification we exclude it from the the query.
+        
+        TODO: pass in the trips year? - tie grading to a trips_year url?
+        TODO: tests for the manager in addition to the view tests
+  
+        Return None if no applications need to be graded.
+        """
+
+        trips_year = TripsYear.objects.current()
+
+        # grab the value of GeneralApplication.PENDING
+        PENDING = self.model.application.field.related_field.model.PENDING
+
+        return (self.completed_applications(trips_year=trips_year)
+                .filter(grades__qualifications=qualification)
+                .filter(application__status=PENDING)
+                # satisfy BOTH condifions for the same skip:
+                .exclude(skips__grader=user,
+                         skips__for_qualification=qualification)
+                .exclude(grades__grader=user)
+                .order_by('?').first())
+
+
+
+    
     

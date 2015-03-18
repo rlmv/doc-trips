@@ -240,26 +240,10 @@ class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermission
         msg = 'You are currently scoring potential %s applications' 
         messages.info(self.request, msg % qualification)
         
-        # we're just serving apps for the specified qualification
-        # and don't care about limits to the total number of grades.
-        # If the grader skipped an app in regular grading we still 
-        # include if.
-        # However, if the grader skipped an app while grading for
-        # this qualification we exclude it from the the query.
-        # TODO: stick this on the manager?
-        # TODO: pass in the trips year? - tie grading to a trips_year url?
-        application = (
-            CrooSupplement.objects
-            .completed_applications(trips_year=TripsYear.objects.current())
-            .filter(grades__qualifications=qual_pk)
-            .filter(application__status=GeneralApplication.PENDING)
-            # satisfy BOTH condifions for the same skip:
-            .exclude(skips__grader=self.request.user,
-                     skips__for_qualification=qual_pk)
-            .exclude(grades__grader=self.request.user)
-            .order_by('?').first()
+        application = CrooSupplement.objects.next_to_grade_for_qualification(
+            self.request.user, qualification
         )
-
+    
         if not application: 
             return reverse('applications:grade:no_croo_left')
 

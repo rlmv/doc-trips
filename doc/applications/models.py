@@ -6,7 +6,7 @@ from doc.db.models import DatabaseModel, TripsYear
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.croos.models import Croo
 from doc.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
-from doc.applications.managers import ApplicationManager, LeaderApplicationManager
+from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager
 
 
 class ApplicationInformation(DatabaseModel):
@@ -203,7 +203,7 @@ class LeaderSupplement(DatabaseModel):
 class CrooSupplement(DatabaseModel):
 
     NUMBER_OF_GRADES = 3
-    objects = ApplicationManager()
+    objects = CrooApplicationManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
     document = models.FileField('Croo Application Answers', blank=True)
