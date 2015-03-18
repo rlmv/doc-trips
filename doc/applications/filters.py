@@ -58,19 +58,27 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status', 'applicant_name', CROO_QUALIFICATIONS]
+        fields = ['status', CROO_QUALIFICATIONS]
         order_by = (
             ('applicant__name', 'Name'),
             ('-avg_croo_grade', 'Croo Grade'),
             ('-avg_leader_grade', 'Leader Grade'),
         )
             
-    applicant_name = django_filters.MethodFilter(action='lookup_user')
+    name = django_filters.MethodFilter(action='lookup_user_by_name')
+    netid = django_filters.MethodFilter(action='lookup_user_by_netid')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
 
-    def lookup_user(self, queryset, value):
+    def lookup_user_by_name(self, queryset, value):
         return queryset.filter(
             applicant__name__icontains=value
+        )
+
+    def lookup_user_by_netid(self, queryset, value):
+        if value == '':
+            return queryset
+        return queryset.filter(
+            applicant__netid__iexact=value
         )
 
     def __init__(self, *args, **kwargs):
@@ -109,7 +117,8 @@ class FilterSetFormHelper(FormHelper):
         self.layout = Layout(
             Row('complete'),
             Row('status'),   
-            Row('applicant_name'),
+            Row('name'),
+            Row('netid'),
             Row('o'),
             Row(InlineCheckboxes(CROO_QUALIFICATIONS)),
             Row(Submit('submit', 'Filter', css_class='btn-block')),
