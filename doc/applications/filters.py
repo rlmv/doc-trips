@@ -22,7 +22,7 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
 
     # (query_value, display value, method)
     choices = [
-        ('any', '--', None),
+        ('any', 'All Applications', None),
         ('croo', 'Croo Applications', 'croo_applications'),
         ('leader', 'Leader Applications', 'leader_applications'),
         ('either', 'Leader OR Croo Applications', 'either_applications'),
