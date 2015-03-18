@@ -58,14 +58,14 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status', 'applicant', CROO_QUALIFICATIONS]
+        fields = ['status', 'applicant_name', CROO_QUALIFICATIONS]
         order_by = (
             ('applicant__name', 'Name'),
             ('-avg_croo_grade', 'Croo Grade'),
             ('-avg_leader_grade', 'Leader Grade'),
         )
             
-    applicant = django_filters.MethodFilter(action='lookup_user')
+    applicant_name = django_filters.MethodFilter(action='lookup_user')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
 
     def lookup_user(self, queryset, value):
@@ -107,16 +107,12 @@ class FilterSetFormHelper(FormHelper):
 
         self.form_method = 'GET'
         self.layout = Layout(
-            Row(
-                Div('complete', css_class='col-sm-4'),
-                Div('status', css_class='col-sm-3'),
-                Div('applicant', css_class='col-sm-2'),
-                Div('o', css_class='col-sm-2'),
-                Div(Submit('submit', 'Filter', css_class='filter-submit'), css_class='col-sm-1'),
-            ),
-            Row(
-                Div(InlineCheckboxes(CROO_QUALIFICATIONS), css_class='col-sm-12'),
-            ),
+            Row('complete'),
+            Row('status'),   
+            Row('applicant_name'),
+            Row('o'),
+            Row(InlineCheckboxes(CROO_QUALIFICATIONS)),
+            Row(Submit('submit', 'Filter')),
         )
 
 

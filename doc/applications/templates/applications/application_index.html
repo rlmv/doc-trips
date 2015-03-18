@@ -5,36 +5,34 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h3> Applications </h3>
+<h3> Volunteers </h3>
+{% endblock %}
+
+{% block right_column %}
+{% crispy applications_filter.form %}
 {% endblock %}
 
 {% block content %}
 
-<div class="panel panel-default">
-  <div class="panel-body">
 
-    {% crispy applications_filter.form %}
-
-    <div class="panel panel-info">
-      <div class="panel-heading" role="tab" id="emailsHeading">
-	<h4 class="panel-title">
-	  <a class="collapsed" data-toggle="collapse" href="#collapsedEmails" aria-expanded="false" aria-controls="collapsedEmails">
-	    Show Filtered Email List
-	  </a>
-	</h4>
-      </div>
-      <div id="collapsedEmails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="emailsHeading">
-	<div class="panel-body">
-	  <div id="emails">
-	    {{ emails|join:", " }}
-	  </div>
-	</div>
+<div class="panel panel-info">
+  <div class="panel-heading" role="tab" id="emailsHeading">
+    <h4 class="panel-title">
+      <a class="collapsed" data-toggle="collapse" href="#collapsedEmails" aria-expanded="false" aria-controls="collapsedEmails">
+	Show Filtered Email List
+      </a>
+    </h4>
+  </div>
+  <div id="collapsedEmails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="emailsHeading">
+    <div class="panel-body">
+      <div id="emails">
+	{{ emails|join:", " }}
       </div>
     </div>
   </div>
 </div>
 
-  
+
 <table class="table table-condensed">
   <tr>
     <th> Application </th>
