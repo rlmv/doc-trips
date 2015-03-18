@@ -59,7 +59,11 @@ class ApplicationFilterSet(django_filters.FilterSet):
     class Meta:
         model = GeneralApplication
         fields = ['status', 'applicant', CROO_QUALIFICATIONS]
-        order_by = [('applicant__name', 'Name'),]
+        order_by = (
+            ('applicant__name', 'Name'),
+            ('-avg_croo_grade', 'Croo Grade'),
+            ('-avg_leader_grade', 'Leader Grade'),
+        )
             
     applicant = django_filters.MethodFilter(action='lookup_user')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
