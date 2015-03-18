@@ -112,7 +112,7 @@ class FilterSetFormHelper(FormHelper):
             Row('applicant_name'),
             Row('o'),
             Row(InlineCheckboxes(CROO_QUALIFICATIONS)),
-            Row(Submit('submit', 'Filter')),
+            Row(Submit('submit', 'Filter', css_class='btn-block')),
         )
 
 
