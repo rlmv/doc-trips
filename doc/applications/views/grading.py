@@ -1,7 +1,7 @@
 import logging
 
 from braces.views import FormMessagesMixin
-from vanilla import RedirectView, TemplateView, CreateView
+from vanilla import RedirectView, TemplateView, FormView
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -81,12 +81,12 @@ class IfGradingAvailable():
         return render(request, 'applications/grading_not_available.html')
 
 
-class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
+class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
     """ 
     Shared logic for grading Croo and Leader applications.
     """
 
-    model = None
+    grade_model = None
     application_model = None
     skipped_grade_model = None
     form_class = None
@@ -138,7 +138,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         
         # Every SHOW_GRADE_AVG_INTERVAL tell the grader what their 
         # average grade has been (for this year, of course)
-        ct = ContentType.objects.get_for_model(self.model)
+        ct = ContentType.objects.get_for_model(self.grade_model)
         grades_by_user = (getattr(self.request.user, ct.model + 's')
                           .filter(trips_year=TripsYear.objects.current()))
         if (grades_by_user.count() % SHOW_GRADE_AVG_INTERVAL == 0 and 
@@ -146,7 +146,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
             avg_grade = grades_by_user.aggregate(models.Avg('grade'))['grade__avg']
             msg = ("Hey, just FYI your average awarded %s is %s. "
                    "We'll show you your average score every %s grades.")
-            self.messages.info(msg % (self.model._meta.verbose_name, 
+            self.messages.info(msg % (self.grade_model._meta.verbose_name, 
                                       avg_grade, SHOW_GRADE_AVG_INTERVAL))
             
         context = super(GenericGradingView, self).get_context_data(**kwargs)
@@ -154,7 +154,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         application = self.get_application()
         context['application'] = application
         context['title'] = 'Score %s #%s: NetId %s' % (self.verbose_application_name, self.kwargs['pk'], application.application.applicant.netid)
-        context['score_choices'] = map(lambda c: c[1], self.model.SCORE_CHOICES)
+        context['score_choices'] = map(lambda c: c[1], self.grade_model.SCORE_CHOICES)
         return context
 
 
@@ -166,7 +166,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, CreateView):
         form.instance.trips_year = TripsYear.objects.current()
         form.save()
         
-        return return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.get_success_url())
 
 
     def get_form(self, **kwargs):
@@ -251,7 +251,7 @@ class RedirectToNextGradableCrooApplicationForQualification(CrooGraderPermission
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
     """ Grade a croo application """
 
-    model = CrooApplicationGrade
+    grade_model = CrooApplicationGrade
     application_model = CrooSupplement
     skipped_grade_model = SkippedCrooGrade
     form_class = CrooApplicationGradeForm
@@ -333,7 +333,7 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
 
 class GradeLeaderApplication(LeaderGraderPermissionRequired, GenericGradingView):
 
-    model = LeaderApplicationGrade
+    grade_model = LeaderApplicationGrade
     application_model = LeaderSupplement
     skipped_grade_model = SkippedLeaderGrade
     form_class = LeaderApplicationGradeForm
