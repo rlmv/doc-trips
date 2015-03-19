@@ -117,20 +117,6 @@ class TripsYearMixin():
 
 
 class DatabaseBaseMixin():
-    # TODO: remove this. you can get the model as view.model 
-
-    def get_context_data(self, **kwargs):
-        """
-        Adds the 'model' of the modelview to the context.
-
-        This along with 'trips_year' add by TripsYearMixin, 
-        is useful for adding 'create' links to templates.
-        """
-        
-        context = super(DatabaseBaseMixin, self).get_context_data(**kwargs)
-        if hasattr(self, 'model'):
-            context['model'] = self.model
-        return context
 
     def form_invalid(self, form):
         
@@ -202,8 +188,8 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
 
 class DatabaseDeleteView(DatabaseEditPermissionRequired, DatabaseBaseMixin, 
                          TripsYearMixin, DeleteView):
-    template_name = 'db/delete.html'
 
+    template_name = 'db/delete.html'
     success_url_pattern = None
 
     def get_success_url(self):
@@ -238,7 +224,6 @@ class DatabaseDetailView(DatabaseReadPermissionRequired, DatabaseBaseMixin,
                          TripsYearMixin, DetailView):
 
     template_name = 'db/detail.html'
-    
     # Fields to display in the view. Passed in the template.
     fields = None
         

@@ -56,7 +56,27 @@ class ScheduledTripTestCase(WebTestCase):
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 
+
+class QuickTestViews(WebTestCase):
+
+    def test_index_views(self):
         
+        trips_year = self.init_current_trips_year()
+        director = self.mock_director()
         
+        names = [
+            'db:scheduledtrip_index',
+            'db:triptemplate_index',
+            'db:triptype_index',
+            'db:campsite_index',
+            'db:section_index',
+            'db:leader_index',
+        ]
+
+        for name in names:
+            res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
+
+
+                            
         
 
