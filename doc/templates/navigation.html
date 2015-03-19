@@ -43,7 +43,7 @@
 	
       </ul>
 
-      <!--- user infor --->
+      <!--- user info --->
       <ul class="nav navbar-nav navbar-right">
 	{% if user.is_authenticated %}
 	<li class="dropdown">
@@ -51,11 +51,11 @@
 	    	<span class="fa fa-user"></span> {{ user }} <span class="fa fa-caret-down">
 	  </a>
 	  <ul class="dropdown-menu" role="menu">
-	    <li><a href="{% url 'users:logout' %}"> Logout </a></li>
+	    <li><a href="{% url 'users:logout' %}"> Logout <span class="fa fa-sign-out"></span></a></li>
 	  </ul>
 	</li>
 	{% else %} 
-	<li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-user"></span> Login</a></li>
+	<li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-sign-in"></span> Login</a></li>
 	{% endif %}
       </ul>
 
