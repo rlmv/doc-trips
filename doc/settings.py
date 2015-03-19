@@ -165,6 +165,7 @@ PIPELINE_CSS = {
             'css/typeaheadjs.css',
             'css/bootstrap.min.css',
             'css/bootstrap-theme.min.css',
+            'css/font-awesome.min.css',
         ),
         'output_filename': 'base.css'
     }
