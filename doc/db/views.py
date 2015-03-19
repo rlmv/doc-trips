@@ -12,6 +12,7 @@ from django.db import IntegrityError, transaction
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, PermissionDenied
 from vanilla import (ListView, UpdateView, CreateView, DeleteView, 
                      TemplateView, DetailView, RedirectView)
+from braces.views import FormInvalidMessageMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
@@ -20,7 +21,10 @@ from doc.db.forms import tripsyear_modelform_factory
 from doc.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
 from doc.utils.views import CrispyFormMixin
 
+
 logger = logging.getLogger(__name__)
+
+FORM_INVALID_MESSAGE = "Uh oh! Looks like there's an error in the form"
 
 
 class TripsYearMixin():
@@ -116,23 +120,15 @@ class TripsYearMixin():
         return context
 
 
-class DatabaseBaseMixin():
-
-    def form_invalid(self, form):
-        
-        messages.error(self.request, 'Uh oh! There seems to be an error in the form.')
-        return super(DatabaseBaseMixin, self).form_invalid(form)
-
-
-class DatabaseListView(DatabaseReadPermissionRequired, DatabaseBaseMixin, 
-                       TripsYearMixin, ListView):
+class DatabaseListView(DatabaseReadPermissionRequired, TripsYearMixin, ListView):
     pass
 
 
-class DatabaseCreateView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
+class DatabaseCreateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin,
                          TripsYearMixin, CrispyFormMixin, CreateView):
 
     template_name = 'db/create.html'
+    form_invalid_message = FORM_INVALID_MESSAGE
 
     def post(self, request, *args, **kwargs):
         """ 
@@ -161,10 +157,11 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
         return reverse_detail_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseEditPermissionRequired, DatabaseBaseMixin, 
+class DatabaseUpdateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin,
                          TripsYearMixin, CrispyFormMixin, UpdateView):
 
     template_name ='db/update.html'
+    form_invalid_message = FORM_INVALID_MESSAGE
 
     def get_success_url(self):
         """ Redirect to same update page for now. """
@@ -186,8 +183,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
         return helper
     
 
-class DatabaseDeleteView(DatabaseEditPermissionRequired, DatabaseBaseMixin, 
-                         TripsYearMixin, DeleteView):
+class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteView):
 
     template_name = 'db/delete.html'
     success_url_pattern = None
@@ -220,8 +216,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
             return HttpResponseRedirect(request.path)
 
 
-class DatabaseDetailView(DatabaseReadPermissionRequired, DatabaseBaseMixin,
-                         TripsYearMixin, DetailView):
+class DatabaseDetailView(DatabaseReadPermissionRequired, TripsYearMixin, DetailView):
 
     template_name = 'db/detail.html'
     # Fields to display in the view. Passed in the template.
