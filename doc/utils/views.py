@@ -60,6 +60,40 @@ class MultipleFormMixin():
         context = self.get_context_data(**forms)
         return self.render_to_response(context)
 
-    
 
+class PassesTestMixin():
+
+    def test_func(self):
+        msg = 'Implement test_func'
+        raise ImproperlyConfigured(msg)
+        
+    def dispatch(self, request, *args, **kwargs):
+        
+        if not self.test_func():
+            raise PermissionDenied
+        
+        return super(PassesTestMixin, self).dispatch(request, *args, **kwargs)
+
+class RedirectIfPassesTest():
+
+    redirect_url = None
+    
+    def test_func(self):
+        msg = 'Implement test_func'
+        raise ImproperlyConfigured(msg)
+
+    def get_redirect_url(self):
+        
+        if redirect_url is None:
+            msg = "Add 'redirect_url' or implement 'get_redirect_url'"
+            raise ImproperlyConfigurd(msg)
+        
+        return redirect_url
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        if self.test_func():
+            return HttpResponseRedirect(self.get_redirect_url())
+        
+        return super(PassesTestMixin, self).dispatch(request, *args, **kwargs)
     
