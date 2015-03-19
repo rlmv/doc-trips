@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpRespons
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib import auth
+from django.shortcuts import render
 
 from doc.dartdm.lookup import EmailLookupException
 
