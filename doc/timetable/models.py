@@ -30,7 +30,10 @@ class Timetable(models.Model):
     applications_open = models.DateTimeField(default=timezone.now)
     applications_close = models.DateTimeField(default=timezone.now)
 
-    leader_assignment_posted = models.DateTimeField(default=timezone.now)
+    application_status_available = models.BooleanField(default=False, help_text='Turn this on once all decisions have been made regarding Leaders and Croos')
+    leader_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Trip Leaders see information about their assigned trip')
+    croo_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Croo members see their assigned Croo')
+
     trippee_registrations_open = models.DateTimeField(default=timezone.now)
     trippee_registrations_close = models.DateTimeField(default=timezone.now)
     trippee_assignment_posted = models.DateTimeField(default=timezone.now)
@@ -57,7 +60,6 @@ class Timetable(models.Model):
 
     def grading_available(self):
         """ After the application deadline? """
-
         return self.applications_close < timezone.now()
 
 
@@ -67,4 +69,4 @@ class Timetable(models.Model):
         now = timezone.now()
         return (self.trippee_registrations_open < now and
                 now < self.trippee_registrations_close)
-        
+       

@@ -19,6 +19,7 @@ from doc.applications.views.grading import(RedirectToNextGradableCrooApplication
                                            NoLeaderApplicationsLeftToGrade,
                                            GraderLandingPage)
 from doc.applications.views.graders import GraderListView
+from doc.applications.views.portal import VolunteerPortalView
 
   
 grade_urlpatterns = patterns(
@@ -36,6 +37,7 @@ grade_urlpatterns = patterns(
 
 urlpatterns = patterns(
     '',
+    url(r'^$', VolunteerPortalView.as_view(), name='portal'),
     url(r'^apply/$', NewApplication.as_view(), name='apply'),
     url(r'^continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/$', SetupApplication.as_view(), name='setup'),

@@ -284,6 +284,8 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
         )    
 
 
+# TODO: give more descriptive names:
+
 class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
                                  TripsYearMixin, UpdateView):
     """ Edit Application status """

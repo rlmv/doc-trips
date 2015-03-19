@@ -491,3 +491,7 @@ class GradersDatabaseListViewTestCase(TripsTestCase):
     # in avgs, grader list
 
         
+class VolunteerPortalViewsTestCase(WebTestCase):
+    
+    pass
+
