@@ -6,7 +6,7 @@
 <html lang="en">
 
 <head>
-<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{% static 'favicon.ico' %}"/>
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{% static 'icons/favicon.ico' %}"/>
 </head>
 
 <body>
@@ -52,13 +52,14 @@
   {% block footer %}
   {% endblock footer %}
 
-
-  {% block scripts %}
-
+  {% block assets %}
   {% load pipeline %}
   {% stylesheet "base" %}
   {% javascript "base" %}
+  {% endblock %}
 
+  {% block scripts %}
+  {# for sub-template added assets #}
   {% endblock %}
 
 </body>
