@@ -59,11 +59,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
     class Meta:
         model = GeneralApplication
         fields = ['status', CROO_QUALIFICATIONS]
-        order_by = (
-            ('applicant__name', 'Name'),
-            ('-avg_croo_grade', 'Croo Grade'),
-            ('-avg_leader_grade', 'Leader Grade'),
-        )
             
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
@@ -100,7 +95,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
             widget=forms.CheckboxSelectMultiple
         )
         
-        self.ordering_field.label = 'Order by'
         self.form.helper = FilterSetFormHelper(self.form)
 
 
@@ -119,7 +113,6 @@ class FilterSetFormHelper(FormHelper):
             Row('status'),   
             Row('name'),
             Row('netid'),
-            Row('o'),
             Row(InlineCheckboxes(CROO_QUALIFICATIONS)),
             Row(Submit('submit', 'Filter', css_class='btn-block')),
         )
