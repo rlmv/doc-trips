@@ -10,7 +10,7 @@
   <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
   <a class="list-group-item" href="{% url 'db:triptemplate_index' trips_year=trips_year %}"> Trip templates </a>
   
-  <a class="list-group-item" href="{% url 'db:application_index' trips_year=trips_year %}"> Applications </a>
+  <a class="list-group-item" href="{% url 'db:application_index' trips_year=trips_year %}"> Volunteers </a>
   
   <a class="list-group-item" href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a>
 
@@ -18,5 +18,9 @@
   <a class="list-group-item" href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a>
   <a class="list-group-item" href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a>
   <a class="list-group-item" href="{% url 'db:graders_index' trips_year=trips_year %}"> Graders </a>
+
+  <a class="list-group-item" href="{% url 'db:incomingstudent_index' trips_year=trips_year %}"> Incoming Students </a>
+  <a class="list-group-item" href="{% url 'db:registration_index' trips_year=trips_year %}"> Registrations </a>
+
 </ul>
 {% endblock %}
