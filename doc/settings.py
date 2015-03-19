@@ -161,10 +161,11 @@ STATICFILES_FINDERS = (
 PIPELINE_CSS = {
     'base': {
         'source_filenames': (
-            'style.css',
-            'lib/typeaheadjs.css',
-            'lib/bootstrap.min.css',
-            'lib/bootstrap-theme.min.css',
+            'css/style.css',
+            'css/typeaheadjs.css',
+            'css/bootstrap.min.css',
+            'css/bootstrap-theme.min.css',
+            'css/font-awesome.min.css',
         ),
         'output_filename': 'base.css'
     }
@@ -173,10 +174,11 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'base': {
         'source_filenames': (
-            'lib/jquery.js',
-            'lib/typeahead.bundle.js',
-            'lib/bootstrap.min.js',
+            'js/jquery.js',
+            'js/bootstrap.min.js',
+            'js/typeahead.bundle.js',
             'dartdm/lookup.js', # must come after typeahead
+            'js/stupidtable.js',
         ),
         'output_filename': 'base.js'
     }

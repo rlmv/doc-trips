@@ -23,3 +23,20 @@ body {
 .filter-croos div {
     margin-bottom: 0;
 }
+
+th[data-sort] {
+    cursor: pointer;
+}
+
+/* shrink navbar */
+/* move to Bootstrap Less if we use it */
+.navbar-nav > li > a, .navbar-header > a.navbar-brand {
+    padding-top: 11px !important;
+    padding-bottom: 11px !important;
+}
+.navbar {
+    min-height: 42px !important;
+}
+.navbar {
+    height: 42px;
+}
