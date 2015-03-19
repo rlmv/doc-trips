@@ -2,12 +2,10 @@
 {% load links %}
 {% load icons %}
 
+{% block header %}
+<h2> Sections </h2>
+{% endblock %}
 {% block content %}
-
-<div>
-  <h3> Sections </h3>
-  <p> </p>
-</div>
 
 <table class="table">
   <tr>
@@ -23,7 +21,7 @@
   
   {% for section in sections %}
   <tr>
-    <td>{{ section | detail_link }}</td>
+    <td>{{ section|detail_link:section.name }}</td>
     <td>{{ section.leaders_arrive }}</td>
     <td>{{ section.is_local | ok_if_true }}</td>
     <td>{{ section.is_exchange | ok_if_true }}</td>
