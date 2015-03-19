@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.db import models
 
 from doc.db.views import CrispyFormMixin
-from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, DatabaseMixin, TripsYearMixin
+from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, TripsYearMixin
 from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.timetable.models import Timetable

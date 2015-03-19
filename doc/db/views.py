@@ -17,55 +17,11 @@ from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
 
 from doc.db.models import DatabaseModel, TripsYear
 from doc.db.forms import tripsyear_modelform_factory
-from doc.permissions.views import DatabasePermissionRequired
+from doc.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
+from doc.utils.views import CrispyFormMixin
 
 logger = logging.getLogger(__name__)
 
-
-class CrispyFormMixin():
-    """
-    Class view mixin which adds support for crispy_forms.
-
-    TODO: needs tests.
-    """
-    
-    def get_form_helper(self, form):
-        """ Return a configured crispy FormHelper. """
-
-        return FormHelper(form)
-
-    def get_form(self, **kwargs):
-        """ 
-        Attach a crispy form helper to the form, if it does not already have one.
-        """
-
-        form = super(CrispyFormMixin, self).get_form(**kwargs)
-
-        if not hasattr(form, 'helper'):
-            form.helper = self.get_form_helper(form)
-
-        self.validate_crispy_layout(form)
-
-        return form
-
-    def validate_crispy_layout(self, form):
-        """
-        Validates that all fields in the form appear in the crispy layout.
-        Catches a tricky bug wherein some required fields specified on the form
-        are accidentally left out of an explicit layout, causing POSTS to fail.
-        """
-        
-        if hasattr(form.helper, 'layout'):
-            # all fields in the layout
-            layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
-            # and in the form
-            form_fields = set(form.fields.keys())
-
-            if form_fields - layout_fields:
-                msg = ('whoa there, make sure you include ALL fields specified by '
-                       '%s in the Crispy Form layout. %r are missing')
-                raise ImproperlyConfigured(msg % (self.__class__.__name__, form_fields-layout_fields))
-        
 
 class TripsYearMixin():
     """ 
@@ -160,12 +116,8 @@ class TripsYearMixin():
         return context
 
 
-class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
-    """
-    If the user is not logged in, redirect 
-    the login page. If the user is logged in, but does not have
-    database-viewing privileges, display a 403 Forbidden page.
-    """
+class DatabaseBaseMixin():
+    # TODO: remove this. you can get the model as view.model 
 
     def get_context_data(self, **kwargs):
         """
@@ -175,7 +127,7 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
         is useful for adding 'create' links to templates.
         """
         
-        context = super(DatabaseMixin, self).get_context_data(**kwargs)
+        context = super(DatabaseBaseMixin, self).get_context_data(**kwargs)
         if hasattr(self, 'model'):
             context['model'] = self.model
         return context
@@ -183,13 +135,17 @@ class DatabaseMixin(DatabasePermissionRequired, TripsYearMixin):
     def form_invalid(self, form):
         
         messages.error(self.request, 'Uh oh! There seems to be an error in the form.')
-        return super(DatabaseMixin, self).form_invalid(form)
+        return super(DatabaseBaseMixin, self).form_invalid(form)
 
-class DatabaseListView(DatabaseMixin, ListView):
 
+class DatabaseListView(DatabaseReadPermissionRequired, DatabaseBaseMixin, 
+                       TripsYearMixin, ListView):
     pass
 
-class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
+
+class DatabaseCreateView(DatabaseEditPermissionRequired, DatabaseBaseMixin,
+                         TripsYearMixin, CrispyFormMixin, CreateView):
+
     template_name = 'db/create.html'
 
     def post(self, request, *args, **kwargs):
@@ -219,7 +175,9 @@ class DatabaseCreateView(DatabaseMixin, CrispyFormMixin, CreateView):
         return reverse_detail_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
+class DatabaseUpdateView(DatabaseEditPermissionRequired, DatabaseBaseMixin, 
+                         TripsYearMixin, CrispyFormMixin, UpdateView):
+
     template_name ='db/update.html'
 
     def get_success_url(self):
@@ -242,7 +200,8 @@ class DatabaseUpdateView(DatabaseMixin, CrispyFormMixin, UpdateView):
         return helper
     
 
-class DatabaseDeleteView(DatabaseMixin, DeleteView):
+class DatabaseDeleteView(DatabaseEditPermissionRequired, DatabaseBaseMixin, 
+                         TripsYearMixin, DeleteView):
     template_name = 'db/delete.html'
 
     success_url_pattern = None
@@ -275,7 +234,8 @@ class DatabaseDeleteView(DatabaseMixin, DeleteView):
             return HttpResponseRedirect(request.path)
 
 
-class DatabaseDetailView(DatabaseMixin, DetailView):
+class DatabaseDetailView(DatabaseReadPermissionRequired, DatabaseBaseMixin,
+                         TripsYearMixin, DetailView):
 
     template_name = 'db/detail.html'
     
@@ -283,7 +243,7 @@ class DatabaseDetailView(DatabaseMixin, DetailView):
     fields = None
         
 
-class DatabaseLandingPage(DatabasePermissionRequired, TripsYearMixin, TemplateView):
+class DatabaseLandingPage(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
     """ 
     Landing page of a particular trips_year in the database
 
@@ -292,7 +252,7 @@ class DatabaseLandingPage(DatabasePermissionRequired, TripsYearMixin, TemplateVi
     template_name = 'db/landing_page.html'
 
 
-class RedirectToCurrentDatabase(DatabasePermissionRequired, RedirectView):
+class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     """ 
     Redirect to the trips database for the current year. 
 

@@ -11,7 +11,7 @@ from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Se
 from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
 from doc.applications.models import LeaderSupplement
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                          DatabaseListView, DatabaseDetailView, DatabaseMixin, 
+                          DatabaseListView, DatabaseDetailView, 
                           TripsYearMixin)
 from doc.permissions.views import ApplicationEditPermissionRequired
 from doc.db.urlhelpers import reverse_detail_url
