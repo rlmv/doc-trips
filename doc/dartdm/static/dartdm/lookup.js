@@ -15,9 +15,9 @@ $(".dartdmLookup").typeahead(null, {
 
 $( ".dartdmLookup" ).on("typeahead:selected", function (event, object, name) {
     // autofill hidden netid and name fields
-    var parent = $( this ).parent( ".twitter-typeahead" )
-    var netIdField = $( parent ).next( ".netIdField" ).val(object.id)
-    $(netIdField).next( ".nameWithAffilField" ).val(object.value)
+    var parent = $( this ).parent( ".twitter-typeahead" );
+    var netIdField = $( parent ).next( ".netIdField" ).val(object.id);
+    $(netIdField).next( ".nameWithAffilField" ).val(object.value);
 
-})
+});
 
