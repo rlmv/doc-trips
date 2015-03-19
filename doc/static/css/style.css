@@ -23,3 +23,7 @@ body {
 .filter-croos div {
     margin-bottom: 0;
 }
+
+th[data-sort] {
+    cursor:pointer;
+}

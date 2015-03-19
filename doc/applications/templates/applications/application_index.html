@@ -30,20 +30,36 @@
   </div>
 </div>
 
-<span class="glyphicon glyphicon-heart"></span> <i class="fa fa-camera-retro"></i> 
-
 <table class="table table-condensed">
   <thead>
-  <tr>
-    <th> Applications <span class="badge"> {{ applications.count }}</th>
-    <th data-sort="string"> <a href="">Status </a></th>
-    <th data-sort="string"> Leader Score </th>
-    <th> Croo Score </th>
-    <th> Leader Application </th>
-    <th> Croo Application </th>
-    <th/>
-    <th/>
-  </tr>
+    <tr>
+
+      <th data-sort="string-ins"> 
+	<span class="fa fa-sort"></span> 
+	Applications <span class="badge"> {{ applications.count }}
+      </th>
+
+      <th data-sort="string"> 
+	<span class="fa fa-sort"></span> 
+	Status
+      </th>
+
+      <th data-sort="float" data-sort-default="desc"> 
+	<span class="fa fa-sort"></span> 
+	Leader Score 
+      </th>
+
+      <th data-sort="float" data-sort-default="desc"> 
+	<span class="fa fa-sort"></span> 
+	Croo Score 
+      </th>
+
+      <th> Leader Application </th>
+      <th> Croo Application </th>
+      <th/>
+      <th/>
+
+    </tr>
   </thead>
   <tbody>
   {% for application in applications %}
@@ -52,8 +68,13 @@
 
     <td> <a href="{% url 'db:update_application_status' trips_year=application.trips_year pk=application.pk %}"> {{ application.status }} </a></td>
 
-    <td> {{ application.avg_leader_grade|default:"" }} </td>
-    <td> {{ application.avg_croo_grade|default:"" }} </td>
+    <td {% if not application.avg_leader_grade %} data-sort-value="0" {% endif %}> 
+      {{ application.avg_leader_grade|default:"" }} 
+    </td>
+
+    <td {% if not application.avg_croo_grade %} data-sort-value="0" {% endif %}> 
+      {{ application.avg_croo_grade|default:"" }} 
+    </td>
 
     <td> {{ application.leader_application_complete | ok_if_true }} </td>
     <td> {{ application.croo_application_complete | ok_if_true }} </td>
