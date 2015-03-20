@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
+{% block header %}
+<h2>Volunteer Portal </h2>
+{% endblock %}
+
 {% block content %}
+
+<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">Logout <span class="fa fa-sign-out"></span></a></p>
 
 <h4> Trip Leader and Croo applications </h4>
 {% if timetable.applications_available %}
@@ -9,19 +15,25 @@
 <p> Trip and Croo Applications not available at this time </p>
 {% endif %}
 
-{% if timetable.application_status_available %}
 <h4> Application Status </h4>
-<p>{{ status }}</p>
+{% if timetable.application_status_available %}
 <p>{{ status_description }}</p>
-
+{% else %}
+<p> The status of your application is not available at this time. </p>
 {% endif %}
 
+<h4> Trip Leader Assignment </h4>
 {% if timetable.leader_assignment_available %}
-
+<p> TODO: TRIP INFO  </p>
+{% else %}
+<p> Information about your assigned trip is not available at this time. </p>
 {% endif %}
 
+<h4> Croo Assignment </h4>
 {% if timetable.croo_assignment_available %}
-
+<p> </p>
+{% else %}
+<p> Information about your assigned Croo is not available at this time. </p>
 {% endif %}
 
 
