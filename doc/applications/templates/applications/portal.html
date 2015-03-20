@@ -4,12 +4,15 @@
 
 <h4> Trip Leader and Croo applications </h4>
 {% if timetable.applications_available %}
-<a href="{% url 'applications:apply' %}"> <span class="fa fa-edit"></span> Edit your application &mdash; available until {{ timetable.applications_close }}
+<a href="{% url 'applications:apply' %}"> <span class="fa fa-edit"></span> Edit your application &mdash; available until {{ timetable.applications_close }} </a>
 {% else %}
 <p> Trip and Croo Applications not available at this time </p>
 {% endif %}
 
 {% if timetable.application_status_available %}
+<h4> Application Status </h4>
+<p>{{ status }}</p>
+<p>{{ status_description }}</p>
 
 {% endif %}
 

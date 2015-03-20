@@ -57,7 +57,8 @@ class GeneralApplication(DatabaseModel):
     )
 
     # ---- administrative information. not seen by applicants ------
-    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, 
+                                  related_name='applications')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
                               verbose_name="Application status")
 
