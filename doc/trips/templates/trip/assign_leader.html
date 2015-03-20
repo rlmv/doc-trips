@@ -12,7 +12,7 @@
 
 <p><strong>Current Assigned Leaders:</strong>
   {% for leader in trip.leaders.all %}
-  {{ leader.application | detail_link }}
+  {{ leader|detail_link }}
   {% endfor %}
 </p>
 
