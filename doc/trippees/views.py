@@ -56,7 +56,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
     form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
 
     def dispatch(self, request, *args, **kwargs):
-        
+        """ Redirect to edit existing application """
         reg = Registration.objects.filter(
             trips_year=TripsYear.objects.current(),
             user=request.user).first()
@@ -64,10 +64,6 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
             return HttpResponseRedirect(reverse('trippees:edit_registration'))
             
         return super(Register, self).dispatch(request, *args, **kwargs)
-
-    def get_form(self, *args, **kwargs):
-        kwargs['trips_year'] = TripsYear.objects.current()
-        return super(Register, self).get_form(*args, **kwargs)
 
     def form_valid(self, form, **kwargs):
         """ 
@@ -100,10 +96,6 @@ class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, FormMessages
             trips_year=TripsYear.objects.current()
         )
 
-    def get_form(self, *args, **kwargs):
-        kwargs['trips_year'] = TripsYear.objects.current()
-        return super(EditRegistration, self).get_form(*args, **kwargs)
-           
  
 class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
     """

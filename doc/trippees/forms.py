@@ -3,6 +3,7 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
+from doc.db.models import TripsYear
 from doc.trippees.models import Registration
 from doc.trippees.layouts import RegistrationFormLayout
 from doc.trips.models import Section
@@ -22,8 +23,12 @@ class RegistrationForm(forms.ModelForm):
         model = Registration
 
     def __init__(self, *args, **kwargs):
-        trips_year = kwargs.pop('trips_year')
         super(RegistrationForm, self).__init__(*args, **kwargs)
+
+        trips_year = TripsYear.objects.current()
+        if kwargs.get('instance', None):
+            assert (kwargs.get('instance').trips_year == trips_year, 
+                    'trips_year needs to be passed in, in this case')
 
         self.fields['bus_stop'].queryset = Stop.objects.external(trips_year)
         
