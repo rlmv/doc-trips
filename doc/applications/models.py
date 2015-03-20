@@ -115,12 +115,12 @@ class GeneralApplication(DatabaseModel):
     def clean(self):
         """ Only allow Croo/Trip assignments if status == LEADER,CROO """
 
-        if self.status != self.LEADER and self.assigned_trip:
+        if self.assigned_trip and self.status != self.LEADER:
             msg = ("Volunteer with status %s cannot be assigned to lead trip. "
                    "Change status to %s")
             raise ValidationError(msg % (self.status, self.LEADER))
 
-        if self.status != self.CROO and self.assigned_croo:
+        if self.assigned_croo and self.status != self.CROO:
             msg = ("Volunteer with status %s cannot be assigned to Croo. " 
                    "Change status to %s")
             raise ValidationError(msg % (self.status, self.CROO))
