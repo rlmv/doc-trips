@@ -43,5 +43,6 @@ class TripLeaderAssignmentForm(forms.ModelForm):
                   'leader_pk': kwargs['instance'].pk}
         self.helper.form_action = reverse('db:assign_leader_to_trip', kwargs=params)
 
-        self.helper.add_input(Submit('submit', 'Add', css_class='btn-xs'))
+        label = 'Assign to %s' % self.initial['assigned_trip']
+        self.helper.add_input(Submit('submit', label, css_class='btn-xs'))
 
