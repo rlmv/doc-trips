@@ -65,11 +65,9 @@ class GeneralApplication(DatabaseModel):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
                               verbose_name="Application status")
     assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
-                                      related_name='leaders',
-                                      on_delete=models.PROTECT)
+                                      related_name='leaders', on_delete=models.PROTECT)
     assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings' ,
-                                      on_delete=models.PROTECT)
+                                      related_name='croolings', on_delete=models.PROTECT)
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
