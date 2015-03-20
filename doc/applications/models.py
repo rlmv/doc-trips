@@ -35,7 +35,7 @@ class GeneralApplication(DatabaseModel):
     """ 
     Contains shared information for Croo and Leader applications.
 
-    TODO: rename to Application? 
+    TODO: rename to Application? Volunteer? mv questionaire to separate model? 
     """
     
     class Meta:
@@ -52,7 +52,7 @@ class GeneralApplication(DatabaseModel):
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (CROO, 'Croo'),
-        # croo waitlist? - probably not a thing
+        # TODO: croo waitlist? - probably not a thing
         (LEADER, 'Leader'),
         (LEADER_WAITLIST, 'Leader Waitlist'),
         (REJECTED, 'Rejected'),
