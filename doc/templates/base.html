@@ -1,12 +1,17 @@
 
-
 {% load staticfiles %}
+{% load pipeline %}
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{% static 'icons/favicon.ico' %}"/>
+
+{% block css %}
+{% stylesheet "base" %}
+{% endblock %}
+
 </head>
 
 <body>
@@ -52,9 +57,7 @@
   {% block footer %}
   {% endblock footer %}
 
-  {% block assets %}
-  {% load pipeline %}
-  {% stylesheet "base" %}
+  {% block javascript %}
   {% javascript "base" %}
   {% endblock %}
 
