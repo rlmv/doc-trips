@@ -2,22 +2,24 @@
 from django.conf.urls import patterns, url, include
 
 from doc.db.urlhelpers import DB_REGEX
-from doc.applications.views.application import (NewApplication, ContinueApplication, 
-                                                SetupApplication,
-                                                ApplicationDatabaseListView, 
-                                                ApplicationDatabaseDetailView,
-                                                ApplicationDatabaseUpdateView,
-                                                ApplicationAdminUpdateView,
-                                                LeaderApplicationAdminUpdateView)
-from doc.applications.views.grading import(RedirectToNextGradableCrooApplication,
-                                           RedirectToNextGradableCrooApplicationForQualification,
-                                           GradeCrooApplication,
-                                           GradeCrooApplicationForQualification,
-                                           NoCrooApplicationsLeftToGrade,
-                                           RedirectToNextGradableLeaderApplication,
-                                           GradeLeaderApplication,
-                                           NoLeaderApplicationsLeftToGrade,
-                                           GraderLandingPage)
+from doc.applications.views.application import (
+    NewApplication, ContinueApplication, 
+    SetupApplication,
+    ApplicationDatabaseListView, 
+    ApplicationDatabaseDetailView,
+    ApplicationDatabaseUpdateView,
+    ApplicationAdminUpdateView,
+    LeaderApplicationAdminUpdateView)
+from doc.applications.views.grading import(
+    RedirectToNextGradableCrooApplication,
+    RedirectToNextGradableCrooApplicationForQualification,
+    GradeCrooApplication,
+    GradeCrooApplicationForQualification,
+    NoCrooApplicationsLeftToGrade,
+    RedirectToNextGradableLeaderApplication,
+    GradeLeaderApplication,
+    NoLeaderApplicationsLeftToGrade,
+    GraderLandingPage)
 from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import VolunteerPortalView
 
