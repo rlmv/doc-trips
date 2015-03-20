@@ -52,6 +52,10 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
 
+    def get_form(self, *args, **kwargs):
+        kwargs['trips_year'] = TripsYear.objects.current()
+        return super(Register, self).get_form(*args, **kwargs)
+
     def form_valid(self, form, **kwargs):
         """ 
         Add the registering user to the registration 

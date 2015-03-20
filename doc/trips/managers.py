@@ -27,3 +27,6 @@ class SectionManager(models.Manager):
 
     def not_local(self, trips_year):
         return self.filter(trips_year=trips_year, is_local=False)
+        
+    def international(self, trips_year):
+        return self.filter(trips_year=trips_year, is_international=True)

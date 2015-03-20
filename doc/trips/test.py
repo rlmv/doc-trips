@@ -95,4 +95,12 @@ class SectionManagerTestCase(TripsTestCase):
         section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
         
         self.assertEqual([section2], list(Section.objects.not_local(trips_year)))
+    
+
+    def test_international(self):
         
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_international=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_international=False)
+        
+        self.assertEqual([section1], list(Section.objects.international(trips_year)))

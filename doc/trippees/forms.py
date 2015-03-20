@@ -4,24 +4,41 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, HTML, Div, Row, Fieldset, Field
 
 from doc.trippees.models import Registration
+from doc.trips.models import Section
 
+def join_with_and(iter):
+    l = list(map(str, iter))
+    if len(l) == 0:
+        return ""
+    elif len(l) == 1:
+        return l[0]
+    return ", ".join(l[:-1]) + " and " + l[-1]
 
 class RegistrationForm(forms.ModelForm):
     
     # TODO: restrict Section and TripType fields to trips_year
     # (and any other ForeignKeys
+
+    # pass the trips_year to the form
     
     class Meta:
         model = Registration
 
     def __init__(self, *args, **kwargs):
+        trips_year = kwargs.pop('trips_year')
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.layout = RegistrationFormLayout()
+        self.helper.layout = RegistrationFormLayout(trips_year)
 
 class RegistrationFormLayout(Layout):
 
-    def __init__(self):
+    def __init__(self, trips_year):
+
+        # TODO: mv this up the call hierarchy?
+        local_sections = join_with_and(Section.objects.local(trips_year))
+        not_local_sections = join_with_and(Section.objects.not_local(trips_year))
+        international_sections = join_with_and(Section.objects.international(trips_year))
+        
         super(RegistrationFormLayout, self).__init__(
             HTML("<p><strong>DOC Trips Mission:</strong> DOC First-year Trips exist to give all incoming students an exciting and unforgettable welcome to the Dartmouth community. Trips provides them with an introduction to the College's traditions and spirit, as well as a safe and positive outdoor experience through the Dartmouth Outing Club. Trips creates common ground for first-year students, a space to build lasting friendships and social support systems, and facilitates a connection to dedicated upperclass students who act as mentors and friends at Dartmouth and beyond.</p>"),
             Fieldset(
@@ -45,9 +62,9 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Section', 
                 HTML("<p>Because we can’t have a thousand students all arrive on the same day, we stagger our program over ten sections.</p>"
-                     "<p> Sections A, B, C, D are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for at least one, if not more, of these sections. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
-                     "<p> Sections E, F, G, H, I and J are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
-                     "<p> Sections E and F are the sections highly recommended for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of international student orientation. </p> "
+                     "<p> " + local_sections + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for at least one, if not more, of these sections. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
+                     "<p> " + not_local_sections + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
+                     "<p> " + international_sections + " are the sections highly recommended for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of international student orientation. </p> "
                      "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned, it is incredibly difficult for us to change it, especially from an earlier section to a later one! </strong></p>"
                  ),
                 # TODO : section preferences
