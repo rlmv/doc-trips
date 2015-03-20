@@ -86,7 +86,7 @@ class IncomingStudent(DatabaseModel):
 class Registration(DatabaseModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-
+    
     # name not just from netid / college info?
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
@@ -98,11 +98,12 @@ class Registration(DatabaseModel):
     # street2 = models.CharField(
 
     previous_school = models.CharField('high school, or most recent school', max_length=255)
-    home_phone = models.CharField(max_length=20)
-    cell_phone = models.CharField(max_length=20)
+    home_phone = models.CharField(max_length=20, blank=True)
+    cell_phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField('email address', max_length=254)
-    guardian_email = models.EmailField('parent/guardian email', max_length=254)
-    
+    guardian_email = models.EmailField('parent/guardian email', blank=True, max_length=254)
+
+    # --- sections and triptypes -----
     # TODO: exchange/transfer/native/etc fields.
     # fall varsity athlete. --> choices or ForeignKey?
     
@@ -112,7 +113,7 @@ class Registration(DatabaseModel):
     # trip type preferences - they have a First Choice option in the old DB
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
-    
+
     # ---- accomodations -----
     
     medical_conditions = models.TextField("Do you have any medical conditions, past injuries, disabilities or allergies that we should be aware of? Please describe any injury, condition, disability, or illness which we should take into consideration in assigning you to a trip")
@@ -125,10 +126,10 @@ class Registration(DatabaseModel):
 
 
     #  ----- physical condition and experience ------
-    regular_exercise = models.CharField(max_length=2, choices=YES_NO_CHOICES)
-    physical_activities = models.TextField("Please describe the types of physical activities you enjoy, including frequency (daily? weekly?) and extent (number of miles or hours)")
-    other_activities = models.TextField("Do you do any other activities that might assist us in assign you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?")
-    summer_plans = models.TextField("Please describe your plans for the summer (working at home, volunteering, etc.)")
+    regular_exercise = models.CharField("Do you do enjoy cardiovascular exercise (running, biking, swimming, sports, etc.) on a regular basis?", max_length=2, choices=YES_NO_CHOICES)
+    physical_activities = models.TextField("Please describe the types of physical activities you enjoy, including frequency (daily? weekly?) and extent (number of miles or hours)", blank=True)
+    other_activities = models.TextField("Do you do any other activities that might assist us in assigning you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?", blank=True)
+    summer_plans = models.TextField("Please describe your plans for the summer (working at home, volunteering, etc.)", blank=True)
 
     SWIMMING_ABILITY_CHOICES = (
         ('NON_SWIMMER', 'Non-Swimmer'),
