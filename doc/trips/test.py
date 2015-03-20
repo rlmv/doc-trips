@@ -7,7 +7,7 @@ from model_mommy import mommy
 from doc.trips.models import ScheduledTrip, Section, TripTemplate
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 
-from doc.test.fixtures import WebTestCase
+from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
 
 class ScheduledTripTestCase(WebTestCase):
     
@@ -76,9 +76,23 @@ class QuickTestViews(WebTestCase):
         for name in names:
             res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
 
+
+class SectionManagerTestCase(TripsTestCase):
+    
+    def test_local(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
+        
+        self.assertEqual([section1], list(Section.objects.local(trips_year)))
         
 
-
-                            
+    def test_not_local(self):
         
-
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
+        
+        self.assertEqual([section2], list(Section.objects.not_local(trips_year)))
+        
