@@ -272,6 +272,7 @@ class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidM
     model = GeneralApplication
     form_class = TripLeaderAssignmentForm
     lookup_url_kwarg = 'leader_pk'
+    template_name = 'db/update.html'
 
     def get_form_valid_message(self):
         """ Flash success message """

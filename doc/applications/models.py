@@ -116,13 +116,13 @@ class GeneralApplication(DatabaseModel):
         """ Only allow Croo/Trip assignments if status == LEADER,CROO """
 
         if self.assigned_trip and self.status != self.LEADER:
-            msg = ("Volunteer with status %s cannot be assigned to lead trip. "
-                   "Change status to %s")
+            msg = ("Volunteer with status %s cannot also lead a trip. "
+                   "Change status to %s or remove Trip assignment")
             raise ValidationError(msg % (self.status, self.LEADER))
 
         if self.assigned_croo and self.status != self.CROO:
-            msg = ("Volunteer with status %s cannot be assigned to Croo. " 
-                   "Change status to %s")
+            msg = ("Volunteer with status %s cannot also be on a Croo. " 
+                   "Change status to %s or remove Croo assignment")
             raise ValidationError(msg % (self.status, self.CROO))
 
 
