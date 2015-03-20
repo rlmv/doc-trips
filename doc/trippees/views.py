@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, FormMessagesMixin
 
 from doc.trippees.models import Registration, IncomingStudent
 from doc.trippees.forms import RegistrationForm, IncomingStudentsForm
@@ -43,7 +43,7 @@ class RegistrationNotAvailable(TemplateView):
     template_name = 'trippees/not_available.html'
 
 
-class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
+class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, CreateView):
     """ 
     Register for trips 
     """
@@ -51,6 +51,19 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
     template_name = 'trippees/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
+
+    form_valid_message = "You've successfully registered"
+    form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        reg = Registration.objects.filter(
+            trips_year=TripsYear.objects.current(),
+            user=request.user).first()
+        if reg: 
+            return HttpResponseRedirect(reverse('trippees:edit_registration'))
+            
+        return super(Register, self).dispatch(request, *args, **kwargs)
 
     def get_form(self, *args, **kwargs):
         kwargs['trips_year'] = TripsYear.objects.current()
@@ -68,7 +81,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, CreateView):
         return super(Register, self).form_valid(form, **kwargs)
 
 
-class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, UpdateView):
+class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, UpdateView):
     """
     Edit a trippee registration.
     """
@@ -77,12 +90,19 @@ class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, UpdateView):
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
 
+    form_valid_message = "You've successfully registered"
+    form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+
     def get_object(self):
         """ Get registration for user """        
         return get_object_or_404(
             self.model, user=self.request.user,
             trips_year=TripsYear.objects.current()
         )
+
+    def get_form(self, *args, **kwargs):
+        kwargs['trips_year'] = TripsYear.objects.current()
+        return super(EditRegistration, self).get_form(*args, **kwargs)
            
  
 class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def YesNoField(*args, **kwargs):
     # Use a boolean field instead?
     kwargs['choices'] = YES_NO_CHOICES
-    kwargs['max_length'] = 2
+    kwargs['max_length'] = 3
     return models.CharField(*args, **kwargs)
     
 
@@ -145,7 +145,7 @@ class Registration(DatabaseModel):
 
     hiking_experience_description = models.TextField("Please describe your hiking experience. Where have you hiked? Was it mountainous or flat? Have you done day hikes? Have you hiked while carrying food and shelter with you? Please be specific: we want to physically challenge you as little or as much as you want. Be honest so that we can place you on the right trip for YOU. If you have questions about this, please let us know.", blank=True)
 
-    has_boating_experience = YesNoField("Have you ever been on an overnight or extended canoe or kayak trip?", default="NO")
+    has_boating_experience = YesNoField("Have you ever been on an overnight or extended canoe or kayak trip?", blank=True)
     boating_experience = models.TextField("Please describe your canoe or kayak trip experience. Have you paddled on flat water? Have you paddled on flat water? When did you do these trips and how long were they?", blank=True)
     other_boating_experience = models.TextField("Please describe any other paddling experience you have had. Be specific regarding location, type of water, and distance covered.", blank=True)
 
@@ -167,9 +167,9 @@ class Registration(DatabaseModel):
 
     financial_assistance = YesNoField("Are you requesting financial assistance from DOC Trips? If 'yes' we will contact you in July with more information about your financial assistance.")
     waiver = YesNoField("I certify that I have read this assumption of risk and the accompanying registration materials. I approve participation for the student indicated above and this serves as my digital signature of this release, waiver & acknowledgement.")
-    doc_membership = YesNoField()
-    green_fund_donation = models.PositiveSmallIntegerField()
-    final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers &mdash; anything goes! All responses will remain anonymous.")
+    doc_membership = YesNoField("Would you like to purchase a DOC membership?")
+    green_fund_donation = models.PositiveSmallIntegerField(blank=True, null=True)
+    final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers &mdash; anything goes! All responses will remain anonymous.", blank=True)
 
 
 @receiver(post_save, sender=Registration)
