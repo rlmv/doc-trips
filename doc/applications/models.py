@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel, TripsYear
 from doc.trips.models import ScheduledTrip, Section, TripType
@@ -109,6 +110,20 @@ class GeneralApplication(DatabaseModel):
     trainings = models.BooleanField(default=False, verbose_name="I understand that if I am accepted as a Crooling or Trip Leader I will be required to get First Aid and CPR training, as well as attend croo and leader specific training. I understand that if I do not meet these requirements, I will not be able to be on a Croo/lead a trip.")
     spring_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the spring term.")
     summer_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the summer term.")
+
+    
+    def clean(self):
+        """ Only allow Croo/Trip assignments if status == LEADER,CROO """
+
+        if self.status != self.LEADER and self.assigned_trip:
+            msg = ("Volunteer with status %s cannot be assigned to lead trip. "
+                   "Change status to %s")
+            raise ValidationError(msg % (self.status, self.LEADER))
+
+        if self.status != self.CROO and self.assigned_croo:
+            msg = ("Volunteer with status %s cannot be assigned to Croo. " 
+                   "Change status to %s")
+            raise ValidationError(msg % (self.status, self.CROO))
 
 
     # Croo and Leader applications are considered complete if the questionaire

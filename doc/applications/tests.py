@@ -16,6 +16,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      QualificationTag, 
                                      SkippedLeaderGrade, SkippedCrooGrade)
 from doc.timetable.models import Timetable
+from doc.croos.models import Croo
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
 from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
@@ -58,6 +59,39 @@ class ApplicationTestMixin():
                               document='some/file')
         
         return application
+
+
+class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
+
+    def test_must_be_LEADER_to_be_assigned_trip(self):
+        
+        trips_year = self.init_current_trips_year()
+        for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
+            application = mommy.make(GeneralApplication, 
+                                     status=getattr(GeneralApplication, status), 
+                                     trips_year=trips_year)
+            application.assigned_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+            with self.assertRaises(ValidationError):
+                application.full_clean()
+        
+        application.status = GeneralApplication.LEADER
+        application.full_clean()
+        
+
+    def test_must_be_CROO_to_be_assigned_croo(self):
+
+        trips_year = self.init_current_trips_year()
+        for status in ['PENDING', 'LEADER_WAITLIST', 'LEADER', 'REJECTED', 'CANCELED']:
+            application = mommy.make(GeneralApplication, 
+                                     status=getattr(GeneralApplication, status), 
+                                     trips_year=trips_year)
+            application.assigned_croo = mommy.make(Croo, trips_year=trips_year)
+            with self.assertRaises(ValidationError):
+                application.full_clean()
+        
+        application.status = GeneralApplication.CROO
+        application.full_clean()
+        
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
