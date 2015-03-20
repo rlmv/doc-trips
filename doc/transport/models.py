@@ -2,6 +2,7 @@
 from django.db import models
 
 from doc.db.models import DatabaseModel
+from doc.transport.managers import StopManager
 
 TRANSPORT_CATEGORIES = (
     ('INTERNAL', 'Internal'),
@@ -13,6 +14,8 @@ class Stop(DatabaseModel):
 
     class Meta:
         ordering = ['category', 'route', 'name']
+
+    objects = StopManager()
 
     name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
