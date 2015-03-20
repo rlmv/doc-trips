@@ -20,7 +20,7 @@
     <td class="col-sm-3"> {{ trip|detail_link }}: {{ trip.template.description_summary }} </td>
     <td class="col-sm-3"> 
       {% for leader in trip.leaders.all %} 
-      {{ leader.application|detail_link }} <br>
+      {{ leader|detail_link }} <br>
       {% endfor %}
       <a href="{% url 'db:assign_leader' trips_year=trips_year trip=trip.pk %}">add</a>
     </td>

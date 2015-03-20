@@ -9,7 +9,7 @@ from braces.views import FormValidMessageMixin
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
-from doc.applications.models import LeaderSupplement
+from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                           DatabaseListView, DatabaseDetailView, 
                           TripsYearMixin)
@@ -202,7 +202,7 @@ class TripLeaderIndexView(DatabaseListView):
         
         return context
         
-    
+        
 class AssignTripLeaderView(DatabaseListView):
     """ 
     Assign a leader to a ScheduledTrip. 
@@ -213,7 +213,7 @@ class AssignTripLeaderView(DatabaseListView):
     is already assigned to a trip.
     """
 
-    model = LeaderSupplement
+    model = GeneralApplication
     template_name = 'trip/assign_leader.html'
     context_object_name = 'leader_applications'
 
@@ -233,30 +233,34 @@ class AssignTripLeaderView(DatabaseListView):
                 form = None
             else:
                 form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
-                                                instance=leader.application)
+                                                instance=leader)
+
+            ls = leader.leader_supplement 
                 
-            if trip.template.triptype in leader.preferred_triptypes.all():
+            if trip.template.triptype in ls.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
-            elif trip.template.triptype in leader.available_triptypes.all():
+            elif trip.template.triptype in ls.available_triptypes.all():
                 triptype_preferrence = 'available'
 
-            if trip.section in leader.preferred_sections.all():
+            if trip.section in ls.preferred_sections.all():
                 section_preferrence = 'prefer'
-            elif trip.section in leader.available_sections.all():
+            elif trip.section in ls.available_sections.all():
                 section_preferrence = 'available'
                 
             return (leader, form, triptype_preferrence, section_preferrence)
         
         # prefetch M2M fields
         leaders = (self.object_list
-                   .prefetch_related('preferred_triptypes')
-                   .prefetch_related('available_triptypes')
-                   .prefetch_related('preferred_sections')
-                   .prefetch_related('available_sections'))
+                   .prefetch_related('leader_supplement__preferred_triptypes')
+                   .prefetch_related('leader_supplement__available_triptypes')
+                   .prefetch_related('leader_supplement__preferred_sections')
+                   .prefetch_related('leader_supplement__available_sections'))
         context[self.context_object_name] = map(process_leader, leaders)
         
         return context
 
+
+# should these volunteer specific views go to the applications app?
 
 class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixin, 
                                    TripsYearMixin, UpdateView):
@@ -265,13 +269,13 @@ class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidM
 
     POST target for AssignTripLeaderView 
     """
-    model = LeaderSupplement
+    model = GeneralApplication
     form_class = TripLeaderAssignmentForm
     lookup_url_kwarg = 'leader_pk'
 
     def get_form_valid_message(self):
         """ Flash success message """
-        return '{} assigned to lead {}'.format(self.object.application.applicant, 
+        return '{} assigned to lead {}'.format(self.object.applicant, 
                                                self.object.assigned_trip)
 
     def get_success_url(self):
@@ -284,7 +288,7 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixi
                          TripsYearMixin, UpdateView):
     """ Remove a leader's assigned trip """
 
-    model = LeaderSupplement
+    model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
     template_name = 'trip/remove_leader_assignment.html'
 
@@ -300,11 +304,11 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixi
         return form
 
     def get_form_valid_message(self):
-        return 'Leader {} removed from Trip {}'.format(self.object.application.applicant,
+        return 'Leader {} removed from Trip {}'.format(self.object.applicant,
                                                        self._assigned_trip)
         
     def get_success_url(self):
-        return reverse_detail_url(self.object.application)
+        return reverse_detail_url(self.object)
         
         
     

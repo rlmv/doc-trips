@@ -6,7 +6,7 @@ from doc.db.models import DatabaseModel, TripsYear
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.croos.models import Croo
 from doc.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
-from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager
+from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager, GeneralApplicationManager
 
 
 class ApplicationInformation(DatabaseModel):
@@ -36,9 +36,11 @@ class GeneralApplication(DatabaseModel):
 
     TODO: rename to Application? 
     """
-
+    
     class Meta:
         ordering = ('applicant',)
+
+    objects = GeneralApplicationManager()
 
     PENDING = 'PENDING'
     CROO = 'CROO'

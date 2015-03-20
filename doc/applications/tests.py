@@ -207,7 +207,7 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertIsNone(next)
 
 
-class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
+class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -221,8 +221,8 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [app])
 
     def test_prospective_leader_with_available_choices(self):
 
@@ -233,8 +233,8 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.available_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [app])
 
     def test_with_pending_status(self):
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
@@ -245,7 +245,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_without_section_preference(self):
@@ -257,7 +257,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_without_triptype_preference(self):
@@ -268,7 +268,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_sections.add(trip.section)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_prospective_leaders_are_distinct(self):
@@ -283,9 +283,9 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.available_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(len(prospects), 1)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        self.assertEquals(list(prospects), [app])
        
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):

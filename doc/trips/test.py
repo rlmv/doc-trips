@@ -76,6 +76,8 @@ class QuickTestViews(WebTestCase):
         for name in names:
             res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
 
+        
+
 
                             
         
