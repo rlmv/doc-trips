@@ -5,6 +5,7 @@ from crispy_forms.layout import Submit, Layout, HTML, Div, Row, Fieldset, Field
 
 from doc.trippees.models import Registration
 from doc.trips.models import Section
+from doc.transport.models import Stop
 
 def join_with_and(iter):
     l = list(map(str, iter))
@@ -13,6 +14,7 @@ def join_with_and(iter):
     elif len(l) == 1:
         return l[0]
     return ", ".join(l[:-1]) + " and " + l[-1]
+
 
 class RegistrationForm(forms.ModelForm):
     
@@ -27,8 +29,12 @@ class RegistrationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         trips_year = kwargs.pop('trips_year')
         super(RegistrationForm, self).__init__(*args, **kwargs)
+
+        self.fields['bus_stop'].queryset = Stop.objects.external(trips_year)
+        
         self.helper = FormHelper(self)
         self.helper.layout = RegistrationFormLayout(trips_year)
+
 
 class RegistrationFormLayout(Layout):
 
@@ -112,7 +118,56 @@ class RegistrationFormLayout(Layout):
                 Field('other_activities', rows=3),
                 Field('summer_plans', rows=3),
             ),
+            Fieldset(
+                'Swimming Experience',
+                HTML("<p> Completing a 50 yard swim is a Dartmouth graduation requirement, and is also required for participation in some of our trips, so every incoming student will have the opportunity to take a swim test the day they arrive. </p>"),
+                'swimming_ability',
+                HTML("<p> If you cannot swim or would rather not take the swim test, please indicate that by answering the above question with 'non-swimmer'. Don't worry, there are plenty of chances to complete the 50-yard swim graduation requirement throughout your time at Dartmouth. This way we can assign you to a trip that does not require you to have passed a swim test. <i>And don't worry! Over half the trips don't involve swimming!</i> <p>"),
+            ),
+            Fieldset(
+                'Hiking and Camping Experience',
+                'camping_experience',
+                'hiking_experience',
+                'hiking_experience_description',
+            ),
+            Fieldset(
+                'Canoeing & Kayaking Experience',
+                HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Canoeing</strong> trip or a <strong>Kayaking</strong> trip. Please note that NO experience is needed for these types of trips; we just want to get a sense of your comfort level with these activites. </p>"),
+                'has_boating_experience',
+                'boating_experience', 
+                'other_boating_experience',
+            ),
+            Fieldset(
+                'Fishing Experience',
+                HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Fishing</strong> trip. Fishing experience is NOT required to participate in this trip. </p>"),
+                'fishing_experience',
+            ),
+            Fieldset(
+                'Horseback Riding Experience',
+                HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Horseback Riding</strong> trip. </p>"),
+                'horseback_riding_experience',
+            ),
+            Fieldset(
+                'Mountain Biking Experience',
+                HTML("<p> Complete this section only if you indicated above that you preferred or were available for a trip that involved <strong>Biking</strong>. Prior mountain biking experience is NOT required to participate in this trip.</p>"),
+                'mountain_biking_experience',
+            ),
+            Fieldset(
+                'Anything else?',
+                'anything_else',
+            ),
+            
+            Fieldset(
+                'Bus Option',
+                HTML("<p> Students in " + local_sections + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast elect the bus option and come on " + local_sections + " if at all possible. </p>"
+                     "<p><strong> These buses do not pick up at the airport.</strong> They are for students who live in the Northeast, NOT students who will be flying to Boston or Manchester airports. (Transportation from the airport must be arranged on your own.)</p>"
+                     "<p>If you live in the Northeast, we ask you to elect the bus option unless: <ul> <li> you are absolutely unavailable for " + local_sections + ", or </li> <li>none of the stops are within 75 miles of you, or </li> <li> you live close enough to have relatively easy transportation to/from Hanover for you and your trip gear </li> </ul> </p>"
+                     "<p> Bus fares vary by location (see bus options below for exact price). Financial assistance is available for bus fares. If the cost of transportation/Trips may prevent you from participating, please contact us & we can help! See below for more information. </p>"),
+                'bus_stop', 
+                HTML('<p> If our bus option does not work for you, there other public transportation services such as the train (<a href="http://www.amtrak.com/home">Amtrak</a>) or bus (<a href="https://www.greyhound.com/">Greyhound</a>, <a href="http://www.dartmouthcoach.com/">Dartmouth Coach</a>). We consider these options the most environmentally friendly ways to get here, so check them out!</p>'),
 
+            ),
+            
             Submit('submit', 'Submit'),
         )
 

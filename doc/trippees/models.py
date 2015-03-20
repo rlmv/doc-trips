@@ -137,7 +137,7 @@ class Registration(DatabaseModel):
         ('COMPETENT', 'Competent'),
         ('EXPERT', 'Expert'),
     )
-    swimming_ability = models.CharField(max_length=20, choices=SWIMMING_ABILITY_CHOICES)
+    swimming_ability = models.CharField("Please rate yourself as a swimmer", max_length=20, choices=SWIMMING_ABILITY_CHOICES)
     
     camping_experience = YesNoField("Have you ever spent a night camping in the outdoors?")
 
@@ -145,23 +145,24 @@ class Registration(DatabaseModel):
 
     hiking_experience_description = models.TextField("Please describe your hiking experience. Where have you hiked? Was it mountainous or flat? Have you done day hikes? Have you hiked while carrying food and shelter with you? Please be specific: we want to physically challenge you as little or as much as you want. Be honest so that we can place you on the right trip for YOU. If you have questions about this, please let us know.", blank=True)
 
-    has_boating_experience = YesNoField("Have you ever been on an overnight or extended canoe or kayak trip?")
-    boating_experience = models.TextField("Please describe your canoe or kayak trip experience. Have you paddled on flat water? Have you paddled on flat water? When did you do these trips and how long were they?")
-    other_boating_experience = models.TextField("Please describe any other paddling experience you have had. Be specific regarding location, type of water, and distance covered.")
+    has_boating_experience = YesNoField("Have you ever been on an overnight or extended canoe or kayak trip?", default="NO")
+    boating_experience = models.TextField("Please describe your canoe or kayak trip experience. Have you paddled on flat water? Have you paddled on flat water? When did you do these trips and how long were they?", blank=True)
+    other_boating_experience = models.TextField("Please describe any other paddling experience you have had. Be specific regarding location, type of water, and distance covered.", blank=True)
 
-    fishing_experience = models.TextField("Please describe your fishing experience.")
+    fishing_experience = models.TextField("Please describe your fishing experience.", blank=True)
     
-    horseback_riding_experience = models.TextField("Please describe your riding experience and ability level. What riding styles are you familiar with? How recently have you ridden horses on a regular basis? NOTE: Prior exposure and some experience is preferred for this trip.")
+    horseback_riding_experience = models.TextField("Please describe your riding experience and ability level. What riding styles are you familiar with? How recently have you ridden horses on a regular basis? NOTE: Prior exposure and some experience is preferred for this trip.", blank=True)
 
-    mountain_biking_experience = models.TextField("Please describe your biking experience and ability level. Have you done any biking off of paved trails? How comfortable are you riding on dirt and rocks?")
+    mountain_biking_experience = models.TextField("Please describe your biking experience and ability level. Have you done any biking off of paved trails? How comfortable are you riding on dirt and rocks?", blank=True)
 
-    anything_else = models.TextField("Is there any other information you'd like to provide (anything helps!) that would assist us in assigning you to a trip?")
+    anything_else = models.TextField("Is there any other information you'd like to provide (anything helps!) that would assist us in assigning you to a trip?", blank=True)
 
 
     # ----- other deets ----
 
     # TODO: limit choices in the form to current trip_year and EXTRNAL stops
     bus_stop = models.ForeignKey(Stop, on_delete=models.PROTECT, 
+                                 blank=True, null=True,
                                  verbose_name="Where would you like to be bussed from/to?")
 
     financial_assistance = YesNoField("Are you requesting financial assistance from DOC Trips? If 'yes' we will contact you in July with more information about your financial assistance.")
