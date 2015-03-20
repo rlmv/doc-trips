@@ -38,8 +38,10 @@ class TripLeaderAssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripLeaderAssignmentForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.form_action = reverse('db:assign_leader_to_trip',
-                                          kwargs={'trips_year': kwargs['instance'].trips_year.year,
-                                                  'leader_pk': kwargs['instance'].pk})
+
+        params = {'trips_year': kwargs['instance'].trips_year.year,
+                  'leader_pk': kwargs['instance'].pk}
+        self.helper.form_action = reverse('db:assign_leader_to_trip', kwargs=params)
+
         self.helper.add_input(Submit('submit', 'Add', css_class='btn-xs'))
 
