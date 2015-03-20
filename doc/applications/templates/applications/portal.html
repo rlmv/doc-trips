@@ -24,14 +24,14 @@
 
 <h4> Trip Leader Assignment </h4>
 {% if timetable.leader_assignment_available %}
-<p> TODO: TRIP INFO  </p>
+<p> TODO: TRIP INFO  {{ application.assigned_trip }} </p>
 {% else %}
 <p> Information about your assigned trip is not available at this time. </p>
 {% endif %}
 
 <h4> Croo Assignment </h4>
 {% if timetable.croo_assignment_available %}
-<p> </p>
+<p>TODO: CROO INFO {{ application.assigned_croo }}</p>
 {% else %}
 <p> Information about your assigned Croo is not available at this time. </p>
 {% endif %}

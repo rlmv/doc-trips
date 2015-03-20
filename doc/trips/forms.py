@@ -6,7 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from doc.applications.models import LeaderSupplement
+from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.trips.models import Section
 
 
@@ -29,7 +29,7 @@ class SectionForm(forms.ModelForm):
 class TripLeaderAssignmentForm(forms.ModelForm):
     
     class Meta:
-        model = LeaderSupplement
+        model = GeneralApplication
         fields = ['assigned_trip']
         widgets = {
             'assigned_trip': forms.HiddenInput(),

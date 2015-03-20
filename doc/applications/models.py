@@ -61,6 +61,12 @@ class GeneralApplication(DatabaseModel):
                                   related_name='applications')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
                               verbose_name="Application status")
+    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
+                                      related_name='leaders',
+                                      on_delete=models.PROTECT)
+    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
+                                      related_name='croolings' ,
+                                      on_delete=models.PROTECT)
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
@@ -150,10 +156,6 @@ class LeaderSupplement(DatabaseModel):
     wilderness_skills = models.DateField(null=True, blank=True)
     first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
 
-    # ----- admin ---------
-    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
-                                      related_name='leaders',
-                                      on_delete=models.PROTECT)
 
     def get_preferred_trips(self):
         """ All scheduled trips which this leader prefers to go lead. """
@@ -217,19 +219,7 @@ class CrooSupplement(DatabaseModel):
     kitchen_lead_qualifications = models.TextField(blank=True, verbose_name='If you are willing to be a Kitchen Witch/Wizard, please briefly describe your qualifications for the position (eg. on Moosilauke Lodge crew spring 2014, experience working in industrial kitchens, experience preparing and organizing food for large groups.)')
     
     # -------- driving -------
-
-    # ----- backend fields -------
-    # only seen by directors in the database.
-    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings' ,
-                                      on_delete=models.PROTECT)
-    potential_croos = models.ManyToManyField(Croo, blank=True, 
-                                             related_name='potential_croolings')
-    safety_lead_qualified = models.BooleanField(default=False)
-    safety_lead = models.BooleanField(default=False)
-
-    kitchen_lead_qualified = models.BooleanField(default=False)
-    kitchen_lead = models.BooleanField(default=False)
+    # TODO: mv from document?
 
 
     def average_grade(self):

@@ -233,7 +233,7 @@ class AssignTripLeaderView(DatabaseListView):
                 form = None
             else:
                 form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
-                                                instance=leader)
+                                                instance=leader.application)
                 
             if trip.template.triptype in leader.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
