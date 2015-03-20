@@ -10,12 +10,14 @@ from doc.transport.models import Stop
 
 
 class RegistrationForm(forms.ModelForm):
+    """
+    Form for incoming student trippee registration.
     
     # TODO: restrict Section and TripType fields to trips_year
     # (and any other ForeignKeys
+    TODO: pull trips_cost, etc from DB.
+    """
 
-    # pass the trips_year to the form
-    
     class Meta:
         model = Registration
 

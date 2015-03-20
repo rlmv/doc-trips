@@ -6,6 +6,8 @@ crispy_form layouts
 """
 
 def join_with_and(iter):
+    """ Given a list ["A", "B", "C"] return "A, B and C" """
+
     l = list(map(str, iter))
     if len(l) == 0:
         return ""
@@ -29,7 +31,7 @@ class RegistrationFormLayout(Layout):
             HTML("<p><strong>DOC Trips Mission:</strong> DOC First-year Trips exist to give all incoming students an exciting and unforgettable welcome to the Dartmouth community. Trips provides them with an introduction to the College's traditions and spirit, as well as a safe and positive outdoor experience through the Dartmouth Outing Club. Trips creates common ground for first-year students, a space to build lasting friendships and social support systems, and facilitates a connection to dedicated upperclass students who act as mentors and friends at Dartmouth and beyond.</p>"),
             Fieldset(
                 'General Information',
-                'name',
+                Field('name', title='hi'),
                 'gender',
                 # show existing contact info?
                 # TODO: address contact info
@@ -162,7 +164,7 @@ class RegistrationFormLayout(Layout):
             ),               
             Fieldset(
                 'OPTIONAL: Dartmouth Outing Club Membership',
-                HTML("<p> The DOC is one of Dartmouth's largest student organizations - and the home of First-Year Trips - and offers many opportunities to get outside and enjoy the beautiful areas surrounding campus. Student members are eligible for membership & positions in the various clubs (e.g. Cabin & Trail, Mountaineering Club, Ski Patrol, etc.), qualify for reduced prices for season passes & cabin rentals, and receive a copy of the 'Dartmouth Outing Guide' book. A student career membership is $" + doc_membership_cost + ". Please indicate if you would like to purchase a student career (the duration of your time as a Dartmouth undergraduate) memberships. You will receive information later this summer about your membership. <i>Note: this charge, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill. </i></p>"),
+                HTML("<p> The DOC is one of Dartmouth's largest student organizations - and the home of First-Year Trips - and offers many opportunities to get outside and enjoy the beautiful areas surrounding campus. Student members are eligible for membership & positions in the various clubs (e.g. Cabin & Trail, Mountaineering Club, Ski Patrol, etc.), qualify for reduced prices for season passes & cabin rentals, and receive a copy of the 'Dartmouth Outing Guide' book. A student career membership is $" + doc_membership_cost + ". Please indicate if you would like to purchase a student career (the duration of your time as a Dartmouth undergraduate) membership. You will receive information later this summer about your membership. <i>Note: this charge, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill. </i></p>"),
                 'doc_membership',
             ),
             Fieldset(
