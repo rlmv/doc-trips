@@ -44,6 +44,9 @@ class RegistrationFormLayout(Layout):
         local_sections = join_with_and(Section.objects.local(trips_year))
         not_local_sections = join_with_and(Section.objects.not_local(trips_year))
         international_sections = join_with_and(Section.objects.international(trips_year))
+        trips_cost = str(220)
+        contact_url = "http://outdoors.dartmouth.edu/firstyear/contact.html"
+        doc_membership_cost = str(50)
         
         super(RegistrationFormLayout, self).__init__(
             HTML("<p><strong>DOC Trips Mission:</strong> DOC First-year Trips exist to give all incoming students an exciting and unforgettable welcome to the Dartmouth community. Trips provides them with an introduction to the College's traditions and spirit, as well as a safe and positive outdoor experience through the Dartmouth Outing Club. Trips creates common ground for first-year students, a space to build lasting friendships and social support systems, and facilitates a connection to dedicated upperclass students who act as mentors and friends at Dartmouth and beyond.</p>"),
@@ -128,33 +131,33 @@ class RegistrationFormLayout(Layout):
                 'Hiking and Camping Experience',
                 'camping_experience',
                 'hiking_experience',
-                'hiking_experience_description',
+                Field('hiking_experience_description', rows=3),
             ),
             Fieldset(
                 'Canoeing & Kayaking Experience',
                 HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Canoeing</strong> trip or a <strong>Kayaking</strong> trip. Please note that NO experience is needed for these types of trips; we just want to get a sense of your comfort level with these activites. </p>"),
                 'has_boating_experience',
-                'boating_experience', 
-                'other_boating_experience',
+                Field('boating_experience', rows=3), 
+                Field('other_boating_experience', rows=3),
             ),
             Fieldset(
                 'Fishing Experience',
                 HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Fishing</strong> trip. Fishing experience is NOT required to participate in this trip. </p>"),
-                'fishing_experience',
+                Field('fishing_experience', rows=3),
             ),
             Fieldset(
                 'Horseback Riding Experience',
                 HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Horseback Riding</strong> trip. </p>"),
-                'horseback_riding_experience',
+                Field('horseback_riding_experience', rows=3),
             ),
             Fieldset(
                 'Mountain Biking Experience',
                 HTML("<p> Complete this section only if you indicated above that you preferred or were available for a trip that involved <strong>Biking</strong>. Prior mountain biking experience is NOT required to participate in this trip.</p>"),
-                'mountain_biking_experience',
+                Field('mountain_biking_experience', rows=3),
             ),
             Fieldset(
                 'Anything else?',
-                'anything_else',
+                Field('anything_else', rows=3),
             ),
             
             Fieldset(
@@ -165,9 +168,35 @@ class RegistrationFormLayout(Layout):
                      "<p> Bus fares vary by location (see bus options below for exact price). Financial assistance is available for bus fares. If the cost of transportation/Trips may prevent you from participating, please contact us & we can help! See below for more information. </p>"),
                 'bus_stop', 
                 HTML('<p> If our bus option does not work for you, there other public transportation services such as the train (<a href="http://www.amtrak.com/home">Amtrak</a>) or bus (<a href="https://www.greyhound.com/">Greyhound</a>, <a href="http://www.dartmouthcoach.com/">Dartmouth Coach</a>). We consider these options the most environmentally friendly ways to get here, so check them out!</p>'),
-
             ),
-            
+            Fieldset(
+                'Financial Assistance',
+                HTML("<p> We are <i>very</i> committed to making Trips available to anyone, regardless of financial need. We offer <strong>generous financial assistance</strong>, which you can request below. Financial assistance is also available for bussing if you are taking a DOC Trips bus from one of our Northeast stops to Hanover. The cost for DOC Trips is $" + trips_cost + ". The cost is the same regardless of which trip you are assigned. </p>"
+                     "<p> Eligibility for financial assistance is determined in conjunction with the College's Financial Aid office. We will notify students receiving any financial assistance in July; the balance of the program cost will be charged to your tuition bill. <strong>If the cost of Trips may prevent you from participating, please contact us and we can help!</strong> </p>"),
+                'financial_assistance',
+            ),
+            Fieldset(
+                'Waiver of Liability',
+                HTML('<p> Please read, review, and indicate your acknowledgment of the following information. If you have any questions or concerns, please feel free to <a href="' + contact_url + '"> contact us.</a> </p>'
+                     "<p><strong> This acknowledgment & assumption of risk, hold harmless agreement, release & waiver of liability is a legally binding document. By acknowledging your understanding and agreement, you are waiving certain rights &mdash; including the right to bring a lawsuit if you are injured while participating in this activity.</strong> </p>" 
+                     "<p> This document is executed in consideration of being able to participate in the D.O.C. Trips Program, sponsored by the Dartmouth Outing Club. I hereby acknowledge that I am aware that there are risks and dangers inherent in the D.O.C. Trips Program, and I hereby agree that I will listen carefully to and follow all instructions and directions and ask questions if I do not understand. I also acknowledge that, despite careful precautions, there are certain inherent dangers and risks of injury in this activity, and I accept those risks and dangers. I further agree, on behalf of myself, and my heirs and assigns, to release and hold harmless Dartmouth College, its officers, agents, employees, successors, and assigns, from and against any and all claims and causes of action arising out of my participation in this activity, except insofar as such claim or cause of action arises from the negligence or intentional acts of Dartmouth College, its officers, agents, or employees. </p>"
+                     "<p> If the student is a minor, I further agree to indemnify and hold harmless Dartmouth College from any and all claims which are brought by, or on behalf of Minor, and which are in any way connected with such use or participation by Minor. </p>"),
+                'waiver',
+            ),               
+            Fieldset(
+                'OPTIONAL: Dartmouth Outing Club Membership',
+                HTML("<p> The DOC is one of Dartmouth's largest student organizations - and the home of First-Year Trips - and offers many opportunities to get outside and enjoy the beautiful areas surrounding campus. Student members are eligible for membership & positions in the various clubs (e.g. Cabin & Trail, Mountaineering Club, Ski Patrol, etc.), qualify for reduced prices for season passes & cabin rentals, and receive a copy of the 'Dartmouth Outing Guide' book. A student career membership is $" + doc_membership_cost + ". Please indicate if you would like to purchase a student career (the duration of your time as a Dartmouth undergraduate) memberships. You will receive information later this summer about your membership. <i>Note: this charge, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill. </i></p>"),
+                'doc_membership',
+            ),
+            Fieldset(
+                'OPTIONAL: Green Fund Donation',
+                HTML("<p> As the largest outdoors orientation program in the country, DOC Trips is committed to being a responsible steward of both natural resources and the environment. Your donation to the Green Fund will go directly toward sustainability initiatives within the program such as locally-sourced food, providing organic cotton t-shirts to all participants, using bio-diesel fuel for Trips transportation, and serving an entirely vegetarian/organic menu during the program. <i>Note: this donation, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill.</i> </p>"),
+                'green_fund_donation',
+            ),
+            Fieldset(
+                'One Final Request',
+                Field('final_request', rows=3),
+            ),
             Submit('submit', 'Submit'),
         )
 
