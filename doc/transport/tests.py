@@ -23,8 +23,8 @@ class ManagersTestCase(TripsYearTestCase):
     def test_external(self):
         
         trips_year = self.init_current_trips_year()
-        external_stop = mommy.make(Stop, trips_year=trips_year, category='EXTERNAL')
-        internal_stop = mommy.make(Stop, trips_year=trips_year, category='INTERNAL')
+        external_stop = mommy.make(Stop, trips_year=trips_year, route__category='EXTERNAL')
+        internal_stop = mommy.make(Stop, trips_year=trips_year, route__category='INTERNAL')
         self.assertEqual([external_stop], list(Stop.objects.external(trips_year)))
 
 

@@ -7,13 +7,12 @@ from doc.transport.managers import StopManager
 TRANSPORT_CATEGORIES = (
     ('INTERNAL', 'Internal'),
     ('EXTERNAL', 'External'),
-    ('BOTH', 'Both'),
 )
 
 class Stop(DatabaseModel):
 
     class Meta:
-        ordering = ['category', 'route', 'name']
+        ordering = ['route__category', 'route', 'name']
 
     objects = StopManager()
 
@@ -26,12 +25,9 @@ class Stop(DatabaseModel):
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
-    #TODO: validate category against route's category.
-    # OR: get rid of category entirely?
     route = models.ForeignKey('Route', null=True, blank=True, on_delete=models.PROTECT, related_name='stops')
-    category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
 
-    # TODO: validate that this only is used if category==EXTERNAL
+    # TODO: validate that this only is used if route.category==EXTERNAL?
     cost = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     
     # legacy data from old db - hide on site?
@@ -40,6 +36,10 @@ class Stop(DatabaseModel):
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
+
+    @property
+    def category(self):
+        return self.route.category
 
     def __str__(self):
         return self.name
