@@ -3,25 +3,7 @@
 
 <div class="expand-whitespace"><p> {{ information.application_header|safe }}</p></div>
 
-<p> 
-  <strong>
-  {% if application.leader_application_complete %}
-  Your Trip Leader application is complete.
-  {% else %}
-  You have not completed a Trip Leader application.
-  {% endif %}
-  </strong>
-</p>
-
-<p> 
-  <strong>
-  {% if application.croo_application_complete %}
-  Your Croo application is complete.
-  {% else %}
-  You have not completed a Croo application. 
-  {% endif %}
-  </strong>
-</p>
+{% include "applications/_application_complete.html" %}
 
 <div role="tabpanel">
 

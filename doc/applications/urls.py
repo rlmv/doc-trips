@@ -41,7 +41,7 @@ urlpatterns = patterns(
     '',
     url(r'^$', VolunteerPortalView.as_view(), name='portal'),
     url(r'^apply/$', NewApplication.as_view(), name='apply'),
-    url(r'^continue/$', ContinueApplication.as_view(), name='continue'),
+    url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/$', SetupApplication.as_view(), name='setup'),
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
 )

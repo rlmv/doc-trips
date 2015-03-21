@@ -9,11 +9,15 @@
 <p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">Logout <span class="fa fa-sign-out"></span></a></p>
 
 <h4> Trip Leader and Croo applications </h4>
+<strong>
 {% if timetable.applications_available %}
-<a href="{% url 'applications:apply' %}"> <span class="fa fa-edit"></span> Edit your application &mdash; available until {{ timetable.applications_close }} </a>
+<p><a href="{% url 'applications:apply' %}"> <span class="fa fa-edit"></span> Edit your application &mdash; available until {{ timetable.applications_close }} </a></p>
 {% else %}
-<p> Trip and Croo Applications not available at this time </p>
+<p> Trip and Croo Applications are not available at this time </p>
 {% endif %}
+</strong>
+
+{% include "applications/_application_complete.html" %}
 
 <h4> Application Status </h4>
 {% if timetable.application_status_available %}
@@ -26,14 +30,14 @@
 {% if timetable.leader_assignment_available %}
 <p> TODO: TRIP INFO  {{ application.assigned_trip }} </p>
 {% else %}
-<p> Information about your assigned trip is not available at this time. </p>
+<p> Information about Trip assignments is not available at this time. </p>
 {% endif %}
 
 <h4> Croo Assignment </h4>
 {% if timetable.croo_assignment_available %}
 <p>TODO: CROO INFO {{ application.assigned_croo }}</p>
 {% else %}
-<p> Information about your assigned Croo is not available at this time. </p>
+<p> Information about Croo assignments is not available at this time. </p>
 {% endif %}
 
 
