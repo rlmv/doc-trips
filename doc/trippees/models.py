@@ -106,6 +106,34 @@ class Registration(DatabaseModel):
     # --- sections and triptypes -----
     # TODO: exchange/transfer/native/etc fields.
     # fall varsity athlete. --> choices or ForeignKey?
+    is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
+    is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
+    is_international = YesNoField('Are you an International Student?', blank=True)
+    is_native = YesNoField('Are you a Native American Student and plan on attending the Native American student orientation?', blank=True)
+    is_fysep = YesNoField('Are you participating in the First Year Student Enrichment Program (FYSEP)?', blank=True)
+    ATHLETE_CHOICES = (
+        ('NO', 'No'),
+        ('ALPINE_SKIING', 'Alpine Skiing'),
+        ('FOOTBALL', 'Football'),
+        ('MENS_SOCCER', "Men's Soccer"),
+        ('WOMENS_SOCCER', "Women's Soccer"),
+        ('FIELD_HOCKEY', "Field Hockey"),
+        ('VOLLEYBALL', "Volleyball"),
+        ("MENS_HEAVYWEIGHT_CREW", "Men's Heavyweight Crew"),
+        ("MENS_LIGHTWEIGHT_CREW", "Men's Lightweight Crew"),
+        ("WOMENS_CREW", "Women's Crew"),
+        ("MENS_CROSS_COUNTRY", "Men's Cross Country"),
+        ("WOMENS_CROSS_COUNTRY", "Women's Cross Country"),
+        ("MENS_GOLF", "Men's Golf"),
+        ("WOMENS_GOLF", "Women's Golf"),
+        ("MENS_TENNIS", "Men's Tennis"),
+        ("WOMENS_TENNIS", "Women's Tennis"),
+        ("MENS_RUGBY", "Men's Rugby"),
+        ("WOMENS_RUGBY", "Women's Rugby"),
+        ("SAILING", "Sailing"),
+        ("MENS_WATER_POLO", "Men's Water Polo"),
+    )
+    is_athlete = models.CharField('Are you a Fall varsity athlete (or Rugby or Water Polo)?', max_length=100, choices=ATHLETE_CHOICES, blank=True,  help_text="Each team has its own pre-season schedule. We are in close contact with fall coaches and will assign you to a trip section that works well for the team's pre-season schedule.")
     
     # TODO: section and triptypes prefs -> custom model? custom field?
     # section preferences 

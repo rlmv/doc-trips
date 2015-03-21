@@ -45,7 +45,12 @@ class RegistrationFormLayout(Layout):
                 'Orientations and Pre-Season Training',
                 HTML("<p> The College has several different pre-orientation options, including athletics pre-season for fall sports. ALL students are able to participate in DOC Trips, even if they are involved in other pre-orientation programs. We work with other programs and offices as we schedule the Trips program, so the information below is helpful in assigning you to an appropriately scheduled trip. </p>"
                      "<p> If your group is limited to certain sections, be sure to mark all other sections as 'Not Available' (see below). Please note that marking any of these groups will NOT affect your eligibility to participate in DOC Trips.</p>"),
-                # TODO
+                'is_exchange',
+                'is_transfer',
+                'is_international',
+                'is_native',
+                'is_fysep',
+                'is_athlete',
             ),
             Fieldset(
                 'Section', 
