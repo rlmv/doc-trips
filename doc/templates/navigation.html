@@ -20,25 +20,34 @@
       <ul class="nav navbar-nav">
 
 	<li><a href="{% url 'applications:apply' %}">Applications</a></li>
-	
-	{% if perms.permissions.can_create_applications %}
-	<li><a href="{% url 'applications:setup' %}">Setup Applications</a></li>
-	{% endif %}
 
 	{% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
-	<li><a href="{% url 'applications:grade:graders' %}">Grade Applications</a></li>
+	<li><a href="{% url 'applications:grade:graders' %}"><span class="fa fa-pencil-square-o"></span> Grade Applications</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
 	<li><a href="{% url 'db:db_redirect' %}"><span class="fa fa-database"></span> Database</a></li>
 	{% endif %}
 
-	{% if perms.permissions.can_set_access %}
-	<li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-user-plus"></span> Access </a></li>
-	{% endif %}
+	{% if perms.permissions.can_set_access or perms.permissions.can_edit_timetable or perms.permissions.can_create_applications %}
+	<li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
+          <ul class="dropdown-menu" role="menu">
 
-	{% if perms.permissions.can_edit_timetable %}
-	<li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-calendar"></span> Calendar </a></li>
+	    {% if perms.permissions.can_set_access %}
+	    <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-user-plus"></span> Access </a></li>
+	    {% endif %}
+
+	    {% if perms.permissions.can_edit_timetable %}
+	    <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-calendar"></span> Calendar </a></li>
+	    {% endif %}
+
+	    {% if perms.permissions.can_create_applications %}
+	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-file-text-o"></span> Applications</a></li>
+	    {% endif %}
+
+          </ul>
+        </li>
 	{% endif %}
 	
       </ul>
