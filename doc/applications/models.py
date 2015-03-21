@@ -119,7 +119,7 @@ class GeneralApplication(DatabaseModel):
             raise ValidationError(msg % (self, self.status, self.LEADER))
 
         if self.assigned_croo and self.status != self.CROO:
-            msg = ("Volunteer % with status %s cannot also be on a Croo. " 
+            msg = ("Volunteer %s with status %s cannot also be on a Croo. " 
                    "Change status to %s or remove Croo assignment")
             raise ValidationError(msg % (self, self.status, self.CROO))
 
