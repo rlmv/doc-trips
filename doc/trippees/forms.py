@@ -5,7 +5,7 @@ from crispy_forms.layout import Submit
 
 from doc.db.models import TripsYear
 from doc.trippees.models import Registration
-from doc.trippees.layouts import RegistrationFormLayout
+from doc.trippees.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section
 from doc.transport.models import Stop
 
@@ -31,6 +31,13 @@ class RegistrationForm(forms.ModelForm):
                     'trips_year needs to be passed in, in this case')
 
         self.fields['bus_stop'].queryset = Stop.objects.external(trips_year)
+
+        # show which sections are available for these choices
+        self.fields['is_exchange'].help_text = join_with_and(Section.objects.exchange(trips_year))
+        self.fields['is_international'].help_text = join_with_and(Section.objects.international(trips_year))
+        self.fields['is_transfer'].help_text = join_with_and(Section.objects.transfer(trips_year))
+        self.fields['is_native'].help_text = join_with_and(Section.objects.native(trips_year))
+        self.fields['is_fysep'].help_text = join_with_and(Section.objects.fysep(trips_year))
         
         self.helper = FormHelper(self)
 

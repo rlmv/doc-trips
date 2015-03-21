@@ -104,3 +104,39 @@ class SectionManagerTestCase(TripsTestCase):
         section2 = mommy.make(Section, trips_year=trips_year, is_international=False)
         
         self.assertEqual([section1], list(Section.objects.international(trips_year)))
+
+    def test_transfer(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_transfer=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_transfer=False)
+        
+        self.assertEqual([section1], list(Section.objects.transfer(trips_year)))
+
+    def test_native(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_native=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_native=False)
+        
+        self.assertEqual([section1], list(Section.objects.native(trips_year)))
+
+    def test_fysep(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_fysep=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_fysep=False)
+        
+        self.assertEqual([section1], list(Section.objects.fysep(trips_year)))
+
+    def test_exchange(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_exchange=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_exchange=False)
+        
+        self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
+
+
+
+                              
