@@ -19,7 +19,7 @@
 
       <ul class="nav navbar-nav">
 
-	<li><a href="{% url 'applications:apply' %}">Applications</a></li>
+	<li><a href="{% url 'applications:portal' %}">Volunteers</a></li>
 
 	{% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
 	<li><a href="{% url 'applications:grade:graders' %}"><span class="fa fa-pencil-square-o"></span> Grade Applications</a></li>
