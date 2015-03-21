@@ -33,13 +33,16 @@ class RegistrationForm(forms.ModelForm):
         self.fields['bus_stop'].queryset = Stop.objects.external(trips_year)
         
         self.helper = FormHelper(self)
+
+        from doc.core.models import Settings
+        settings = Settings.objects.get()
         kwargs = {
             'local_sections': Section.objects.local(trips_year),
             'not_local_sections': Section.objects.not_local(trips_year),
             'international_sections': Section.objects.international(trips_year),
-            'trips_cost': 220,
-            'doc_membership_cost': 50,
-            'contact_url': 'http://outdoors.dartmouth.edu/firstyear/contact.html',
+            'trips_cost': settings.trips_cost,
+            'doc_membership_cost': settings.doc_membership_cost,
+            'contact_url': settings.contact_url,
         }
         self.helper.layout = RegistrationFormLayout(**kwargs)
 
