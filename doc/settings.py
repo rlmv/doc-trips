@@ -72,6 +72,7 @@ INSTALLED_APPS = (
 
     # doc apps
     'doc.applications',
+    'doc.core',
     'doc.croos', 
     'doc.dartdm', 
     'doc.db',

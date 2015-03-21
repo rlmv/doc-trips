@@ -60,7 +60,3 @@ class DatabaseModel(models.Model):
         """ Return the app name of cls. """
         return cls._meta.app_label
          
-
-class Cost(DatabaseModel):
-
-    cost = models.PositiveIntegerField()
