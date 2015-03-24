@@ -6,7 +6,7 @@ from django.dispatch import receiver
 from django.conf import settings
 
 from doc.transport.models import Stop
-from doc.trips.models import ScheduledTrip, Section
+from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
 from doc.trippees.managers import IncomingStudentManager
@@ -19,18 +19,6 @@ def YesNoField(*args, **kwargs):
     kwargs['choices'] = YES_NO_CHOICES
     kwargs['max_length'] = 3
     return models.CharField(*args, **kwargs)
-
-
-class SectionPreference(DatabaseModel):
-
-    registration = models.ForeignKey('Registration')
-    section = models.ForeignKey(Section)
-    CHOICES = (
-        ('PREFER', 'prefer'),
-        ('AVAILABLE', 'available'),
-        ('NOT_AVAILABLE', 'not available'),
-    )
-    preference = models.CharField(max_length=20, choices=CHOICES)
 
 
 class Address(models.Model):
@@ -100,8 +88,6 @@ class IncomingStudent(DatabaseModel):
 class Registration(DatabaseModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-
-    sections = models.ManyToManyField(Section, through=SectionPreference)
     
     # name not just from netid / college info?
     name = models.CharField(max_length=255)
@@ -150,9 +136,30 @@ class Registration(DatabaseModel):
         ("MENS_WATER_POLO", "Men's Water Polo"),
     )
     is_athlete = models.CharField('Are you a Fall varsity athlete (or Rugby or Water Polo)?', max_length=100, choices=ATHLETE_CHOICES, blank=True,  help_text="Each team has its own pre-season schedule. We are in close contact with fall coaches and will assign you to a trip section that works well for the team's pre-season schedule.")
-    
-    # TODO: section and triptypes prefs -> custom model? custom field?
-    # section preferences 
+
+    preferred_sections = models.ManyToManyField(
+        Section, blank=True, related_name='prefering_trippees'
+    )
+    available_sections = models.ManyToManyField(
+        Section, blank=True, related_name='available_trippees'
+    )
+    unavailable_sections = models.ManyToManyField(
+        Section, blank=True, related_name='unavailable_trippees'
+    )
+    preferred_triptypes = models.ManyToManyField(
+        TripType, blank=True, related_name='preferring_trippees',
+        verbose_name="preferred types of trips"
+    )
+    available_triptypes = models.ManyToManyField(
+        TripType, blank=True, related_name='available_trippees',
+        verbose_name="available types of trips"
+    )
+    unavailable_triptypes = models.ManyToManyField(
+        TripType, blank=True, related_name='unavailable_trippees',
+        verbose_name="unavailable types of trips"
+    )
+
+    # section preferences
     schedule_conflicts = models.TextField(blank=True)
     # trip type preferences - they have a First Choice option in the old DB
 
