@@ -35,11 +35,14 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
                 trips_year=trips_year,
                 applicant=self.request.user
             )
+            application_status = STATUS_DESCRIPTIONS[application.status]
+
         except GeneralApplication.DoesNotExist:
             application = None
+            application_status = "You did not submit an application"
 
         context['application'] = application
-        context['status_description'] = STATUS_DESCRIPTIONS[application.status]
+        context['status_description'] = application_status
 
         return context
 
