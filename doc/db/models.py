@@ -27,18 +27,15 @@ class TripsYear(models.Model):
 
 
 class DatabaseModel(models.Model):
+    """ 
+    Abstract base class for all models in the trips database.
 
-    """ Abstract base class for all models in the trips database.
+    Manages the trips_year property.
 
-    Manages the trips_year property. Whenever a DatabaseModel is created,
-    the current trips_year is automatically attached to the object if it is
-    not already. 
-    
-    See https://docs.djangoproject.com/en/dev/topics/db/models/#abstract-base-classes
+    TODO: rename this to TripsModel?
     """
 
     # TODO: index on trips_year?
-    # editable=False hides this field in all forms
     trips_year = models.ForeignKey('TripsYear', editable=False, on_delete=models.PROTECT) 
 
     class Meta:
@@ -63,7 +60,3 @@ class DatabaseModel(models.Model):
         """ Return the app name of cls. """
         return cls._meta.app_label
          
-
-class Cost(DatabaseModel):
-
-    cost = models.PositiveIntegerField()

@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 
 from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
-from doc.trips.managers import SectionDatesManager
+from doc.trips.managers import SectionDatesManager, SectionManager
 
 
 class ScheduledTrip(DatabaseModel):
@@ -48,7 +48,7 @@ class Section(DatabaseModel):
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
     
-    objects = models.Manager()
+    objects = SectionManager()
     dates = SectionDatesManager()
 
     @property

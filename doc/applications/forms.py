@@ -111,6 +111,9 @@ class LeaderSupplementForm(forms.ModelForm):
         # pass the trips year in explicitly to support previous years, 
         # OR don't allow editing of old trips_years.
         trips_year = TripsYear.objects.current()
+        if kwargs.get('instance', None):
+            assert kwargs['instance'].trips_year == trips_year
+        
         self.fields['preferred_sections'].queryset = Section.objects.filter(trips_year=trips_year)
         self.fields['available_sections'].queryset = Section.objects.filter(trips_year=trips_year)
         self.fields['preferred_triptypes'].queryset = self.fields['preferred_triptypes'].queryset.filter(trips_year=trips_year)

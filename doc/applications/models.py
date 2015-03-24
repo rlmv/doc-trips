@@ -1,12 +1,13 @@
 
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel, TripsYear
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.croos.models import Croo
 from doc.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
-from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager
+from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager, GeneralApplicationManager
 
 
 class ApplicationInformation(DatabaseModel):
@@ -34,11 +35,13 @@ class GeneralApplication(DatabaseModel):
     """ 
     Contains shared information for Croo and Leader applications.
 
-    TODO: rename to Application? 
+    TODO: rename to Application? Volunteer? mv questionaire to separate model? 
     """
-
+    
     class Meta:
         ordering = ('applicant',)
+
+    objects = GeneralApplicationManager()
 
     PENDING = 'PENDING'
     CROO = 'CROO'
@@ -49,7 +52,7 @@ class GeneralApplication(DatabaseModel):
     STATUS_CHOICES = (
         (PENDING, 'Pending'),
         (CROO, 'Croo'),
-        # croo waitlist? - probably not a thing
+        # TODO: croo waitlist? - probably not a thing
         (LEADER, 'Leader'),
         (LEADER_WAITLIST, 'Leader Waitlist'),
         (REJECTED, 'Rejected'),
@@ -57,9 +60,14 @@ class GeneralApplication(DatabaseModel):
     )
 
     # ---- administrative information. not seen by applicants ------
-    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, 
+                                  related_name='applications')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
                               verbose_name="Application status")
+    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
+                                      related_name='leaders', on_delete=models.PROTECT)
+    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
+                                      related_name='croolings', on_delete=models.PROTECT)
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
@@ -100,6 +108,20 @@ class GeneralApplication(DatabaseModel):
     trainings = models.BooleanField(default=False, verbose_name="I understand that if I am accepted as a Crooling or Trip Leader I will be required to get First Aid and CPR training, as well as attend croo and leader specific training. I understand that if I do not meet these requirements, I will not be able to be on a Croo/lead a trip.")
     spring_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the spring term.")
     summer_training_ok = models.BooleanField(default=False, verbose_name="I can attend trainings during the summer term.")
+
+    
+    def clean(self):
+        """ Only allow Croo/Trip assignments if status == LEADER,CROO """
+
+        if self.assigned_trip and self.status != self.LEADER:
+            msg = ("Volunteer %s with status %s cannot also lead a trip. "
+                   "Change status to %s or remove Trip assignment")
+            raise ValidationError(msg % (self, self.status, self.LEADER))
+
+        if self.assigned_croo and self.status != self.CROO:
+            msg = ("Volunteer %s with status %s cannot also be on a Croo. " 
+                   "Change status to %s or remove Croo assignment")
+            raise ValidationError(msg % (self, self.status, self.CROO))
 
 
     # Croo and Leader applications are considered complete if the questionaire
@@ -149,10 +171,6 @@ class LeaderSupplement(DatabaseModel):
     wilderness_skills = models.DateField(null=True, blank=True)
     first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
 
-    # ----- admin ---------
-    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
-                                      related_name='leaders',
-                                      on_delete=models.PROTECT)
 
     def get_preferred_trips(self):
         """ All scheduled trips which this leader prefers to go lead. """
@@ -216,19 +234,7 @@ class CrooSupplement(DatabaseModel):
     kitchen_lead_qualifications = models.TextField(blank=True, verbose_name='If you are willing to be a Kitchen Witch/Wizard, please briefly describe your qualifications for the position (eg. on Moosilauke Lodge crew spring 2014, experience working in industrial kitchens, experience preparing and organizing food for large groups.)')
     
     # -------- driving -------
-
-    # ----- backend fields -------
-    # only seen by directors in the database.
-    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings' ,
-                                      on_delete=models.PROTECT)
-    potential_croos = models.ManyToManyField(Croo, blank=True, 
-                                             related_name='potential_croolings')
-    safety_lead_qualified = models.BooleanField(default=False)
-    safety_lead = models.BooleanField(default=False)
-
-    kitchen_lead_qualified = models.BooleanField(default=False)
-    kitchen_lead = models.BooleanField(default=False)
+    # TODO: mv from document?
 
 
     def average_grade(self):

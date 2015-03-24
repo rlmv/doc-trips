@@ -7,7 +7,7 @@ from model_mommy import mommy
 from doc.trips.models import ScheduledTrip, Section, TripTemplate
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 
-from doc.test.fixtures import WebTestCase
+from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
 
 class ScheduledTripTestCase(WebTestCase):
     
@@ -56,7 +56,87 @@ class ScheduledTripTestCase(WebTestCase):
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 
+
+class QuickTestViews(WebTestCase):
+
+    def test_index_views(self):
         
+        trips_year = self.init_current_trips_year()
+        director = self.mock_director()
         
+        names = [
+            'db:scheduledtrip_index',
+            'db:triptemplate_index',
+            'db:triptype_index',
+            'db:campsite_index',
+            'db:section_index',
+            'db:leader_index',
+        ]
+
+        for name in names:
+            res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
+
+
+class SectionManagerTestCase(TripsTestCase):
+    
+    def test_local(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
+        
+        self.assertEqual([section1], list(Section.objects.local(trips_year)))
         
 
+    def test_not_local(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
+        
+        self.assertEqual([section2], list(Section.objects.not_local(trips_year)))
+    
+
+    def test_international(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_international=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_international=False)
+        
+        self.assertEqual([section1], list(Section.objects.international(trips_year)))
+
+    def test_transfer(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_transfer=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_transfer=False)
+        
+        self.assertEqual([section1], list(Section.objects.transfer(trips_year)))
+
+    def test_native(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_native=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_native=False)
+        
+        self.assertEqual([section1], list(Section.objects.native(trips_year)))
+
+    def test_fysep(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_fysep=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_fysep=False)
+        
+        self.assertEqual([section1], list(Section.objects.fysep(trips_year)))
+
+    def test_exchange(self):
+        
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year, is_exchange=True)
+        section2 = mommy.make(Section, trips_year=trips_year, is_exchange=False)
+        
+        self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
+
+
+
+                              

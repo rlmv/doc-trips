@@ -41,7 +41,7 @@ def convert_docx_to_html(file_obj):
     except BadZipFile as exc:
         logger.info('Conversion error ' + str(exc))
         raise ConversionError(exc)
-    except Exception as exv:
+    except Exception as exc:
         # mammoth is raising 'NoneType' has no attribute __' exceptions
         logger.error('Conversion error ' + str(exc))
         raise ConversionError(exc)

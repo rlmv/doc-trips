@@ -1,6 +1,53 @@
 
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseRedirect
+from crispy_forms.helper import FormHelper
+
+
+class CrispyFormMixin():
+    """
+    Class view mixin which adds support for crispy_forms.
+
+    TODO: needs tests.
+    """
+    
+    def get_form_helper(self, form):
+        """ Return a configured crispy FormHelper. """
+
+        return FormHelper(form)
+
+    def get_form(self, **kwargs):
+        """ 
+        Attach a crispy form helper to the form, if it does not already have one.
+        """
+
+        form = super(CrispyFormMixin, self).get_form(**kwargs)
+
+        if not hasattr(form, 'helper'):
+            form.helper = self.get_form_helper(form)
+
+        self.validate_crispy_layout(form)
+
+        return form
+
+    def validate_crispy_layout(self, form):
+        """
+        Validates that all fields in the form appear in the crispy layout.
+        Catches a tricky bug wherein some required fields specified on the form
+        are accidentally left out of an explicit layout, causing POSTS to fail.
+        """
+        
+        if hasattr(form.helper, 'layout'):
+            # all fields in the layout
+            layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
+            # and in the form
+            form_fields = set(form.fields.keys())
+
+            if form_fields - layout_fields:
+                msg = ('whoa there, make sure you include ALL fields specified by '
+                       '%s in the Crispy Form layout. %r are missing')
+                raise ImproperlyConfigured(msg % (self.__class__.__name__, form_fields-layout_fields))
+        
 
 class MultipleFormMixin():
     """ 
@@ -60,6 +107,42 @@ class MultipleFormMixin():
         context = self.get_context_data(**forms)
         return self.render_to_response(context)
 
-    
 
+# TODO: these aren't used anywhere. Use or remove
+
+class PassesTestMixin():
+
+    def test_func(self):
+        msg = 'Implement test_func'
+        raise ImproperlyConfigured(msg)
+        
+    def dispatch(self, request, *args, **kwargs):
+        
+        if not self.test_func():
+            raise PermissionDenied
+        
+        return super(PassesTestMixin, self).dispatch(request, *args, **kwargs)
+
+class RedirectIfPassesTest():
+
+    redirect_url = None
+    
+    def test_func(self):
+        msg = 'Implement test_func'
+        raise ImproperlyConfigured(msg)
+
+    def get_redirect_url(self):
+        
+        if redirect_url is None:
+            msg = "Add 'redirect_url' or implement 'get_redirect_url'"
+            raise ImproperlyConfigurd(msg)
+        
+        return redirect_url
+
+    def dispatch(self, request, *args, **kwargs):
+        
+        if self.test_func():
+            return HttpResponseRedirect(self.get_redirect_url())
+        
+        return super(PassesTestMixin, self).dispatch(request, *args, **kwargs)
     

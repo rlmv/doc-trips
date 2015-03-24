@@ -19,3 +19,27 @@ class SectionDatesManager(models.Manager):
 
         return sorted(list(nights_camping))
 
+
+class SectionManager(models.Manager):
+
+    def local(self, trips_year):
+        return self.filter(trips_year=trips_year, is_local=True)
+
+    def not_local(self, trips_year):
+        return self.filter(trips_year=trips_year, is_local=False)
+        
+    def international(self, trips_year):
+        return self.filter(trips_year=trips_year, is_international=True)
+
+    def transfer(self, trips_year):
+        return self.filter(trips_year=trips_year, is_transfer=True)
+        
+    def native(self, trips_year):
+        return self.filter(trips_year=trips_year, is_native=True)
+        
+    def fysep(self, trips_year):
+        return self.filter(trips_year=trips_year, is_fysep=True)
+
+    def exchange(self, trips_year):
+        return self.filter(trips_year=trips_year, is_exchange=True)
+        

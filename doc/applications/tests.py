@@ -16,6 +16,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      QualificationTag, 
                                      SkippedLeaderGrade, SkippedCrooGrade)
 from doc.timetable.models import Timetable
+from doc.croos.models import Croo
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
 from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
@@ -58,6 +59,39 @@ class ApplicationTestMixin():
                               document='some/file')
         
         return application
+
+
+class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
+
+    def test_must_be_LEADER_to_be_assigned_trip(self):
+        
+        trips_year = self.init_current_trips_year()
+        for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
+            application = mommy.make(GeneralApplication, 
+                                     status=getattr(GeneralApplication, status), 
+                                     trips_year=trips_year)
+            application.assigned_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+            with self.assertRaises(ValidationError):
+                application.full_clean()
+        
+        application.status = GeneralApplication.LEADER
+        application.full_clean()
+        
+
+    def test_must_be_CROO_to_be_assigned_croo(self):
+
+        trips_year = self.init_current_trips_year()
+        for status in ['PENDING', 'LEADER_WAITLIST', 'LEADER', 'REJECTED', 'CANCELED']:
+            application = mommy.make(GeneralApplication, 
+                                     status=getattr(GeneralApplication, status), 
+                                     trips_year=trips_year)
+            application.assigned_croo = mommy.make(Croo, trips_year=trips_year)
+            with self.assertRaises(ValidationError):
+                application.full_clean()
+        
+        application.status = GeneralApplication.CROO
+        application.full_clean()
+        
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
@@ -207,7 +241,7 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertIsNone(next)
 
 
-class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
+class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -221,8 +255,8 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [app])
 
     def test_prospective_leader_with_available_choices(self):
 
@@ -233,8 +267,8 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.available_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
+        self.assertEquals(list(prospects), [app])
 
     def test_with_pending_status(self):
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
@@ -245,7 +279,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_without_section_preference(self):
@@ -257,7 +291,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_without_triptype_preference(self):
@@ -268,7 +302,7 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.preferred_sections.add(trip.section)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
 
     def test_prospective_leaders_are_distinct(self):
@@ -283,9 +317,9 @@ class LeaderApplicationManager_prospectve_leaders_TestCase(ApplicationTestMixin,
         app.leader_supplement.available_triptypes.add(trip.template.triptype)
         app.save()
 
-        prospects = LeaderApplication.objects.prospective_leaders_for_trip(trip)
+        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(len(prospects), 1)
-        self.assertEquals(list(prospects), [app.leader_supplement])
+        self.assertEquals(list(prospects), [app])
        
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
@@ -491,3 +525,7 @@ class GradersDatabaseListViewTestCase(TripsTestCase):
     # in avgs, grader list
 
         
+class VolunteerPortalViewsTestCase(WebTestCase):
+    
+    pass
+

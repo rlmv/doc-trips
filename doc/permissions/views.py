@@ -40,18 +40,6 @@ class BasePermissionMixin(LoginRequiredMixin):
 
 # TODO: can we set permission_required with an imported permission() call ?
 
-class DatabasePermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
-    """ 
-    Allow access to logged in users with database-level permissions.
-
-    These are directors, croo members, etc.
-
-    # TODO: this should be deprecated in favor of Edit and View perms
-    """
-    permissions = {
-        'any': ('permissions.can_edit_db', 'permissions.can_view_db')
-    }
-
 
 class DatabaseEditPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_edit_db'

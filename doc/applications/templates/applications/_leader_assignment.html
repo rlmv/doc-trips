@@ -1,0 +1,22 @@
+
+{# have 'application' as a template variable #}
+
+{% with trip=application.assigned_trip %}
+
+{% if trip %}
+
+<p><strong> Assigned Trip:</strong> {{ trip }}:{{ trip.template.description_summary }}</p>
+<p><strong> Trip Type: </strong> {{ trip.template.triptype }} </p>
+<p><strong> Dates: </strong> {{ trip.section.date_range_str }} </p>
+
+<p><strong> Leaders: </strong> {{ trip.leaders.all|join:", " }} </p>
+<p><strong> Trippees: </strong> {{ trip.trippees.all|join:", " }} </p>
+
+{# TODO: leaders on section #}
+{# TODO: description #}
+
+{% else %}
+<p> You are not currently assigned to a trip. </p>
+{% endif %}
+
+{% endwith %}

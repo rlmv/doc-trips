@@ -12,7 +12,7 @@
 
 <p><strong>Current Assigned Leaders:</strong>
   {% for leader in trip.leaders.all %}
-  {{ leader.application | detail_link }}
+  {{ leader|detail_link }}
   {% endfor %}
 </p>
 
@@ -29,14 +29,14 @@ This list shows all Accepted and Waitlisted leaders who indicated that they pref
   </tr>
   {% for leader, assign_form, triptype_pref, section_pref in leader_applications %}
   <tr>
-    <td> {{ leader.application | detail_link:leader }} </td>
+    <td> {{ leader|detail_link:leader }} </td>
     <td> 
       {% if assign_form %}
       {% crispy assign_form %}
       {% else %} 
       {{ leader.assigned_trip | detail_link }}
       {% endif %}</td>
-    <td> {{ leader.application.status }} </td>
+    <td> {{ leader.status }} </td>
     <td> {{ triptype_pref }} </td>
     <td> {{ section_pref }} </td>
   </tr>

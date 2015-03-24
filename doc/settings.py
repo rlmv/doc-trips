@@ -72,6 +72,7 @@ INSTALLED_APPS = (
 
     # doc apps
     'doc.applications',
+    'doc.core',
     'doc.croos', 
     'doc.dartdm', 
     'doc.db',
@@ -166,6 +167,7 @@ PIPELINE_CSS = {
             'css/bootstrap.min.css',
             'css/bootstrap-theme.min.css',
             'css/font-awesome.min.css',
+            'css/bootstrap-switch.css',
         ),
         'output_filename': 'base.css'
     }
@@ -179,6 +181,7 @@ PIPELINE_JS = {
             'js/typeahead.bundle.js',
             'dartdm/lookup.js', # must come after typeahead
             'js/stupidtable.js',
+            'js/bootstrap-switch.js',
         ),
         'output_filename': 'base.js'
     }

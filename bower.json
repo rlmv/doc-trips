@@ -7,5 +7,6 @@
 	"bootstrap": "*",
 	"typeahead.js": "*",
 	"typeahead.js-bootstrap-css": "bassjobsen/typeahead.js-bootstrap-css",
+	"bootstrap-switch": "*"
     }
 }
