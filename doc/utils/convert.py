@@ -55,8 +55,8 @@ def convert_docx_filefield_to_html(filefield):
     """
     Convert a django FileField containing a docx file to html.
 
-    This doesn't perform a file type check. If the conversion fails, 
-    return a failure string.
+    This doesn't perform a file type check. Raises a ConversionError
+    if conversions fails.
     """
 
     # empty filefield
@@ -64,9 +64,5 @@ def convert_docx_filefield_to_html(filefield):
         return None
 
     with filefield as docx_file:
-        try:
-            return convert_docx_to_html(docx_file)
-        # TODO: handle this in view?
-        except ConversionError as exc:
-            return 'docx to HTML conversion failed. Try downloading the document instead.'
+        return convert_docx_to_html(docx_file)
 

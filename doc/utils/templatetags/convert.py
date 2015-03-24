@@ -1,7 +1,7 @@
 
 from django import template
 
-from doc.utils.convert import convert_docx_filefield_to_html
+from doc.utils.convert import convert_docx_filefield_to_html, ConversionError
 
 register = template.Library()
 
@@ -21,6 +21,11 @@ def display_docx_filefield_as_html(filefield):
     {{ html }}
     </div>
     """)
-    c = template.Context({'filefield': filefield, 
-                          'html': convert_docx_filefield_to_html(filefield) })
+
+    try:
+        html = convert_docx_filefield_to_html(filefield)
+    except ConversionError:
+        html = 'docx to HTML conversion failed. Try downloading the document instead.'
+
+    c = template.Context({'filefield': filefield, 'html': html})
     return t.render(c)
