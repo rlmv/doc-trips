@@ -34,7 +34,9 @@ boto
 # testing
 model_mommy
 coverage
+flake8
 webtest
 django-webtest
 django-test-without-migrations
+
 
