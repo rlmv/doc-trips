@@ -156,7 +156,7 @@ class Registration(DatabaseModel):
     )
     unavailable_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='unavailable_trippees',
-        verbose_name="unavailable types of trips"
+        verbose_name="unavailable trip types"
     )
 
     # section preferences
