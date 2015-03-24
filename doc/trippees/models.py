@@ -6,23 +6,37 @@ from django.dispatch import receiver
 from django.conf import settings
 
 from doc.transport.models import Stop
-from doc.trips.models import ScheduledTrip
+from doc.trips.models import ScheduledTrip, Section
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
 from doc.trippees.managers import IncomingStudentManager
 
 logger = logging.getLogger(__name__)
 
+
 def YesNoField(*args, **kwargs):
     # Use a boolean field instead?
     kwargs['choices'] = YES_NO_CHOICES
     kwargs['max_length'] = 3
     return models.CharField(*args, **kwargs)
-    
+
+
+class SectionPreference(DatabaseModel):
+
+    registration = models.ForeignKey('Registration')
+    section = models.ForeignKey(Section)
+    CHOICES = (
+        ('PREFER', 'prefer'),
+        ('AVAILABLE', 'available'),
+        ('NOT_AVAILABLE', 'not available'),
+    )
+    preference = models.CharField(max_length=20, choices=CHOICES)
+
 
 class Address(models.Model):
     # TODO, or use django-address
     pass
+
 
 class IncomingStudent(DatabaseModel):
     """
@@ -81,11 +95,13 @@ class IncomingStudent(DatabaseModel):
 
     def __str__(self):
         return self.name
-    
+
 
 class Registration(DatabaseModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+
+    sections = models.ManyToManyField(Section, through=SectionPreference)
     
     # name not just from netid / college info?
     name = models.CharField(max_length=255)
