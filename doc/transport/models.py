@@ -6,6 +6,12 @@ from doc.transport.managers import StopManager, RouteManager
 
 
 class Stop(DatabaseModel):
+    """
+    A stop on a transportation route.
+
+    Represents a pickup or dropoff point for a trip OR a
+    bus stop where local sections are picked up.
+    """
 
     class Meta:
         ordering = ['route__category', 'route', 'name']
@@ -43,6 +49,13 @@ class Stop(DatabaseModel):
 
 
 class Route(DatabaseModel):
+    """
+    A transportation route.
+
+    A route is either INTERNAL (transporting students to/from Hanover,
+    trip dropoffs/pickups, and the lodge) or EXTERNAl (moving local
+    students to and from campus before and after their trips.)
+    """
 
     name = models.CharField(max_length=255)
     INTERNAL = 'INTERNAL'
@@ -64,7 +77,8 @@ class Route(DatabaseModel):
 
 
 class Vehicle(DatabaseModel):
-                        
+    """ A type of vehicle """
+
     # eg. Internal Bus, Microbus,
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
