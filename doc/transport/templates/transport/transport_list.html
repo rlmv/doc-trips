@@ -5,13 +5,23 @@
 {% endblock %}
 
 {% block content %}
+<table>
+  <tr>
+    <th> Route </th>
+    {% for date in dates %}
+    <th> {{ date }} </th>
+    {% endfor %}
+  </tr>
 
-{% for route in internal_routes %}
-<li>{{ route }}</li>
-{% endfor %}
+  {% for route, dates in matrix.items %}
+  <tr> 
+    <td> {{ route }} </td>
+    {% for date, transport in dates.items %}
+    <td> {{ transport }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
 
-{% for route in external_routes %}
-<li>{{ route }}</li>
-{% endfor %}
 
 {% endblock content %}
