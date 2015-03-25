@@ -70,11 +70,11 @@
     <td> <a href="{% url 'db:update_application_status' trips_year=application.trips_year pk=application.pk %}"> {{ application.status }} </a></td>
 
     <td {% if not application.avg_leader_grade %} data-sort-value="0" {% endif %}> 
-      {{ application.avg_leader_grade|default:"" }} 
+      {{ application.avg_leader_grade|default:""|floatformat:1 }} 
     </td>
 
     <td {% if not application.avg_croo_grade %} data-sort-value="0" {% endif %}> 
-      {{ application.avg_croo_grade|default:"" }} 
+      {{ application.avg_croo_grade|default:""|floatformat:1 }} 
     </td>
 
     <td> {{ application.leader_application_complete | ok_if_true }} </td>

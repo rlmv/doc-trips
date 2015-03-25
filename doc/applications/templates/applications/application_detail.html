@@ -72,7 +72,7 @@
   {% endfor %}
   {% if application.leader_supplement.average_grade %}
   <tr class="info">
-    <td> {{ application.leader_supplement.average_grade }} </td>
+    <td> {{ application.leader_supplement.average_grade|floatformat:1 }} </td>
     <td> AVERAGE </td> <td/> <td/> <td/>
   </tr>
   {% endif %}
@@ -100,7 +100,7 @@
   {% endfor %}
   {% if application.croo_supplement.average_grade %}
   <tr class="info">
-    <td> {{ application.croo_supplement.average_grade }} </td>
+    <td> {{ application.croo_supplement.average_grade|floatformat:1 }} </td>
     <td> AVERAGE </td> <td/> <td/> <td/>  
   </tr>
   {% endif %}
