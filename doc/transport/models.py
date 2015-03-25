@@ -9,6 +9,7 @@ TRANSPORT_CATEGORIES = (
     ('EXTERNAL', 'External'),
 )
 
+
 class Stop(DatabaseModel):
 
     class Meta:
@@ -25,17 +26,18 @@ class Stop(DatabaseModel):
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
-    route = models.ForeignKey('Route', null=True, blank=True, on_delete=models.PROTECT, related_name='stops')
+    route = models.ForeignKey('Route', null=True, blank=True,
+                              on_delete=models.PROTECT, related_name='stops')
 
     # TODO: validate that this only is used if route.category==EXTERNAL?
-    cost = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    
-    # legacy data from old db - hide on site?
-    distance = models.IntegerField(null=True)
-
+    cost = models.DecimalField(max_digits=5, decimal_places=2,
+                               blank=True, null=True)
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
+
+    # legacy data from old db - hide on site?
+    distance = models.IntegerField(null=True)
 
     @property
     def category(self):
@@ -43,8 +45,8 @@ class Stop(DatabaseModel):
 
     def __str__(self):
         return self.name
-    
-    
+
+
 class Route(DatabaseModel):
 
     name = models.CharField(max_length=255)
@@ -56,11 +58,11 @@ class Route(DatabaseModel):
 
     def __str__(self):
         return self.name
-    
+
 
 class Vehicle(DatabaseModel):
-    
-    # eg. Internal Bus, Microbus, 
+                        
+    # eg. Internal Bus, Microbus,
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
 
@@ -75,8 +77,3 @@ class ScheduledTransportation(DatabaseModel):
 
     route = models.ForeignKey('Route', on_delete=models.PROTECT)
     date = models.DateField()
-    
-    
-    
-    
-    
