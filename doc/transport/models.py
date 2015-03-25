@@ -3,7 +3,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel
-from doc.transport.managers import StopManager, RouteManager
+from doc.transport.managers import (StopManager, RouteManager,
+                                    ScheduledTransportManager)
 
 
 class Stop(DatabaseModel):
@@ -106,6 +107,8 @@ class ScheduledTransport(DatabaseModel):
     # has a date if INTERNAL, section if EXTERNAL
     date = models.DateField(null=True, blank=True)
     section = models.ForeignKey('trips.Section', null=True, blank=True)
+
+    objects = ScheduledTransportManager()
 
     def clean(self):
         if self.date and self.section:

@@ -79,6 +79,16 @@ class RouteManagerTestCase(TripsYearTestCase):
         self.assertEqual([internal_route], list(Route.objects.internal(trips_year)))
 
 
+class ScheduledTransportManagerTestCase(TripsYearTestCase):
+    
+    def test_internal(self):
+
+        ty = self.init_current_trips_year()
+        external_transport = mommy.make(ScheduledTransport, trips_year=ty, route__category=Route.EXTERNAL)
+        internal_transport = mommy.make(ScheduledTransport, trips_year=ty, route__category=Route.INTERNAL)
+        self.assertEqual([internal_transport], list(ScheduledTransport.objects.internal(ty)))
+     
+   
 class TestViews(WebTestCase):
 
     def test_index_views(self):

@@ -6,6 +6,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
+from doc.trips.models import Section
 
 
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
@@ -19,6 +20,14 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context['external_routes'] = Route.objects.external(trips_year)
         return context
 
+    def get_route_date_matrix(self):
+
+        trips_year = self.kwargs['trips_year']
+        routes = Route.objects.internal(trips_year)
+        dates = Section.objects.trip_dates(trips_year)
+        
+        scheduled = ScheduledTransport.objects.internal(trips_year)
+        
 
 class StopListView(DatabaseListView):
     model = Stop
