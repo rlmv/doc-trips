@@ -3,10 +3,9 @@ from django.conf.urls import patterns, url, include
 
 from doc.trips.urls import (trip_urlpatterns, template_urlpatterns, triptype_urlpatterns, 
                             campsite_urlpatterns, section_urlpatterns, leader_urlpatterns)
-#from doc.leaders.urls import leaderapplication_urlpatterns
 from doc.croos.urls import croo_urlpatterns
-from doc.transport.urls import (transportstop_urlpatterns, route_urlpatterns, 
-                                vehicle_urlpatterns)
+from doc.transport.urls import (scheduledtransport_urlpatterns, route_urlpatterns,
+                                transportstop_urlpatterns, vehicle_urlpatterns)
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 from doc.applications.urls import application_urlpatterns, grader_urlpatterns
 from doc.trippees.urls import trippee_urlpatterns, registration_urlpatterns
@@ -16,7 +15,7 @@ from doc.trippees.urls import trippee_urlpatterns, registration_urlpatterns
 All database urlpatterns take a trips_year param.
 """
 database_urlpatterns = patterns(
-    '', 
+    '',
     url(r'^$', DatabaseLandingPage.as_view(), name='landing_page'),
     url(r'^trips/', include(trip_urlpatterns)),
     url(r'^leaders/', include(leader_urlpatterns)),                            
@@ -32,6 +31,7 @@ database_urlpatterns = patterns(
     url(r'^graders/', include(grader_urlpatterns)),
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),
+    url(r'^transport/', include(scheduledtransport_urlpatterns)),
 )
 
 urlpatterns = patterns(

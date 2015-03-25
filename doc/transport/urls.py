@@ -6,6 +6,12 @@ from doc.db.urlhelpers import DB_REGEX
 
 from doc.transport.views import *
 
+scheduledtransport_urlpatterns = patterns(
+    '',
+    url(DB_REGEX['LIST'], ScheduledTransportListView.as_view(),
+        name='scheduledtransport_index'),
+)
+
 transportstop_urlpatterns = patterns('', 
     url(DB_REGEX['LIST'], StopListView.as_view(), name='stop_index'),
     url(DB_REGEX['CREATE'], StopCreateView.as_view(), name='stop_create'),

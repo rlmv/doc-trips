@@ -4,7 +4,13 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
                           DatabaseDetailView)
 
-from doc.transport.models import Stop, Route, Vehicle
+from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
+
+
+class ScheduledTransportListView(DatabaseListView):
+    model = ScheduledTransport
+    context_object_name = 'scheduled_transports'
+    template_name = 'transport/transport_list.html'
 
 
 class StopListView(DatabaseListView):
