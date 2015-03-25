@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 BLEACH_WHITELIST = {
     'tags': ['p', 'strong', 'br', 'table', 'td', 'tr',
-             'em', 'ol', 'li', 'a', 'sup'],
+             'em', 'ol', 'ul', 'li', 'a', 'sup'],
     'attributes': {
         'a': ['href'],
     },
