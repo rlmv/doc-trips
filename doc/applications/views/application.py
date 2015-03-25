@@ -31,7 +31,6 @@ from doc.permissions.views import (CreateApplicationPermissionRequired,
                                    DatabaseEditPermissionRequired, 
                                    ApplicationEditPermissionRequired)
 from doc.utils.views import MultipleFormMixin
-from doc.utils.convert import convert_docx_filefield_to_html
 
 
 class IfApplicationAvailable():

@@ -11,12 +11,12 @@ from doc.applications.models import GeneralApplication
 # then each template can include trip information, etc.
 # but will require more logic for figuring out what's available when.
 STATUS_DESCRIPTIONS = {
-    "PENDING": "Your application is still Pending. ",
-    "CROO": "You've been accepted for a Croo!",
-    "LEADER": "You're a Trip Leader! See below for information about your trip.",
-    "LEADER_WAITLIST": "You're on the Leader Waitlist. People often back out of leading a Trip as the date gets nearer.", 
-    "REJECTED": "Unfortunately, we had a lot of really strong applications this year. ",
-    "CANCELLED": "Your application has been cancelled in the system. Please get in touch with the trip directors if you think this is an error.",
+    GeneralApplication.PENDING: "Your application is still Pending.",
+    GeneralApplication.CROO: "You've been accepted for a Croo!",
+    GeneralApplication.LEADER: "You're a Trip Leader! See below for information about your trip.",
+    GeneralApplication.LEADER_WAITLIST: "You're on the Leader Waitlist. People often back out of leading a Trip as the date gets nearer.", 
+    GeneralApplication.REJECTED: "Unfortunately, we had a lot of really strong applications this year. ",
+    GeneralApplication.CANCELED: "Your application has been cancelled in the system. Please get in touch with the trip directors if you think this is an error.",
 }
 
 
@@ -35,11 +35,14 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
                 trips_year=trips_year,
                 applicant=self.request.user
             )
+            application_status = STATUS_DESCRIPTIONS[application.status]
+
         except GeneralApplication.DoesNotExist:
             application = None
+            application_status = "You did not submit an application"
 
         context['application'] = application
-        context['status_description'] = STATUS_DESCRIPTIONS[application.status]
+        context['status_description'] = application_status
 
         return context
 

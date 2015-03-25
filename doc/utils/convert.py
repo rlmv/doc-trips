@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 BLEACH_WHITELIST = {
-    'tags': ['p', 'strong', 'br', 'table', 'td', 'tr', 
+    'tags': ['p', 'strong', 'br', 'table', 'td', 'tr',
              'em', 'ol', 'li', 'a', 'sup'],
     'attributes': {
         'a': ['href'],
@@ -18,12 +18,13 @@ BLEACH_WHITELIST = {
     'styles': [],
 }
 
+
 def sanitize_html(html):
     """ Escape all unapproved tags from the html string """
 
     return bleach.clean(html, **BLEACH_WHITELIST)
 
-    
+
 class ConversionError(Exception):
     pass
 
@@ -35,7 +36,7 @@ def convert_docx_to_html(file_obj):
     Return a sanitized, django-safe html string, or raise a 
     ConversionError if something went wrong.
     """
-    
+
     try:
         result = mammoth.convert_to_html(file_obj)
     except BadZipFile as exc:
@@ -45,28 +46,23 @@ def convert_docx_to_html(file_obj):
         # mammoth is raising 'NoneType' has no attribute __' exceptions
         logger.error('Conversion error ' + str(exc))
         raise ConversionError(exc)
-        
+
     html = sanitize_html(result.value)
-    
+
     return mark_safe(html)
-    
+
 
 def convert_docx_filefield_to_html(filefield):
     """
     Convert a django FileField containing a docx file to html.
 
-    This doesn't perform a file type check. If the conversion fails, 
-    return a failure string.
+    This doesn't perform a file type check. Raises a ConversionError
+    if conversions fails.
     """
 
     # empty filefield
-    if not filefield: 
+    if not filefield:
         return None
 
     with filefield as docx_file:
-        try:
-            return convert_docx_to_html(docx_file)
-        # TODO: handle this in view?
-        except ConversionError as exc:
-            return 'docx to HTML conversion failed. Try downloading the document instead.'
-
+        return convert_docx_to_html(docx_file)

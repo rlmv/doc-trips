@@ -145,20 +145,26 @@ class LeaderSupplement(DatabaseModel):
 
     objects = LeaderApplicationManager()
 
-    application = models.OneToOneField(GeneralApplication, editable=False, related_name='leader_supplement')
+    application = models.OneToOneField(
+        GeneralApplication, editable=False, related_name='leader_supplement'
+    )
     document = models.FileField('leader application answers', blank=True)
 
     #  ------  trip and section information ------
-    preferred_sections = models.ManyToManyField(Section, blank=True,
-                                                related_name='preferred_leaders')
-    available_sections = models.ManyToManyField(Section, blank=True,
-                                                related_name='available_leaders')
-    preferred_triptypes = models.ManyToManyField(TripType, blank=True,
-                                                 related_name='preferred_leaders',
-                                                 verbose_name='Preferred types of trips')
-    available_triptypes = models.ManyToManyField(TripType, blank=True, 
-                                                 related_name='available_triptypes', 
-                                                 verbose_name='Available types of trips')
+    preferred_sections = models.ManyToManyField(
+        Section, blank=True, related_name='preferred_leaders'
+    )
+    available_sections = models.ManyToManyField(
+        Section, blank=True, related_name='available_leaders'
+    )
+    preferred_triptypes = models.ManyToManyField(
+        TripType, blank=True, related_name='preferred_leaders',
+        verbose_name='Preferred types of trips'
+    )
+    available_triptypes = models.ManyToManyField(
+        TripType, blank=True, related_name='available_triptypes',
+        verbose_name='Available types of trips'
+    )
 
     # ------- availibilty and experience --------
     trip_preference_comments = models.TextField(blank=True, verbose_name="Looking at the Trips descriptions, please feel free to use this space to address any concerns or explain your availability. This will only be used to help us in Trip assignments, it will not be considered when your application is being read.")
