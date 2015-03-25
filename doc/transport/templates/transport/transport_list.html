@@ -6,4 +6,12 @@
 
 {% block content %}
 
+{% for route in internal_routes %}
+<li>{{ route }}</li>
+{% endfor %}
+
+{% for route in external_routes %}
+<li>{{ route }}</li>
+{% endfor %}
+
 {% endblock content %}

@@ -8,7 +8,7 @@ from doc.transport.views import *
 
 scheduledtransport_urlpatterns = patterns(
     '',
-    url(DB_REGEX['LIST'], ScheduledTransportListView.as_view(),
+    url(DB_REGEX['LIST'], ScheduledTransportMatrix.as_view(),
         name='scheduledtransport_index'),
 )
 

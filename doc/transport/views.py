@@ -1,18 +1,25 @@
 
+from vanilla.views import TemplateView
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
-                          DatabaseDetailView)
-
+                          DatabaseDetailView, TripsYearMixin)
+from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 
 
-class ScheduledTransportListView(DatabaseListView):
-    model = ScheduledTransport
-    context_object_name = 'scheduled_transports'
+class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
+                               TripsYearMixin, TemplateView):
     template_name = 'transport/transport_list.html'
 
-   
+    def get_context_data(self, **kwargs):
+        context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
+        trips_year = self.kwargs['trips_year']
+        context['internal_routes'] = Route.objects.internal(trips_year)
+        context['external_routes'] = Route.objects.external(trips_year)
+        return context
+
+
 class StopListView(DatabaseListView):
     model = Stop
     context_object_name = 'stops'
