@@ -28,6 +28,21 @@ class StopManagerTestCase(TripsYearTestCase):
         self.assertEqual([external_stop], list(Stop.objects.external(trips_year)))
 
 
+class RouteManagerTestCase(TripsYearTestCase):
+    
+    def test_external(self):
+        trips_year = self.init_current_trips_year()
+        external_route = mommy.make(Route, category=Route.EXTERNAL, trips_year=trips_year)
+        internal_route = mommy.make(Route, category=Route.INTERNAL, trips_year=trips_year)
+        self.assertEqual([external_route], list(Route.objects.external(trips_year)))
+
+    def test_internal(self):
+        trips_year = self.init_current_trips_year()
+        external_route = mommy.make(Route, category=Route.EXTERNAL, trips_year=trips_year)
+        internal_route = mommy.make(Route, category=Route.INTERNAL, trips_year=trips_year)
+        self.assertEqual([internal_route], list(Route.objects.internal(trips_year)))
+
+
 class TestViews(WebTestCase):
 
     def test_index_views(self):

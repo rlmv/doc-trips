@@ -13,4 +13,10 @@ class StopManager(models.Manager):
 
 class RouteManager(models.Manager):
 
-    pass
+    def internal(self, trips_year):
+        from doc.transport.models import Route
+        return self.filter(trips_year=trips_year, category=Route.INTERNAL)
+
+    def external(self, trips_year):
+        from doc.transport.models import Route
+        return self.filter(trips_year=trips_year, category=Route.EXTERNAL)

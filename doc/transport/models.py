@@ -2,7 +2,7 @@
 from django.db import models
 
 from doc.db.models import DatabaseModel
-from doc.transport.managers import StopManager
+from doc.transport.managers import StopManager, RouteManager
 
 
 class Stop(DatabaseModel):
@@ -53,6 +53,8 @@ class Route(DatabaseModel):
     )
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
     vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
+
+    objects = RouteManager()
 
     class Meta:
         ordering = ['category', 'vehicle', 'name']
