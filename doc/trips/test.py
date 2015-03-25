@@ -1,4 +1,4 @@
-
+from datetime import date
 from django.db import transaction
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
@@ -138,5 +138,26 @@ class SectionManagerTestCase(TripsTestCase):
         self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
 
 
+class SectionModelTestCase(TripsTestCase):
+    
+    def test_model_trip_dates(self):
+        ty = self.init_current_trips_year()
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        self.assertEqual(section.trip_dates, 
+                         [date(2015, 1, 2), date(2015, 1, 3), date(2015, 1, 4), date(2015, 1, 5), date(2015, 1, 6)])
+        
 
-                              
+class SectionDateManagerTestCase(TripsTestCase):
+    
+    def test_trips_dates_with_one_section(self):
+        ty = self.init_current_trips_year()
+        leaders_arrive = date(2015, 1, 1)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=leaders_arrive)
+        self.assertEqual(section.trip_dates, Section.dates.trip_dates(ty))
+
+    def test_trips_dates_with_multiple_sections(self):
+        ty = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 4))
+        self.assertEqual(Section.dates.trip_dates(ty),
+                         sorted(list(set(section1.trip_dates + section2.trip_dates))))

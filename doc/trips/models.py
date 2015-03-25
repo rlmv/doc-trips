@@ -81,6 +81,16 @@ class Section(DatabaseModel):
         """ Date section returns to campus from the lodge """
         return self.leaders_arrive + timedelta(days=5)
 
+    @property
+    def trip_dates(self):
+        """ 
+        All dates when trippees are here for trips.
+        
+        Excludes the day leaders arrive.
+        """
+        return [self.trippees_arrive, self.at_campsite1, self.at_campsite2,
+                self.arrive_at_lodge, self.return_to_campus]
+
     def __str__(self):
         return 'Section ' + self.name
         
@@ -88,6 +98,7 @@ class Section(DatabaseModel):
         """ 
         Return a string of dates that this section covers.
         
+        These are the leader dates.
         Looks like 'Aug 10th to Aug 15th'
         """
         fmt = '%b %d'
