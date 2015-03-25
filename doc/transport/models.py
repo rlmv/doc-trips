@@ -73,7 +73,7 @@ class Vehicle(DatabaseModel):
         return self.name
 
 
-class ScheduledTransportation(DatabaseModel):
+class ScheduledTransport(DatabaseModel):
 
     route = models.ForeignKey('Route', on_delete=models.PROTECT)
     date = models.DateField()
