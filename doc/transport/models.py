@@ -4,11 +4,6 @@ from django.db import models
 from doc.db.models import DatabaseModel
 from doc.transport.managers import StopManager
 
-TRANSPORT_CATEGORIES = (
-    ('INTERNAL', 'Internal'),
-    ('EXTERNAL', 'External'),
-)
-
 
 class Stop(DatabaseModel):
 
@@ -50,8 +45,14 @@ class Stop(DatabaseModel):
 class Route(DatabaseModel):
 
     name = models.CharField(max_length=255)
-    vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
+    INTERNAL = 'INTERNAL'
+    EXTERNAL = 'EXTERNAL'
+    TRANSPORT_CATEGORIES = (
+        (INTERNAL, 'Internal'),
+        (EXTERNAL, 'External'),
+    )
     category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
+    vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
 
     class Meta:
         ordering = ['category', 'vehicle', 'name']
