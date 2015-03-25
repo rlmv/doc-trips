@@ -12,8 +12,7 @@ class ScheduledTransportListView(DatabaseListView):
     context_object_name = 'scheduled_transports'
     template_name = 'transport/transport_list.html'
 
-    
-    
+   
 class StopListView(DatabaseListView):
     model = Stop
     context_object_name = 'stops'
