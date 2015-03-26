@@ -32,9 +32,6 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
             matrix[transport.route][transport.date] = transport
         
         return matrix
-        
-        
-        
 
 class StopListView(DatabaseListView):
     model = Stop
@@ -48,9 +45,11 @@ class StopCreateView(DatabaseCreateView):
 
 class StopDetailView(DatabaseDetailView):
     model = Stop
-    fields = ['name', 'address', 'route', 'category',
-              'directions', 'latitude', 'longitude',
-              'cost', 'pickup_time', 'dropoff_time', 'distance']
+    fields = [
+        'name', 'address', 'route', 'directions',
+        'latitude', 'longitude', 'cost',
+        'pickup_time', 'dropoff_time', 'distance'
+    ]
 
 
 class StopUpdateView(DatabaseUpdateView):
