@@ -1,5 +1,6 @@
 
 from vanilla.views import TemplateView
+from django.core.urlresolvers import reverse
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
@@ -38,9 +39,12 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
 class ScheduledTransportCreateView(DatabaseCreateView):
     
     model = ScheduledTransport
+    
+    def get_success_url(self):
+        return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
 
     def get(self, request, *args, **kwargs):
-
+        
         data = None
         GET = request.GET
         if 'route' in GET and 'date' in GET:
