@@ -25,6 +25,18 @@ class ScheduledTrip(DatabaseModel):
         # combination; we don't want to schedule two identical trips
         unique_together = ('template', 'section', 'trips_year')
 
+    @property 
+    def dropoff_date(self):
+        return self.section.at_campsite1
+
+    @property
+    def pickup_date(self):
+        return self.section.arrive_at_lodge
+
+    @property
+    def return_date(self):
+        return self.section.return_to_campus
+
     def __str__(self):
 
         # return '{}{}- {}'.format(self.section.name, self.template.name, self.template.description)

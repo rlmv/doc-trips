@@ -1,3 +1,4 @@
+from collections import namedtuple
 
 from vanilla.views import TemplateView
 from django.core.urlresolvers import reverse
@@ -7,7 +8,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
-from doc.trips.models import Section
+from doc.trips.models import Section, ScheduledTrip
 
 
 def get_internal_route_matrix(trips_year):
@@ -22,6 +23,38 @@ def get_internal_route_matrix(trips_year):
 
     return matrix
 
+
+Riders = namedtuple('Riders', ['dropping_off', 'picking_up', 'returning'])
+
+
+def get_internal_rider_matrix(trips_year):
+    """
+    Given an internal route and a date,
+    returns tuple (dropoff #, pickup #, return #) 
+    which are the number of people moved each leg of the journey.
+    
+    TODO: Maxed out number of people - or actual number? Either has
+    issues since we are not currently enforcing max_trippees.
+    """
+
+    routes = Route.objects.internal(trips_year)
+    dates = Section.dates.trip_dates(trips_year)
+    trips = ScheduledTrip.objects.filter(trips_year=trips_year)
+   
+    matrix = {route: {date: None for date in dates} for route in routes}
+
+    for trip in trips:
+
+        n = trip.template.max_num_people
+        # dropoff 
+        matrix[trip.template.dropoff.route][trip.dropoff_date] = Riders(n, 0, 0)
+        # pickup
+        matrix[trip.template.pickup.route][trip.pickup_date] = Riders(0, n, 0)
+        # return 
+        matrix[trip.template.return_route][trip.return_date] = Riders(0, 0, n)
+
+    return matrix
+    
 
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):

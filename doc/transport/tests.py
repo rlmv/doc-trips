@@ -8,8 +8,8 @@ from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport
-from doc.transport.views import get_internal_route_matrix
-from doc.trips.models import Section
+from doc.transport.views import get_internal_route_matrix, get_internal_rider_matrix
+from doc.trips.models import Section, ScheduledTrip
 
 class TransportModelTestCase(TripsYearTestCase):
 
@@ -135,3 +135,20 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
                   route2: {date(2015,1,2): None, date(2015,1,3): None, date(2015, 1,4): transport2, date(2015,1,5): None, date(2015,1,6):None, date(2015,1,7):None}}
         matrix = get_internal_route_matrix(ty)
         self.assertEqual(target, matrix)
+
+
+class RidersMatrixTestCase(TripsYearTestCase):
+
+    def test_internal_riders_matrix(self):
+        ty = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+      
+        trip = mommy.make(ScheduledTrip, trips_year=ty, section=section, template__dropoff__route=route, template__pickup__route=route, template__return_route=route)
+
+        num = trip.template.max_num_people
+        target = {route: {date(2015,1,2): None, date(2015,1,3): (num,0,0), date(2015, 1,4): None, date(2015,1,5): (0,num,0), date(2015,1,6): (0,0,num)}}
+        matrix = get_internal_rider_matrix(ty)
+        self.assertEqual(target, matrix)
+        
+    
