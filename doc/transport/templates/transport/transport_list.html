@@ -9,14 +9,14 @@
   <tr>
     <th> Route </th>
     {% for date in dates %}
-    <th> {{ date }} </th>
+    <th> {{ date|date:"n/j" }} </th>
     {% endfor %}
   </tr>
 
   {% for route, dates in matrix.items %}
   <tr> 
     <td> {{ route }} </td>
-    {% for date, transport in dates.items %}
+    {% for transport in dates %}
     <td> {{ transport }} </td>
     {% endfor %}
   </tr>

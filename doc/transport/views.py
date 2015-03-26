@@ -9,6 +9,21 @@ from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 from doc.trips.models import Section
 
 
+def get_internal_route_matrix(trips_year):
+    
+    routes = Route.objects.internal(trips_year)
+    dates = Section.dates.trip_dates(trips_year)
+   
+    matrix = {route: {date: None for date in dates} for route in routes}
+    scheduled = ScheduledTransport.objects.internal(trips_year)
+    for transport in scheduled:
+        matrix[transport.route][transport.date] = transport
+   
+    for route, transport in matrix.items():
+        matrix[route] = [transport[date] for date in sorted(transport.keys())]
+    return matrix
+
+
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
     template_name = 'transport/transport_list.html'
@@ -17,21 +32,9 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
         context['dates'] = Section.dates.trip_dates(trips_year)
-        context['matrix'] = self.get_route_date_matrix()
+        context['matrix'] = get_internal_route_matrix(trips_year)
         return context
-
-    def get_route_date_matrix(self):
-
-        trips_year = self.kwargs['trips_year']
-        routes = Route.objects.internal(trips_year)
-        dates = Section.dates.trip_dates(trips_year)
-        
-        matrix = {route: {date: None for date in dates} for route in routes}
-        scheduled = ScheduledTransport.objects.internal(trips_year)
-        for transport in scheduled:
-            matrix[transport.route][transport.date] = transport
-        
-        return matrix
+   
 
 class StopListView(DatabaseListView):
     model = Stop

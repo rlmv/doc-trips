@@ -1,3 +1,4 @@
+from datetime import date
 
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -7,6 +8,7 @@ from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport
+from doc.transport.views import get_internal_route_matrix
 from doc.trips.models import Section
 
 class TransportModelTestCase(TripsYearTestCase):
@@ -105,4 +107,31 @@ class TestViews(WebTestCase):
         for name in names:
             res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
 
+        
+class ScheduledTransportMatrixTestCase(TripsYearTestCase):
 
+    def test_internal_matrix(self):
+        ty = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        transport = mommy.make(ScheduledTransport, trips_year=ty,
+                               route=route, date=date(2015, 1, 2))
+
+        target = {route: [transport, None, None, None, None]}
+        matrix = get_internal_route_matrix(ty)
+        self.assertEqual(target, matrix)
+
+    def test_internal_matrix_again(self):
+        ty = self.init_current_trips_year()
+        route1 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        route2 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 2))
+        transport1 = mommy.make(ScheduledTransport, trips_year=ty,
+                               route=route1, date=date(2015, 1, 2))
+        transport2 = mommy.make(ScheduledTransport, trips_year=ty,
+                                route=route2, date=date(2015, 1, 4))
+        target = {route1: [transport1, None, None, None, None, None],
+                  route2: [None, None, transport2, None, None, None]}
+        matrix = get_internal_route_matrix(ty)
+        self.assertEqual(target, matrix)
