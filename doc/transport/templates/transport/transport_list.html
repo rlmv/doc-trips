@@ -18,7 +18,9 @@
   <tr> 
     <td> {{ route }} </td>
     {% for date in transport_by_date.keys %}
-    <td> {{ transport_by_date|get:date|default:"--" }} </td>
+    {% with transport=transport_by_date|get:date %}
+    <td> {% if transport %} {{ transport }} {% else %} Add {% endif %} </td>
+    {% endwith %}
     {% endfor %}
   </tr>
   {% endfor %}

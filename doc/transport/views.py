@@ -33,7 +33,23 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context['matrix'] = matrix
         context['dates'] = matrix[list(matrix.keys())[0]].keys() #  dates in matrix
         return context
-   
+
+
+class ScheduledTransportCreateView(DatabaseCreateView):
+    
+    model = ScheduledTransport
+
+    def get(self, request, *args, **kwargs):
+
+        data = None
+        GET = request.GET
+        if 'route' in GET and 'date' in GET:
+            data = {'route': GET['route'], 'date': GET['date']}
+
+        form = self.get_form(data=data)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+    
 
 class StopListView(DatabaseListView):
     model = Stop
