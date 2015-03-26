@@ -10,7 +10,7 @@ from doc.trips.models import Section
 
 
 def get_internal_route_matrix(trips_year):
-    
+
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
    
@@ -18,9 +18,7 @@ def get_internal_route_matrix(trips_year):
     scheduled = ScheduledTransport.objects.internal(trips_year)
     for transport in scheduled:
         matrix[transport.route][transport.date] = transport
-   
-    for route, transport in matrix.items():
-        matrix[route] = [transport[date] for date in sorted(transport.keys())]
+
     return matrix
 
 
@@ -31,8 +29,9 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
     def get_context_data(self, **kwargs):
         context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
-        context['dates'] = Section.dates.trip_dates(trips_year)
-        context['matrix'] = get_internal_route_matrix(trips_year)
+        matrix = get_internal_route_matrix(trips_year)
+        context['matrix'] = matrix
+        context['dates'] = matrix[list(matrix.keys())[0]].keys() #  dates in matrix
         return context
    
 

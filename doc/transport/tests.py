@@ -117,7 +117,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
         transport = mommy.make(ScheduledTransport, trips_year=ty,
                                route=route, date=date(2015, 1, 2))
 
-        target = {route: [transport, None, None, None, None]}
+        target = {route: {date(2015,1,2): transport, date(2015,1,3): None, date(2015, 1,4): None, date(2015,1,5): None, date(2015,1,6):None}}
         matrix = get_internal_route_matrix(ty)
         self.assertEqual(target, matrix)
 
@@ -131,7 +131,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
                                route=route1, date=date(2015, 1, 2))
         transport2 = mommy.make(ScheduledTransport, trips_year=ty,
                                 route=route2, date=date(2015, 1, 4))
-        target = {route1: [transport1, None, None, None, None, None],
-                  route2: [None, None, transport2, None, None, None]}
+        target = {route1: {date(2015,1,2): transport1, date(2015,1,3): None, date(2015, 1,4): None, date(2015,1,5): None, date(2015,1,6):None, date(2015,1,7):None},
+                  route2: {date(2015,1,2): None, date(2015,1,3): None, date(2015, 1,4): transport2, date(2015,1,5): None, date(2015,1,6):None, date(2015,1,7):None}}
         matrix = get_internal_route_matrix(ty)
         self.assertEqual(target, matrix)

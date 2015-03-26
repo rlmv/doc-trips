@@ -1,4 +1,5 @@
 {% extends "db/base.html" %}
+{% load get from dict %}
 
 {% block header %}
 <h2> Scheduled Transportation </h2>
@@ -13,11 +14,11 @@
     {% endfor %}
   </tr>
 
-  {% for route, dates in matrix.items %}
+  {% for route, transport_by_date in matrix.items %}
   <tr> 
     <td> {{ route }} </td>
-    {% for transport in dates %}
-    <td> {{ transport }} </td>
+    {% for date in transport_by_date.keys %}
+    <td> {{ transport_by_date|get:date|default:"--" }} </td>
     {% endfor %}
   </tr>
   {% endfor %}
