@@ -73,9 +73,10 @@ INSTALLED_APPS = (
     # doc apps
     'doc.applications',
     'doc.core',
-    'doc.croos', 
-    'doc.dartdm', 
+    'doc.croos',
+    'doc.dartdm',
     'doc.db',
+    'doc.emails',
     'doc.permissions',
     'doc.timetable',
     'doc.transport',
@@ -83,7 +84,7 @@ INSTALLED_APPS = (
     'doc.trips',
     'doc.users',
     'doc.utils',
-    'doc.webauth', 
+    'doc.webauth',
 )
 
 MIDDLEWARE_CLASSES = (
