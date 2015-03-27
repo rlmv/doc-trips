@@ -48,7 +48,8 @@ class ApplicationManager(models.Manager):
         """
 
         # grab the value of GeneralApplication.PENDING
-        PENDING = self.model.application.field.related_field.model.PENDING
+        from doc.applications.models import GeneralApplication
+        PENDING = GeneralApplication.PENDING
 
         return (self.completed_applications(trips_year=trips_year).
                 filter(application__status=PENDING)
@@ -93,7 +94,8 @@ class CrooApplicationManager(ApplicationManager):
         trips_year = TripsYear.objects.current()
 
         # grab the value of GeneralApplication.PENDING
-        PENDING = self.model.application.field.related_field.model.PENDING
+        from doc.applications.models import GeneralApplication
+        PENDING = GeneralApplication.PENDING
 
         return (self.completed_applications(trips_year=trips_year)
                 .filter(grades__qualifications=qualification)

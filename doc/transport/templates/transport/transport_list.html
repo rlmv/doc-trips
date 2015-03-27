@@ -1,0 +1,32 @@
+{% extends "db/base.html" %}
+{% load get from dict %}
+{% load links %}
+
+{% block header %}
+<h2> Scheduled Transportation </h2>
+{% endblock %}
+
+{% block content %}
+<table class="table table-condensed">
+  <tr>
+    <th> Route </th>
+    {% for date in dates %}
+    <th> {{ date|date:"n/j" }} </th>
+    {% endfor %}
+  </tr>
+
+  {% for route, transport_by_date in matrix.items %}
+  <tr> 
+    <td> {{ route|detail_link }} </td>
+    {% for date in transport_by_date.keys %}
+    {% with transport=transport_by_date|get:date %}
+    <td> {% if transport %} {{ transport }} {% else %} 
+      <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> {% endif %} </td>
+    {% endwith %}
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+
+
+{% endblock content %}

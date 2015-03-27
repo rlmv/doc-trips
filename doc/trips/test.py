@@ -1,4 +1,4 @@
-
+from datetime import date
 from django.db import transaction
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
@@ -84,25 +84,20 @@ class SectionManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
-        
         self.assertEqual([section1], list(Section.objects.local(trips_year)))
-        
 
     def test_not_local(self):
         
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
-        
         self.assertEqual([section2], list(Section.objects.not_local(trips_year)))
-    
 
     def test_international(self):
         
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_international=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_international=False)
-        
         self.assertEqual([section1], list(Section.objects.international(trips_year)))
 
     def test_transfer(self):
@@ -110,7 +105,6 @@ class SectionManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_transfer=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_transfer=False)
-        
         self.assertEqual([section1], list(Section.objects.transfer(trips_year)))
 
     def test_native(self):
@@ -118,7 +112,6 @@ class SectionManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_native=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_native=False)
-        
         self.assertEqual([section1], list(Section.objects.native(trips_year)))
 
     def test_fysep(self):
@@ -126,7 +119,6 @@ class SectionManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_fysep=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_fysep=False)
-        
         self.assertEqual([section1], list(Section.objects.fysep(trips_year)))
 
     def test_exchange(self):
@@ -134,9 +126,29 @@ class SectionManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_exchange=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_exchange=False)
-        
         self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
 
 
+class SectionModelTestCase(TripsTestCase):
+    
+    def test_model_trip_dates(self):
+        ty = self.init_current_trips_year()
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        self.assertEqual(section.trip_dates, 
+                         [date(2015, 1, 2), date(2015, 1, 3), date(2015, 1, 4), date(2015, 1, 5), date(2015, 1, 6)])
+        
 
-                              
+class SectionDateManagerTestCase(TripsTestCase):
+    
+    def test_trips_dates_with_one_section(self):
+        ty = self.init_current_trips_year()
+        leaders_arrive = date(2015, 1, 1)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=leaders_arrive)
+        self.assertEqual(section.trip_dates, Section.dates.trip_dates(ty))
+
+    def test_trips_dates_with_multiple_sections(self):
+        ty = self.init_current_trips_year()
+        section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 4))
+        self.assertEqual(Section.dates.trip_dates(ty),
+                         sorted(list(set(section1.trip_dates + section2.trip_dates))))
