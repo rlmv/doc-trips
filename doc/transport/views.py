@@ -128,7 +128,12 @@ class ScheduledTransportCreateView(DatabaseCreateView):
         form = self.get_form(data=data)
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
-    
+
+
+class ScheduledTransportDeleteView(DatabaseDeleteView):
+    model = ScheduledTransport
+    success_url_pattern = 'db:scheduledtransport_index'
+
 
 class StopListView(DatabaseListView):
     model = Stop

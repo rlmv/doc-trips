@@ -10,6 +10,8 @@ scheduledtransport_urlpatterns = patterns(
         name='scheduledtransport_index'),
     url(DB_REGEX['CREATE'], ScheduledTransportCreateView.as_view(),
         name='scheduledtransport_create'),
+    url(DB_REGEX['DELETE'], ScheduledTransportDeleteView.as_view(),
+        name='scheduledtransport_delete'),
 )
 
 transportstop_urlpatterns = patterns(
