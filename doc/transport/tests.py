@@ -1,4 +1,5 @@
 from datetime import date
+import unittest
 
 from django.core.exceptions import ValidationError
 from django.utils import timezone
@@ -8,8 +9,9 @@ from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport
-from doc.transport.views import get_internal_route_matrix, get_internal_rider_matrix
+from doc.transport.views import get_internal_route_matrix, get_internal_rider_matrix, Riders
 from doc.trips.models import Section, ScheduledTrip
+
 
 class TransportModelTestCase(TripsYearTestCase):
 
@@ -151,4 +153,23 @@ class RidersMatrixTestCase(TripsYearTestCase):
         matrix = get_internal_rider_matrix(ty)
         self.assertEqual(target, matrix)
         
+    
+class RidersClassTestCase(unittest.TestCase):
+
+    def test__add__(self):
+        r1 = Riders(0, 0, 1)
+        r2 = Riders(1, 1, 1)
+        new = r1 + r2
+        self.assertEqual(new.dropping_off, 1)
+        self.assertEqual(new.picking_up, 1)
+        self.assertEqual(new.returning, 2)
+
+    def test__bool__true(self):
+        self.assertTrue(Riders(0, 0, 1))
+        self.assertTrue(Riders(0, 2, 0))
+        self.assertTrue(Riders(2012, 0, 0))
+
+    def test__bool__false(self):
+        r1 = Riders(0, 0, 0)
+        self.assertFalse(r1)
     

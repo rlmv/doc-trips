@@ -24,7 +24,36 @@ def get_internal_route_matrix(trips_year):
     return matrix
 
 
-Riders = namedtuple('Riders', ['dropping_off', 'picking_up', 'returning'])
+class Riders:
+    """ 
+    Utility class to represent the number of riders on a route.
+    
+    Riders objects can be added to each other. An empty Riders object 
+    evaluates to False for convenience.
+
+    TODO: "Riders" doesn't really mean much, semantically.
+    """
+
+    def __init__(self, dropping_off, picking_up, returning):
+        self.dropping_off = dropping_off
+        self.picking_up = picking_up
+        self.returning = returning
+
+    def __add__(self, y):
+        d = self.dropping_off + y.dropping_off
+        p = self.picking_up + y.picking_up
+        r = self.returning + y.returning
+        return Riders(d, p, r)
+
+    def __bool__(self):
+        return bool(self.dropping_off | self.picking_up | self.returning)
+
+    def __str__(self):
+        return "Riders({}, {}, {})".format(
+            self.dropping_off, self.picking_up, self.returning
+        )
+
+    __repr__ = __str__
 
 
 def get_internal_rider_matrix(trips_year):
@@ -32,6 +61,8 @@ def get_internal_rider_matrix(trips_year):
     Given an internal route and a date,
     returns tuple (dropoff #, pickup #, return #) 
     which are the number of people moved each leg of the journey.
+
+    matrix[route][date] gives you the numbers for that route on that date.
     
     TODO: Maxed out number of people - or actual number? Either has
     issues since we are not currently enforcing max_trippees.
@@ -41,18 +72,20 @@ def get_internal_rider_matrix(trips_year):
     dates = Section.dates.trip_dates(trips_year)
     trips = ScheduledTrip.objects.filter(trips_year=trips_year)
    
-    matrix = {route: {date: None for date in dates} for route in routes}
+    matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
     for trip in trips:
 
         n = trip.template.max_num_people
         # dropoff 
-        matrix[trip.template.dropoff.route][trip.dropoff_date] = Riders(n, 0, 0)
+        if trip.template.dropoff.route:
+            matrix[trip.template.dropoff.route][trip.dropoff_date] += Riders(n, 0, 0)
         # pickup
-        matrix[trip.template.pickup.route][trip.pickup_date] = Riders(0, n, 0)
+        if trip.template.pickup.route:
+            matrix[trip.template.pickup.route][trip.pickup_date] += Riders(0, n, 0)
         # return 
-        matrix[trip.template.return_route][trip.return_date] = Riders(0, 0, n)
-
+        matrix[trip.template.return_route][trip.return_date] += Riders(0, 0, n)
+        
     return matrix
     
 
@@ -66,6 +99,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         matrix = get_internal_route_matrix(trips_year)
         context['matrix'] = matrix
         context['dates'] = matrix[list(matrix.keys())[0]].keys() #  dates in matrix
+        print(get_internal_rider_matrix(trips_year))
         return context
 
 
