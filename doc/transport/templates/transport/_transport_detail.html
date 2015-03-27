@@ -1,0 +1,9 @@
+{# has 'transport' and 'riders' in context #}
+
+<span data-toggle="tooltip" data-placement="top" title="{{ riders }}">
+  {% if transport %} 
+  <a class="btn btn-xs btn-warning" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i> del </a>
+  {% else %} 
+  <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> 
+  {% endif %}
+</span>

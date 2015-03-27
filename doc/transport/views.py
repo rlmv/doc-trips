@@ -57,7 +57,7 @@ class Riders:
         return not self.__eq__(y)
 
     def __str__(self):
-        return "Riders({}, {}, {})".format(
+        return "({}, {}, {})".format(
             self.dropping_off, self.picking_up, self.returning
         )
 
