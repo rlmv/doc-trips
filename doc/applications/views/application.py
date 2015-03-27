@@ -202,7 +202,6 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
                                                    trips_year=self.kwargs['trips_year'])
         context[self.context_object_name] = applications_filter.qs
         context['applications_filter'] = applications_filter
-        context['emails'] = map(lambda x: x.applicant.email, applications_filter.qs)
         return context
 
 

@@ -5,5 +5,5 @@ from doc.emails.views import EmailList
 
 urlpatterns = patterns(
     '',
-    url(r'$', EmailList.as_view(), name='email_list'),
+    url(r'$', EmailList.as_view(), name='email_lists'),
 )
