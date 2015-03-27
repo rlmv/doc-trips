@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<table class="table table-condensed">
+<table class="table table-condensed table-bordered">
   <tr>
     <th> Route </th>
     {% for date in dates %}
@@ -19,7 +19,7 @@
   <tr> 
     <td> {{ route|detail_link }} </td>
     {% for date in dates %}
-    {% with transport=transport_by_date|get:date riders=riders|get:route|get:date %}
+    {% with transport=transport_by_date|get:date riders=riders|get:route|get:date capacity=route.vehicle.capacity %}
     <td> 
       {% include "transport/_transport_detail.html" %}
     </td>
