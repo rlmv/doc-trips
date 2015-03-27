@@ -6,13 +6,29 @@
 
 {% block content %}
 
-<div> 
-{% for title, emails in email_lists.items %}
-<strong>{{ title }}</strong>
-{% for email in emails %}
-{{ email }}
-{% endfor %}
-{% endfor %}
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  {% for title, emails in email_lists.items %}
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#emails{{ forloop.counter }}" aria-expanded="true" aria-controls="emails{{ forloop.counter }}">
+          {{ title }} <span class="badge">{{ emails|length }}</span>
+        </a>
+      </h4>
+    </div>
+    <div id="emails{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+      <div class="panel-body">
+	{{ emails|join:", " }}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 
+{% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+  $('.collapse').collapse()
+</script>
 {% endblock %}

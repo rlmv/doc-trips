@@ -15,10 +15,10 @@ def email_lists(trips_year):
             .filter(**filter_kwargs)
             .values('applicant__email')
         )
-        return map(lambda x: x['applicant__email'], values)
+        return list(map(lambda x: x['applicant__email'], values))
 
     return {
-        'all applications': emails(),
+        'all applicants': emails(),
         'leaders': emails(status=GeneralApplication.LEADER),
         'leader waitlist': emails(status=GeneralApplication.LEADER_WAITLIST),
         'croos': emails(status=GeneralApplication.CROO),
