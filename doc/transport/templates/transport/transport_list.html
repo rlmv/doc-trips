@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load get from dict %}
+{% load links %}
 
 {% block header %}
 <h2> Scheduled Transportation </h2>
@@ -16,7 +17,7 @@
 
   {% for route, transport_by_date in matrix.items %}
   <tr> 
-    <td> {{ route }} </td>
+    <td> {{ route|detail_link }} </td>
     {% for date in transport_by_date.keys %}
     {% with transport=transport_by_date|get:date %}
     <td> {% if transport %} {{ transport }} {% else %} 

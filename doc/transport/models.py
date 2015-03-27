@@ -126,4 +126,4 @@ class ScheduledTransport(DatabaseModel):
 
     def __str__(self):
        
-        return "%s: %s" % (self.route, self.date)
+        return "%s: %s" % (self.route, self.date.strftime("%x"))
