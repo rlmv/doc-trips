@@ -20,8 +20,14 @@
     <td> {{ route|detail_link }} </td>
     {% for date in transport_by_date.keys %}
     {% with transport=transport_by_date|get:date %}
-    <td> {% if transport %} {{ transport }} {% else %} 
-      <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> {% endif %} </td>
+    <td> 
+      {% if transport %} 
+      <span class="bg-error">
+	<a class="btn btn-xs btn-warning" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i> del </a>
+      {% else %} 
+      <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> 
+      {% endif %} 
+    </td>
     {% endwith %}
     {% endfor %}
   </tr>
