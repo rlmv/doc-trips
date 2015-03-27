@@ -1,3 +1,4 @@
+from collections import OrderedDict
 
 from vanilla import TemplateView
 
@@ -17,13 +18,13 @@ def email_lists(trips_year):
         )
         return list(map(lambda x: x['applicant__email'], values))
 
-    return {
-        'all applicants': emails(),
-        'leaders': emails(status=GeneralApplication.LEADER),
-        'leader waitlist': emails(status=GeneralApplication.LEADER_WAITLIST),
-        'croos': emails(status=GeneralApplication.CROO),
-        'rejected': emails(status=GeneralApplication.REJECTED),
-    }
+    return OrderedDict([
+        ('all applicants', emails()),
+        ('leaders', emails(status=GeneralApplication.LEADER)),
+        ('leader waitlist', emails(status=GeneralApplication.LEADER_WAITLIST)),
+        ('croos', emails(status=GeneralApplication.CROO)),
+        ('rejected', emails(status=GeneralApplication.REJECTED)),
+    ])
 
 
 class EmailList(DatabaseReadPermissionRequired, TripsYearMixin, 

@@ -12,7 +12,7 @@
     <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
       <h4 class="panel-title">
         <a data-toggle="collapse" data-parent="#accordion" href="#emails{{ forloop.counter }}" aria-expanded="true" aria-controls="emails{{ forloop.counter }}">
-          {{ title }} <span class="badge">{{ emails|length }}</span>
+          {{ title|capfirst }} <span class="badge">{{ emails|length }}</span>
         </a>
       </h4>
     </div>
