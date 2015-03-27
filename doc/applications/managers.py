@@ -133,7 +133,3 @@ class GeneralApplicationManager(models.Manager):
                 .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) | 
                         Q(leader_supplement__available_triptypes=trip.template.triptype))
                 .distinct())
-                           
-
-    
-    

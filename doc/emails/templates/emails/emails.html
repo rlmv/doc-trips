@@ -6,4 +6,13 @@
 
 {% block content %}
 
+<div> 
+{% for title, emails in email_lists.items %}
+<strong>{{ title }}</strong>
+{% for email in emails %}
+{{ email }}
+{% endfor %}
+{% endfor %}
+</div>
+
 {% endblock %}
