@@ -18,8 +18,8 @@
   {% for route, transport_by_date in matrix.items %}
   <tr> 
     <td> {{ route|detail_link }} </td>
-    {% for date in transport_by_date.keys %}
-    {% with transport=transport_by_date|get:date %}
+    {% for date in dates %}
+    {% with transport=transport_by_date|get:date riders=riders|get:route|get:date %}
     <td> 
       {% if transport %} 
       <span class="bg-error">
@@ -27,6 +27,7 @@
       {% else %} 
       <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> 
       {% endif %} 
+      {{ riders }}
     </td>
     {% endwith %}
     {% endfor %}

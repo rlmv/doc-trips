@@ -79,7 +79,7 @@ def get_internal_rider_matrix(trips_year):
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
     trips = ScheduledTrip.objects.filter(trips_year=trips_year)
-   
+        
     matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
     for trip in trips:
@@ -107,7 +107,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         matrix = get_internal_route_matrix(trips_year)
         context['matrix'] = matrix
         context['dates'] = sorted(matrix[list(matrix.keys())[0]].keys()) #  dates in matrix
-        print(get_internal_rider_matrix(trips_year))
+        context['riders'] = get_internal_rider_matrix(trips_year)
         return context
 
 
