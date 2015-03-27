@@ -38,7 +38,6 @@ class Stop(DatabaseModel):
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
-
     # legacy data from old db - hide on site?
     distance = models.IntegerField(null=True)
 
@@ -102,6 +101,7 @@ class ScheduledTransport(DatabaseModel):
     TODO: should this be separated into Internal and 
     and External models? Or just schedule for date?
     """
+
     route = models.ForeignKey('Route', on_delete=models.PROTECT)
 
     # has a date if INTERNAL, section if EXTERNAL
@@ -123,3 +123,7 @@ class ScheduledTransport(DatabaseModel):
         elif self.route.category == Route.EXTERNAL and self.date:
             msg = "External transport must be scheduled for a section"
             raise ValidationError(msg)
+
+    def __str__(self):
+       
+        return "%s: %s" % (self.route, self.date)

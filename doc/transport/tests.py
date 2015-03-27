@@ -149,7 +149,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         trip = mommy.make(ScheduledTrip, trips_year=ty, section=section, template__dropoff__route=route, template__pickup__route=route, template__return_route=route)
 
         num = trip.template.max_num_people
-        target = {route: {date(2015,1,2): None, date(2015,1,3): (num,0,0), date(2015, 1,4): None, date(2015,1,5): (0,num,0), date(2015,1,6): (0,0,num)}}
+        target = {route: {date(2015,1,2): Riders(0,0,0), date(2015,1,3): Riders(num,0,0), date(2015, 1,4): Riders(0,0,0), date(2015,1,5): Riders(0,num,0), date(2015,1,6): Riders(0,0,num)}}
         matrix = get_internal_rider_matrix(ty)
         self.assertEqual(target, matrix)
         
@@ -172,4 +172,8 @@ class RidersClassTestCase(unittest.TestCase):
     def test__bool__false(self):
         r1 = Riders(0, 0, 0)
         self.assertFalse(r1)
+
+    def test__eq__(self):
+        self.assertEqual(Riders(0,0,0), Riders(0,0,0))
+        self.assertNotEqual(Riders(1,2,3), Riders(0,0,0))
     

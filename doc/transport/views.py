@@ -46,7 +46,15 @@ class Riders:
         return Riders(d, p, r)
 
     def __bool__(self):
-        return bool(self.dropping_off | self.picking_up | self.returning)
+        return bool(self.dropping_off or self.picking_up or self.returning)
+
+    def __eq__(self, y):
+        return (self.dropping_off == y.dropping_off and
+                self.picking_up == y.picking_up and
+                self.returning == y.returning)
+
+    def __ne__(self, y):
+        return not self.__eq__(y)
 
     def __str__(self):
         return "Riders({}, {}, {})".format(
@@ -98,7 +106,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         trips_year = self.kwargs['trips_year']
         matrix = get_internal_route_matrix(trips_year)
         context['matrix'] = matrix
-        context['dates'] = matrix[list(matrix.keys())[0]].keys() #  dates in matrix
+        context['dates'] = sorted(matrix[list(matrix.keys())[0]].keys()) #  dates in matrix
         print(get_internal_rider_matrix(trips_year))
         return context
 
