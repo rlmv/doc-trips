@@ -57,7 +57,7 @@ class Riders:
         return not self.__eq__(y)
 
     def __str__(self):
-        return "Riders({}, {}, {})".format(
+        return "({}, {}, {})".format(
             self.dropping_off, self.picking_up, self.returning
         )
 
@@ -79,7 +79,7 @@ def get_internal_rider_matrix(trips_year):
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
     trips = ScheduledTrip.objects.filter(trips_year=trips_year)
-   
+        
     matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
     for trip in trips:
@@ -107,7 +107,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         matrix = get_internal_route_matrix(trips_year)
         context['matrix'] = matrix
         context['dates'] = sorted(matrix[list(matrix.keys())[0]].keys()) #  dates in matrix
-        print(get_internal_rider_matrix(trips_year))
+        context['riders'] = get_internal_rider_matrix(trips_year)
         return context
 
 
@@ -128,7 +128,12 @@ class ScheduledTransportCreateView(DatabaseCreateView):
         form = self.get_form(data=data)
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
-    
+
+
+class ScheduledTransportDeleteView(DatabaseDeleteView):
+    model = ScheduledTransport
+    success_url_pattern = 'db:scheduledtransport_index'
+
 
 class StopListView(DatabaseListView):
     model = Stop
@@ -144,8 +149,9 @@ class StopDetailView(DatabaseDetailView):
     model = Stop
     fields = [
         'name', 'address', 'route', 'directions',
+        'picked_up_trips', 'dropped_off_trips',
         'latitude', 'longitude', 'cost',
-        'pickup_time', 'dropoff_time', 'distance'
+        'pickup_time', 'dropoff_time', 'distance',    
     ]
 
 

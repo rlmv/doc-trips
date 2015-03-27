@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<table class="table table-condensed">
+<table class="table table-condensed table-bordered">
   <tr>
     <th> Route </th>
     {% for date in dates %}
@@ -18,15 +18,24 @@
   {% for route, transport_by_date in matrix.items %}
   <tr> 
     <td> {{ route|detail_link }} </td>
-    {% for date in transport_by_date.keys %}
-    {% with transport=transport_by_date|get:date %}
-    <td> {% if transport %} {{ transport }} {% else %} 
-      <a href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> add </a> {% endif %} </td>
+    {% for date in dates %}
+    {% with transport=transport_by_date|get:date riders=riders|get:route|get:date capacity=route.vehicle.capacity %}
+    <td> 
+      {% include "transport/_transport_detail.html" %}
+    </td>
     {% endwith %}
     {% endfor %}
   </tr>
   {% endfor %}
 </table>
 
-
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}
+

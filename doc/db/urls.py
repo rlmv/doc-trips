@@ -35,6 +35,7 @@ database_urlpatterns = patterns(
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),
     url(r'^transport/', include(scheduledtransport_urlpatterns)),
+    url(r'^emails/', include('doc.emails.urls')),
 )
 
 urlpatterns = patterns(

@@ -13,23 +13,6 @@
 
 {% block content %}
 
-<div class="panel panel-info">
-  <div class="panel-heading" role="tab" id="emailsHeading">
-    <h4 class="panel-title">
-      <a class="collapsed" data-toggle="collapse" href="#collapsedEmails" aria-expanded="false" aria-controls="collapsedEmails">
-	Email list <span class="fa fa-caret-down"></span> 
-      </a>
-    </h4>
-  </div>
-  <div id="collapsedEmails" class="panel-collapse collapse" role="tabpanel" aria-labelledby="emailsHeading">
-    <div class="panel-body">
-      <div id="emails">
-	{{ emails|join:", " }}
-      </div>
-    </div>
-  </div>
-</div>
-
 <table class="table table-condensed">
   <thead>
     <tr>
