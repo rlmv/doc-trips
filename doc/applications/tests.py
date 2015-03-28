@@ -320,7 +320,28 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(len(prospects), 1)
         self.assertEquals(list(prospects), [app])
-       
+
+
+class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
+    
+    def test_get_leader_applications(self):
+        trips_year = self.init_current_trips_year()
+        app1 = self.make_application(trips_year=trips_year)
+        app2 = self.make_application(trips_year=trips_year)
+        app2.leader_supplement.document = '' #  incomplete
+        app2.leader_supplement.save()
+        qs = GeneralApplication.objects.leader_applications(trips_year)
+        self.assertEqual(list(qs), [app1])
+
+    def test_get_croo_applications(self):
+        trips_year = self.init_current_trips_year()
+        app1 = self.make_application(trips_year=trips_year)
+        app2 = self.make_application(trips_year=trips_year)
+        app2.croo_supplement.document = '' #  incomplete
+        app2.croo_supplement.save()
+        qs = GeneralApplication.objects.croo_applications(trips_year)
+        self.assertEqual(list(qs), [app1])
+
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 

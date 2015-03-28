@@ -63,7 +63,7 @@ class ApplicationManager(models.Manager):
 
 
     def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(document='')    
+        return self.filter(trips_year=trips_year).exclude(document='')   
 
 
 class LeaderApplicationManager(ApplicationManager):
@@ -133,3 +133,9 @@ class GeneralApplicationManager(models.Manager):
                 .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) | 
                         Q(leader_supplement__available_triptypes=trip.template.triptype))
                 .distinct())
+        
+    def leader_applications(self, trips_year):
+        return self.filter(trips_year=trips_year).exclude(leader_supplement__document="")
+
+    def croo_applications(self, trips_year):
+        return self.filter(trips_year=trips_year).exclude(croo_supplement__document="")
