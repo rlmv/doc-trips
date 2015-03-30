@@ -5,6 +5,19 @@
 {% endblock %}
 
 {% block content %}
+<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
+{% if registration_available %}
+<p> You can edit your registration any time before {{ registration_closes }} </p>
+
+{% if registration %}
+<a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Edit Registration </a>
+{% else %}
+<a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Register for Trips {{ trips_year }} </a>
+{% endif %}
+
+{% else %}
+<p> Registration is not available at this time </p>
+{% endif %}
 
 {% endblock content %}

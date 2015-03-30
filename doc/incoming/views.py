@@ -35,7 +35,7 @@ class IfRegistrationAvailable():
     def dispatch(self, request, *args, **kwargs):
         
         if not Timetable.objects.timetable().registration_available():
-            return HttpResponseRedirect(reverse('trippees:registration_not_available'))
+            return HttpResponseRedirect(reverse('incoming:registration_not_available'))
         return super(IfRegistrationAvailable, self).dispatch(request, *args, **kwargs)
 
 
@@ -50,7 +50,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
     model = Registration
     template_name = 'incoming/register.html'
     form_class = RegistrationForm
-    success_url = reverse_lazy('trippees:view_registration')
+    success_url = reverse_lazy('incoming:view_registration')
 
     form_valid_message = "You've successfully registered"
     form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
@@ -61,7 +61,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
             trips_year=TripsYear.objects.current(),
             user=request.user).first()
         if reg: 
-            return HttpResponseRedirect(reverse('trippees:edit_registration'))
+            return HttpResponseRedirect(reverse('incoming:edit_registration'))
             
         return super(Register, self).dispatch(request, *args, **kwargs)
 
@@ -84,7 +84,7 @@ class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, FormMessages
     model = Registration
     template_name = 'incoming/register.html'
     form_class = RegistrationForm
-    success_url = reverse_lazy('trippees:view_registration')
+    success_url = reverse_lazy('incoming:view_registration')
 
     form_valid_message = "You've successfully registered"
     form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
@@ -120,6 +120,24 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
     Shows trip assignment, if available, and link to registration.
     """
     template_name = 'incoming/portal.html'
+
+    def get_registration(self):
+        """ Return current user's registration, or None if DNE """
+        try:
+            return Registration.objects.get(
+                user=self.request.user,
+                trips_year=TripsYear.objects.current()
+            )
+        except Registration.DoesNotExist:
+            return None
+
+    def get_context_data(self, **kwargs):
+        kwargs['registration'] = self.get_registration()
+        timetable = Timetable.objects.timetable()
+        kwargs['registration_available'] = timetable.registration_available()
+        kwargs['registration_closes'] = timetable.trippee_registrations_open
+        kwargs['trips_year'] = TripsYear.objects.current()
+        return super(IncomingStudentPortal, self).get_context_data(**kwargs)
 
 
 # ----- database internal views --------
