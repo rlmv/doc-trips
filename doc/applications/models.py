@@ -258,7 +258,11 @@ class CrooSupplement(DatabaseModel):
 
 
 class AbstractGrade(DatabaseModel):
-    """ Abstract model for shared grade information """
+    """ 
+    Abstract model for shared grade information
+
+    Concrete grade objects implement an 'application' field
+    """
 
     class Meta:
         abstract = True
@@ -279,6 +283,9 @@ class AbstractGrade(DatabaseModel):
     hard_skills = models.CharField(max_length=255, blank=True)
     soft_skills = models.CharField(max_length=255, blank=True)
     comment = models.TextField()
+
+    def __str__(self):
+        return "%s's grade for %s" % (self.grader, self.application)
 
 
 class LeaderApplicationGrade(AbstractGrade):
