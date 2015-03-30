@@ -76,6 +76,7 @@ class RegistrationFormLayout(Layout):
                      "<p><strong> As long as you register by the deadline, when you register makes no difference. Registering early does not increase your chances of getting your desired trip. </strong></p>"
                  ),
                 Row(
+                    Div('firstchoice_triptype', css_class='col-sm-3'),
                     Div('preferred_triptypes', css_class='col-sm-3'),
                     Div('available_triptypes', css_class='col-sm-3'),
                     Div('unavailable_triptypes', css_class='col-sm-3'),

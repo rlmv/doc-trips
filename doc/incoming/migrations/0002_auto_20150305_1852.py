@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('trips', '0015_auto_20150224_2104'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('trippees', '0001_initial'),
+        ('incoming', '0001_initial'),
     ]
 
     operations = [
@@ -45,13 +45,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='trippee',
             name='info',
-            field=models.ForeignKey(editable=False, to='trippees.TrippeeInfo'),
+            field=models.ForeignKey(editable=False, to='incoming.TrippeeInfo'),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='trippee',
             name='registration',
-            field=models.ForeignKey(editable=False, to='trippees.TrippeeRegistration'),
+            field=models.ForeignKey(editable=False, to='incoming.TrippeeRegistration'),
             preserve_default=True,
         ),
         migrations.AddField(

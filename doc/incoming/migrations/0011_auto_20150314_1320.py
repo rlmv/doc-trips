@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ('transport', '0016_auto_20150204_1628'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('db', '__first__'),
-        ('trippees', '0010_collegeinfo_class_year'),
+        ('incoming', '0010_collegeinfo_class_year'),
     ]
 
     operations = [
@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incomingstudent',
             name='registration',
-            field=models.OneToOneField(editable=False, to='trippees.Registration', related_name='trippee', null=True),
+            field=models.OneToOneField(editable=False, to='incoming.Registration', related_name='trippee', null=True),
             preserve_default=True,
         ),
         migrations.AddField(

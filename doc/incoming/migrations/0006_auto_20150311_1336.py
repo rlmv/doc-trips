@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('db', '__first__'),
-        ('trippees', '0005_auto_20150311_1234'),
+        ('incoming', '0005_auto_20150311_1234'),
     ]
 
     operations = [

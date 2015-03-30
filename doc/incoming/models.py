@@ -146,6 +146,10 @@ class Registration(DatabaseModel):
     unavailable_sections = models.ManyToManyField(
         Section, blank=True, related_name='unavailable_trippees'
     )
+    firstchoice_triptype = models.ForeignKey(
+        TripType, blank=True, null=True, related_name='firstchoice_triptype',
+        verbose_name="first choice trip types",
+    )
     preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferring_trippees',
         verbose_name="preferred types of trips"
@@ -177,7 +181,7 @@ class Registration(DatabaseModel):
 
 
     #  ----- physical condition and experience ------
-    regular_exercise = models.CharField("Do you do enjoy cardiovascular exercise (running, biking, swimming, sports, etc.) on a regular basis?", max_length=2, choices=YES_NO_CHOICES)
+    regular_exercise = YesNoField("Do you do enjoy cardiovascular exercise (running, biking, swimming, sports, etc.) on a regular basis?")
     physical_activities = models.TextField("Please describe the types of physical activities you enjoy, including frequency (daily? weekly?) and extent (number of miles or hours)", blank=True)
     other_activities = models.TextField("Do you do any other activities that might assist us in assigning you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?", blank=True)
     summer_plans = models.TextField("Please describe your plans for the summer (working at home, volunteering, etc.)", blank=True)

@@ -45,15 +45,18 @@ class RegistrationForm(forms.ModelForm):
         self.fields['unavailable_sections'].queryset = sections
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
+        self.fields['firstchoice_triptype'].queryset = triptypes
         self.fields['preferred_triptypes'].queryset = triptypes
         self.fields['available_triptypes'].queryset = triptypes
         self.fields['unavailable_triptypes'].queryset = triptypes
 
-        for f in ['preferred_sections', 'available_sections', 
+        for f in ['preferred_sections', 'available_sections',
                   'unavailable_sections', 'preferred_triptypes',
                   'available_triptypes', 'unavailable_triptypes']:
             self.fields[f].widget = forms.CheckboxSelectMultiple()
             self.fields[f].help_text = None
+        self.fields['firstchoice_triptype'].empty_label = None
+        self.fields['firstchoice_triptype'].widget = forms.RadioSelect()
 
         self.helper = FormHelper(self)
 

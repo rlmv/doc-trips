@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('trippees', '0004_auto_20150310_1619'),
+        ('incoming', '0004_auto_20150310_1619'),
     ]
 
     operations = [
@@ -28,12 +28,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='trippee',
             name='info',
-            field=models.OneToOneField(null=True, editable=False, to='trippees.TrippeeInfo', related_name='trippee'),
+            field=models.OneToOneField(null=True, editable=False, to='incoming.TrippeeInfo', related_name='trippee'),
         ),
         migrations.AlterField(
             model_name='trippee',
             name='registration',
-            field=models.OneToOneField(related_name='trippee', editable=False, to='trippees.TrippeeRegistration'),
+            field=models.OneToOneField(related_name='trippee', editable=False, to='incoming.TrippeeRegistration'),
         ),
         migrations.AlterField(
             model_name='trippee',

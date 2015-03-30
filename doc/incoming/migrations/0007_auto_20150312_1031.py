@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trippees', '0006_auto_20150311_1336'),
+        ('incoming', '0006_auto_20150311_1336'),
     ]
 
     operations = [
@@ -18,11 +18,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='trippee',
             name='info',
-            field=models.OneToOneField(editable=False, related_name='trippee', to='trippees.TrippeeInfo'),
+            field=models.OneToOneField(editable=False, related_name='trippee', to='incoming.TrippeeInfo'),
         ),
         migrations.AlterField(
             model_name='trippee',
             name='registration',
-            field=models.OneToOneField(editable=False, related_name='trippee', null=True, to='trippees.TrippeeRegistration'),
+            field=models.OneToOneField(editable=False, related_name='trippee', null=True, to='incoming.TrippeeRegistration'),
         ),
     ]

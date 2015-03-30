@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('trips', '0017_auto_20150310_1431'),
-        ('trippees', '0021_auto_20150321_1353'),
+        ('incoming', '0021_auto_20150321_1353'),
     ]
 
     operations = [

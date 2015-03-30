@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('db', '__first__'),
-        ('trippees', '0007_auto_20150312_1031'),
+        ('incoming', '0007_auto_20150312_1031'),
     ]
 
     operations = [
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='trippee',
             name='info',
-            field=models.OneToOneField(editable=False, related_name='trippee', to='trippees.CollegeInfo'),
+            field=models.OneToOneField(editable=False, related_name='trippee', to='incoming.CollegeInfo'),
         ),
         migrations.DeleteModel(
             name='TrippeeInfo',

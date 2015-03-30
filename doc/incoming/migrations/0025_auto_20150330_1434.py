@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incoming', '0022_auto_20150324_1801'),
+        ('incoming', '0024_registration_firstchoice_triptype'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='registration',
-            name='unavailable_triptypes',
-            field=models.ManyToManyField(verbose_name='unavailable trip types', blank=True, to='trips.TripType', related_name='unavailable_trippees'),
+            name='firstchoice_triptype',
+            field=models.ForeignKey(blank=True, verbose_name='first choice trip types', related_name='firstchoice_triptype', to='trips.TripType', null=True),
         ),
     ]
