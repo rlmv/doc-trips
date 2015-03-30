@@ -4,8 +4,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 
 from doc.db.models import TripsYear
-from doc.trippees.models import Registration
-from doc.trippees.layouts import RegistrationFormLayout, join_with_and
+from doc.incoming.models import Registration
+from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType
 from doc.transport.models import Stop
 

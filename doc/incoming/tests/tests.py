@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase
-from doc.trippees.models import Registration, IncomingStudent
+from doc.incoming.models import Registration, IncomingStudent
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 

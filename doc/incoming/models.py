@@ -9,7 +9,7 @@ from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
-from doc.trippees.managers import IncomingStudentManager
+from doc.incoming.managers import IncomingStudentManager
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,7 @@
 from django.conf.urls import patterns, url, include
 
 from doc.db.urlhelpers import DB_REGEX
-from doc.trippees.views import (Register, EditRegistration, ViewRegistration, 
+from doc.incoming.views import (Register, EditRegistration, ViewRegistration, 
                                 RegistrationNotAvailable,
                                 RegistrationIndexView,
                                 IncomingStudentIndexView, IncomingStudentDetailView, 

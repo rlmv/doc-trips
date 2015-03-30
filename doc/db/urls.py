@@ -11,7 +11,7 @@ from doc.transport.urls import (
     vehicle_urlpatterns, route_urlpatterns,
 )
 from doc.applications.urls import application_urlpatterns, grader_urlpatterns
-from doc.trippees.urls import trippee_urlpatterns, registration_urlpatterns
+from doc.incoming.urls import trippee_urlpatterns, registration_urlpatterns
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 
 """

@@ -23,7 +23,7 @@ urlpatterns = patterns(
     url(r'^applications/', include('doc.applications.urls', namespace='applications')),
 
     url(r'^croos/', include('doc.croos.urls', namespace='croos')),
-    url(r'^incoming/', include('doc.trippees.urls', namespace='trippees')),
+    url(r'^incoming/', include('doc.incoming.urls', namespace='trippees')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

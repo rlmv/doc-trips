@@ -9,8 +9,8 @@ from django.contrib import messages
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 
-from doc.trippees.models import Registration, IncomingStudent
-from doc.trippees.forms import RegistrationForm, IncomingStudentsForm
+from doc.incoming.models import Registration, IncomingStudent
+from doc.incoming.forms import RegistrationForm, IncomingStudentsForm
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
