@@ -111,7 +111,16 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
             self.model, user=self.request.user,
             trips_year=TripsYear.objects.current()
         )
-           
+
+
+class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
+    """
+    Information for incoming students.
+
+    Shows trip assignment, if available, and link to registration.
+    """
+    template_name = 'incoming/portal.html'
+
 
 # ----- database internal views --------
 
