@@ -40,7 +40,7 @@ class IfRegistrationAvailable():
 
 
 class RegistrationNotAvailable(TemplateView):
-    template_name = 'trippees/not_available.html'
+    template_name = 'incoming/not_available.html'
 
 
 class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, CreateView):
@@ -48,7 +48,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
     Register for trips 
     """
     model = Registration
-    template_name = 'trippees/register.html'
+    template_name = 'incoming/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
 
@@ -82,7 +82,7 @@ class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, FormMessages
     Edit a trippee registration.
     """
     model = Registration
-    template_name = 'trippees/register.html'
+    template_name = 'incoming/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('trippees:view_registration')
 
@@ -102,7 +102,7 @@ class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
     View a complete registration 
     """
     model = Registration
-    template_name = 'trippees/completed_registration.html'
+    template_name = 'incoming/completed_registration.html'
     fields = ['name'] # TODO
     
     def get_object(self):
@@ -129,7 +129,7 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
     """ All trippee registrations """
 
     model = Registration
-    template_name = 'trippees/registration_index.html'
+    template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
 
     
@@ -138,14 +138,14 @@ class IncomingStudentIndexView(DatabaseReadPermissionRequired,
     """ All incoming students """
 
     model = IncomingStudent
-    template_name = 'trippees/trippee_index.html'
+    template_name = 'incoming/trippee_index.html'
     context_object_name = 'trippees'
 
 
 class IncomingStudentDetailView(DatabaseReadPermissionRequired,
                                 TripsYearMixin, DetailView):
     model = IncomingStudent
-    template_name = 'trippees/trippee_detail.html'
+    template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
 
     admin_fields = ['registration', 'trip_assignment', 
@@ -175,7 +175,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     """
 
     form_class = IncomingStudentsForm
-    template_name = 'trippees/upload_incoming_students.html'
+    template_name = 'incoming/upload_incoming_students.html'
 
     def form_valid(self, form):
 
