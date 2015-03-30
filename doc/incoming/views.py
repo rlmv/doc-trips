@@ -43,17 +43,23 @@ class RegistrationNotAvailable(TemplateView):
     template_name = 'incoming/not_available.html'
 
 
-class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, CreateView):
-    """ 
-    Register for trips 
-    """
+class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
+                           FormMessagesMixin):
     model = Registration
     template_name = 'incoming/register.html'
     form_class = RegistrationForm
-    success_url = reverse_lazy('incoming:view_registration')
-
-    form_valid_message = "You've successfully registered"
+    success_url = reverse_lazy('incoming:portal')
+    form_valid_message = "Your registration has been saved"
     form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+
+
+class Register(BaseRegistrationView, CreateView):
+    """
+    Register for trips 
+    
+    Redirects to the edit view if this incoming student 
+    has already registered.
+    """
 
     def dispatch(self, request, *args, **kwargs):
         """ Redirect to edit existing application """
@@ -62,7 +68,7 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
             user=request.user).first()
         if reg: 
             return HttpResponseRedirect(reverse('incoming:edit_registration'))
-            
+
         return super(Register, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form, **kwargs):
@@ -77,36 +83,11 @@ class Register(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, C
         return super(Register, self).form_valid(form, **kwargs)
 
 
-class EditRegistration(LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, UpdateView):
-    """
-    Edit a trippee registration.
-    """
-    model = Registration
-    template_name = 'incoming/register.html'
-    form_class = RegistrationForm
-    success_url = reverse_lazy('incoming:view_registration')
-
-    form_valid_message = "You've successfully registered"
-    form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+class EditRegistration(BaseRegistrationView, UpdateView):
+    """ Edit a trippee registration """
 
     def get_object(self):
         """ Get registration for user """        
-        return get_object_or_404(
-            self.model, user=self.request.user,
-            trips_year=TripsYear.objects.current()
-        )
-
- 
-class ViewRegistration(LoginRequiredMixin, IfRegistrationAvailable, DetailView):
-    """
-    View a complete registration 
-    """
-    model = Registration
-    template_name = 'incoming/completed_registration.html'
-    fields = ['name'] # TODO
-    
-    def get_object(self):
-        """ Get registration for user """
         return get_object_or_404(
             self.model, user=self.request.user,
             trips_year=TripsYear.objects.current()
@@ -132,8 +113,8 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
             return None
 
     def get_context_data(self, **kwargs):
-        kwargs['registration'] = self.get_registration()
         timetable = Timetable.objects.timetable()
+        kwargs['registration'] = self.get_registration()
         kwargs['registration_available'] = timetable.registration_available()
         kwargs['registration_closes'] = timetable.trippee_registrations_open
         kwargs['trips_year'] = TripsYear.objects.current()
