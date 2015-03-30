@@ -36,7 +36,7 @@ class Timetable(models.Model):
 
     trippee_registrations_open = models.DateTimeField(default=timezone.now)
     trippee_registrations_close = models.DateTimeField(default=timezone.now)
-    trippee_assignment_posted = models.DateTimeField(default=timezone.now)
+    trippee_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Incoming Students see their trip assignments')
 
     migration_date = models.DateTimeField(default=timezone.now)
 

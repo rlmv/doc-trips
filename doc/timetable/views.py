@@ -24,7 +24,6 @@ class TimetableForm(ModelForm):
             'leader_assignment_posted': DateTimePicker(options=OPTIONS),
             'trippee_registrations_open': DateTimePicker(options=OPTIONS),
             'trippee_registrations_close': DateTimePicker(options=OPTIONS),
-            'trippee_assignment_posted': DateTimePicker(options=OPTIONS),
         }
 
     helper = FormHelper()
