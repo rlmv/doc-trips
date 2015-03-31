@@ -7,17 +7,34 @@
 {% block content %}
 <p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
-{% if registration_available %}
-<p> You can edit your registration any time before {{ registration_closes }} </p>
+<h3> Trips Registration </h3>
 
 {% if registration %}
-<a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Edit Registration </a>
-{% else %}
-<a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Register for Trips {{ trips_year }} </a>
+<p> You have successfully registered for Trips {{ trips_year }}! </p>
 {% endif %}
 
-{% else %}
+{% if registration_available %}
+<div>
+  <p> You can edit your registration any time before {{ registration_closes }} </p>
+  {% if registration %}
+  <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Edit Registration </a>
+  {% else %}
+  <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Register for Trips {{ trips_year }} </a>
+  {% endif %}
+</div>
+{% elif not registration and after_deadline %}
+<p> The deadline for registering has passed. Don't despair though! <a href="{{ contact_url }}"> Contact us </a> and we can get you on a trip. </p>
+{% elif not registration %}
 <p> Registration is not available at this time </p>
+{% endif %}
+
+{% if assignment_available %}
+<h3> Trip Assignment </h3>
+{% if trip_assignment %}
+<p> TODO: {{ trip_assignement }} </p>
+{% else %}
+<p> You have not yet been assigned to a trip. </p>
+{% endif %}
 {% endif %}
 
 {% endblock content %}

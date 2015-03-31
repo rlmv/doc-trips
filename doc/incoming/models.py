@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip, Section, TripType
@@ -225,6 +226,19 @@ class Registration(DatabaseModel):
     doc_membership = YesNoField("Would you like to purchase a DOC membership?")
     green_fund_donation = models.PositiveSmallIntegerField(blank=True, null=True)
     final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers &mdash; anything goes! All responses will remain anonymous.", blank=True)
+   
+    def get_trip_assignment(self):
+        """
+        Return the trip assignment for this registration's trippee.
+     
+        If the registration does not have an associated
+        IncomingStudent, or IncomingStudent is not assigned
+        to a trip, return None.
+        """
+        try:
+            return self.trippee.trip_assignment
+        except ObjectDoesNotExist:
+            return None
 
 
 @receiver(post_save, sender=Registration)

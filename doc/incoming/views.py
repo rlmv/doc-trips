@@ -3,14 +3,17 @@ import logging
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.utils import timezone
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import RegistrationForm, IncomingStudentsForm
+from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
@@ -114,9 +117,13 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         timetable = Timetable.objects.timetable()
-        kwargs['registration'] = self.get_registration()
+        kwargs['registration'] = reg = self.get_registration()
+        kwargs['trip_assignment'] = reg.get_trip_assignment() if reg else None
         kwargs['registration_available'] = timetable.registration_available()
-        kwargs['registration_closes'] = timetable.trippee_registrations_open
+        kwargs['registration_closes'] = timetable.trippee_registrations_close
+        kwargs['after_deadline'] = timetable.trippee_registrations_close > timezone.now()
+        kwargs['assignment_available'] = timetable.trippee_assignment_available
+        kwargs['contact_url'] = Settings.objects.get().contact_url
         kwargs['trips_year'] = TripsYear.objects.current()
         return super(IncomingStudentPortal, self).get_context_data(**kwargs)
 
