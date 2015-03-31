@@ -281,7 +281,17 @@ class Registration(DatabaseModel):
         return self._base_trips_qs().filter(
             template__triptype__in=self.preferred_triptypes.all()
         )
-            
+
+    def get_available_trips(self):
+        """ 
+        Return available ScheduledTrips 
+        
+        For both preferred and available Sections
+        """
+        return self._base_trips_qs().filter(
+            template__triptype__in=self.available_triptypes.all()
+        )
+
 
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
