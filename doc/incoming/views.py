@@ -176,8 +176,17 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
 class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
                                TripsYearMixin, UpdateView):
     model = IncomingStudent
-    template_name = 'db/update.html'
+    template_name = 'incoming/update_trip.html'
     fields = ['trip_assignment']
+
+    def get_context_date(self, **kwargs):
+        reg = self.object.get_registration()
+        if reg:
+            kwargs['firstchoice_trips'] = reg.get_firstchoice_trips()
+            kwargs['preferred_trips'] = reg.get_preferred_trips()
+            kwargs['available_trips'] = reg.get_available_trips()
+        kwargs['registration'] = reg
+        return super(UpdateTripAssignmentView, self).get_context_data(**kwargs)
 
 
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,

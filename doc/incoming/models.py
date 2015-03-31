@@ -82,6 +82,12 @@ class IncomingStudent(DatabaseModel):
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
 
+    def get_registration(self):
+        try:
+            return self.registration
+        except ObjectDoesNotExist:
+            return None
+
     def __str__(self):
         return self.name
 
