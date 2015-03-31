@@ -187,11 +187,15 @@ class Registration(DatabaseModel):
     other_activities = models.TextField("Do you do any other activities that might assist us in assigning you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?", blank=True)
     summer_plans = models.TextField("Please describe your plans for the summer (working at home, volunteering, etc.)", blank=True)
 
+    NON_SWIMMER = 'NON_SWIMMER'
+    BEGINNER = 'BEGINNER'
+    COMPETENT = 'COMPETENT'
+    EXPERT = 'EXPERT'
     SWIMMING_ABILITY_CHOICES = (
-        ('NON_SWIMMER', 'Non-Swimmer'),
-        ('BEGINNER', 'Beginner'),
-        ('COMPETENT', 'Competent'),
-        ('EXPERT', 'Expert'),
+        (NON_SWIMMER, 'Non-Swimmer'),
+        (BEGINNER, 'Beginner'),
+        (COMPETENT, 'Competent'),
+        (EXPERT, 'Expert'),
     )
     swimming_ability = models.CharField("Please rate yourself as a swimmer", max_length=20, choices=SWIMMING_ABILITY_CHOICES)
     
@@ -239,6 +243,21 @@ class Registration(DatabaseModel):
             return self.trippee.trip_assignment
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def is_non_swimmer(self):
+        return self.swimming_ability == self.NON_SWIMMER
+
+    def _swimming_filtered_trips(self):
+        """ 
+        Queryset to use for computing trip options for this registration.
+        
+        If the registration is NON_SWIMMER, exclude all swimming trips.
+        """
+        qs = ScheduledTrip.objects.filter(trips_year=self.trips_year)
+        if self.is_non_swimmer:
+            return qs.filter(template__non_swimmers_allowed=True)
+        return qs
 
 
 @receiver(post_save, sender=Registration)

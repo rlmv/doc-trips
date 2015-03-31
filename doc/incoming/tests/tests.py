@@ -66,6 +66,30 @@ class RegistrationModelTestCase(TripsYearTestCase):
         reg = mommy.make(Registration, trips_year=trips_year)
         self.assertIsNone(reg.get_trip_assignment())
 
+    def test_nonswimmer_property(self):
+        trips_year = self.init_current_trips_year()
+        non_swimmer =  mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.NON_SWIMMER)
+        self.assertTrue(non_swimmer.is_non_swimmer)
+        for choice in [Registration.BEGINNER, Registration.COMPETENT, Registration.EXPERT]:
+            swimmer = mommy.make(Registration, trips_year=trips_year, swimming_ability=choice)
+            self.assertFalse(swimmer.is_non_swimmer)
+
+    def test_base_trip_choice_queryset_filters_for_nonswimmers(self):
+        trips_year = self.init_current_trips_year()
+        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, template__non_swimmers_allowed=False)
+        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, template__non_swimmers_allowed=True)
+        reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.NON_SWIMMER)
+        self.assertEqual(list(reg._swimming_filtered_trips()), [trip2])
+
+    def test_get_firstchoice_trips(self):
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make('Section', trips_year=trips_year)
+        section2 = mommy.make('Section', trips_year=trips_year)
+        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year)
+        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year)
+        reg = mommy.make(Registration, trips_year=trips_year)
+                         
+
        
 FILE = os.path.join(os.path.dirname(__file__), 'incoming_students.csv')
 
