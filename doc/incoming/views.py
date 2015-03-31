@@ -154,12 +154,17 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
     template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
 
-    assignment_fields = ['trip_assignment']
-    admin_fields = ['registration',
-                    'decline_reason', 'notes']
-    college_fields = ['name', 'netid', 'class_year', 'gender',
-                      'ethnic_code', 'incoming_status', 'email', 
-                      'blitz']
+    assignment_fields = (
+        'trip_assignment',
+    )
+    admin_fields = (
+        'registration', 'decline_reason', 'notes'
+    )
+    college_fields = (
+        'name', 'netid', 'class_year', 'gender',
+        'ethnic_code', 'incoming_status', 'email',
+        'blitz'
+    )
 
     def get_context_data(self, **kwargs):
         kwargs['edit_assignment_url'] = reverse(
