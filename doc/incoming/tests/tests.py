@@ -119,6 +119,23 @@ class RegistrationModelTestCase(TripsYearTestCase):
                          preferred_sections=[section1])
         self.assertEqual([trip1], list(reg.get_preferred_trips()))
 
+    def test_get_available_trips(self):
+
+        trips_year = self.init_current_trips_year()
+        section1 = mommy.make('Section', trips_year=trips_year)
+        section2 = mommy.make('Section', trips_year=trips_year)
+        triptype = mommy.make('TripType', trips_year=trips_year)
+        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1, template__triptype=triptype)
+        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section2, template__triptype=triptype)
+        trip3 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1)
+        reg = mommy.make(Registration, trips_year=trips_year,
+                         available_triptypes=[triptype],
+                         swimming_ability=Registration.COMPETENT,
+                         preferred_sections=[section1],
+                         available_sections=[section1])
+        self.assertEqual([trip1], list(reg.get_available_trips()))
+
+
        
 FILE = os.path.join(os.path.dirname(__file__), 'incoming_students.csv')
 
