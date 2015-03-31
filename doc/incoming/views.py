@@ -154,11 +154,25 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
     template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
 
-    admin_fields = ['registration', 'trip_assignment', 
+    assignment_fields = ['trip_assignment']
+    admin_fields = ['registration',
                     'decline_reason', 'notes']
     college_fields = ['name', 'netid', 'class_year', 'gender',
                       'ethnic_code', 'incoming_status', 'email', 
                       'blitz']
+
+    def get_context_data(self, **kwargs):
+        kwargs['edit_assignment_url'] = reverse(
+            'db:incomingstudent_update_assignment', kwargs=self.kwargs
+        )
+        return super(IncomingStudentDetailView, self).get_context_data(**kwargs)
+
+
+class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
+                               TripsYearMixin, UpdateView):
+    model = IncomingStudent
+    template_name = 'db/update.html'
+    fields = ['trip_assignment']
 
 
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,

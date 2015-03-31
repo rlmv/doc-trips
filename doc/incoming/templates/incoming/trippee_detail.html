@@ -3,14 +3,16 @@
 {% load links %}
 
 {% block header %}
-<h2> {{ trippee }} <small> Trippee {{ object|edit_link }} </small></h2>
+<h2> {{ trippee }} <small> Trippee </small></h2>
 {% endblock %}
 
 {% block content %}
 
-<h4> Admin Info </h4>
+<h4> Trip Assignment <a href="{{ edit_assignment_url }}"> edit </a></h4>
+{% detail trippee view.assignment_fields %}
+<h4> Admin Info {{ object|edit_link }}</h4>
 {% detail trippee view.admin_fields %}
-<h4> College Data </h4>
+<h4> College Data {{ object|edit_link }}</h4>
 {% detail trippee view.college_fields %}
 
 {% endblock content %}

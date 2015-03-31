@@ -7,6 +7,7 @@ from doc.incoming.views import (
     RegistrationNotAvailable, IncomingStudentPortal,
     RegistrationIndexView, IncomingStudentIndexView,
     IncomingStudentDetailView, IncomingStudentUpdateView,
+    UpdateTripAssignmentView,
     UploadIncomingStudentData
 )
 
@@ -26,6 +27,8 @@ trippee_urlpatterns = patterns(
     url(DB_REGEX['LIST'], IncomingStudentIndexView.as_view(), name='incomingstudent_index'),
     url(DB_REGEX['DETAIL'], IncomingStudentDetailView.as_view(), name='incomingstudent_detail'),
     url(DB_REGEX['UPDATE'], IncomingStudentUpdateView.as_view(), name='incomingstudent_update'),
+    url(r'^(?P<pk>[0-9]+)/update/assignment$', UpdateTripAssignmentView.as_view(),
+        name='incomingstudent_update_assignment'),
     url(r'^upload/$', UploadIncomingStudentData.as_view(), name='upload_incoming'),
 )
 
