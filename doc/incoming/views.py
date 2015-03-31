@@ -138,7 +138,7 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
 
-    
+
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,
                                TripsYearMixin, ListView):
     """ All incoming students """

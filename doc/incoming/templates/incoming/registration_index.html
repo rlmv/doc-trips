@@ -1,9 +1,20 @@
 {% extends "db/base.html" %}
+{% load links %}
 
 {% block header %}
 <h3> Trippee Registrations </h3>
 {% endblock %}
 
 {% block content %}
+
+<table class="table table-condensed">
+<tr>
+</tr>
+{% for registration in registrations %}
+<tr>
+  <td> {{ registration }} </td>
+</tr>
+{% endfor %}
+</table>
 
 {% endblock content %}
