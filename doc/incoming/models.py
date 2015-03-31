@@ -248,17 +248,40 @@ class Registration(DatabaseModel):
     def is_non_swimmer(self):
         return self.swimming_ability == self.NON_SWIMMER
 
-    def _swimming_filtered_trips(self):
+    def _base_trips_qs(self):
         """ 
         Queryset to use for computing trip options for this registration.
         
         If the registration is NON_SWIMMER, exclude all swimming trips.
         """
-        qs = ScheduledTrip.objects.filter(trips_year=self.trips_year)
+        qs = (ScheduledTrip.objects
+              .filter(trips_year=self.trips_year)
+              .filter(models.Q(section__in=self.preferred_sections.all()) |
+                      models.Q(section__in=self.available_sections.all())))
         if self.is_non_swimmer:
             return qs.filter(template__non_swimmers_allowed=True)
         return qs
+    
+    def get_firstchoice_trips(self):
+        """ 
+        Return first choice ScheduledTrips 
+        
+        For both preferred and available Sections
+        """
+        return self._base_trips_qs().filter(
+            template__triptype=self.firstchoice_triptype
+        )
 
+    def get_preferred_trips(self):
+        """ 
+        Return preferred ScheduledTrips 
+        
+        For both preferred and available Sections
+        """
+        return self._base_trips_qs().filter(
+            template__triptype__in=self.preferred_triptypes.all()
+        )
+            
 
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
