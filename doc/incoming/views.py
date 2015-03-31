@@ -12,7 +12,9 @@ from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, 
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 
 from doc.incoming.models import Registration, IncomingStudent
-from doc.incoming.forms import RegistrationForm, IncomingStudentsForm
+from doc.incoming.forms import (
+    RegistrationForm, IncomingStudentsForm, TripAssignmentForm
+)
 from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import TripsYearMixin
@@ -177,7 +179,7 @@ class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
                                TripsYearMixin, UpdateView):
     model = IncomingStudent
     template_name = 'incoming/update_trip.html'
-    fields = ['trip_assignment']
+    form_class = TripAssignmentForm
 
     def get_context_date(self, **kwargs):
         reg = self.object.get_registration()

@@ -1,12 +1,12 @@
 
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Layout, Field, Row, Submit, Div
 
 from doc.db.models import TripsYear
-from doc.incoming.models import Registration
+from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
-from doc.trips.models import Section, TripType
+from doc.trips.models import Section, TripType, ScheduledTrip
 from doc.transport.models import Stop
 
 
@@ -71,6 +71,26 @@ class RegistrationForm(forms.ModelForm):
             'contact_url': settings.contact_url,
         }
         self.helper.layout = RegistrationFormLayout(**kwargs)
+
+
+class TripAssignmentForm(forms.ModelForm):
+    """ Form for assigning a trippee to a trip """
+    class Meta:
+        model = IncomingStudent
+        fields = ['trip_assignment']
+
+    def __init__(self, *args, **kwargs):
+        super(TripAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['trip_assignment'].queryset = ScheduledTrip.objects.filter(
+            trips_year=kwargs['instance'].trips_year
+        )
+        self.helper = FormHelper(self)
+        self.helper.label_class = 'col-lg-3'
+        self.helper.field_class = 'col-lg-7'     
+        self.helper.layout = Layout(
+            'trip_assignment',
+            Submit('submit', 'Submit'),
+        )
 
 
 class IncomingStudentsForm(forms.Form):
