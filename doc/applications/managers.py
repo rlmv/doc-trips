@@ -139,3 +139,10 @@ class GeneralApplicationManager(models.Manager):
 
     def croo_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(croo_supplement__document="")
+
+    def leader_or_croo_applications(self, trips_year):
+        """ Return all GenApps with either complete croo OR tl parts """
+        return (self.filter(trips_year=trips_year)
+                .exclude(Q(leader_supplement__document="") &
+                         Q(croo_supplement__document="")))
+            

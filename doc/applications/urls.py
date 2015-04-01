@@ -22,6 +22,7 @@ from doc.applications.views.grading import(
     GraderLandingPage)
 from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import VolunteerPortalView
+from doc.applications.views.reports import VolunteerCSV
 
   
 grade_urlpatterns = patterns(
@@ -57,6 +58,7 @@ application_urlpatterns = patterns(
     url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(), name='generalapplication_update'),
     url(r'^(?P<pk>[0-9]+)/update/status', ApplicationAdminUpdateView.as_view(), name='update_application_status'),
     url(r'^(?P<pk>[0-9]+)/update/trainings', LeaderApplicationAdminUpdateView.as_view(), name='update_application_trainings'),
+    url(r'^export/$', VolunteerCSV.as_view(), name='application_csv'),
 )
 
 grader_urlpatterns = patterns(

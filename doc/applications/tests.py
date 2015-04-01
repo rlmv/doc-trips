@@ -342,6 +342,26 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         qs = GeneralApplication.objects.croo_applications(trips_year)
         self.assertEqual(list(qs), [app1])
 
+    def test_get_leader_or_croo_applications(self):
+        trips_year = self.init_current_trips_year()
+
+        app1 = self.make_application(trips_year=trips_year)
+        app1.leader_supplement.document = '' 
+        app1.save()
+
+        app2 = self.make_application(trips_year=trips_year)
+        app2.croo_supplement.document = '' #  incomplete
+        app2.croo_supplement.save()
+
+        app3 = self.make_application(trips_year=trips_year)
+        app3.croo_supplement.document = '' #  incomplete
+        app3.leader_supplement.document = '' #  incomplete
+        app3.croo_supplement.save()
+        app3.leader_supplement.save()
+        
+        qs = GeneralApplication.objects.leader_or_croo_applications(trips_year)
+        self.assertEqual(set(qs), set([app1, app2]))
+
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 
