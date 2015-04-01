@@ -92,7 +92,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
             name=CROO_QUALIFICATIONS,
             label='Croo Qualifications',
             queryset=QualificationTag.objects.filter(trips_year=trips_year),
-            widget=forms.CheckboxSelectMultiple
+            # TODO: this causes a HUGE number of queries. WHY?
+            # widget=forms.CheckboxSelectMultiple()
         )
         
         self.form.helper = FilterSetFormHelper(self.form)
