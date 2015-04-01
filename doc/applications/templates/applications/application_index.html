@@ -54,7 +54,7 @@
   <tr> 
     <td> {{ application | detail_link }} </td>
 
-    <td> <a href="{% url 'db:update_application_status' trips_year=application.trips_year pk=application.pk %}"> {{ application.status }} </a></td>
+    <td> <a href="{% url 'db:update_application_status' trips_year=trips_year pk=application.pk %}"> {{ application.status }} </a></td>
 
     <td {% if not application.avg_leader_grade %} data-sort-value="0" {% endif %}> 
       {{ application.avg_leader_grade|default:""|floatformat:1 }} 

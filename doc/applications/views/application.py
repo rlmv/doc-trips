@@ -192,7 +192,7 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
             super(ApplicationDatabaseListView, self).get_queryset()
             .annotate(avg_croo_grade=models.Avg('croo_supplement__grades__grade'))
             .annotate(avg_leader_grade=models.Avg('leader_supplement__grades__grade'))
-            .select_related('applicant')
+            .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
     def get_context_data(self, **kwargs):

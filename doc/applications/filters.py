@@ -89,9 +89,9 @@ class ApplicationFilterSet(django_filters.FilterSet):
         # add the suggested croos filter. we have to restrict the queryset, 
         # and use the widget
         self.filters[CROO_QUALIFICATIONS] = django_filters.ModelMultipleChoiceFilter(
-            name=CROO_QUALIFICATIONS, 
+            name=CROO_QUALIFICATIONS,
             label='Croo Qualifications',
-            queryset=QualificationTag.objects.filter(trips_year=trips_year), 
+            queryset=QualificationTag.objects.filter(trips_year=trips_year),
             widget=forms.CheckboxSelectMultiple
         )
         
