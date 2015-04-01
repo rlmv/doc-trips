@@ -100,7 +100,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Div, HTML
-from crispy_forms.bootstrap import FormActions, FieldWithButtons, InlineCheckboxes
     
 class FilterSetFormHelper(FormHelper):
 
@@ -109,12 +108,12 @@ class FilterSetFormHelper(FormHelper):
 
         self.form_method = 'GET'
         self.layout = Layout(
-            Row('complete'),
-            Row('status'),   
-            Row('name'),
-            Row('netid'),
-            Row(InlineCheckboxes(CROO_QUALIFICATIONS)),
-            Row(Submit('submit', 'Filter', css_class='btn-block')),
+            Row(Div('complete', css_class='col-lg-12')),
+            Row(Div('status', css_class='col-lg-12')),   
+            Row(Div('name', css_class='col-lg-12')),
+            Row(Div('netid', css_class='col-lg-12')),
+            Row(Div(CROO_QUALIFICATIONS, css_class='col-lg-12')),
+            Row(Div(Submit('submit', 'Filter', css_class='btn-block'), css_class='col-lg-12')),
         )
 
 
