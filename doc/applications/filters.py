@@ -115,6 +115,3 @@ class FilterSetFormHelper(FormHelper):
             Row(Div(CROO_QUALIFICATIONS, css_class='col-lg-12')),
             Row(Div(Submit('submit', 'Filter', css_class='btn-block'), css_class='col-lg-12')),
         )
-
-
- 

@@ -38,5 +38,6 @@ flake8
 webtest
 django-webtest
 django-test-without-migrations
+django-debug-toolbar
 
 
