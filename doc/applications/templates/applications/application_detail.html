@@ -30,7 +30,7 @@
       <a href="{% url 'db:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.leader_supplement.pk %}">remove </a> 
     </td>
     {% else %}
-    <td> * </td> <td> TODO: assign trip </td>
+    <td> * </td> <td> <a href="{{ trip_assignment_url }}"> assign </a> </td>
     {% endif %}
   </tr>
 

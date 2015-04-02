@@ -252,7 +252,9 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
         context['leaderapplication_fields'] = self.leaderapplication_fields
         context['trainings_fields'] = self.trainings_fields
         context['crooapplication_fields'] = self.crooapplication_fields
-        
+        context['trip_assignment_url'] = reverse(
+            'db:update_trip_assignment', kwargs=self.kwargs
+        )
         return context
 
 

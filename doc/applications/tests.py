@@ -609,3 +609,15 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit()
         self.assertRedirects(res, reverse_detail_url(application))
+
+
+class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
+    
+    def test_assignment_view(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(
+            trips_year=trips_year, status=GeneralApplication.LEADER
+        )
+        url = reverse('db:update_trip_assignment', 
+                      kwargs={'trips_year': trips_year, 'pk': application.pk})
+        res = self.app.get(url, user=self.mock_director())

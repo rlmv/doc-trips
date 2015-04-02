@@ -45,4 +45,3 @@ class TripLeaderAssignmentForm(forms.ModelForm):
 
         label = 'Assign to %s' % self.initial['assigned_trip']
         self.helper.add_input(Submit('submit', label, css_class='btn-xs'))
-
