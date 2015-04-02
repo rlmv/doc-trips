@@ -95,22 +95,42 @@ class LeaderSupplementForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(LeaderSupplementForm, self).__init__(*args, **kwargs)
 
-        # restrict querysets to current trips year
+        # Restrict querysets to current trips year
         # TODO: since this form is used by the database update view, 
-        # pass the trips year in explicitly to support previous years, 
+        # pass the trips year in explicitly to support previous years,
         # OR don't allow editing of old trips_years.
         trips_year = TripsYear.objects.current()
         if kwargs.get('instance', None):
             assert kwargs['instance'].trips_year == trips_year
-       
-        self.fields['preferred_sections'].queryset = Section.objects.filter(trips_year=trips_year)
-        self.fields['preferred_sections'].widget = forms.CheckboxSelectMultiple()
-        self.fields['available_sections'].queryset = Section.objects.filter(trips_year=trips_year)
-        self.fields['available_sections'].widget = forms.CheckboxSelectMultiple()
-        self.fields['preferred_triptypes'].queryset = self.fields['preferred_triptypes'].queryset.filter(trips_year=trips_year)
-        self.fields['preferred_triptypes'].widget = forms.CheckboxSelectMultiple()
-        self.fields['available_triptypes'].queryset = self.fields['available_triptypes'].queryset.filter(trips_year=trips_year)
-        self.fields['available_triptypes'].widget = forms.CheckboxSelectMultiple()
+
+        # Widget specifications are in __init__ because of 
+        # https://github.com/maraujop/django-crispy-forms/issues/303
+        # This weird SQL behavior is also triggered when field.queryset 
+        # is specified after field.widget = CheckboxSelectMultiple.
+        self.fields['preferred_sections'].queryset = (
+            Section.objects.filter(trips_year=trips_year)
+        )
+        self.fields['preferred_sections'].widget = (
+            forms.CheckboxSelectMultiple()
+        )
+        self.fields['available_sections'].queryset = (
+            Section.objects.filter(trips_year=trips_year)
+        )
+        self.fields['available_sections'].widget = (
+            forms.CheckboxSelectMultiple()
+        )
+        self.fields['preferred_triptypes'].queryset = (
+            TripType.objects.filter(trips_year=trips_year)
+        )
+        self.fields['preferred_triptypes'].widget = (
+            forms.CheckboxSelectMultiple()
+        )
+        self.fields['available_triptypes'].queryset = (
+            TripType.objects.filter(trips_year=trips_year)
+        )
+        self.fields['available_triptypes'].widget = (
+            forms.CheckboxSelectMultiple()
+        )
         
         self.helper = FormHelper(self)
         self.helper.form_tag = False
