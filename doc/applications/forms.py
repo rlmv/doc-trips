@@ -92,12 +92,6 @@ class LeaderSupplementForm(forms.ModelForm):
             'relevant_experience', 'document'
         )
 
-        widgets = {
-            'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
-            'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
-            'relevant_experience': forms.Textarea(attrs={'rows': 4}),
-        }
-
     def __init__(self, *args, **kwargs):
         super(LeaderSupplementForm, self).__init__(*args, **kwargs)
 
@@ -239,9 +233,9 @@ class LeaderSupplementLayout(Layout):
                     Div('preferred_triptypes', css_class='col-sm-3'),
                     Div('available_triptypes', css_class='col-sm-3'),
                 ),
-                'relevant_experience',
-                'trip_preference_comments',
-                'cannot_participate_in',
+                Field('relevant_experience', rows=4),
+                Field('trip_preference_comments', rows=2),
+                Field('cannot_participate_in', rows=2),
             ),
         )
 
