@@ -14,6 +14,10 @@ Deployment
 * I *highly recommend* setting up a [Heroku dev/staging instance](https://devcenter.heroku.com/articles/multiple-environments), with a development AWS bucket.
 * Sentry ?
 
+Dependencies
+===========
+django-braces>1.4.0 # need Login/Permission compatibility in master. Eait for version > 1.4.0
+django-bootstrap3-datetimepicker Need version>2.2.3. need PR #14 which fixes an early jquery dependency:
 
 Timeline
 ========
