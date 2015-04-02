@@ -6,7 +6,7 @@ from model_mommy import mommy
 from django_webtest import WebTest
 
 from doc.db.models import TripsYear
-from doc.permissions import directors, graders
+from doc.permissions import directors, graders, directorate, trip_leader_trainers
 
 
 class TripsYearTestCaseUtils():
@@ -64,6 +64,28 @@ class TripsYearTestCaseUtils():
         self.director.save()
 
         return self.director
+
+    def mock_directorate(self):
+        """ Create a user with directorate permissions, and log the user in. """
+
+        netid = 'directorate'
+        email = netid + '@dartmouth.edu'
+        self.directorate = get_user_model().objects.create_user(netid, netid, email)
+        self.directorate.groups.add(directorate())
+        self.directorate.save()
+
+        return self.directorate
+
+    def mock_tlt(self):
+        """ Create a user with trip leader trainer permissions, and log the user in. """
+        netid = 'tlt'
+        email = netid + '@dartmouth.edu'
+        self.tlt = get_user_model().objects.create_user(netid, netid, email)
+        self.tlt.groups.add(trip_leader_trainers())
+        self.tlt.save()
+
+        return self.tlt
+
 
     def mock_grader(self):
         

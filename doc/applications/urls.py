@@ -19,7 +19,9 @@ from doc.applications.views.grading import(
     RedirectToNextGradableLeaderApplication,
     GradeLeaderApplication,
     NoLeaderApplicationsLeftToGrade,
-    GraderLandingPage)
+    GraderLandingPage, 
+    DeleteCrooGrade,
+    DeleteLeaderGrade)
 from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import VolunteerPortalView
 from doc.applications.views.reports import VolunteerCSV
@@ -64,4 +66,12 @@ application_urlpatterns = patterns(
 grader_urlpatterns = patterns(
     '',
     url(DB_REGEX['LIST'], GraderListView.as_view(), name='graders_index'),
+)
+
+grade_urlpatterns = patterns(
+    '',
+    url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
+        name='leaderapplicationgrade_delete'),
+    url(r'^croo/(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(),
+        name='crooapplicationgrade_delete'),
 )

@@ -10,7 +10,9 @@ from doc.transport.urls import (
     scheduledtransport_urlpatterns, transportstop_urlpatterns,
     vehicle_urlpatterns, route_urlpatterns,
 )
-from doc.applications.urls import application_urlpatterns, grader_urlpatterns
+from doc.applications.urls import (
+    application_urlpatterns, grader_urlpatterns, grade_urlpatterns
+)
 from doc.incoming.urls import trippee_urlpatterns, registration_urlpatterns
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 
@@ -31,6 +33,7 @@ database_urlpatterns = patterns(
     url(r'^routes/', include(route_urlpatterns)),
     url(r'^vehicles/', include(vehicle_urlpatterns)),
     url(r'^applications/', include(application_urlpatterns)),
+    url(r'^grades/', include(grade_urlpatterns)),
     url(r'^graders/', include(grader_urlpatterns)),
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),

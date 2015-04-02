@@ -20,6 +20,7 @@ from doc.croos.models import Croo
 from doc.trips.models import Section, ScheduledTrip
 from doc.applications.views.graders import get_graders
 from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
+from doc.db.urlhelpers import reverse_detail_url
 
 
 class ApplicationTestMixin():
@@ -567,6 +568,44 @@ class GradersDatabaseListViewTestCase(TripsTestCase):
 
         
 class VolunteerPortalViewsTestCase(WebTestCase):
-    
+   
     pass
 
+
+class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
+
+    def test_delete_leader_grade_is_restricted_to_directors(self):
+        trips_year = self.init_current_trips_year()
+        grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year)
+        url = reverse('db:leaderapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        res = self.app.get(url, user=self.mock_tlt(), status=403)
+        res = self.app.get(url, user=self.mock_directorate(), status=403)
+        res = self.app.get(url, user=self.mock_grader(), status=403)
+        res = self.app.get(url, user=self.mock_director())
+
+    def test_delete_croo_grade_is_restricted_to_directors(self):
+        trips_year = self.init_current_trips_year()
+        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
+        url = reverse('db:crooapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        res = self.app.get(url, user=self.mock_tlt(), status=403)
+        res = self.app.get(url, user=self.mock_directorate(), status=403)
+        res = self.app.get(url, user=self.mock_grader(), status=403)
+        res = self.app.get(url, user=self.mock_director())
+
+    def test_delete_leader_grade_redirects_to_app(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year)
+        grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year, application=application.leader_supplement)
+        url = reverse('db:leaderapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        res = self.app.get(url, user=self.mock_director())
+        res = res.form.submit()
+        self.assertRedirects(res, reverse_detail_url(application))
+
+    def test_delete_croo_grade_redirects_to_app(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year)
+        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year, application=application.croo_supplement)
+        url = reverse('db:crooapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        res = self.app.get(url, user=self.mock_director())
+        res = res.form.submit()
+        self.assertRedirects(res, reverse_detail_url(application))

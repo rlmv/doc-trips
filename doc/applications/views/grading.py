@@ -11,7 +11,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpResponseRedirect
 
+from doc.db.urlhelpers import reverse_detail_url
 from doc.db.models import TripsYear
+from doc.db.views import DatabaseDeleteView
 from doc.applications.models import (
     LeaderSupplement, CrooSupplement,
     CrooApplicationGrade, LeaderApplicationGrade,
@@ -356,3 +358,19 @@ class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired,
     """ Tell user there are no more applications for her to grade """
 
     template_name = 'applications/no_applications.html'
+
+
+class DeleteLeaderGrade(DatabaseDeleteView):
+    model = LeaderApplicationGrade
+
+    def get_success_url(self):
+        return reverse_detail_url(self.object.application.application)
+
+
+class DeleteCrooGrade(DatabaseDeleteView):
+    model = CrooApplicationGrade
+
+    def get_success_url(self):
+        return reverse_detail_url(self.object.application.application)
+
+    
