@@ -1,11 +1,12 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+<h3> Delete Leader Assignment </h3>
+{% endblock %}
+
 {% block content %}
 
-<div class="page-header">
-  <h3> Delete Leader Assignment </h3>
-</div>
 <p><strong> Trip: </strong> {{ object.assigned_trip }} </p>
 <p><strong> Leader: </strong> {{ object.applicant }} </p>
 
