@@ -85,6 +85,13 @@ class TripTemplateListView(DatabaseListView):
     model = TripTemplate
     context_object_name = 'templates' 
     template_name = 'trip/template_index.html'
+    
+    def get_queryset(self):
+        qs = super(TripTemplateListView, self).get_queryset()
+        return qs.select_related(
+            'triptype', 'campsite1', 'campsite2', 'dropoff', 'pickup'
+        )
+
 
 class TripTemplateCreateView(DatabaseCreateView):
     model = TripTemplate
@@ -97,7 +104,7 @@ class TripTemplateDetailView(DatabaseDetailView):
               'description_introduction', 'description_day1', 
               'description_day2', 'description_day3', 
               'description_conclusion', 'revision_notes']
-              
+
 
 class TripTemplateUpdateView(DatabaseUpdateView):
     model = TripTemplate
