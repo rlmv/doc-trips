@@ -15,12 +15,11 @@ from doc.db.models import TripsYear
 from doc.applications.models import (
     LeaderSupplement, CrooSupplement,
     CrooApplicationGrade, LeaderApplicationGrade,
-    QualificationTag, SkippedLeaderGrade, SkippedCrooGrade
-)
-from doc.applications.forms import (CrooApplicationGradeForm,
-                                    LeaderApplicationGradeForm)
-from doc.permissions.views import (CrooGraderPermissionRequired,
-                                   LeaderGraderPermissionRequired)
+    QualificationTag, SkippedLeaderGrade, SkippedCrooGrade)
+from doc.applications.forms import (
+    CrooApplicationGradeForm, LeaderApplicationGradeForm)
+from doc.permissions.views import (
+    CrooGraderPermissionRequired, LeaderGraderPermissionRequired)
 from doc.timetable.models import Timetable
 
 """
