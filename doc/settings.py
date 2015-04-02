@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
@@ -39,16 +36,6 @@ RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN', ''),
 }
 
-# Don't need this because we're using Raven/Sentry
-# ADMINS = (('Bo', 'bo.marchman@gmail.com'),)
-# MANAGERS = ADMINS
-
-# SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'root@localhost')
-# EMAIL_HOST = os.environ.get('MAILGUN_SMTP_SERVER', '')
-# EMAIL_PORT = os.environ.get('MAILGUN_SMTP_PORT', '')
-# EMAIL_HOST_USER = os.environ.get('MAILGUN_SMTP_LOGIN', None)
-# EMAIL_HOST_PASSWORD = os.environ.get('MAILGUN_SMTP_PASSWORD', None)
-
 # heroku settings
 ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -61,16 +48,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # third party
-#    'address',
-    'pipeline',
-    'crispy_forms',
     'bootstrap3_datetime',
+    'crispy_forms',
     'django_extensions',
+    'pipeline',
     'raven.contrib.django.raven_compat',
     'test_without_migrations',
 
-    # doc apps
     'doc.applications',
     'doc.core',
     'doc.croos',
@@ -86,7 +70,6 @@ INSTALLED_APPS = [
     'doc.utils',
     'doc.webauth',
 ]
-
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
 
@@ -97,9 +80,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    # enable Dartmouth WebAuth
-    'doc.webauth.middleware.WebAuthMiddleware',
+    'doc.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
 )
 
 AUTH_USER_MODEL = 'users.DartmouthUser'
@@ -117,8 +98,8 @@ ROOT_URLCONF = 'doc.urls'
 
 WSGI_APPLICATION = 'doc.wsgi.application'
 
-# used for local testing instead of Postgres
 import dj_database_url
+# use SQLite for local testing instead of Postgres
 sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
     'default': dj_database_url.config(default=sqlite)
@@ -137,6 +118,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
+# Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
@@ -150,19 +132,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-
 STATICFILES_STORAGE = 'doc.utils.storages.GzipManifestPipelineStorage'
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'pipeline.finders.PipelineFinder',
 )
 
+# Pipeline - static files
 PIPELINE_CSS = {
     'base': {
         'source_filenames': (
@@ -176,21 +156,19 @@ PIPELINE_CSS = {
         'output_filename': 'base.css'
     }
 }
-
 PIPELINE_JS = {
     'base': {
         'source_filenames': (
             'js/jquery.js',
             'js/bootstrap.min.js',
             'js/typeahead.bundle.js',
-            'dartdm/lookup.js', # must come after typeahead
+            'dartdm/lookup.js',  # must come after typeahead
             'js/stupidtable.js',
             'js/bootstrap-switch.js',
         ),
         'output_filename': 'base.js'
     }
 }
-
 # concatenate assets only -- GzipManifest deals with compression
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
@@ -198,7 +176,6 @@ PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
 )
-
 if not DEBUG:
     TEMPLATE_LOADERS = (
         ('django.template.loaders.cached.Loader', (
@@ -206,7 +183,6 @@ if not DEBUG:
             'django.template.loaders.app_directories.Loader',
         )),
     )
-
 
 LOGGING = {
     'version': 1,
@@ -232,7 +208,7 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
         },
-        'doc': { # project namespace
+        'doc': {  # project namespace
             'handlers': ['console', 'sentry'],
             'level': 'INFO',
         },
