@@ -72,10 +72,7 @@ class SectionChoiceField(forms.ModelMultipleChoiceField):
     """
     Custom field to display section information
     """
-    widget = forms.CheckboxSelectMultiple()
-    
     def label_from_instance(self, obj):
-
         return mark_safe(str(obj) + ' &mdash; '  + obj.date_range_str())
 
 
@@ -96,8 +93,6 @@ class LeaderSupplementForm(forms.ModelForm):
         )
 
         widgets = {
-            'preferred_triptypes': forms.CheckboxSelectMultiple,
-            'available_triptypes': forms.CheckboxSelectMultiple, 
             'trip_preference_comments': forms.Textarea(attrs={'rows': 2}),
             'cannot_participate_in': forms.Textarea(attrs={'rows': 2}),
             'relevant_experience': forms.Textarea(attrs={'rows': 4}),
@@ -113,11 +108,15 @@ class LeaderSupplementForm(forms.ModelForm):
         trips_year = TripsYear.objects.current()
         if kwargs.get('instance', None):
             assert kwargs['instance'].trips_year == trips_year
-        
+       
         self.fields['preferred_sections'].queryset = Section.objects.filter(trips_year=trips_year)
+        self.fields['preferred_sections'].widget = forms.CheckboxSelectMultiple()
         self.fields['available_sections'].queryset = Section.objects.filter(trips_year=trips_year)
+        self.fields['available_sections'].widget = forms.CheckboxSelectMultiple()
         self.fields['preferred_triptypes'].queryset = self.fields['preferred_triptypes'].queryset.filter(trips_year=trips_year)
+        self.fields['preferred_triptypes'].widget = forms.CheckboxSelectMultiple()
         self.fields['available_triptypes'].queryset = self.fields['available_triptypes'].queryset.filter(trips_year=trips_year)
+        self.fields['available_triptypes'].widget = forms.CheckboxSelectMultiple()
         
         self.helper = FormHelper(self)
         self.helper.form_tag = False
