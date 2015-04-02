@@ -18,19 +18,23 @@ the edit_db permission.
 
 """
 
-# Should these permission accessors be in a Manager?
+# TODO: Should these permission accessors be in a Manager?
+
+
 def get_permission(codename, name):
     """ Return a the requested SitePermission. """
     permission, created = SitePermission.objects.get_or_create(
         codename=codename, name=name)
     return permission
 
+
 def initialize_groups_and_permissions():
     """ Set up all permissions used by the site."""
-
+    trip_leader_trainers()
     directors()
     directorate()
     graders()
+
 
 def can_set_access():
     return get_permission('can_set_access', 
@@ -43,9 +47,8 @@ def can_view_database():
 def can_edit_database():
     """ 
     Implies can_view_db permissions. It's assumed that if you can edit, 
-    you can also view an object. 
+    you can also view an object.
     """
-    
     return get_permission('can_edit_db',
                           'Can edit objects in the trips database')
 
@@ -79,23 +82,27 @@ def can_edit_applications_and_assign_trip_leaders():
 
 def directors():    
     directors, created = Group.objects.get_or_create(name='directors')
-    directors.permissions = [can_set_access(), 
-                             can_view_database(),
-                             can_edit_database(),
-                             can_edit_timetable(), 
-                             can_grade_croo_applications(),
-                             can_grade_leader_applications(), 
-                             can_create_applications(), 
-                             can_edit_applications_and_assign_trip_leaders(),]
+    directors.permissions = [
+        can_set_access(), 
+        can_view_database(),
+        can_edit_database(),
+        can_edit_timetable(), 
+        can_grade_croo_applications(),
+        can_grade_leader_applications(), 
+        can_create_applications(), 
+        can_edit_applications_and_assign_trip_leaders(),
+    ]
     directors.save()
     return directors
 
 
 def directorate():
     directorate, created = Group.objects.get_or_create(name='directorate')
-    directorate.permissions = [can_view_database(),
-                               can_grade_leader_applications(),
-                               can_grade_croo_applications()]
+    directorate.permissions = [
+        can_view_database(),
+        can_grade_leader_applications(),
+        can_grade_croo_applications(),
+    ]
     directorate.save()
     return directorate
 
@@ -103,16 +110,19 @@ def directorate():
 def trip_leader_trainers():
     # trip leader trainers
     tlts, created = Group.objects.get_or_create(name='trip leader trainers')
-    tlts.permissions = [can_view_database(),
-                        can_grade_leader_applications(),
-                        can_edit_applications_and_assign_trip_leaders(),]
-
+    tlts.permissions = [
+        can_view_database(),
+        can_grade_leader_applications(),
+        can_edit_applications_and_assign_trip_leaders(),
+    ]
     tlts.save()
     return tlts
 
 
 def graders():
     graders, created = Group.objects.get_or_create(name='graders')
-    graders.permissions = [can_grade_leader_applications()]
+    graders.permissions = [
+        can_grade_leader_applications(),
+    ]
     graders.save()
     return graders

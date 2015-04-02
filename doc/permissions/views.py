@@ -80,9 +80,11 @@ class CreateApplicationPermissionRequired(BasePermissionMixin, PermissionRequire
 
 class GenericGroupForm(forms.Form):
     
-    members = forms.ModelMultipleChoiceField(queryset=None, 
-                                             widget=forms.CheckboxSelectMultiple, 
-                                             required=False)
+    members = forms.ModelMultipleChoiceField(
+        queryset=None,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
     new_member = DartmouthDirectoryLookupField(required=False)
 
     def __init__(self, group, *args, **kwargs):
