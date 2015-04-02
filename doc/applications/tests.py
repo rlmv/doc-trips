@@ -17,7 +17,7 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      SkippedLeaderGrade, SkippedCrooGrade)
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
-from doc.trips.models import Section, ScheduledTrip
+from doc.trips.models import Section, ScheduledTrip, TripType
 from doc.applications.views.graders import get_graders
 from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
 from doc.db.urlhelpers import reverse_detail_url
@@ -92,8 +92,45 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         
         application.status = GeneralApplication.CROO
         application.full_clean()
-        
 
+
+    def test_get_preferred_trips(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        ls = application.leader_supplement
+        preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        ls.preferred_sections = [preferred_trip.section]
+        ls.preferred_triptypes = [preferred_trip.template.triptype]
+        ls.save()
+        not_preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
+
+        
+    def test_get_available_trips(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        ls = application.leader_supplement
+        preferred_triptype = mommy.make(TripType, trips_year=trips_year)
+        preferred_section = mommy.make(Section, trips_year=trips_year)
+        available_triptype = mommy.make(TripType, trips_year=trips_year)
+        available_section = mommy.make(Section, trips_year=trips_year)
+        ls.preferred_sections = [preferred_section]
+        ls.preferred_triptypes = [preferred_triptype]
+        ls.available_sections = [available_section]
+        ls.available_triptypes = [available_triptype]
+        ls.save()
+
+        make = lambda s,t: mommy.make(ScheduledTrip, trips_year=trips_year, section=s, template__triptype=t)
+        preferred_trip = make(preferred_section, preferred_triptype)
+        available_trips = [  # all other permutations
+            make(preferred_section, available_triptype),
+            make(available_section, preferred_triptype),
+            make(available_section, available_triptype),
+        ]
+        not_preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual(set(available_trips), set(application.get_available_trips()))
+
+        
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 

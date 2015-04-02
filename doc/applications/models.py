@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
@@ -134,6 +135,14 @@ class GeneralApplication(DatabaseModel):
     def croo_application_complete(self):
         return (hasattr(self, 'croo_supplement') and 
                 self.croo_supplement.document)
+        
+
+    def get_preferred_trips(self):
+        return self.leader_supplement.get_preferred_trips()
+
+    def get_available_trips(self):
+        return self.leader_supplement.get_available_trips()
+
 
     def __str__(self):
         return str(self.applicant)
@@ -179,33 +188,33 @@ class LeaderSupplement(DatabaseModel):
 
 
     def get_preferred_trips(self):
-        """ All scheduled trips which this leader prefers to go lead. """
+        """ All trips which this applicant prefers to lead """
 
-        trips = (ScheduledTrip.objects
-                 .filter(trips_year=self.trips_year)
-                 .filter(Q(section__in=self.preferred_sections.all()) &
-                         Q(template__triptype__in=self.preferred_triptypes.all())))
-
-        return trips
+        return (
+            ScheduledTrip.objects
+            .filter(trips_year=self.trips_year)
+            .filter(Q(section__in=self.preferred_sections.all()) &
+                    Q(template__triptype__in=self.preferred_triptypes.all()))
+        )
 
 
     def get_available_trips(self):
         """
-        Return all ScheduledTrips which this leader is available for. 
+        Return all ScheduledTrips which this leader is available to lead.
         
         Contains all permutations of available and preferred sections and 
         trips types, excluding the results of get_preferred_trips.
         """
         
-        trips = (ScheduledTrip.objects
-                 .filter(trips_year=self.trips_year)
-                 .filter(Q(section__in=self.preferred_sections.all()) |
-                         Q(section__in=self.available_sections.all()), 
-                         Q(template__triptype__in=self.preferred_triptypes.all()) |
-                         Q(template__triptype__in=self.available_triptypes.all()))
-                 .exclude(id__in=self.get_preferred_trips().all()))
-
-        return trips
+        return (
+            ScheduledTrip.objects
+            .filter(trips_year=self.trips_year)
+            .filter(Q(section__in=self.preferred_sections.all()) |
+                    Q(section__in=self.available_sections.all()),
+                    Q(template__triptype__in=self.preferred_triptypes.all()) |
+                    Q(template__triptype__in=self.available_triptypes.all()))
+            .exclude(id__in=self.get_preferred_trips().all())
+        )
 
 
     def average_grade(self):
