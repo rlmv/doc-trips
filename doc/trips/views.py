@@ -32,6 +32,7 @@ class ScheduledTripListView(DatabaseListView):
         context['sections'] = Section.objects.filter(trips_year=trips_year)
         return context
 
+
 class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip
     fields = ['section', 'template']
@@ -96,6 +97,7 @@ class TripTemplateListView(DatabaseListView):
 class TripTemplateCreateView(DatabaseCreateView):
     model = TripTemplate
 
+
 class TripTemplateDetailView(DatabaseDetailView):
     model = TripTemplate
     fields = ['name', 'description_summary', 'triptype', 
@@ -109,6 +111,7 @@ class TripTemplateDetailView(DatabaseDetailView):
 class TripTemplateUpdateView(DatabaseUpdateView):
     model = TripTemplate
 
+
 class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:template_index'
@@ -119,16 +122,20 @@ class TripTypeListView(DatabaseListView):
     context_object_name = '{}s'.format(TripType.get_model_name_lower())
     template_name = 'trip/triptype_index.html'
 
+
 class TripTypeCreateView(DatabaseCreateView):
     model = TripType
+
 
 class TripTypeDetailView(DatabaseDetailView):
     model = TripType
     fields = ['name', 'trippee_description', 'leader_description', 
               'packing_list']
 
+
 class TripTypeUpdateView(DatabaseUpdateView):
     model = TripType
+
 
 class TripTypeDeleteView(DatabaseDeleteView):
     model = TripType
@@ -146,15 +153,19 @@ class CampsiteListView(DatabaseListView):
         context['camping_dates'] = Section.dates.camping_dates(trips_year)
         return context
 
+
 class CampsiteCreateView(DatabaseCreateView):
     model = Campsite
+
 
 class CampsiteDetailView(DatabaseDetailView):
     model = Campsite
     fields = ['name', 'capacity', 'directions', 'bugout', 'secret']
 
+
 class CampsiteUpdateView(DatabaseUpdateView):
     model = Campsite
+
 
 class CampsiteDeleteView(DatabaseDeleteView):
     model = Campsite
@@ -172,15 +183,18 @@ class SectionCreateView(DatabaseCreateView):
     form_class = SectionForm
     template_name = 'trip/section_create.html'
 
+
 class SectionDetailView(DatabaseDetailView):
     model = Section
     fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange', 
               'is_transfer', 'is_international', 'is_native', 'is_fysep']
 
+
 class SectionUpdateView(DatabaseUpdateView):
     model = Section
     form_class = SectionForm
     template_name = 'trip/section_update.html'
+
 
 class SectionDeleteView(DatabaseDeleteView):
     model = Section
@@ -269,8 +283,9 @@ class AssignTripLeaderView(DatabaseListView):
 
 # should these volunteer specific views go to the applications app?
 
-class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixin, 
-                                   TripsYearMixin, UpdateView):
+class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, 
+                                   FormValidMessageMixin, TripsYearMixin, 
+                                   UpdateView):
     """ 
     Add an assigned_trip to a leader. 
 
@@ -292,8 +307,8 @@ class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, FormValidM
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
-class RemoveAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixin, 
-                         TripsYearMixin, UpdateView):
+class RemoveAssignedTrip(ApplicationEditPermissionRequired,
+                         FormValidMessageMixin, TripsYearMixin, UpdateView):
     """ Remove a leader's assigned trip """
 
     model = GeneralApplication
@@ -317,10 +332,4 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired, FormValidMessageMixi
         
     def get_success_url(self):
         return reverse_detail_url(self.object)
-        
-        
     
-    
-    
-    
-        
