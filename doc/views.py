@@ -23,4 +23,4 @@ def permission_denied(request):
     else:
         context = {'base_template': 'base.html'}
 
-    return render(request, 'permission_denied.html', context)
+    return render(request, 'permission_denied.html', context, status=403)
