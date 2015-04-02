@@ -8,10 +8,38 @@ from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from doc.applications.models import (GeneralApplication, CrooSupplement, LeaderSupplement,
-                                 CrooApplicationGrade, LeaderApplicationGrade)
+                                     CrooApplicationGrade, LeaderApplicationGrade)
 from doc.db.models import TripsYear
-from doc.trips.models import Section, TripType
+from doc.trips.models import Section, TripType, ScheduledTrip
+from doc.utils.forms import crispify
 
+
+class ScheduledTripChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{}{}: {}: {}".format(
+            obj.section, obj.template.name,
+            obj.template.triptype.name,
+            obj.template.description_summary
+        )
+
+
+class TripAssignmentForm(forms.ModelForm):
+    """ Update a leader's assigned trip """
+
+    class Meta:
+        model = GeneralApplication
+        fields = ['assigned_trip']
+    assigned_trip = ScheduledTripChoiceField(queryset=None)
+
+    def __init__(self, *args, **kwargs):
+        super(TripAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['assigned_trip'].queryset = (
+            ScheduledTrip.objects
+            .filter(trips_year=kwargs['instance'].trips_year)
+            .select_related('section', 'template', 'template__triptype')
+        )
+        crispify(self, submit_text='Update Assignment')
+       
 
 class ApplicationForm(forms.ModelForm):
     
