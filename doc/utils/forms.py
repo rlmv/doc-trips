@@ -6,7 +6,9 @@ def crispify(form, submit_text=None):
     """
     Add a crispy form helper and submit button to form.
 
+    The form can then by rendered using {% crispy form %}.
     """
+
     if submit_text is None:
         submit_text = 'Submit'
     form.helper = FormHelper(form)
