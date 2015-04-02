@@ -140,6 +140,10 @@ class StopListView(DatabaseListView):
     context_object_name = 'stops'
     template_name = 'transport/stop_index.html'
 
+    def get_queryset(self):
+        qs = super(StopListView, self).get_queryset()
+        return qs.select_related('route')
+
 
 class StopCreateView(DatabaseCreateView):
     model = Stop
