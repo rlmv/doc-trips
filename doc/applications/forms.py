@@ -38,6 +38,7 @@ class TripAssignmentForm(forms.ModelForm):
             .filter(trips_year=kwargs['instance'].trips_year)
             .select_related('section', 'template', 'template__triptype')
         )
+        self.fields['assigned_trip'].label = 'Trip Assignment'
         crispify(self, submit_text='Update Assignment')
        
 
