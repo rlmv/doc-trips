@@ -1,0 +1,5 @@
+<ul>
+  {% for trip in trips %}
+  <li> <strong> {{ trip.grouper }}: </strong> {{ trip.list|join:", " }}</li>
+  {% endfor %}
+</ul>
