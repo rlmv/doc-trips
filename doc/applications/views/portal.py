@@ -1,6 +1,7 @@
 
 from vanilla import TemplateView, UpdateView
 from braces.views import LoginRequiredMixin
+from django.core.urlresolvers import reverse_lazy
 
 from doc.utils.forms import crispify
 from doc.timetable.models import Timetable
@@ -58,6 +59,7 @@ class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
 
     model = PortalContent
     template_name = 'applications/setup_portal.html'
+    success_url = reverse_lazy('applications:setup_portal')
     
     def get_object(self):
         trips_year = TripsYear.objects.current()

@@ -8,3 +8,15 @@
 {% block content %}
 {% crispy form %}
 {% endblock %}
+
+{% block scripts %}
+<script>
+$('.textarea').summernote({
+  toolbar: [
+    ['style', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear']],
+    ['para', ['ul', 'ol', 'paragraph']],
+    ['insert', ['link']],
+  ]
+});
+</script>
+{% endblock %}

@@ -152,6 +152,7 @@ PIPELINE_CSS = {
             'css/bootstrap-theme.min.css',
             'css/font-awesome.min.css',
             'css/bootstrap-switch.css',
+            'css/summernote.css',
         ),
         'output_filename': 'base.css'
     }
@@ -165,6 +166,7 @@ PIPELINE_JS = {
             'dartdm/lookup.js',  # must come after typeahead
             'js/stupidtable.js',
             'js/bootstrap-switch.js',
+            'js/summernote.js',
         ),
         'output_filename': 'base.js'
     }
