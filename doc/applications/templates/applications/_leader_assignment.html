@@ -10,10 +10,73 @@
 <p><strong> Dates: </strong> {{ trip.section.date_range_str }} </p>
 
 <p><strong> Leaders: </strong> {{ trip.leaders.all|join:", " }} </p>
-<p><strong> Trippees: </strong> {{ trip.trippees.all|join:", " }} </p>
+<p><strong> Trippees: </strong> {{ trip.trippees.all|join:", "|default:"No trippees yet" }} </p>
 
 {# TODO: leaders on section #}
 {# TODO: description #}
+
+<h3> Day 0 &mdash; {{ trip.section.leaders_arrive }} </h3>
+<p> Whether you came by car, plane, boat, foot, or llama, you made it to HANOVER!  Your first task is to <b>meet behind Robinson Hall between 2:45pm and 3:00pm!</b> Please arrive no later than 3:00pm as you have a packed day ahead of you!  If you will be late, even by a few minutes, please CALL the Trips office at 603.646.3996. </p>
+
+<p> When you meet behind Robinson Hall (BY 3PM!), you can be all packed for your trip OR you can just bring what you need for Gilman Island.  You'll be sleeping outside, so don't forget your sleeping bag, sleeping pad, and rain jacket! </p>
+
+<p> At this point, you'll meet up with your co-leader & section, and then canoe over to Gilman Island for a fantastic evening with the lovely TLTs!  Games, dinner, surprises, hard skills review, and lots of Trips info await you on Gilman Island, so get excited!  In the morning, you will return to Hanover and have a short break before starting your trip. </p>
+
+<p><strong> So - Meet at Robinson Hall between 2:45pm & 3:00pm! Do NOT be late! </strong></p>
+
+<h3> Day 1 &mdash; {{ trip.section.trippees_arrive }} </h3>
+<p> Ahoy! You made it through the training, and now trips are on! When you get back from Gilman Island, you will meet up with the Hanover Croo Safety Dorks to review all that important safety info.  This is important because your trippees are counting on YOU to know what to do while on the trail!</p>
+
+<p>You'll learn some great Trips games & make your med kits, then enjoy a delicious lunch with your section in Sarner Underground!  At that point, you'll talk to the Trips Director (he or she is SO pumped you are here, it's crazy) and get some specific details about your trip.  Ask him or her if you have any questions - they are there to help you! At about 1:00pm, you will be free for a few hours to finish packing, eat more food, purchase any last minute items, and get ready for your trip!</p>
+
+<p>After a break, it's go time! <strong>Meet behind Robinson Hall at 3:30pm!</strong> Do <u>NOT</u> be late! The HCroo Chiefs will come say hello and review any last minute details. Then it's finally time to MEET YOUR TRIPPEES!!</p>
+
+<p>After a round of introductions, you'll find your trip & head over to the BEMA for some games! HCroo members will dismiss each trip from the BEMA to Alumni Gym to participate in the College swim test.  For some trips, this is required. HCroo will give you a list of which trippees have opted to NOT take the swim test so you don't need to ask people in front of the whole group.  Be sensitive to the fact that some people do not feel comfortable swimming - that's totally fine!</p>
+
+<p>After the swim test, walk IMMEDIATELY to Sarner Underground to pack your food for your trip.  Don't gallivant around the Green or play games; we need you to walk DIRECTLY to Sarner Underground to grab your food.  Food boxes can stay with your backpack for now.  Head outside to Collis Patio for dinner at 6:30!</p>
+
+<p>After a delicious dinner, you'll want to lead your trippes back into Sarner Underground for the 8:30pm Safety Talk (Winkity wink wink).  After a few hours of safety, your trippees will be ready to hit the sack, and at 10:00pm, you&rsquo;ll head over to Leverone to pack your gear & food, hang out with your trip, and sleep! </p>
+
+<p> The next morning, HCroo will wake you up at 5:45 AM.  As you wake up, get some breakfast at Collis, and head out in buses, boats, or feet to your trip!! </p>
+
+<p>
+  <u>In short:</u>
+  <ul>
+    <li>1:00 pm: Free time, finish packing for your trip</li>
+    <li>3:30 pm: Meet behind Robinson Hall, do NOT be late</li>
+    <li>4:00 pm: Meet your trippees!</li>
+    <li>4:45 pm: Swim test & pack your food box</li>
+    <li>6:30 pm: Dinner (Collis Patio area)</li>
+    <li>8:30 pm: Safety Talk (Sarner Underground)</li>
+    <li>10:00 pm: Walk to Leverone & sleep!</li>
+  </ul>
+</p>
+
+<h3> Day 2 &mdash; {{ trip.section.at_campsite1 }} </h3>
+<p> {{ trip.template.description_day1|linebreaks }} </p>
+<p><strong> Campsite: </strong> {{ trip.template.campsite1 }} </p>
+
+<h3> Day 3 &mdash; {{ trip.section.at_campsite2 }} </h3>
+<p> {{ trip.template.description_day2|linebreaks }} </p>
+<p><strong> Campsite: </strong> {{ trip.template.campsite2 }} </p>
+
+<h3> Day 4 &mdash; {{ trip.section.arrive_at_lodge }} </h3>
+<p> {{ trip.template.description_day3|linebreaks }} </p>
+
+<h3> Day 5 &mdash; {{ trip.section.return_to_campus }} </h3>
+<p> By now, you&rsquo;ve had a delightful day living it up at Chez Lodj, and it&rsquo;s time to think about heading home (Waaaa). Buses will start leaving for Hanover as they come in, which will start happening around noon, so listen for when your trip is called. Makes sure you have all of your trippees as you head on the bus back home. </p>
+<p> H-croo will greet you as your return to Hanover and you&rsquo;ll fly off the bus, wiser and smellier than when you started.  Make sure your trippees get all their stored possessions back, and also get their new DOC Trips 2014 T-shirts. </p>
+<p><strong>Sections E-J:</strong> Stop by the Collis Patio with your trip to get your t-shirt and get information about Connections -- which can help your trippees figure out Pre-O & campus life now that they are back!  After that comes the rest of life! Plan reunions, invite your trippees to hang out with you, check-in with them throughout the year, support your trippees in whatever cool stuff they decide to do at Dartmouth, and play like there&rsquo;s no tomorrow, because you did a great job - and will continue to do a great job! </p>
+
+{% if trip.template.description_conclusion %}
+<h3> Notes </h3>
+<p> {{ trip.template.description_conclusion|linebreaks }} </p>
+{% endif %}
+
+{% if trip.template.triptype.packing_list %}
+<h3> Packing List </h3>
+<p> {{ trip.template.triptype.packing_list|linebreaks }}
+{% endif %}
 
 {% else %}
 <p> You are not currently assigned to a trip. </p>
