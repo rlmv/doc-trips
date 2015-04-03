@@ -166,9 +166,15 @@ PIPELINE_JS = {
             'dartdm/lookup.js',  # must come after typeahead
             'js/stupidtable.js',
             'js/bootstrap-switch.js',
-            'js/summernote.js',
         ),
         'output_filename': 'base.js'
+    },
+    'summernote': {
+        'source_filenames': (
+            'js/summernote.js',
+            'js/init_summernote.js',
+        ),
+        'output_filename': 'my_summernote.js'
     }
 }
 # concatenate assets only -- GzipManifest deals with compression

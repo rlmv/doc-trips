@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load pipeline %}
 
 {% block header %}
 <h2> Edit Trip Assignment Text </h2>
@@ -11,13 +12,5 @@
 {% endblock content %}
 
 {% block scripts %}
-<script>
-$('.textarea').summernote({
-  toolbar: [
-    ['style', ['style', 'bold', 'italic', 'underline', 'strikethrough', 'clear']],
-    ['para', ['ul', 'ol', 'paragraph']],
-    ['insert', ['link']],
-  ]
-});
-</script>
+{% javascript "summernote" %}
 {% endblock %}
