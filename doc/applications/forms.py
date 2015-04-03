@@ -15,6 +15,7 @@ from doc.utils.forms import crispify
 
 
 class ScheduledTripChoiceField(forms.ModelChoiceField):
+    """ Field with verbose ScheduledTrip labels """
     def label_from_instance(self, obj):
         return "{}{}: {}: {}".format(
             obj.section, obj.template.name,
