@@ -61,14 +61,20 @@ class GeneralApplication(DatabaseModel):
     )
 
     # ---- administrative information. not seen by applicants ------
-    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False, 
-                                  related_name='applications')
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default=PENDING,
-                              verbose_name="Application status")
-    assigned_trip = models.ForeignKey(ScheduledTrip, blank=True, null=True, 
-                                      related_name='leaders', on_delete=models.PROTECT)
-    assigned_croo = models.ForeignKey(Croo, blank=True, null=True, 
-                                      related_name='croolings', on_delete=models.PROTECT)
+    applicant = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, related_name='applications'
+    )
+    status = models.CharField(
+        "Application status", max_length=15, choices=STATUS_CHOICES, default=PENDING,
+    )
+    assigned_trip = models.ForeignKey(
+        ScheduledTrip, blank=True, null=True,
+        related_name='leaders', on_delete=models.PROTECT
+    )
+    assigned_croo = models.ForeignKey(
+        Croo, blank=True, null=True,
+        related_name='croolings', on_delete=models.PROTECT
+    )
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
@@ -85,8 +91,7 @@ class GeneralApplication(DatabaseModel):
     personal_activities = models.TextField(blank=True, verbose_name="In order of importance to you, please list your activities and involvements at Dartmouth and beyond (e.g. greek affiliation, affinity group, campus organization, team, etc)")
     feedback = models.TextField(blank=True, verbose_name="If you have any experience with Trips, what would you change about the program (big or small)?  If you do not have experience with Trips, what would you change about the program OR what would you change about your introduction to Dartmouth?")
 
-    hanover_in_fall = models.CharField('Are you planning to be in Hanover this fall?',
-                                       choices=YES_NO_CHOICES, max_length=5)
+    hanover_in_fall = models.CharField('Are you planning to be in Hanover this fall?', choices=YES_NO_CHOICES, max_length=5)
     LEADER_CROO_PREFERENCE = (
         ('PREFER_LEADER', 'Prefer Trip Leader'),
         ('PREFER_CROO', 'Prefer Croo'),
@@ -286,8 +291,9 @@ class AbstractGrade(DatabaseModel):
     )
     
     # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False,
-                               related_name='%(class)ss') 
+    grader = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, related_name='%(class)ss'
+    )
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     hard_skills = models.CharField(max_length=255, blank=True)
     soft_skills = models.CharField(max_length=255, blank=True)
@@ -299,14 +305,16 @@ class AbstractGrade(DatabaseModel):
 
 class LeaderApplicationGrade(AbstractGrade):
     """ Grade for LeaderApplications """
-    application = models.ForeignKey(LeaderSupplement, related_name='grades',
-                                    editable=False)
+    application = models.ForeignKey(
+        LeaderSupplement, related_name='grades', editable=False
+    )
 
 
 class CrooApplicationGrade(AbstractGrade):
     """ Grade for CrooApplications """
-    application = models.ForeignKey(CrooSupplement, related_name='grades',
-                                    editable=False)
+    application = models.ForeignKey(
+        CrooSupplement, related_name='grades', editable=False
+    )
     qualifications = models.ManyToManyField('QualificationTag', blank=True)
     
 
@@ -336,18 +344,20 @@ class AbstractSkippedGrade(DatabaseModel):
 
 class SkippedLeaderGrade(AbstractSkippedGrade):    
     # skipped application
-    application = models.ForeignKey(LeaderSupplement, editable=False,
-                                    related_name='skips')
+    application = models.ForeignKey(
+        LeaderSupplement, editable=False, related_name='skips'
+    )
 
 
 class SkippedCrooGrade(AbstractSkippedGrade):
-    application = models.ForeignKey(CrooSupplement, editable=False,
-                                    related_name='skips')
-
+    application = models.ForeignKey(
+        CrooSupplement, editable=False, related_name='skips'
+    )
     # marks whether the grader was grading for a particular
     # qualification when they skipped the application
-    for_qualification = models.ForeignKey(QualificationTag, 
-                                          null=True, editable=False)
+    for_qualification = models.ForeignKey(
+        QualificationTag, null=True, editable=False
+    )
     
     
     
