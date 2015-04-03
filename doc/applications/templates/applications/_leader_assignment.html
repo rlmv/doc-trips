@@ -1,16 +1,18 @@
 
-{# have 'application' as a template variable #}
+{# 'trip' is a template variable in this context #}
 
-{% with trip=application.assigned_trip %}
+<div class="panel panel-default">
 
 {% if trip %}
+<ul class="list-group">
+<li class="list-group-item"><h2 class="list-group-item-heading"> Trip Assignment </h2> <p class="list-group-item-text">{{ trip }}:{{ trip.template.description_summary }}</p></li>
+<li class="list-group-item"><strong> Trip Type </strong> {{ trip.template.triptype }}</li>
+<p class="list-group-item"><strong> Dates </strong> {{ trip.section.date_range_str }} </p>
+<li class="list-group-item"><strong> Leaders </strong> {{ trip.leaders.all|join:", " }} </li>
+<li class="list-group-item"> <strong> Trippees </strong> {{ trip.trippees.all|join:", "|default:"No trippees yet" }} </li>
+</ul>
 
-<p><strong> Assigned Trip:</strong> {{ trip }}:{{ trip.template.description_summary }}</p>
-<p><strong> Trip Type: </strong> {{ trip.template.triptype }} </p>
-<p><strong> Dates: </strong> {{ trip.section.date_range_str }} </p>
-
-<p><strong> Leaders: </strong> {{ trip.leaders.all|join:", " }} </p>
-<p><strong> Trippees: </strong> {{ trip.trippees.all|join:", "|default:"No trippees yet" }} </p>
+  <div class="panel-body">
 
 {# TODO: leaders on section #}
 {# TODO: description #}
@@ -81,5 +83,5 @@
 {% else %}
 <p> You are not currently assigned to a trip. </p>
 {% endif %}
-
-{% endwith %}
+  </div>
+</div>

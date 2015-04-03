@@ -13,7 +13,7 @@ from doc.applications.models import GeneralApplication
 STATUS_DESCRIPTIONS = {
     GeneralApplication.PENDING: "Your application is still Pending.",
     GeneralApplication.CROO: "You've been accepted for a Croo!",
-    GeneralApplication.LEADER: "You're a Trip Leader! See below for information about your trip.",
+    GeneralApplication.LEADER: "You're a Trip Leader!",
     GeneralApplication.LEADER_WAITLIST: "You're on the Leader Waitlist. People often back out of leading a Trip as the date gets nearer.", 
     GeneralApplication.REJECTED: "Unfortunately, we had a lot of really strong applications this year. ",
     GeneralApplication.CANCELED: "Your application has been cancelled in the system. Please get in touch with the trip directors if you think this is an error.",

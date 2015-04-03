@@ -27,13 +27,15 @@
 {% endif %}
 
 {% if is_trip_leader %}
-<h2> Trip Leader Assignment </h2>
 {% if timetable.leader_assignment_available %}
+{% with trip=application.assigned_trip %}
 {% include "applications/_leader_assignment.html" %}
+{% endwith %}
 {% else %}
 <p> Information about Trip assignments is not available at this time. </p>
 {% endif %}
 {% endif %}
+
 
 {% if is_croo %}
 <h2> Croo Assignment </h2>
