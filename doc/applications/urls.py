@@ -24,7 +24,9 @@ from doc.applications.views.grading import(
     DeleteLeaderGrade)
 from doc.applications.views.assign import AssignToTrip
 from doc.applications.views.graders import GraderListView
-from doc.applications.views.portal import VolunteerPortalView
+from doc.applications.views.portal import (
+    VolunteerPortalView, EditVolunteerPortalContent
+)
 from doc.applications.views.reports import VolunteerCSV
 
   
@@ -44,9 +46,10 @@ grade_urlpatterns = patterns(
 urlpatterns = patterns(
     '',
     url(r'^$', VolunteerPortalView.as_view(), name='portal'),
+    url(r'^setup/portal$', EditVolunteerPortalContent.as_view(), name='setup_portal'),
     url(r'^apply/$', NewApplication.as_view(), name='apply'),
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
-    url(r'^setup/$', SetupApplication.as_view(), name='setup'),
+    url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
 )
 

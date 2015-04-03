@@ -1,10 +1,12 @@
 
-from vanilla import TemplateView
+from vanilla import TemplateView, UpdateView
 from braces.views import LoginRequiredMixin
 
+from doc.utils.forms import crispify
 from doc.timetable.models import Timetable
 from doc.db.models import TripsYear
-from doc.applications.models import GeneralApplication
+from doc.applications.models import GeneralApplication, PortalContent
+from doc.permissions.views import DatabaseEditPermissionRequired
 
 
 # TODO: Move this into templates? One template per choice?
@@ -50,5 +52,21 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
         context['status_description'] = status_description
 
         return context
+
+
+class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
+
+    model = PortalContent
+    template_name = 'applications/setup_portal.html'
+    
+    def get_object(self):
+        trips_year = TripsYear.objects.current()
+        # changing state in a GET is not semantically correct, but hey...
+        obj, ctd = self.model.objects.get_or_create(trips_year=trips_year)
+        return obj
+
+    def get_form(self, *args, **kwargs):
+        form = super(EditVolunteerPortalContent, self).get_form(*args, **kwargs)
+        return crispify(form)
 
     

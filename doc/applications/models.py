@@ -32,6 +32,17 @@ class ApplicationInformation(DatabaseModel):
     croo_info = models.TextField(blank=True, help_text="This will be displayed at the top of Croo Application tab")
 
 
+class PortalContent(DatabaseModel):
+    """ Model with content to display to users in the volunteer portal """
+
+    class Meta:
+        unique_together = ['trips_year']
+
+    day0_description = models.TextField('day 0 description', blank=True)
+    day1_description = models.TextField(blank=True)
+    day5_description = models.TextField(blank=True)
+
+
 class GeneralApplication(DatabaseModel):
     """ 
     Contains shared information for Croo and Leader applications.
