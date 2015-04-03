@@ -71,7 +71,6 @@ class ApplicationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ApplicationForm, self).__init__(*args, **kwargs)
-        
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout()
@@ -92,7 +91,6 @@ class CrooSupplementForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CrooSupplementForm, self).__init__(*args, **kwargs)
-        
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = CrooSupplementLayout()
@@ -161,7 +159,6 @@ class LeaderSupplementForm(forms.ModelForm):
         self.fields['available_triptypes'].widget = (
             forms.CheckboxSelectMultiple()
         )
-        
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout()
@@ -175,8 +172,7 @@ class ApplicationAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ApplicationAdminForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Update'))
+        crispify(self, submit_text='Update')
         
 
 TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
