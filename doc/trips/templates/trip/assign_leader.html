@@ -2,18 +2,19 @@
 {% load crispy_forms_tags %}
 {% load links %}
 
+{% block header %}
+  <h3> Add Leader to {{ trip }} <small> {{ trip.template.description_summary }} </small></h3>
+{% endblock %}
+
 {% block content %}
 
-<div class="page-heading">
-  <h3> Add Leader to {{ trip }} </h3>
-</div>
-
-<p><strong>Summary:</strong> {{ trip.template.description_summary }} </p>
-
-<p><strong>Current Assigned Leaders:</strong>
+<h5> Current Assigned Leaders </h5>
+<p>
+  <ul>
   {% for leader in trip.leaders.all %}
-  {{ leader|detail_link }}
+  <li>{{ leader|detail_link }} ({{ leader.gender|lower }})</li>
   {% endfor %}
+  </ul>
 </p>
 
 <h4> Prospective Leaders </h4>
@@ -22,6 +23,7 @@ This list shows all Accepted and Waitlisted leaders who indicated that they pref
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
+    <th> Gender </th>
     <th> Trip Assignment </th>
     <th> Status </th>
     <th> {{ trip.template.triptype }} </th>
@@ -30,6 +32,7 @@ This list shows all Accepted and Waitlisted leaders who indicated that they pref
   {% for leader, assign_form, triptype_pref, section_pref in leader_applications %}
   <tr>
     <td> {{ leader|detail_link:leader }} </td>
+    <td> {{ leader.gender|lower }} </td>
     <td> 
       {% if assign_form %}
       {% crispy assign_form %}
