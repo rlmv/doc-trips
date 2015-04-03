@@ -32,6 +32,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
         context = super(VolunteerPortalView, self).get_context_data(**kwargs)
         context['timetable'] = Timetable.objects.timetable()
         context['trips_year'] = trips_year = TripsYear.objects.current()
+        context['content'] = PortalContent.objects.get(trips_year=trips_year)
 
         try:
             application = GeneralApplication.objects.get(
