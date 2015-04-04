@@ -49,6 +49,16 @@ class PortalContent(DatabaseModel):
     day1_description = models.TextField('day 1 description', blank=True, help_text="post-Gilman, trippee arrival, swim test, safety talk, etc.")
     day5_description = models.TextField('day 5 description', blank=True, help_text="return to campust, pre-o")
 
+    def get_status_description(self, status):
+        """ Given a GeneralApplication.status choice, return the description """
+        return {
+            GeneralApplication.PENDING: self.PENDING_description,
+            GeneralApplication.CROO: self.CROO_description,
+            GeneralApplication.LEADER: self.LEADER_description,
+            GeneralApplication.LEADER_WAITLIST: self.LEADER_WAITLIST_description,
+            GeneralApplication.REJECTED: self.REJECTED_description,
+            GeneralApplication.CANCELED: self.CANCELED_description
+        }[status]
 
 
 class GeneralApplication(DatabaseModel):

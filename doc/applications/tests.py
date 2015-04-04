@@ -14,7 +14,8 @@ from doc.applications.models import (LeaderSupplement as LeaderApplication,
                                      GeneralApplication, LeaderApplicationGrade, 
                                      ApplicationInformation, CrooApplicationGrade,
                                      QualificationTag, 
-                                     SkippedLeaderGrade, SkippedCrooGrade)
+                                     SkippedLeaderGrade, SkippedCrooGrade, 
+                                     PortalContent)
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
 from doc.trips.models import Section, ScheduledTrip, TripType
@@ -658,3 +659,24 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
         url = reverse('db:update_trip_assignment', 
                       kwargs={'trips_year': trips_year, 'pk': application.pk})
         res = self.app.get(url, user=self.mock_director())
+
+
+
+class PortalContentModelTestCase(ApplicationTestMixin, TripsTestCase):
+
+    def test_get_status_description(self):
+        trips_year = self.init_current_trips_year()
+        content = mommy.make(
+            PortalContent, trips_year=trips_year,
+            PENDING_description='pending',
+            CROO_description='croo',
+            LEADER_description='leader',
+            LEADER_WAITLIST_description='waitlist',
+            REJECTED_description='rejected',
+            CANCELED_description='cancelled'
+        )
+        for choice, label in GeneralApplication.STATUS_CHOICES:
+            self.assertEqual(
+                getattr(content, "%s_description" % choice),
+                content.get_status_description(choice)
+            )
