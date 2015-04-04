@@ -1,6 +1,6 @@
-
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load pipeline %}
 
 {% block content %}
 <div>
@@ -23,4 +23,7 @@
 {% crispy form %}
 {% endblock content %}
 
+{% block scripts %}
+{% javascript "summernote" %}
+{% endblock %}
 
