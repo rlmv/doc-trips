@@ -80,7 +80,6 @@ class IfGradingAvailable():
     def dispatch(self, request, *args, **kwargs):
         if not Timetable.objects.timetable().grading_available():
             return render(request, 'applications/grading_not_available.html')
-
         return super(IfGradingAvailable, self).dispatch(request, *args, **kwargs)
 
 
@@ -103,7 +102,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         """ Message the grader their average grade """
-
         self.check_and_show_average_grade(request.user)
         return super(GenericGradingView, self).get(request, *args, **kwargs)
 
@@ -116,12 +114,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
                                               self.kwargs['pk']))
             self.skip_application()
             return HttpResponseRedirect(self.get_success_url())
-
         return super(GenericGradingView, self).post(request, *args, **kwargs)
 
     def get_application(self):
         """ Return the Croo or Leader application to grade """
-
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
     def skip_application(self):
@@ -142,7 +138,6 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
     def get_context_data(self, **kwargs):
 
         context = super(GenericGradingView, self).get_context_data(**kwargs)
-
         application = self.get_application()
         context['application'] = application
         context['title'] = 'Score %s #%s: NetId %s' % (
