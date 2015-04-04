@@ -315,9 +315,14 @@ class CrooApplicationGradeForm(forms.ModelForm):
     class Meta:
         model = CrooApplicationGrade
         widgets = {
-            'qualifications': forms.CheckboxSelectMultiple(),
             'scratchpad': forms.Textarea(attrs=dict(rows=3)),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(CrooApplicationGradeForm, self).__init__(*args, **kwargs)
+        # CheckboxSelectMultiple in __init__ because 
+        # https://github.com/maraujop/django-crispy-forms/issues/303
+        self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()
 
 class LeaderApplicationGradeForm(forms.ModelForm):
     """ Form for scoring Leader applications """
