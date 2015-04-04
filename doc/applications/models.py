@@ -38,9 +38,17 @@ class PortalContent(DatabaseModel):
     class Meta:
         unique_together = ['trips_year']
 
+    PENDING_description = models.TextField(blank=True)
+    CROO_description = models.TextField(blank=True)
+    LEADER_description = models.TextField(blank=True)
+    LEADER_WAITLIST_description = models.TextField(blank=True)
+    REJECTED_description = models.TextField(blank=True)
+    CANCELED_description = models.TextField(blank=True)
+    
     day0_description = models.TextField('day 0 description', blank=True, help_text="description for leaders' first day, Gilman Island, etc.")
     day1_description = models.TextField('day 1 description', blank=True, help_text="post-Gilman, trippee arrival, swim test, safety talk, etc.")
     day5_description = models.TextField('day 5 description', blank=True, help_text="return to campust, pre-o")
+
 
 
 class GeneralApplication(DatabaseModel):
