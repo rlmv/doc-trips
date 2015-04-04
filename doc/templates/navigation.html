@@ -35,7 +35,7 @@
           <ul class="dropdown-menu" role="menu">
 
 	    {% if perms.permissions.can_set_access %}
-	    <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-user-plus"></span> Access </a></li>
+	    <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-user-plus"></span> User Permissions </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_edit_timetable %}
@@ -43,7 +43,11 @@
 	    {% endif %}
 
 	    {% if perms.permissions.can_create_applications %}
-	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-file-text-o"></span> Applications</a></li>
+	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-file-word-o"></span> Volunteer Applications</a></li>
+	    {% endif %}
+
+	    {% if perms.permissions.can_edit_db %}
+	    <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
 	    {% endif %}
 
           </ul>
