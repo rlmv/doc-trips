@@ -1,5 +1,6 @@
 import django_tables2 as tables
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from doc.db.templatetags.links import detail_link, make_link, edit_link
 from doc.utils.templatetags.icons import ok_if_true
@@ -8,7 +9,7 @@ from doc.utils.templatetags.icons import ok_if_true
 class ApplicationTable(tables.Table):
     
     applicant = tables.Column(
-        verbose_name='Applicant'
+        verbose_name='Applications'
     )
     status = tables.Column(
         verbose_name='Status'
