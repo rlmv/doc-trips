@@ -269,7 +269,7 @@ class LeaderSupplement(DatabaseModel):
 
 class CrooSupplement(DatabaseModel):
 
-    NUMBER_OF_GRADES = 3
+    NUMBER_OF_GRADES = 4
     objects = CrooApplicationManager()
 
     application = models.OneToOneField(GeneralApplication, editable=False, related_name='croo_supplement')
