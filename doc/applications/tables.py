@@ -14,10 +14,10 @@ class ApplicationTable(tables.Table):
         verbose_name='Status'
     )
     avg_leader_grade = tables.Column(
-        verbose_name='Leader score', order_by='-avg_leader_grade'
+        verbose_name='Leader score', order_by=('leader_supplement__grades', '-avg_leader_grade')
     )
     avg_croo_grade = tables.Column(
-        verbose_name='Croo score',  order_by='-avg_croo_grade'
+        verbose_name='Croo score',  order_by=('-croo_supplement__grades', '-avg_croo_grade')
     )
     leader_application = tables.Column(
         accessor='leader_application_complete', orderable=False

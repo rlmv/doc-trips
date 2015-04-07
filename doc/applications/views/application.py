@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.db import models
+from django.db.models import Avg, Count
 from django.core.exceptions import PermissionDenied
 
 from doc.db.views import CrispyFormMixin
@@ -217,8 +218,10 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
     def get_queryset(self):
         return (
             super(ApplicationDatabaseListView, self).get_queryset()
-            .annotate(avg_croo_grade=models.Avg('croo_supplement__grades__grade'))
-            .annotate(avg_leader_grade=models.Avg('leader_supplement__grades__grade'))
+            .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
+            .annotate(has_croo_grades=Count('croo_supplement__grades'))
+            .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
+            .annotate(has_leader_grades=Count('leader_supplement__grades'))
             .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
