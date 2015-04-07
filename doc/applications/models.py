@@ -102,7 +102,7 @@ class GeneralApplication(DatabaseModel):
     )
     assigned_croo = models.ForeignKey(
         Croo, blank=True, null=True,
-        related_name='croolings', on_delete=models.PROTECT
+        related_name='croo_members', on_delete=models.PROTECT
     )
 
     # ----- general information, not shown to graders ------

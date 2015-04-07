@@ -677,7 +677,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, WebTestCase):
         form['assigned_croo'] = croo.pk
         res = form.submit()
         croo = Croo.objects.get(pk=croo.pk)
-        self.assertEqual(list(croo.croolings.all()), [application])
+        self.assertEqual(list(croo.croo_members.all()), [application])
         
 
 class DbVolunteerPagesAccessTestCase(WebTestCase):
