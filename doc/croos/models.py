@@ -21,6 +21,9 @@ class Croo(DatabaseModel):
     def safety_leads(self):
         return self.croo_members.filter(safety_lead=True)
 
+    def non_safety_leads(self):
+        return self.croo_members.filter(safety_lead=False)
+
     def __str__(self):
         return self.name
     
