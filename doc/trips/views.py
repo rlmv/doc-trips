@@ -298,8 +298,9 @@ class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired,
 
     def get_form_valid_message(self):
         """ Flash success message """
-        return '{} assigned to lead {}'.format(self.object.applicant, 
-                                               self.object.assigned_trip)
+        return '{} assigned to lead {}'.format(
+            self.object.applicant, self.object.assigned_trip
+        )
 
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
@@ -316,19 +317,17 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
     template_name = 'trip/remove_leader_assignment.html'
 
     def get_form(self, **kwargs):
-
         # save the old assigned trip so we can show it in a message after deletion
         self._assigned_trip = kwargs['instance'].assigned_trip
-
         form = TripLeaderAssignmentForm(initial={'assigned_trip': None}, **kwargs)
-        
         form.helper = FormHelper(form)
         form.helper.add_input(Submit('submit', 'Remove', css_class="btn-danger"))
         return form
 
     def get_form_valid_message(self):
-        return 'Leader {} removed from Trip {}'.format(self.object.applicant,
-                                                       self._assigned_trip)
+        return 'Leader {} removed from Trip {}'.format(
+            self.object.applicant, self._assigned_trip
+        )
         
     def get_success_url(self):
         return reverse_detail_url(self.object)
