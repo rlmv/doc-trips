@@ -39,7 +39,7 @@
 	    {% endif %}
 
 	    {% if perms.permissions.can_edit_timetable %}
-	    <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-calendar"></span> Calendar </a></li>
+	    <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-calendar"></span> Calendar and Access </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_create_applications %}
