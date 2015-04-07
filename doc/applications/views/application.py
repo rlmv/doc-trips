@@ -1,8 +1,7 @@
 
 
 from vanilla import DetailView, CreateView, UpdateView, RedirectView, TemplateView, ListView
-from braces.views import FormMessagesMixin
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin, GroupRequiredMixin, FormMessagesMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -11,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.db import models
+from django.core.exceptions import PermissionDenied
 
 from doc.db.views import CrispyFormMixin
 from doc.db.views import DatabaseListView, DatabaseDetailView, DatabaseUpdateView, TripsYearMixin
@@ -181,8 +181,35 @@ class SetupApplication(CreateApplicationPermissionRequired,
         return context
 
 
+class BlockNonDirectors(GroupRequiredMixin):
+    """ 
+    Blocks access to non-directors if the 'hide_volunteer_page' 
+    Timetable field is True.
+    """
+
+    group_required = 'directors'
+
+    def dispatch(self, request, *args, **kwargs):
+        """ 
+        Lifted from the default GroupRequiredMixin.
+
+        We first check whether the volunteer pages should be hidden to
+        everyone except the directors. We drop some of the redirect details 
+        here because we already know that we're dealing with an
+        authenticated user (put this *after* permission checking.
+        """
+
+        if Timetable.objects.get().hide_volunteer_page:
+            self.request = request
+            in_group = self.check_membership(self.get_group_required())
+            if not in_group:
+                raise PermissionDenied
+        return super(GroupRequiredMixin, self).dispatch(
+            request, *args, **kwargs)
+    
+
 class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
-                                  TripsYearMixin, ListView):
+                                  BlockNonDirectors, TripsYearMixin, ListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
@@ -207,7 +234,7 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
 
 
 class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
-                                    TripsYearMixin, DetailView):
+                                    BlockNonDirectors, TripsYearMixin, DetailView):
     model = GeneralApplication
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
@@ -259,7 +286,8 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
 
 
 class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired, 
-                                    ApplicationFormsMixin, TripsYearMixin, UpdateView):
+                                    BlockNonDirectors, ApplicationFormsMixin, 
+                                    TripsYearMixin, UpdateView):
     
     template_name = 'applications/application_update.html'
     context_object_name = 'application'
@@ -288,7 +316,7 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
 # TODO: give more descriptive names:
 
 class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                 TripsYearMixin, UpdateView):
+                                 BlockNonDirectors, TripsYearMixin, UpdateView):
     """ Edit Application status """
     model = GeneralApplication
     form_class = ApplicationAdminForm
@@ -296,7 +324,7 @@ class ApplicationAdminUpdateView(ApplicationEditPermissionRequired,
 
 
 class LeaderApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                       TripsYearMixin, UpdateView):
+                                       BlockNonDirectors, TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
     model = LeaderSupplement
     form_class = LeaderSupplementAdminForm

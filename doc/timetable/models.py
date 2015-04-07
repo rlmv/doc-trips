@@ -30,6 +30,8 @@ class Timetable(models.Model):
     applications_open = models.DateTimeField(default=timezone.now)
     applications_close = models.DateTimeField(default=timezone.now)
 
+    hide_volunteer_page = models.BooleanField(default=False, help_text="Enabling this will hide the database Volunteers page from everyone except directors. Use this during grading to prevent graders from seeing applicant's scores.")
+
     application_status_available = models.BooleanField(default=False, help_text='Turn this on once all decisions have been made regarding Leaders and Croos')
     leader_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Trip Leaders see information about their assigned trip')
     croo_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Croo members see their assigned Croo')
