@@ -21,9 +21,9 @@ from doc.trips.models import TripType
 from doc.applications.models import (GeneralApplication, LeaderSupplement, 
                                      CrooSupplement, ApplicationInformation, 
                                      CrooApplicationGrade, LeaderApplicationGrade)
-from doc.applications.forms import (ApplicationForm, CrooSupplementForm, 
-                                    LeaderSupplementForm, LeaderSupplementAdminForm, 
-                                    ApplicationAdminForm)
+from doc.applications.forms import (
+    ApplicationForm, CrooSupplementForm, LeaderSupplementForm, 
+    LeaderSupplementTrainingsForm, ApplicationStatusForm)
 from doc.applications.filters import ApplicationFilterSet
 from doc.permissions.views import (CreateApplicationPermissionRequired, 
                                    CrooGraderPermissionRequired, 
@@ -314,19 +314,19 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
 
 # TODO: give more descriptive names:
 
-class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                 BlockDirectorate, TripsYearMixin, UpdateView):
+class ApplicationStatusUpdateView(ApplicationEditPermissionRequired, 
+                                  BlockDirectorate, TripsYearMixin, UpdateView):
     """ Edit Application status """
     model = GeneralApplication
-    form_class = ApplicationAdminForm
+    form_class = ApplicationStatusForm
     template_name = 'applications/status_update.html'
 
 
-class LeaderApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                       BlockDirectorate, TripsYearMixin, UpdateView):
+class ApplicationTrainingsUpdateView(ApplicationEditPermissionRequired, 
+                                     BlockDirectorate, TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
     model = LeaderSupplement
-    form_class = LeaderSupplementAdminForm
+    form_class = LeaderSupplementTrainingsForm
     template_name = 'applications/trainings_update.html'
     
     def get_success_url(self):

@@ -164,26 +164,25 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper.layout = LeaderSupplementLayout()
 
 
-class ApplicationAdminForm(forms.ModelForm):
+class ApplicationStatusForm(forms.ModelForm):
 
     class Meta:
         model = GeneralApplication
         fields = ('status',)
 
     def __init__(self, *args, **kwargs):
-        super(ApplicationAdminForm, self).__init__(*args, **kwargs)
+        super(ApplicationStatusForm, self).__init__(*args, **kwargs)
         crispify(self, submit_text='Update')
         
 
 TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
 
-class LeaderSupplementAdminForm(forms.ModelForm):
+class LeaderSupplementTrainingsForm(forms.ModelForm):
 
     class Meta:
         model = LeaderSupplement
         fields = ('community_building', 'risk_management', 
                   'wilderness_skills', 'first_aid')
-
         widgets = {
             'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),
             'risk_management': DateTimePicker(options=TIMEPICKER_OPTIONS),
@@ -192,7 +191,7 @@ class LeaderSupplementAdminForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(LeaderSupplementAdminForm, self).__init__(*args, **kwargs)
+        super(LeaderSupplementTrainingsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.all().wrap(Div, css_class='col-sm-3')
         self.helper.all().wrap(Row)
