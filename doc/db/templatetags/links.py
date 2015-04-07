@@ -14,6 +14,8 @@ def _make_link(url, text):
     html = '<a href="{}">{}</a>'.format(url, text)
     return mark_safe(html)
 
+make_link = _make_link
+
 
 @register.filter
 def edit_link(db_object, text=None):

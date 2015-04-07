@@ -25,6 +25,7 @@ from doc.applications.forms import (
     ApplicationForm, CrooSupplementForm, LeaderSupplementForm, 
     LeaderSupplementTrainingsForm, ApplicationStatusForm)
 from doc.applications.filters import ApplicationFilterSet
+from doc.applications.tables import ApplicationTable
 from doc.permissions.views import (CreateApplicationPermissionRequired, 
                                    CrooGraderPermissionRequired, 
                                    DatabaseReadPermissionRequired, 
@@ -228,6 +229,10 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
         applications_filter = ApplicationFilterSet(self.request.GET, queryset=self.object_list,
                                                    trips_year=self.kwargs['trips_year'])
         context[self.context_object_name] = applications_filter.qs
+        table = ApplicationTable(applications_filter.qs)
+        from django_tables2   import RequestConfig
+        RequestConfig(self.request, paginate=False).configure(table)
+        context['table'] = table
         context['applications_filter'] = applications_filter
         return context
 
