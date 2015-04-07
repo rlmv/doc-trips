@@ -1,26 +1,35 @@
 import django_tables2 as tables
-from django_tables2.utils import A
 from django.core.urlresolvers import reverse
 
-from doc.db.templatetags.links import detail_link, make_link
+from doc.db.templatetags.links import detail_link, make_link, edit_link
 from doc.utils.templatetags.icons import ok_if_true
 
 
 class ApplicationTable(tables.Table):
     
-    applicant = tables.Column(verbose_name='Applicant')
-    status = tables.Column(verbose_name='Status')
+    applicant = tables.Column(
+        verbose_name='Applicant'
+    )
+    status = tables.Column(
+        verbose_name='Status'
+    )
     avg_leader_grade = tables.Column(
-        verbose_name='Leader score', order_by='-avg_leader_grade')
+        verbose_name='Leader score', order_by='-avg_leader_grade'
+    )
     croo_score = tables.Column(
-        accessor='avg_croo_grade', order_by='-avg_croo_grade')
+        accessor='avg_croo_grade', order_by='-avg_croo_grade'
+    )
     leader_application = tables.Column(
-        accessor='leader_application_complete', orderable=False)
+        accessor='leader_application_complete', orderable=False
+    )
     croo_application = tables.Column(
-        accessor='croo_application_complete', orderable=False)
-    view_link = tables.LinkColumn('db:generalapplication_detail', 
-                                  kwargs={'trips_year': A('trips_year'),
-                                          'pk': A('pk')})
+        accessor='croo_application_complete', orderable=False
+    )
+    view_link = tables.Column(
+        verbose_name=' ', empty_values=(), orderable=False
+    )
+    edit_link = tables.Column(
+        verbose_name=' ', empty_values=(), orderable=False)
 
     class Meta:
         attrs = {
@@ -47,5 +56,8 @@ class ApplicationTable(tables.Table):
     def render_croo_application(self, value):
         return ok_if_true(value)
 
+    def render_view_link(self, record):
+        return detail_link(record, 'view')
 
-
+    def render_edit_link(self, record):
+        return edit_link(record, 'edit')
