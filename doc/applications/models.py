@@ -104,6 +104,7 @@ class GeneralApplication(DatabaseModel):
         Croo, blank=True, null=True,
         related_name='croo_members', on_delete=models.PROTECT
     )
+    safety_lead = models.BooleanField(default=False)
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()

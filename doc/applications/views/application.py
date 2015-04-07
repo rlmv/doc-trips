@@ -33,6 +33,7 @@ from doc.permissions.views import (CreateApplicationPermissionRequired,
                                    DatabaseEditPermissionRequired, 
                                    ApplicationEditPermissionRequired)
 from doc.utils.views import MultipleFormMixin
+from doc.utils.forms import crispify
 
 
 class IfApplicationAvailable():
@@ -345,3 +346,12 @@ class ApplicationTrainingsUpdateView(ApplicationEditPermissionRequired,
                                'pk': self.object.application.pk})
 
         
+class ApplicationAdminUpdateView(ApplicationEditPermissionRequired,
+                                 BlockDirectorate, TripsYearMixin, UpdateView):
+    model = GeneralApplication
+    template_name = 'db/update.html'
+    fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
+    
+    def get_form(self, **kwargs):
+        form = super(ApplicationAdminUpdateView, self).get_form(**kwargs)
+        return crispify(form, submit_text='Update')

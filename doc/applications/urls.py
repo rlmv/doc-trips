@@ -9,7 +9,8 @@ from doc.applications.views.application import (
     ApplicationDatabaseDetailView,
     ApplicationDatabaseUpdateView,
     ApplicationStatusUpdateView,
-    ApplicationTrainingsUpdateView)
+    ApplicationTrainingsUpdateView,
+    ApplicationAdminUpdateView)
 from doc.applications.views.grading import(
     RedirectToNextGradableCrooApplication,
     RedirectToNextGradableCrooApplicationForQualification,
@@ -68,6 +69,8 @@ application_urlpatterns = patterns(
         name='update_trip_assignment'),
     url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
         name='update_croo_assignment'),
+    url(r'^(?P<pk>[0-9]+)/update/admin/$', ApplicationAdminUpdateView.as_view(), 
+       name='update_application_admin'),
     url(r'^export/$', VolunteerCSV.as_view(), name='application_csv'),
 )
 
