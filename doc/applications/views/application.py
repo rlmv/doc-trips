@@ -181,20 +181,19 @@ class SetupApplication(CreateApplicationPermissionRequired,
         return context
 
 
-class BlockNonDirectors(GroupRequiredMixin):
+class BlockDirectorate(GroupRequiredMixin):
     """ 
-    Blocks access to non-directors if the 'hide_volunteer_page' 
+    Blocks access to directorate if the 'hide_volunteer_page' 
     Timetable field is True.
     """
-
-    group_required = 'directors'
+    group_required = ['directors', 'trip leader trainers']
 
     def dispatch(self, request, *args, **kwargs):
         """ 
         Lifted from the default GroupRequiredMixin.
 
         We first check whether the volunteer pages should be hidden to
-        everyone except the directors. We drop some of the redirect details 
+        Directorate members. We drop some of the redirect details
         here because we already know that we're dealing with an
         authenticated user (put this *after* permission checking.
         """
@@ -209,7 +208,7 @@ class BlockNonDirectors(GroupRequiredMixin):
     
 
 class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
-                                  BlockNonDirectors, TripsYearMixin, ListView):
+                                  BlockDirectorate, TripsYearMixin, ListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
@@ -234,7 +233,7 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
 
 
 class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
-                                    BlockNonDirectors, TripsYearMixin, DetailView):
+                                    BlockDirectorate, TripsYearMixin, DetailView):
     model = GeneralApplication
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
@@ -286,7 +285,7 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
 
 
 class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired, 
-                                    BlockNonDirectors, ApplicationFormsMixin, 
+                                    BlockDirectorate, ApplicationFormsMixin, 
                                     TripsYearMixin, UpdateView):
     
     template_name = 'applications/application_update.html'
@@ -316,7 +315,7 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
 # TODO: give more descriptive names:
 
 class ApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                 BlockNonDirectors, TripsYearMixin, UpdateView):
+                                 BlockDirectorate, TripsYearMixin, UpdateView):
     """ Edit Application status """
     model = GeneralApplication
     form_class = ApplicationAdminForm
@@ -324,7 +323,7 @@ class ApplicationAdminUpdateView(ApplicationEditPermissionRequired,
 
 
 class LeaderApplicationAdminUpdateView(ApplicationEditPermissionRequired, 
-                                       BlockNonDirectors, TripsYearMixin, UpdateView):
+                                       BlockDirectorate, TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
     model = LeaderSupplement
     form_class = LeaderSupplementAdminForm

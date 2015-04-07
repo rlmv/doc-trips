@@ -678,5 +678,5 @@ class DbVolunteerPagesAccessTestCase(WebTestCase):
         res = self.app.get(url, user=self.mock_director())
         res = self.app.get(url, user=self.mock_grader(), status=403)
         res = self.app.get(url, user=self.mock_directorate(), status=403)
-        res = self.app.get(url, user=self.mock_tlt(), status=403)
+        res = self.app.get(url, user=self.mock_tlt())
         
