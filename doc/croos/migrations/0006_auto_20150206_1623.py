@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='crooapplicationgrade',
             name='grade',
-            field=models.IntegerField(validators=[doc.croos.models.validate_grade]),
+            field=models.IntegerField()
         ),
     ]

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='_CrooApplicationGrade',
             fields=[
                 ('id', models.AutoField(primary_key=True, verbose_name='ID', serialize=False, auto_created=True)),
-                ('grade', models.IntegerField(validators=[doc.croos.models.validate_grade])),
+                ('grade', models.IntegerField()),
                 ('comments', models.TextField()),
                 ('application', models.ForeignKey(to='croos.CrooApplication', related_name='grades')),
                 ('grader', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
