@@ -198,7 +198,7 @@ class BlockDirectorate(GroupRequiredMixin):
         authenticated user (put this *after* permission checking.
         """
 
-        if Timetable.objects.get().hide_volunteer_page:
+        if Timetable.objects.timetable().hide_volunteer_page:
             self.request = request
             in_group = self.check_membership(self.get_group_required())
             if not in_group:
