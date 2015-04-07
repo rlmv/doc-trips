@@ -281,6 +281,9 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
         context['trip_assignment_url'] = reverse(
             'db:update_trip_assignment', kwargs=self.kwargs
         )
+        context['croo_assignment_url'] = reverse(
+            'db:update_croo_assignment', kwargs=self.kwargs
+        )
         return context
 
 

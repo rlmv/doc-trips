@@ -661,6 +661,25 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
         res = self.app.get(url, user=self.mock_director())
 
 
+class AssignToCrooTestCase(ApplicationTestMixin, WebTestCase):
+
+    def test_assignment_view(self):
+        trips_year = self.init_current_trips_year()
+        application = self.make_application(
+            trips_year=trips_year, status=GeneralApplication.CROO
+        )
+        croo = mommy.make(Croo, trips_year=trips_year)
+        url = reverse(
+            'db:update_croo_assignment',
+            kwargs={'trips_year': trips_year, 'pk': application.pk}
+        )
+        form = self.app.get(url, user=self.mock_director()).form
+        form['assigned_croo'] = croo.pk
+        res = form.submit()
+        croo = Croo.objects.get(pk=croo.pk)
+        self.assertEqual(list(croo.croolings.all()), [application])
+        
+
 class DbVolunteerPagesAccessTestCase(WebTestCase):
 
     def test_directorate_can_normally_see_volunteer_pages(self):

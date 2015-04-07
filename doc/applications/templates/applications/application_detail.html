@@ -40,7 +40,7 @@
     <td> {{ application.assigned_croo | detail_link }} </td>
     <td> TODO: remove link </td>
     {% else %}
-    <td> * </td> <td> TODO: assign croo </td>
+    <td> * </td> <td> <a href="{{ croo_assignment_url }}"> assign </a> </td>
     {% endif %}
    </tr>
     

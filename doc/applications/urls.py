@@ -22,7 +22,7 @@ from doc.applications.views.grading import(
     GraderLandingPage, 
     DeleteCrooGrade,
     DeleteLeaderGrade)
-from doc.applications.views.assign import AssignToTrip
+from doc.applications.views.assign import AssignToTrip, AssignToCroo
 from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import (
     VolunteerPortalView, EditVolunteerPortalContent
@@ -64,8 +64,10 @@ application_urlpatterns = patterns(
     url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(), name='generalapplication_update'),
     url(r'^(?P<pk>[0-9]+)/update/status/$', ApplicationStatusUpdateView.as_view(), name='update_application_status'),
     url(r'^(?P<pk>[0-9]+)/update/trainings/$', ApplicationTrainingsUpdateView.as_view(), name='update_application_trainings'),
-    url(r'^(?P<pk>[0-9]+)/update/assignment/$', AssignToTrip.as_view(),
+    url(r'^(?P<pk>[0-9]+)/update/trip$', AssignToTrip.as_view(),
         name='update_trip_assignment'),
+    url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
+        name='update_croo_assignment'),
     url(r'^export/$', VolunteerCSV.as_view(), name='application_csv'),
 )
 
