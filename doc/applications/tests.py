@@ -658,3 +658,25 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
         url = reverse('db:update_trip_assignment', 
                       kwargs={'trips_year': trips_year, 'pk': application.pk})
         res = self.app.get(url, user=self.mock_director())
+
+
+class DbVolunteerPagesAccessTestCase(WebTestCase):
+
+    def test_directorate_can_normally_see_volunteer_pages(self):
+        trips_year = self.init_current_trips_year()
+        mommy.make(Timetable, hide_volunteer_page=False)
+        url = reverse('db:application_index', kwargs={'trips_year': trips_year})
+        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.mock_grader(), status=403)
+        res = self.app.get(url, user=self.mock_directorate())
+        res = self.app.get(url, user=self.mock_tlt())
+
+    def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
+        trips_year = self.init_current_trips_year()
+        mommy.make(Timetable, hide_volunteer_page=True)
+        url = reverse('db:application_index', kwargs={'trips_year': trips_year})
+        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.mock_grader(), status=403)
+        res = self.app.get(url, user=self.mock_directorate(), status=403)
+        res = self.app.get(url, user=self.mock_tlt())
+        
