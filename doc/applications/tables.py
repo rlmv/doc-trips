@@ -41,7 +41,7 @@ class ApplicationTable(tables.Table):
         return detail_link(record)
 
     def render_status(self, record):
-        kwargs = {'pk': record.pk, 'trips_year': record.trips_year}
+        kwargs = {'pk': record.pk, 'trips_year': record.trips_year_id}
         url = reverse('db:update_application_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
