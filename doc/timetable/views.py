@@ -27,7 +27,7 @@ class TimetableForm(ModelForm):
         }
 
     helper = FormHelper()
-    helper.add_input(Submit('submit', 'Change calendar dates'))
+    helper.add_input(Submit('submit', 'Update'))
     
 
 class TimetableEditView(TimetablePermissionRequired, UpdateView):
