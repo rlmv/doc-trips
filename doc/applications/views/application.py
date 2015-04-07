@@ -219,9 +219,7 @@ class ApplicationDatabaseListView(DatabaseReadPermissionRequired,
         return (
             super(ApplicationDatabaseListView, self).get_queryset()
             .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
-            .annotate(has_croo_grades=Count('croo_supplement__grades'))
             .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
-            .annotate(has_leader_grades=Count('leader_supplement__grades'))
             .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
