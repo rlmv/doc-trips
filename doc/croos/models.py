@@ -18,6 +18,9 @@ class Croo(DatabaseModel):
     description = models.TextField(blank=True)
     # TODO: croo head?
 
+    def safety_leads(self):
+        return self.croo_members.filter(safety_lead=True)
+
     def __str__(self):
         return self.name
     
