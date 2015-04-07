@@ -1,6 +1,5 @@
 import django_tables2 as tables
 from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
 
 from doc.db.templatetags.links import detail_link, make_link, edit_link
 from doc.utils.templatetags.icons import ok_if_true
@@ -17,8 +16,8 @@ class ApplicationTable(tables.Table):
     avg_leader_grade = tables.Column(
         verbose_name='Leader score', order_by='-avg_leader_grade'
     )
-    croo_score = tables.Column(
-        accessor='avg_croo_grade', order_by='-avg_croo_grade'
+    avg_croo_grade = tables.Column(
+        verbose_name='Croo score',  order_by='-avg_croo_grade'
     )
     leader_application = tables.Column(
         accessor='leader_application_complete', orderable=False
