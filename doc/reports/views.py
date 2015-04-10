@@ -68,3 +68,16 @@ class TripLeaderApplicationsCSV(GenericReportView):
     def get_row(self, application):
         user = application.applicant
         return {'name': user.name, 'netid': user.netid}
+
+
+class CrooApplicationsCSV(GenericReportView):
+
+    file_prefix = 'Croo-applicants'
+    fieldnames = ['name', 'netid']
+    
+    def get_queryset(self):
+        return GeneralApplication.objects.croo_applications(self.kwargs['trips_year'])
+
+    def get_row(self, application):
+        user = application.applicant
+        return {'name': user.name, 'netid': user.netid}
