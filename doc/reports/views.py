@@ -14,11 +14,17 @@ class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
     
     file_prefix = None
+    fieldnames = None
     
     def get_filename(self):
         return "{}-{}.csv".format(
             self.file_prefix, self.kwargs['trips_year']
         )
+        
+    def get_fieldnames(self):
+        if self.fieldnames is not None:
+            return self.fieldnames
+        raise ImproperlyConfigured("add 'fieldnames' property")
 
     def get_queryset(self):
         raise ImproperlyConfigured('implement get_queryset()')
@@ -31,7 +37,8 @@ class GenericReportView(DatabaseReadPermissionRequired,
         response['Content-Disposition'] = (
             'attachment; filename="{}"'.format(self.get_filename())
         )
-        writer = csv.writer(response)
+        writer = csv.DictWriter(response, fieldnames=self.get_fieldnames())
+        writer.writeheader()
         for obj in self.get_queryset():
             writer.writerow(self.get_row(obj))
         return response
@@ -40,10 +47,24 @@ class GenericReportView(DatabaseReadPermissionRequired,
 class VolunteerCSV(GenericReportView):
 
     file_prefix = 'TL-and-Croo-applicants'
+    fieldnames = ['name', 'netid']
 
     def get_queryset(self):
         return GeneralApplication.objects.leader_or_croo_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
-        return [user.name, user.netid]
+        return {'name': user.name, 'netid': user.netid}
+
+
+class TripLeaderApplicationsCSV(GenericReportView):
+
+    file_prefix = 'TL-applicants'
+    fieldnames = ['name', 'netid']
+    
+    def get_queryset(self):
+        return GeneralApplication.objects.leader_applications(self.kwargs['trips_year'])
+
+    def get_row(self, application):
+        user = application.applicant
+        return {'name': user.name, 'netid': user.netid}

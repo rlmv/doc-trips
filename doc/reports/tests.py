@@ -28,10 +28,10 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         f = tempfile.NamedTemporaryFile()
         f.write(res.content)
         f = open(f.name) # open in non-binary mode
-        reader = csv.reader(f)
+        reader = csv.DictReader(f)
         row = next(reader)
-        self.assertEqual(row[0], application.applicant.name)
-        self.assertEqual(row[1], application.applicant.netid)
+        self.assertEqual(row['name'], application.applicant.name)
+        self.assertEqual(row['netid'], application.applicant.netid)
         with self.assertRaises(StopIteration):
             next(reader)
         
