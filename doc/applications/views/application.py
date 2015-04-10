@@ -19,6 +19,7 @@ from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.timetable.models import Timetable
 from doc.trips.models import TripType
+from doc.croos.models import Croo
 from doc.applications.models import (GeneralApplication, LeaderSupplement, 
                                      CrooSupplement, ApplicationInformation, 
                                      CrooApplicationGrade, LeaderApplicationGrade)
@@ -345,13 +346,18 @@ class ApplicationTrainingsUpdateView(ApplicationEditPermissionRequired,
                        kwargs={'trips_year': self.kwargs['trips_year'], 
                                'pk': self.object.application.pk})
 
+from doc.applications.forms import ApplicationAdminForm
         
 class ApplicationAdminUpdateView(ApplicationEditPermissionRequired,
                                  BlockDirectorate, TripsYearMixin, UpdateView):
     model = GeneralApplication
     template_name = 'db/update.html'
     fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
+    form_class = ApplicationAdminForm
     
-    def get_form(self, **kwargs):
-        form = super(ApplicationAdminUpdateView, self).get_form(**kwargs)
-        return crispify(form, submit_text='Update')
+    def get_context_data(self, **kwargs):
+        kwargs['preferred_trips'] = self.object.get_preferred_trips()
+        kwargs['available_trips'] = self.object.get_available_trips()
+        kwargs['croos'] = Croo.objects.filter(trips_year=self.kwargs['trips_year']).all()
+        return super(ApplicationAdminUpdateView, self).get_context_data(**kwargs)
+

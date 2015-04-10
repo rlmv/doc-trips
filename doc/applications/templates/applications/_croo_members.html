@@ -1,0 +1,9 @@
+<div class="panel panel-info">
+<div class="panel-body bg-info">
+<ul>
+{% for croo in croos %}
+<li><strong> {{ croo.name }}: </strong> {{ croo.croo_members.all|join:", " }} </li>
+{% endfor %}
+</ul>
+</div>
+</div>

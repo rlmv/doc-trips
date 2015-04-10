@@ -1,0 +1,14 @@
+<div class="panel panel-info">
+<div class="panel-body">
+<h5> Preferred Trips </h5>
+<p>
+  {% regroup preferred_trips by template.triptype as trips %}
+  {% include "applications/_group_by_triptype.html" %}
+</p>
+<h5>Available Trips </h5>
+<p>
+  {% regroup available_trips by template.triptype as trips %}
+  {% include "applications/_group_by_triptype.html" %}
+</p>
+</div>
+</div>

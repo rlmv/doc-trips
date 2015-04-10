@@ -173,6 +173,26 @@ class ApplicationStatusForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ApplicationStatusForm, self).__init__(*args, **kwargs)
         crispify(self, submit_text='Update')
+
+
+class ApplicationAdminForm(forms.ModelForm):
+    
+    class Meta: 
+        model = GeneralApplication
+        fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
+        
+    def __init__(self, *args, **kwargs):
+        super(ApplicationAdminForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            'status', 
+            HTML("{% include 'applications/_trip_preferences.html' %}"),
+            'assigned_trip',
+            HTML("{% include 'applications/_croo_members.html' %}"),
+            'assigned_croo',
+            'safety_lead',
+            Submit('submit', 'Update'),
+        )
         
 
 TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
