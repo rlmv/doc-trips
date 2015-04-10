@@ -25,7 +25,6 @@ from doc.applications.views.grading import(
 from doc.applications.views.assign import AssignToTrip
 from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import VolunteerPortalView
-from doc.applications.views.reports import VolunteerCSV
 
   
 grade_urlpatterns = patterns(
@@ -63,7 +62,6 @@ application_urlpatterns = patterns(
     url(r'^(?P<pk>[0-9]+)/update/trainings/$', LeaderApplicationAdminUpdateView.as_view(), name='update_application_trainings'),
     url(r'^(?P<pk>[0-9]+)/update/assignment/$', AssignToTrip.as_view(),
         name='update_trip_assignment'),
-    url(r'^export/$', VolunteerCSV.as_view(), name='application_csv'),
 )
 
 grader_urlpatterns = patterns(

@@ -9,8 +9,12 @@ from doc.applications.models import GeneralApplication
 from doc.permissions.views import DatabaseReadPermissionRequired
 
 
-class VolunteerCSV(DatabaseReadPermissionRequired,
-                   TripsYearMixin, AllVerbsMixin, View):
+class GenericReportView(DatabaseReadPermissionRequired,
+                        TripsYearMixin, AllVerbsMixin, View):
+    pass
+
+
+class VolunteerCSV(GenericReportView):
 
     def all(self, request, *args, **kwargs):
         trips_year = self.kwargs['trips_year']
@@ -23,3 +27,4 @@ class VolunteerCSV(DatabaseReadPermissionRequired,
             user = application.applicant
             writer.writerow([user.name, user.netid])
         return response
+
