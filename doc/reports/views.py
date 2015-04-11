@@ -70,8 +70,10 @@ class TripLeaderApplicationsCSV(GenericReportView):
 
     def get_row(self, application):
         user = application.applicant
-        return [user.name, application.class_year,
-                user.netid, application.avg_score]
+        row = [user.name, application.class_year,
+               user.netid, application.avg_score]
+        return row + [grade.grade for grade in
+                      application.leader_supplement.grades.all()]
 
 
 class CrooApplicationsCSV(GenericReportView):
@@ -86,5 +88,7 @@ class CrooApplicationsCSV(GenericReportView):
 
     def get_row(self, application):
         user = application.applicant
-        return [user.name, application.class_year, user.netid,
-                application.avg_score]
+        row = [user.name, application.class_year,
+               user.netid, application.avg_score]
+        return row + [grade.grade for grade in
+                      application.croo_supplement.grades.all()]
