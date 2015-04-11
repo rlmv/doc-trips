@@ -47,37 +47,43 @@ class GenericReportView(DatabaseReadPermissionRequired,
 class VolunteerCSV(GenericReportView):
 
     file_prefix = 'TL-and-Croo-applicants'
-    fieldnames = ['name', 'netid']
+    fieldnames = ['name', 'class year', 'netid']
 
     def get_queryset(self):
         return GeneralApplication.objects.leader_or_croo_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
-        return {'name': user.name, 'netid': user.netid}
+        return {'name': user.name, 
+                'class year': application.class_year,
+                'netid': user.netid}
 
 
 class TripLeaderApplicationsCSV(GenericReportView):
 
     file_prefix = 'TL-applicants'
-    fieldnames = ['name', 'netid']
+    fieldnames = ['name', 'class year', 'netid']
     
     def get_queryset(self):
         return GeneralApplication.objects.leader_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
-        return {'name': user.name, 'netid': user.netid}
+        return {'name': user.name, 
+                'class year': application.class_year,
+                'netid': user.netid}
 
 
 class CrooApplicationsCSV(GenericReportView):
 
     file_prefix = 'Croo-applicants'
-    fieldnames = ['name', 'netid']
+    fieldnames = ['name', 'class year', 'netid']
     
     def get_queryset(self):
         return GeneralApplication.objects.croo_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
-        return {'name': user.name, 'netid': user.netid}
+        return {'name': user.name, 
+                'class year': application.class_year,
+                'netid': user.netid}
