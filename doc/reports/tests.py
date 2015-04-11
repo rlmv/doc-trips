@@ -20,7 +20,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         non_applicant.croo_supplement.save()
         non_applicant.leader_supplement.document = ''
         non_applicant.leader_supplement.save()
-        res = self.app.get(reverse('db:reports:application_csv',
+        res = self.app.get(reverse('db:reports:all_apps',
                                    kwargs={'trips_year': trips_year}),
                            user=self.mock_director())
         self.assertTrue(res['Content-Disposition'].startswith('attachment; filename="'))
