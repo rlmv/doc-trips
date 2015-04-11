@@ -40,6 +40,7 @@ class GenericReportView(DatabaseReadPermissionRequired,
         )
         writer = csv.writer(response)
         writer.writerow(self.get_header())
+        import pdb; pdb.set_trace()
         for obj in self.get_queryset():
             writer.writerow(self.get_row(obj))
         return response
@@ -71,7 +72,7 @@ class TripLeaderApplicationsCSV(GenericReportView):
     def get_row(self, application):
         user = application.applicant
         row = [user.name, application.class_year,
-               user.netid, application.avg_score]
+               user.netid, "%.1f" % application.avg_score]
         return row + [grade.grade for grade in
                       application.leader_supplement.grades.all()]
 
@@ -89,6 +90,6 @@ class CrooApplicationsCSV(GenericReportView):
     def get_row(self, application):
         user = application.applicant
         row = [user.name, application.class_year,
-               user.netid, application.avg_score]
+               user.netid, "%.1f" % application.avg_score]
         return row + [grade.grade for grade in
                       application.croo_supplement.grades.all()]
