@@ -4,6 +4,7 @@ from braces.views import AllVerbsMixin
 from vanilla import View
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
+from django.db.models import Avg
 
 from doc.db.views import TripsYearMixin
 from doc.applications.models import GeneralApplication
@@ -62,28 +63,34 @@ class VolunteerCSV(GenericReportView):
 class TripLeaderApplicationsCSV(GenericReportView):
 
     file_prefix = 'TL-applicants'
-    fieldnames = ['name', 'class year', 'netid']
+    fieldnames = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return GeneralApplication.objects.leader_applications(self.kwargs['trips_year'])
+        return (GeneralApplication.objects
+                .leader_applications(self.kwargs['trips_year'])
+                .annotate(avg_score=Avg('leader_supplement__grades__grade')))
 
     def get_row(self, application):
         user = application.applicant
         return {'name': user.name, 
                 'class year': application.class_year,
-                'netid': user.netid}
+                'netid': user.netid,
+                'avg score': application.avg_score}
 
-
+        
 class CrooApplicationsCSV(GenericReportView):
 
     file_prefix = 'Croo-applicants'
-    fieldnames = ['name', 'class year', 'netid']
+    fieldnames = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return GeneralApplication.objects.croo_applications(self.kwargs['trips_year'])
+        return (GeneralApplication.objects
+                .croo_applications(self.kwargs['trips_year'])
+                .annotate(avg_score=Avg('croo_supplement__grades__grade')))
 
     def get_row(self, application):
         user = application.applicant
-        return {'name': user.name, 
+        return {'name': user.name,
                 'class year': application.class_year,
-                'netid': user.netid}
+                'netid': user.netid,
+                'avg score': application.avg_score}
