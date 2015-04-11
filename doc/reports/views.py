@@ -40,7 +40,6 @@ class GenericReportView(DatabaseReadPermissionRequired,
         )
         writer = csv.writer(response)
         writer.writerow(self.get_header())
-        import pdb; pdb.set_trace()
         for obj in self.get_queryset():
             writer.writerow(self.get_row(obj))
         return response
@@ -67,12 +66,18 @@ class TripLeaderApplicationsCSV(GenericReportView):
     def get_queryset(self):
         return (GeneralApplication.objects
                 .leader_applications(self.kwargs['trips_year'])
-                .annotate(avg_score=Avg('leader_supplement__grades__grade')))
+                .annotate(avg_score=Avg('leader_supplement__grades__grade'))
+                .select_related('leader_supplement')
+                .prefetch_related('leader_supplement__grades'))
 
     def get_row(self, application):
         user = application.applicant
+        if application.avg_score:
+            avg_score = "%.1f" % application.avg_score
+        else:
+            avg_score = None
         row = [user.name, application.class_year,
-               user.netid, "%.1f" % application.avg_score]
+               user.netid, avg_score]
         return row + [grade.grade for grade in
                       application.leader_supplement.grades.all()]
 
@@ -85,11 +90,17 @@ class CrooApplicationsCSV(GenericReportView):
     def get_queryset(self):
         return (GeneralApplication.objects
                 .croo_applications(self.kwargs['trips_year'])
-                .annotate(avg_score=Avg('croo_supplement__grades__grade')))
+                .annotate(avg_score=Avg('croo_supplement__grades__grade'))
+                .select_related('croo_supplement')
+                .prefetch_related('croo_supplement__grades'))
 
     def get_row(self, application):
         user = application.applicant
+        if application.avg_score:
+            avg_score = "%.1f" % application.avg_score
+        else:
+            avg_score = None
         row = [user.name, application.class_year,
-               user.netid, "%.1f" % application.avg_score]
+               user.netid, avg_score]
         return row + [grade.grade for grade in
                       application.croo_supplement.grades.all()]
