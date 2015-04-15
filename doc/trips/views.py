@@ -205,25 +205,13 @@ class TripLeaderIndexView(DatabaseListView):
     """ Show all ScheduledTrips and assigned leaders + links to assign leaders """
     model = ScheduledTrip
     template_name = 'trip/leaders.html'
+    context_object_name = 'trips'
     
     def get_queryset(self):
         qs = super(TripLeaderIndexView, self).get_queryset()
         return qs.order_by('section', 'template')
 
-    def get_context_data(self, **kwargs):
-
-        context = super(TripLeaderIndexView, self).get_context_data(**kwargs)
-
-        trips_by_section = defaultdict(list)
-        for trip in self.object_list:
-            trips_by_section[trip.section].append(trip)
-        # value lists in trips_by_section will by sorted by trip #
-        # give a tuple (section, [trips]) to the template
-        context['trips_by_section'] = list(trips_by_section.items())
-        
-        return context
-        
-        
+       
 class AssignTripLeaderView(DatabaseListView):
     """ 
     Assign a leader to a ScheduledTrip. 

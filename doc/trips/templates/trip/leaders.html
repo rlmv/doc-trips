@@ -8,14 +8,16 @@
 
 {% block content %}
 
-{% for section, trips in trips_by_section %}
+{% regroup trips by section as trips_by_section %}
+
+{% for section in trips_by_section %}
 
 <table class="table table-condensed">
   <tr class="bg-info">
-    <th> {{ section }} </th>
+    <th> {{ section.grouper }} </th>
     <th> Leaders </th>
   </tr>
-  {% for trip in trips %}
+  {% for trip in section.list %}
   <tr> 
     <td class="col-sm-3"> {{ trip|detail_link }}: {{ trip.template.description_summary }} </td>
     <td class="col-sm-3"> 
