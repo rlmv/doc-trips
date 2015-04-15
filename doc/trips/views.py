@@ -228,7 +228,14 @@ class AssignTripLeaderView(DatabaseListView):
 
     def get_queryset(self):
         trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
-        return self.model.objects.prospective_leaders_for_trip(trip)
+        return (
+            self.model.objects.prospective_leaders_for_trip(trip)
+            # prefetch M2M fields
+            .prefetch_related('leader_supplement__preferred_triptypes')
+            .prefetch_related('leader_supplement__available_triptypes')
+            .prefetch_related('leader_supplement__preferred_sections')
+            .prefetch_related('leader_supplement__available_sections')
+        )
 
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
@@ -257,15 +264,8 @@ class AssignTripLeaderView(DatabaseListView):
                 section_preferrence = 'available'
                 
             return (leader, form, triptype_preferrence, section_preferrence)
-        
-        # prefetch M2M fields
-        leaders = (self.object_list
-                   .prefetch_related('leader_supplement__preferred_triptypes')
-                   .prefetch_related('leader_supplement__available_triptypes')
-                   .prefetch_related('leader_supplement__preferred_sections')
-                   .prefetch_related('leader_supplement__available_sections'))
-        context[self.context_object_name] = map(process_leader, leaders)
-        
+
+        context[self.context_object_name] = map(process_leader, self.object_list)
         return context
 
 
