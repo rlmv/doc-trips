@@ -2,6 +2,7 @@
 from collections import defaultdict
 
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.db.models import Avg
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -230,7 +231,8 @@ class AssignTripLeaderView(DatabaseListView):
         trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
         return (
             self.model.objects.prospective_leaders_for_trip(trip)
-            # prefetch M2M fields
+            .annotate(avg_grade=Avg('leader_supplement__grades__grade'))
+            .order_by('-avg_grade')
             .prefetch_related('leader_supplement__preferred_triptypes')
             .prefetch_related('leader_supplement__available_triptypes')
             .prefetch_related('leader_supplement__preferred_sections')

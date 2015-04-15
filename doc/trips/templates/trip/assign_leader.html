@@ -23,6 +23,7 @@ This list shows all leaders who indicated that they prefer of are available for 
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
+    <th> Score </th>
     <th> Gender </th>
     <th> Trip Assignment </th>
     <th> Status </th>
@@ -32,6 +33,7 @@ This list shows all leaders who indicated that they prefer of are available for 
   {% for leader, assign_form, triptype_pref, section_pref in leader_applications %}
   <tr>
     <td> {{ leader|detail_link:leader }} </td>
+    <td> {{ leader.avg_grade|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
     <td> 
       {% if assign_form %}
