@@ -297,6 +297,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app])
 
+
     def test_prospective_leader_with_available_choices(self):
 
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
@@ -309,17 +310,21 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app])
 
-    def test_with_pending_status(self):
+    def test_only_complete_applications(self):
         trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
-        
-        # otherwise available
-        app = self.make_application(status=GeneralApplication.PENDING)
-        app.leader_supplement.preferred_sections.add(trip.section)
-        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
-        app.save()
+        prospective = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
+        prospective.leader_supplement.available_sections.add(trip.section)
+        prospective.leader_supplement.available_triptypes.add(trip.template.triptype)
+        prospective.save()
+        not_prosp = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
+        not_prosp.leader_supplement.available_sections.add(trip.section)
+        not_prosp.leader_supplement.available_triptypes.add(trip.template.triptype)
+        not_prosp.save()
+        not_prosp.leader_supplement.document = ''
+        not_prosp.leader_supplement.save()
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [])
+        self.assertEquals(list(prospects), [prospective])
 
     def test_without_section_preference(self):
         

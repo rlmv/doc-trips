@@ -114,25 +114,22 @@ class GeneralApplicationManager(models.Manager):
         """ 
         Get prospective leaders who can lead ScheduledTrip trip.
         
-        Returns all LeaderApplications which 
+        Returns all GeneralApplications which 
         (1) are for the same trips_year as trip
-        (2) are Accepted or Waitlisted as leaders
+        (2) are complete
         (3) prefer or are available for trip's TripType and Section
 
         We don't exclude leaders already assigned to a trip.
         """
 
-        LEADER = self.model.LEADER
-        LEADER_WAITLIST = self.model.LEADER_WAITLIST
-
-        return (self.filter(trips_year=trip.trips_year)
-                .filter(Q(status=LEADER) |
-                        Q(status=LEADER_WAITLIST))
-                .filter(Q(leader_supplement__preferred_sections=trip.section) | 
-                        Q(leader_supplement__available_sections=trip.section))
-                .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) | 
-                        Q(leader_supplement__available_triptypes=trip.template.triptype))
-                .distinct())
+        return (
+            self.leader_applications(trip.trips_year)
+            .filter(Q(leader_supplement__preferred_sections=trip.section) | 
+                    Q(leader_supplement__available_sections=trip.section))
+            .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) | 
+                    Q(leader_supplement__available_triptypes=trip.template.triptype))
+            .distinct()
+        )
         
     def leader_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(leader_supplement__document="")
