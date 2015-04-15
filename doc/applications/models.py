@@ -150,7 +150,7 @@ class GeneralApplication(DatabaseModel):
 
 class LeaderSupplement(DatabaseModel):
 
-    NUMBER_OF_GRADES = 2
+    NUMBER_OF_GRADES = 4
 
     objects = LeaderApplicationManager()
 
