@@ -206,7 +206,10 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteV
     def post(self, request, *args, **kwargs):
 
         try:
-            return super(DatabaseDeleteView, self).post(request, *args, **kwargs)
+            resp = super(DatabaseDeleteView, self).post(request, *args, **kwargs)
+            msg = "Succesfully deleted {}".format(self.object)
+            messages.success(request, msg)
+            return resp
 
         except models.ProtectedError as e:
             msg = "Oops, you can't delete {} {} because the following objects reference it: {}." 
