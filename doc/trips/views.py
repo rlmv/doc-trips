@@ -227,12 +227,17 @@ class AssignTripLeaderView(DatabaseListView):
     template_name = 'trip/assign_leader.html'
     context_object_name = 'leader_applications'
 
+    def get_trip(self):
+        if not hasattr(self, 'trip'):
+            self.trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+        return self.trip
+
     def get_queryset(self):
-        trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
         return (
-            self.model.objects.prospective_leaders_for_trip(trip)
+            self.model.objects.prospective_leaders_for_trip(self.get_trip())
             .annotate(avg_grade=Avg('leader_supplement__grades__grade'))
             .order_by('-avg_grade')
+            .select_related('applicant')
             .prefetch_related('leader_supplement__preferred_triptypes')
             .prefetch_related('leader_supplement__available_triptypes')
             .prefetch_related('leader_supplement__preferred_sections')
@@ -241,9 +246,7 @@ class AssignTripLeaderView(DatabaseListView):
 
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
-
-        trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
-        context['trip'] = trip
+        context['trip'] = trip = self.get_trip()
 
         def process_leader(leader):
 
