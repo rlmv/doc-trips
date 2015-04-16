@@ -44,10 +44,10 @@ class ApplicationTable(tables.Table):
         url = reverse('db:update_application_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
-    def render_leader_score(self, value):
+    def render_avg_leader_grade(self, value):
         return "%.1f" % value
 
-    def render_croo_score(self, value):
+    def render_avg_croo_grade(self, value):
         return "%.1f" % value
 
     def render_leader_application(self, value):
