@@ -7,7 +7,7 @@
   {% endif %}
 
   {% if transport %} 
-  <a class="btn btn-xs btn-default" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i></a>
+  <a class="btn btn-xs btn-default" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i> del </a>
   {% else %} 
   <a class="btn btn-xs btn-default" href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> <i class="fa fa-plus"></i> add </a> 
   {% endif %}

@@ -9,7 +9,7 @@ from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport
-from doc.transport.views import get_internal_route_matrix, get_internal_rider_matrix, Riders
+from doc.transport.views import get_internal_route_matrix, get_internal_rider_matrix, Riders, get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY
 from doc.trips.models import Section, ScheduledTrip
 
 
@@ -182,6 +182,35 @@ class RidersMatrixTestCase(TripsYearTestCase):
         matrix = get_internal_rider_matrix(ty)
 
         self.assertEqual(target, matrix)
+
+
+class IssuesMatrixTestCase(TripsYearTestCase):
+
+    def test_unscheduled(self):
+        ty = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        trip = mommy.make(ScheduledTrip, trips_year=ty, section=section, template__dropoff__route=route, template__pickup__route=route, template__return_route=route)
+
+        target = {route: {date(2015,1,2): None, date(2015,1,3): NOT_SCHEDULED, date(2015,1,4): None, date(2015,1,5): NOT_SCHEDULED, date(2015,1,6): NOT_SCHEDULED}}
+        matrix = get_internal_issues_matrix(get_internal_route_matrix(ty), get_internal_rider_matrix(ty))
+        self.assertEqual(target, matrix)
+
+    def test_exceeds_capacity(self):
+        ty = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+
+        max_trippees = route.vehicle.capacity + 1000 # exceed capacity
+        trip = mommy.make(ScheduledTrip, trips_year=ty, section=section, template__dropoff__route=route, template__pickup__route=route, template__return_route=route, template__max_trippees=max_trippees)
+
+        mommy.make(ScheduledTransport, trips_year=ty,route=route, date=date(2015, 1, 3))
+        mommy.make(ScheduledTransport, trips_year=ty,route=route, date=date(2015, 1, 5))
+           
+        target = {route: {date(2015,1,2): None, date(2015,1,3): EXCEEDS_CAPACITY, date(2015,1,4): None, date(2015,1,5): EXCEEDS_CAPACITY, date(2015,1,6): NOT_SCHEDULED}}
+        matrix = get_internal_issues_matrix(get_internal_route_matrix(ty), get_internal_rider_matrix(ty))
+        self.assertEqual(target, matrix)
+
         
     
 class RidersClassTestCase(unittest.TestCase):

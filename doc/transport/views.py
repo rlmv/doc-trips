@@ -10,6 +10,8 @@ from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 from doc.trips.models import Section, ScheduledTrip
 
+NOT_SCHEDULED = 'NOT_SCHEDULED'
+EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
 
 def get_internal_route_matrix(trips_year):
 
@@ -95,7 +97,27 @@ def get_internal_rider_matrix(trips_year):
         matrix[trip.template.return_route][trip.return_date] += Riders(0, 0, n)
         
     return matrix
-    
+
+
+def get_internal_issues_matrix(transport_matrix, riders_matrix):
+
+    assert len(transport_matrix.keys()) == len(riders_matrix.keys())
+
+    dates = transport_matrix[list(transport_matrix.keys())[0]].keys()
+    matrix = {route: {date: None for date in dates} for route in transport_matrix.keys()}
+    for route in matrix.keys():
+        for date in dates:
+            transport = transport_matrix[route][date]
+            riders = riders_matrix[route][date]
+            capacity = route.vehicle.capacity
+            if riders and not transport:
+                matrix[route][date] = NOT_SCHEDULED
+            elif riders and (riders.dropping_off > capacity or
+                             riders.picking_up > capacity or
+                             riders.returning > capacity):
+                matrix[route][date] = EXCEEDS_CAPACITY
+
+    return matrix
 
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
