@@ -200,7 +200,6 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteV
         if self.success_url_pattern:
             kwargs = {'trips_year': self.kwargs['trips_year']}
             return reverse(self.success_url_pattern, kwargs=kwargs)
-
         return super(DatabaseDeleteView, self).get_success_url()
 
     def post(self, request, *args, **kwargs):
@@ -215,7 +214,6 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteV
             msg = "Oops, you can't delete {} {} because the following objects reference it: {}." 
             msg = msg.format(self.object._meta.model.__name__, self.object, e.protected_objects)
             messages.error(request, msg)
-
             return HttpResponseRedirect(request.path)
 
 
