@@ -1,18 +1,11 @@
-{# has 'transport', 'riders', 'capacity', 'trips_year', in context #}
+{# has 'transport', 'riders', 'issue', 'capacity', 'trips_year', in context #}
 
-<span data-toggle="tooltip" data-placement="top" title="{{ riders }}">
-
-  {% if riders.dropping_off > capacity or riders.picking_up > capacity or riders.returning > capacity %}
-  <span class="bg-danger"><i class="fa fa-exclamation"></i> Riders exceed capacity </span>
-  {% endif %}
+<span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %} RIDERS EXCEED CAPACITY: {% elif issue == NOT_SCHEDULED %} TRANSPORT NOT SCHEDULED: {% endif %}Dropping off {{ riders.dropping_off }}/{{ capacity }}, picking up {{ riders.picking_up }}/{{ capacity }}, returning {{ riders.returning }}/{{ capacity }}">
 
   {% if transport %} 
-  <a class="btn btn-xs btn-default" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i> del </a>
+  <a class="btn btn-xs {% if issue == EXCEEDS_CAPACITY %} btn-warning {% else %} btn-success {% endif %}" href="{% url 'db:scheduledtransport_delete' trips_year=trips_year pk=route.pk %}"> <i class="fa fa-times"></i> del  {% if issue == EXCEEDS_CAPACITY %}<i class="fa fa-exclamation"></i>{% endif %}</a>
   {% else %} 
-  <a class="btn btn-xs btn-default" href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> <i class="fa fa-plus"></i> add </a> 
+  <a class="btn btn-xs {% if issue == NOT_SCHEDULED %} btn-warning {% endif %}" href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"> <i class="fa fa-plus"></i> add {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation"></i>{% endif %}</a> 
   {% endif %}
 
-  {% if riders and not transport %}
-  <button class="btn btn-xs btn-block btn-danger"><i class="fa fa-exclamation"></i> </button>
-  {% endif %}
 </span>

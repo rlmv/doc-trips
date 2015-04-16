@@ -235,4 +235,3 @@ class RidersClassTestCase(unittest.TestCase):
     def test__eq__(self):
         self.assertEqual(Riders(0,0,0), Riders(0,0,0))
         self.assertNotEqual(Riders(1,2,3), Riders(0,0,0))
-    

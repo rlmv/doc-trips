@@ -126,10 +126,12 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
     def get_context_data(self, **kwargs):
         context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
-        matrix = get_internal_route_matrix(trips_year)
-        context['matrix'] = matrix
-        context['dates'] = sorted(matrix[next(iter(matrix))].keys()) #  dates in matrix
-        context['riders'] = get_internal_rider_matrix(trips_year)
+        context['matrix'] = matrix = get_internal_route_matrix(trips_year)
+        context['dates'] = sorted(matrix[next(iter(matrix))].keys())  # dates in matrix
+        context['riders'] = riders = get_internal_rider_matrix(trips_year)
+        context['issues'] = get_internal_issues_matrix(matrix, riders)
+        context['NOT_SCHEDULED'] = NOT_SCHEDULED
+        context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
         return context
 
 
