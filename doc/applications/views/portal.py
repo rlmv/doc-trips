@@ -30,9 +30,6 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
             context['is_trip_leader'] = (
                 application.status == GeneralApplication.LEADER
             )
-            context['is_croo'] = (
-                application.status == GeneralApplication.CROO
-            )
         except GeneralApplication.DoesNotExist:
             application = None
             status_description = "You did not submit an application"

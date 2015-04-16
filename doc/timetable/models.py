@@ -34,7 +34,6 @@ class Timetable(models.Model):
 
     application_status_available = models.BooleanField(default=False, help_text='Turn this on once all decisions have been made regarding Leaders and Croos')
     leader_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Trip Leaders see information about their assigned trip')
-    croo_assignment_available = models.BooleanField(default=False, help_text='Turn this on to let Croo members see their assigned Croo')
 
     trippee_registrations_open = models.DateTimeField(default=timezone.now)
     trippee_registrations_close = models.DateTimeField(default=timezone.now)
