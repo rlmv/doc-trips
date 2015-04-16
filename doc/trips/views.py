@@ -114,7 +114,7 @@ class TripTemplateUpdateView(DatabaseUpdateView):
 
 class TripTemplateDeleteView(DatabaseDeleteView):
     model = TripTemplate
-    success_url_pattern = 'db:template_index'
+    success_url_pattern = 'db:triptemplate_index'
     
 
 class TripTypeListView(DatabaseListView):

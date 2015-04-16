@@ -146,7 +146,6 @@ class TripTemplate(DatabaseModel):
     revision_notes = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = 'template'
         ordering = ['name']
 
     @property
