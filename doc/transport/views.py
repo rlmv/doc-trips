@@ -103,7 +103,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
 
     assert len(transport_matrix.keys()) == len(riders_matrix.keys())
 
-    dates = transport_matrix[list(transport_matrix.keys())[0]].keys()
+    dates = transport_matrix[next(iter(transport_matrix))].keys()
     matrix = {route: {date: None for date in dates} for route in transport_matrix.keys()}
     for route in matrix.keys():
         for date in dates:
@@ -112,7 +112,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
             capacity = route.vehicle.capacity
             if riders and not transport:
                 matrix[route][date] = NOT_SCHEDULED
-            elif riders and (riders.dropping_off > capacity or
+            elif riders and (riders.dropping_off > capacity or 
                              riders.picking_up > capacity or
                              riders.returning > capacity):
                 matrix[route][date] = EXCEEDS_CAPACITY
@@ -128,7 +128,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         trips_year = self.kwargs['trips_year']
         matrix = get_internal_route_matrix(trips_year)
         context['matrix'] = matrix
-        context['dates'] = sorted(matrix[list(matrix.keys())[0]].keys()) #  dates in matrix
+        context['dates'] = sorted(matrix[next(iter(matrix))].keys()) #  dates in matrix
         context['riders'] = get_internal_rider_matrix(trips_year)
         return context
 
