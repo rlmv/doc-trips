@@ -57,7 +57,7 @@ class Riders:
         return not self.__eq__(y)
 
     def __str__(self):
-        return "({}, {}, {})".format(
+        return "Dropping off {}, picking up {}, returning {} to campus".format(
             self.dropping_off, self.picking_up, self.returning
         )
 
