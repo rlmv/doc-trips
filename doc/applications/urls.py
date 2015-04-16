@@ -28,7 +28,6 @@ from doc.applications.views.graders import GraderListView
 from doc.applications.views.portal import (
     VolunteerPortalView, EditVolunteerPortalContent
 )
-from doc.applications.views.reports import VolunteerCSV
 
   
 grade_urlpatterns = patterns(
@@ -70,8 +69,7 @@ application_urlpatterns = patterns(
     url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
         name='update_croo_assignment'),
     url(r'^(?P<pk>[0-9]+)/update/admin/$', ApplicationAdminUpdateView.as_view(), 
-       name='update_application_admin'),
-    url(r'^export/$', VolunteerCSV.as_view(), name='application_csv'),
+        name='update_application_admin'),
 )
 
 grader_urlpatterns = patterns(

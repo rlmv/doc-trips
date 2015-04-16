@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'doc.emails',
     'doc.incoming',
     'doc.permissions',
+    'doc.reports',
     'doc.timetable',
     'doc.transport',
     'doc.trips',

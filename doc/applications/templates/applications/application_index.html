@@ -4,9 +4,15 @@
 
 {% block header %}
 <h2> <span class="badge"> {{ applications.count }} </span> Volunteers 
- <a class="btn btn-success" href="{% url 'db:application_csv' trips_year=trips_year %}">
-  <i class="fa fa-download"></i> Applicant Spreadsheet
-</a>
+  <a class="btn btn-success" href="{% url 'db:reports:all_apps' trips_year=trips_year %}"> 
+    <i class="fa fa-download"></i> All Applications
+  </a>
+  <a class="btn btn-success" href="{% url 'db:reports:trip_leader_apps' trips_year=trips_year %}">
+    <i class="fa fa-download"></i> Trip Leader Applications 
+  </a>
+  <a class="btn btn-success" href="{% url 'db:reports:croo_apps' trips_year=trips_year %}">
+    <i class="fa fa-download"></i> Croo Applications 
+  </a>
 </h2>
 {% endblock %}
 
