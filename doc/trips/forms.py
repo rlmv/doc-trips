@@ -45,3 +45,9 @@ class TripLeaderAssignmentForm(forms.ModelForm):
 
         label = 'Assign to %s' % self.initial['assigned_trip']
         self.helper.add_input(Submit('submit', label, css_class='btn-xs'))
+
+    def clean(self):
+        """ Change status to leader if trip assignment is successful """
+        if self.cleaned_data.get('assigned_trip'):
+            self.instance.status = GeneralApplication.LEADER
+        return super(TripLeaderAssignmentForm, self).clean()

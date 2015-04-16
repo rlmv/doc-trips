@@ -19,7 +19,7 @@
 
 <h4> Prospective Leaders </h4>
 
-This list shows all leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}.
+This list shows all leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. Assigning a leader to a trip will change the leader's status to LEADER.
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
@@ -41,7 +41,7 @@ This list shows all leaders who indicated that they prefer of are available for 
       {% else %} 
       {{ leader.assigned_trip | detail_link }}
       {% endif %}</td>
-    <td> {{ leader.status }} </td>
+    <td> <a href="{% url 'db:update_application_status' trips_year=trip.trips_year_id pk=leader.pk %}"> {{ leader.status }} </a></td>
     <td> {{ triptype_pref }} </td>
     <td> {{ section_pref }} </td>
   </tr>

@@ -24,6 +24,22 @@ from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
 from doc.db.urlhelpers import reverse_detail_url
 
 
+def make_application(status=GeneralApplication.PENDING, trips_year=None):
+
+        application = mommy.make(GeneralApplication, 
+                                 status=status,
+                                 trips_year=trips_year)
+        leader_app = mommy.make(LeaderApplication, 
+                                application=application, 
+                                trips_year=trips_year, 
+                                document='some/file')
+        croo_app = mommy.make(CrooSupplement, 
+                              application=application, 
+                              trips_year=trips_year, 
+                              document='some/file')
+        return application
+
+
 class ApplicationTestMixin():
 
     """ Common utilities for testing applications """
@@ -48,19 +64,7 @@ class ApplicationTestMixin():
         if trips_year is None:
             trips_year = self.current_trips_year
 
-        application = mommy.make(GeneralApplication, 
-                                 status=status,
-                                 trips_year=trips_year)
-        leader_app = mommy.make(LeaderApplication, 
-                                application=application, 
-                                trips_year=trips_year, 
-                                document='some/file')
-        croo_app = mommy.make(CrooSupplement, 
-                              application=application, 
-                              trips_year=trips_year, 
-                              document='some/file')
-        
-        return application
+        return make_application(status=status, trips_year=trips_year)
 
 
 class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):

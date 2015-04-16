@@ -6,8 +6,9 @@ from model_mommy import mommy
 
 from doc.trips.models import ScheduledTrip, Section, TripTemplate
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
-
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
+from doc.applications.tests import make_application
+from doc.applications.models import GeneralApplication
 
 class ScheduledTripTestCase(WebTestCase):
     
@@ -152,3 +153,19 @@ class SectionDateManagerTestCase(TripsTestCase):
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 4))
         self.assertEqual(Section.dates.trip_dates(ty),
                          sorted(list(set(section1.trip_dates + section2.trip_dates))))
+
+
+class AssignLeaderTestCase(WebTestCase):
+
+    def test_trip_assignment_automatically_sets_LEADER_status(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        volunteer = make_application(trips_year=trips_year)
+        volunteer.leader_supplement.available_sections.add(trip.section)
+        volunteer.leader_supplement.available_triptypes.add(trip.template.triptype)
+        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        form = self.app.get(url, user=self.mock_director()).form
+        form.submit()  # assign to trip - first (and only) form on page
+        volunteer = GeneralApplication.objects.get(pk=volunteer.pk)  # refresh
+        self.assertEqual(volunteer.status, GeneralApplication.LEADER)
+        
