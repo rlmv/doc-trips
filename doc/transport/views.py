@@ -15,11 +15,13 @@ EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
 
 def get_internal_route_matrix(trips_year):
 
-    routes = Route.objects.internal(trips_year)
+    routes = (Route.objects.internal(trips_year)
+              .select_related('vehicle'))
     dates = Section.dates.trip_dates(trips_year)
    
     matrix = {route: {date: None for date in dates} for route in routes}
-    scheduled = ScheduledTransport.objects.internal(trips_year)
+    scheduled = (ScheduledTransport.objects.internal(trips_year)
+                 .select_related('route'))
     for transport in scheduled:
         matrix[transport.route][transport.date] = transport
 
@@ -80,7 +82,9 @@ def get_internal_rider_matrix(trips_year):
 
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
-    trips = ScheduledTrip.objects.filter(trips_year=trips_year)
+    trips = (ScheduledTrip.objects.filter(trips_year=trips_year)
+             .select_related('template', 'section', 'template__dropoff__route',
+                             'template__pickup__route', 'template__return_route'))
         
     matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
