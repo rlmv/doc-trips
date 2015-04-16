@@ -114,6 +114,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
 class ScheduledTransportCreateView(DatabaseCreateView):
     
     model = ScheduledTransport
+    fields = ('route', 'date')
     
     def get_success_url(self):
         return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
