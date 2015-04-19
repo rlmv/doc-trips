@@ -238,6 +238,7 @@ class AssignTripLeaderView(DatabaseListView):
             .annotate(avg_grade=Avg('leader_supplement__grades__grade'))
             .order_by('-avg_grade')
             .select_related('applicant')
+            .select_related('assigned_trip', 'assigned_trip__template', 'assigned_trip__section')
             .prefetch_related('leader_supplement__preferred_triptypes')
             .prefetch_related('leader_supplement__available_triptypes')
             .prefetch_related('leader_supplement__preferred_sections')
