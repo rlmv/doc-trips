@@ -47,6 +47,8 @@ class DatabaseModel(models.Model):
     @classmethod
     def get_model_name(cls):
         """ Return the name of the model. """
+        if hasattr(cls, 'model_name'):
+            return cls.model_name
         return cls.__name__
 
     @classmethod

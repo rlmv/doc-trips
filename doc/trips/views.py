@@ -247,6 +247,9 @@ class AssignTripLeaderView(DatabaseListView):
             .prefetch_related('leader_supplement__preferred_sections')
             .prefetch_related('leader_supplement__available_sections')
             .prefetch_related('leader_supplement__grades')
+            .defer('race_ethnicity', 'what_do_you_like_to_study',
+                   'personal_activities', 'feedback', 'dietary_restrictions',
+                   'allergen_information')
         )
         # fix issue with aggregation.
         # For some reason, annotating grades using Avg adds an 

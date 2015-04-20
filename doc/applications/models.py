@@ -67,6 +67,8 @@ class GeneralApplication(DatabaseModel):
 
     TODO: rename to Application? Volunteer? mv questionaire to separate model? 
     """
+
+    model_name = 'generalapplication'
     
     class Meta:
         ordering = ('applicant',)
