@@ -120,7 +120,7 @@ class Section(DatabaseModel):
 
 class TripTemplate(DatabaseModel):
 
-    name = models.PositiveSmallIntegerField() # TODO: validate this to range [0-999]
+    name = models.PositiveSmallIntegerField(db_index=True) # TODO: validate this to range [0-999]
     description_summary = models.CharField(max_length=255, verbose_name='Summary') # short info
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type', on_delete=models.PROTECT)
@@ -187,7 +187,7 @@ class TripTemplate(DatabaseModel):
 
 class TripType(DatabaseModel):
     
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     leader_description = models.TextField()
     trippee_description = models.TextField()
     packing_list = models.TextField(blank=True) 
