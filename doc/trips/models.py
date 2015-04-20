@@ -14,6 +14,8 @@ from doc.trips.managers import SectionDatesManager, SectionManager
 
 class ScheduledTrip(DatabaseModel):
 
+    model_name = 'scheduledtrip'
+
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
     section = models.ForeignKey('Section', on_delete=models.PROTECT)
 

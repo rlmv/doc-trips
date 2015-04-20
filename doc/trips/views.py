@@ -247,9 +247,12 @@ class AssignTripLeaderView(DatabaseListView):
  #           .prefetch_related('leader_supplement__preferred_sections')
 #            .prefetch_related('leader_supplement__available_sections')
             .prefetch_related('leader_supplement__grades')
-            .defer('race_ethnicity', 'what_do_you_like_to_study',
-                   'personal_activities', 'feedback', 'dietary_restrictions',
-                   'allergen_information')
+            .only('trips_year', 'gender',
+                  'applicant__name',
+                  'assigned_trip__trips_year_id',
+                  'assigned_trip__template__name',
+                  'assigned_trip__section__name',
+                  'status')
         )
 
         # fix issue with aggregation.
@@ -288,8 +291,8 @@ class AssignTripLeaderView(DatabaseListView):
             elif trip.section in ls.available_sections.all():
                 section_preferrence = 'available'
             """
-            triptype_preferrence = ""
-            section_preferrence = ""
+            triptype_preferrence = "--"
+            section_preferrence = "--"
                 
             return (leader, form, triptype_preferrence, section_preferrence)
 
