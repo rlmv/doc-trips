@@ -242,15 +242,16 @@ class AssignTripLeaderView(DatabaseListView):
             .select_related('applicant')
             .select_related('assigned_trip', 'assigned_trip__template')
             .select_related('assigned_trip__section')
-            .prefetch_related('leader_supplement__preferred_triptypes')
-            .prefetch_related('leader_supplement__available_triptypes')
-            .prefetch_related('leader_supplement__preferred_sections')
-            .prefetch_related('leader_supplement__available_sections')
+#            .prefetch_related('leader_supplement__preferred_triptypes')
+  #          .prefetch_related('leader_supplement__available_triptypes')
+ #           .prefetch_related('leader_supplement__preferred_sections')
+#            .prefetch_related('leader_supplement__available_sections')
             .prefetch_related('leader_supplement__grades')
             .defer('race_ethnicity', 'what_do_you_like_to_study',
                    'personal_activities', 'feedback', 'dietary_restrictions',
                    'allergen_information')
         )
+
         # fix issue with aggregation.
         # For some reason, annotating grades using Avg adds an 
         # expensive GROUP BY clause to the query, killing the site.
@@ -275,9 +276,8 @@ class AssignTripLeaderView(DatabaseListView):
             else:
                 form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
                                                 instance=leader)
-
-            ls = leader.leader_supplement 
-                
+            # ls = leader.leader_supplement 
+            """
             if trip.template.triptype in ls.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
             elif trip.template.triptype in ls.available_triptypes.all():
@@ -287,6 +287,9 @@ class AssignTripLeaderView(DatabaseListView):
                 section_preferrence = 'prefer'
             elif trip.section in ls.available_sections.all():
                 section_preferrence = 'available'
+            """
+            triptype_preferrence = ""
+            section_preferrence = ""
                 
             return (leader, form, triptype_preferrence, section_preferrence)
 
