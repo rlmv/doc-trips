@@ -6,16 +6,17 @@ from django.db.models import Avg
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from braces.views import FormValidMessageMixin
+from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
-from doc.trips.forms import TripLeaderAssignmentForm, SectionForm
+from doc.trips.forms import TripLeaderAssignmentForm, SectionForm, AssignmentForm
 from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                           DatabaseListView, DatabaseDetailView, 
                           TripsYearMixin)
 from doc.permissions.views import ApplicationEditPermissionRequired
 from doc.db.urlhelpers import reverse_detail_url
+from doc.utils.forms import crispify
 
 
 class ScheduledTripListView(DatabaseListView):
@@ -243,8 +244,8 @@ class AssignTripLeaderView(DatabaseListView):
             .select_related('assigned_trip', 'assigned_trip__template')
             .select_related('assigned_trip__section')
 #            .prefetch_related('leader_supplement__preferred_triptypes')
-  #          .prefetch_related('leader_supplement__available_triptypes')
- #           .prefetch_related('leader_supplement__preferred_sections')
+#            .prefetch_related('leader_supplement__available_triptypes')
+#            .prefetch_related('leader_supplement__preferred_sections')
 #            .prefetch_related('leader_supplement__available_sections')
             .prefetch_related('leader_supplement__grades')
             .only('trips_year', 'gender',
@@ -275,11 +276,10 @@ class AssignTripLeaderView(DatabaseListView):
         def process_leader(leader):
 
             if leader.assigned_trip:
-                form = None
+                link = None
             else:
-                form = TripLeaderAssignmentForm(initial={'assigned_trip': trip}, 
-                                                instance=leader)
-            # ls = leader.leader_supplement 
+                link = reverse('db:assignment', kwargs={'trips_year': leader.trips_year_id, 'leader_pk': leader.pk}) + '?assign_to=%s' % trip.pk
+                
             """
             if trip.template.triptype in ls.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
@@ -294,13 +294,52 @@ class AssignTripLeaderView(DatabaseListView):
             triptype_preferrence = "--"
             section_preferrence = "--"
                 
-            return (leader, form, triptype_preferrence, section_preferrence)
+            return (leader, link, triptype_preferrence, section_preferrence)
 
         context[self.context_object_name] = map(process_leader, self.object_list)
         return context
 
-
 # should these volunteer specific views go to the applications app?
+
+class AssignLeaderToTrip(ApplicationEditPermissionRequired, 
+                         FormValidMessageMixin, SetHeadlineMixin, TripsYearMixin, 
+                         UpdateView):
+
+    model = GeneralApplication
+    lookup_url_kwarg = 'leader_pk'
+    template_name = 'db/update.html'
+    form_class = AssignmentForm
+
+    def get(self, request, *args, **kwargs):
+        
+        data = None
+        GET = request.GET
+        if 'assign_to' in GET:
+            data = {'assigned_trip': GET['assign_to']}
+        form = self.get_form(data=data)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+    def get_form(self, **kwargs):
+        return self.get_form_class()(self.kwargs['trips_year'], **kwargs)
+    
+    def get_form_valid_message(self):
+        """ Flash success message """
+        return '{} assigned to lead {}'.format(
+            self.object.applicant, self.object.assigned_trip
+        )
+
+    def get_headline(self):
+        self.object = self.get_object()
+        return 'Assign {} to trip'.format(
+            self.object.applicant
+        )
+
+    def get_success_url(self):
+        """ Override DatabaseUpdateView default """
+        return reverse('db:leader_index', 
+                       kwargs={'trips_year': self.kwargs['trips_year']})
+
 
 class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, 
                                    FormValidMessageMixin, TripsYearMixin, 

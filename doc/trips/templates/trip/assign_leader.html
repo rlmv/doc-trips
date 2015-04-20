@@ -30,14 +30,14 @@ This list shows all leaders who indicated that they prefer of are available for 
     <th> {{ trip.template.triptype }} </th>
     <th> {{ trip.section }} </th>
   </tr>
-  {% for leader, assign_form, triptype_pref, section_pref in leader_applications %}
+  {% for leader, assign_link, triptype_pref, section_pref in leader_applications %}
   <tr>
     <td> {{ leader|detail_link:leader }} </td>
     <td> {{ leader.avg_grade|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
     <td> 
-      {% if assign_form %}
-      {% crispy assign_form %}
+      {% if assign_link %}
+      <a class="btn btn-xs btn-primary" href="{{ assign_link }}">Assign to {{ trip }} </a>
       {% else %} 
       {{ leader.assigned_trip | detail_link }}
       {% endif %}</td>
