@@ -1,4 +1,4 @@
-
+from statistics import mean
 from collections import defaultdict
 
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -237,17 +237,29 @@ class AssignTripLeaderView(DatabaseListView):
         return self.trip
 
     def get_queryset(self):
-        return (
+        qs = (
             self.model.objects.prospective_leaders_for_trip(self.get_trip())
-            .annotate(avg_grade=Avg('leader_supplement__grades__grade'))
-            .order_by('-avg_grade')
             .select_related('applicant')
-            .select_related('assigned_trip', 'assigned_trip__template', 'assigned_trip__section')
+            .select_related('assigned_trip', 'assigned_trip__template')
+            .select_related('assigned_trip__section')
             .prefetch_related('leader_supplement__preferred_triptypes')
             .prefetch_related('leader_supplement__available_triptypes')
             .prefetch_related('leader_supplement__preferred_sections')
             .prefetch_related('leader_supplement__available_sections')
+            .prefetch_related('leader_supplement__grades')
         )
+        # fix issue with aggregation.
+        # For some reason, annotating grades using Avg adds an 
+        # expensive GROUP BY clause to the query, killing the site.
+        # See https://code.djangoproject.com/ticket/17144. 
+        # Does this need to be reopened?
+        # This is a hackish workaround to explicitly compute the
+        # average for all applications with reasonable performance:
+        for app in qs:
+            app.avg_grade = mean(
+                map(lambda g: g.grade, app.leader_supplement.grades.all())
+            )
+        return sorted(qs, key=lambda x: x.avg_grade, reverse=True)
 
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
