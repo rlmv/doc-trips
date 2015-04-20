@@ -209,8 +209,12 @@ class TripLeaderIndexView(DatabaseListView):
     context_object_name = 'trips'
     
     def get_queryset(self):
-        qs = super(TripLeaderIndexView, self).get_queryset()
-        return qs.order_by('section', 'template')
+        return (
+            super(TripLeaderIndexView, self).get_queryset()
+            .select_related('section', 'template')
+            .prefetch_related('leaders', 'leaders__applicant')
+            .order_by('section', 'template')
+        )
 
        
 class AssignTripLeaderView(DatabaseListView):
