@@ -194,7 +194,8 @@ class LeaderSupplement(DatabaseModel):
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='leader_supplement'
     )
-    document = models.FileField('leader application answers', blank=True)
+    document = models.FileField('leader application answers',
+                                blank=True, db_index=True)
 
     #  ------  trip and section information ------
     preferred_sections = models.ManyToManyField(
