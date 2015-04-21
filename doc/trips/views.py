@@ -217,7 +217,9 @@ class TripLeaderIndexView(DatabaseListView):
             .order_by('section', 'template')
         )
 
-       
+PREFER = 'prefer'
+AVAILABLE = 'available'
+
 class AssignTripLeaderView(DatabaseListView):
     """ 
     Assign a leader to a ScheduledTrip.
@@ -247,10 +249,6 @@ class AssignTripLeaderView(DatabaseListView):
             .select_related('applicant')
             .select_related('assigned_trip', 'assigned_trip__template')
             .select_related('assigned_trip__section')
-#            .prefetch_related('leader_supplement__preferred_triptypes')
-#            .prefetch_related('leader_supplement__available_triptypes')
-#            .prefetch_related('leader_supplement__preferred_sections')
-#            .prefetch_related('leader_supplement__available_sections')
             .prefetch_related('leader_supplement__grades')
             .only('trips_year', 'gender',
                   'applicant__name',
@@ -260,7 +258,6 @@ class AssignTripLeaderView(DatabaseListView):
                   'status')
         )
 
-        # fix issue with aggregation.
         # For some reason, annotating grades using Avg adds an 
         # expensive GROUP BY clause to the query, killing the site.
         # See https://code.djangoproject.com/ticket/17144. 
@@ -289,29 +286,37 @@ class AssignTripLeaderView(DatabaseListView):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
 
-        def process_leader(leader):
+        # Compute whether each leader prefers or is available for this 
+        # trip's section and triptype. We do this because prefetch_related
+        # pulls in *all* related objects--and all fields of the related 
+        # objects--which is a huge query and kills performance.
+        # This technique is O(1) for queries and O(n) for in-memory 
+        # processing, which is quite acceptable.
+        # PREFERing takes precedence; if a leader both prefers and is 
+        # available we just show that she prefers the option.
+        # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
 
+        triptype = trip.template.triptype
+        triptype_preference = {}
+        for pair in LeaderSupplement.available_triptypes.through.objects.filter(triptype=triptype):
+            triptype_preference[pair.leadersupplement_id] = AVAILABLE
+        for pair in LeaderSupplement.preferred_triptypes.through.objects.filter(triptype=triptype):
+            triptype_preference[pair.leadersupplement_id] = PREFER
+
+        section_preference = {}
+        section = trip.section
+        for pair in LeaderSupplement.available_sections.through.objects.filter(section=section):
+            section_preference[pair.leadersupplement_id] = AVAILABLE
+        for pair in LeaderSupplement.preferred_sections.through.objects.filter(section=section):
+            section_preference[pair.leadersupplement_id] = PREFER
+
+        def process_leader(leader):
             if leader.assigned_trip:
                 link = None
             else:
                 link = self.get_assign_url(leader, trip)
-                
-            # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
-            """
-            if trip.template.triptype in ls.preferred_triptypes.all():
-                triptype_preferrence = 'prefer'
-            elif trip.template.triptype in ls.available_triptypes.all():
-                triptype_preferrence = 'available'
-
-            if trip.section in ls.preferred_sections.all():
-                section_preferrence = 'prefer'
-            elif trip.section in ls.available_sections.all():
-                section_preferrence = 'available'
-            """
-            triptype_preferrence = "--"
-            section_preferrence = "--"
-                
-            return (leader, link, triptype_preferrence, section_preferrence)
+            return (leader, link, triptype_preference[leader.id],
+                    section_preference[leader.id])
 
         context[self.context_object_name] = list(map(process_leader, self.object_list))
         return context
