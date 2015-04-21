@@ -261,6 +261,7 @@ class AssignTripLeaderView(DatabaseListView):
         # expensive GROUP BY clause to the query, killing the site.
         # See https://code.djangoproject.com/ticket/17144. 
         # Does this need to be reopened?
+        # TODO: check with 1.8
         # This is a hackish workaround to explicitly compute the
         # average for all applications with reasonable performance:
         for app in qs:
@@ -279,7 +280,8 @@ class AssignTripLeaderView(DatabaseListView):
                 link = None
             else:
                 link = reverse('db:assignment', kwargs={'trips_year': leader.trips_year_id, 'leader_pk': leader.pk}) + '?assign_to=%s' % trip.pk
-                
+               
+            # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
             """
             if trip.template.triptype in ls.preferred_triptypes.all():
                 triptype_preferrence = 'prefer'
