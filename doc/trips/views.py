@@ -313,7 +313,7 @@ class AssignTripLeaderView(DatabaseListView):
                 
             return (leader, link, triptype_preferrence, section_preferrence)
 
-        context[self.context_object_name] = map(process_leader, self.object_list)
+        context[self.context_object_name] = list(map(process_leader, self.object_list))
         return context
 
 # should these volunteer specific views go to the applications app?

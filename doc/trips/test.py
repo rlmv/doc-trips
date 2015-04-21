@@ -165,9 +165,24 @@ class AssignLeaderTestCase(WebTestCase):
         volunteer.leader_supplement.available_triptypes.add(trip.template.triptype)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
         res = self.app.get(url, user=self.mock_director())
-        res = res.click(description="Assign to")
+        res = res.click(description="Assign to") 
         res.form.submit()  # assign to trip - first (and only) form on page
         volunteer = GeneralApplication.objects.get(pk=volunteer.pk)  # refresh
         self.assertEqual(volunteer.assigned_trip, trip)
         self.assertEqual(volunteer.status, GeneralApplication.LEADER)
+
+    def test_assign_trip_computes_section_and_type_preferences(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        volunteer = make_application(trips_year=trips_year)
+        volunteer.leader_supplement.available_sections.add(trip.section)
+        volunteer.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        res = self.app.get(url, user=self.mock_director())
+        leader_list = list(res.context['leader_applications'])
+        self.assertEqual(len(leader_list), 1)
+        (leader, _, triptype_preference, section_preference) = leader_list[0]
+        self.assertEqual(leader, volunteer)
+        self.assertEqual(triptype_preference, 'prefer')
+        self.assertEqual(section_preference, 'available')
         
