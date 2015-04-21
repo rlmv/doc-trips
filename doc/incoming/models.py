@@ -1,6 +1,6 @@
 import logging
 
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
@@ -24,6 +24,10 @@ def YesNoField(*args, **kwargs):
 
 class Address(models.Model):
     # TODO, or use django-address
+    pass
+
+
+class TooManyTrippees(Exception):
     pass
 
 
@@ -77,6 +81,25 @@ class IncomingStudent(DatabaseModel):
     # can we get rid of some of it?
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
+
+    def __init__(self, *args, **kwargs):
+        super(IncomingStudent, self).__init__(*args, **kwargs)
+        self._orig_trip = self.trip_assignment
+
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        """
+        Check that the trip is not full before saving.
+
+        If the trip is full, don't save and raise a TooManyTrippees 
+        exception. We only do this if the trip assignment changes.
+        """
+        if self._orig_trip != self.trip_assignment:
+            # will adding this trippee go over the limit?
+            if (self.trip_assignment.trippees.count() ==
+                self.trip_assignment.template.max_trippees):
+                raise TooManyTrippees
+        return super(IncomingStudent, self).save(*args, **kwargs)
 
     def get_registration(self):
         try:

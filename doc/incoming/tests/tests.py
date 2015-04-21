@@ -4,13 +4,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase
-from doc.incoming.models import Registration, IncomingStudent
+from doc.incoming.models import Registration, IncomingStudent, TooManyTrippees
 from doc.trips.models import ScheduledTrip
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
-    def setUp(self):
-        pass
     
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
         
@@ -44,6 +42,23 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         reg = Registration.objects.get(pk=reg.pk)
         
         self.assertEqual(incoming.registration, reg) 
+
+    def test_assigning_student_to_trip_with_maxed_trippees_raises_error(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year, template__max_trippees=0)
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year)
+        incoming.trip_assignment = trip
+        with self.assertRaises(TooManyTrippees):
+            incoming.save()
+
+    def test_trip_maxout_check_only_happens_when_trip_assignment_changes(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year, template__max_trippees=1)
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        trip.template__max_trippees = 0
+        trip.template.save()
+        incoming.gender = 'alien'
+        incoming.save()
 
 
 class RegistrationModelTestCase(TripsYearTestCase):
