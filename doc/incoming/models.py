@@ -35,16 +35,16 @@ class IncomingStudent(DatabaseModel):
     database notes, and trip assignment.
 
     Created by the the post_save signal on Registration.
-
-    TODO: call this IncomingStudent?
     """
 
     objects = IncomingStudentManager()
 
-    registration = models.OneToOneField('Registration', editable=False,
-                                        related_name='trippee', null=True)
-    trip_assignment = models.ForeignKey(ScheduledTrip, on_delete=models.PROTECT,
-                                        related_name='trippees', null=True)
+    registration = models.OneToOneField(
+        'Registration', editable=False, related_name='trippee', null=True
+    )
+    trip_assignment = models.ForeignKey(
+        ScheduledTrip, on_delete=models.PROTECT, related_name='trippees', null=True
+    )
 
     # TODO:
     # bus assignment
@@ -60,10 +60,6 @@ class IncomingStudent(DatabaseModel):
     #    did = models.CharField(max_length=30)
     netid = models.CharField(max_length=20)
     class_year = models.CharField(max_length=10)
-
-    # hmmmm no netid provided?
-    # We may need to save did on the UserModel for matching registrations
-    #    netid = models.CharField(max_len
 
     # address - related model ? or abstract.
 

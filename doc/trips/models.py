@@ -40,8 +40,6 @@ class ScheduledTrip(DatabaseModel):
         return self.section.return_to_campus
 
     def __str__(self):
-
-        # return '{}{}- {}'.format(self.section.name, self.template.name, self.template.description)
         return '{}{}'.format(self.section.name, self.template.name)
 
 
