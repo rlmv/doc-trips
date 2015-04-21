@@ -164,8 +164,10 @@ class AssignLeaderTestCase(WebTestCase):
         volunteer.leader_supplement.available_sections.add(trip.section)
         volunteer.leader_supplement.available_triptypes.add(trip.template.triptype)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
-        form = self.app.get(url, user=self.mock_director()).form
-        form.submit()  # assign to trip - first (and only) form on page
+        res = self.app.get(url, user=self.mock_director())
+        res = res.click(description="Assign to")
+        res.form.submit()  # assign to trip - first (and only) form on page
         volunteer = GeneralApplication.objects.get(pk=volunteer.pk)  # refresh
+        self.assertEqual(volunteer.assigned_trip, trip)
         self.assertEqual(volunteer.status, GeneralApplication.LEADER)
         

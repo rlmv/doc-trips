@@ -269,9 +269,12 @@ class AssignTripLeaderView(DatabaseListView):
         # This is a hackish workaround to explicitly compute the
         # average for all applications with reasonable performance:
         for app in qs:
-            app.avg_grade = mean(
-                map(lambda g: g.grade, app.leader_supplement.grades.all())
-            )
+            if app.leader_supplement.grades.exists():
+                app.avg_grade = mean(
+                    map(lambda g: g.grade, app.leader_supplement.grades.all())
+                )
+            else:
+                app.avg_grade = None
         return sorted(qs, key=lambda x: x.avg_grade, reverse=True)
 
     def get_context_data(self, **kwargs):
