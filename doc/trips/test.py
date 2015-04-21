@@ -1,10 +1,12 @@
+import unittest
 from datetime import date
 from django.db import transaction
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
-from doc.trips.models import ScheduledTrip, Section, TripTemplate
+from doc.trips.models import ScheduledTrip, Section, TripTemplate, validate_triptemplate_name
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
 from doc.applications.tests import make_application
@@ -154,6 +156,17 @@ class SectionDateManagerTestCase(TripsTestCase):
         self.assertEqual(Section.dates.trip_dates(ty),
                          sorted(list(set(section1.trip_dates + section2.trip_dates))))
 
+
+class TripTemplateValidatorTest(unittest.TestCase):
+
+    def test_validator(self):
+        with self.assertRaises(ValidationError):
+            validate_triptemplate_name(-1)
+        with self.assertRaises(ValidationError):
+            validate_triptemplate_name(1000)
+        validate_triptemplate_name(0)
+        validate_triptemplate_name(525)
+        validate_triptemplate_name(999)
 
 class AssignLeaderTestCase(WebTestCase):
 

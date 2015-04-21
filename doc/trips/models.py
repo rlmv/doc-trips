@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
@@ -116,11 +117,19 @@ class Section(DatabaseModel):
         fmt = '%b %d'
         return (self.leaders_arrive.strftime(fmt) + ' to ' + 
                 self.return_to_campus.strftime(fmt))
-        
+
+
+def validate_triptemplate_name(value):
+    """ Validator for TripTemplate.name """
+    if value < 0 or value > 999:
+        raise ValidationError('Value must be in range 0-999')
+
 
 class TripTemplate(DatabaseModel):
 
-    name = models.PositiveSmallIntegerField(db_index=True) # TODO: validate this to range [0-999]
+    name = models.PositiveSmallIntegerField(
+        db_index=True, validators=[validate_triptemplate_name]
+    )
     description_summary = models.CharField(max_length=255, verbose_name='Summary') # short info
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type', on_delete=models.PROTECT)
