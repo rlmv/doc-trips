@@ -57,7 +57,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         incoming = mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         trip.template__max_trippees = 0
         trip.template.save()
-        incoming.gender = 'alien'
+        incoming.gender = 'gender queer'
         incoming.save()
 
 
