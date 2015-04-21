@@ -220,12 +220,16 @@ class TripLeaderIndexView(DatabaseListView):
        
 class AssignTripLeaderView(DatabaseListView):
     """ 
-    Assign a leader to a ScheduledTrip. 
+    Assign a leader to a ScheduledTrip.
 
-    Takes the trip pk as a url arg. The template is passed 
-    a list of (LeaderApplication, assignment_form, triptype_preference, section_pref) 
-    tuples in context_object_name. assignment_form will be None if the leader 
-    is already assigned to a trip.
+    Takes the trip's pk as a url arg.
+    The template is passed a list of tuples in context_object_name:
+    (LeaderApplication, assign_link, triptype_preference, section_pref)
+    - assign_link will be None if the leader is already assigned to a trip.
+    - triptype_preference is a string describing whether the leader prefers or
+    is available for the trip type
+    - section preference is a string describing whether the leader prefers or 
+    is available for the section.
     """
 
     model = GeneralApplication
@@ -279,7 +283,10 @@ class AssignTripLeaderView(DatabaseListView):
             if leader.assigned_trip:
                 link = None
             else:
-                link = reverse('db:assignment', kwargs={'trips_year': leader.trips_year_id, 'leader_pk': leader.pk}) + '?assign_to=%s' % trip.pk
+                link = reverse('db:assign_leader_to_trip',
+                               kwargs={'trips_year': self.kwargs['trips_year'],
+                                       'leader_pk': leader.pk})
+                link += '?assign_to=%s' % trip.pk
                
             # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
             """
@@ -303,9 +310,9 @@ class AssignTripLeaderView(DatabaseListView):
 
 # should these volunteer specific views go to the applications app?
 
-class AssignLeaderToTrip(ApplicationEditPermissionRequired, 
-                         FormValidMessageMixin, SetHeadlineMixin, TripsYearMixin, 
-                         UpdateView):
+class AssignLeaderToTrip(ApplicationEditPermissionRequired,
+                         FormValidMessageMixin, SetHeadlineMixin,
+                         TripsYearMixin, UpdateView):
 
     model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
@@ -313,11 +320,8 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired,
     form_class = AssignmentForm
 
     def get(self, request, *args, **kwargs):
-        
-        data = None
-        GET = request.GET
-        if 'assign_to' in GET:
-            data = {'assigned_trip': GET['assign_to']}
+        """ Pull the 'assign_to' trip from GET qs """
+        data = {'assigned_trip': request.GET['assign_to']}
         form = self.get_form(data=data)
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
@@ -339,32 +343,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired,
 
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
-        return reverse('db:leader_index', 
-                       kwargs={'trips_year': self.kwargs['trips_year']})
-
-
-class UpdateLeaderWithAssignedTrip(ApplicationEditPermissionRequired, 
-                                   FormValidMessageMixin, TripsYearMixin, 
-                                   UpdateView):
-    """ 
-    Add an assigned_trip to a leader. 
-
-    POST target for AssignTripLeaderView 
-    """
-    model = GeneralApplication
-    form_class = TripLeaderAssignmentForm
-    lookup_url_kwarg = 'leader_pk'
-    template_name = 'db/update.html'
-
-    def get_form_valid_message(self):
-        """ Flash success message """
-        return '{} assigned to lead {}'.format(
-            self.object.applicant, self.object.assigned_trip
-        )
-
-    def get_success_url(self):
-        """ Override DatabaseUpdateView default """
-        return reverse('db:leader_index', 
+        return reverse('db:leader_index',
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 

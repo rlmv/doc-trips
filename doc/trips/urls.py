@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.trips.views import *
-from doc.trips.views import (TripLeaderIndexView, UpdateLeaderWithAssignedTrip,
+from doc.trips.views import (TripLeaderIndexView, 
                              RemoveAssignedTrip, AssignLeaderToTrip)
 
 """
@@ -86,10 +86,7 @@ leader_urlpatterns = patterns(
     url(r'^assign/(?P<trip>[0-9]+)$',
         AssignTripLeaderView.as_view(), name='assign_leader'),
     url(r'^assign/(?P<leader_pk>[0-9]+)/update/$',
-        AssignLeaderToTrip.as_view(), name='assignment'),
-    url(r'^assign/post/(?P<leader_pk>[0-9]+)$',
-        UpdateLeaderWithAssignedTrip.as_view(), name='assign_leader_to_trip'),
+        AssignLeaderToTrip.as_view(), name='assign_leader_to_trip'),
     url(r'^remove/(?P<leader_pk>[0-9]+)$',
         RemoveAssignedTrip.as_view(), name='remove_leader_from_trip'),
-    
 )
