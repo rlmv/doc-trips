@@ -277,6 +277,14 @@ class AssignTripLeaderView(DatabaseListView):
                 app.avg_grade = None
         return sorted(qs, key=lambda x: x.avg_grade, reverse=True)
 
+    def get_assign_url(self, leader, trip):
+        """ Return the url used to assign leader to trip """
+        url = reverse('db:assign_leader_to_trip', kwargs={
+            'trips_year': self.kwargs['trips_year'],
+            'leader_pk': leader.pk
+        })
+        return '%s?assign_to=%s' % (url, trip.pk)
+
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
@@ -286,11 +294,8 @@ class AssignTripLeaderView(DatabaseListView):
             if leader.assigned_trip:
                 link = None
             else:
-                link = reverse('db:assign_leader_to_trip',
-                               kwargs={'trips_year': self.kwargs['trips_year'],
-                                       'leader_pk': leader.pk})
-                link += '?assign_to=%s' % trip.pk
-               
+                link = self.get_assign_url(leader, trip)
+                
             # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
             """
             if trip.template.triptype in ls.preferred_triptypes.all():
