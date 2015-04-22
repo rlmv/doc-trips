@@ -93,13 +93,13 @@ class TripAssignmentForm(forms.ModelForm):
         )
 
 
-class IncomingStudentsForm(forms.Form):
+class UploadIncomingStudentsForm(forms.Form):
 
     csv_file = forms.FileField(label='CSV file')
 
     def __init__(self, *args, **kwargs):
 
-        super(IncomingStudentsForm, self).__init__(*args, **kwargs)
+        super(UploadIncomingStudentsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))

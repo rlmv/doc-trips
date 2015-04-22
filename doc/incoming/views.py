@@ -13,7 +13,7 @@ from braces.views import LoginRequiredMixin, FormMessagesMixin
 
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import (
-    RegistrationForm, IncomingStudentsForm, TripAssignmentForm
+    RegistrationForm, UploadIncomingStudentsForm, TripAssignmentForm
 )
 from doc.core.models import Settings
 from doc.db.models import TripsYear
@@ -210,7 +210,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     (eg first year, transfer, etc.)
     """
 
-    form_class = IncomingStudentsForm
+    form_class = UploadIncomingStudentsForm
     template_name = 'incoming/upload_incoming_students.html'
 
     def form_valid(self, form):
