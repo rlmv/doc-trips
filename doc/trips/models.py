@@ -27,6 +27,7 @@ class ScheduledTrip(DatabaseModel):
         # no two ScheduledTrips can have the same template-section-trips_year
         # combination; we don't want to schedule two identical trips
         unique_together = ('template', 'section', 'trips_year')
+        ordering = ('section__name', 'template__name')
 
     @property 
     def dropoff_date(self):
