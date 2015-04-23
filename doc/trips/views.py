@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
-from vanilla import FormView, UpdateView
+from vanilla import FormView, UpdateView, TemplateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
@@ -14,7 +14,7 @@ from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                           DatabaseListView, DatabaseDetailView, 
                           TripsYearMixin)
-from doc.permissions.views import ApplicationEditPermissionRequired
+from doc.permissions.views import ApplicationEditPermissionRequired, DatabaseReadPermissionRequired
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
 
@@ -383,4 +383,18 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
         
     def get_success_url(self):
         return reverse_detail_url(self.object)
-    
+
+
+class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
+                          TripsYearMixin, TemplateView):
+    """
+    Shows a matrix of the number of tripees and leaders for all trips 
+    """
+   
+    template_name = 'trip/trippee_leader_counts.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TrippeeLeaderCounts, self).get_context_data(**kwargs)
+        context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
+        return context
+

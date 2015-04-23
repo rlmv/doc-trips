@@ -1,0 +1,18 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h2> Counts </h2>
+{% endblock %}
+
+{% block content %}
+<table class="table table-condensed">
+  {% for template, sections in matrix.items %}
+  <tr>
+    {% for section, trip in sections.items %}
+    <td> {{ trip.num_trippees }} &ndash; {{ trip.num_leaders }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}

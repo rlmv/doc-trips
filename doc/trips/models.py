@@ -10,12 +10,14 @@ from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
-from doc.trips.managers import SectionDatesManager, SectionManager
+from doc.trips.managers import (SectionDatesManager, SectionManager,
+                                ScheduledTripManager)
 
 
 class ScheduledTrip(DatabaseModel):
 
     model_name = 'scheduledtrip'
+    objects = ScheduledTripManager()
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
     section = models.ForeignKey('Section', on_delete=models.PROTECT)

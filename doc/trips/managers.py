@@ -1,4 +1,4 @@
-
+from collections import OrderedDict
 
 from django.db import models
 
@@ -53,4 +53,39 @@ class SectionManager(models.Manager):
 
     def exchange(self, trips_year):
         return self.filter(trips_year=trips_year, is_exchange=True)
+        
+
+class ScheduledTripManager(models.Manager):
+
+    def matrix(self, trips_year):
+        """
+        Return a matrix of scheduled trips.
+
+        matrix[template][section] gives the scheduled trip
+        with template and section, or None if it is not scheduled.
+
+        Returns OrderedDicts so that you can iterate over the keys:
+        >>> for template in matrix:
+        >>>    for section in matrix[template]:
+        >>>        ...
+        """
+
+        from doc.trips.models import Section, TripTemplate
+        sections = Section.objects.filter(trips_year=trips_year)
+        templates = TripTemplate.objects.filter(trips_year=trips_year)
+        matrix = OrderedDict()
+        for t in templates:
+            matrix[t] = OrderedDict()
+            for s in sections:
+                matrix[t][s] = None
+
+        trips = (self.filter(trips_year=trips_year)
+                 .select_related('section', 'template')
+                 .annotate(num_trippees=models.Count('trippees'))
+                 .annotate(num_leaders=models.Count('leaders')))
+        
+        for trip in trips:
+            matrix[trip.template][trip.section] = trip
+
+        return matrix
         

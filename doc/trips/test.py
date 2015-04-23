@@ -199,3 +199,32 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(triptype_preference, 'prefer')
         self.assertEqual(section_preference, 'available')
         
+
+class ScheduledTripManagerTestCase(TripsTestCase):
+    
+    def test_simple_matrix(self):
+        trips_year = self.init_current_trips_year()
+        template = mommy.make(TripTemplate, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        trip = mommy.make(ScheduledTrip, section=section,
+                          template=template, trips_year=trips_year)
+        target = {template: {section: trip}}
+        self.assertEqual(ScheduledTrip.objects.matrix(trips_year), target)
+
+    def test_another_matrix(self):
+        trips_year = self.init_current_trips_year()
+        template1 = mommy.make(TripTemplate, trips_year=trips_year)
+        section1 = mommy.make(Section, trips_year=trips_year)
+        template2 = mommy.make(TripTemplate, trips_year=trips_year)
+        section2 = mommy.make(Section, trips_year=trips_year)
+        trip1 = mommy.make(ScheduledTrip, section=section1,
+                           template=template1, trips_year=trips_year)
+        trip2 = mommy.make(ScheduledTrip, section=section1,
+                           template=template2, trips_year=trips_year)
+        trip3 = mommy.make(ScheduledTrip, section=section2,
+                           template=template2, trips_year=trips_year)
+        target = {template1: {section1: trip1, section2: None},
+                  template2: {section1: trip2, section2: trip3}}
+        self.assertEqual(ScheduledTrip.objects.matrix(trips_year), target)
+        
+    
