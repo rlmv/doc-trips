@@ -12,7 +12,7 @@ all:
 
 install:
 	pyvenv $(VENV)
-	$(PIP) install -r requirements.txt
+	$(PIP) install --upgrade -r requirements.txt
 
 deploy: 
 	heroku maintenance:on

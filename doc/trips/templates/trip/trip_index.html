@@ -13,37 +13,32 @@
 </div>
 
 <table class="table table-condensed">
+
+  {% for template, sections in matrix.items %}
+
+  {% if forloop.first %}
   <tr>
     <th>Template</th>
     <th>Type</th>
     {% for section in sections %}
-    <th>{{ section.name }}</th>
+    <th> {{ section.name }} </th>
     {% endfor %}
-
-    {% comment %} 
-    <th>Description</th>
-    <th>Max trippees</th> 
-    {% endcomment %}
-
   </tr>
-  {% for template in templates %}
+  {% endif %}
+  
   <tr>
     <td> {{ template | detail_link }} </td>
     <td> {{ template.triptype.name }} </td>
-    {% for section, trip in template.get_scheduled_trips.items %}
+
+    {% for section, trip in sections.items %}
     {% if trip %}
     <td>{{ trip | detail_link }}</td>
     {% else %}
-    <td><a href="{% url 'db:scheduledtrip_create' trips_year=section.trips_year.year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
+    <td><a href="{% url 'db:scheduledtrip_create' trips_year=trips_year %}?template={{ template.pk }}&section={{ section.pk }}">add</a></td>
     {% endif %}
     {% endfor %}
-    
-    {% comment %}
-    <td> {{ template.description }} </td>
-    <td> {{ template.max_trippees }} </td>
-    {% endcomment %}
-
   </tr>
+
   {% endfor %}
 </table>
 

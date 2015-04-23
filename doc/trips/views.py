@@ -19,19 +19,13 @@ from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
 
 
-class ScheduledTripListView(DatabaseListView):
-    """ Note: this queries on TripTemplates, not ScheduledTrips 
-    Rename to clarify?
-    """
-    model = TripTemplate
+class ScheduledTripListView(DatabaseReadPermissionRequired,
+                            TripsYearMixin, TemplateView):
     template_name = 'trip/trip_index.html'
-    context_object_name = 'templates'
 
     def get_context_data(self, **kwargs):
-        """ Add sections to template context """
         context = super(ScheduledTripListView, self).get_context_data(**kwargs)
-        trips_year = self.kwargs['trips_year']
-        context['sections'] = Section.objects.filter(trips_year=trips_year)
+        context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
         return context
 
 

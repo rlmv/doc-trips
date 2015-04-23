@@ -60,6 +60,22 @@ class ScheduledTripTestCase(WebTestCase):
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
 
+    def test_num_queries_in_scheduled_trip_matrix(self):
+        trips_year = self.trips_year
+        template1 = mommy.make(TripTemplate, trips_year=trips_year)
+        section1 = mommy.make(Section, trips_year=trips_year)
+        template2 = mommy.make(TripTemplate, trips_year=trips_year)
+        section2 = mommy.make(Section, trips_year=trips_year)
+        mommy.make(ScheduledTrip, section=section1,
+                   template=template1, trips_year=trips_year)
+        mommy.make(ScheduledTrip, section=section1,
+                   template=template2, trips_year=trips_year)
+        mommy.make(ScheduledTrip, section=section2,
+                   template=template2, trips_year=trips_year)
+        user = self.mock_director()
+        with self.assertNumQueries(18):
+            self.app.get(reverse('db:scheduledtrip_index', kwargs={'trips_year': self.trips_year}), user=user)
+
 
 class QuickTestViews(WebTestCase):
 

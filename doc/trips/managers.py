@@ -72,7 +72,10 @@ class ScheduledTripManager(models.Manager):
 
         from doc.trips.models import Section, TripTemplate
         sections = Section.objects.filter(trips_year=trips_year)
-        templates = TripTemplate.objects.filter(trips_year=trips_year)
+        templates = (
+            TripTemplate.objects.filter(trips_year=trips_year)
+            .select_related('triptype')
+        )
         matrix = OrderedDict()
         for t in templates:
             matrix[t] = OrderedDict()
@@ -84,8 +87,7 @@ class ScheduledTripManager(models.Manager):
         trips = (self.filter(trips_year=trips_year)
                  .select_related('section', 'template')
                  .annotate(num_trippees=models.Count('trippees', distinct=True))
-                 .annotate(num_leaders=models.Count('leaders', distinct=True))
-             )
+                 .annotate(num_leaders=models.Count('leaders', distinct=True)))
         
         for trip in trips:
             matrix[trip.template][trip.section] = trip
