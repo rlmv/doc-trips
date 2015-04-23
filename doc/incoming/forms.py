@@ -81,8 +81,10 @@ class TripAssignmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['trip_assignment'].queryset = ScheduledTrip.objects.filter(
-            trips_year=kwargs['instance'].trips_year
+        self.fields['trip_assignment'].queryset = (
+            ScheduledTrip.objects
+            .filter(trips_year=kwargs['instance'].trips_year)
+            .select_related('template', 'section')
         )
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-3'

@@ -27,10 +27,6 @@ class Address(models.Model):
     pass
 
 
-class TooManyTrippees(Exception):
-    pass
-
-
 class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
@@ -81,29 +77,7 @@ class IncomingStudent(DatabaseModel):
     # can we get rid of some of it?
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
-
-    def __init__(self, *args, **kwargs):
-        super(IncomingStudent, self).__init__(*args, **kwargs)
-        self._orig_trip = self.trip_assignment
-
-    @transaction.atomic
-    def save(self, *args, **kwargs):
-        """
-        Check that the trip is not full before saving.
-
-        If the trip is full, don't save and raise a TooManyTrippees
-        exception. We only do this if the trip assignment changes.
-
-        TODO: What happens if template.max_trippees changes? Should
-        we validate and make sure that we don't have too many trippees?
-        """
-        if self._orig_trip != self.trip_assignment:
-            # will adding this trippee go over the limit?
-            if (self.trip_assignment.trippees.count() >=
-                self.trip_assignment.template.max_trippees):
-                raise TooManyTrippees
-        return super(IncomingStudent, self).save(*args, **kwargs)
-
+ 
     def get_registration(self):
         """ Return this student's registration, or None if DNE """
         try:
