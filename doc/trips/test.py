@@ -11,6 +11,7 @@ from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
 from doc.applications.tests import make_application
 from doc.applications.models import GeneralApplication
+from doc.incoming.models import IncomingStudent
 
 class ScheduledTripTestCase(WebTestCase):
     
@@ -226,5 +227,19 @@ class ScheduledTripManagerTestCase(TripsTestCase):
         target = {template1: {section1: trip1, section2: None},
                   template2: {section1: trip2, section2: trip3}}
         self.assertEqual(ScheduledTrip.objects.matrix(trips_year), target)
-        
-    
+
+
+    def test_counts_are_equal(self):
+        # tests that we are using Count(distinct=True)
+        trips_year = self.init_current_trips_year()
+        template = mommy.make(TripTemplate, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        trip = mommy.make(ScheduledTrip, section=section,
+                          template=template, trips_year=trips_year)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        mommy.make(GeneralApplication, trips_year=trips_year, assigned_trip=trip)
+        mommy.make(GeneralApplication, trips_year=trips_year, assigned_trip=trip)
+        matrix = ScheduledTrip.objects.matrix(trips_year)
+        self.assertEqual(matrix[template][section].num_trippees, 1)
+        self.assertEqual(matrix[template][section].num_trippees, matrix[template][section].trippees.count())
+

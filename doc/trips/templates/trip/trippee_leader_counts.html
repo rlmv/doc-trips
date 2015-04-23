@@ -1,18 +1,54 @@
 {% extends "db/base.html" %}
 
 {% block header %}
-<h2> Counts </h2>
+<h2> Trippee and Leader Counts  </h2>
 {% endblock %}
 
 {% block content %}
+
+<p> The number of trippees and leaders on each scheduled trip. Clicking on an entry takes you to the details of the trip. <span class="text-bright-danger">Red</span> numbers indicate that trippees or leaders are overbooked. A <span class="text-bright-success">green</span> trippee number indicates that you can safely add more trippees to the trip. </p>
+
 <table class="table table-condensed">
   {% for template, sections in matrix.items %}
+
+  {% if forloop.first %}
   <tr>
+    <th></th>
+    <th class="text-muted"> max </th>
+    {% for section in sections %}
+    <th> {{ section.name }} </th>
+    {% endfor %}
+  </tr>
+  {% endif %}
+
+  <tr>
+    <th> {{ template.name }} </th>
+    <td class="text-muted"> {{ template.max_trippees }} &ndash; 2 </td>
     {% for section, trip in sections.items %}
-    <td> {{ trip.num_trippees }} &ndash; {{ trip.num_leaders }} </td>
+    {% if trip %}
+    <td>
+      <span data-toggle="tooltip" data-placement="top" title="{{ trip.verbose_str }}">
+	<a class="no-color-link" href="{{ trip.get_absolute_url }}"> 
+	  <span {% if trip.num_trippees < trip.template.max_trippees %} class="text-bright-success" {% elif trip.num_trippees > trip.template.max_trippees %} class="text-bright-danger" {% endif %}> {{ trip.num_trippees }} </span>
+	  &ndash; 
+	  <span {% if trip.num_leaders > 2 %} class="text-bright-danger" {% endif %}> {{ trip.num_leaders }} </span>
+	</a>
+      </span>
+    </td>
+    {% else %}
+    <td class="text-muted"> &mdash;  </td>
+    {% endif %}
     {% endfor %}
   </tr>
   {% endfor %}
 </table>
 
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}

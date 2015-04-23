@@ -79,10 +79,13 @@ class ScheduledTripManager(models.Manager):
             for s in sections:
                 matrix[t][s] = None
 
+        # see https://docs.djangoproject.com/en/dev/ref/models/querysets/#id7
+        # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations
         trips = (self.filter(trips_year=trips_year)
                  .select_related('section', 'template')
-                 .annotate(num_trippees=models.Count('trippees'))
-                 .annotate(num_leaders=models.Count('leaders')))
+                 .annotate(num_trippees=models.Count('trippees', distinct=True))
+                 .annotate(num_leaders=models.Count('leaders', distinct=True))
+             )
         
         for trip in trips:
             matrix[trip.template][trip.section] = trip

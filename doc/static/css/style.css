@@ -40,3 +40,15 @@ th[data-sort] {
 .navbar {
     height: 42px;
 }
+
+a.no-color-link {
+    color: inherit;
+}
+
+.text-bright-danger {
+    color: red !important;
+}
+
+.text-bright-success {
+    color: yellowgreen !important;
+}

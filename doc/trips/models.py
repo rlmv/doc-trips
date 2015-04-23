@@ -45,6 +45,12 @@ class ScheduledTrip(DatabaseModel):
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)
+    
+    def verbose_str(self):
+        return '{}{}: {}'.format(
+            self.section.name, self.template.name,
+            self.template.description_summary
+        )
 
 
 class Section(DatabaseModel):
