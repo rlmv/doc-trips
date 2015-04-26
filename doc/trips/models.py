@@ -25,6 +25,18 @@ class ScheduledTrip(DatabaseModel):
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
 
+    # Fields to override the default transport routes. If any of these 
+    # routes are set, they are used instead of trip.template.*_route.
+    dropoff_route = models.ForeignKey(
+        Route, blank=True, null=True, on_delete=models.PROTECT,
+        related_name='overridden_dropped_off_trips')
+    pickup_route = models.ForeignKey(
+        Route, blank=True, null=True, on_delete=models.PROTECT,
+        related_name='overridden_picked_up_trips')
+    return_route =  models.ForeignKey(
+        Route, blank=True, null=True, on_delete=models.PROTECT,
+        related_name='overriden_returning_trips')
+
     class Meta:
         # no two ScheduledTrips can have the same template-section-trips_year
         # combination; we don't want to schedule two identical trips
