@@ -44,6 +44,24 @@ class ScheduledTrip(DatabaseModel):
         unique_together = ('template', 'section', 'trips_year')
         ordering = ('section__name', 'template__name')
 
+    def get_dropoff_route(self):
+        """ Returns the overriden dropoff, if set """
+        if self.dropoff_route:
+            return self.dropoff_route
+        return self.template.dropoff
+
+    def get_pickup_route(self):
+        """ Returns the overriden pickup, if set """
+        if self.pickup_route:
+            return self.pickup_route
+        return self.template.pickup
+
+    def get_return_route(self):
+        """ Returns the overriden return route, if set """
+        if self.return_route:
+            return self.return_route
+        return self.template.return_route
+
     @property 
     def dropoff_date(self):
         return self.section.at_campsite1

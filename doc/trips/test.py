@@ -98,6 +98,33 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.pickup_route, route)
         self.assertEqual(trip.return_route, route)
 
+    def test_get_dropoff_route_method(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff)
+        # override default route
+        trip.dropoff_route = mommy.make(Route, trips_year=trips_year)
+        trip.save()
+        self.assertEqual(trip.get_dropoff_route(), trip.dropoff_route)
+
+    def test_get_pickup_route_method(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual(trip.get_pickup_route(), trip.template.pickup)
+        # override default route
+        trip.pickup_route = mommy.make(Route, trips_year=trips_year)
+        trip.save()
+        self.assertEqual(trip.get_pickup_route(), trip.pickup_route)
+
+    def test_get_return_route_method(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual(trip.get_return_route(), trip.template.return_route)
+        # override default route
+        trip.return_route = mommy.make(Route, trips_year=trips_year)
+        trip.save()
+        self.assertEqual(trip.get_return_route(), trip.return_route)
+
 
 class QuickTestViews(WebTestCase):
 
