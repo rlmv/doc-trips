@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
 from doc.trips.models import ScheduledTrip, Section, TripTemplate, validate_triptemplate_name
+from doc.transport.models import Route
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
 from doc.applications.tests import make_application
@@ -75,6 +76,27 @@ class ScheduledTripTestCase(WebTestCase):
         user = self.mock_director()
         with self.assertNumQueries(18):
             self.app.get(reverse('db:scheduledtrip_index', kwargs={'trips_year': self.trips_year}), user=user)
+
+
+class ScheduledTripRouteOverridesTestCase(WebTestCase):
+
+    def test_override_routes_in_trip_update_form(self):
+        trips_year = self.init_current_trips_year()
+        template = mommy.make(TripTemplate, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year,
+                          section=section, template=template)
+        route = mommy.make(Route, trips_year=trips_year)
+        res = self.app.get(reverse_update_url(trip), user=self.mock_director())
+        form = res.form
+        form['dropoff_route'] = route.pk
+        form['pickup_route'] = route.pk
+        form['return_route'] = route.pk
+        res = form.submit()
+        trip = ScheduledTrip.objects.get(pk=trip.pk)
+        self.assertEqual(trip.dropoff_route, route)
+        self.assertEqual(trip.pickup_route, route)
+        self.assertEqual(trip.return_route, route)
 
 
 class QuickTestViews(WebTestCase):

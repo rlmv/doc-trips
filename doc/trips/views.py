@@ -31,7 +31,8 @@ class ScheduledTripListView(DatabaseReadPermissionRequired,
 
 class ScheduledTripUpdateView(DatabaseUpdateView):
     model = ScheduledTrip
-    fields = ['section', 'template']
+    fields = ['section', 'template', 'dropoff_route',
+              'pickup_route', 'return_route']
 
 
 class ScheduledTripDetailView(DatabaseDetailView):
