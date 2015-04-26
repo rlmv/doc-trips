@@ -27,15 +27,16 @@ class ScheduledTrip(DatabaseModel):
 
     # Fields to override the default transport routes. If any of these 
     # routes are set, they are used instead of trip.template.*_route.
+    ROUTE_HELP_TEXT = 'leave blank to use default route from template'
     dropoff_route = models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overridden_dropped_off_trips')
+        related_name='overridden_dropped_off_trips', help_text=ROUTE_HELP_TEXT)
     pickup_route = models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overridden_picked_up_trips')
+        related_name='overridden_picked_up_trips', help_text=ROUTE_HELP_TEXT)
     return_route =  models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overriden_returning_trips')
+        related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
 
     class Meta:
         # no two ScheduledTrips can have the same template-section-trips_year
