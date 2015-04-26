@@ -3,6 +3,7 @@ from collections import defaultdict
 
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
+from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView, TemplateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -29,10 +30,14 @@ class ScheduledTripListView(DatabaseReadPermissionRequired,
         return context
 
 
-class ScheduledTripUpdateView(DatabaseUpdateView):
+class ScheduledTripUpdateView(SetHeadlineMixin, DatabaseUpdateView):
     model = ScheduledTrip
-    fields = ['section', 'template', 'dropoff_route',
-              'pickup_route', 'return_route']
+    fields = ['dropoff_route', 'pickup_route', 'return_route']
+
+    def get_headline(self):
+        return mark_safe(
+            "Edit %s <small> ScheduledTrip </small>" % self.object
+        )
 
 
 class ScheduledTripDetailView(DatabaseDetailView):
