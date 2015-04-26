@@ -42,25 +42,6 @@ class ScheduledTripTestCase(WebTestCase):
         self.assertEquals(len(scheduled_trips), 1)
         self.assertEquals(scheduled_trips[0], trip)
 
-    def test_unique_validation_in_update_view(self):
-        self.mock_director()
-
-        trip = mommy.make(ScheduledTrip, trips_year=self.trips_year, 
-                        template__trips_year=self.trips_year,
-                        section__trips_year=self.trips_year)
-        trip.save()
-
-        trip2 = mommy.make(ScheduledTrip, trips_year=self.trips_year)
-        trip2.save()
-
-        #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(reverse_update_url(trip2),
-                                 {'template': trip.template.pk, 
-                                  'section': trip.section.pk}, 
-                                 user=self.director.netid)
-        # should have unique constraint error
-        self.assertIn('unique constraint failed', str(response.content).lower())
-
     def test_num_queries_in_scheduled_trip_matrix(self):
         trips_year = self.trips_year
         template1 = mommy.make(TripTemplate, trips_year=trips_year)
