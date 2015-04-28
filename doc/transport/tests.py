@@ -183,6 +183,18 @@ class RidersMatrixTestCase(TripsYearTestCase):
 
         self.assertEqual(target, matrix)
 
+    def test_internal_riders_matrix_with_overriden_routes(self):
+        ty = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        # route is set *directly* on scheduled trip
+        trip = mommy.make(ScheduledTrip, trips_year=ty, section=section,
+                          dropoff_route=route, pickup_route=route, return_route=route)
+        num = trip.template.max_num_people
+        target = {route: {date(2015,1,2): Riders(0,0,0), date(2015,1,3): Riders(num,0,0), date(2015, 1,4): Riders(0,0,0), date(2015,1,5): Riders(0,num,0), date(2015,1,6): Riders(0,0,num)}}
+        matrix = get_internal_rider_matrix(ty)
+        self.assertEqual(target, matrix)
+
 
 class IssuesMatrixTestCase(TripsYearTestCase):
 

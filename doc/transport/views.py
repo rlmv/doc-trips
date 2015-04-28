@@ -92,13 +92,13 @@ def get_internal_rider_matrix(trips_year):
 
         n = trip.template.max_num_people
         # dropoff 
-        if trip.template.dropoff.route:
-            matrix[trip.template.dropoff.route][trip.dropoff_date] += Riders(n, 0, 0)
+        if trip.get_dropoff_route():
+            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0)
         # pickup
-        if trip.template.pickup.route:
-            matrix[trip.template.pickup.route][trip.pickup_date] += Riders(0, n, 0)
+        if trip.get_pickup_route():
+            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0)
         # return 
-        matrix[trip.template.return_route][trip.return_date] += Riders(0, 0, n)
+        matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n)
         
     return matrix
 

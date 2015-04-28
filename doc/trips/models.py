@@ -27,6 +27,7 @@ class ScheduledTrip(DatabaseModel):
 
     # Fields to override the default transport routes. If any of these 
     # routes are set, they are used instead of trip.template.*_route.
+    # Is there a way to easily tell when a route is way off for a stop?
     ROUTE_HELP_TEXT = 'leave blank to use default route from template'
     dropoff_route = models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
