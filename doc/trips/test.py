@@ -81,8 +81,9 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
 
     def test_get_dropoff_route_method(self):
         trips_year = self.init_current_trips_year()
-        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
-        self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff)
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year, 
+                          template__dropoff__route=mommy.make(Route, trips_year=trips_year))
+        self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff.route)
         # override default route
         trip.dropoff_route = mommy.make(Route, trips_year=trips_year)
         trip.save()
@@ -91,7 +92,8 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
     def test_get_pickup_route_method(self):
         trips_year = self.init_current_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
-        self.assertEqual(trip.get_pickup_route(), trip.template.pickup)
+
+        self.assertEqual(trip.get_pickup_route(), trip.template.pickup.route)
         # override default route
         trip.pickup_route = mommy.make(Route, trips_year=trips_year)
         trip.save()

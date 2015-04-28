@@ -48,13 +48,13 @@ class ScheduledTrip(DatabaseModel):
         """ Returns the overriden dropoff, if set """
         if self.dropoff_route:
             return self.dropoff_route
-        return self.template.dropoff
+        return self.template.dropoff.route
 
     def get_pickup_route(self):
         """ Returns the overriden pickup, if set """
         if self.pickup_route:
             return self.pickup_route
-        return self.template.pickup
+        return self.template.pickup.route
 
     def get_return_route(self):
         """ Returns the overriden return route, if set """

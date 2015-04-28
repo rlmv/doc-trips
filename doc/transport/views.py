@@ -85,7 +85,7 @@ def get_internal_rider_matrix(trips_year):
     trips = (ScheduledTrip.objects.filter(trips_year=trips_year)
              .select_related('template', 'section', 'template__dropoff__route',
                              'template__pickup__route', 'template__return_route'))
-        
+       
     matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
     for trip in trips:
