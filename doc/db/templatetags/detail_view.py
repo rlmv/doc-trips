@@ -15,7 +15,8 @@ def detail(db_object, fields=None):
     Output a generic detail view of a database object.
     
     Fields is an iterable of strings. Each string is either the
-    name of a field or a method of the object.
+    name of a field or a method of the object. Fields can be 
+    passed as (label, accessor) tuples, eg ('Section', 'get_section_name').
     """
     
     if not fields:
