@@ -44,7 +44,12 @@ class ScheduledTripDetailView(DatabaseDetailView):
     model = ScheduledTrip
     template_name = 'trip/trip_detail.html'
 
-    fields = ['section', 'template', 'leaders', 'trippees']
+    fields = [
+        'section', 'template', 'leaders', 'trippees',
+        ('dropoff route', 'get_dropoff_route'),
+        ('pickup route', 'get_pickup_route'),
+        ('return route', 'get_return_route')
+    ]
 
     triptemplate_fields = [
         'triptype', 'max_trippees', 'non_swimmers_allowed', 
@@ -53,7 +58,6 @@ class ScheduledTripDetailView(DatabaseDetailView):
         'description_day2', 'campsite2',
         'description_day3', 'pickup',
         'description_conclusion', 
-        'return_route', 
         'revision_notes']
     
 
