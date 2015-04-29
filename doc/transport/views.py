@@ -70,14 +70,25 @@ class Riders:
 
 def get_internal_rider_matrix(trips_year):
     """
-    Given an internal route and a date,
-    returns tuple (dropoff #, pickup #, return #) 
-    which are the number of people moved each leg of the journey.
-
-    matrix[route][date] gives you the numbers for that route on that date.
+    Matrix of hypothetical numbers, 
+    computed with max_trippees + 2 leaders.
     
-    TODO: Maxed out number of people - or actual number? Either has
-    issues since we are not currently enforcing max_trippees.
+    matrix[route][date] gives you the Riders for that route on that date.
+    """
+    
+    return _rider_matrix(trips_year, lambda trip: trip.template.max_num_people)
+
+
+def get_actual_rider_matrix(trips_year):
+    """ 
+    Matrix of actual, assigned transport numbers.
+    """
+    return _rider_matrix(trips_year, lambda trip: trip.size())
+
+
+def _rider_matrix(trips_year, size_key):
+    """
+    Size key computes the number of riders on a transport leg
     """
 
     routes = Route.objects.internal(trips_year)
@@ -90,7 +101,7 @@ def get_internal_rider_matrix(trips_year):
 
     for trip in trips:
 
-        n = trip.template.max_num_people
+        n = size_key(trip)
         # dropoff 
         if trip.get_dropoff_route():
             matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0)
