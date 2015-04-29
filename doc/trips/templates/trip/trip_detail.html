@@ -1,7 +1,9 @@
 {% extends "db/detail.html" %}
 {% load detail_view %}
+{% load links %}
 
 {% block content %}
+<p> Click {{ object|edit_link }} to change the default transportation routes for this trip. </p>
 {{ block.super }}
 
 {% detail object.template view.triptemplate_fields %}
