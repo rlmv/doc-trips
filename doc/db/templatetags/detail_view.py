@@ -3,6 +3,7 @@
 from django import template
 from django.shortcuts import render
 from django.db import models
+from django.db.models.fields import FieldDoesNotExist
 
 from django.contrib.auth import get_user_model
 from doc.db.templatetags.links import *
@@ -12,6 +13,9 @@ register = template.Library()
 def detail(db_object, fields=None):
     """ 
     Output a generic detail view of a database object.
+    
+    Fields is an iterable of strings. Each string is either the
+    name of a field or a method of the object.
     """
     
     if not fields:
@@ -19,13 +23,25 @@ def detail(db_object, fields=None):
     
     display_fields = []
     for field_name in fields:
-        
-        field = db_object._meta.get_field_by_name(field_name)[0]
 
+        # allow tuple of (name, accessor) in the field list
+        if isinstance(field_name, tuple) and len(field_name) == 2:
+            (label, field_name) = field_name
+        else:
+            label = None
+            
         if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
-        value = getattr(db_object, field_name)
+        try:
+            field = db_object._meta.get_field_by_name(field_name)[0]
+            value = getattr(db_object, field_name)
+        except FieldDoesNotExist:
+            value = getattr(db_object, field_name)()
+            if label is None:
+                label = field_name
+            display_fields.append((label, value))
+            continue
 
         if isinstance(field, models.FileField) and value:
             t = template.Template("""<a href="{{ file.url }}">{{ file }}</a>""")
@@ -57,8 +73,10 @@ def detail(db_object, fields=None):
                 value = "yes"
             else:
                 value = "no"
-            
-        display_fields.append((field.verbose_name, value))
+
+        if label is None:
+            label = field.verbose_name
+        display_fields.append((label, value))
         
     t = template.loader.get_template('db/_detail_view_tag.html')
     c = template.Context({'fields': display_fields})
