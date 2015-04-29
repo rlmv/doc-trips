@@ -24,11 +24,12 @@ from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
 from doc.db.urlhelpers import reverse_detail_url
 
 
-def make_application(status=GeneralApplication.PENDING, trips_year=None):
+def make_application(status=GeneralApplication.PENDING, trips_year=None, assigned_trip=None):
 
         application = mommy.make(GeneralApplication, 
                                  status=status,
-                                 trips_year=trips_year)
+                                 trips_year=trips_year, 
+                                 assigned_trip=assigned_trip)
         leader_app = mommy.make(LeaderApplication, 
                                 application=application, 
                                 trips_year=trips_year, 

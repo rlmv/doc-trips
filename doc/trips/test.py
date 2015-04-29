@@ -108,6 +108,26 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         trip.save()
         self.assertEqual(trip.get_return_route(), trip.return_route)
 
+    def test_size_method_with_noone(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        self.assertEqual(trip.size(), 0)
+
+    def test_size_method_with_1_leader(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        self.assertEqual(trip.size(), 1)
+
+    def test_size_method_with_1_leader_and_2_trippees(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.size(), 3)
+
+
 
 class QuickTestViews(WebTestCase):
 

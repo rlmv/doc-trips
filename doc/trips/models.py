@@ -63,6 +63,10 @@ class ScheduledTrip(DatabaseModel):
             return self.return_route
         return self.template.return_route
 
+    def size(self):
+        """ Return the number trippees + leaders on this trip """
+        return self.leaders.count() + self.trippees.count()
+
     @property 
     def dropoff_date(self):
         return self.section.at_campsite1
