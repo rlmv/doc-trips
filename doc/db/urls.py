@@ -17,6 +17,7 @@ from doc.incoming.urls import trippee_urlpatterns, registration_urlpatterns
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 
 from doc.trips.views import TrippeeLeaderCounts
+from doc.transport.views import TransportCounts
 
 """
 All database urlpatterns take a trips_year param.
@@ -42,7 +43,8 @@ database_urlpatterns = patterns(
     url(r'^transport/', include(scheduledtransport_urlpatterns)),
     url(r'^emails/', include('doc.emails.urls')),
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
-    url(r'^counts/', TrippeeLeaderCounts.as_view(), name='counts'),
+    url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),
+    url(r'^counts/transport/', TransportCounts.as_view(), name='transport_counts'),
 )
 
 urlpatterns = patterns(

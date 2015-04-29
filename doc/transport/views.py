@@ -96,7 +96,7 @@ def _rider_matrix(trips_year, size_key):
     trips = (ScheduledTrip.objects.filter(trips_year=trips_year)
              .select_related('template', 'section', 'template__dropoff__route',
                              'template__pickup__route', 'template__return_route'))
-       
+      
     matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
 
     for trip in trips:
@@ -147,6 +147,16 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context['issues'] = get_internal_issues_matrix(matrix, riders)
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
+        return context
+
+
+class TransportCounts(DatabaseReadPermissionRequired,
+                      TripsYearMixin, TemplateView):
+    template_name = 'transport/transport_counts.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TransportCounts, self).get_context_data(**kwargs)
+        context['matrix'] = get_actual_rider_matrix(self.kwargs['trips_year'])
         return context
 
 
