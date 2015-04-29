@@ -9,6 +9,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 from doc.trips.models import Section, ScheduledTrip
+from doc.utils.matrix import make_ordered_matrix
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
@@ -97,7 +98,7 @@ def _rider_matrix(trips_year, size_key):
              .select_related('template', 'section', 'template__dropoff__route',
                              'template__pickup__route', 'template__return_route'))
       
-    matrix = {route: {date: Riders(0, 0, 0) for date in dates} for route in routes}
+    matrix = make_ordered_matrix(routes, dates, lambda: Riders(0, 0, 0))
 
     for trip in trips:
 

@@ -1,6 +1,8 @@
-from collections import OrderedDict
 
 from django.db import models
+
+from doc.utils.matrix import make_ordered_matrix
+
 
 class SectionDatesManager(models.Manager):
 
@@ -76,11 +78,8 @@ class ScheduledTripManager(models.Manager):
             TripTemplate.objects.filter(trips_year=trips_year)
             .select_related('triptype')
         )
-        matrix = OrderedDict()
-        for t in templates:
-            matrix[t] = OrderedDict()
-            for s in sections:
-                matrix[t][s] = None
+
+        matrix = make_ordered_matrix(templates, sections)
 
         # see https://docs.djangoproject.com/en/dev/ref/models/querysets/#id7
         # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations
