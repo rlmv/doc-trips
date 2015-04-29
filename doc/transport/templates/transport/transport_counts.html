@@ -1,0 +1,78 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h2> Transport Counts </h2>
+{% endblock %}
+
+{% block content %}
+
+<p> The number of people each transport is dropping off, picking up, and returning on any given day. A <span class="text-bright-danger"> red </span> number indicates overbooked transportation. A grey dash indicates unscheduled transportation. {# A gray number between two dashes indicates passengers assigned to unscheduled transportation. #} </p>
+
+<table class="table table-condensed">
+
+  {% for route, dates in matrix.items %}
+  {% if forloop.first %}
+  <tr class="bg-info">
+    <th> </th>
+    <th> Dropoffs </th>
+    {% for date in dates %}
+    <th> {{ date|date:"n/j" }} </th>
+    {% endfor %}
+  </tr>
+  {% endif %}
+
+  <tr>
+    <th> {{ route }} </th>
+    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
+    {% for date, riders in dates.items %}
+    <td> {{ riders.dropping_off|default:'<span class="text-muted">&mdash;</span>' }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+
+
+ {% for route, dates in matrix.items %}
+  {% if forloop.first %}
+  <tr class="bg-info">
+    <th> </th>
+    <th> Pickups </th>
+    {% for date in dates %}
+    <th> {{ date|date:"n/j" }} </th>
+    {% endfor %}
+  </tr>
+  {% endif %}
+
+  <tr>
+    <th> {{ route }} </th>
+    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
+    {% for date, riders in dates.items %}
+    <td> {{ riders.picking_up|default:'<span class="text-muted">&mdash;</span>' }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+
+
+ {% for route, dates in matrix.items %}
+  {% if forloop.first %}
+  <tr class="bg-info">
+    <th> </th>
+    <th> Returns </th>
+    {% for date in dates %}
+    <th> {{ date|date:"n/j" }} </th>
+    {% endfor %}
+  </tr>
+  {% endif %}
+
+  <tr>
+    <th> {{ route }} </th>
+    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
+    {% for date, riders in dates.items %}
+    <td> {{ riders.returning|default:'<span class="text-muted">&mdash;</span>' }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+
+
+</table>
+
+{% endblock %}
