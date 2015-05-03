@@ -1,5 +1,7 @@
+from datetime import timedelta
 
 from django.db import models
+from django.db.models import Q
 
 from doc.utils.matrix import make_ordered_matrix
 
@@ -92,4 +94,15 @@ class ScheduledTripManager(models.Manager):
             matrix[trip.template][trip.section] = trip
 
         return matrix
-        
+    
+    def dropoffs(self, route, date, trips_year):
+        """
+        All trips which are dropped off on route on date
+
+        This returns all trips which have overridden the dropoff
+        route, or whose template drops off with this route.
+        """
+        return (self.filter(trips_year=trips_year)
+                .filter(section__leaders_arrive=date-timedelta(days=2))
+                .filter(Q(dropoff_route=route) |
+                        Q(dropoff_route=None, template__dropoff__route=route)))

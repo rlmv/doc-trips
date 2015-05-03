@@ -1,5 +1,5 @@
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from django.db import transaction
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
@@ -311,3 +311,22 @@ class ScheduledTripManagerTestCase(TripsTestCase):
         self.assertEqual(matrix[template][section].num_trippees, 1)
         self.assertEqual(matrix[template][section].num_trippees, matrix[template][section].trippees.count())
 
+
+    def test_dropoffs(self):
+        trips_year = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        dropoff = mommy.make(ScheduledTrip, trips_year=trips_year,
+                             section=section, template__dropoff__route=route)
+        overridden_dropoff = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                        section=section, dropoff_route=route)
+        other_route = mommy.make(ScheduledTrip, trips_year=trips_year, 
+                                 section=section)
+        other_date = mommy.make(ScheduledTrip, trips_year=trips_year, 
+                                template__dropoff__route=route,
+                                section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
+
+        self.assertEqual(set([dropoff, overridden_dropoff]), 
+                         set(ScheduledTrip.objects.dropoffs(route, section.at_campsite1, trips_year=trips_year)))
+        
+    
