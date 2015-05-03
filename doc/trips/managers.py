@@ -85,10 +85,12 @@ class ScheduledTripManager(models.Manager):
 
         # see https://docs.djangoproject.com/en/dev/ref/models/querysets/#id7
         # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations
-        trips = (self.filter(trips_year=trips_year)
-                 .select_related('section', 'template')
-                 .annotate(num_trippees=models.Count('trippees', distinct=True))
-                 .annotate(num_leaders=models.Count('leaders', distinct=True)))
+        trips = (
+            self.filter(trips_year=trips_year)
+            .select_related('section', 'template')
+            .annotate(num_trippees=models.Count('trippees', distinct=True))
+            .annotate(num_leaders=models.Count('leaders', distinct=True))
+        )
         
         for trip in trips:
             matrix[trip.template][trip.section] = trip
@@ -102,7 +104,9 @@ class ScheduledTripManager(models.Manager):
         This returns all trips which have overridden the dropoff
         route, or whose template drops off with this route.
         """
-        return (self.filter(trips_year=trips_year)
-                .filter(section__leaders_arrive=date-timedelta(days=2))
-                .filter(Q(dropoff_route=route) |
-                        Q(dropoff_route=None, template__dropoff__route=route)))
+        return (
+            self.filter(trips_year=trips_year)
+            .filter(section__leaders_arrive=date-timedelta(days=2))
+            .filter(Q(dropoff_route=route) |
+                    Q(dropoff_route=None, template__dropoff__route=route))
+        )
