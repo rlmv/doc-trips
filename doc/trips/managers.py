@@ -110,3 +110,27 @@ class ScheduledTripManager(models.Manager):
             .filter(Q(dropoff_route=route) |
                     Q(dropoff_route=None, template__dropoff__route=route))
         )
+
+    def pickups(self, route, date, trips_year):
+        """ 
+        All trips which are picked up on route and taken to the lodge on date.
+        """
+        return (
+            self.filter(trips_year=trips_year)
+            .filter(section__leaders_arrive=date-timedelta(days=4))
+            .filter(Q(pickup_route=route) |
+                    Q(pickup_route=None, template__pickup__route=route))
+        )
+        
+    def returns(self, route, date, trips_year):
+        """ 
+        All trips which return to campus via route on date.
+        """
+        return (
+            self.filter(trips_year=trips_year)
+            .filter(section__leaders_arrive=date-timedelta(days=4))
+            .filter(Q(return_route=route) |
+                    Q(return_route=None, template__return_route=route))
+        )
+
+

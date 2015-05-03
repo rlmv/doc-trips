@@ -328,5 +328,38 @@ class ScheduledTripManagerTestCase(TripsTestCase):
 
         self.assertEqual(set([dropoff, overridden_dropoff]), 
                          set(ScheduledTrip.objects.dropoffs(route, section.at_campsite1, trips_year=trips_year)))
+
+    def test_pickups(self):
+        trips_year = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+                            section=section, template__pickup__route=route)
+        overridden_pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                       section=section, pickup_route=route)
+        other_route = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                 section=section)
+        other_date = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                template__pickup__route=route,
+                                section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
+
+        self.assertEqual(set([pickup, overridden_pickup]),
+                         set(ScheduledTrip.objects.pickups(route, section.arrive_at_lodge, trips_year=trips_year)))
         
+    def test_returns(self):
+        trips_year = self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=trips_year)
+        section = mommy.make(Section, trips_year=trips_year)
+        pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+                            section=section, template__return_route=route)
+        overridden_pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                       section=section, return_route=route)
+        other_route = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                 section=section)
+        other_date = mommy.make(ScheduledTrip, trips_year=trips_year,
+                                template__return_route=route,
+                                section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
+
+        self.assertEqual(set([pickup, overridden_pickup]),
+                         set(ScheduledTrip.objects.returns(route, section.arrive_at_lodge, trips_year=trips_year)))
     
