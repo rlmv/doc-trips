@@ -1,4 +1,5 @@
 from collections import namedtuple
+from datetime import datetime
 
 from vanilla.views import TemplateView
 from django.core.urlresolvers import reverse
@@ -265,3 +266,28 @@ class VehicleUpdateView(DatabaseUpdateView):
 class VehicleDeleteView(DatabaseDeleteView):
     model = Vehicle
     success_url_pattern = 'db:vehicle_index'
+
+
+class TransportChecklist(DatabaseReadPermissionRequired,
+                         TripsYearMixin, TemplateView):
+    """ 
+    Shows all trips which are supposed to be dropped off,
+    picked up, or returned to campus on the date and route
+    in the kwargs.
+    """
+
+    template_name = 'transport/transport_checklist.html'
+
+    def get_date(self):
+        """ Convert from ISO date format """
+        return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
+
+    def get_context_data(self, **kwargs):
+        context = super(TransportChecklist, self).get_context_data(**kwargs)
+        args = (self.kwargs['route'], self.get_date(), self.kwargs['trips_year'])
+        context['dropoffs'] = ScheduledTrip.objects.dropoffs(*args)
+        context['pickups'] = ScheduledTrip.objects.pickups(*args)
+        context['returns'] = ScheduledTrip.objects.returns(*args)
+
+        return context
+        

@@ -12,7 +12,7 @@ from doc.transport.models import Stop, Route, ScheduledTransport
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders, 
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
-    get_actual_rider_matrix
+    get_actual_rider_matrix, TransportChecklist
 )
 from doc.trips.models import Section, ScheduledTrip
 
@@ -285,3 +285,12 @@ class RidersClassTestCase(unittest.TestCase):
     def test__eq__(self):
         self.assertEqual(Riders(0,0,0), Riders(0,0,0))
         self.assertNotEqual(Riders(1,2,3), Riders(0,0,0))
+
+
+class TransportChecklistTest(TripsYearTestCase):
+    
+    def test_get_date(self):
+        view = TransportChecklist()
+        d = date(2015, 1, 1)
+        view.kwargs = {'date': str(d)}
+        self.assertEqual(view.get_date(), d)

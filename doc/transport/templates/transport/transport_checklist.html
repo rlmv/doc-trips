@@ -1,0 +1,9 @@
+{% extends "db/base.html" %}
+
+{% block content %}
+
+{% for trip in dropoffs %}
+{{ trip }}
+{% endfor %}
+
+{% endblock %}
