@@ -284,10 +284,9 @@ class TransportChecklist(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super(TransportChecklist, self).get_context_data(**kwargs)
-        args = (self.kwargs['route'], self.get_date(), self.kwargs['trips_year'])
+        args = (self.kwargs['route_pk'], self.get_date(), self.kwargs['trips_year'])
         context['dropoffs'] = ScheduledTrip.objects.dropoffs(*args)
         context['pickups'] = ScheduledTrip.objects.pickups(*args)
         context['returns'] = ScheduledTrip.objects.returns(*args)
-
         return context
         

@@ -2,8 +2,27 @@
 
 {% block content %}
 
+
+<h4> Dropping Off </h4>
+<ul>
 {% for trip in dropoffs %}
-{{ trip }}
+<li>{{ trip }}</li>
 {% endfor %}
+</ul>
+
+<h4> Picking Up </h4>
+<ul>
+{% for trip in pickups %}
+<li>{{ trip }}</li>
+{% endfor %}
+</ul>
+
+<h4> Returning to Campus </h4>
+<ul>
+{% for trip in returns %}
+<li>{{ trip }}</li>
+{% endfor %}
+</ul>
+
 
 {% endblock %}
