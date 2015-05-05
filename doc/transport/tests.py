@@ -215,7 +215,7 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         matrix = get_actual_rider_matrix(trips_year)
         self.assertEqual(target, matrix)
 
-    def test_internal_riders_matrix_with_multiple_trips_overlap(self):
+    def test_actual_riders_matrix_with_multiple_trips_overlap(self):
         ty = self.init_current_trips_year()
         route1 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         route2 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
