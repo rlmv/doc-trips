@@ -54,7 +54,9 @@ class TripsYearMixin():
             raise Http404(msg % trips_year)
 
         return super(TripsYearMixin, self).dispatch(request, *args, **kwargs)
-            
+
+    def get_trips_year(self):
+        return self.kwargs['trips_year']
 
     def get_queryset(self):
         """ Get objects for requested trips_year """
