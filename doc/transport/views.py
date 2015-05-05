@@ -10,7 +10,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 from doc.trips.models import Section, ScheduledTrip
-from doc.utils.matrix import make_ordered_matrix
+from doc.utils.matrix import make_ordered_matrix, truncate_matrix
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
@@ -158,7 +158,10 @@ class TransportCounts(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super(TransportCounts, self).get_context_data(**kwargs)
-        context['matrix'] = get_actual_rider_matrix(self.kwargs['trips_year'])
+        context['matrix'] = truncate_matrix(
+            # TODO: make three matrices and truncate each
+            get_actual_rider_matrix(self.kwargs['trips_year'])
+        )
         return context
 
 
