@@ -1,26 +1,30 @@
 {% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> {{ route|detail_link }} <small>{{ date|date:"n/j" }}</small> </h2>
+{% endblock %}
 
 {% block content %}
-
 
 <h4> Dropping Off </h4>
 <ul>
 {% for trip in dropoffs %}
-<li>{{ trip }}</li>
+<li>{{ trip|detail_link }}</li>
 {% endfor %}
 </ul>
 
 <h4> Picking Up </h4>
 <ul>
 {% for trip in pickups %}
-<li>{{ trip }}</li>
+<li>{{ trip|detail_link }}</li>
 {% endfor %}
 </ul>
 
 <h4> Returning to Campus </h4>
 <ul>
 {% for trip in returns %}
-<li>{{ trip }}</li>
+<li>{{ trip|detail_link }}</li>
 {% endfor %}
 </ul>
 

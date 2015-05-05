@@ -282,11 +282,19 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         """ Convert from ISO date format """
         return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
 
+    def get_route(self):
+        return Route.objects.get(pk=self.kwargs['route_pk'])
+
     def get_context_data(self, **kwargs):
         context = super(TransportChecklist, self).get_context_data(**kwargs)
-        args = (self.kwargs['route_pk'], self.get_date(), self.kwargs['trips_year'])
-        context['dropoffs'] = ScheduledTrip.objects.dropoffs(*args)
-        context['pickups'] = ScheduledTrip.objects.pickups(*args)
-        context['returns'] = ScheduledTrip.objects.returns(*args)
+        context['route'] = self.get_route()
+        context['date'] = self.get_date()
+
+        rel = lambda qs: qs.select_related('section', 'template')
+        args = (self.get_route(), self.get_date(), self.kwargs['trips_year'])
+        context['dropoffs'] = rel(ScheduledTrip.objects.dropoffs(*args))
+        context['pickups'] = rel(ScheduledTrip.objects.pickups(*args))
+        context['returns'] = rel(ScheduledTrip.objects.returns(*args))
+      
         return context
         

@@ -46,7 +46,7 @@
     <th> {{ route }} </th>
     <th class="text-muted"> {{ route.vehicle.capacity }} </th>
     {% for date, riders in dates.items %}
-    <td> {{ riders.picking_up|default:'<span class="text-muted">&mdash;</span>' }} </td>
+    <td><a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ riders.picking_up|default:'<span class="text-muted">&mdash;</span>' }} </a></td>
     {% endfor %}
   </tr>
   {% endfor %}
@@ -67,7 +67,7 @@
     <th> {{ route }} </th>
     <th class="text-muted"> {{ route.vehicle.capacity }} </th>
     {% for date, riders in dates.items %}
-    <td> {{ riders.returning|default:'<span class="text-muted">&mdash;</span>' }} </td>
+    <td><a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ riders.returning|default:'<span class="text-muted">&mdash;</span>' }} </a></td>
     {% endfor %}
   </tr>
   {% endfor %}
