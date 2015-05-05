@@ -47,8 +47,7 @@ class TripsYearMixin():
         
         TODO: test cases.
         """
-        
-        trips_year = self.kwargs['trips_year']
+        trips_year = self.get_trips_year()
         if not TripsYear.objects.filter(year=trips_year).exists():
             msg = 'Trips %s does not exist in the database'
             raise Http404(msg % trips_year)
@@ -60,10 +59,8 @@ class TripsYearMixin():
 
     def get_queryset(self):
         """ Get objects for requested trips_year """
-
         qs = super(TripsYearMixin, self).get_queryset()
-        return qs.filter(trips_year=self.kwargs['trips_year'])
-
+        return qs.filter(trips_year=self.get_trips_year())
 
     def get_form_class(self):
         """ 
@@ -84,9 +81,9 @@ class TripsYearMixin():
                    'the querysets for these fields, or bad things will happen')
             logger.warn(msg % self.__class__.__name__)
             return self.form_class
-
+            
         if hasattr(self, 'model') and self.model is not None:
-            trips_year = self.kwargs['trips_year']
+            trips_year = self.get_trips_year()
             return tripsyear_modelform_factory(self.model, trips_year,
                                                fields=self.fields)
         
@@ -118,7 +115,7 @@ class TripsYearMixin():
     def get_context_data(self, **kwargs):
         """ Add the trips_year for this request to the context. """
         context = super(TripsYearMixin, self).get_context_data(**kwargs)
-        context['trips_year'] = self.kwargs['trips_year']
+        context['trips_year'] = self.get_trips_year()
         return context
 
 
@@ -140,7 +137,7 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin
         of the trips_year.
         """
         form = self.get_form(data=request.POST, files=request.FILES)
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year_id = self.get_trips_year()
         if form.is_valid():
             return self.form_valid(form)
         return self.form_invalid(form)
@@ -200,7 +197,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteV
         """
 
         if self.success_url_pattern:
-            kwargs = {'trips_year': self.kwargs['trips_year']}
+            kwargs = {'trips_year': self.get_trips_year()}
             return reverse(self.success_url_pattern, kwargs=kwargs)
         return super(DatabaseDeleteView, self).get_success_url()
 

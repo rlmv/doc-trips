@@ -291,7 +291,7 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['date'] = self.get_date()
 
         rel = lambda qs: qs.select_related('section', 'template')
-        args = (self.get_route(), self.get_date(), self.kwargs['trips_year'])
+        args = (self.get_route(), self.get_date(), self.get_trips_year())
         context['dropoffs'] = rel(ScheduledTrip.objects.dropoffs(*args))
         context['pickups'] = rel(ScheduledTrip.objects.pickups(*args))
         context['returns'] = rel(ScheduledTrip.objects.returns(*args))
