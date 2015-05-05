@@ -1,5 +1,5 @@
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
 from doc.croos.urls import croo_urlpatterns
 from doc.trips.urls import (
@@ -22,8 +22,7 @@ from doc.transport.views import TransportCounts, TransportChecklist
 """
 All database urlpatterns take a trips_year param.
 """
-database_urlpatterns = patterns(
-    '',
+database_urlpatterns = [
     url(r'^$', DatabaseLandingPage.as_view(), name='landing_page'),
     url(r'^trips/', include(trip_urlpatterns)),
     url(r'^leaders/', include(leader_urlpatterns)),                    
@@ -47,11 +46,10 @@ database_urlpatterns = patterns(
     url(r'^counts/transport/', TransportCounts.as_view(), name='transport_counts'),
     url(r'^checklists/transport/(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         TransportChecklist.as_view(), name='transport_checklist'),
-)
+]
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', RedirectToCurrentDatabase.as_view(), name='db_redirect'),
     # capture the 'trips_year' parameter which is passed to core views
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
-)
+]

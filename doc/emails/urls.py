@@ -1,9 +1,8 @@
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from doc.emails.views import EmailList
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'$', EmailList.as_view(), name='email_lists'),
-)
+]

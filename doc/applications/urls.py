@@ -1,5 +1,5 @@
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.applications.views.application import (
@@ -30,8 +30,7 @@ from doc.applications.views.portal import (
 )
 
 
-grade_urlpatterns = patterns(
-    '',
+grade_urlpatterns = [
     url(r'^$', GraderLandingPage.as_view(), name='graders'),
     url(r'^croos/$', RedirectToNextGradableCrooApplication.as_view(),
         name='next_croo'),
@@ -50,10 +49,9 @@ grade_urlpatterns = patterns(
         name='leader'),
     url(r'^leaders/none/$', NoLeaderApplicationsLeftToGrade.as_view(),
         name='no_leaders_left'),
-)
+]
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', VolunteerPortalView.as_view(), name='portal'),
     url(r'^setup/portal$', EditVolunteerPortalContent.as_view(),
         name='setup_portal'),
@@ -61,14 +59,13 @@ urlpatterns = patterns(
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
-)
+]
 
 
 # ----- protected database views ----------
 # TODO: fix leaderapplication, leadersupplement mismatch
 
-application_urlpatterns = patterns(
-    '',
+application_urlpatterns = [
     url(DB_REGEX['LIST'], ApplicationDatabaseListView.as_view(),
         name='application_index'),
     url(DB_REGEX['DETAIL'], ApplicationDatabaseDetailView.as_view(),
@@ -88,17 +85,15 @@ application_urlpatterns = patterns(
     url(r'^(?P<pk>[0-9]+)/update/admin/$',
         ApplicationAdminUpdateView.as_view(),
         name='update_application_admin'),
-)
+]
 
-grader_urlpatterns = patterns(
-    '',
+grader_urlpatterns = [
     url(DB_REGEX['LIST'], GraderListView.as_view(), name='graders_index'),
-)
+]
 
-grade_urlpatterns = patterns(
-    '',
-    url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
+grade_urlpatterns = [
+     url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
         name='leaderapplicationgrade_delete'),
     url(r'^croo/(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(),
         name='crooapplicationgrade_delete'),
-)
+]

@@ -10,8 +10,7 @@ OOdles of urls. These patterns all included in the main
 database urlpatterns.
 """
 
-trip_urlpatterns = patterns(
-    '',
+trip_urlpatterns = [
     url(DB_REGEX['LIST'], ScheduledTripListView.as_view(),
         name='scheduledtrip_index'),
     url(DB_REGEX['CREATE'], ScheduledTripCreateView.as_view(),
@@ -22,10 +21,9 @@ trip_urlpatterns = patterns(
         name='scheduledtrip_update'),
     url(DB_REGEX['DELETE'], ScheduledTripDeleteView.as_view(),
         name='scheduledtrip_delete'),
-)
+]
 
-template_urlpatterns = patterns(
-    '',
+template_urlpatterns = [
     url(DB_REGEX['LIST'], TripTemplateListView.as_view(),
         name='triptemplate_index'),
     url(DB_REGEX['CREATE'], TripTemplateCreateView.as_view(),
@@ -36,10 +34,9 @@ template_urlpatterns = patterns(
         name='triptemplate_update'),
     url(DB_REGEX['DELETE'], TripTemplateDeleteView.as_view(),
         name='triptemplate_delete'),
-)
+]
 
-triptype_urlpatterns = patterns(
-    '',
+triptype_urlpatterns = [
     url(DB_REGEX['LIST'], TripTypeListView.as_view(),
         name='triptype_index'),   
     url(DB_REGEX['CREATE'], TripTypeCreateView.as_view(),
@@ -50,11 +47,10 @@ triptype_urlpatterns = patterns(
         name='triptype_update'),
     url(DB_REGEX['DELETE'], TripTypeDeleteView.as_view(),
         name='triptype_delete'),
-)
+]
 
-campsite_urlpatterns = patterns(
-    '',
-    url(DB_REGEX['LIST'], CampsiteListView.as_view(),
+campsite_urlpatterns = [
+     url(DB_REGEX['LIST'], CampsiteListView.as_view(),
         name='campsite_index'),
     url(DB_REGEX['CREATE'], CampsiteCreateView.as_view(),
         name='campsite_create'),
@@ -64,10 +60,9 @@ campsite_urlpatterns = patterns(
         name='campsite_update'),
     url(DB_REGEX['DELETE'], CampsiteDeleteView.as_view(),
         name='campsite_delete'),
-)
+]
 
-section_urlpatterns = patterns(
-    '',
+section_urlpatterns = [
     url(DB_REGEX['LIST'], SectionListView.as_view(),
         name='section_index'),
     url(DB_REGEX['CREATE'], SectionCreateView.as_view(),
@@ -78,10 +73,9 @@ section_urlpatterns = patterns(
         name='section_update'),
     url(DB_REGEX['DELETE'], SectionDeleteView.as_view(),
         name='section_delete'),
-)
+]
 
-leader_urlpatterns = patterns(
-    '',
+leader_urlpatterns = [
     url(r'^$', TripLeaderIndexView.as_view(), name='leader_index'),
     url(r'^assign/(?P<trip>[0-9]+)$',
         AssignTripLeaderView.as_view(), name='assign_leader'),
@@ -89,4 +83,4 @@ leader_urlpatterns = patterns(
         AssignLeaderToTrip.as_view(), name='assign_leader_to_trip'),
     url(r'^remove/(?P<leader_pk>[0-9]+)$',
         RemoveAssignedTrip.as_view(), name='remove_leader_from_trip'),
-)
+]

@@ -1,5 +1,5 @@
 
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 
 from doc.views import HomePage
@@ -9,8 +9,7 @@ admin.autodiscover()
 initialize_groups_and_permissions()
 handler403 = 'doc.views.permission_denied'
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', HomePage.as_view(), name='home'),
     url(r'^users/', include('doc.users.urls', namespace='users')),
     url(r'^dartdm/', include('doc.dartdm.urls', namespace='dartdm')),      
@@ -25,5 +24,5 @@ urlpatterns = patterns(
     url(r'^croos/', include('doc.croos.urls', namespace='croos')),
     url(r'^incoming/', include('doc.incoming.urls', namespace='incoming')),
     url(r'^admin/', include(admin.site.urls)),
-)
+]
 
