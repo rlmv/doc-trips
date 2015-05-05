@@ -128,7 +128,7 @@ class ScheduledTripManager(models.Manager):
         """
         return (
             self.filter(trips_year=trips_year)
-            .filter(section__leaders_arrive=date-timedelta(days=4))
+            .filter(section__leaders_arrive=date-timedelta(days=5))
             .filter(Q(return_route=route) |
                     Q(return_route=None, template__return_route=route))
         )

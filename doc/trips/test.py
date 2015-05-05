@@ -350,9 +350,9 @@ class ScheduledTripManagerTestCase(TripsTestCase):
         trips_year = self.init_current_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
-        pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+        returning = mommy.make(ScheduledTrip, trips_year=trips_year,
                             section=section, template__return_route=route)
-        overridden_pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
+        overridden_return = mommy.make(ScheduledTrip, trips_year=trips_year,
                                        section=section, return_route=route)
         other_route = mommy.make(ScheduledTrip, trips_year=trips_year,
                                  section=section)
@@ -360,6 +360,6 @@ class ScheduledTripManagerTestCase(TripsTestCase):
                                 template__return_route=route,
                                 section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
 
-        self.assertEqual(set([pickup, overridden_pickup]),
-                         set(ScheduledTrip.objects.returns(route, section.arrive_at_lodge, trips_year=trips_year)))
+        self.assertEqual(set([returning, overridden_return]),
+                         set(ScheduledTrip.objects.returns(route, section.return_to_campus, trips_year=trips_year)))
     

@@ -12,7 +12,15 @@ from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
 from doc.trips.managers import (SectionDatesManager, SectionManager,
                                 ScheduledTripManager)
-
+"""
+TODO: use these in place of magic numbers?
+INTVL_LEADERS = timedelta(days=0)
+INTVL_TRIPPEES = timedelta(days=1)
+INTVL_CAMPSITE_1
+INTVL_CAMPSITE_2
+INTVL_LODGE
+INTVL_CAMPUS
+""" 
 
 class ScheduledTrip(DatabaseModel):
 
