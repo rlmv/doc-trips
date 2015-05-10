@@ -108,6 +108,18 @@ class GeneralApplication(DatabaseModel):
     )
     safety_lead = models.BooleanField(default=False)
 
+    # ----- trainings -----
+    community_building = models.DateField(null=True, blank=True)
+    risk_management = models.DateField(null=True, blank=True)
+    wilderness_skills = models.DateField(null=True, blank=True)
+    croo_training = models.DateField(null=True, blank=True)
+    FIRST_AID_CHOICES = (
+        (None, None),
+    )
+    first_aid = models.CharField(max_length=10, blank=True, default="",
+                                 choices=FIRST_AID_CHOICES)
+    first_aid_other = models.CharField('other', max_length=100, blank=True, default="")
+
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()
     gender = models.CharField(max_length=25)
@@ -218,13 +230,6 @@ class LeaderSupplement(DatabaseModel):
     cannot_participate_in = models.TextField(blank=True, verbose_name="If applicable, please elaborate (to the extent you feel comfortable) on any particular trips or activities that you absolutely cannot participate in. This information will be used exclusively for trip assignments & co-leader pairings. All information in this application will remain confidential.")
     relevant_experience = models.TextField(blank=True, verbose_name="For each type of trip you are interested in leading, please describe your level of expertise and any amount of previous experience that might qualify you to lead that particular trip (DOC Wilderness Leader, lifeguard training, yoga experience, mountain biking enthusiast, photography class, NOLS, etc.).")
     
-    # ----- trainings -----
-    community_building = models.DateField(null=True, blank=True)
-    risk_management = models.DateField(null=True, blank=True)
-    wilderness_skills = models.DateField(null=True, blank=True)
-    first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
-
-
     def get_preferred_trips(self):
         """ All trips which this applicant prefers to lead """
 
