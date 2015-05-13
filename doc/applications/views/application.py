@@ -269,7 +269,8 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
 
     trainings_fields = [
         'community_building', 'risk_management', 
-        'wilderness_skills', 'first_aid'
+        'wilderness_skills', 
+        ('first aid cert', 'get_first_aid_cert')
     ]
 
     crooapplication_fields = [

@@ -136,6 +136,24 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         not_preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
 
+    def test_get_first_aid_cert(self):
+        trips_year = self.init_current_trips_year()
+        application = mommy.make(GeneralApplication, trips_year=trips_year,
+                                 fa_cert='WFR')
+        self.assertEqual(application.get_first_aid_cert(), 'WFR')
+
+    def test_get_first_aid_cert_other(self):
+        trips_year = self.init_current_trips_year()
+        application = mommy.make(GeneralApplication, trips_year=trips_year,
+                                 fa_cert=GeneralApplication.OTHER, 
+                                 fa_other='ABC')
+        self.assertEqual(application.get_first_aid_cert(), 'ABC')
+
+    def test_get_first_aid_cert_without_explicit_other(self):
+        trips_year = self.init_current_trips_year()
+        application = mommy.make(GeneralApplication, trips_year=trips_year,
+                                 fa_cert="", fa_other='ABC')
+        self.assertEqual(application.get_first_aid_cert(), 'ABC')
         
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
