@@ -60,7 +60,7 @@ class ApplicationTable(tables.Table):
         verbose_name='CT', tooltip="Croo Training"
     )
     first_aid = tables.Column(
-        accessor='get_first_aid_cert'
+        verbose_name='med cert', accessor='get_first_aid_cert'
     )
     view_link = tables.Column(
         verbose_name=' ', empty_values=(), orderable=False
