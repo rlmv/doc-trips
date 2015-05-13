@@ -217,6 +217,12 @@ class GeneralApplication(DatabaseModel):
 
 class LeaderSupplement(DatabaseModel):
 
+    # ----- trainings -----
+    community_building = models.DateField(null=True, blank=True)
+    risk_management = models.DateField(null=True, blank=True)
+    wilderness_skills = models.DateField(null=True, blank=True)
+    first_aid = models.DateField('First Aid/CPR', null=True, blank=True)
+
     NUMBER_OF_GRADES = 4
 
     objects = LeaderApplicationManager()
