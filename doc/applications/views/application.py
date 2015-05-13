@@ -269,7 +269,7 @@ class ApplicationDatabaseDetailView(DatabaseReadPermissionRequired,
 
     trainings_fields = [
         'community_building', 'risk_management', 
-        'wilderness_skills', 
+        'wilderness_skills', 'croo_training',
         ('first aid cert', 'get_first_aid_cert')
     ]
 

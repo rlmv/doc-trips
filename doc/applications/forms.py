@@ -201,12 +201,16 @@ class TrainingsForm(forms.ModelForm):
 
     class Meta:
         model = GeneralApplication
-        fields = ('community_building', 'risk_management',
-                  'wilderness_skills', 'fa_cert', 'fa_other')
+        fields = (
+            'community_building', 'risk_management',
+            'wilderness_skills', 'croo_training', 
+            'fa_cert', 'fa_other'
+        )
         widgets = {
             'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),
             'risk_management': DateTimePicker(options=TIMEPICKER_OPTIONS),
             'wilderness_skills': DateTimePicker(options=TIMEPICKER_OPTIONS),
+            'croo_training': DateTimePicker(options=TIMEPICKER_OPTIONS,)
         }
 
     def __init__(self, *args, **kwargs):
