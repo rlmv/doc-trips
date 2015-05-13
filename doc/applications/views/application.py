@@ -25,7 +25,7 @@ from doc.applications.models import (GeneralApplication, LeaderSupplement,
                                      CrooApplicationGrade, LeaderApplicationGrade)
 from doc.applications.forms import (
     ApplicationForm, CrooSupplementForm, LeaderSupplementForm, 
-    LeaderSupplementTrainingsForm, ApplicationStatusForm)
+    TrainingsForm, ApplicationStatusForm)
 from doc.applications.filters import ApplicationFilterSet
 from doc.applications.tables import ApplicationTable
 from doc.permissions.views import (CreateApplicationPermissionRequired, 
@@ -320,7 +320,7 @@ class ApplicationDatabaseUpdateView(ApplicationEditPermissionRequired,
             information=ApplicationInformation.objects.get(trips_year=trips_year),
             triptypes=TripType.objects.filter(trips_year=trips_year),
             **kwargs
-        )    
+        )
 
 
 # TODO: give more descriptive names:
@@ -336,15 +336,14 @@ class ApplicationStatusUpdateView(ApplicationEditPermissionRequired,
 class ApplicationTrainingsUpdateView(ApplicationEditPermissionRequired, 
                                      BlockDirectorate, TripsYearMixin, UpdateView):
     """ Edit leader admin data - trainings """
-    model = LeaderSupplement
-    form_class = LeaderSupplementTrainingsForm
+    model = GeneralApplication
+    form_class = TrainingsForm
     template_name = 'applications/trainings_update.html'
     
     def get_success_url(self):
         """ Redirect back to GeneralApplication """
-        return reverse('db:generalapplication_detail', 
-                       kwargs={'trips_year': self.kwargs['trips_year'], 
-                               'pk': self.object.application.pk})
+        return self.object.get_absolute_url()
+
 
 from doc.applications.forms import ApplicationAdminForm
         

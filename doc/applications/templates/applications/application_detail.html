@@ -47,8 +47,8 @@
 </table>
 
 
-<h4> Trip Leader Trainings <a href="{% url 'db:update_application_trainings' trips_year=application.trips_year pk=application.leader_supplement.pk %}">edit</a></h4>
-{% detail application.leader_supplement trainings_fields %}
+<h4> Trip Leader Trainings <a href="{% url 'db:update_application_trainings' trips_year=application.trips_year pk=application.pk %}">edit</a></h4>
+{% detail application trainings_fields %}
 
 
 {# grades #}

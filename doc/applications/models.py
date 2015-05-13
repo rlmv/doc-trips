@@ -118,7 +118,7 @@ class GeneralApplication(DatabaseModel):
     )
     first_aid = models.CharField(max_length=10, blank=True, default="",
                                  choices=FIRST_AID_CHOICES)
-    first_aid_other = models.CharField('other', max_length=100, blank=True, default="")
+    first_aid_other = models.CharField(max_length=100, blank=True, default="")
 
     # ----- general information, not shown to graders ------
     class_year = models.PositiveIntegerField()

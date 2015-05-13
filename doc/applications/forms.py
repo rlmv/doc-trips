@@ -197,12 +197,12 @@ class ApplicationAdminForm(forms.ModelForm):
 
 TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
 
-class LeaderSupplementTrainingsForm(forms.ModelForm):
+class TrainingsForm(forms.ModelForm):
 
     class Meta:
-        model = LeaderSupplement
-        fields = ('community_building', 'risk_management', 
-                  'wilderness_skills', 'first_aid')
+        model = GeneralApplication
+        fields = ('community_building', 'risk_management',
+                  'wilderness_skills', 'first_aid', 'first_aid_other')
         widgets = {
             'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),
             'risk_management': DateTimePicker(options=TIMEPICKER_OPTIONS),
@@ -211,7 +211,7 @@ class LeaderSupplementTrainingsForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(LeaderSupplementTrainingsForm, self).__init__(*args, **kwargs)
+        super(TrainingsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.all().wrap(Div, css_class='col-sm-3')
         self.helper.all().wrap(Row)
