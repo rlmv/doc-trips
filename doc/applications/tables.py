@@ -59,6 +59,9 @@ class ApplicationTable(tables.Table):
     croo_training = TrainingColumn(
         verbose_name='CT', tooltip="Croo Training"
     )
+    first_aid = tables.Column(
+        accessor='get_first_aid_cert'
+    )
     view_link = tables.Column(
         verbose_name=' ', empty_values=(), orderable=False
     )
@@ -89,9 +92,15 @@ class ApplicationTable(tables.Table):
 
     def render_croo_application(self, value):
         return ok_if_true(value)
+    
+    def render_first_aid(self, value):
+        if len(value) > 6:
+            return tooltip_wrap(value[:6], value)
+        return value
 
     def render_view_link(self, record):
         return detail_link(record, 'view')
 
     def render_edit_link(self, record):
         return edit_link(record, 'edit')
+
