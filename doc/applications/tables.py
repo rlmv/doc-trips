@@ -62,11 +62,7 @@ class ApplicationTable(tables.Table):
     first_aid = tables.Column(
         verbose_name='med cert', accessor='get_first_aid_cert'
     )
-    view_link = tables.Column(
-        verbose_name=' ', empty_values=(), orderable=False
-    )
-    edit_link = tables.Column(
-        verbose_name=' ', empty_values=(), orderable=False)
+
 
     class Meta:
         attrs = {
@@ -98,9 +94,4 @@ class ApplicationTable(tables.Table):
             return tooltip_wrap(value[:6], value)
         return value
 
-    def render_view_link(self, record):
-        return detail_link(record, 'view')
-
-    def render_edit_link(self, record):
-        return edit_link(record, 'edit')
 
