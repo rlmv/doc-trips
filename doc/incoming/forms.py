@@ -10,6 +10,13 @@ from doc.trips.models import Section, TripType, ScheduledTrip
 from doc.transport.models import Stop
 
 
+class StopChoiceField(forms.ModelChoiceField):
+    """ Field for displaying an external transport Stop, with prices """
+
+    def label_from_instance(self, obj):
+        return "{} - ${}".format(obj.name, obj.cost)
+
+
 class RegistrationForm(forms.ModelForm):
     """
     Form for incoming student trippee registration.
@@ -29,8 +36,8 @@ class RegistrationForm(forms.ModelForm):
         if kwargs.get('instance', None):
             assert (kwargs.get('instance').trips_year == trips_year, 
                     'trips_year needs to be passed in, in this case')
-
-        self.fields['bus_stop'].queryset = Stop.objects.external(trips_year)
+            
+        self.fields['bus_stop'] = StopChoiceField(queryset=Stop.objects.external(trips_year))
 
         # show which sections are available for these choices
         self.fields['is_exchange'].help_text = join_with_and(Section.objects.exchange(trips_year))
