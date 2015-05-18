@@ -1,4 +1,5 @@
 import os
+import unittest
 
 from django.core.exceptions import ObjectDoesNotExist
 from model_mommy import mommy
@@ -166,5 +167,5 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
 
         self.assertEqual(set(['id_1', 'id_2']), set(existing))
         self.assertEqual(created, [])
-        
+
         

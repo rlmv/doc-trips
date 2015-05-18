@@ -1,6 +1,8 @@
 
 from crispy_forms.layout import Submit, Layout, HTML, Div, Row, Fieldset, Field
 
+from doc.utils.fmt import section_range
+
 """ 
 crispy_form layouts 
 """
@@ -21,7 +23,9 @@ class RegistrationFormLayout(Layout):
     def __init__(self, **kwargs):
 
         local_sections = join_with_and(kwargs['local_sections'])
+        local_sections_range = section_range(kwargs['local_sections'])
         not_local_sections = join_with_and(kwargs['not_local_sections'])
+        not_local_sections_range = section_range(kwargs['not_local_sections'])
         international_sections = join_with_and(kwargs['international_sections'])
         trips_cost = str(kwargs['trips_cost'])
         contact_url = kwargs['contact_url']
@@ -55,10 +59,10 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Section',
                 HTML("<p>Because we can’t have a thousand students all arrive on the same day, we stagger our program over ten Sections.</p>"
-                     "<p> " + local_sections + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for at least one, if not more, of these sections. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
-                     "<p> " + not_local_sections + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
-                     "<p> " + international_sections + " are the sections highly recommended for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of international student orientation. </p> "
-                     "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned, it is incredibly difficult for us to change it, especially from an earlier section to a later one! </strong></p>"
+                     "<p> " + local_sections + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for as many of these sections as possible. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
+                     "<p> " + not_local_sections + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students on sections " + not_local_sections_range + " can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
+                     "<p> " + international_sections + " are the sections for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of International Student Orientation. </p> "
+                     "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned it is incredibly difficult for us to change it! </strong></p>"
                  ),
                 Row(
                     Div('preferred_sections', css_class='col-sm-2'),
@@ -70,9 +74,9 @@ class RegistrationFormLayout(Layout):
             ),
             Fieldset(
                 'Trip Type',
-                HTML("<p> Every trip spends two and a half days exploring a specific location around New Hampshire while doing any number of outdoor activities - everything from hiking to yoga to kayaking to organic farming. No matter which trip you are assigned to, we promise you'll find the experience to be an exciting and comfortable one. </p>"
-                     "<p> We offers a variety of different types of trips on each section. The Trip Type is determined by the activity featured on the trip. You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choose increases if you: </p>"
-                     "<ul> <li>submit all your registration materials by the deadline</li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: sections A-D, Other regions: sections E-J)</li> <li>Select a trip on section B-G (our slightly smaller sections).</li></ul>"
+                HTML("<p> Every trip spends two and a half of the five days exploring a specific location around New Hampshire while doing any number of outdoor activities - everything from hiking to yoga to kayaking to organic farming. No matter which trip you are assigned to, we promise you'll find the experience to be an exciting and comfortable one. </p>"
+                     "<p> We offer a variety of different types of trips on each section. The trip type is determined by the activity featured on the trip. You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choose increases if you: </p>"
+                     "<ul> <li>submit all your registration materials by the deadline</li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections " + local_sections_range + ", Other regions: Sections " + not_local_sections_range + ")</li> </ul>"
                      "<p><strong> As long as you register by the deadline, when you register makes no difference. Registering early does not increase your chances of getting your desired trip. </strong></p>"
                  ),
                 Row(
@@ -99,11 +103,14 @@ class RegistrationFormLayout(Layout):
                 Field('medical_conditions', rows=3),
                 Field('allergies', rows=3),
                 Field('allergen_information', rows=3),
+                'epipen',
                 Field('needs', rows=3),
             ),
             Fieldset(
                 'Dietary Restrictions',
                 Field('dietary_restrictions', rows=3),
+                'allergy_severity', 
+                Field('allergy_reaction', rows=3),
             ),
             Fieldset(
                 'General Physical Condition',
@@ -112,11 +119,10 @@ class RegistrationFormLayout(Layout):
                 'regular_exercise',
                 Field('physical_activities', rows=3),
                 Field('other_activities', rows=3),
-                Field('summer_plans', rows=3),
             ),
             Fieldset(
                 'Swimming Experience',
-                HTML("<p> Completing a 50 yard swim is a Dartmouth graduation requirement, and is also required for participation in some of our trips, so every incoming student will have the opportunity to take a swim test the day they arrive. </p>"),
+                HTML("<p> Completing a 50 yard swim is a Dartmouth graduation requirement, and is also required for participation in some of our trips, so every incoming student will have the opportunity to take a swim test the day they arrive. If possible, we highly recommend that you take your swim test during Trips so you can get it out of the way. </p>"),
                 'swimming_ability',
                 HTML("<p> If you cannot swim or would rather not take the swim test, please indicate that by answering the above question with 'non-swimmer'. Don't worry, there are plenty of chances to complete the 50-yard swim graduation requirement throughout your time at Dartmouth. This way we can assign you to a trip that does not require you to have passed a swim test. <i>And don't worry! Over half the trips don't involve swimming!</i> <p>"),
             ),
@@ -149,13 +155,18 @@ class RegistrationFormLayout(Layout):
                 Field('mountain_biking_experience', rows=3),
             ),
             Fieldset(
+                'Sailing Experience',
+                HTML("<p> Complete this section only if you indicated above that you preferred or were available for a Sailing trip. Sailing experience is NOT required to participate in this trip. </p>"),
+                Field('sailing_experience', rows=3),
+            ),
+            Fieldset(
                 'Anything else?',
                 Field('anything_else', rows=3),
             ),
             
             Fieldset(
                 'Bus Option',
-                HTML("<p> Students in " + local_sections + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast elect the bus option and come on " + local_sections + " if at all possible. </p>"
+                HTML("<p> Students in " + local_sections + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast come on Sections " + local_sections_range + ". </p>"
                      "<p><strong> These buses do not pick up at the airport.</strong> They are for students who live in the Northeast, NOT students who will be flying to Boston or Manchester airports. (Transportation from the airport must be arranged on your own.)</p>"
                      "<p>If you live in the Northeast, we ask you to elect the bus option unless: <ul> <li> you are absolutely unavailable for " + local_sections + ", or </li> <li>none of the stops are within 75 miles of you, or </li> <li> you live close enough to have relatively easy transportation to/from Hanover for you and your trip gear </li> </ul> </p>"
                      "<p> Bus fares vary by location (see bus options below for exact price). Financial assistance is available for bus fares. If the cost of transportation/Trips may prevent you from participating, please contact us & we can help! See below for more information. </p>"),
@@ -171,7 +182,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Waiver of Liability',
                 HTML('<p> Please read, review, and indicate your acknowledgment of the following information. If you have any questions or concerns, please feel free to <a href="' + contact_url + '"> contact us.</a> </p>'
-                     "<p><strong> This acknowledgment & assumption of risk, hold harmless agreement, release & waiver of liability is a legally binding document. By acknowledging your understanding and agreement, you are waiving certain rights &mdash; including the right to bring a lawsuit if you are injured while participating in this activity.</strong> </p>" 
+                     "<p><strong> This acknowledgment and assumption of risk, hold harmless agreement, release and waiver of liability is a legally binding document. By acknowledging your understanding and agreement, you are waiving certain rights &mdash; including the right to bring a lawsuit if you are injured while participating in this activity.</strong> </p>" 
                      "<p> This document is executed in consideration of being able to participate in the D.O.C. Trips Program, sponsored by the Dartmouth Outing Club. I hereby acknowledge that I am aware that there are risks and dangers inherent in the D.O.C. Trips Program, and I hereby agree that I will listen carefully to and follow all instructions and directions and ask questions if I do not understand. I also acknowledge that, despite careful precautions, there are certain inherent dangers and risks of injury in this activity, and I accept those risks and dangers. I further agree, on behalf of myself, and my heirs and assigns, to release and hold harmless Dartmouth College, its officers, agents, employees, successors, and assigns, from and against any and all claims and causes of action arising out of my participation in this activity, except insofar as such claim or cause of action arises from the negligence or intentional acts of Dartmouth College, its officers, agents, or employees. </p>"
                      "<p> If the student is a minor, I further agree to indemnify and hold harmless Dartmouth College from any and all claims which are brought by, or on behalf of Minor, and which are in any way connected with such use or participation by Minor. </p>"),
                 'waiver',

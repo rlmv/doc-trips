@@ -114,8 +114,8 @@ class Registration(DatabaseModel):
     # fall varsity athlete. --> choices or ForeignKey?
     is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
     is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
-    is_international = YesNoField('Are you an International Student?', blank=True)
-    is_native = YesNoField('Are you a Native American Student and plan on attending the Native American student orientation?', blank=True)
+    is_international = YesNoField('Are you an International who plans on attending the International Student Orientation?', blank=True)
+    is_native = YesNoField('Are you a Native American Student who plans on attending the Native American student orientation?', blank=True)
     is_fysep = YesNoField('Are you participating in the First Year Student Enrichment Program (FYSEP)?', blank=True)
     ATHLETE_CHOICES = (
         ('NO', 'No'),
@@ -178,17 +178,21 @@ class Registration(DatabaseModel):
     medical_conditions = models.TextField("Do you have any medical conditions, past injuries, disabilities or allergies that we should be aware of? Please describe any injury, condition, disability, or illness which we should take into consideration in assigning you to a trip", blank=True)
     allergies = models.TextField("Please describe any allergies you have (e.g. bee stings, specific medications, foods, etc.) which might require special medical attention.", blank=True)
     allergen_information = models.TextField("What happens if you come into contact with this allergen (e.g. I get hives, I go into anaphylactic shock)?", blank=True)
+    epipen = YesNoField("Do you carry an EpiPen? If yes, please bring it with you on Trips.", blank=True)
     
-    needs = models.TextField("While many students manage their own health needs, we would prefer that you let us know of any other needs or conditions so we can ensure your safety and comfort during the trip.", blank=True)
+    needs = models.TextField("While many students manage their own health needs, we would prefer that you let us know of any other needs or conditions so we can ensure your safety and comfort during the trip (e.g. Diabetes, recent surgery, migraines).", blank=True)
     
     dietary_restrictions = models.TextField("Do you have any dietary restrictions we should be aware of (vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL dietary needs as long as we know in advance. Leave blank if not applicable", blank=True)
-
+    SEVERITY_CHOICES = (
+        (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
+    )
+    allergy_severity = models.PositiveIntegerField("If you have a food allergy, please rate the severity of the allergy on a scale from 1 to 5 (1 = itchy skin, puffy eyes and 5 = anaphylaxis).", choices=SEVERITY_CHOICES, null=True, blank=True)
+    allergy_reaction = models.TextField("If you have a food allergy, please describe what happens when you come into contact with the allergen (e.g. I get hives, I go into anaphylactic shock).", blank=True)
 
     #  ----- physical condition and experience ------
     regular_exercise = YesNoField("Do you do enjoy cardiovascular exercise (running, biking, swimming, sports, etc.) on a regular basis?")
     physical_activities = models.TextField("Please describe the types of physical activities you enjoy, including frequency (daily? weekly?) and extent (number of miles or hours)", blank=True)
     other_activities = models.TextField("Do you do any other activities that might assist us in assigning you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?", blank=True)
-    summer_plans = models.TextField("Please describe your plans for the summer (working at home, volunteering, etc.)", blank=True)
 
     NON_SWIMMER = 'NON_SWIMMER'
     BEGINNER = 'BEGINNER'
@@ -202,7 +206,7 @@ class Registration(DatabaseModel):
     )
     swimming_ability = models.CharField("Please rate yourself as a swimmer", max_length=20, choices=SWIMMING_ABILITY_CHOICES)
     
-    camping_experience = YesNoField("Have you ever spent a night camping in the outdoors?")
+    camping_experience = YesNoField("Have you ever spent a night camping under a tarp?")
 
     hiking_experience = YesNoField("Have you ever hiked or climbed with a pack of at least 20-30 pounds (10-15 kilograms)?")
 
@@ -218,6 +222,8 @@ class Registration(DatabaseModel):
 
     mountain_biking_experience = models.TextField("Please describe your biking experience and ability level. Have you done any biking off of paved trails? How comfortable are you riding on dirt and rocks?", blank=True)
 
+    sailing_experience = models.TextField("Please describe your sailing experience.", blank=True)
+
     anything_else = models.TextField("Is there any other information you'd like to provide (anything helps!) that would assist us in assigning you to a trip?", blank=True)
 
 
@@ -229,7 +235,7 @@ class Registration(DatabaseModel):
                                  verbose_name="Where would you like to be bussed from/to?")
 
     financial_assistance = YesNoField("Are you requesting financial assistance from DOC Trips? If 'yes' we will contact you in July with more information about your financial assistance.")
-    waiver = YesNoField("I certify that I have read this assumption of risk and the accompanying registration materials. I approve participation for the student indicated above and this serves as my digital signature of this release, waiver & acknowledgement.")
+    waiver = YesNoField("I certify that I have read this assumption of risk and the accompanying registration materials. I approve participation for the student indicated above and this serves as my digital signature of this release, waiver and acknowledgement.")
     doc_membership = YesNoField("Would you like to purchase a DOC membership?")
     green_fund_donation = models.PositiveSmallIntegerField(blank=True, null=True)
     final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers &mdash; anything goes! All responses will remain anonymous.", blank=True)
