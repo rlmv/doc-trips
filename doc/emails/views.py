@@ -5,7 +5,7 @@ from vanilla import TemplateView
 from doc.db.views import TripsYearMixin
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.applications.models import GeneralApplication
-from doc.trips.models import TripType
+from doc.trips.models import TripType, Section
 
 
 def email_lists(trips_year):
@@ -39,6 +39,12 @@ def email_lists(trips_year):
         email_list.append(
             ('%s leaders' % triptype,
              emails(leaders.filter(assigned_trip__template__triptype=triptype)))
+        )
+    sections = Section.objects.filter(trips_year=trips_year)
+    for section in sections:
+        email_list.append(
+            ('%s leaders' % section,
+             emails(leaders.filter(assigned_trip__section=section)))
         )
 
     return OrderedDict(email_list)
