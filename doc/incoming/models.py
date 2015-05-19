@@ -104,8 +104,7 @@ class Registration(DatabaseModel):
     # street2 = models.CharField(
 
     previous_school = models.CharField('high school, or most recent school', max_length=255)
-    home_phone = models.CharField(max_length=20, blank=True)
-    cell_phone = models.CharField(max_length=20, blank=True)
+    phone = models.CharField('phone number', max_length=20)
     email = models.EmailField('email address', max_length=254)
     guardian_email = models.EmailField('parent/guardian email', blank=True, max_length=254)
 

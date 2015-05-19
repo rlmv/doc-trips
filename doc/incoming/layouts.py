@@ -39,10 +39,9 @@ class RegistrationFormLayout(Layout):
                 'gender',
                 # show existing contact info?
                 # TODO: address contact info
-                'previous_school', 
-                'home_phone',
-                'cell_phone',
-                'email', 
+                'previous_school',
+                'phone',
+                'email',
                 'guardian_email',
             ),
             Fieldset(
