@@ -19,13 +19,7 @@ class StopChoiceField(forms.ModelChoiceField):
 
 
 class RegistrationForm(forms.ModelForm):
-    """
-    Form for incoming student trippee registration.
-    
-    # TODO: restrict Section and TripType fields to trips_year
-    # (and any other ForeignKeys
-    TODO: pull trips_cost, etc from DB.
-    """
+    """ Form for incoming student trippee registration """
 
     class Meta:
         model = Registration
@@ -83,6 +77,7 @@ class RegistrationForm(forms.ModelForm):
 
 class TripAssignmentForm(forms.ModelForm):
     """ Form for assigning a trippee to a trip """
+
     class Meta:
         model = IncomingStudent
         fields = ['trip_assignment']
@@ -104,6 +99,7 @@ class TripAssignmentForm(forms.ModelForm):
 
 
 class UploadIncomingStudentsForm(forms.Form):
+    """ Form used to upload data about incoming students """
 
     csv_file = forms.FileField(label='CSV file')
 
