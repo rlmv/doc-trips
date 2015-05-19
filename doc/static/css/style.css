@@ -34,9 +34,11 @@ th[data-sort] {
     padding-top: 11px !important;
     padding-bottom: 11px !important;
 }
+
 .navbar {
     min-height: 42px !important;
 }
+
 .navbar {
     height: 42px;
 }
