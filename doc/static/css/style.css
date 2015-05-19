@@ -41,6 +41,8 @@ th[data-sort] {
     height: 42px;
 }
 
+/* sidebar */
+
 .sidebar .sidebar-nav.navbar-collapse {
     padding-right: 0;
     padding-left: 0;
@@ -54,7 +56,7 @@ th[data-sort] {
     background-color: #eee;
 }
 
-.sidebar .arrow {
+.sidebar .fa.arrow {
     float: right;
 }
 
@@ -66,20 +68,15 @@ th[data-sort] {
     content: "\f107";
 }
 
-.sidebar .nav-second-level li,
-.sidebar .nav-third-level li {
+.sidebar ul li ul li {
     border-bottom: 0!important;
 }
 
-.sidebar .nav-second-level li a {
-    padding-left: 37px;
+.sidebar ul li ul li a {
+    padding-left: 30px;
 }
 
-.sidebar .nav-third-level li a {
-    padding-left: 52px;
-}
-
-
+/* / sidebar */
 
 a.no-color-link {
     color: inherit;

@@ -5,9 +5,9 @@
 <div class="sidebar navbar-default" role="navigation">
   <div class="sidebar-nav navbar-collapse">
 
-  <ul class="nav" id="sidebar-menu">
+  <ul id="sidebar-menu" class="nav">
     <li role="presentation">
-      <a href="#"> Trips <i class="fa fa-angle-left pull-right"></i> </a>
+      <a href="#"> <i class="fa fa-fire"></i> Trips <i class="fa arrow"></i> </a>
 
       <ul class="nav nav-stacked">
 	<li> <a href="{% url 'db:scheduledtrip_index' trips_year=trips_year %}"> Scheduled Trips </a> </li>
@@ -21,7 +21,7 @@
     </li>
 
     <li>
-      <a href="#">Transport <i class="fa fa-angle-left pull-right"></i> </a>
+      <a href="#"> <i class="fa fa-bus"></i> Transport <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
 	<li> <a href="{% url 'db:scheduledtransport_index' trips_year=trips_year %}"> Scheduled Transport </a> </li>
 	<li> <a  href="{% url 'db:transport_counts' trips_year=trips_year %}"> Transport Counts </a> </li>
@@ -32,7 +32,7 @@
     </li>
 
     <li>
-      <a href="#"> Volunteers <i class="fa fa-angle-left pull-right"></i> </a>
+      <a href="#"> <i class="fa fa-heart"></i> Volunteers <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
 	<li> <a  href="{% url 'db:application_index' trips_year=trips_year %}"></i> Applications </a> </li>
 	<li> <a  href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a> </li>
@@ -41,14 +41,14 @@
     </li>
 
     <li>
-      <a href="#"> Trippees <i class="fa fa-angle-left pull-right"></i> </a>
+      <a href="#"> <i class="fa fa-child"></i> Trippees <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
 	<li> <a  href="{% url 'db:incomingstudent_index' trips_year=trips_year %}"> Incoming Students </a> </li>
 	<li> <a  href="{% url 'db:registration_index' trips_year=trips_year %}"> Registrations </a> </li>
       </ul>
     </li>
 
-   <li> <a  href="{% url 'db:email_lists' trips_year=trips_year %}"> <i class="fa fa-envelope-o"></i> Email Lists </a> </li>
+   <li> <a  href="{% url 'db:email_lists' trips_year=trips_year %}"> <i class="fa fa-envelope"></i> Email Lists </a> </li>
 
 </nav>
 </div>
