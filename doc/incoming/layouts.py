@@ -64,9 +64,9 @@ class RegistrationFormLayout(Layout):
                      "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned it is incredibly difficult for us to change it! </strong></p>"
                  ),
                 Row(
-                    Div('preferred_sections', css_class='col-sm-2'),
-                    Div('available_sections', css_class='col-sm-2'),
-                    Div('unavailable_sections', css_class='col-sm-2'),
+                    Div('preferred_sections', css_class='col-sm-3'),
+                    Div('available_sections', css_class='col-sm-3'),
+                    Div('unavailable_sections', css_class='col-sm-3'),
                 ),
                 HTML("<p> If you have a particular, immovable scheduling conflict and need to come on a specific section, please elaborate below. Let us know which section(s) you can attend and which ones you cannot. </p>"),
                 Field('schedule_conflicts', rows=3),

@@ -1,7 +1,4 @@
-
-
 from django import forms
-from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField, Row, Column
 from crispy_forms.bootstrap import Alert
@@ -11,6 +8,7 @@ from doc.applications.models import (GeneralApplication, CrooSupplement, LeaderS
                                      CrooApplicationGrade, LeaderApplicationGrade)
 from doc.db.models import TripsYear
 from doc.trips.models import Section, TripType, ScheduledTrip
+from doc.trips.fields import SectionChoiceField
 from doc.utils.forms import crispify
 
 
@@ -94,14 +92,6 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = CrooSupplementLayout()
-
-
-class SectionChoiceField(forms.ModelMultipleChoiceField):
-    """
-    Custom field to display section information
-    """
-    def label_from_instance(self, obj):
-        return mark_safe(str(obj) + ' &mdash; '  + obj.date_range_str())
 
 
 class LeaderSupplementForm(forms.ModelForm):

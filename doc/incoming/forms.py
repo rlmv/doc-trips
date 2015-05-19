@@ -7,6 +7,7 @@ from doc.db.models import TripsYear
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, ScheduledTrip
+from doc.trips.fields import SectionChoiceField
 from doc.transport.models import Stop
 
 
@@ -47,9 +48,9 @@ class RegistrationForm(forms.ModelForm):
         self.fields['is_fysep'].help_text = join_with_and(Section.objects.fysep(trips_year))
 
         sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['preferred_sections'].queryset = sections
-        self.fields['available_sections'].queryset = sections
-        self.fields['unavailable_sections'].queryset = sections
+        self.fields['preferred_sections'] = SectionChoiceField(queryset=sections)
+        self.fields['available_sections'] = SectionChoiceField(queryset=sections)
+        self.fields['unavailable_sections'] = SectionChoiceField(queryset=sections)
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['firstchoice_triptype'].queryset = triptypes
