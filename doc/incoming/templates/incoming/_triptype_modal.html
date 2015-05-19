@@ -1,0 +1,27 @@
+<!-- Button trigger modal -->
+<a href="#" role="button" data-toggle="modal" data-target="#tripTypeModal">
+  Click here for a description of each type of trip
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="tripTypeModal" tabindex="-1" role="dialog" aria-labelledby="tripTypeModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="tripTypeModalLabel">Trip Types</h4>
+      </div>
+      <div class="modal-body">
+
+	<dl>
+	  {% for type in triptypes %}
+	  <dt> {{ type }} </dt> 
+	  <dd> {{ type.trippee_description }} </dd>
+	  <br>
+	  {% endfor %}
+	</dl>
+
+      </div>
+    </div>
+  </div>
+</div>

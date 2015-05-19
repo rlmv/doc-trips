@@ -21,6 +21,7 @@ from doc.db.views import TripsYearMixin
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
+from doc.trips.models import TripType
 
 """ 
 Views for incoming students.
@@ -56,6 +57,12 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     success_url = reverse_lazy('incoming:portal')
     form_valid_message = "Your registration has been saved"
     form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+
+    def get_context_data(self, **kwargs):
+        context = super(BaseRegistrationView, self).get_context_data(**kwargs)
+        context['triptypes'] = TripType.objects.filter(
+            trips_year=TripsYear.objects.current())
+        return context
 
 
 class Register(BaseRegistrationView, CreateView):
