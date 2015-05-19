@@ -113,7 +113,7 @@ class Registration(DatabaseModel):
     # fall varsity athlete. --> choices or ForeignKey?
     is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
     is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
-    is_international = YesNoField('Are you an International who plans on attending the International Student Orientation?', blank=True)
+    is_international = YesNoField('Are you an International Student who plans on attending the International Student Orientation?', blank=True)
     is_native = YesNoField('Are you a Native American Student who plans on attending the Native American student orientation?', blank=True)
     is_fysep = YesNoField('Are you participating in the First Year Student Enrichment Program (FYSEP)?', blank=True)
     ATHLETE_CHOICES = (
