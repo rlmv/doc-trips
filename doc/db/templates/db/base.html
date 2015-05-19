@@ -2,29 +2,64 @@
 {% extends "base.html" %}
 
 {% block left_column %}
-<ul class="list-group">
-  <a class="list-group-item" href="{% url 'db:scheduledtrip_index' trips_year=trips_year %}"> Scheduled trips </a>
-  <a class="list-group-item" href="{% url 'db:scheduledtransport_index' trips_year=trips_year %}"> Scheduled transport </a>
-  <a class="list-group-item" href="{% url 'db:leader_index' trips_year=trips_year %}"> Trip Leaders </a>
-  <a class="list-group-item" href="{% url 'db:people_counts' trips_year=trips_year %}"> Trippee and Leader Counts </a>
-  <a class="list-group-item" href="{% url 'db:transport_counts' trips_year=trips_year %}"> Transport Counts </a>
-  <a class="list-group-item" href="{% url 'db:section_index' trips_year=trips_year %}"> Sections </a> 
-  <a class="list-group-item" href="{% url 'db:campsite_index' trips_year=trips_year %}"> Campsites </a>
-  <a class="list-group-item" href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip types </a>
-  <a class="list-group-item" href="{% url 'db:triptemplate_index' trips_year=trips_year %}"> Trip templates </a>
-  
-  <a class="list-group-item" href="{% url 'db:application_index' trips_year=trips_year %}"> <i class="fa fa-users"></i> Volunteers </a>
-  <a class="list-group-item" href="{% url 'db:email_lists' trips_year=trips_year %}"> <i class="fa fa-envelope-o"></i> Email Lists </a>
-  
-  <a class="list-group-item" href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a>
+<div class="sidebar navbar-default" role="navigation">
+  <div class="sidebar-nav navbar-collapse">
 
-  <a class="list-group-item" href="{% url 'db:stop_index' trips_year=trips_year %}">Transportation Stops </a>
-  <a class="list-group-item" href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a>
-  <a class="list-group-item" href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a>
-  <a class="list-group-item" href="{% url 'db:graders_index' trips_year=trips_year %}"> Graders </a>
+  <ul class="nav" id="sidebar-menu">
+    <li role="presentation">
+      <a href="#"> Trips <i class="fa fa-angle-left pull-right"></i> </a>
 
-  <a class="list-group-item" href="{% url 'db:incomingstudent_index' trips_year=trips_year %}"> Incoming Students </a>
-  <a class="list-group-item" href="{% url 'db:registration_index' trips_year=trips_year %}"> Registrations </a>
+      <ul class="nav nav-stacked">
+	<li> <a href="{% url 'db:scheduledtrip_index' trips_year=trips_year %}"> Scheduled Trips </a> </li>
+	<li> <a  href="{% url 'db:leader_index' trips_year=trips_year %}"> Trip Leaders </a> </li>
+	<li> <a  href="{% url 'db:people_counts' trips_year=trips_year %}"> Trippee/Leader Counts </a> </li>
+	<li> <a href="{% url 'db:section_index' trips_year=trips_year %}"> Sections </a> </li>
+	<li> <a href="{% url 'db:triptemplate_index' trips_year=trips_year %}"> Trip Templates </a> </li>
+	<li> <a href="{% url 'db:triptype_index' trips_year=trips_year %}"> Trip Types </a></li>
+	<li> <a href="{% url 'db:campsite_index' trips_year=trips_year %}"> Campsites </a> </li>
+      </ul>
+    </li>
 
-</ul>
+    <li>
+      <a href="#">Transport <i class="fa fa-angle-left pull-right"></i> </a>
+      <ul class="nav nav-stacked">
+	<li> <a href="{% url 'db:scheduledtransport_index' trips_year=trips_year %}"> Scheduled Transport </a> </li>
+	<li> <a  href="{% url 'db:transport_counts' trips_year=trips_year %}"> Transport Counts </a> </li>
+	<li> <a href="{% url 'db:stop_index' trips_year=trips_year %}">Transportation Stops </a></li>
+	<li> <a  href="{% url 'db:route_index' trips_year=trips_year %}"> Transportation Routes</a> </li>
+	<li> <a  href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a> </li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="#"> Volunteers <i class="fa fa-angle-left pull-right"></i> </a>
+      <ul class="nav nav-stacked">
+	<li> <a  href="{% url 'db:application_index' trips_year=trips_year %}"></i> Applications </a> </li>
+	<li> <a  href="{% url 'db:croo_index' trips_year=trips_year %}"> Croos </a> </li>
+	<li> <a  href="{% url 'db:graders_index' trips_year=trips_year %}"> Graders </a> </li>
+      </ul>
+    </li>
+
+    <li>
+      <a href="#"> Trippees <i class="fa fa-angle-left pull-right"></i> </a>
+      <ul class="nav nav-stacked">
+	<li> <a  href="{% url 'db:incomingstudent_index' trips_year=trips_year %}"> Incoming Students </a> </li>
+	<li> <a  href="{% url 'db:registration_index' trips_year=trips_year %}"> Registrations </a> </li>
+      </ul>
+    </li>
+
+   <li> <a  href="{% url 'db:email_lists' trips_year=trips_year %}"> <i class="fa fa-envelope-o"></i> Email Lists </a> </li>
+
+</nav>
+</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+  $(function () {
+      $('#sidebar-menu').metisMenu();
+  });
+</script>
 {% endblock %}

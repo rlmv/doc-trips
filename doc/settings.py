@@ -156,6 +156,7 @@ PIPELINE_CSS = {
             'css/font-awesome.min.css',
             'css/bootstrap-switch.css',
             'css/summernote.css',
+            'css/metisMenu.css',
         ),
         'output_filename': 'base.css'
     }
@@ -168,6 +169,7 @@ PIPELINE_JS = {
             'js/typeahead.bundle.js',
             'dartdm/lookup.js',  # must come after typeahead
             'js/stupidtable.js',
+            'js/metisMenu.min.js',
             'js/bootstrap-switch.js',
         ),
         'output_filename': 'base.js'
