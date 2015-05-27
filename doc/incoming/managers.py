@@ -32,6 +32,8 @@ class IncomingStudentManager(models.Manager):
             
         def parse_to_object(row):
             """ Parse a CSV row and return an incoming student object """
+            if not row['Id']:
+                return None
             return self.model(
                 trips_year=trips_year,
                 netid=row['Id'],
@@ -51,7 +53,7 @@ class IncomingStudentManager(models.Manager):
                 )
             )
 
-        incoming = list(map(parse_to_object, reader))
+        incoming = list(filter(None, map(parse_to_object, reader)))
         incoming_netids = get_netids(incoming)
 
         existing = self.model.objects.filter(trips_year=trips_year)
@@ -59,7 +61,8 @@ class IncomingStudentManager(models.Manager):
 
         netids_to_create = incoming_netids - existing_netids
         to_create = filter(lambda x: x.netid in netids_to_create, incoming)
-        self.model.objects.bulk_create(to_create)
+        for obj in to_create:
+            obj.save()
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))

@@ -136,38 +136,44 @@ class RegistrationModelTestCase(TripsYearTestCase):
         self.assertEqual([trip1], list(reg.get_available_trips()))
 
 
-       
-FILE = os.path.join(os.path.dirname(__file__), 'incoming_students.csv')
+def resolve_path(fname):
+    return os.path.join(os.path.dirname(__file__), fname)
+
+FILE = resolve_path('incoming_students.csv')
+FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
+
 
 class ImportIncomingStudentsTestCase(TripsYearTestCase):
-
     
     def test_create_from_csv(self):
-
         trips_year = self.init_current_trips_year().pk
-        
         with open(FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
-
         self.assertEqual(set(['id_1', 'id_2']), set(created))
         self.assertEqual(existing, [])
-        
         # are student objects created?
         IncomingStudent.objects.get(netid='id_1')
         IncomingStudent.objects.get(netid='id_2')
 
-
     def test_ignore_existing_students(self):
-        
         trips_year = self.init_current_trips_year().pk
         with open(FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
-
         with open(FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
-
         self.assertEqual(set(['id_1', 'id_2']), set(existing))
         self.assertEqual(created, [])
+
+    def test_ignore_rows_without_id(self):
+        trips_year = self.init_current_trips_year().pk
+
+        with open(FILE_WITH_BLANKS) as f:
+            (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
+
+        self.assertEqual(set(['id_1']), set(created))
+        self.assertEqual(existing, [])
+        # are student objects created?
+        IncomingStudent.objects.get(netid='id_1')
 
 
 class RegistrationViewsTestCase(WebTestCase):
