@@ -57,14 +57,12 @@ class IncomingStudent(DatabaseModel):
     # --- information provided by the college ----
     
     name = models.CharField(max_length=255)
-    #    did = models.CharField(max_length=30)
     netid = models.CharField(max_length=20)
     class_year = models.CharField(max_length=10)
 
-    # address - related model ? or abstract.
-
     ethnic_code = models.CharField(max_length=1)
     gender = models.CharField(max_length=10)
+    birthday = models.CharField(max_length=20)
     
     INCOMING_STATUS_CHOICES = (
         ('EXCHANGE', 'Exchange'),
@@ -73,10 +71,10 @@ class IncomingStudent(DatabaseModel):
     )
     incoming_status = models.CharField(max_length=20, choices=INCOMING_STATUS_CHOICES)
 
-    # TODO: there is a lot of redundant email information floating around. 
-    # can we get rid of some of it?
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
+    phone = models.CharField(max_length=30)
+    address = models.TextField()
  
     def get_registration(self):
         """ Return this student's registration, or None if DNE """

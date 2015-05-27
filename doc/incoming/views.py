@@ -179,9 +179,9 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
         'registration', 'decline_reason', 'notes'
     )
     college_fields = (
-        'name', 'netid', 'class_year', 'gender',
-        'ethnic_code', 'incoming_status', 'email',
-        'blitz'
+        'name', 'netid', 'class_year', 'gender', 'birthday',
+        'ethnic_code', 'incoming_status', 'email', 'blitz',
+        'phone', 'address'
     )
 
     def get_context_data(self, **kwargs):
