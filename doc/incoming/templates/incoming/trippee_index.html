@@ -2,15 +2,15 @@
 {% load links %}
 
 {% block header %}
-<h3> Incoming Students <small><a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"><span class="fa fa-upload"></span> Upload incoming students </a> </small></h3>
+<h2> Incoming Students <small><a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"><span class="fa fa-upload"></span> Upload incoming students </a> </small></h2>
 {% endblock %}
 
 {% block content %}
 
 <table class="table table-condensed">
   <tr>
-    <th></th>
-    <th></th>
+    <th> Student </th>
+    <th> Trip Assignment </th>
   </tr>
   {% for trippee in trippees %}
   <tr> 
