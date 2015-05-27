@@ -135,6 +135,15 @@ class RegistrationModelTestCase(TripsYearTestCase):
                          available_sections=[section1])
         self.assertEqual([trip1], list(reg.get_available_trips()))
 
+    def test_get_incoming_student(self):
+        trips_year = self.init_current_trips_year()
+        reg = mommy.make(Registration, trips_year=trips_year)
+        self.assertIsNone(reg.get_incoming_student())
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year, 
+                              registration=reg)
+        reg = Registration.objects.get(pk=reg.pk)
+        self.assertEqual(reg.get_incoming_student(), incoming)
+
 
 def resolve_path(fname):
     return os.path.join(os.path.dirname(__file__), fname)

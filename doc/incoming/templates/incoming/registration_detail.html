@@ -1,11 +1,19 @@
 {% extends "db/base.html" %}
 {% load detail_view %}
+{% load links %}
 
 {% block header %}
 <h2> Trippee Registration <small> {{ object.name }} </small> </h2>
 {% endblock %}
 
+
 {% block content %}
+
+<p><strong> Matched Incoming Student Data: </strong>
+  {% if object.get_incoming_student %}
+  {{ object.get_incoming_student|detail_link }}
+  {% endif %}
+</p>
 
 {% detail object view.fields %}
 

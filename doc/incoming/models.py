@@ -291,6 +291,13 @@ class Registration(DatabaseModel):
             template__triptype__in=self.available_triptypes.all()
         )
 
+    def get_incoming_student(self):
+        """ Return this registration's IncomingStudent, or None if DNE """
+        try:
+            return self.trippee
+        except ObjectDoesNotExist:
+            return None
+
     def __str__(self):
         return self.name
 
