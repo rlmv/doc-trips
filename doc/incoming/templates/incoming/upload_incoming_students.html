@@ -2,15 +2,37 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h3>Upload Incoming Students </h3>
+<h3>Upload Incoming Student Data </h3>
 {% endblock %}
 
 {% block content %}
-<p> Uploaded student data must be in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
-
-<p> If an incoming student already exists in the database for this trips year (determined by comparing NetIds) we do nothing. </p>
+<p> You must upload student data in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
 
 <form enctype="multipart/form-data" method="post" action="">
 {% crispy form %}
 </form>
+<br>
+<p> The database expects to find the following columns in the CSV file:
+  <ul>
+    <li> Id <i> (this is the students NetId) </i> </li>
+    <li> Formatted Fml Name </li>
+    <li> Class Year </li>
+    <li> Gender </li>
+    <li> Birthday </li>
+    <li> Fine Ethnic Code </li>
+    <li> EMail </li>
+    <li> Blitz </li>
+    <li> PR Phone </li>
+    <li> PR Street 1 </li>
+    <li> PR Street 2 </li>
+    <li> PR City </li>
+    <li> PR State </li>
+    <li> PR Zip </li>
+    <li> Pr Nation Name </li>
+  </ul>
+Yes, 'Pr Nation Name' has a lowercase 'r' for whatever reason. These column names were pulled from last year's incoming student data. Let me know if the headers have changed dramatically and I can tweak the expectations of the input. The order of the columns in the CSV file does not matter. Any extra columns will be ignored.
+</p>
+    
+<p> If an incoming student already exists in the database for this trips year (determined by comparing NetIds) the database skips importing that information. </p>
+
 {% endblock content %}
