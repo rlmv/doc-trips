@@ -42,9 +42,9 @@ class RegistrationForm(forms.ModelForm):
         self.fields['is_fysep'].help_text = join_with_and(Section.objects.fysep(trips_year))
 
         sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['preferred_sections'] = SectionChoiceField(queryset=sections)
-        self.fields['available_sections'] = SectionChoiceField(queryset=sections)
-        self.fields['unavailable_sections'] = SectionChoiceField(queryset=sections)
+        self.fields['preferred_sections'] = SectionChoiceField(queryset=sections, required=False)
+        self.fields['available_sections'] = SectionChoiceField(queryset=sections, required=False)
+        self.fields['unavailable_sections'] = SectionChoiceField(queryset=sections, required=False)
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['firstchoice_triptype'].queryset = triptypes
