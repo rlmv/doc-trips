@@ -51,12 +51,18 @@ class RegistrationNotAvailable(TemplateView):
 
 class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
                            FormMessagesMixin):
+    """ 
+    CBV base for registration form with all contextual information 
+    """
     model = Registration
     template_name = 'incoming/register.html'
     form_class = RegistrationForm
     success_url = reverse_lazy('incoming:portal')
     form_valid_message = "Your registration has been saved"
-    form_invalid_message = "Uh oh, looks like there's an error somewhere in the form"
+    form_invalid_message = (
+        "Uh oh, it looks like there's an error somewhere in your registration. "
+        "Please fix the error and submit the form again."
+    )
 
     def get_context_data(self, **kwargs):
         context = super(BaseRegistrationView, self).get_context_data(**kwargs)
@@ -75,7 +81,6 @@ class Register(BaseRegistrationView, CreateView):
     Redirects to the edit view if this incoming student 
     has already registered.
     """
-
     def dispatch(self, request, *args, **kwargs):
         """ Redirect to edit existing application """
         reg = Registration.objects.filter(
