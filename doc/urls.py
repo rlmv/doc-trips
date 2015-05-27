@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from doc.views import HomePage
 from doc.permissions import initialize_groups_and_permissions
+from doc.core import urls as core_urls
 
 admin.autodiscover()
 initialize_groups_and_permissions()
@@ -23,6 +24,7 @@ urlpatterns = [
 
     url(r'^croos/', include('doc.croos.urls', namespace='croos')),
     url(r'^incoming/', include('doc.incoming.urls', namespace='incoming')),
+    url(r'^core/', include(core_urls, namespace='core')),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

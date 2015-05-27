@@ -13,7 +13,7 @@ class Settings(models.Model):
     
     trips_cost = models.PositiveSmallIntegerField()
     doc_membership_cost = models.PositiveSmallIntegerField()
-    contact_url = models.URLField(help_text='url of trips_directorate contact info')
+    contact_url = models.URLField(help_text='url of trips directorate contact info')
 
     SETTINGS_ID = 1
 
