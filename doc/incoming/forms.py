@@ -32,8 +32,9 @@ class RegistrationForm(forms.ModelForm):
             assert (kwargs.get('instance').trips_year == trips_year, 
                     'trips_year needs to be passed in, in this case')
             
-        self.fields['bus_stop'] = StopChoiceField(queryset=Stop.objects.external(trips_year))
-
+        self.fields['bus_stop'] = StopChoiceField(
+            queryset=Stop.objects.external(trips_year), required=False
+        )
         # show which sections are available for these choices
         self.fields['is_exchange'].help_text = join_with_and(Section.objects.exchange(trips_year))
         self.fields['is_international'].help_text = join_with_and(Section.objects.international(trips_year))

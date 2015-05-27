@@ -228,8 +228,7 @@ class Registration(DatabaseModel):
 
     # ----- other deets ----
 
-    # TODO: limit choices in the form to current trip_year and EXTRNAL stops
-    bus_stop = models.ForeignKey(Stop, on_delete=models.PROTECT, 
+    bus_stop = models.ForeignKey(Stop, on_delete=models.PROTECT,
                                  blank=True, null=True,
                                  verbose_name="Where would you like to be bussed from/to?")
 
