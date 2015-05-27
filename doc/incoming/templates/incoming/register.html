@@ -7,6 +7,7 @@
 {% endblock header %}
 
 {% block content %}
+<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout <i class="fa fa-sign-out"> </i></a></p>
 
 <h4> Registration is due {{ registration_deadline }} </h4> 
 <p> You can come back and edit your registration at any time before the deadline. Don't forget to click 'Submit' and save your changes! </p>
