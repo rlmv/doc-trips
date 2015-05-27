@@ -3,10 +3,15 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h1>Trips Registration </h1>
+<h1> Registration <small> Trips {{ trips_year }} </small></h1>
 {% endblock header %}
 
 {% block content %}
+
+<h4> Registration is due {{ registration_deadline }} </h4> 
+<p> You can come back and edit your registration at any time before the deadline. Don't forget to click 'Submit' and save your changes! </p>
+
+<p><strong>DOC Trips Mission:</strong> DOC First-year Trips exist to give all incoming students an exciting and unforgettable welcome to the Dartmouth community. Trips provides them with an introduction to the College's traditions and spirit, as well as a safe and positive outdoor experience through the Dartmouth Outing Club. Trips creates common ground for first-year students, a space to build lasting friendships and social support systems, and facilitates a connection to dedicated upperclass students who act as mentors and friends at Dartmouth and beyond. </p>
 
 {% crispy form %}
 

@@ -32,7 +32,6 @@ class RegistrationFormLayout(Layout):
         doc_membership_cost = str(kwargs['doc_membership_cost'])
         
         super(RegistrationFormLayout, self).__init__(
-            HTML("<p><strong>DOC Trips Mission:</strong> DOC First-year Trips exist to give all incoming students an exciting and unforgettable welcome to the Dartmouth community. Trips provides them with an introduction to the College's traditions and spirit, as well as a safe and positive outdoor experience through the Dartmouth Outing Club. Trips creates common ground for first-year students, a space to build lasting friendships and social support systems, and facilitates a connection to dedicated upperclass students who act as mentors and friends at Dartmouth and beyond.</p>"),
             Fieldset(
                 'General Information',
                 'name',
