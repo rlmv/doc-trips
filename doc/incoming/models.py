@@ -43,7 +43,8 @@ class IncomingStudent(DatabaseModel):
         'Registration', editable=False, related_name='trippee', null=True
     )
     trip_assignment = models.ForeignKey(
-        ScheduledTrip, on_delete=models.PROTECT, related_name='trippees', null=True
+        ScheduledTrip, on_delete=models.PROTECT, related_name='trippees',
+        null=True, blank=True
     )
 
     # TODO:
@@ -69,7 +70,8 @@ class IncomingStudent(DatabaseModel):
         ('TRANSFER', 'Transfer'),
         ('FIRSTYEAR', 'First Year'),
     )
-    incoming_status = models.CharField(max_length=20, choices=INCOMING_STATUS_CHOICES)
+    incoming_status = models.CharField(
+        max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True)
 
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)

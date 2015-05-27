@@ -24,6 +24,7 @@ from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
 from doc.trips.models import TripType
+from doc.utils.forms import crispify
 
 """ 
 Views for incoming students.
@@ -216,12 +217,26 @@ class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
         kwargs['registration'] = reg
         return super(UpdateTripAssignmentView, self).get_context_data(**kwargs)
 
+    def get_form(self, **kwargs):
+        form = super(UpdateTripAssignmentView, self).get_form(**kwargs)
+        return crispify(form)
+
 
 class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
                                 TripsYearMixin, UpdateView):
     model = IncomingStudent
     template_name = 'db/update.html'
     context_object_name = 'trippee'
+
+    fields = [
+        'decline_reason', 'notes', 'name', 'netid', 'class_year',
+        'ethnic_code', 'gender', 'birthday', 'incoming_status',
+        'email', 'blitz', 'phone', 'address'
+    ]
+
+    def get_form(self, **kwargs):
+        form = super(IncomingStudentUpdateView, self).get_form(**kwargs)
+        return crispify(form)
     
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
