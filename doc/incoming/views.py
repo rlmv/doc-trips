@@ -286,18 +286,22 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
         file = io.TextIOWrapper(form.files['csv_file'].file, 
                                 encoding='utf-8', errors='replace')
+        try:
+            (created, ignored) = IncomingStudent.objects.create_from_csv_file(file, self.kwargs['trips_year'])
 
-        (created, ignored) = IncomingStudent.objects.create_from_csv_file(file, self.kwargs['trips_year'])
-
-        if created:
-            msg = 'Created incoming students with NetIds %s' % created
-            logger.info(msg)
-            messages.info(self.request, msg)
+            if created:
+                msg = 'Created incoming students with NetIds %s' % created
+                logger.info(msg)
+                messages.info(self.request, msg)
         
-        if ignored:
-            msg = 'Ignored existing incoming students with NetIds %s' % ignored
-            logger.info(msg)
-            messages.warning(self.request, msg)
+            if ignored:
+                msg = 'Ignored existing incoming students with NetIds %s' % ignored
+                logger.info(msg)
+                messages.warning(self.request, msg)
+
+        except KeyError as exc:
+            msg = "A column is missing (or mis-named) in the uploaded file: %s" % exc
+            messages.error(self.request, msg)
 
         return super(UploadIncomingStudentData, self).form_valid(form)        
 
