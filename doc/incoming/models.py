@@ -57,12 +57,12 @@ class IncomingStudent(DatabaseModel):
 
     # --- information provided by the college ----
     
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=512)
     netid = models.CharField(max_length=20)
     class_year = models.CharField(max_length=10)
 
-    ethnic_code = models.CharField(max_length=1)
-    gender = models.CharField(max_length=10)
+    ethnic_code = models.CharField(max_length=100)
+    gender = models.CharField(max_length=100)
     birthday = models.CharField(max_length=20)
     
     INCOMING_STATUS_CHOICES = (
