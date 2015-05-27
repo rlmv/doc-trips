@@ -7,7 +7,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 
@@ -82,12 +84,20 @@ class Register(BaseRegistrationView, CreateView):
     Redirects to the edit view if this incoming student 
     has already registered.
     """
+
+    @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ Redirect to edit existing application """
+        """ 
+        Redirect to edit existing application 
+        
+        This is redundantly decorated with login_required to prevent user
+        from being anonymous. Otherwise this gets called first in the MRO
+        order *then* passes to the LoginRequiredMixin, which doesn't work.
+        """
         reg = Registration.objects.filter(
             trips_year=TripsYear.objects.current(),
             user=request.user).first()
-        if reg: 
+        if reg:
             return HttpResponseRedirect(reverse('incoming:edit_registration'))
 
         return super(Register, self).dispatch(request, *args, **kwargs)

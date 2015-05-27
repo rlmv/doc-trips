@@ -2,9 +2,10 @@ import os
 import unittest
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from doc.test.fixtures import TripsYearTestCase
+from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent
 from doc.trips.models import ScheduledTrip
 
@@ -168,4 +169,9 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
         self.assertEqual(set(['id_1', 'id_2']), set(existing))
         self.assertEqual(created, [])
 
-        
+
+class RegistrationViewsTestCase(WebTestCase):
+
+    def test_registration_with_anonymous_user(self):
+        self.init_current_trips_year()
+        self.app.get(reverse('incoming:register'))
