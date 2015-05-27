@@ -173,7 +173,27 @@ class RegistrationDetailView(DatabaseReadPermissionRequired,
     model = Registration
     template_name = 'incoming/registration_detail.html'
     
-    fields = ['name']
+    fields = [
+        'name', 'gender', 'previous_school', 'phone', 'email',
+        'guardian_email', 'is_exchange', 'is_transfer', 'is_international',
+        'is_native', 'is_fysep', 'is_athlete',
+        'preferred_sections', 'available_sections', 'unavailable_sections',
+        'firstchoice_triptype', 'preferred_triptypes',
+        'available_triptypes', 'unavailable_triptypes',
+        'schedule_conflicts', 'tshirt_size', 'medical_conditions',
+        'allergies', 'allergen_information', 'epipen', 'needs',
+        'dietary_restrictions', 'allergy_severity', 'allergy_reaction',
+        'regular_exercise', 'physical_activities', 'other_activities',
+        'swimming_ability', 'camping_experience',
+        'hiking_experience',
+        ('please describe your hiking experience', 'hiking_experience_description'),
+        'has_boating_experience', 'boating_experience',
+        'other_boating_experience', 'fishing_experience',
+        'horseback_riding_experience', 'mountain_biking_experience',
+        'sailing_experience', 'anything_else',
+        'bus_stop', 'financial_assistance', 'waiver', 'doc_membership',
+        'green_fund_donation', 'final_request'
+    ]
 
 
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,

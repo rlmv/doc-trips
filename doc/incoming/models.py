@@ -96,12 +96,6 @@ class Registration(DatabaseModel):
     # name not just from netid / college info?
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
-    
-    # contact could be in a related address model
-    # which we could use for transport stops?
-    # also, college input address info.
-    # street1 = models.CharField(max_length=255)
-    # street2 = models.CharField(
 
     previous_school = models.CharField('high school, or most recent school', max_length=255)
     phone = models.CharField('phone number', max_length=20)
@@ -109,8 +103,6 @@ class Registration(DatabaseModel):
     guardian_email = models.EmailField('parent/guardian email', blank=True, max_length=254)
 
     # --- sections and triptypes -----
-    # TODO: exchange/transfer/native/etc fields.
-    # fall varsity athlete. --> choices or ForeignKey?
     is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
     is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
     is_international = YesNoField('Are you an International Student who plans on attending the International Student Orientation?', blank=True)
