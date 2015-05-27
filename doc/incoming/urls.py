@@ -5,7 +5,8 @@ from doc.db.urlhelpers import DB_REGEX
 from doc.incoming.views import (
     Register, EditRegistration,
     RegistrationNotAvailable, IncomingStudentPortal,
-    RegistrationIndexView, IncomingStudentIndexView,
+    RegistrationIndexView, RegistrationDetailView,
+    IncomingStudentIndexView,
     IncomingStudentDetailView, IncomingStudentUpdateView,
     UpdateTripAssignmentView,
     UploadIncomingStudentData
@@ -32,5 +33,6 @@ trippee_urlpatterns = [
 
 registration_urlpatterns = [
     url(DB_REGEX['LIST'], RegistrationIndexView.as_view(), name='registration_index'),
+    url(DB_REGEX['DETAIL'], RegistrationDetailView.as_view(), name='registration_detail'),
 ]
                            

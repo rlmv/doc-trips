@@ -299,6 +299,9 @@ class Registration(DatabaseModel):
             template__triptype__in=self.available_triptypes.all()
         )
 
+    def __str__(self):
+        return self.name
+
 
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):

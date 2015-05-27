@@ -2,17 +2,15 @@
 {% load links %}
 
 {% block header %}
-<h3> Trippee Registrations </h3>
+<h2> Trippee Registrations </h2>
 {% endblock %}
 
 {% block content %}
 
 <table class="table table-condensed">
-<tr>
-</tr>
 {% for registration in registrations %}
 <tr>
-  <td> {{ registration }} </td>
+  <td> {{ registration|detail_link }} </td>
 </tr>
 {% endfor %}
 </table>

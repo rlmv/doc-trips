@@ -168,6 +168,14 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
     context_object_name = 'registrations'
 
 
+class RegistrationDetailView(DatabaseReadPermissionRequired,
+                             TripsYearMixin, DetailView):
+    model = Registration
+    template_name = 'incoming/registration_detail.html'
+    
+    fields = ['name']
+
+
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,
                                TripsYearMixin, ListView):
     """ All incoming students """
