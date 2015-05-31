@@ -34,7 +34,6 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         with self.assertRaises(ObjectDoesNotExist):
             reg.trippee
 
-
     def test_creating_IncomingStudent_connects_to_existing_registration(self):
         
         user = self.mock_incoming_student()

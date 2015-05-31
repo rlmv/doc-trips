@@ -299,6 +299,21 @@ class Registration(DatabaseModel):
         except ObjectDoesNotExist:
             return None
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:  # is new
+            try:
+                trippee = IncomingStudent.objects.get(
+                    netid=self.user.netid,
+                    trips_year=self.trips_year
+                )
+                trippee.registration = self
+                trippee.save()
+            except IncomingStudent.DoesNotExist:
+                msg = 'Incoming student info not found for registration %s'
+                logger.error(msg % self)
+
+        return super(Registration, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -312,6 +327,7 @@ def connect_registration_to_trippee(instance=None, **kwargs):
 
     If the info cannot be found, the registration is left to sit.
     """
+    return
     if kwargs.get('created', False):
         try:
             instance.trippee = IncomingStudent.objects.get(
@@ -321,7 +337,7 @@ def connect_registration_to_trippee(instance=None, **kwargs):
             instance.save()
         except IncomingStudent.DoesNotExist as e:
             msg = 'Incoming student info not found for registration %s'
-            logger.info(msg % instance)
+            logger.error(msg % instance)
         
         
 @receiver(post_save, sender=IncomingStudent)
