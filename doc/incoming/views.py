@@ -112,6 +112,15 @@ class Register(BaseRegistrationView, CreateView):
         """
         form.instance.trips_year = TripsYear.objects.current()
         form.instance.user = self.request.user
+        try:
+            form.instance.trippee = IncomingStudent.objects.get(
+                netid=form.instance.user.netid,
+                trips_year=form.instance.trips_year
+            )
+        except IncomingStudent.DoesNotExist:
+            msg = 'Incoming student info not found for registration %s in form'
+            logger.error(msg % self)
+        
         return super(Register, self).form_valid(form, **kwargs)
 
 
