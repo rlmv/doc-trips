@@ -10,12 +10,14 @@
 <table class="table table-condensed">
   <tr>
     <th> Student </th>
+    <th> Registration </th>
     <th> Trip Assignment </th>
   </tr>
   {% for trippee in trippees %}
   <tr> 
     <td>{{ trippee|detail_link }}</td>
-    <td>{% if trippee.trip_assignment %}{{ trippee.trip_assignment|detail_link }}{% endif %}</td>
+    <td>{% if trippee.get_registration %} {{ trippee.get_registration|detail_link }} {% endif %} </td>
+    <td>{% if trippee.trip_assignment %} {{ trippee.trip_assignment|detail_link }} {% endif %}</td>
 
     <td>{{ trippee|detail_link:"view" }}</td>
     <td>{{ trippee|edit_link:"edit" }}</td>
