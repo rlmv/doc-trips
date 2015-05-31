@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "db/detail.html" %}
 {% load detail_view %}
 {% load links %}
 
@@ -6,15 +6,14 @@
 <h2> Trippee Registration <small> {{ object.name }} &mdash; {{ object.user.netid }} </small> </h2>
 {% endblock %}
 
+{% block links %}
+{{ object|edit_link }}
+{% endblock %}
 
-{% block content %}
-
+{% block description %}
 <p><strong> Matched Incoming Student Data: </strong>
   {% if object.get_incoming_student %}
   {{ object.get_incoming_student|detail_link }}
   {% endif %}
 </p>
-
-{% detail object view.fields %}
-
-{% endblock content %}
+{% endblock description %}

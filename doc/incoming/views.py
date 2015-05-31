@@ -19,7 +19,7 @@ from doc.incoming.forms import (
 )
 from doc.core.models import Settings
 from doc.db.models import TripsYear
-from doc.db.views import TripsYearMixin
+from doc.db.views import TripsYearMixin, DatabaseUpdateView
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
@@ -195,6 +195,14 @@ class RegistrationDetailView(DatabaseReadPermissionRequired,
         'green_fund_donation', 'final_request'
     ]
 
+
+class RegistrationUpdateView(DatabaseEditPermissionRequired, 
+                             TripsYearMixin, UpdateView):
+
+    form_class = RegistrationForm
+    model = Registration
+    template_name = 'db/update.html'
+    
 
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,
                                TripsYearMixin, ListView):

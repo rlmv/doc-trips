@@ -227,3 +227,8 @@ LOGGING = {
         },
     },
 }
+
+from model_mommy.generators import gen_string
+MOMMY_CUSTOM_FIELDS_GEN = {
+    'doc.users.models.NetIdField': gen_string,
+}

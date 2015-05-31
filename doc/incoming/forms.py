@@ -27,10 +27,11 @@ class RegistrationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)
 
-        trips_year = TripsYear.objects.current()
-        if kwargs.get('instance', None):
-            assert (kwargs.get('instance').trips_year == trips_year, 
-                    'trips_year needs to be passed in, in this case')
+        instance = kwargs.get('instance')
+        if instance:
+            trips_year = instance.trips_year
+        else:
+            trips_year = TripsYear.objects.current()
             
         self.fields['bus_stop'] = StopChoiceField(
             queryset=Stop.objects.external(trips_year), required=False

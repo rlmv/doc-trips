@@ -7,7 +7,9 @@ from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent
-from doc.trips.models import ScheduledTrip
+from doc.incoming.forms import RegistrationForm
+from doc.trips.models import ScheduledTrip, TripType
+from doc.core.models import Settings
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
@@ -190,3 +192,23 @@ class RegistrationViewsTestCase(WebTestCase):
     def test_registration_with_anonymous_user(self):
         self.init_current_trips_year()
         self.app.get(reverse('incoming:register'))
+
+
+class RegistrationFormTestCase(TripsYearTestCase):
+
+    def test_registration_form_without_instance_uses_current_trips_year(self):
+        trips_year = self.init_current_trips_year()
+        tt = mommy.make(TripType, trips_year=trips_year)
+        mommy.make(Settings)  # must exist
+        reg = mommy.make(Registration, trips_year=trips_year)
+        form = RegistrationForm()
+        self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])
+    
+    def test_registration_form_uses_trips_year_from_instance(self):
+        trips_year = self.init_current_trips_year()
+        prev_trips_year = self.init_previous_trips_year()
+        tt = mommy.make(TripType, trips_year=prev_trips_year)
+        mommy.make(Settings)  # must exist
+        reg = mommy.make(Registration, trips_year=prev_trips_year)
+        form = RegistrationForm(instance=reg)
+        self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])
