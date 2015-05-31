@@ -1,5 +1,6 @@
 
 from django import forms
+from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Submit, Div
 
@@ -7,7 +8,6 @@ from doc.db.models import TripsYear
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, ScheduledTrip
-from doc.trips.fields import SectionChoiceField
 from doc.transport.models import Stop
 
 
@@ -16,6 +16,12 @@ class StopChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
         return "{} - ${}".format(obj.name, obj.cost)
+
+
+class TrippeeSectionChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return mark_safe('%s &mdash; %s' %
+                         (obj.name, obj.trippee_date_range_str()))
 
 
 class RegistrationForm(forms.ModelForm):
@@ -44,9 +50,9 @@ class RegistrationForm(forms.ModelForm):
         self.fields['is_fysep'].help_text = join_with_and(Section.objects.fysep(trips_year))
 
         sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['preferred_sections'] = SectionChoiceField(queryset=sections, required=False)
-        self.fields['available_sections'] = SectionChoiceField(queryset=sections, required=False)
-        self.fields['unavailable_sections'] = SectionChoiceField(queryset=sections, required=False)
+        self.fields['preferred_sections'] = TrippeeSectionChoiceField(queryset=sections, required=False)
+        self.fields['available_sections'] = TrippeeSectionChoiceField(queryset=sections, required=False)
+        self.fields['unavailable_sections'] = TrippeeSectionChoiceField(queryset=sections, required=False)
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['firstchoice_triptype'].queryset = triptypes

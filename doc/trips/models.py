@@ -171,6 +171,15 @@ class Section(DatabaseModel):
         return (self.leaders_arrive.strftime(fmt) + ' to ' + 
                 self.return_to_campus.strftime(fmt))
 
+    def trippee_date_range_str(self):
+        """ 
+        Date string for *trippees*
+        """
+        fmt = '%b %d'
+        return (self.trippees_arrive.strftime(fmt) + ' to ' + 
+                self.return_to_campus.strftime(fmt))
+
+
 
 def validate_triptemplate_name(value):
     """ Validator for TripTemplate.name """
