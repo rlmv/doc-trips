@@ -2,6 +2,7 @@
 from unittest.mock import patch
 
 from django.test import TestCase
+from model_mommy import mommy
 
 from doc.users.models import DartmouthUser
 
@@ -35,5 +36,16 @@ class UserManagerTestCase(TestCase):
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
         self.assertEqual(user.did, DID)
-        
-        
+
+
+class NetIdFieldTestCase(TestCase):
+    
+    def test_lowercase_conversion(self):
+        netid = 'D34898Z'
+        user = mommy.make(DartmouthUser, netid=netid)
+        self.assertEqual(user.netid, netid.lower())
+
+    def test_lowercase_conversion_and_query(self):
+        netid = 'D34898Z'
+        user = mommy.make(DartmouthUser, netid=netid)
+        self.assertEqual(user, DartmouthUser.objects.get(netid=netid))

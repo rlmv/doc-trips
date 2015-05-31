@@ -57,11 +57,38 @@ class DartmouthUserManager(BaseUserManager):
         raise Exception(msg)
 
 
+class NetIdField(models.CharField):
+    """
+    Saves NetIds as lowercase for easy comparison.
+    """
+    description = "A field to hold a Dartmouth WebAuth Netid"
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 20
+        super(NetIdField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        """
+        Handle uppercase ids 
+        """
+        value = super(NetIdField, self).to_python(value)
+        if value is not None:
+            return value.lower()
+
+    def pre_save(self, model_instance, add):
+        """ 
+        Update lowercase ids on the instance before saving
+        """
+        value = getattr(model_instance, self.attname).lower()
+        setattr(model_instance, self.attname, value)
+        return value
+
+
 class DartmouthUser(PermissionsMixin):
 
     objects = DartmouthUserManager()
 
-    netid = models.CharField(max_length=20, unique=True)
+    netid = NetIdField(unique=True)
     # DID (Dartmouth ID) is not guaranteed to be set
     did = models.CharField(max_length=20)
     email = models.EmailField('email address')

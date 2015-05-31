@@ -11,6 +11,7 @@ from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
 from doc.incoming.managers import IncomingStudentManager
+from doc.users.models import NetIdField
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class IncomingStudent(DatabaseModel):
     # --- information provided by the college ----
     
     name = models.CharField(max_length=512)
-    netid = models.CharField(max_length=20)
+    netid = NetIdField()
     class_year = models.CharField(max_length=10)
 
     ethnic_code = models.CharField(max_length=100)
