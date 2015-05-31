@@ -1,8 +1,10 @@
 import os
 import unittest
+from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
@@ -10,6 +12,7 @@ from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import RegistrationForm
 from doc.trips.models import ScheduledTrip, TripType
 from doc.core.models import Settings
+from doc.timetable.models import Timetable
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
@@ -33,7 +36,6 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
 
         with self.assertRaises(ObjectDoesNotExist):
             reg.trippee
-
 
     def test_creating_IncomingStudent_connects_to_existing_registration(self):
         
@@ -189,9 +191,41 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
 
 class RegistrationViewsTestCase(WebTestCase):
 
+    csrf_checks = False
+
     def test_registration_with_anonymous_user(self):
         self.init_current_trips_year()
         self.app.get(reverse('incoming:register'))
+
+    def test_registration_connects_to_incoming(self):
+        trips_year = self.init_current_trips_year()
+        t = Timetable.objects.timetable()
+        t.trippee_registrations_open += timedelta(-1)
+        t.trippee_registrations_close += timedelta(1)
+        t.save()
+        mommy.make(Settings)
+        user = self.mock_incoming_student()
+        student = mommy.make(IncomingStudent, trips_year=trips_year, netid=user.netid)
+        reg_data = {
+            'name': 'test',
+            'gender': 'hi',
+            'previous_school': 'nah',
+            'phone': '134',
+            'email': 'asf@gmail.com',
+            'tshirt_size': 'L',
+            'regular_exercise': 'NO',
+            'swimming_ability': 'BEGINNER',
+            'camping_experience': 'NO',
+            'hiking_experience': 'YES',
+            'financial_assistance': 'YES',
+            'waiver': 'YES',
+            'doc_membership': 'NO',
+        }
+        url = reverse('incoming:register')
+        self.app.post(url, reg_data, user=user)
+        registration = Registration.objects.get()
+        student = IncomingStudent.objects.get()
+        self.assertEqual(registration.trippee, student)
 
 
 class RegistrationFormTestCase(TripsYearTestCase):
