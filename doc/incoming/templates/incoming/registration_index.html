@@ -8,11 +8,18 @@
 {% block content %}
 
 <table class="table table-condensed">
-{% for registration in registrations %}
-<tr>
-  <td> {{ registration|detail_link }} </td>
-</tr>
-{% endfor %}
+  <tr>
+    <th> Registration </th>
+    <th> Incoming Student Data </th>
+    <th> </th>
+  </tr>
+  {% for registration in registrations %}
+  <tr>
+    <td> {{ registration|detail_link }} </td>
+    <td> {% if registration.get_incoming_student %} {{ registration.get_incoming_student|detail_link }} {% endif %} </td>
+    <td> {{ registration|edit_link }} </td>
+  </tr>
+  {% endfor %}
 </table>
 
 {% endblock content %}
