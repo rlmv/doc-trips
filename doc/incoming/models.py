@@ -300,17 +300,6 @@ class Registration(DatabaseModel):
             return None
 
     def save(self, *args, **kwargs):
-        if self.pk is None:  # is new
-            try:
-                trippee = IncomingStudent.objects.get(
-                    netid=self.user.netid,
-                    trips_year=self.trips_year
-                )
-                trippee.registration = self
-                trippee.save()
-            except IncomingStudent.DoesNotExist:
-                msg = 'Incoming student info not found for registration %s'
-                logger.error(msg % self)
 
         return super(Registration, self).save(*args, **kwargs)
 
@@ -327,7 +316,6 @@ def connect_registration_to_trippee(instance=None, **kwargs):
 
     If the info cannot be found, the registration is left to sit.
     """
-    return
     if kwargs.get('created', False):
         try:
             instance.trippee = IncomingStudent.objects.get(
