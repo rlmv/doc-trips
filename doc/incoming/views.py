@@ -341,7 +341,7 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
         regs = Registration.objects.filter(trips_year=self.get_trips_year())
         matches = []
         for reg in regs:
-            if not reg.trippee:
+            if not hasattr(reg, 'trippee'):
                 matches.append(reg.match())
         messages.info(self.request, 'Matched %s' % list(filter(None, matches)))
         return HttpResponseRedirect(reverse('db:registration_match', kwargs=self.kwargs))
