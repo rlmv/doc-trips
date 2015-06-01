@@ -20,7 +20,7 @@ class SectionChoiceField(forms.ModelMultipleChoiceField):
     
     def label_from_instance(self, obj):
 
-        return mark_safe(str(obj) + ' &mdash; '  + obj.date_range_str())
+        return mark_safe(str(obj) + ' &mdash; '  + obj.leader_date_str())
         
 
 class LeaderApplicationForm(forms.ModelForm):

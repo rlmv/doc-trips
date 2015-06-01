@@ -1,6 +1,5 @@
 
 from django import forms
-from django.utils.safestring import mark_safe
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Row, Submit, Div
 
@@ -8,20 +7,14 @@ from doc.db.models import TripsYear
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, ScheduledTrip
+from doc.trips.fields import TrippeeSectionChoiceField
 from doc.transport.models import Stop
 
 
 class StopChoiceField(forms.ModelChoiceField):
     """ Field for displaying an external transport Stop, with prices """
-
     def label_from_instance(self, obj):
         return "{} - ${}".format(obj.name, obj.cost)
-
-
-class TrippeeSectionChoiceField(forms.ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return mark_safe('%s &mdash; %s' %
-                         (obj.name, obj.trippee_date_range_str()))
 
 
 class RegistrationForm(forms.ModelForm):

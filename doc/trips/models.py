@@ -160,7 +160,7 @@ class Section(DatabaseModel):
     def __str__(self):
         return 'Section ' + self.name
         
-    def date_range_str(self):
+    def leader_date_str(self):
         """ 
         Return a string of dates that this section covers.
         
@@ -171,7 +171,7 @@ class Section(DatabaseModel):
         return (self.leaders_arrive.strftime(fmt) + ' to ' + 
                 self.return_to_campus.strftime(fmt))
 
-    def trippee_date_range_str(self):
+    def trippee_date_str(self):
         """ 
         Date string for *trippees*
         """

@@ -8,18 +8,8 @@ from doc.applications.models import (GeneralApplication, CrooSupplement, LeaderS
                                      CrooApplicationGrade, LeaderApplicationGrade)
 from doc.db.models import TripsYear
 from doc.trips.models import Section, TripType, ScheduledTrip
-from doc.trips.fields import SectionChoiceField
+from doc.trips.fields import LeaderSectionChoiceField, ScheduledTripChoiceField
 from doc.utils.forms import crispify
-
-
-class ScheduledTripChoiceField(forms.ModelChoiceField):
-    """ Field with verbose ScheduledTrip labels """
-    def label_from_instance(self, obj):
-        return "{}{}: {}: {}".format(
-            obj.section, obj.template.name,
-            obj.template.triptype.name,
-            obj.template.description_summary
-        )
 
 
 class TripAssignmentForm(forms.ModelForm):
@@ -97,8 +87,8 @@ class CrooSupplementForm(forms.ModelForm):
 class LeaderSupplementForm(forms.ModelForm):
 
     # override ModelForm field defaults
-    preferred_sections = SectionChoiceField(queryset=None, required=False)
-    available_sections = SectionChoiceField(queryset=None, required=False)
+    preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
+    available_sections = LeaderSectionChoiceField(queryset=None, required=False)
     
     class Meta:
         model = LeaderSupplement
