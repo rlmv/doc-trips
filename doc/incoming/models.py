@@ -306,6 +306,24 @@ class Registration(DatabaseModel):
     def __str__(self):
         return self.name
 
+    def match(self):
+        """ 
+        Try to match this registration with incoming student data.
+        
+        Returns the matched IncomingStudent, or None.
+        """
+        try:
+            trippee = IncomingStudent.objects.get(
+                netid=self.user.netid,
+                trips_year=self.trips_year
+            )
+            trippee.registration = self
+            trippee.save()
+            return trippee
+        except IncomingStudent.DoesNotExist:
+            msg = "student data not found for registration %s"
+            logger.info(msg % self)
+        
 
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
@@ -317,17 +335,9 @@ def connect_registration_to_trippee(instance=None, **kwargs):
     If the info cannot be found, the registration is left to sit.
     """
     if kwargs.get('created', False):
-        try:
-            instance.trippee = IncomingStudent.objects.get(
-                netid=instance.user.netid,
-                trips_year=instance.trips_year
-            )
-            instance.save()
-        except IncomingStudent.DoesNotExist as e:
-            msg = 'Incoming student info not found for registration %s'
-            logger.error(msg % instance)
+        instance.match()
         
-        
+
 @receiver(post_save, sender=IncomingStudent)
 def create_trippee_for_college_info(instance=None, **kwargs):
     """ 

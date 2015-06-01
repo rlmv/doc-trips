@@ -148,6 +148,18 @@ class RegistrationModelTestCase(TripsYearTestCase):
         reg = Registration.objects.get(pk=reg.pk)
         self.assertEqual(reg.get_incoming_student(), incoming)
 
+    def test_match(self):
+        user = self.mock_incoming_student()
+        trips_year = self.init_current_trips_year()
+        incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
+        reg = mommy.make(Registration, trips_year=trips_year, user=user)
+        # clear automatic connections
+        incoming.registration = None
+        incoming.save()
+        reg = Registration.objects.get(pk=reg.pk)
+        reg.match()
+        self.assertEqual(reg.trippee, incoming)
+
 
 def resolve_path(fname):
     return os.path.join(os.path.dirname(__file__), fname)

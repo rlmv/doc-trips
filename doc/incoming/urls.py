@@ -10,7 +10,8 @@ from doc.incoming.views import (
     IncomingStudentIndexView,
     IncomingStudentDetailView, IncomingStudentUpdateView,
     UpdateTripAssignmentView,
-    UploadIncomingStudentData
+    UploadIncomingStudentData,
+    MatchRegistrations
 )
 
 urlpatterns = [
@@ -36,5 +37,6 @@ registration_urlpatterns = [
     url(DB_REGEX['LIST'], RegistrationIndexView.as_view(), name='registration_index'),
     url(DB_REGEX['DETAIL'], RegistrationDetailView.as_view(), name='registration_detail'),
     url(DB_REGEX['UPDATE'], RegistrationUpdateView.as_view(), name='registration_update'),
+    url(r'^match/$', MatchRegistrations.as_view(), name='registration_match'),
 ]
                            

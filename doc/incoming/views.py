@@ -112,20 +112,11 @@ class Register(BaseRegistrationView, CreateView):
         """
         form.instance.trips_year = TripsYear.objects.current()
         form.instance.user = self.request.user
-     
-        resp = super(Register, self).form_valid(form, **kwargs)
-        try:
-            trippee = IncomingStudent.objects.get(
-                netid=self.object.user.netid,
-                trips_year=self.object.trips_year
-            )
-            trippee.registration = self.object
-            trippee.save()
-        except IncomingStudent.DoesNotExist:
-            msg = "student data not found for registration %s"
-            logger.info(msg % self.object)
+
+        self.object = form.save()
+        self.object.match()
         
-        return resp
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class EditRegistration(BaseRegistrationView, UpdateView):
@@ -329,6 +320,30 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     def get_success_url(self):
         return self.request.path
         
- 
 
-    
+class MatchRegistrations(DatabaseEditPermissionRequired,
+                         TripsYearMixin, FormView):
+    """
+    Match all registrations for this trips year. 
+
+    Backdoor solution in case auto-matching is not
+    working.
+    """
+    template_name = 'db/form.html'
+
+    def get_form(self, **kwargs):
+        return crispify(forms.Form(**kwargs), 'Match')
+
+    def form_valid(self, form):
+        """
+        Try and match all unmatched registrations.
+        """
+        regs = Registration.objects.filter(trips_year=self.get_trips_year())
+        def match(reg):
+            if not reg.trippee:
+                return reg.match()
+        matches = list(filter(None, map(match, regs)))
+        messages.info(self.request, 'Matched %s' % matches)
+        return HttpResponseRedirect(reverse('db:registration_match', kwargs=self.kwargs))
+        
+        
