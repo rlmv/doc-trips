@@ -17,6 +17,20 @@ class MatrixFuncsTestCase(unittest.TestCase):
         m[0][0] = True
         self.assertEqual(m.truncate(), {0: {0: True, 1: None}})
 
+    def test_map(self):
+        rows = [0, 1]
+        cols = [0, 1]
+        m = OrderedMatrix(rows, cols, default=0)
+        n = m.map(lambda x: x + 1)
+        self.assertTrue(m[0][0]==m[0][1]==m[1][0]==m[1][1]==1)
+
+    def test_map_creates_new_instance(self):
+        rows = [0, 1]
+        cols = [0, 1]
+        m = OrderedMatrix(rows, cols, default=0)
+        n = m.map(lambda x: x + 1)
+        self.assertEqual(m[0][0], 1)
+        
 
 class FmtUtilsTest(TripsYearTestCase):
 
