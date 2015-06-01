@@ -344,6 +344,7 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
             if not hasattr(reg, 'trippee'):
                 matches.append(reg.match())
         messages.info(self.request, 'Matched %s' % list(filter(None, matches)))
-        return HttpResponseRedirect(reverse('db:registration_match', kwargs=self.kwargs))
-        
-        
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('db:registration_match', kwargs=self.kwargs)
