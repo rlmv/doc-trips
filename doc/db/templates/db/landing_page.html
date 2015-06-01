@@ -1,18 +1,21 @@
 {% extends "db/base.html" %}
 
 {% block header %}
-<h1> Welcome to the database <small>Trips {{ trips_year }}</small></h1>
+<h1> Trips Database <small>{{ trips_year }}</small></h1>
 {% endblock %}
 
 {% block content %}
 
-<p> You can see things, you can do things. Don't break things. Every user has varying levels of access; for example Trip Leader Trainers can assign leaders to trips and edit leader applications, but can't Schedule Trips or change the dates of Sections. If you try and edit something in the database which you don't have permission to change you will see a <strong>403 Forbidden</strong> page. If you are seeing these pages&mdash;and think they are in error and you should be able to make changes&mdash;check in with the omnipotent Directors.
+<p> Every user has varying levels of access; for example Trip Leader Trainers can assign leaders to trips and edit leader applications, but can't Schedule Trips or change the dates of Sections. If you try and edit something in the database which you don't have permission to change you will see a <strong>403 Forbidden</strong> page. If you are seeing these pages&mdash;and think they are in error and you should be able to make changes&mdash;check in with the omnipotent Directors.
 </p>
 
 <div id="numbering">
+
+  <h3> Trips Numbering </h3>
+
   <p>The following numbering convention was adopted in 2005 to make the trip numbers more consistent.</p>
 
-  <h3>Hundreds Digit (Nxx)</h4>
+  <h4>Hundreds Digit (Nxx)</h4>
 
   <p>The <b>hundreds digit</b> is the type of trip (blank for zero/Hiking):</p>
   <ul class='compact'>
