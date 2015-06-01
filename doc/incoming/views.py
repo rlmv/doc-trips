@@ -339,11 +339,11 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
         Try and match all unmatched registrations.
         """
         regs = Registration.objects.filter(trips_year=self.get_trips_year())
-        def match(reg):
+        matches = []
+        for reg in regs:
             if not reg.trippee:
-                return reg.match()
-        matches = list(filter(None, map(match, regs)))
-        messages.info(self.request, 'Matched %s' % matches)
+                matches.append(reg.match())
+        messages.info(self.request, 'Matched %s' % list(filter(None, matches)))
         return HttpResponseRedirect(reverse('db:registration_match', kwargs=self.kwargs))
         
         
