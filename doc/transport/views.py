@@ -158,8 +158,10 @@ class TransportCounts(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super(TransportCounts, self).get_context_data(**kwargs)
-        # TODO: make three matrices and truncate each
-        context['matrix'] = get_actual_rider_matrix(self.kwargs['trips_year']).truncate()
+        m = get_actual_rider_matrix(self.kwargs['trips_year'])
+        context['dropoff_matrix'] = m.map(lambda x: x.dropping_off).truncate()
+        context['pickup_matrix'] = m.map(lambda x: x.picking_up).truncate()
+        context['return_matrix'] = m.map(lambda x: x.returning).truncate()
         return context
 
 

@@ -10,68 +10,17 @@
 
 <table class="table table-condensed">
 
-  {% for route, dates in matrix.items %}
-  {% if forloop.first %}
-  <tr class="bg-info">
-    <th> </th>
-    <th> Dropoffs </th>
-    {% for date in dates %}
-    <th> {{ date|date:"n/j" }} </th>
-    {% endfor %}
-  </tr>
-  {% endif %}
+  {% with name="Dropoffs" matrix=dropoff_matrix %}
+  {% include "transport/_count_table.html" %}
+  {% endwith %}
 
-  <tr>
-    <th> {{ route }} </th>
-    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
-    {% for date, riders in dates.items %}
-    <td> <a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}">{{ riders.dropping_off|default:'<span class="text-muted">&mdash;</span>' }} </a></td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
+  {% with name="Pickups" matrix=pickup_matrix %}
+  {% include "transport/_count_table.html" %}
+  {% endwith %}
 
-
- {% for route, dates in matrix.items %}
-  {% if forloop.first %}
-  <tr class="bg-info">
-    <th> </th>
-    <th> Pickups </th>
-    {% for date in dates %}
-    <th> {{ date|date:"n/j" }} </th>
-    {% endfor %}
-  </tr>
-  {% endif %}
-
-  <tr>
-    <th> {{ route }} </th>
-    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
-    {% for date, riders in dates.items %}
-    <td><a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ riders.picking_up|default:'<span class="text-muted">&mdash;</span>' }} </a></td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-
-
- {% for route, dates in matrix.items %}
-  {% if forloop.first %}
-  <tr class="bg-info">
-    <th> </th>
-    <th> Returns </th>
-    {% for date in dates %}
-    <th> {{ date|date:"n/j" }} </th>
-    {% endfor %}
-  </tr>
-  {% endif %}
-
-  <tr>
-    <th> {{ route }} </th>
-    <th class="text-muted"> {{ route.vehicle.capacity }} </th>
-    {% for date, riders in dates.items %}
-    <td><a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ riders.returning|default:'<span class="text-muted">&mdash;</span>' }} </a></td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-
+  {% with name="Returns" matrix=return_matrix %}
+  {% include "transport/_count_table.html" %}
+  {% endwith %}
 
 </table>
 
