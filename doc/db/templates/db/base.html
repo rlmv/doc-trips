@@ -48,10 +48,16 @@
       </ul>
     </li>
 
-   <li> <a  href="{% url 'db:email_lists' trips_year=trips_year %}"> <i class="fa fa-envelope"></i> Email Lists </a> </li>
-
-</nav>
-</div>
+    <li>
+      <a href="#"> <i class="fa fa-envelope"></i> Email Lists <i class="fa arrow"></i> </a>
+      <ul class="nav nav-stacked">
+	<li> <a  href="{% url 'db:emails:applicants' trips_year=trips_year %}"> Applicants </a> </li>
+	<li> <a  href="{% url 'db:emails:leaders_by_triptype' trips_year=trips_year %}"> Leaders By Triptype</a> </li>
+	<li> <a  href="{% url 'db:emails:leaders_by_section' trips_year=trips_year %}"> Leaders By Section</a> </li>
+      </ul>
+    </li>
+   </nav>
+  </div>
 </div>
 {% endblock %}
 

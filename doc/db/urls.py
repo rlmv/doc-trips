@@ -40,7 +40,7 @@ database_urlpatterns = [
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),
     url(r'^transport/', include(scheduledtransport_urlpatterns)),
-    url(r'^emails/', include('doc.emails.urls')),
+    url(r'^emails/', include('doc.emails.urls', namespace='emails')),
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
     url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),
     url(r'^counts/transport/', TransportCounts.as_view(), name='transport_counts'),
