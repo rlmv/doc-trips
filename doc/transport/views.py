@@ -10,7 +10,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
 from doc.trips.models import Section, ScheduledTrip
-from doc.utils.matrix import make_ordered_matrix, truncate_matrix
+from doc.utils.matrix import OrderedMatrix
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
@@ -77,7 +77,7 @@ def get_internal_rider_matrix(trips_year):
     
     matrix[route][date] gives you the Riders for that route on that date.
     """
-    
+  
     return _rider_matrix(trips_year, lambda trip: trip.template.max_num_people)
 
 
@@ -99,7 +99,7 @@ def _rider_matrix(trips_year, size_key):
              .select_related('template', 'section', 'template__dropoff__route',
                              'template__pickup__route', 'template__return_route'))
       
-    matrix = make_ordered_matrix(routes, dates, lambda: Riders(0, 0, 0))
+    matrix = OrderedMatrix(routes, dates, lambda: Riders(0, 0, 0))
 
     for trip in trips:
 
@@ -158,10 +158,8 @@ class TransportCounts(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super(TransportCounts, self).get_context_data(**kwargs)
-        context['matrix'] = truncate_matrix(
-            # TODO: make three matrices and truncate each
-            get_actual_rider_matrix(self.kwargs['trips_year'])
-        )
+        # TODO: make three matrices and truncate each
+        context['matrix'] = get_actual_rider_matrix(self.kwargs['trips_year']).truncate()
         return context
 
 

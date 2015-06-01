@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.db import models
 from django.db.models import Q
 
-from doc.utils.matrix import make_ordered_matrix
+from doc.utils.matrix import OrderedMatrix
 
 
 class SectionDatesManager(models.Manager):
@@ -81,7 +81,7 @@ class ScheduledTripManager(models.Manager):
             .select_related('triptype')
         )
 
-        matrix = make_ordered_matrix(templates, sections)
+        matrix = OrderedMatrix(templates, sections)
 
         # see https://docs.djangoproject.com/en/dev/ref/models/querysets/#id7
         # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations

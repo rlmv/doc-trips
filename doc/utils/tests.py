@@ -2,7 +2,7 @@ import unittest
 
 from model_mommy import mommy
 
-from doc.utils.matrix import make_ordered_matrix, truncate_matrix
+from doc.utils.matrix import OrderedMatrix
 from doc.utils.fmt import section_range
 from doc.trips.models import Section
 from doc.test.fixtures import TripsYearTestCase
@@ -13,9 +13,9 @@ class MatrixFuncsTestCase(unittest.TestCase):
     def test_truncate_matrix(self):
         rows = [0, 1]
         cols = [0, 1]
-        m = make_ordered_matrix(rows, cols)
+        m = OrderedMatrix(rows, cols)
         m[0][0] = True
-        self.assertEqual(truncate_matrix(m), {0: {0: True, 1: None}})
+        self.assertEqual(m.truncate(), {0: {0: True, 1: None}})
 
 
 class FmtUtilsTest(TripsYearTestCase):
