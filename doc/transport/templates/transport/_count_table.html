@@ -1,0 +1,24 @@
+{% load links %}
+
+{% for route, dates in matrix.items %}
+{% if forloop.first %}
+<tr class="bg-info">
+  <th> </th>
+  <th> {{ name }} </th>
+  {% for date in dates %}
+  <th> {{ date|date:"n/j" }} </th>
+  {% endfor %}
+</tr>
+{% endif %}
+
+<tr>
+  <th> {{ route|detail_link }} </th>
+  <th class="text-muted"> {{ route.vehicle.capacity }} </th>
+  {% for date, num_riders in dates.items %}
+  <td>
+     <a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}" {% if num_riders > route.vehicle.capacity %} class="text-bright-danger" {% endif %}> {{ num_riders|default:'<span class="text-muted">&mdash;</span>' }} 
+     </a>
+  </td>
+  {% endfor %}
+</tr>
+{% endfor %}
