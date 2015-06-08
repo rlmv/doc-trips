@@ -2,7 +2,7 @@
 {% load links %}
 
 {% block header %}
-<h2> Incoming Students <small><a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"><span class="fa fa-upload"></span> Upload incoming students </a> </small></h2>
+<h2> <span class="badge"> {{ trippees.count }} </span> Incoming Students <small><a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"><span class="fa fa-upload"></span> Upload incoming students </a> </small></h2>
 {% endblock %}
 
 {% block content %}
