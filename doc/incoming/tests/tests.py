@@ -201,6 +201,16 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
         IncomingStudent.objects.get(netid='id_1')
 
 
+class IncomingStudentsManagerTestCase(TripsYearTestCase):
+
+    def test_unregistered(self):
+        trips_year = self.init_current_trips_year()
+        registration = mommy.make(Registration, trips_year=trips_year)
+        registered = mommy.make(IncomingStudent, trips_year=trips_year, registration=registration)
+        unregistered = mommy.make(IncomingStudent, trips_year=trips_year)
+        self.assertEqual([unregistered], list(IncomingStudent.objects.unregistered(trips_year)))
+        
+
 class RegistrationViewsTestCase(WebTestCase):
 
     csrf_checks = False

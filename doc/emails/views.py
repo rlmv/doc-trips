@@ -8,6 +8,7 @@ from doc.db.views import TripsYearMixin
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.applications.models import GeneralApplication
 from doc.trips.models import TripType, Section
+from doc.incoming.models import IncomingStudent
 
 
 class BaseEmailList(DatabaseReadPermissionRequired, TripsYearMixin,
@@ -101,3 +102,25 @@ class LeadersBySection(BaseEmailList):
                  emails(leaders.filter(assigned_trip__section=section)))
             )
         return email_list
+
+
+class IncomingStudents(BaseEmailList):
+
+    headline = "Incoming Student Emails"
+
+    def get_email_lists(self):
+        trips_year = self.get_trips_year()
+        unregistered = IncomingStudent.objects.unregistered(
+            trips_year=trips_year
+        )
+        email_list = [
+            ('unregistered personal emails', self.personal(unregistered)),
+            ('unregistered blitz', self.blitz(unregistered)),
+        ]
+        return email_list
+
+    def personal(self, qs):
+        return list(map(lambda x: x.email, qs))
+
+    def blitz(self, qs):
+        return list(map(lambda x: x.blitz, qs))

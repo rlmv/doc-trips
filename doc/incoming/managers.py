@@ -13,6 +13,9 @@ def get_netids(incoming_students):
 
 class IncomingStudentManager(models.Manager):
 
+    def unregistered(self, trips_year):
+        return self.filter(trips_year=trips_year, registration__isnull=True)
+
     def create_from_csv_file(self, file, trips_year):
         """
         Import incoming students from a CSV file. 
