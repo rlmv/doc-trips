@@ -16,23 +16,24 @@
 {% endif %}
 
 <h4> Preferences </h4>
-{% if registration and registration.is_non_swimmer %}
+{% if registration %}
+{% if registration.is_non_swimmer %}
 <p> {{ object }} has indicated on their registration that they are a NON-SWIMMER. All preferences shown here are trips which allow non-swimmers <p>
 {% endif %}
 
-<table class="table table-condensed">
-  <tr>
-    <td class="col-sm-3"> <strong> First choice trips </strong></td> 
-    <td> {{ firstchoice_trips|join:", "|default:"N/A" }} </td> 
-  </tr>
-  <tr>
-    <td> <strong> Preferred trips </strong></td> 
-    <td> {{ preferred_trips|join:", "|default:"N/A" }} </td> </tr>
-  <tr>
-    <td> <strong> Available trips </strong></td> 
-    <td> {{ available_trips|join:", "|default:"N/A" }} </td> 
-  </tr>
-</table>
+<h5> First Choice Trips </h5>
+{% regroup firstchoice_trips by template.triptype as trips %}
+{% include "applications/_group_by_triptype.html" %}
+<h5> Preferred Trips </h5>
+{% regroup preferred_trips by template.triptype as trips %}
+{% include "applications/_group_by_triptype.html" %}
+<h5> Available Trips </h5>
+{% regroup available_trips by template.triptype as trips %}
+{% include "applications/_group_by_triptype.html" %}
+
+{% else %}
+<p> N/A </p>
+{% endif %}
 
 {% crispy form %}
 

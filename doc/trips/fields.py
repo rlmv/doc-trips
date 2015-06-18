@@ -26,7 +26,7 @@ class ScheduledTripChoiceField(forms.ModelChoiceField):
     """
     def label_from_instance(self, obj):
         return "{}{}: {}: {}".format(
-            obj.section, obj.template.name,
+            obj.section.name, obj.template.name,
             obj.template.triptype.name,
             obj.template.description_summary
         )
