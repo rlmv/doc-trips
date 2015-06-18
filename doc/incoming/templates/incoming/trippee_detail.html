@@ -3,7 +3,7 @@
 {% load links %}
 
 {% block header %}
-<h2> {{ trippee }} <small> Trippee </small></h2>
+<h2> {{ trippee }} <small> Trippee {{ object|delete_link }} </small></h2>
 {% endblock %}
 
 {% block content %}

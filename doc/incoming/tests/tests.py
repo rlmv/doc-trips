@@ -268,3 +268,17 @@ class RegistrationFormTestCase(TripsYearTestCase):
         reg = mommy.make(Registration, trips_year=prev_trips_year)
         form = RegistrationForm(instance=reg)
         self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])
+
+
+class IncomingStudentViewsTestCase(WebTestCase):
+    
+    def test_delete_view(self):
+        trips_year = self.init_current_trips_year()
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year)
+        url = incoming.get_delete_url()
+        res = self.app.get(url, user=self.mock_director())
+        res = res.form.submit().follow()
+        self.assertEqual(res.request.path, 
+                         reverse('db:incomingstudent_index', kwargs={'trips_year': trips_year}))
+        with self.assertRaises(IncomingStudent.DoesNotExist):
+            IncomingStudent.objects.get(pk=incoming.pk)

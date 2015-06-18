@@ -19,7 +19,7 @@ from doc.incoming.forms import (
 )
 from doc.core.models import Settings
 from doc.db.models import TripsYear
-from doc.db.views import TripsYearMixin, DatabaseUpdateView
+from doc.db.views import TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
@@ -240,6 +240,17 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
             'db:incomingstudent_update_assignment', kwargs=self.kwargs
         )
         return super(IncomingStudentDetailView, self).get_context_data(**kwargs)
+
+
+class IncomingStudentDeleteView(DatabaseDeleteView):
+    """ 
+    Delete an incoming student.
+    """
+    model = IncomingStudent
+
+    def get_success_url(self):
+        return reverse('db:incomingstudent_index',
+                       kwargs={'trips_year': self.get_trips_year()})
 
 
 class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
