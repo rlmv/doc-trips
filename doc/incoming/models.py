@@ -263,7 +263,8 @@ class Registration(DatabaseModel):
         qs = (ScheduledTrip.objects
               .filter(trips_year=self.trips_year)
               .filter(models.Q(section__in=self.preferred_sections.all()) |
-                      models.Q(section__in=self.available_sections.all())))
+                      models.Q(section__in=self.available_sections.all()))
+              .order_by('template__triptype'))
         if self.is_non_swimmer:
             return qs.filter(template__non_swimmers_allowed=True)
         return qs
