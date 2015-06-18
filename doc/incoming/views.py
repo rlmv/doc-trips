@@ -259,7 +259,7 @@ class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
     template_name = 'incoming/update_trip.html'
     form_class = TripAssignmentForm
 
-    def get_context_date(self, **kwargs):
+    def get_context_data(self, **kwargs):
         reg = self.object.get_registration()
         if reg:
             kwargs['firstchoice_trips'] = reg.get_firstchoice_trips()

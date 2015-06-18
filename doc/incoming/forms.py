@@ -7,7 +7,7 @@ from doc.db.models import TripsYear
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, ScheduledTrip
-from doc.trips.fields import TrippeeSectionChoiceField
+from doc.trips.fields import TrippeeSectionChoiceField, ScheduledTripChoiceField
 from doc.transport.models import Stop
 
 
@@ -85,17 +85,19 @@ class TripAssignmentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)
-        self.fields['trip_assignment'].queryset = (
-            ScheduledTrip.objects
-            .filter(trips_year=kwargs['instance'].trips_year)
-            .select_related('template', 'section')
+        self.fields['trip_assignment'] = ScheduledTripChoiceField(
+            queryset = (
+                ScheduledTrip.objects
+                .filter(trips_year=kwargs['instance'].trips_year)
+                .select_related('template', 'section')
+            )
         )
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-3'
         self.helper.field_class = 'col-lg-7'     
         self.helper.layout = Layout(
             'trip_assignment',
-            Submit('submit', 'Submit'),
+            Submit('submit', 'Update'),
         )
 
 
