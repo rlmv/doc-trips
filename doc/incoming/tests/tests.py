@@ -209,7 +209,21 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         registered = mommy.make(IncomingStudent, trips_year=trips_year, registration=registration)
         unregistered = mommy.make(IncomingStudent, trips_year=trips_year)
         self.assertEqual([unregistered], list(IncomingStudent.objects.unregistered(trips_year)))
-        
+
+    def test_availability_for_trip(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        available = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            registration__preferred_sections=[trip.section],
+            registration__available_triptypes=[trip.template.triptype]
+        )
+        unavailable = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            registration__preferred_sections=[trip.section]
+            # but no triptype pref
+        )
+        self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
 
 class RegistrationViewsTestCase(WebTestCase):
 

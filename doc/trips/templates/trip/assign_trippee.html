@@ -1,0 +1,45 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+{% load links %}
+
+{% block header %}
+  <h3> Add Trippee to {{ trip }} <small> {{ trip.template.description_summary }} </small></h3>
+{% endblock %}
+
+{% block content %}
+
+{#
+<h5> Current Assigned Leaders </h5>
+<p>
+  <ul>
+  {% for leader in trip.leaders.all %}
+  <li>{{ leader|detail_link }} ({{ leader.gender|lower }})</li>
+  {% endfor %}
+  </ul>
+</p> #}
+
+<h4> # WHAT ABOUT SWIMMING? </h4>
+
+<h4> Prospective Trippees </h4>
+
+This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. 
+<table class="table table-condensed table=striped">
+  <tr>
+    <th/>
+    <th> Gender </th>
+    <th> Trip Assignment </th>
+    <th> {{ trip.template.triptype }} </th>
+    <th> {{ trip.section }} </th>
+  </tr>
+  {% for trippee in available_trippees %}
+  <tr>
+    <td> {{ trippee|detail_link }} </td>
+    <td>  ? </td>
+    <td> - </td>
+    <td> - </td>
+  {% endfor %}
+
+</table>
+
+
+{% endblock content %}

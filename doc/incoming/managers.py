@@ -2,6 +2,7 @@
 import csv
 
 from django.db import models
+from django.db.models import Q
 
 from doc.db.models import TripsYear
 
@@ -15,6 +16,29 @@ class IncomingStudentManager(models.Manager):
 
     def unregistered(self, trips_year):
         return self.filter(trips_year=trips_year, registration__isnull=True)
+
+    def available_for_trip(self, trip):
+        """
+        Return all incoming students who indicate on their 
+        registration that they are available for, prefer, or have
+        chosen trip as their first choice.
+
+        Unregistered students are not included.
+
+        TODO: what about swimming??
+        """
+        sxn_pref = Q(registration__preferred_sections=trip.section)
+        sxn_avail = Q(registration__available_sections=trip.section)
+        type_top = Q(registration__firstchoice_triptype=trip.template.triptype)
+        type_pref = Q(registration__preferred_triptypes=trip.template.triptype)
+        type_avail = Q(registration__available_triptypes=trip.template.triptype)
+        
+        return (
+            self.filter(trips_year=trip.trips_year)
+            .filter(sxn_pref | sxn_avail)
+            .filter(type_top | type_pref | type_avail)
+            .distinct()
+        )
 
     def create_from_csv_file(self, file, trips_year):
         """

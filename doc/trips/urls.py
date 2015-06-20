@@ -77,10 +77,11 @@ section_urlpatterns = [
 
 leader_urlpatterns = [
     url(r'^$', LeaderTrippeeIndexView.as_view(), name='leader_index'),
-    url(r'^assign/(?P<trip>[0-9]+)$',
+    url(r'^assign/trippee/(?P<trip>[0-9]+)$', AssignTrippee.as_view(), name='assign_trippee'),
+    url(r'^assign/leader/(?P<trip>[0-9]+)$',
         AssignTripLeaderView.as_view(), name='assign_leader'),
-    url(r'^assign/(?P<leader_pk>[0-9]+)/update/$',
+    url(r'^assign/leader/(?P<leader_pk>[0-9]+)/update/$',
         AssignLeaderToTrip.as_view(), name='assign_leader_to_trip'),
-    url(r'^remove/(?P<leader_pk>[0-9]+)$',
+    url(r'^remove/leader/(?P<leader_pk>[0-9]+)$',
         RemoveAssignedTrip.as_view(), name='remove_leader_from_trip'),
 ]

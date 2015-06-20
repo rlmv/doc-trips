@@ -12,6 +12,7 @@ from braces.views import FormValidMessageMixin, SetHeadlineMixin
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from doc.trips.forms import TripLeaderAssignmentForm, SectionForm, AssignmentForm
 from doc.applications.models import LeaderSupplement, GeneralApplication
+from doc.incoming.models import IncomingStudent
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
                           DatabaseListView, DatabaseDetailView, 
                           TripsYearMixin)
@@ -228,6 +229,37 @@ class LeaderTrippeeIndexView(DatabaseListView):
 
 PREFER = 'prefer'
 AVAILABLE = 'available'
+
+class _AssignMixin():
+    
+    def get_trip(self):
+        if not hasattr(self, 'trip'):
+            self.trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+        return self.trip
+
+
+class AssignTrippee(DatabaseListView, _AssignMixin):
+    """ 
+    Assign trippees to a trip.
+
+    The trip's pk is passed in the url arg.
+    """
+    model = IncomingStudent
+    template_name = 'trip/assign_trippee.html'
+    context_object_name = 'available_trippees'
+
+    def get_queryset(self):
+        """ 
+        All trippees which prefer, are available, or chose this
+        trip as their first choice.
+        """
+        return self.model.objects.available_for_trip(self.get_trip())
+
+    def get_context_data(self, **kwargs):
+        context = super(AssignTrippee, self).get_context_data(**kwargs)
+        context['trip'] = trip = self.get_trip()
+        return context
+
 
 class AssignTripLeaderView(DatabaseListView):
     """ 
