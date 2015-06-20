@@ -24,8 +24,6 @@ class IncomingStudentManager(models.Manager):
         chosen trip as their first choice.
 
         Unregistered students are not included.
-
-        TODO: what about swimming??
         """
         sxn_pref = Q(registration__preferred_sections=trip.section)
         sxn_avail = Q(registration__available_sections=trip.section)
@@ -44,7 +42,6 @@ class IncomingStudentManager(models.Manager):
             .filter(type_top | type_pref | type_avail)
             .distinct()
         )
-
 
     def create_from_csv_file(self, file, trips_year):
         """
