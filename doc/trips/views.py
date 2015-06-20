@@ -207,17 +207,22 @@ class SectionDeleteView(DatabaseDeleteView):
     success_url_pattern = 'db:section_index'
                                
 
-class TripLeaderIndexView(DatabaseListView):
-    """ Show all ScheduledTrips and assigned leaders + links to assign leaders """
+class LeaderTrippeeIndexView(DatabaseListView):
+    """ 
+    Show all ScheduledTrips with leaders and trippees.
+    
+    Links to pages to assign leaders and trippees.
+    """
     model = ScheduledTrip
     template_name = 'trip/leaders.html'
     context_object_name = 'trips'
     
     def get_queryset(self):
         return (
-            super(TripLeaderIndexView, self).get_queryset()
+            super(LeaderTrippeeIndexView, self).get_queryset()
             .select_related('section', 'template')
             .prefetch_related('leaders', 'leaders__applicant')
+            .prefetch_related('trippees')
             .order_by('section', 'template')
         )
 

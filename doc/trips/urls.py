@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.trips.views import *
-from doc.trips.views import (TripLeaderIndexView, 
+from doc.trips.views import (LeaderTrippeeIndexView, 
                              RemoveAssignedTrip, AssignLeaderToTrip)
 
 """
@@ -76,7 +76,7 @@ section_urlpatterns = [
 ]
 
 leader_urlpatterns = [
-    url(r'^$', TripLeaderIndexView.as_view(), name='leader_index'),
+    url(r'^$', LeaderTrippeeIndexView.as_view(), name='leader_index'),
     url(r'^assign/(?P<trip>[0-9]+)$',
         AssignTripLeaderView.as_view(), name='assign_leader'),
     url(r'^assign/(?P<leader_pk>[0-9]+)/update/$',

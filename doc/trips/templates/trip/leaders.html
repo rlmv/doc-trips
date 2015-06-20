@@ -3,7 +3,7 @@
 {% load links %}
 
 {% block header %}
-  <h3> Trip Leaders </h3>
+  <h3> Trip Leaders and Trippees </h3>
 {% endblock %}
 
 {% block content %}
@@ -16,16 +16,27 @@
   <tr class="bg-info">
     <th> {{ section.grouper }} </th>
     <th> Leaders </th>
+    <th> Trippees </th>
   </tr>
   {% for trip in section.list %}
   <tr> 
-    <td class="col-sm-3"> {{ trip|detail_link }}: {{ trip.template.description_summary }} </td>
-    <td class="col-sm-3"> 
+    <td class="col-sm-5"> 
+      {{ trip|detail_link }}: {{ trip.template.description_summary }} 
+    </td>
+
+    <td class="col-sm-4"> 
       {% for leader in trip.leaders.all %} 
       {{ leader|detail_link }} <br>
       {% endfor %}
       <a href="{% url 'db:assign_leader' trips_year=trips_year trip=trip.pk %}">add</a>
     </td>
+
+    <td class="col-sm-3">
+      {% for trippee in trip.trippees.all %} 
+      {{ trippee|detail_link }} <br>
+      {% endfor %}
+    </td>
+
   </tr>
   {% endfor %}
 </table>
