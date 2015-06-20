@@ -1,13 +1,20 @@
 
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.db.models.signals import post_migrate
+from django.dispatch import receiver
 
 from doc.views import HomePage
 from doc.permissions import initialize_groups_and_permissions
 from doc.core import urls as core_urls
 
 admin.autodiscover()
-initialize_groups_and_permissions()
+
+# update the auth groups after each migration
+@receiver(post_migrate)
+def sync_auth(**kwargs):
+    initialize_groups_and_permissions()
+
 handler403 = 'doc.views.permission_denied'
 
 urlpatterns = [
