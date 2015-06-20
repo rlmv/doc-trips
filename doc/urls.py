@@ -24,11 +24,7 @@ urlpatterns = [
     url(r'^permissions/', include('doc.permissions.urls', namespace='permissions')),
     url(r'^timetable/', include('doc.timetable.urls', namespace='timetable')),
     url(r'^db/', include('doc.db.urls', namespace='db')),
-
     url(r'^volunteers/', include('doc.applications.urls', namespace='applications')),
-    # TODO: remove the 'applications' urls in favor of 'volunteers'
-    url(r'^applications/', include('doc.applications.urls', namespace='applications')),
-
     url(r'^croos/', include('doc.croos.urls', namespace='croos')),
     url(r'^incoming/', include('doc.incoming.urls', namespace='incoming')),
     url(r'^core/', include(core_urls, namespace='core')),
