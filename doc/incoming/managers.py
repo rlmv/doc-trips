@@ -32,13 +32,19 @@ class IncomingStudentManager(models.Manager):
         type_top = Q(registration__firstchoice_triptype=trip.template.triptype)
         type_pref = Q(registration__preferred_triptypes=trip.template.triptype)
         type_avail = Q(registration__available_triptypes=trip.template.triptype)
+
+        qs = self
+        if not trip.template.non_swimmers_allowed:  # swimmers only
+            from doc.incoming.models import Registration
+            qs = qs.exclude(registration__swimming_ability=Registration.NON_SWIMMER)
         
         return (
-            self.filter(trips_year=trip.trips_year)
+            qs.filter(trips_year=trip.trips_year)
             .filter(sxn_pref | sxn_avail)
             .filter(type_top | type_pref | type_avail)
             .distinct()
         )
+
 
     def create_from_csv_file(self, file, trips_year):
         """

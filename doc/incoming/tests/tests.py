@@ -225,6 +225,26 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         )
         self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
 
+    def test_non_swimmer_availability_for_trip(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year, 
+            template__non_swimmers_allowed=False
+        )
+        available = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            registration__preferred_sections=[trip.section],
+            registration__available_triptypes=[trip.template.triptype],
+            registration__swimming_ability=Registration.BEGINNER
+        )
+        unavailable = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            registration__preferred_sections=[trip.section],
+            registration__available_triptypes=[trip.template.triptype],
+            registration__swimming_ability=Registration.NON_SWIMMER
+        )
+        self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
+
 class RegistrationViewsTestCase(WebTestCase):
 
     csrf_checks = False
