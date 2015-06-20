@@ -28,13 +28,14 @@
       {% for leader in trip.leaders.all %} 
       {{ leader|detail_link }} <br>
       {% endfor %}
-      <a href="{% url 'db:assign_leader' trips_year=trips_year trip=trip.pk %}">add</a>
+      <a href="{% url 'db:assign_leader' trips_year=trips_year trip=trip.pk %}"> add </a>
     </td>
 
     <td class="col-sm-3">
       {% for trippee in trip.trippees.all %} 
       {{ trippee|detail_link }} <br>
       {% endfor %}
+      <a href="{% url 'db:assign_trippee' trips_year=trips_year trip=trip.pk %}"> add</a> 
     </td>
 
   </tr>

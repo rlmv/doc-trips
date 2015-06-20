@@ -86,7 +86,8 @@ class TripAssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['trip_assignment'] = ScheduledTripChoiceField(
-            queryset = (
+            required=False,
+            queryset=(
                 ScheduledTrip.objects
                 .filter(trips_year=kwargs['instance'].trips_year)
                 .select_related('template', 'section')

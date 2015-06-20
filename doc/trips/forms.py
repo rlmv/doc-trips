@@ -7,6 +7,7 @@ from crispy_forms.layout import Submit
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from doc.applications.models import LeaderSupplement, GeneralApplication
+from doc.incoming.models import IncomingStudent
 from doc.trips.models import Section, ScheduledTrip
 
 
@@ -79,3 +80,24 @@ class AssignmentForm(forms.ModelForm):
         if self.cleaned_data.get('assigned_trip'):
             self.instance.status = GeneralApplication.LEADER
         return super(AssignmentForm, self).clean()
+
+
+class TrippeeAssignmentForm(forms.ModelForm):
+    
+    class Meta:
+        model = IncomingStudent
+        fields = ['trip_assignment']
+        widgets = {
+            'trip_assignment': forms.HiddenInput()
+        }
+
+    def __init__(self, trips_year, *args, **kwargs):
+        super(TrippeeAssignmentForm, self).__init__(*args, **kwargs)
+        self.fields['trip_assignment'].queryset = (
+            ScheduledTrip.objects.filter(trips_year=trips_year)
+        )
+        self.helper = FormHelper(self)
+        label = 'Assign to %s' % (
+            ScheduledTrip.objects.get(pk=self.data['trip_assignment'])
+        )
+        self.helper.add_input(Submit('submit', label))

@@ -8,15 +8,15 @@
 
 {% block content %}
 
-{#
-<h5> Current Assigned Leaders </h5>
+
+<h5> Current Trippees </h5>
 <p>
   <ul>
-  {% for leader in trip.leaders.all %}
-  <li>{{ leader|detail_link }} ({{ leader.gender|lower }})</li>
-  {% endfor %}
+    {% for trippee in trip.trippees.all %}
+    <li> {{ trippee|detail_link }} ({{ trippee.registration.gender|default:trippee.gender|lower }} &mdash; {{ trippee.address }}) </li>
+    {% endfor %}
   </ul>
-</p> #}
+</p> 
 
 <h4> Prospective Trippees </h4>
 
@@ -25,6 +25,7 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
   <tr>
     <th/>
     <th> Gender </th>
+    <th> Address </th>
     <th> Trip Assignment </th>
     <th> {{ trip.template.triptype }} </th>
     <th> {{ trip.section }} </th>
@@ -32,7 +33,17 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
   {% for trippee in available_trippees %}
   <tr>
     <td> {{ trippee|detail_link }} </td>
-    <td> ? </td>
+    <td> {{ trippee.registration.gender|default:trippee.gender|lower }} </td>
+    <td> {{ trippee.address }} </td>
+    <td> 
+      {% if trippee.trip_assignment %}
+      {{ trippee.trip_assignment|detail_link }}
+      {% else %}
+      <a class="btn btn-xs btn-primary" href="{{ trippee.assignment_url }}">
+	Assign to {{ trip }}
+      </a>
+      {% endif %}
+    </td>
     <td> - </td>
     <td> - </td>
   {% endfor %}

@@ -10,13 +10,18 @@ from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
-from doc.trips.forms import TripLeaderAssignmentForm, SectionForm, AssignmentForm
+from doc.trips.forms import (
+    TripLeaderAssignmentForm, SectionForm, AssignmentForm,
+    TrippeeAssignmentForm
+)
 from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.incoming.models import IncomingStudent
-from doc.db.views import (DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-                          DatabaseListView, DatabaseDetailView, 
-                          TripsYearMixin)
-from doc.permissions.views import ApplicationEditPermissionRequired, DatabaseReadPermissionRequired
+from doc.db.views import (
+    DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+    DatabaseListView, DatabaseDetailView, TripsYearMixin)
+from doc.permissions.views import (
+    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired
+)
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
 
@@ -252,13 +257,56 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
         """ 
         All trippees which prefer, are available, or chose this
         trip as their first choice.
+
+        All students in the qs have a registration attached.
         """
         return self.model.objects.available_for_trip(self.get_trip())
 
     def get_context_data(self, **kwargs):
         context = super(AssignTrippee, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
+
+        for trippee in self.object_list:
+            url = reverse('db:assign_trippee_to_trip', kwargs={
+                'trips_year': self.get_trips_year(),
+                'trippee_pk': trippee.pk
+            })
+            trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
         return context
+
+
+class AssignTrippeeToTrip(FormValidMessageMixin, SetHeadlineMixin,
+                          DatabaseUpdateView):
+
+    model = IncomingStudent
+    lookup_url_kwarg = 'trippee_pk'
+    template_name = 'db/update.html'
+    form_class = TrippeeAssignmentForm
+
+    def get(self, request, *args, **kwargs):
+        """ Pull the 'assign_to' trip from GET qs """
+        data = {'trip_assignment': request.GET['assign_to']}
+        form = self.get_form(data=data)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+    def get_form(self, **kwargs):
+        return self.get_form_class()(self.get_trips_year(), **kwargs)
+    
+    def get_form_valid_message(self):
+        """ Flash success message """
+        return '{} assigned to {}'.format(
+            self.object, self.object.trip_assignment
+        )
+
+    def get_headline(self):
+        self.object = self.get_object()
+        return 'Assign {} to trip'.format(self.object)
+
+    def get_success_url(self):
+        """ Override DatabaseUpdateView default """
+        return reverse('db:leader_index',
+                       kwargs={'trips_year': self.get_trips_year()})
 
 
 class AssignTripLeaderView(DatabaseListView):

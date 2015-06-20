@@ -269,6 +269,24 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(section_preference, 'available')
         
 
+class AssignTrippeeTestCase(WebTestCase):
+
+    def test_trip_assignment(self):
+        trips_year = self.init_current_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        trippee = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            registration__preferred_sections=[trip.section],
+            registration__preferred_triptypes=[trip.template.triptype]
+        )
+        url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        res = self.app.get(url, user=self.mock_director())
+        res = res.click(description="Assign to") 
+        res.form.submit()  # assign to trip - first (and only) form on page
+        trippee = IncomingStudent.objects.get(pk=trippee.pk)
+        self.assertEqual(trippee.trip_assignment, trip)
+
+
 class ScheduledTripManagerTestCase(TripsTestCase):
     
     def test_simple_matrix(self):
