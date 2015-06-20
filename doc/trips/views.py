@@ -15,7 +15,7 @@ from doc.trips.forms import (
     TrippeeAssignmentForm
 )
 from doc.applications.models import LeaderSupplement, GeneralApplication
-from doc.incoming.models import IncomingStudent
+from doc.incoming.models import IncomingStudent, Registration
 from doc.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, TripsYearMixin)
@@ -232,6 +232,7 @@ class LeaderTrippeeIndexView(DatabaseListView):
             .order_by('section', 'template')
         )
 
+FIRST_CHOICE = 'first choice'
 PREFER = 'prefer'
 AVAILABLE = 'available'
 
@@ -266,12 +267,33 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
         context = super(AssignTrippee, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
 
+        # TODO: refactor this...
+        triptype = trip.template.triptype
+        triptype_preference = {}
+        for pair in Registration.available_triptypes.through.objects.filter(triptype=triptype):
+            triptype_preference[pair.registration_id] = AVAILABLE
+        for pair in Registration.preferred_triptypes.through.objects.filter(triptype=triptype):
+            triptype_preference[pair.registration_id] = PREFER
+        for registration in Registration.objects.filter(trips_year=self.get_trips_year()):
+            if registration.firstchoice_triptype == triptype:
+                triptype_preference[registration.id] = FIRST_CHOICE
+
+        # TODO: refactor this...
+        section = trip.section
+        section_preference = {}
+        for pair in Registration.available_sections.through.objects.filter(section=section):
+            section_preference[pair.registration_id] = AVAILABLE
+        for pair in Registration.preferred_sections.through.objects.filter(section=section):
+            section_preference[pair.registration_id] = PREFER
+
         for trippee in self.object_list:
             url = reverse('db:assign_trippee_to_trip', kwargs={
                 'trips_year': self.get_trips_year(),
                 'trippee_pk': trippee.pk
             })
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
+            trippee.triptype_preference = triptype_preference[trippee.registration.id]
+            trippee.section_preference = section_preference[trippee.registration.id]
         return context
 
 
