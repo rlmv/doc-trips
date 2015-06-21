@@ -4,6 +4,7 @@ PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 COVERAGE=$(VENV)/bin/coverage
 MANAGE=$(PYTHON) manage.py
+DB=doc/db.sqlite3
 
 .PHONY: install migrations migrate test coverage clean deploy
 
@@ -40,3 +41,7 @@ coverage:
 clean: 
 	rm -rf *.pyc
 	rm -rf *~
+
+flush:
+	$(MANAGE) sqlflush | $(MANAGE) dbshell
+
