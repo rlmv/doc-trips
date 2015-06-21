@@ -2,7 +2,11 @@
 {% load links %}
 
 {% block header %}
-<h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations </h2>
+<h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations 
+  <a class="btn btn-success" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
+    <i class="fa fa-download"></i> Requesting Financial Aid 
+  </a>
+</h2>
 {% endblock %}
 
 {% block content %}

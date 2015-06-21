@@ -11,7 +11,7 @@ from doc.transport.models import Stop
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
-from doc.incoming.managers import IncomingStudentManager
+from doc.incoming.managers import IncomingStudentManager, RegistrationManager
 from doc.users.models import NetIdField
 
 logger = logging.getLogger(__name__)
@@ -97,6 +97,10 @@ class IncomingStudent(DatabaseModel):
 
 
 class Registration(DatabaseModel):
+    """ 
+    Registration information for an incoming student.
+    """
+    objects = RegistrationManager()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     

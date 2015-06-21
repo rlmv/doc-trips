@@ -8,6 +8,7 @@ from model_mommy import mommy
 from doc.test.fixtures import WebTestCase
 from doc.applications.tests import ApplicationTestMixin
 from doc.applications.models import GeneralApplication
+from doc.incoming.models import Registration
 
 
 class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
@@ -34,4 +35,3 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         self.assertEqual(row['netid'], application.applicant.netid)
         with self.assertRaises(StopIteration):
             next(reader)
-        

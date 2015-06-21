@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 
 from doc.db.models import TripsYear
+from doc.utils.choices import YES
 
 
 def get_netids(incoming_students):
@@ -96,5 +97,15 @@ class IncomingStudentManager(models.Manager):
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
+     
+   
+class RegistrationManager(models.Manager):
+
+    def want_financial_aid(self, trips_year):
+        """
+        All registrations for trips_year requesting financial aid.
+        """
+        return self.filter(
+            trips_year=trips_year, financial_assistance=YES
+        )
         
-       

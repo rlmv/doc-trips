@@ -9,6 +9,7 @@ from django.db.models import Avg
 from doc.db.views import TripsYearMixin
 from doc.applications.models import GeneralApplication
 from doc.permissions.views import DatabaseReadPermissionRequired
+from doc.incoming.models import Registration
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -104,3 +105,16 @@ class CrooApplicationsCSV(GenericReportView):
                user.netid, avg_score]
         return row + [grade.grade for grade in
                       application.croo_supplement.grades.all()]
+
+
+class FinancialAidCSV(GenericReportView):
+
+    file_prefix = 'Financial-aid'
+    header = ['name', 'preferred name', 'netid', 'blitz', 'email']
+    
+    def get_queryset(self):
+        return Registration.objects.want_financial_aid(self.get_trips_year())
+
+    def get_row(self, reg):
+        user = reg.user
+        return [user.name, reg.name, user.netid, user.email, reg.email]

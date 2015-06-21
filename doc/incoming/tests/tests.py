@@ -316,3 +316,20 @@ class IncomingStudentViewsTestCase(WebTestCase):
                          reverse('db:incomingstudent_index', kwargs={'trips_year': trips_year}))
         with self.assertRaises(IncomingStudent.DoesNotExist):
             IncomingStudent.objects.get(pk=incoming.pk)
+
+
+class RegistrationManagerTestCase(TripsYearTestCase):
+    
+    def test_requesting_financial_aid(self):
+        trips_year = self.init_current_trips_year()
+        requesting = mommy.make(
+            Registration, trips_year=trips_year,
+            financial_assistance='YES'
+        )
+        not_requesting = mommy.make(
+            Registration, trips_year=trips_year,
+            financial_assistance='NO'
+        )
+        self.assertEqual(
+            [requesting], list(Registration.objects.want_financial_aid(trips_year))
+        )
