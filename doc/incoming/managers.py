@@ -115,4 +115,9 @@ class RegistrationManager(models.Manager):
         """
         return self.filter(trips_year=trips_year).exclude(bus_stop=None)
 
-   
+    def unmatched(self, trips_year):
+        """
+        All registrations for trips_year which are not associated
+        with an IncomingStudent object.
+        """
+        return self.filter(trips_year=trips_year, trippee__isnull=True)

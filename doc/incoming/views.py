@@ -165,11 +165,18 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
 class RegistrationIndexView(DatabaseReadPermissionRequired, 
                             TripsYearMixin, ListView):
-    """ All trippee registrations """
-
+    """ 
+    All trippee registrations 
+    """
     model = Registration
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
+
+    def get_context_data(self, **kwargs):
+        kwargs['unmatched'] = (
+            Registration.objects.unmatched(self.get_trips_year())
+        )
+        return super(RegistrationIndexView, self).get_context_data(**kwargs)
 
 
 class RegistrationDetailView(DatabaseReadPermissionRequired,

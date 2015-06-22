@@ -17,6 +17,17 @@
 
 {% block content %}
 
+{% if unmatched %}
+<div class="alert alert-danger alert">
+  <h4> <i class="fa fa-warning"></i> The following registrations are not matched to Incoming Student data: </h4>
+  <ul>
+    {% for reg in unmatched %}
+    <li> {{ reg|detail_link }} </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 <table class="table table-condensed">
   <tr>
     <th> Registration </th>

@@ -348,3 +348,9 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         )
         self.assertEqual([requesting], list(Registration.objects.want_bus(trips_year)))
 
+    def test_unmatched(self):
+        trips_year = self.init_current_trips_year()
+        matched = mommy.make(Registration, trips_year=trips_year)
+        mommy.make(IncomingStudent, trips_year=trips_year, registration=matched)
+        unmatched = mommy.make(Registration, trips_year=trips_year)
+        self.assertEqual([unmatched], list(Registration.objects.unmatched(trips_year)))
