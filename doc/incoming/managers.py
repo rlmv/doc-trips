@@ -108,4 +108,11 @@ class RegistrationManager(models.Manager):
         return self.filter(
             trips_year=trips_year, financial_assistance=YES
         )
-        
+     
+    def want_bus(self, trips_year):
+        """
+        All registrations for trips_year requesting an external bus
+        """
+        return self.filter(trips_year=trips_year).exclude(bus_stop=None)
+
+   

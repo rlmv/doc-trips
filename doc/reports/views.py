@@ -118,3 +118,16 @@ class FinancialAidCSV(GenericReportView):
     def get_row(self, reg):
         user = reg.user
         return [user.name, reg.name, user.netid, user.email, reg.email]
+
+
+class ExternalBusCSV(GenericReportView):
+    
+    file_prefix = 'External-Bus-Requests'
+    header = ['name', 'preferred_name', 'netid', 'requested stop', 'on route']
+    
+    def get_queryset(self):
+        return Registration.objects.want_bus(self.get_trips_year())
+        
+    def get_row(self, reg):
+        user = reg.user
+        return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]

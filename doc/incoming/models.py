@@ -49,11 +49,8 @@ class IncomingStudent(DatabaseModel):
         null=True, blank=True
     )
 
-    # TODO:
-    # bus assignment
     # gear requested
     
-    # TODO: decline_choices: sports, no responses, etc.
     decline_reason = models.CharField(max_length=50, blank=True)
     notes = models.TextField(blank=True)
 

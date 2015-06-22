@@ -13,6 +13,7 @@ from doc.incoming.forms import RegistrationForm
 from doc.trips.models import ScheduledTrip, TripType
 from doc.core.models import Settings
 from doc.timetable.models import Timetable
+from doc.transport.models import Stop, Route
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
@@ -333,3 +334,17 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         self.assertEqual(
             [requesting], list(Registration.objects.want_financial_aid(trips_year))
         )
+
+    def test_requesting_bus(self):
+        trips_year = self.init_current_trips_year()
+        external_stop = mommy.make(
+            Stop, trips_year=trips_year, route__category=Route.EXTERNAL
+        )
+        requesting = mommy.make(
+            Registration, trips_year=trips_year, bus_stop=external_stop
+        )
+        not_requesting = mommy.make(
+            Registration, trips_year=trips_year
+        )
+        self.assertEqual([requesting], list(Registration.objects.want_bus(trips_year)))
+
