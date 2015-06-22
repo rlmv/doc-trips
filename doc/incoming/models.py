@@ -24,19 +24,17 @@ def YesNoField(*args, **kwargs):
     return models.CharField(*args, **kwargs)
 
 
-class Address(models.Model):
-    # TODO, or use django-address
-    pass
-
-
 class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
+    
+    All important logistical information is stored on this model 
+    since it is possible for a student to go on a trip without 
+    submitting a registration, but a student won't go on a trip
+    unless we have received information from the college about her.
 
-    Includes trippee input registration, college incoming student data, 
-    database notes, and trip assignment.
-
-    Created by the the post_save signal on Registration.
+    Registrations and IncomingStudents are connected by post_save
+    signals on each model.
     """
 
     objects = IncomingStudentManager()
@@ -301,7 +299,9 @@ class Registration(DatabaseModel):
         )
 
     def get_incoming_student(self):
-        """ Return this registration's IncomingStudent, or None if DNE """
+        """ 
+        Return this registration's IncomingStudent, or None if DNE 
+        """
         try:
             return self.trippee
         except ObjectDoesNotExist:
@@ -336,9 +336,9 @@ class Registration(DatabaseModel):
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
     """
-    When an incoming student submits a registration, try and 
-    find the student's college-provided information and attach to 
-    the registration.
+    When an incoming student submits a registration, try and
+    find the student's college-provided information and attach 
+    to the registration.
 
     If the info cannot be found, the registration is left to sit.
     """
@@ -352,7 +352,6 @@ def create_trippee_for_college_info(instance=None, **kwargs):
     If the incoming student has somehow already submitted a 
     registration, attach the registration to the new object.
     """
-    
     if kwargs.get('created', False):
         try:
             instance.registration = Registration.objects.get(
