@@ -206,6 +206,14 @@ class RegistrationUpdateView(DatabaseEditPermissionRequired,
     form_class = RegistrationForm
     model = Registration
     template_name = 'db/update.html'
+
+
+class RegistrationDeleteView(DatabaseDeleteView):
+    """
+    Delete a registration.
+    """
+    model = Registration
+    success_url_pattern = 'db:registration_index'
     
 
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,

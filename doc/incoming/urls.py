@@ -6,7 +6,7 @@ from doc.incoming.views import (
     Register, EditRegistration,
     RegistrationNotAvailable, IncomingStudentPortal,
     RegistrationIndexView, RegistrationDetailView,
-    RegistrationUpdateView,
+    RegistrationUpdateView, RegistrationDeleteView,
     IncomingStudentIndexView, IncomingStudentDeleteView,
     IncomingStudentDetailView, IncomingStudentUpdateView,
     UpdateTripAssignmentView,
@@ -36,9 +36,13 @@ trippee_urlpatterns = [
 ]
 
 registration_urlpatterns = [
-    url(DB_REGEX['LIST'], RegistrationIndexView.as_view(), name='registration_index'),
-    url(DB_REGEX['DETAIL'], RegistrationDetailView.as_view(), name='registration_detail'),
-    url(DB_REGEX['UPDATE'], RegistrationUpdateView.as_view(), name='registration_update'),
+    url(DB_REGEX['LIST'], RegistrationIndexView.as_view(),
+        name='registration_index'),
+    url(DB_REGEX['DETAIL'], RegistrationDetailView.as_view(),
+        name='registration_detail'),
+    url(DB_REGEX['UPDATE'], RegistrationUpdateView.as_view(),
+        name='registration_update'),
+    url(DB_REGEX['DELETE'], RegistrationDeleteView.as_view(),
+        name='registration_delete'),
     url(r'^match/$', MatchRegistrations.as_view(), name='registration_match'),
 ]
-                           

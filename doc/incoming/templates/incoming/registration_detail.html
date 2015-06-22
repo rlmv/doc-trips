@@ -6,10 +6,6 @@
 <h2> Trippee Registration <small> {{ object.name }} &mdash; {{ object.user.netid }} </small> </h2>
 {% endblock %}
 
-{% block links %}
-{{ object|edit_link }}
-{% endblock %}
-
 {% block description %}
 <p><strong> Matched Incoming Student Data: </strong>
   {% if object.get_incoming_student %}
