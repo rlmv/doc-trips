@@ -190,6 +190,11 @@ class ScheduledTransportDeleteView(DatabaseDeleteView):
     success_url_pattern = 'db:scheduledtransport_index'
 
 
+class ExternalTransportMatrix(DatabaseReadPermissionRequired,
+                              TripsYearMixin, TemplateView):
+    pass
+
+
 class StopListView(DatabaseListView):
     model = Stop
     context_object_name = 'stops'

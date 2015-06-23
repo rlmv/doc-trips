@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
-from doc.transport.models import Stop, Route, ScheduledTransport
+from doc.transport.models import Stop, Route, ScheduledTransport, ExternalTransport
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders, 
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
@@ -260,3 +260,31 @@ class TransportChecklistTest(TripsYearTestCase):
         d = date(2015, 1, 1)
         view.kwargs = {'date': str(d)}
         self.assertEqual(view.get_date(), d)
+
+
+class ExternalTransportManager(TripsYearTestCase):
+
+    def test_schedule_matrix(self):
+        trips_year = self.init_current_trips_year()
+        
+        sxn1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        sxn2 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        not_local_sxn = mommy.make(Section, trips_year=trips_year, is_local=False)
+        
+        route1 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        route2 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        internal = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
+
+        transp1 = mommy.make(ExternalTransport, trips_year=trips_year, 
+                                route=route1, section=sxn2)
+        transp2 = mommy.make(ExternalTransport, trips_year=trips_year, 
+                                route=route2, section=sxn1)
+
+        matrix = ExternalTransport.objects.schedule_matrix(trips_year)
+        target = {
+            route1: {sxn1: None, sxn2: transp1},
+            route2: {sxn1: transp2, sxn2: None},
+        }
+        self.assertEqual(matrix, target)
+        
+                               

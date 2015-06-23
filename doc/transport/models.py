@@ -3,8 +3,10 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel
-from doc.transport.managers import (StopManager, RouteManager,
-                                    ScheduledTransportManager)
+from doc.transport.managers import (
+    StopManager, RouteManager, ScheduledTransportManager,
+    ExternalTransportManager
+)
 
 
 class Stop(DatabaseModel):
@@ -95,12 +97,28 @@ class ScheduledTransport(DatabaseModel):
     """ 
     Represents a scheduled internal transport.
     """
-
-    route = models.ForeignKey('Route', on_delete=models.PROTECT)
-    date = models.DateField()
-
     objects = ScheduledTransportManager()
+
+    route = models.ForeignKey(Route, on_delete=models.PROTECT)
+    date = models.DateField()
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))
 
+    # TODO: validate INTERNAL routes
+
+
+class ExternalTransport(DatabaseModel):
+    """
+    Bus used to transport local-section students to and 
+    from campus.
+    """
+    objects = ExternalTransportManager()
+    
+    route = models.ForeignKey(Route, on_delete=models.PROTECT)
+    section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)
+
+    def __str__(self):
+        return "%: %s" % (self.route, self.section.name)
+
+    # TODO: validate EXTERNAL routes
