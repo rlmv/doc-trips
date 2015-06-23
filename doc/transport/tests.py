@@ -31,40 +31,6 @@ class TransportModelTestCase(TripsYearTestCase):
             route.delete()
 
 
-class ScheduledTransportModelTestCase(TripsYearTestCase):
-
-    def test_date_and_section_raise_error(self):
-        trips_year = self.init_current_trips_year()
-        t = mommy.make(ScheduledTransport, trips_year=trips_year,
-                       date=timezone.now(),
-                       section=mommy.make(Section, trips_year=trips_year))
-        with self.assertRaises(ValidationError):
-            t.full_clean()
-
-    def test_no_date_and_no_section_raises_error(self):
-        trips_year = self.init_current_trips_year()
-        t = mommy.make(ScheduledTransport, trips_year=trips_year,
-                       date=None, section=None)
-        with self.assertRaises(ValidationError):
-            t.full_clean()
-
-    def test_validation_error_with_INTERNAL_and_section(self):
-        trips_year = self.init_current_trips_year()
-        t = mommy.make(ScheduledTransport, trips_year=trips_year,
-                       route__category=Route.INTERNAL, date=None,
-                       section=mommy.make(Section, trips_year=trips_year), )
-        with self.assertRaises(ValidationError):
-            t.full_clean()
-
-    def test_validation_error_with_EXTERNAL_and_date(self):
-        trips_year = self.init_current_trips_year()
-        t = mommy.make(ScheduledTransport, trips_year=trips_year,
-                       route__category=Route.EXTERNAL,
-                       date=timezone.now(), section=None)
-        with self.assertRaises(ValidationError):
-            t.full_clean()
-
-
 class StopManagerTestCase(TripsYearTestCase):
 
     def test_external(self):

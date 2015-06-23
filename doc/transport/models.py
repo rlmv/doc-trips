@@ -93,37 +93,14 @@ class Vehicle(DatabaseModel):
 
 class ScheduledTransport(DatabaseModel):
     """ 
-    Represents a scheduled transport.
-
-    The model is either scheduled for a date, if INTERNAL
-    or a section
-
-    TODO: should this be separated into Internal and 
-    and External models? Or just schedule for date?
+    Represents a scheduled internal transport.
     """
 
     route = models.ForeignKey('Route', on_delete=models.PROTECT)
-
-    # has a date if INTERNAL, section if EXTERNAL
-    date = models.DateField(null=True, blank=True)
-    section = models.ForeignKey('trips.Section', null=True, blank=True)
+    date = models.DateField()
 
     objects = ScheduledTransportManager()
 
-    def clean(self):
-        if self.date and self.section:
-            msg = "Transport can only be scheduled for a date OR section"
-            raise ValidationError(msg)
-        if self.date is None and self.section is None:
-            msg = "Transport must be scheduled for a data OR a section"
-            raise ValidationError(msg)
-        if self.route.category == Route.INTERNAL and self.section:
-            msg = "Internal transport must be scheduled for a date"
-            raise ValidationError(msg)
-        elif self.route.category == Route.EXTERNAL and self.date:
-            msg = "External transport must be scheduled for a section"
-            raise ValidationError(msg)
-
     def __str__(self):
-       
         return "%s: %s" % (self.route, self.date.strftime("%x"))
+
