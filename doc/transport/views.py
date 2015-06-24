@@ -209,7 +209,15 @@ class ExternalTransportCreate(PopulateMixin, DatabaseCreateView):
     fields = ['route', 'section']
 
     def get_success_url(self):
-        return reverse('db:externaltransport_matrix', 
+        return reverse('db:externaltransport_matrix',
+                       kwargs={'trips_year': self.kwargs['trips_year']})
+
+
+class ExternalTransportDelete(DatabaseDeleteView):
+    model = ExternalTransport
+    
+    def get_success_url(self):
+        return reverse('db:externaltransport_matrix',
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 

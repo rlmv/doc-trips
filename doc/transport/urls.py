@@ -18,6 +18,8 @@ externaltransport_urlpatterns = [
         name='externaltransport_matrix'),
     url(DB_REGEX['CREATE'], ExternalTransportCreate.as_view(),
         name='externaltransport_create'),
+    url(DB_REGEX['DELETE'], ExternalTransportDelete.as_view(),
+        name='externaltransport_delete'),
 ]
 
 transportstop_urlpatterns = [

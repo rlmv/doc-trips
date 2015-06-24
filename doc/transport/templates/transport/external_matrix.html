@@ -1,0 +1,40 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> External Transport </h2>
+{% endblock %}
+
+{% block content %}
+
+<table class="table table-condensed">
+  {% for route, sections in matrix.items %}
+
+  {# table headings #}
+  {% if forloop.first %}
+  <tr> 
+    <th> Route </th>
+    {% for section in sections %}
+    <th> {{ section.name }} </th>
+    {% endfor %}
+   </tr>
+  {% endif %}
+
+  <tr>
+    <td> {{ route | detail_link }} </td>
+    {% for section, transport in sections.items %}
+    <td>
+      {% if transport %}
+      {{ transport }}
+      {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}
+      {% else %}
+      <a href="{% url 'db:externaltransport_create' trips_year=trips_year %}?section={{ section.pk}}&route={{ route.pk }}"> add </a>
+      {% endif %}
+      {% endfor %}
+    </td>
+  </tr>
+
+  {% endfor %}
+</table>
+
+{% endblock content %}
