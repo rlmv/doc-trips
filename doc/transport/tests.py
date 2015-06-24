@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
-from doc.transport.models import Stop, Route, ScheduledTransport, ExternalTransport
+from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders, 
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
@@ -262,7 +262,7 @@ class TransportChecklistTest(TripsYearTestCase):
         self.assertEqual(view.get_date(), d)
 
 
-class ExternalTransportManager(TripsYearTestCase):
+class ExternalBusManager(TripsYearTestCase):
 
     def test_schedule_matrix(self):
         trips_year = self.init_current_trips_year()
@@ -275,12 +275,12 @@ class ExternalTransportManager(TripsYearTestCase):
         route2 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         internal = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
 
-        transp1 = mommy.make(ExternalTransport, trips_year=trips_year, 
+        transp1 = mommy.make(ExternalBus, trips_year=trips_year, 
                                 route=route1, section=sxn2)
-        transp2 = mommy.make(ExternalTransport, trips_year=trips_year, 
+        transp2 = mommy.make(ExternalBus, trips_year=trips_year, 
                                 route=route2, section=sxn1)
 
-        matrix = ExternalTransport.objects.schedule_matrix(trips_year)
+        matrix = ExternalBus.objects.schedule_matrix(trips_year)
         target = {
             route1: {sxn1: None, sxn2: transp1},
             route2: {sxn1: transp2, sxn2: None},
@@ -289,7 +289,7 @@ class ExternalTransportManager(TripsYearTestCase):
         
                                
 
-class ExternalTransportView(WebTestCase):
+class ExternalBusView(WebTestCase):
 
     csrf_checks = False
 
@@ -300,7 +300,7 @@ class ExternalTransportView(WebTestCase):
         section = mommy.make(Section, trips_year=trips_year, is_local=True)
         
         # Visit matrix page
-        url = reverse('db:externaltransport_matrix',
+        url = reverse('db:externalbus_matrix',
                       kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
         # click 'add' button for the single entry
@@ -308,4 +308,4 @@ class ExternalTransportView(WebTestCase):
         # which takes us to the create page, prepopulated w/ data
         res = res.form.submit()
         # and hopefully creates a new tranport
-        ExternalTransport.objects.get(route=route, section=section)
+        ExternalBus.objects.get(route=route, section=section)

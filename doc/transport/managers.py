@@ -29,9 +29,9 @@ class ScheduledTransportManager(models.Manager):
         return self.filter(trips_year=trips_year, route__category=Route.INTERNAL)
 
 
-class ExternalTransportManager(models.Manager):
+class ExternalBusManager(models.Manager):
     """ 
-    Manager for the ExternalTransport model.
+    Manager for the ExternalBus model.
     """
     def schedule_matrix(self, trips_year):
         """

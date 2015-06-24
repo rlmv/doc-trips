@@ -8,7 +8,7 @@ from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, ScheduledTrip
 from doc.trips.fields import TrippeeSectionChoiceField, ScheduledTripChoiceField
-from doc.transport.models import Stop, ExternalTransport
+from doc.transport.models import Stop, ExternalBus
 
 
 class StopChoiceField(forms.ModelChoiceField):

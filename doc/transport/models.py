@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from doc.db.models import DatabaseModel
 from doc.transport.managers import (
     StopManager, RouteManager, ScheduledTransportManager,
-    ExternalTransportManager
+    ExternalBusManager
 )
 
 
@@ -108,12 +108,12 @@ class ScheduledTransport(DatabaseModel):
     # TODO: validate INTERNAL routes
 
 
-class ExternalTransport(DatabaseModel):
+class ExternalBus(DatabaseModel):
     """
     Bus used to transport local-section students to and 
     from campus.
     """
-    objects = ExternalTransportManager()
+    objects = ExternalBusManager()
     
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)

@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from doc.transport.models import Stop, ExternalTransport
+from doc.transport.models import Stop, ExternalBus
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
@@ -84,6 +84,7 @@ class IncomingStudent(DatabaseModel):
             return self.registration
         except ObjectDoesNotExist:
             return None
+
     
     def get_delete_url(self):
         return reverse('db:incomingstudent_delete', 
