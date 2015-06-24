@@ -12,16 +12,16 @@
     <th> Student </th>
     <th> Registration </th>
     <th> Trip Assignment </th>
-    <th> </th>
-    <th> </th>
+    <th> Bus Assignment </th>
+    <th> Bus Request </th>
   </tr>
   {% for trippee in trippees %}
   <tr> 
-    <td>{{ trippee|detail_link }}</td>
-    <td>{% if trippee.get_registration %} {{ trippee.get_registration|detail_link }} {% endif %} </td>
-    <td>{% if trippee.trip_assignment %} {{ trippee.trip_assignment|detail_link }} {% endif %}</td>
-    <td> {{ trippee|edit_link }} </td>
-    <td> {{ trippee|delete_link }} </td>
+    <td> {{ trippee|detail_link }} </td>
+    <td> {{ trippee.get_registration|detail_link|default:"" }} </td>
+    <td> {{ trippee.trip_assignment|detail_link|default:"" }} </td>
+    <td> {{ trippee.bus_assignment|detail_link|default:"" }} </td>
+    <td> {{ trippee.get_registration.bus_stop|detail_link|default:"" }} </td>
   </tr>
   {% endfor %}
   <tr>
