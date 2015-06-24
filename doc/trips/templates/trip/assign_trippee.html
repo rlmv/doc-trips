@@ -37,7 +37,7 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
   <tr>
     <td> {{ trippee|detail_link }} </td>
     <td> {{ trippee.registration.gender|default:trippee.gender|lower }} </td>
-    <td> {{ trippee.address }} </td>
+    <td> {{ trippee.get_hometown }} </td>
     <td> 
       {% if trippee.trip_assignment %}
       {{ trippee.trip_assignment|detail_link }}

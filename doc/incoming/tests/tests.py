@@ -50,6 +50,12 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         
         self.assertEqual(incoming.registration, reg) 
 
+    def test_get_hometown_parsing(self):
+        trips_year = self.init_trips_year()
+        with open(FILE) as f:
+            IncomingStudent.objects.create_from_csv_file(f, trips_year.pk)
+        incoming = IncomingStudent.objects.get(netid='id_2')
+        self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC 27514 USA')
 
 class RegistrationModelTestCase(TripsYearTestCase):
 
