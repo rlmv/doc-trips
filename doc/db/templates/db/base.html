@@ -23,8 +23,10 @@
     <li>
       <a href="#"> <i class="fa fa-bus"></i> Transport <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-	<li> <a href="{% url 'db:scheduledtransport_index' trips_year=trips_year %}"> Scheduled Transport </a> </li>
-	<li> <a  href="{% url 'db:transport_counts' trips_year=trips_year %}"> Transport Counts </a> </li>
+	<li> <a href="{% url 'db:scheduledtransport_index' trips_year=trips_year %}"> Internal Transport </a> </li>
+	<li> <a  href="{% url 'db:transport_counts' trips_year=trips_year %}"> Internal Transport Counts </a> </li>
+	<li> <a  href="{% url 'db:externalbus_matrix' trips_year=trips_year %}"> External Buses</a> </li>
+
 	<li> <a href="{% url 'db:stop_index' trips_year=trips_year %}"> Stops </a></li>
 	<li> <a  href="{% url 'db:route_index' trips_year=trips_year %}"> Routes </a> </li>
 	<li> <a  href="{% url 'db:vehicle_index' trips_year=trips_year %}"> Vehicles </a> </li>
