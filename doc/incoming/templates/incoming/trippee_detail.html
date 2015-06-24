@@ -8,8 +8,22 @@
 
 {% block content %}
 
-<h4> Trip Assignment <a href="{{ edit_assignment_url }}"> edit </a></h4>
-{% detail trippee view.assignment_fields %}
+<h4> Assignments <a href="{{ edit_assignment_url }}"> edit </a></h4>
+<table class="table table-condensed table-striped expand-whitespace">
+<tr>
+  <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
+  <td> {{ object.trip_assignment|default:"*" }} </td>
+  <td/>
+  <td/>
+</tr>
+<tr>
+  <td class="col-sm-3 text-right"><strong> Bus Assignment </strong></td>
+  <td> {{ object.bus_assignment|default:"*" }} </td>
+  <td class="col-sm-3 text-right"> <strong> Requested Bus: </strong> </td> 
+  <td> {{ object.get_registration.bus_stop|detail_link|default:"*" }} </td>
+</tr>
+</table>
+
 <h4> Admin Info {{ object|edit_link }}</h4>
 {% detail trippee view.admin_fields %}
 <h4> College Data {{ object|edit_link }}</h4>

@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
-from doc.transport.models import Stop
+from doc.transport.models import Stop, ExternalTransport
 from doc.trips.models import ScheduledTrip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
 from doc.db.models import DatabaseModel
@@ -45,6 +45,9 @@ class IncomingStudent(DatabaseModel):
     trip_assignment = models.ForeignKey(
         ScheduledTrip, on_delete=models.PROTECT, related_name='trippees',
         null=True, blank=True
+    )
+    bus_assignment = models.ForeignKey(
+        ExternalTransport, on_delete=models.PROTECT, null=True, blank=True
     )
 
     # gear requested

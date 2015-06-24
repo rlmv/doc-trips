@@ -31,6 +31,12 @@
 {% regroup available_trips by template.triptype as trips %}
 {% include "applications/_group_by_triptype.html" %}
 
+<p> <strong> External Bus Request: </strong>
+{% if registration.bus_stop %}
+{{ registration.bus_stop|detail_link }}
+{% endif %}
+</p>
+
 {% else %}
 <p> N/A </p>
 {% endif %}

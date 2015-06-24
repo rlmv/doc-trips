@@ -239,7 +239,7 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
     context_object_name = 'trippee'
 
     assignment_fields = (
-        'trip_assignment',
+        'trip_assignment', 'bus_assignment',
     )
     admin_fields = (
         'registration', 'decline_reason', 'notes'
