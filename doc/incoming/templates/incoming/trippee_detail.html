@@ -18,7 +18,7 @@
 </tr>
 <tr>
   <td class="col-sm-3 text-right"><strong> Bus Assignment </strong></td>
-  <td> {{ object.bus_assignment|default:"*" }} </td>
+  <td> {{ object.bus_assignment|detail_link|default:"*" }} </td>
   <td class="col-sm-3 text-right"> <strong> Requested Bus: </strong> </td> 
   <td> {{ object.get_registration.bus_stop|detail_link|default:"*" }} </td>
 </tr>

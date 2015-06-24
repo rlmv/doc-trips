@@ -47,7 +47,7 @@ class IncomingStudent(DatabaseModel):
         null=True, blank=True
     )
     bus_assignment = models.ForeignKey(
-        ExternalTransport, on_delete=models.PROTECT, null=True, blank=True
+        Stop, on_delete=models.PROTECT, null=True, blank=True
     )
 
     # gear requested

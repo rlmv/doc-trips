@@ -95,7 +95,7 @@ class TripAssignmentForm(forms.ModelForm):
             )
         )
         self.fields['bus_assignment'].queryset = (
-            ExternalTransport.objects.filter(trips_year=trips_year)
+            Stop.objects.external(trips_year)
         )
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-3'
