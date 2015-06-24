@@ -24,6 +24,7 @@ from doc.permissions.views import (
 )
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
+from doc.transport.models import ExternalBus
 
 
 class ScheduledTripListView(DatabaseReadPermissionRequired,
@@ -285,7 +286,13 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
             section_preference[pair.registration_id] = AVAILABLE
         for pair in Registration.preferred_sections.through.objects.filter(section=section):
             section_preference[pair.registration_id] = PREFER
-
+        
+        # compute all external bus routes for this section
+        buses = ExternalBus.objects.filter(
+            trips_year=self.get_trips_year(), section=section
+        )
+        routes = list(map(lambda bus: bus.route, buses))
+        
         for trippee in self.object_list:
             url = reverse('db:assign_trippee_to_trip', kwargs={
                 'trips_year': self.get_trips_year(),
@@ -294,6 +301,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
             trippee.triptype_preference = triptype_preference[trippee.registration.id]
             trippee.section_preference = section_preference[trippee.registration.id]
+            trippee.bus_available = trippee.registration.bus_stop.route in routes
         return context
 
 

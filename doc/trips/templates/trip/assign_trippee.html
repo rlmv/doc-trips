@@ -1,6 +1,7 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
 {% load links %}
+{% load icons %}
 
 {% block header %}
   <h3> Add Trippee to {{ trip }} <small> {{ trip.template.description_summary }} </small></h3>
@@ -20,7 +21,7 @@
 
 <h4> Prospective Trippees </h4>
 
-This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. 
+This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. If a trippee requested an external bus, the 'Bus Available' column indicates whether the requested bus is scheduled to run for this section.
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
@@ -29,6 +30,8 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
     <th> Trip Assignment </th>
     <th> {{ trip.template.triptype }} </th>
     <th> {{ trip.section }} </th>
+    <th> Bus Available? </th>
+    <th> Stop Requested </th>
   </tr>
   {% for trippee in available_trippees %}
   <tr>
@@ -46,9 +49,22 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
     </td>
     <td> {{ trippee.triptype_preference }} </td>
     <td> {{ trippee.section_preference }} </td>
+    <td> {{ trippee.bus_available|ok_if_true }} </td>
+    <td> {{ trippee.registration.bus_stop }} </td>
+    </span>
+
   {% endfor %}
 
 </table>
 
-
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}
+
+
