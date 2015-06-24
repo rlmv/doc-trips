@@ -301,7 +301,8 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
             trippee.triptype_preference = triptype_preference[trippee.registration.id]
             trippee.section_preference = section_preference[trippee.registration.id]
-            trippee.bus_available = trippee.registration.bus_stop.route in routes
+            if trippee.registration.bus_stop:
+                trippee.bus_available = trippee.registration.bus_stop.route in routes
         return context
 
 

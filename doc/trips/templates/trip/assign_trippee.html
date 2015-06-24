@@ -50,7 +50,7 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
     <td> {{ trippee.triptype_preference }} </td>
     <td> {{ trippee.section_preference }} </td>
     <td> {{ trippee.bus_available|ok_if_true }} </td>
-    <td> {{ trippee.registration.bus_stop|detail_link }} </td>
+    <td> {{ trippee.registration.bus_stop|detail_link|default:"" }} </td>
 
   {% endfor %}
 
