@@ -196,8 +196,13 @@ class TripTemplate(DatabaseModel):
 
     triptype = models.ForeignKey('TripType', verbose_name='trip type', on_delete=models.PROTECT)
     max_trippees = models.PositiveSmallIntegerField()
-    non_swimmers_allowed = models.BooleanField("non-swimmers allowed", default=True)
-    
+    non_swimmers_allowed = models.BooleanField(
+        "non-swimmers allowed", default=True,
+        help_text=(
+            "otherwise, trippees on the assignment page will be those who are "
+            "at least 'BEGINNER' swimmers"
+        )
+    )
     dropoff = models.ForeignKey(Stop, related_name='dropped_off_trips', on_delete=models.PROTECT)
     pickup = models.ForeignKey(Stop, related_name='picked_up_trips', on_delete=models.PROTECT)
     # is this for returning from the lodge?
