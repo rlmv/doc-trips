@@ -288,3 +288,24 @@ class ExternalTransportManager(TripsYearTestCase):
         self.assertEqual(matrix, target)
         
                                
+
+class ExternalTransportView(WebTestCase):
+
+    csrf_checks = False
+
+    def test_create_from_matrix(self):
+        
+        trips_year=self.init_current_trips_year()
+        route = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        section = mommy.make(Section, trips_year=trips_year, is_local=True)
+        
+        # Visit matrix page
+        url = reverse('db:externaltransport_matrix',
+                      kwargs={'trips_year': trips_year})
+        res = self.app.get(url, user=self.mock_director())
+        # click 'add' button for the single entry
+        res = res.click(description='add')
+        # which takes us to the create page, prepopulated w/ data
+        res = res.form.submit()
+        # and hopefully creates a new tranport
+        ExternalTransport.objects.get(route=route, section=section)

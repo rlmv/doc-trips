@@ -13,6 +13,13 @@ scheduledtransport_urlpatterns = [
         name='scheduledtransport_delete'),
 ]
 
+externaltransport_urlpatterns = [
+    url(DB_REGEX['LIST'], ExternalTransportMatrix.as_view(),
+        name='externaltransport_matrix'),
+    url(DB_REGEX['CREATE'], ExternalTransportCreate.as_view(),
+        name='externaltransport_create'),
+]
+
 transportstop_urlpatterns = [
     url(DB_REGEX['LIST'], StopListView.as_view(), name='stop_index'),
     url(DB_REGEX['CREATE'], StopCreateView.as_view(), name='stop_create'),

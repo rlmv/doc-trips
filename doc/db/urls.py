@@ -9,6 +9,7 @@ from doc.trips.urls import (
 from doc.transport.urls import (
     scheduledtransport_urlpatterns, transportstop_urlpatterns,
     vehicle_urlpatterns, route_urlpatterns,
+    externaltransport_urlpatterns
 )
 from doc.applications.urls import (
     application_urlpatterns, grader_urlpatterns, grade_urlpatterns
@@ -40,6 +41,7 @@ database_urlpatterns = [
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),
     url(r'^transport/', include(scheduledtransport_urlpatterns)),
+    url(r'^transport/external/', include(externaltransport_urlpatterns)),
     url(r'^emails/', include('doc.emails.urls', namespace='emails')),
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
     url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),

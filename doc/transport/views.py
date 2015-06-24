@@ -8,7 +8,8 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
                           DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import DatabaseReadPermissionRequired
-from doc.transport.models import Stop, Route, Vehicle, ScheduledTransport
+from doc.transport.models import (
+    Stop, Route, Vehicle, ScheduledTransport, ExternalTransport)
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 
@@ -190,9 +191,38 @@ class ScheduledTransportDeleteView(DatabaseDeleteView):
     success_url_pattern = 'db:scheduledtransport_index'
 
 
+class PopulateMixin():
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Populate the create form with data passed 
+        in the url querystring.
+        """
+        data = request.GET or None
+        form = self.get_form(data=data)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+
+class ExternalTransportCreate(PopulateMixin, DatabaseCreateView):
+    model = ExternalTransport
+    fields = ['route', 'section']
+
+    def get_success_url(self):
+        return reverse('db:externaltransport_matrix', 
+                       kwargs={'trips_year': self.kwargs['trips_year']})
+
+
 class ExternalTransportMatrix(DatabaseReadPermissionRequired,
                               TripsYearMixin, TemplateView):
-    pass
+
+    template_name = 'transport/external_matrix.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['matrix'] = ExternalTransport.objects.schedule_matrix(
+            self.kwargs['trips_year']
+        )
+        return super(ExternalTransportMatrix, self).get_context_data(**kwargs)
 
 
 class StopListView(DatabaseListView):

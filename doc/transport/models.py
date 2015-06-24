@@ -119,6 +119,6 @@ class ExternalTransport(DatabaseModel):
     section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)
 
     def __str__(self):
-        return "%: %s" % (self.route, self.section.name)
+        return "%s: %s" % (self.route, self.section.name)
 
     # TODO: validate EXTERNAL routes
