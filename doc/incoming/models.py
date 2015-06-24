@@ -84,7 +84,6 @@ class IncomingStudent(DatabaseModel):
             return self.registration
         except ObjectDoesNotExist:
             return None
-
     
     def get_delete_url(self):
         return reverse('db:incomingstudent_delete', 
