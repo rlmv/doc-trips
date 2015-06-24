@@ -1,4 +1,4 @@
-
+from functools import wraps
 
 from django import template
 from django.utils.safestring import mark_safe
@@ -17,7 +17,24 @@ def _make_link(url, text):
 make_link = _make_link
 
 
+def pass_null(func):
+    """ 
+    Decorator
+
+    If the first argument is False, return the
+    argument. Otherwise call func.
+    """
+    def wrapper(obj, *args, **kwargs):
+        if not obj:
+            return obj
+        return func(obj, *args, **kwargs)
+    # used by django template parser to introspect args
+    wrapper._decorated_function = getattr(func, '_decorated_function', func)
+    return wraps(func)(wrapper)
+
+
 @register.filter
+@pass_null
 def edit_link(db_object, text=None):
     """ Insert html link to edit db_object. """
     if text is None:
@@ -26,6 +43,7 @@ def edit_link(db_object, text=None):
 
         
 @register.filter
+@pass_null
 def delete_link(db_object, text=None):
     """ Insert html link to delete db_object. """
     if text is None:
@@ -43,6 +61,7 @@ def create_url(model, trips_year_str):
     
 
 @register.filter
+@pass_null
 def detail_link(db_object, text=None):
     """ Html link to detailed view for object. """
     if text is None:

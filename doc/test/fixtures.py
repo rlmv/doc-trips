@@ -25,6 +25,8 @@ class TripsYearTestCaseUtils():
 
         return self.trips_year
 
+    init_trips_year = init_current_trips_year
+
     def init_old_trips_year(self):
         self.old_trips_year = mommy.make(TripsYear, year=2013, is_current=False)
         self.previous_trips_year = self.old_trips_year
@@ -102,6 +104,7 @@ class TripsYearTestCaseUtils():
 
 class TripsYearTestCase(TestCase, TripsYearTestCaseUtils):
     pass
+TripsTestCase = TripsYearTestCase
 
 
 class WebTestCase(WebTest, TripsYearTestCaseUtils):
