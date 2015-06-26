@@ -91,7 +91,7 @@ class TripAssignmentForm(forms.ModelForm):
             queryset=(
                 ScheduledTrip.objects
                 .filter(trips_year=trips_year)
-                .select_related('template', 'section')
+                .select_related('template', 'template__triptype', 'section')
             )
         )
         self.fields['bus_assignment'].queryset = (
