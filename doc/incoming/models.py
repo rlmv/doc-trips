@@ -323,6 +323,8 @@ class Registration(DatabaseModel):
         return self._base_trips_qs().filter(
             template__triptype__in=self.available_triptypes.all()
         ).exclude(
+            id__in=self.get_firstchoice_trips()
+        ).exclude(
             id__in=self.get_preferred_trips()
         )
 
