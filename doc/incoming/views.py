@@ -21,7 +21,9 @@ from doc.incoming.forms import (
 )
 from doc.core.models import Settings
 from doc.db.models import TripsYear
-from doc.db.views import TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView
+from doc.db.views import (
+    TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView
+)
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
@@ -165,8 +167,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
 # ----- database internal views --------
 
-class RegistrationIndexView(DatabaseReadPermissionRequired, 
-                            TripsYearMixin, ListView):
+class RegistrationIndexView(DatabaseListView):
     """ 
     All trippee registrations 
     """
