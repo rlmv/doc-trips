@@ -8,18 +8,17 @@
 
 {% block content %}
 
-<h5> Current Assigned Leaders </h5>
-<p>
-  <ul>
+<h4> Current Assigned Leaders </h4>
+<ul>
   {% for leader in trip.leaders.all %}
   <li>{{ leader|detail_link }} ({{ leader.gender|lower }})</li>
   {% endfor %}
-  </ul>
-</p>
+</ul>
 
 <h4> Prospective Leaders </h4>
+<p> This list shows all leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. Assigning a leader to a trip will change the leader's status to LEADER.
+</p>
 
-This list shows all leaders who indicated that they prefer of are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. Assigning a leader to a trip will change the leader's status to LEADER.
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
