@@ -29,6 +29,19 @@ class ScheduledTransportManager(models.Manager):
         return self.filter(trips_year=trips_year, route__category=Route.INTERNAL)
 
 
+def external_route_matrix(trips_year, default=None):
+    """ 
+    Return an OrderedMatrix of [routes][sections]
+    for local sections and external routes.
+    """
+    from doc.trips.models import Section
+    from doc.transport.models import Route
+
+    rts = Route.objects.external(trips_year)
+    sxns = Section.objects.local(trips_year)
+    return OrderedMatrix(rts, sxns, default=default)
+
+
 class ExternalBusManager(models.Manager):
     """ 
     Manager for the ExternalBus model.
@@ -38,17 +51,29 @@ class ExternalBusManager(models.Manager):
         Returns and ordered matrix of all scheduled external
         transports.
         """
-        from doc.trips.models import Section
-        from doc.transport.models import Route
-        
-        rts = Route.objects.external(trips_year)
-        sxns = Section.objects.local(trips_year)
-        matrix = OrderedMatrix(rts, sxns)
-
+        matrix = external_route_matrix(trips_year)
         scheduled = self.filter(trips_year=trips_year)
         for transport in scheduled:
             matrix[transport.route][transport.section] = transport
         return matrix
-        
 
     
+class ExternalPassengerManager(models.Manager):
+    """
+    """
+    def matrix(self, trips_year):
+        """ 
+        Each entry in the matrix contains the number of 
+        trippees riding [route] on [section].
+        """
+        from doc.incoming.models import IncomingStudent
+        matrix = external_route_matrix(trips_year, default=0)
+        passengers = IncomingStudent.objects.filter(
+            trips_year=trips_year,
+            bus_assignment__isnull=False,
+            trip_assignment__isnull=False
+        )
+        for p in passengers:
+            matrix[p.bus_assignment.route][p.trip_assignment.section] += 1
+
+        return matrix

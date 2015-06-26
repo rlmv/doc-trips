@@ -137,6 +137,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
 
     return matrix
 
+
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
     template_name = 'transport/transport_list.html'
@@ -228,6 +229,9 @@ class ExternalBusMatrix(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         kwargs['matrix'] = ExternalBus.objects.schedule_matrix(
+            self.kwargs['trips_year']
+        )
+        kwargs['passengers'] = ExternalBus.passengers.matrix(
             self.kwargs['trips_year']
         )
         return super(ExternalBusMatrix, self).get_context_data(**kwargs)
