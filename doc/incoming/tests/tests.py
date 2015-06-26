@@ -145,6 +145,16 @@ class RegistrationModelTestCase(TripsYearTestCase):
                          preferred_sections=[section1])
         self.assertEqual([trip1], list(reg.get_preferred_trips()))
 
+    def test_get_preferred_trips_excludes_firstchoice_trips(self):
+        trips_year = self.init_trips_year()
+        firstchoice_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        reg = mommy.make(Registration, trips_year=trips_year, 
+                         firstchoice_triptype=firstchoice_trip.template.triptype,
+                         preferred_triptypes=[firstchoice_trip.template.triptype],
+                         preferred_sections=[firstchoice_trip.section],
+                         swimming_ability=Registration.COMPETENT)
+        self.assertEqual(list(reg.get_preferred_trips()), [])
+
     def test_get_available_trips(self):
 
         trips_year = self.init_current_trips_year()
@@ -160,6 +170,19 @@ class RegistrationModelTestCase(TripsYearTestCase):
                          preferred_sections=[section1],
                          available_sections=[section1])
         self.assertEqual([trip1], list(reg.get_available_trips()))
+
+    def test_get_available_trips_excludes_firstchoice_and_preffed_trips(self):
+        trips_year = self.init_trips_year()
+        firstchoice_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        preffed_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        reg = mommy.make(Registration, trips_year=trips_year, 
+                         firstchoice_triptype=firstchoice_trip.template.triptype,
+                         preferred_triptypes=[firstchoice_trip.template.triptype, preffed_trip.template.triptype],
+                         available_triptypes=[preffed_trip.template.triptype],
+                         preferred_sections=[firstchoice_trip.section, preffed_trip.section],
+                         available_sections=[firstchoice_trip.section, preffed_trip.section],
+                         swimming_ability=Registration.COMPETENT)
+        self.assertEqual(list(reg.get_available_trips()), [])
 
     def test_get_incoming_student(self):
         trips_year = self.init_current_trips_year()
