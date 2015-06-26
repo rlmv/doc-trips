@@ -12,8 +12,10 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
+from django_tables2 import RequestConfig
 
 from doc.incoming.models import Registration, IncomingStudent
+from doc.incoming.tables import RegistrationTable
 from doc.incoming.forms import (
     RegistrationForm, UploadIncomingStudentsForm, TripAssignmentForm
 )
@@ -176,6 +178,8 @@ class RegistrationIndexView(DatabaseReadPermissionRequired,
         kwargs['unmatched'] = (
             Registration.objects.unmatched(self.get_trips_year())
         )
+        kwargs['table'] = RegistrationTable(self.object_list)
+        RequestConfig(self.request, paginate=False).configure(kwargs['table'])
         return super(RegistrationIndexView, self).get_context_data(**kwargs)
 
 

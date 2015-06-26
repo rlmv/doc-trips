@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load render_table from django_tables2 %}
 
 {% block header %}
 <h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations 
@@ -29,19 +30,6 @@
 </div>
 {% endif %}
 
-<table class="table table-condensed">
-  <tr>
-    <th> Registration </th>
-    <th> Incoming Student Data </th>
-    <th> </th>
-  </tr>
-  {% for registration in registrations %}
-  <tr>
-    <td> {{ registration|detail_link }} </td>
-    <td> {% if registration.get_incoming_student %} {{ registration.get_incoming_student|detail_link }} {% endif %} </td>
-    <td> {{ registration|edit_link }} </td>
-  </tr>
-  {% endfor %}
-</table>
+{% render_table table %}
 
 {% endblock content %}
