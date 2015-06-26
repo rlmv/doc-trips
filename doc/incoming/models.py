@@ -79,7 +79,9 @@ class IncomingStudent(DatabaseModel):
     address = models.TextField()
  
     def get_registration(self):
-        """ Return this student's registration, or None if DNE """
+        """ 
+        Return this student's registration, or None if DNE 
+        """
         try:
             return self.registration
         except ObjectDoesNotExist:
@@ -92,6 +94,17 @@ class IncomingStudent(DatabaseModel):
         parts = self.address.split('\n')
         city_state = ' '.join(parts[2].split(' ')[0:-1])
         return "%s %s" % (city_state, parts[3])
+
+    def get_gender(self):
+        """
+        If there is a registration, pull gender from there.
+        Otherwise use the incoming student data.
+        """
+        if self.get_registration():
+            gender = self.get_registration().gender
+        else:
+            gender = self.gender
+        return gender.lower()
     
     def get_delete_url(self):
         return reverse('db:incomingstudent_delete', 

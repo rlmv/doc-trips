@@ -10,18 +10,16 @@
 {% block content %}
 
 
-<h5> Current Trippees </h5>
-<p>
-  <ul>
-    {% for trippee in trip.trippees.all %}
-    <li> {{ trippee|detail_link }} ({{ trippee.registration.gender|default:trippee.gender|lower }} &mdash; {{ trippee.address }}) </li>
-    {% endfor %}
-  </ul>
-</p> 
+<h4> Current Trippees </h4>
+<ul>
+  {% for trippee in trip.trippees.all %}
+  <li> {{ trippee|detail_link }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }}) </li>
+  {% endfor %}
+</ul>
 
 <h4> Prospective Trippees </h4>
+<p> This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. If a trippee requested an external bus, the 'Bus Available' column indicates whether the requested bus is scheduled to run for this section. </p>
 
-This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. If a trippee requested an external bus, the 'Bus Available' column indicates whether the requested bus is scheduled to run for this section.
 <table class="table table-condensed table=striped">
   <tr>
     <th/>
@@ -36,7 +34,7 @@ This list shows all trippees who indicated that they first choice, prefer, or ar
   {% for trippee in available_trippees %}
   <tr>
     <td> {{ trippee|detail_link }} </td>
-    <td> {{ trippee.registration.gender|default:trippee.gender|lower }} </td>
+    <td> {{ trippee.get_gender }} </td>
     <td> {{ trippee.get_hometown }} </td>
     <td> 
       {% if trippee.trip_assignment %}

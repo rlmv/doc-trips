@@ -57,6 +57,21 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
 
+    def test_get_gender_without_registration(self):
+        trips_year = self.init_trips_year()
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year, gender='MALE')
+        self.assertEqual(incoming.get_gender(), 'male')
+        
+    def test_get_gender_with_registration(self):
+        """ Pull from registration, if available """
+        trips_year = self.init_trips_year()
+        reg = mommy.make(Registration, trips_year=trips_year, gender='FEMALE')
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year,
+                              gender='MALE', registration=reg)
+        self.assertEqual(incoming.get_gender(), 'female')
+        
+        
+
 class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_get_trip_assignment_returns_assignment(self):
