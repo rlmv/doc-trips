@@ -13,6 +13,9 @@ class RegistrationTable(tables.Table):
     user = tables.Column(
         verbose_name='Registration'
     )
+    trip_assignment = tables.Column(
+        accessor='get_incoming_student.trip_assignment'
+    )
     trippee = tables.Column(
         verbose_name='Incoming Student Data'
     )
@@ -24,6 +27,9 @@ class RegistrationTable(tables.Table):
         return detail_link(record)
 
     def render_trippee(self, value):
+        return detail_link(value)
+
+    def render_trip_assignment(self, value):
         return detail_link(value)
 
     def render_edit_link(self, record):
