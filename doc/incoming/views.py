@@ -245,6 +245,16 @@ class IncomingStudentIndexView(DatabaseReadPermissionRequired,
     template_name = 'incoming/trippee_index.html'
     context_object_name = 'trippees'
 
+    def get_queryset(self):
+        qs = super(IncomingStudentIndexView, self).get_queryset()
+        return qs.select_related(
+            'registration__user',
+            'registration__bus_stop',
+            'trip_assignment__section',
+            'trip_assignment__template',
+            'bus_assignment'
+        )
+
 
 class IncomingStudentDetailView(DatabaseReadPermissionRequired,
                                 TripsYearMixin, DetailView):
