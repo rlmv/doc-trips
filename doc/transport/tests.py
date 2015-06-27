@@ -355,3 +355,30 @@ class ExternalBusView(WebTestCase):
         res = res.form.submit()
         # and hopefully creates a new tranport
         ExternalBus.objects.get(route=route, section=section)
+
+
+class InternalTransportModelTestCase(TripsYearTestCase):
+
+    def test_INTERNAL_validation(self):
+        trips_year = self.init_trips_year()
+        transport = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.EXTERNAL
+        )
+        with self.assertRaises(ValidationError):
+            transport.full_clean()
+        
+    
+class ExternalBusModelTestCase(TripsYearTestCase):
+    
+    def test_EXTERNAL_validation(self):
+        trips_year = self.init_trips_year()
+        transport = mommy.make(
+            ExternalBus, trips_year=trips_year,
+            route__category=Route.INTERNAL
+        )
+        with self.assertRaises(ValidationError):
+            transport.full_clean()
+        
+
+
