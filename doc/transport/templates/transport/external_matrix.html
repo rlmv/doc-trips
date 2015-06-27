@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<p> Click <i class="fa fa-plus"></i> to schedule an external bus for the specified section and route. </p>
+<p> Click <i class="fa fa-plus"></i> to schedule an external bus for the specified section and route. Click on the passenger count to see a full list of passengers. </p>
 
 <table class="table table-condensed">
   {% for route, sections in matrix.items %}
@@ -25,7 +25,9 @@
     <td> {{ route | detail_link }} </td>
     {% for section, transport in sections.items %}
     <td>
-      <kbd> {{ passengers|get:route|get:section }}/{{ route.vehicle.capacity }}</kbd>
+      <a href="{% url 'db:external_checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">       
+	<kbd> {{ passengers|get:route|get:section }}/{{ route.vehicle.capacity }}</kbd> 
+      </a>
       {% if transport %}
       {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}
       {% else %}

@@ -12,6 +12,7 @@ from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus)
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
+from doc.incoming.models import IncomingStudent
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
@@ -348,3 +349,28 @@ class TransportChecklist(DatabaseReadPermissionRequired,
       
         return context
         
+
+class ExternalBusChecklist(DatabaseReadPermissionRequired,
+                           TripsYearMixin, TemplateView):
+    
+    template_name = 'transport/externalbus_checklist.html'
+
+    def get_section(self):
+        return Section.objects.get(pk=self.kwargs['section_pk'])
+        
+    def get_route(self):
+        return Route.objects.get(pk=self.kwargs['route_pk'])
+
+    def get_context_data(self, **kwargs):
+        context = super(ExternalBusChecklist, self).get_context_data(**kwargs)
+        context['route'] = self.get_route()
+        context['section'] = self.get_section()
+        context['scheduled'] = ExternalBus.objects.scheduled(
+            self.get_trips_year(), self.get_route(), self.get_section()
+        )
+        context['passengers'] = IncomingStudent.objects.passengers(
+            self.get_trips_year(), self.get_route(), self.get_section()
+        )
+        return context
+
+    

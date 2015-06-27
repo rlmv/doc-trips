@@ -97,6 +97,20 @@ class IncomingStudentManager(models.Manager):
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
+
+    def passengers(self, trips_year, route, section):
+        """ 
+        Return all trippees assigned to ride on external 
+        bus route on section.
+        """
+        from doc.transport.models import Route
+        assert route.category == Route.EXTERNAL
+
+        return self.filter(
+            trips_year=trips_year,
+            bus_assignment__route=route,
+            trip_assignment__section=section
+        )
      
    
 class RegistrationManager(models.Manager):

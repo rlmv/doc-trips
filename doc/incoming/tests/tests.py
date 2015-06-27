@@ -10,7 +10,7 @@ from model_mommy import mommy
 from doc.test.fixtures import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import RegistrationForm
-from doc.trips.models import ScheduledTrip, TripType
+from doc.trips.models import ScheduledTrip, TripType, Section
 from doc.core.models import Settings
 from doc.timetable.models import Timetable
 from doc.transport.models import Stop, Route
@@ -290,6 +290,25 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         )
         self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
 
+    def test_passengers(self):
+        trips_year = self.init_trips_year()
+        rte = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        sxn = mommy.make(Section, trips_year=trips_year)
+        psngr = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment__route=rte,
+            trip_assignment__section=sxn
+        )
+        not_psngr = mommy.make(
+            IncomingStudent, trips_year=trips_year
+        )
+        target = [psngr]
+        actual = list(IncomingStudent.objects.passengers(
+            trips_year, rte, sxn
+        ))
+        self.assertEqual(target, actual)
+
+
 class RegistrationViewsTestCase(WebTestCase):
 
     csrf_checks = False
@@ -398,3 +417,4 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, trips_year=trips_year, registration=matched)
         unmatched = mommy.make(Registration, trips_year=trips_year)
         self.assertEqual([unmatched], list(Registration.objects.unmatched(trips_year)))
+        

@@ -18,7 +18,9 @@ from doc.incoming.urls import trippee_urlpatterns, registration_urlpatterns
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 
 from doc.trips.views import TrippeeLeaderCounts
-from doc.transport.views import TransportCounts, TransportChecklist
+from doc.transport.views import (
+    TransportCounts, TransportChecklist, ExternalBusChecklist
+)
 
 """
 All database urlpatterns take a trips_year param.
@@ -48,6 +50,8 @@ database_urlpatterns = [
     url(r'^counts/transport/', TransportCounts.as_view(), name='transport_counts'),
     url(r'^checklists/transport/(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         TransportChecklist.as_view(), name='transport_checklist'),
+    url(r'^checklists/external/(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
+        ExternalBusChecklist.as_view(), name='external_checklist'),
 ]
 
 urlpatterns = [

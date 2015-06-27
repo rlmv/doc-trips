@@ -1,0 +1,27 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> {{ route }} <small> {{ section }} </small></h2>
+{% endblock %}
+
+{% block content %}
+
+{% if scheduled %}
+<div class="alert alert-info">
+  <i class="fa fa-check"></i> This bus is scheduled
+</div>
+{% else %}
+<div class="alert alert-warning">
+  <i class="fa fa-warning"></i> This bus is not scheduled
+</div>
+{% endif %}
+
+<h4> Passengers </h4>
+<ul>
+  {% for trippee in passengers %}
+  <li> {{ trippee|detail_link }} </li>
+  {% endfor %}
+</ul>
+
+{% endblock content %}
