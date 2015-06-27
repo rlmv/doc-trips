@@ -350,7 +350,7 @@ class ExternalBusView(WebTestCase):
                       kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
         # click 'add' button for the single entry
-        res = res.click(description='add')
+        res = res.click(description='<i class="fa fa-plus"></i>')
         # which takes us to the create page, prepopulated w/ data
         res = res.form.submit()
         # and hopefully creates a new tranport
