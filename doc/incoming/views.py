@@ -174,6 +174,15 @@ class RegistrationIndexView(DatabaseListView):
     model = Registration
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
+    
+    def get_queryset(self):
+        qs = super(RegistrationIndexView, self).get_queryset()
+        return qs.select_related(
+            'user',
+            'trippee', 
+            'trippee__trip_assignment__section',
+            'trippee__trip_assignment__template',
+        )
 
     def get_context_data(self, **kwargs):
         kwargs['unmatched'] = (
