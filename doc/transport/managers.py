@@ -52,7 +52,11 @@ class ExternalBusManager(models.Manager):
         transports.
         """
         matrix = external_route_matrix(trips_year)
-        scheduled = self.filter(trips_year=trips_year)
+        scheduled = self.filter(
+            trips_year=trips_year
+        ).select_related(
+            'route', 'section'
+        )
         for transport in scheduled:
             matrix[transport.route][transport.section] = transport
         return matrix
@@ -72,6 +76,9 @@ class ExternalPassengerManager(models.Manager):
             trips_year=trips_year,
             bus_assignment__isnull=False,
             trip_assignment__isnull=False
+        ).select_related(
+            'bus_assignment__route',
+            'trip_assignment__section'
         )
         for p in passengers:
             matrix[p.bus_assignment.route][p.trip_assignment.section] += 1
