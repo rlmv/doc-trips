@@ -102,6 +102,9 @@ class ScheduledTransport(DatabaseModel):
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     date = models.DateField()
 
+    class Meta:
+        unique_together = ('trips_year', 'route', 'date')
+
     def clean(self):
         if self.route.category == Route.EXTERNAL:
             raise ValidationError("route must be internal")
@@ -121,6 +124,9 @@ class ExternalBus(DatabaseModel):
     
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)
+
+    class Meta:
+        unique_together = ('trips_year', 'route', 'section')
     
     def clean(self):
         if self.route.category == Route.INTERNAL:

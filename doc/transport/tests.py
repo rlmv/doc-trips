@@ -4,6 +4,7 @@ import unittest
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.db.models import ProtectedError
+from django.db import IntegrityError
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
@@ -382,6 +383,19 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         with self.assertRaises(ValidationError):
             transport.full_clean()
+
+    def test_unique_validation(self):
+        trips_year = self.init_trips_year()
+        transport = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL
+        )
+        with self.assertRaises(IntegrityError):
+            mommy.make(
+                ScheduledTransport, trips_year=trips_year,
+                route=transport.route,
+                date=transport.date
+            )
         
     
 class ExternalBusModelTestCase(TripsYearTestCase):
@@ -394,6 +408,20 @@ class ExternalBusModelTestCase(TripsYearTestCase):
         )
         with self.assertRaises(ValidationError):
             transport.full_clean()
+
+    def test_unique_validation(self):
+        trips_year = self.init_trips_year()
+        transport = mommy.make(
+            ExternalBus, trips_year=trips_year,
+            route__category=Route.EXTERNAL
+        )
+        with self.assertRaises(IntegrityError):
+            mommy.make(
+                ExternalBus, trips_year=trips_year,
+                route=transport.route,
+                section=transport.section
+            )
+                
         
 
 
