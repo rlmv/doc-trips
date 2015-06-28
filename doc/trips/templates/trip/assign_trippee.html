@@ -13,7 +13,7 @@
 <h4> Current Trippees </h4>
 <ul>
   {% for trippee in trip.trippees.all %}
-  <li> {{ trippee|detail_link }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }}) </li>
+  <li> {{ trippee|detail_link }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }} &mdash; {{ trippee.registration.previous_school }}) </li>
   {% endfor %}
 </ul>
 
