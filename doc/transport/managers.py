@@ -61,18 +61,6 @@ class ExternalBusManager(models.Manager):
             matrix[transport.route][transport.section] = transport
         return matrix
 
-    def scheduled(self, trips_year, route, section):
-        """ 
-        Return the ExternalBus scheduled for route and section,
-        otherwise return None
-        """
-        try: 
-            return self.get(
-                trips_year=trips_year, route=route, section=section
-            )
-        except self.model.DoesNotExist:
-            return None
-
     
 class ExternalPassengerManager(models.Manager):
     """

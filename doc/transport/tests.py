@@ -335,21 +335,6 @@ class ExternalBusManager(TripsYearTestCase):
         actual = ExternalBus.passengers.matrix(trips_year)
         self.assertEqual(target, actual)
 
-    def test_is_scheduled(self):
-        trips_year = self.init_trips_year()
-        sxn = mommy.make(Section, trips_year=trips_year, is_local=True)
-        rte = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
-        self.assertIsNone(ExternalBus.objects.scheduled(
-            trips_year, rte, sxn
-        ))
-        bus = mommy.make(
-            ExternalBus, trips_year=trips_year,
-            route=rte, section=sxn
-        )
-        self.assertEqual(bus, ExternalBus.objects.scheduled(
-            trips_year, rte, sxn
-        ))
-
 
 class ExternalBusView(WebTestCase):
 

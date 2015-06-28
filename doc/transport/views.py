@@ -365,9 +365,10 @@ class ExternalBusChecklist(DatabaseReadPermissionRequired,
         context = super(ExternalBusChecklist, self).get_context_data(**kwargs)
         context['route'] = self.get_route()
         context['section'] = self.get_section()
-        context['scheduled'] = ExternalBus.objects.scheduled(
-            self.get_trips_year(), self.get_route(), self.get_section()
-        )
+        context['scheduled'] = ExternalBus.objects.filter(
+            trips_year=self.get_trips_year(),
+            route=self.get_route(), section=self.get_section()
+        ).first()
         context['passengers'] = IncomingStudent.objects.passengers(
             self.get_trips_year(), self.get_route(), self.get_section()
         )
