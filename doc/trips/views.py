@@ -262,7 +262,13 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
 
         All students in the qs have a registration attached.
         """
-        return self.model.objects.available_for_trip(self.get_trip())
+        return (self.model.objects.available_for_trip(self.get_trip())
+                .select_related(
+                    'trip_assignment__template',
+                    'trip_assignment__section',
+                    'registration__bus_stop',
+                )
+            )
 
     def get_context_data(self, **kwargs):
         context = super(AssignTrippee, self).get_context_data(**kwargs)
@@ -276,7 +282,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
         for pair in Registration.preferred_triptypes.through.objects.filter(triptype=triptype):
             triptype_preference[pair.registration_id] = PREFER
         for registration in Registration.objects.filter(trips_year=self.get_trips_year()):
-            if registration.firstchoice_triptype == triptype:
+            if registration.firstchoice_triptype_id == triptype.id:
                 triptype_preference[registration.id] = FIRST_CHOICE
 
         # TODO: refactor this...
@@ -291,7 +297,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
         buses = ExternalBus.objects.filter(
             trips_year=self.get_trips_year(), section=section
         )
-        routes = list(map(lambda bus: bus.route, buses))
+        route_ids = list(map(lambda bus: bus.route_id, buses))
         
         for trippee in self.object_list:
             url = reverse('db:assign_trippee_to_trip', kwargs={
@@ -302,7 +308,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
             trippee.triptype_preference = triptype_preference[trippee.registration.id]
             trippee.section_preference = section_preference[trippee.registration.id]
             if trippee.registration.bus_stop:
-                trippee.bus_available = trippee.registration.bus_stop.route in routes
+                trippee.bus_available = trippee.registration.bus_stop.route_id in route_ids
         return context
 
 
