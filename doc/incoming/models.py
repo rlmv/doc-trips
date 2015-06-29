@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from doc.transport.models import Stop, ExternalBus
 from doc.trips.models import ScheduledTrip, Section, TripType
@@ -48,6 +49,12 @@ class IncomingStudent(DatabaseModel):
     )
     bus_assignment = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True
+    )
+    financial_aid = models.PositiveSmallIntegerField(
+        'percentage financial assistance',
+        default=0, validators=[
+            MinValueValidator(0), MaxValueValidator(100)
+        ]
     )
 
     # gear requested

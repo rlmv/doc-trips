@@ -2,7 +2,7 @@ import os
 import unittest
 from datetime import timedelta
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
@@ -69,7 +69,24 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         incoming = mommy.make(IncomingStudent, trips_year=trips_year,
                               gender='MALE', registration=reg)
         self.assertEqual(incoming.get_gender(), 'female')
+
+    def test_financial_aid_in_range_0_to_100(self):
+        trips_year=self.init_trips_year()
         
+        with self.assertRaises(ValidationError):
+            mommy.make(
+                IncomingStudent, trips_year=trips_year, 
+                financial_aid=-1
+            ).full_clean()
+        with self.assertRaises(ValidationError):
+            mommy.prepare(
+                IncomingStudent, trips_year=trips_year, 
+                financial_aid=101
+            ).full_clean()
+        mommy.prepare(
+            IncomingStudent, trips_year=trips_year,
+            financial_aid=100
+        ).full_clean()
         
 
 class RegistrationModelTestCase(TripsYearTestCase):

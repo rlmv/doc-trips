@@ -266,7 +266,7 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
         'trip_assignment', 'bus_assignment',
     )
     admin_fields = (
-        'registration', 'decline_reason', 'notes'
+        'registration', 'financial_aid', 'decline_reason', 'notes'
     )
     college_fields = (
         'name', 'netid', 'class_year', 'gender', 'birthday',
@@ -319,7 +319,8 @@ class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
     context_object_name = 'trippee'
 
     fields = [
-        'decline_reason', 'notes', 'name', 'netid', 'class_year',
+        'decline_reason', 'financial_aid', 'notes', 'name',
+        'netid', 'class_year',
         'ethnic_code', 'gender', 'birthday', 'incoming_status',
         'email', 'blitz', 'phone', 'address'
     ]
