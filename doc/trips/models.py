@@ -263,36 +263,6 @@ class TripTemplate(DatabaseModel):
         """
         return self.max_trippees + 2
 
-    def get_scheduled_trips(self):
-        """ 
-        Get all scheduled trips which use this template 
-
-        Returns a dictionary of section:scheduledtrip/None. This is used 
-        by the ScheduledTripListView to compute the scheduled trip table.
-
-        TODO: optimize this. Calling this for every row means a lot
-        of redundant queries. Can we compute the entire table with 
-        a constant number of queries? 
-        """
-        scheduled_trips = (ScheduledTrip.objects
-                 .filter(trips_year=self.trips_year)
-                 .filter(template=self))
-        
-        sections = Section.objects.filter(trips_year=self.trips_year)
-        
-        trips_by_section = {section: None for section in sections}
-        
-        for trip in scheduled_trips:
-            trips_by_section[trip.section] = trip
-
-        return trips_by_section
-
-    def get_scheduled_trips_list(self):
-        
-        trips_by_section = self.get_scheduled_trips()
-        keys = sorted(trips_by_section.keys(), key=(lambda s: s.name))
-        return map(lambda k: trips_by_section[k], keys)
-
     def __str__(self):
         return "{}: {}".format(self.name, self.description_summary)
 
