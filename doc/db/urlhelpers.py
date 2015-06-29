@@ -32,7 +32,10 @@ def _reverse_db_url(db_object, urlpattern_suffix):
     return reverse(urlpattern, kwargs=kwargs)
 
 def reverse_detail_url(db_object):
-    return _reverse_db_url(db_object, 'detail')
+    try:
+        return db_object.get_detail_url()
+    except AttributeError:
+        return _reverse_db_url(db_object, 'detail')
 
 def reverse_delete_url(db_object):
     """ Reverse the url to delete db_object. """

@@ -105,11 +105,14 @@ class IncomingStudent(DatabaseModel):
         else:
             gender = self.gender
         return gender.lower()
+
+    def get_detail_url(self):
+        return reverse('db:incomingstudent_detail',
+                       kwargs=self.obj_kwargs())
     
     def get_delete_url(self):
-        return reverse('db:incomingstudent_delete', 
-                       kwargs={'trips_year': self.trips_year,
-                               'pk': self.pk})
+        return reverse('db:incomingstudent_delete',
+                       kwargs=self.obj_kwargs())
 
     def __str__(self):
         return self.name

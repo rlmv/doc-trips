@@ -266,7 +266,18 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
                 .select_related(
                     'trip_assignment__template',
                     'trip_assignment__section',
-                    'registration__bus_stop',
+                    'registration__bus_stop')
+                .only(
+                    'name',
+                    'address',
+                    'trips_year',
+                    'trip_assignment__template__name',
+                    'trip_assignment__section__name',
+                    'trip_assignment__trips_year',
+                    'registration__bus_stop__route_id',
+                    'registration__bus_stop__trips_year_id',
+                    'registration__bus_stop__name',
+                    'registration__gender',
                 )
             )
 

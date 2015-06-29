@@ -60,4 +60,7 @@ class DatabaseModel(models.Model):
     def get_app_name(cls):
         """ Return the app name of cls. """
         return cls._meta.app_label
+
+    def obj_kwargs(self):
+        return {'trips_year': self.trips_year_id, 'pk': self.pk}
          

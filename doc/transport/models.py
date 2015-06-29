@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 
 from doc.db.models import DatabaseModel
 from doc.transport.managers import (
@@ -46,6 +47,9 @@ class Stop(DatabaseModel):
     @property
     def category(self):
         return self.route.category
+
+    def get_detail_url(self):
+        return reverse('db:stop_detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
         return self.name

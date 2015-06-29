@@ -305,10 +305,13 @@ class Campsite(DatabaseModel):
         camping_dates = Section.dates.camping_dates(trips_year)
 
         # all trips which stay at campsite
-        resident_trips = (ScheduledTrip.objects
-                          .filter(trips_year=trips_year)
-                          .filter(Q(template__campsite1=self) |
-                                  Q(template__campsite2=self)))
+        resident_trips = (
+            ScheduledTrip.objects
+            .filter(trips_year=trips_year)
+            .filter(Q(template__campsite1=self) |
+                    Q(template__campsite2=self))
+            .select_related('section', 'template')
+        )
 
         # mapping of dates -> trips at this campsite
         trips_by_date = {date: [] for date in camping_dates}
