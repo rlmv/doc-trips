@@ -200,8 +200,8 @@ class RegistrationDetailView(DatabaseReadPermissionRequired,
     
     fields = [
         'name', 'gender', 'previous_school', 'phone', 'email',
-        'guardian_email', 'is_exchange', 'is_transfer', 'is_international',
-        'is_native', 'is_fysep', 'is_athlete',
+        'guardian_email', 'is_exchange', 'is_transfer', 
+        'is_international', 'is_native', 'is_fysep', 'is_athlete',
         'preferred_sections', 'available_sections', 'unavailable_sections',
         'firstchoice_triptype', 'preferred_triptypes',
         'available_triptypes', 'unavailable_triptypes',

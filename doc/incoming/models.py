@@ -44,8 +44,8 @@ class IncomingStudent(DatabaseModel):
         'Registration', editable=False, related_name='trippee', null=True
     )
     trip_assignment = models.ForeignKey(
-        ScheduledTrip, on_delete=models.PROTECT, related_name='trippees',
-        null=True, blank=True
+        ScheduledTrip, on_delete=models.PROTECT,
+        related_name='trippees', null=True, blank=True
     )
     bus_assignment = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True
@@ -133,21 +133,35 @@ class Registration(DatabaseModel):
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     
-    # name not just from netid / college info?
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
-
-    previous_school = models.CharField('high school, or most recent school', max_length=255)
+    previous_school = models.CharField(
+        'high school, or most recent school', max_length=255
+    )
     phone = models.CharField('phone number', max_length=20)
     email = models.EmailField('email address', max_length=254)
-    guardian_email = models.EmailField('parent/guardian email', blank=True, max_length=254)
+    guardian_email = models.EmailField(
+        'parent/guardian email', blank=True, max_length=254
+    )
 
     # --- sections and triptypes -----
     is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
     is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
-    is_international = YesNoField('Are you an International Student who plans on attending the International Student Orientation?', blank=True)
-    is_native = YesNoField('Are you a Native American Student who plans on attending the Native American student orientation?', blank=True)
-    is_fysep = YesNoField('Are you participating in the First Year Student Enrichment Program (FYSEP)?', blank=True)
+    is_international = YesNoField(
+        "Are you an International Student who plans on attending "
+        "the International Student Orientation?",
+        blank=True
+    )
+    is_native = YesNoField(
+        "Are you a Native American Student who plans on attending "
+        "the Native American student orientation?",
+        blank=True
+    )
+    is_fysep = YesNoField(
+        "Are you participating in the First Year Student Enrichment "
+        "Program (FYSEP)?",
+        blank=True
+    )
     ATHLETE_CHOICES = (
         ('NO', 'No'),
         ('ALPINE_SKIING', 'Alpine Skiing'),
@@ -170,7 +184,15 @@ class Registration(DatabaseModel):
         ("SAILING", "Sailing"),
         ("MENS_WATER_POLO", "Men's Water Polo"),
     )
-    is_athlete = models.CharField('Are you a Fall varsity athlete (or Rugby or Water Polo)?', max_length=100, choices=ATHLETE_CHOICES, blank=True,  help_text="Each team has its own pre-season schedule. We are in close contact with fall coaches and will assign you to a trip section that works well for the team's pre-season schedule.")
+    is_athlete = models.CharField(
+        "Are you a Fall varsity athlete (or Rugby or Water Polo)?",
+        max_length=100, choices=ATHLETE_CHOICES, blank=True,
+        help_text=(
+            "Each team has its own pre-season schedule. We are in close "
+            "contact with fall coaches and will assign you to a trip section "
+            "that works well for the team's pre-season schedule."
+        )
+    )
 
     preferred_sections = models.ManyToManyField(
         Section, blank=True, related_name='prefering_trippees'
@@ -197,33 +219,82 @@ class Registration(DatabaseModel):
         TripType, blank=True, related_name='unavailable_trippees',
         verbose_name="unavailable trip types"
     )
-
-    # section preferences
     schedule_conflicts = models.TextField(blank=True)
-    # trip type preferences - they have a First Choice option in the old DB
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
     # ---- accomodations -----
     
-    medical_conditions = models.TextField("Do you have any medical conditions, past injuries, disabilities or allergies that we should be aware of? Please describe any injury, condition, disability, or illness which we should take into consideration in assigning you to a trip", blank=True)
-    allergies = models.TextField("Please describe any allergies you have (e.g. bee stings, specific medications, foods, etc.) which might require special medical attention.", blank=True)
-    allergen_information = models.TextField("What happens if you come into contact with this allergen (e.g. I get hives, I go into anaphylactic shock)?", blank=True)
-    epipen = YesNoField("Do you carry an EpiPen? If yes, please bring it with you on Trips.", blank=True)
+    medical_conditions = models.TextField(
+        "Do you have any medical conditions, past injuries, disabilities "
+        "or allergies that we should be aware of? Please describe any "
+        "injury, condition, disability, or illness which we should take "
+        "into consideration in assigning you to a trip",
+        blank=True
+    )
+    allergies = models.TextField(
+        "Please describe any allergies you have (e.g. bee stings, specific "
+        "medications, foods, etc.) which might require special medical "
+        "attention.",
+        blank=True
+    )
+    allergen_information = models.TextField(
+        "What happens if you come into contact with this allergen (e.g. "
+        "I get hives, I go into anaphylactic shock)?",
+        blank=True
+    )
+    epipen = YesNoField(
+        "Do you carry an EpiPen? If yes, please bring it with you on Trips.",
+        blank=True
+    )
+    needs = models.TextField(
+        "While many students manage their own health needs, we would prefer "
+        "that you let us know of any other needs or conditions so we can "
+        "ensure your safety and comfort during the trip (e.g. Diabetes, "
+        "recent surgery, migraines).",
+        blank=True
+    )
     
-    needs = models.TextField("While many students manage their own health needs, we would prefer that you let us know of any other needs or conditions so we can ensure your safety and comfort during the trip (e.g. Diabetes, recent surgery, migraines).", blank=True)
-    
-    dietary_restrictions = models.TextField("Do you have any dietary restrictions we should be aware of (vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL dietary needs as long as we know in advance. Leave blank if not applicable", blank=True)
+    dietary_restrictions = models.TextField(
+        "Do you have any dietary restrictions we should be aware of "
+        "(vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
+        "dietary needs as long as we know in advance. Leave blank if not "
+        "applicable",
+        blank=True
+    )
     SEVERITY_CHOICES = (
         (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
     )
-    allergy_severity = models.PositiveIntegerField("If you have a food allergy, please rate the severity of the allergy on a scale from 1 to 5 (1 = itchy skin, puffy eyes and 5 = anaphylaxis).", choices=SEVERITY_CHOICES, null=True, blank=True)
-    allergy_reaction = models.TextField("If you have a food allergy, please describe what happens when you come into contact with the allergen (e.g. I get hives, I go into anaphylactic shock).", blank=True)
+    allergy_severity = models.PositiveIntegerField(
+        "If you have a food allergy, please rate the severity of the "
+        "allergy on a scale from 1 to 5 (1 = itchy skin, puffy eyes and "
+        "5 = anaphylaxis).",
+        choices=SEVERITY_CHOICES, null=True, blank=True
+    )
+    allergy_reaction = models.TextField(
+        "If you have a food allergy, please describe what happens when "
+        "you come into contact with the allergen (e.g. I get hives, I go "
+        "into anaphylactic shock).",
+        blank=True
+    )
 
     #  ----- physical condition and experience ------
-    regular_exercise = YesNoField("Do you do enjoy cardiovascular exercise (running, biking, swimming, sports, etc.) on a regular basis?")
-    physical_activities = models.TextField("Please describe the types of physical activities you enjoy, including frequency (daily? weekly?) and extent (number of miles or hours)", blank=True)
-    other_activities = models.TextField("Do you do any other activities that might assist us in assigning you to a trip (yoga, karate, horseback riding, photography, fishing, etc.)?", blank=True)
+    regular_exercise = YesNoField(
+        "Do you do enjoy cardiovascular exercise (running, biking, "
+        "swimming, sports, etc.) on a regular basis?"
+    )
+    physical_activities = models.TextField(
+        "Please describe the types of physical activities you enjoy, "
+        "including frequency (daily? weekly?) and extent (number of "
+        "miles or hours)",
+        blank=True
+    )
+    other_activities = models.TextField(
+        "Do you do any other activities that might assist us in "
+        "assigning you to a trip (yoga, karate, horseback riding, "
+        "photography, fishing, etc.)?",
+        blank=True
+    )
 
     NON_SWIMMER = 'NON_SWIMMER'
     BEGINNER = 'BEGINNER'
@@ -235,40 +306,103 @@ class Registration(DatabaseModel):
         (COMPETENT, 'Competent'),
         (EXPERT, 'Expert'),
     )
-    swimming_ability = models.CharField("Please rate yourself as a swimmer", max_length=20, choices=SWIMMING_ABILITY_CHOICES)
+    swimming_ability = models.CharField(
+        "Please rate yourself as a swimmer",
+        max_length=20, choices=SWIMMING_ABILITY_CHOICES
+    )
     
-    camping_experience = YesNoField("Have you ever spent a night camping under a tarp?")
-
-    hiking_experience = YesNoField("Have you ever hiked or climbed with a pack of at least 20-30 pounds (10-15 kilograms)?")
-
-    hiking_experience_description = models.TextField("Please describe your hiking experience. Where have you hiked? Was it mountainous or flat? Have you done day hikes? Have you hiked while carrying food and shelter with you? Please be specific: we want to physically challenge you as little or as much as you want. Be honest so that we can place you on the right trip for YOU. If you have questions about this, please let us know.", blank=True)
-
-    has_boating_experience = YesNoField("Have you ever been on an overnight or extended canoe or kayak trip?", blank=True)
-    boating_experience = models.TextField("Please describe your canoe or kayak trip experience. Have you paddled on flat water? Have you paddled on flat water? When did you do these trips and how long were they?", blank=True)
-    other_boating_experience = models.TextField("Please describe any other paddling experience you have had. Be specific regarding location, type of water, and distance covered.", blank=True)
-
-    fishing_experience = models.TextField("Please describe your fishing experience.", blank=True)
-    
-    horseback_riding_experience = models.TextField("Please describe your riding experience and ability level. What riding styles are you familiar with? How recently have you ridden horses on a regular basis? NOTE: Prior exposure and some experience is preferred for this trip.", blank=True)
-
-    mountain_biking_experience = models.TextField("Please describe your biking experience and ability level. Have you done any biking off of paved trails? How comfortable are you riding on dirt and rocks?", blank=True)
-
-    sailing_experience = models.TextField("Please describe your sailing experience.", blank=True)
-
-    anything_else = models.TextField("Is there any other information you'd like to provide (anything helps!) that would assist us in assigning you to a trip?", blank=True)
-
+    camping_experience = YesNoField(
+        "Have you ever spent a night camping under a tarp?"
+    )
+    hiking_experience = YesNoField(
+        "Have you ever hiked or climbed with a pack of at "
+        "least 20-30 pounds (10-15 kilograms)?"
+    )
+    hiking_experience_description = models.TextField(
+        "Please describe your hiking experience. Where have you hiked? "
+        "Was it mountainous or flat? Have you done day hikes? Have you "
+        "hiked while carrying food and shelter with you? Please be "
+        "specific: we want to physically challenge you as little or as "
+        "much as you want. Be honest so that we can place you on the "
+        "right trip for YOU. If you have questions about this, please "
+        "let us know.",
+        blank=True
+    )
+    has_boating_experience = YesNoField(
+        "Have you ever been on an overnight or extended canoe "
+        "or kayak trip?",
+        blank=True
+    )
+    boating_experience = models.TextField(
+        "Please describe your canoe or kayak trip experience. Have you "
+        "paddled on flat water? Have you paddled on flat water? When "
+        "did you do these trips and how long were they?",
+        blank=True
+    )
+    other_boating_experience = models.TextField(
+        "Please describe any other paddling experience you have had. Be "
+        "specific regarding location, type of water, and distance covered.",
+        blank=True
+    )
+    fishing_experience = models.TextField(
+        "Please describe your fishing experience.",
+        blank=True
+    )
+    horseback_riding_experience = models.TextField(
+        "Please describe your riding experience and ability level. What "
+        "riding styles are you familiar with? How recently have you ridden "
+        "horses on a regular basis? NOTE: Prior exposure and some "
+        "experience is preferred for this trip.",
+        blank=True
+    )
+    mountain_biking_experience = models.TextField(
+        "Please describe your biking experience and ability level. Have "
+        "you done any biking off of paved trails? How comfortable are you "
+        "riding on dirt and rocks?",
+        blank=True
+    )
+    sailing_experience = models.TextField(
+        "Please describe your sailing experience.",
+        blank=True
+    )
+    anything_else = models.TextField(
+        "Is there any other information you'd like to provide (anything "
+        "helps!) that would assist us in assigning you to a trip?",
+        blank=True
+    )
 
     # ----- other deets ----
 
-    bus_stop = models.ForeignKey(Stop, on_delete=models.PROTECT,
-                                 blank=True, null=True,
-                                 verbose_name="Where would you like to be bussed from/to?")
-
-    financial_assistance = YesNoField("Are you requesting financial assistance from DOC Trips? If 'yes' we will contact you in July with more information about your financial assistance.")
-    waiver = YesNoField("I certify that I have read this assumption of risk and the accompanying registration materials. I approve participation for the student indicated above and this serves as my digital signature of this release, waiver and acknowledgement.")
-    doc_membership = YesNoField("Would you like to purchase a DOC membership?")
-    green_fund_donation = models.PositiveSmallIntegerField(blank=True, null=True)
-    final_request = models.TextField("We know this form is really long, so thanks for sticking with us! The following question has nothing to do with your trip assignment. To whatever extent you feel comfortable, please share one thing you are excited and/or nervous for about coming to Dartmouth (big or small). There is no right or wrong answers &mdash; anything goes! All responses will remain anonymous.", blank=True)
+    bus_stop = models.ForeignKey(
+        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        verbose_name="Where would you like to be bussed from/to?"
+    )
+    financial_assistance = YesNoField(
+        "Are you requesting financial assistance from DOC Trips? If "
+        "'yes' we will contact you in July with more information about "
+        "your financial assistance."
+    )
+    waiver = YesNoField(
+        "I certify that I have read this assumption of risk and the "
+        "accompanying registration materials. I approve participation "
+        "for the student indicated above and this serves as my digital "
+        "signature of this release, waiver and acknowledgement."
+    )
+    doc_membership = YesNoField(
+        "Would you like to purchase a DOC membership?"
+    )
+    green_fund_donation = models.PositiveSmallIntegerField(
+        blank=True, null=True
+    )
+    final_request = models.TextField(
+        "We know this form is really long, so thanks for sticking with "
+        "us! The following question has nothing to do with your trip "
+        "assignment. To whatever extent you feel comfortable, please "
+        "share one thing you are excited and/or nervous for about coming "
+        "to Dartmouth (big or small). There is no right or wrong answers "
+        "&mdash; anything goes! All responses will remain anonymous.",
+        blank=True
+    )
    
     def get_trip_assignment(self):
         """
@@ -295,8 +429,9 @@ class Registration(DatabaseModel):
         """
         qs = (ScheduledTrip.objects
               .filter(trips_year=self.trips_year)
-              .filter(models.Q(section__in=self.preferred_sections.all()) |
-                      models.Q(section__in=self.available_sections.all()))
+              .filter(
+                  models.Q(section__in=self.preferred_sections.all()) |
+                  models.Q(section__in=self.available_sections.all()))
               .select_related('template__triptype', 'section')
               .order_by('template__triptype', 'section'))
         if self.is_non_swimmer:
