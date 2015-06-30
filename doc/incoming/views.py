@@ -266,7 +266,9 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
         'trip_assignment', 'bus_assignment',
     )
     admin_fields = (
-        'registration', 'financial_aid', 'decline_reason', 'notes'
+        'registration', 'financial_aid',
+        ('total cost', 'compute_cost'),
+        'decline_reason', 'notes'
     )
     college_fields = (
         'name', 'netid', 'class_year', 'gender', 'birthday',

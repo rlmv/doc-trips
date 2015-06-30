@@ -14,6 +14,7 @@ from doc.trips.models import ScheduledTrip, TripType, Section
 from doc.core.models import Settings
 from doc.timetable.models import Timetable
 from doc.transport.models import Stop, Route
+from doc.utils.choices import YES
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
@@ -72,7 +73,6 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
 
     def test_financial_aid_in_range_0_to_100(self):
         trips_year=self.init_trips_year()
-        
         with self.assertRaises(ValidationError):
             mommy.make(
                 IncomingStudent, trips_year=trips_year, 
@@ -87,6 +87,54 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             financial_aid=100
         ).full_clean()
+
+    def test_compute_base_cost(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            financial_aid=0, bus_assignment=None
+        )
+        self.assertEqual(inc.compute_cost(), 100)
+
+    def test_compute_cost_with_financial_aid(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            financial_aid=35, bus_assignment=None
+        )
+        self.assertEqual(inc.compute_cost(), 65)
+
+    def test_compute_cost_with_bus(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            financial_aid=25, bus_assignment__cost=25
+        )
+        self.assertEqual(inc.compute_cost(), 93.75)
+
+    def test_compute_cost_with_doc_membership(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            financial_aid=25, bus_assignment__cost=25,
+            registration__doc_membership=YES
+        )
+        self.assertEqual(inc.compute_cost(), 131.25)
+
+    def test_compute_cost_with_green_fund_contribution(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            financial_aid=25, bus_assignment__cost=25,
+            registration__doc_membership=YES,
+            registration__green_fund_donation=290
+        )
+        self.assertEqual(inc.compute_cost(), 421.25)
         
 
 class RegistrationModelTestCase(TripsYearTestCase):
@@ -223,6 +271,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
         self.assertEqual(reg.trippee, incoming)
 
 
+
 def resolve_path(fname):
     return os.path.join(os.path.dirname(__file__), fname)
 
@@ -357,6 +406,7 @@ class RegistrationViewsTestCase(WebTestCase):
             'financial_assistance': 'YES',
             'waiver': 'YES',
             'doc_membership': 'NO',
+            'green_fund_donation': 0,
         }
         url = reverse('incoming:register')
         self.app.post(url, reg_data, user=user)

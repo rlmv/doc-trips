@@ -10,10 +10,11 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from doc.transport.models import Stop, ExternalBus
 from doc.trips.models import ScheduledTrip, Section, TripType
-from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES
+from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
 from doc.db.models import DatabaseModel
 from doc.incoming.managers import IncomingStudentManager, RegistrationManager
 from doc.users.models import NetIdField
+from doc.core.models import Settings
 
 logger = logging.getLogger(__name__)
 
@@ -113,14 +114,33 @@ class IncomingStudent(DatabaseModel):
             gender = self.gender
         return gender.lower()
 
-    def get_detail_url(self):
-        return reverse('db:incomingstudent_detail',
-                       kwargs=self.obj_kwargs())
-    
-    def get_delete_url(self):
-        return reverse('db:incomingstudent_delete',
-                       kwargs=self.obj_kwargs())
+    def compute_cost(self):
+        """
+        Compute the total charge for this student.
+        
+        Cost is the sum of the base cost, bus cost and
+        doc membership, adjusted by financial aid, plus 
+        any green fund donation.
+        """
+        costs = Settings.objects.get()
+        base_cost = costs.trips_cost
+        
+        if self.bus_assignment:
+            base_cost += self.bus_assignment.cost
 
+        reg = self.get_registration()
+        if reg and reg.doc_membership == YES:
+            base_cost += costs.doc_membership_cost
+        green_fund = reg.green_fund_donation if reg else 0
+
+        return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
+
+    def get_delete_url(self):
+        return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
+        
+    def get_detail_url(self):
+        return reverse('db:incomingstudent_detail', kwargs=self.obj_kwargs())
+        
     def __str__(self):
         return self.name
 
@@ -392,7 +412,7 @@ class Registration(DatabaseModel):
         "Would you like to purchase a DOC membership?"
     )
     green_fund_donation = models.PositiveSmallIntegerField(
-        blank=True, null=True
+        default=0
     )
     final_request = models.TextField(
         "We know this form is really long, so thanks for sticking with "
@@ -482,10 +502,6 @@ class Registration(DatabaseModel):
             return self.trippee
         except ObjectDoesNotExist:
             return None
-
-    def save(self, *args, **kwargs):
-
-        return super(Registration, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
