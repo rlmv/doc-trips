@@ -29,12 +29,7 @@
 {% endif %}
 
 {% if assignment_available %}
-<h3> Trip Assignment </h3>
-{% if trip_assignment %}
-<p> TODO: {{ trip_assignement }} </p>
-{% else %}
-<p> You have not yet been assigned to a trip. </p>
-{% endif %}
+{% include "incoming/_trip_assignment.html" %} 
 {% endif %}
 
 {% endblock content %}

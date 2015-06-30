@@ -141,9 +141,11 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
     Shows trip assignment, if available, and link to registration.
     """
     template_name = 'incoming/portal.html'
-
+    
     def get_registration(self):
-        """ Return current user's registration, or None if DNE """
+        """ 
+        Return current user's registration, or None if DNE 
+        """
         try:
             return Registration.objects.get(
                 user=self.request.user,
@@ -152,10 +154,23 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
         except Registration.DoesNotExist:
             return None
 
+    def get_incoming_student(self):
+        """
+        Return user's incomings student data, or None if DNE
+        """
+        try:
+            return IncomingStudent.objects.get(
+                netid=self.request.user.netid,
+                trips_year=TripsYear.objects.current()
+            )
+        except IncomingStudent.DoesNotExist:
+            return None
+
     def get_context_data(self, **kwargs):
         timetable = Timetable.objects.timetable()
         kwargs['registration'] = reg = self.get_registration()
-        kwargs['trip_assignment'] = reg.get_trip_assignment() if reg else None
+        kwargs['incoming_student'] = inc = self.get_incoming_student()
+        kwargs['trip'] = inc.trip_assignment if inc else None
         kwargs['registration_available'] = timetable.registration_available()
         kwargs['registration_closes'] = timetable.trippee_registrations_close
         kwargs['after_deadline'] = timetable.trippee_registrations_close > timezone.now()
@@ -166,6 +181,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
 
 # ----- database internal views --------
+
 
 class RegistrationIndexView(DatabaseListView):
     """ 

@@ -1,0 +1,17 @@
+
+{% if trip %}
+<ul class="list-group">
+<li class="list-group-item"><h3 class="list-group-item-heading"> Trip Assignment <small> {{ trip }}: {{ trip.template.description_summary }} </small></h3> </li>
+<li class="list-group-item"><strong> Trip Type </strong> {{ trip.template.triptype }}</li>
+<li class="list-group-item"><strong> Section {{ trip.section.name }} </strong> {{ trip.section.trippee_date_str }} </li>
+<li class="list-group-item"><strong> Bus </strong> {{ incoming_student.bus_assignment }} </li>
+<li class="list-group-item"><strong> Bus Directions </strong> <br>{{ incoming_student.bus_assignment.directions }} </li>
+<li class="list-group-item"><strong> Bus Pickup Time (To Hanover) </strong> {{ incoming_student.bus_assignment.pickup_time }} </li>
+<li class="list-group-item"><strong> Bus Dropoff Time (From Hanover) </strong> {{ incoming_student.bus_assignment.dropoff_time }} </li>
+<li class="list-group-item"><strong> Notes </strong> {{ incoming_student.notes }} </li>
+<li class="list-group-item"><strong> Packing List </strong> {{ trip.template.triptype.packing_list|linebreaks }} </li>
+</ul>
+
+{% else %}
+<p> You are not currently assigned to a trip </p>
+{% endif %}
