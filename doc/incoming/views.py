@@ -223,7 +223,6 @@ class RegistrationDetailView(DatabaseReadPermissionRequired,
 
 class RegistrationUpdateView(DatabaseEditPermissionRequired, 
                              TripsYearMixin, UpdateView):
-
     form_class = RegistrationForm
     model = Registration
     template_name = 'db/update.html'
@@ -239,8 +238,9 @@ class RegistrationDeleteView(DatabaseDeleteView):
 
 class IncomingStudentIndexView(DatabaseReadPermissionRequired,
                                TripsYearMixin, ListView):
-    """ All incoming students """
-
+    """ 
+    All incoming students
+    """
     model = IncomingStudent
     template_name = 'incoming/trippee_index.html'
     context_object_name = 'trippees'
@@ -347,26 +347,29 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     def form_valid(self, form):
 
-        file = io.TextIOWrapper(form.files['csv_file'].file, 
-                                encoding='utf-8', errors='replace')
+        file = io.TextIOWrapper(
+            form.files['csv_file'].file, encoding='utf-8', errors='replace'
+        )
         try:
-            (created, ignored) = IncomingStudent.objects.create_from_csv_file(file, self.kwargs['trips_year'])
+            (ctd, skipped) = IncomingStudent.objects.create_from_csv_file(
+                file, self.kwargs['trips_year']
+            )
 
-            if created:
-                msg = 'Created incoming students with NetIds %s' % created
-                logger.info(msg)
-                messages.info(self.request, msg)
+            if ctd:
+                msg = 'Created incoming students with NetIds %s'
+                logger.info(msg % ctd)
+                messages.info(self.request, msg % ctd)
         
-            if ignored:
-                msg = 'Ignored existing incoming students with NetIds %s' % ignored
-                logger.info(msg)
-                messages.warning(self.request, msg)
+            if skipped:
+                msg = 'Ignored existing incoming students with NetIds %s'
+                logger.info(msg % skipped)
+                messages.warning(self.request, msg % ctd)
 
         except KeyError as exc:
-            msg = "A column is missing (or mis-named) in the uploaded file: %s" % exc
-            messages.error(self.request, msg)
+            msg = "A column is missing (or mis-named) in the uploaded file: %s"
+            messages.error(self.request, msg % exc)
 
-        return super(UploadIncomingStudentData, self).form_valid(form)        
+        return super(UploadIncomingStudentData, self).form_valid(form)
 
     def get_success_url(self):
         return self.request.path
@@ -375,7 +378,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 class MatchRegistrations(DatabaseEditPermissionRequired,
                          TripsYearMixin, FormView):
     """
-    Match all registrations for this trips year. 
+    Match all registrations for this trips year.
 
     Backdoor solution in case auto-matching is not
     working.
