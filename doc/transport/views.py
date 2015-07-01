@@ -362,7 +362,11 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['waypoints'] = '|'.join(map(lambda x: x.address, stops))
         context['origin'] = get_hanover().address
         context['destination'] = get_lodge().address
-        context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY        
+        context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
+
+        stops = [get_hanover()] + list(stops) + [get_lodge()]
+        get_directions(stops)
+        
         return context
 
 
