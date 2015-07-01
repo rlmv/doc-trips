@@ -380,4 +380,21 @@ class ScheduledTripManagerTestCase(TripsTestCase):
 
         self.assertEqual(set([returning, overridden_return]),
                          set(ScheduledTrip.objects.returns(route, section.return_to_campus, trips_year=trips_year)))
+
+
+class ViewsTestCase(WebTestCase):
     
+    csrf_checks = False
+
+    def test_create_scheduled_trip_from_matrix(self):
+        trips_year = self.init_trips_year()
+        section = mommy.make(Section, trips_year=trips_year)
+        template = mommy.make(TripTemplate, trips_year=trips_year)
+        url = reverse('db:scheduledtrip_index', kwargs={'trips_year': trips_year})
+        # get matrix
+        resp = self.app.get(url, user=self.mock_director())
+        # click add -> CreateView
+        resp = resp.click(description='add')
+        # submit create form
+        resp.form.submit()
+        ScheduledTrip.objects.get(section=section, template=template)

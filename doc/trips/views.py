@@ -24,6 +24,7 @@ from doc.permissions.views import (
 )
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
+from doc.utils.views import PopulateMixin
 from doc.transport.models import ExternalBus
 
 
@@ -68,26 +69,9 @@ class ScheduledTripDetailView(DatabaseDetailView):
         'revision_notes']
     
 
-class ScheduledTripCreateView(DatabaseCreateView):
+class ScheduledTripCreateView(PopulateMixin, DatabaseCreateView):
     model = ScheduledTrip
     fields = ['section', 'template']
-
-    def get_form(self, data=None, files=None, **kwargs):
-        """ Populate the CreateForm with query parameters
-
-        Used by the trip_index.html template to link to a create form 
-        for a template-section pair
-
-        TODO: make the form fields uneditable.
-        """
-
-        cls = self.get_form_class()
-
-        GET = self.request.GET
-        if data is None and 'section' in GET and 'template' in GET:
-            data = {'section': GET['section'], 'template': GET['template']}
-        
-        return super(ScheduledTripCreateView, self).get_form(data=data, files=files, **kwargs)
         
 
 class ScheduledTripDeleteView(DatabaseDeleteView):
