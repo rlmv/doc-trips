@@ -117,7 +117,6 @@ class ScheduledTransport(DatabaseModel):
         return "%s: %s" % (self.route, self.date.strftime("%x"))
 
 
-
 class ExternalBus(DatabaseModel):
     """
     Bus used to transport local-section students to and 
@@ -138,5 +137,3 @@ class ExternalBus(DatabaseModel):
 
     def __str__(self):
         return "Section %s %s" % (self.section.name, self.route)
-
-    # TODO: validate EXTERNAL routes

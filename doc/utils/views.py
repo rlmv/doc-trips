@@ -108,6 +108,19 @@ class MultipleFormMixin():
         return self.render_to_response(context)
 
 
+class PopulateMixin():
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Populate the create form with data passed 
+        in the url querystring.
+        """
+        data = request.GET or None
+        form = self.get_form(data=data)
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
+
+
 # TODO: these aren't used anywhere. Use or remove
 
 class PassesTestMixin():
