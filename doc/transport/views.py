@@ -14,10 +14,11 @@ from doc.transport.models import (
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.incoming.models import IncomingStudent
-from doc.transport.maps import get_directions, get_hanover, get_lodge
+
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
+
 
 def get_internal_route_matrix(trips_year):
 
