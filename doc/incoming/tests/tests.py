@@ -57,6 +57,13 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             IncomingStudent.objects.create_from_csv_file(f, trips_year.pk)
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
+        
+    def test_get_hometown_parsing_with_bad_formatting(self):
+        trips_year = self.init_trips_year()
+        incoming = mommy.make(
+            IncomingStudent, trips_year=trips_year, address='what\nblah'
+        )
+        self.assertEqual(incoming.get_hometown(), 'what\nblah')
 
     def test_get_gender_without_registration(self):
         trips_year = self.init_trips_year()
