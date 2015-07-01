@@ -353,7 +353,16 @@ class TransportChecklist(DatabaseReadPermissionRequired,
             trips_year=self.get_trips_year(), date=self.get_date(),
             route=self.get_route()
         )
-        
+        # Hanover -> dropoffs & pickups -> Lodge -> Hanover
+        stops = set(
+            list(map(lambda x: x.template.dropoff, context['dropoffs'])) +
+            list(map(lambda x: x.template.pickup, context['pickups']))
+        )
+
+        context['waypoints'] = '|'.join(map(lambda x: x.address, stops))
+        context['origin'] = get_hanover().address
+        context['destination'] = get_lodge().address
+        context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY        
         return context
 
 

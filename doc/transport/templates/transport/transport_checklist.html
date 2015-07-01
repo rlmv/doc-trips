@@ -30,5 +30,13 @@
 {% endfor %}
 </ul>
 
+{{ waypoints }}
+
+<iframe
+  width="450"
+  height="250"
+  frameborder="0" style="border:0"
+  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints=optimize:true|{{ waypoints }}"
+</iframe>
 
 {% endblock %}
