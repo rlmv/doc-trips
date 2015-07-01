@@ -3,6 +3,7 @@ from datetime import datetime
 
 from vanilla.views import TemplateView
 from django.core.urlresolvers import reverse
+from django.conf import settings
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
@@ -13,6 +14,7 @@ from doc.transport.models import (
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.incoming.models import IncomingStudent
+from doc.transport.maps import get_directions, get_hanover, get_lodge
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
@@ -346,9 +348,14 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['dropoffs'] = rel(ScheduledTrip.objects.dropoffs(*args))
         context['pickups'] = rel(ScheduledTrip.objects.pickups(*args))
         context['returns'] = rel(ScheduledTrip.objects.returns(*args))
-      
-        return context
+
+        context['scheduled'] = ScheduledTransport.objects.filter(
+            trips_year=self.get_trips_year(), date=self.get_date(),
+            route=self.get_route()
+        )
         
+        return context
+
 
 class ExternalBusChecklist(DatabaseReadPermissionRequired,
                            TripsYearMixin, TemplateView):

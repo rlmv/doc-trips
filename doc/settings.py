@@ -20,6 +20,9 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
 
+GOOGLE_MAPS_KEY = os.environ.get('GOOGLE_MAPS_KEY', '')
+GOOGLE_MAPS_BROWSER_KEY = os.environ.get('GOOGLE_MAPS_BROWSER_KEY', '')
+
 # don't overwrite identically named files
 # TODO: change this if we move static files to S3!
 # - will need to implement custom storage classes for STATIC and MEDIA
