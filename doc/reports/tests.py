@@ -81,7 +81,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': incoming1.name,
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
-            'aid award (percentage)': str(incoming1.financial_aid),
+            'aid award (percentage)': '15',
             'bus': '37',
             'doc membership': '91',
             'green fund donation': '20',
