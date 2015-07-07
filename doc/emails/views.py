@@ -46,6 +46,13 @@ def personal_emails(qs):
     return list(map(lambda x: x.email, qs))
 
 
+def blitz(qs):
+    """
+    List of trippee blitzes from IncomingStudent qs
+    """
+    return list(map(lambda x: x.blitz, qs))
+
+
 class Applicants(BaseEmailList):
 
     headline = "Applicant Emails"
@@ -123,18 +130,12 @@ class IncomingStudents(BaseEmailList):
             trips_year=self.get_trips_year()
         )
         email_list = [
-            ('unregistered personal emails', self.personal(unregistered)),
-            ('unregistered blitz', self.blitz(unregistered)),
-            ('registrations', self.personal(registered)),
+            ('unregistered personal emails', personal_emails(unregistered)),
+            ('unregistered blitz', blitz(unregistered)),
+            ('registrations', personal_emails(registered)),
         ]
         
         return email_list
-
-    def personal(self, qs):
-        return list(map(lambda x: x.email, qs))
-
-    def blitz(self, qs):
-        return list(map(lambda x: x.blitz, qs))
 
 
 class Trippees(BaseEmailList):
