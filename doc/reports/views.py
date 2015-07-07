@@ -9,7 +9,8 @@ from django.db.models import Avg
 from doc.db.views import TripsYearMixin
 from doc.applications.models import GeneralApplication
 from doc.permissions.views import DatabaseReadPermissionRequired
-from doc.incoming.models import Registration
+from doc.incoming.models import Registration, IncomingStudent
+from doc.core.models import Settings
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -131,3 +132,38 @@ class ExternalBusCSV(GenericReportView):
     def get_row(self, reg):
         user = reg.user
         return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
+
+
+class Charges(GenericReportView):
+    """
+    CSV file of charges to be applied to each trippee.
+    """
+    file_prefix = 'Charges'
+    
+    def get_queryset(self):
+        return IncomingStudent.objects.filter(
+            trips_year=self.get_trips_year(), trip_assignment__isnull=False
+        )
+
+    header = [
+        'name', 'netid', 'total charge', 'aid award (percentage)',
+        'bus', 'doc membership', 'green fund donation'
+    ]
+    def get_row(self, incoming):
+        reg = incoming.get_registration()
+        return [
+            incoming.name,
+            incoming.netid,
+            incoming.compute_cost(),
+            incoming.financial_aid if incoming.financial_aid else '',
+            incoming.bus_assignment.cost if incoming.bus_assignment else '',
+            self.membership_cost() if reg and reg.doc_membership else '',
+            reg.green_fund_donation if reg and reg.green_fund_donation else ''
+        ]
+
+    def membership_cost(self):
+        return Settings.objects.get().doc_membership_cost
+
+
+            
+
