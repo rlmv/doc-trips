@@ -11,6 +11,7 @@ from doc.applications.models import GeneralApplication
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
+from doc.utils.choices import YES
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -155,9 +156,9 @@ class Charges(GenericReportView):
             incoming.name,
             incoming.netid,
             incoming.compute_cost(),
-            incoming.financial_aid if incoming.financial_aid else '',
+            incoming.financial_aid if incoming.financial_aid != 0 else '',
             incoming.bus_assignment.cost if incoming.bus_assignment else '',
-            self.membership_cost() if reg and reg.doc_membership else '',
+            self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''
         ]
 

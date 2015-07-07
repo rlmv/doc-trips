@@ -12,6 +12,7 @@ from doc.applications.models import GeneralApplication
 from doc.incoming.models import Registration, IncomingStudent
 from doc.trips.models import ScheduledTrip
 from doc.core.models import Settings
+from doc.utils.choices import YES, NO
 
 
 def save_and_open_csv(resp):
@@ -58,7 +59,8 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # force trip to exist
             bus_assignment__cost=37,
-            registration__doc_membership=True,
+            financial_aid=15,
+            registration__doc_membership=YES,
             registration__green_fund_donation=20
         )
         # another, without a registration
@@ -66,6 +68,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             IncomingStudent,
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # ditto
+            financial_aid=0
         )
         # not charged because no trip assignment:
         mommy.make(IncomingStudent, trips_year=trips_year)
@@ -77,7 +80,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         target = [{
             'name': incoming1.name,
             'netid': incoming1.netid,
-            'total charge': str(round(incoming1.compute_cost())),
+            'total charge': str(incoming1.compute_cost()),
             'aid award (percentage)': str(incoming1.financial_aid),
             'bus': '37',
             'doc membership': '91',
@@ -86,7 +89,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': incoming2.name,
             'netid': incoming2.netid,
             'total charge': str(incoming2.compute_cost()),
-            'aid award (percentage)': str(incoming2.financial_aid),
+            'aid award (percentage)': '',
             'bus': '',
             'doc membership': '',
             'green fund donation': '',
