@@ -6,13 +6,14 @@ import unittest
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from doc.test.fixtures import WebTestCase
+from doc.test.fixtures import WebTestCase, TripsTestCase
 from doc.applications.tests import ApplicationTestMixin
 from doc.applications.models import GeneralApplication
 from doc.incoming.models import Registration, IncomingStudent
 from doc.trips.models import ScheduledTrip
 from doc.core.models import Settings
-from doc.utils.choices import YES, NO
+from doc.utils.choices import YES, NO, S, M, L, XL
+from doc.reports.views import tshirt_counts
 
 
 def save_and_open_csv(resp):
@@ -95,3 +96,48 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'green fund donation': '',
         }]
         self.assertEqual(rows, target)
+
+
+class TShirtCountTestCase(TripsTestCase):
+    
+    def test_tshirt_count_leaders(self):
+        trips_year = self.init_trips_year()
+        mommy.make(
+            GeneralApplication,
+            trips_year=trips_year,
+            status=GeneralApplication.LEADER,
+            assigned_trip__trips_year=trips_year,
+            tshirt_size=S
+        )
+        target = {
+            S: 1, M: 0, L: 0, XL: 0
+        }
+        self.assertEqual(target, tshirt_counts(trips_year))
+        
+    def test_tshirt_count_croos(self):
+        trips_year = self.init_trips_year()
+        mommy.make(
+            GeneralApplication,
+            trips_year=trips_year,
+            status=GeneralApplication.CROO,
+            tshirt_size=M
+        )
+        target = {
+            S: 0, M: 1, L: 0, XL: 0
+        }
+        self.assertEqual(target, tshirt_counts(trips_year))
+
+    def test_tshirt_count_trippees(self):
+        trips_year = self.init_trips_year()
+        mommy.make(
+            Registration,
+            trips_year=trips_year,
+            tshirt_size=L
+        )
+        target = {
+            S: 0, M: 0, L: 1, XL: 0
+        }
+        self.assertEqual(target, tshirt_counts(trips_year))
+        
+
+        

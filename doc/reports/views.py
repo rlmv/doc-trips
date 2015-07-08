@@ -1,17 +1,18 @@
 import csv
+from collections import defaultdict
 
 from braces.views import AllVerbsMixin
-from vanilla import View
+from vanilla import View, TemplateView
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.db.models import Avg
 
 from doc.db.views import TripsYearMixin
-from doc.applications.models import GeneralApplication
+from doc.applications.models import GeneralApplication as Application 
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
-from doc.utils.choices import YES
+from doc.utils.choices import YES, S, M, L, XL
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -54,7 +55,7 @@ class VolunteerCSV(GenericReportView):
     header = ['name', 'class year', 'netid']
 
     def get_queryset(self):
-        return GeneralApplication.objects.leader_or_croo_applications(self.kwargs['trips_year'])
+        return Application.objects.leader_or_croo_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
@@ -67,7 +68,7 @@ class TripLeaderApplicationsCSV(GenericReportView):
     header = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return (GeneralApplication.objects
+        return (Application.objects
                 .leader_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('leader_supplement__grades__grade'))
                 .select_related('leader_supplement')
@@ -91,7 +92,7 @@ class CrooApplicationsCSV(GenericReportView):
     header = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return (GeneralApplication.objects
+        return (Application.objects
                 .croo_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('croo_supplement__grades__grade'))
                 .select_related('croo_supplement')
@@ -166,5 +167,34 @@ class Charges(GenericReportView):
         return Settings.objects.get().doc_membership_cost
 
 
-            
+def tshirt_counts(trips_year):
+    """
+    Return a dict with S, M, L, XL keys, each
+    with the number of shirts needed in that size.
+    """
+    counts = {S: 0, M: 0, L: 0, XL: 0}
 
+    leaders = Application.objects.filter(
+        trips_year=trips_year, status=Application.LEADER
+    )
+    croos = Application.objects.filter(
+        trips_year=trips_year, status=Application.CROO
+    )
+    trippees = Registration.objects.filter(
+        trips_year=trips_year
+    )
+    for qs in [leaders, croos, trippees]:
+        for size in [S, M, L, XL]:
+            counts[size] += qs.filter(tshirt_size=size).count()
+    return counts
+
+
+class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+    """
+    Counts of all tshirt sizes requested by leaders, croos, and trippees.
+    """
+    template_name = "reports/tshirts.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs['tshirt_counts'] = tshirt_counts(self.kwargs['trips_year'])
+        return super(TShirts, self).get_context_data(**kwargs)
