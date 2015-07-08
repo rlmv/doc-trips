@@ -104,7 +104,10 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             IncomingStudent,
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,
-            trip_assignment__section__leaders_arrive=date(2015, 1, 1)
+            trip_assignment__section__leaders_arrive=date(2015, 1, 1),
+            registration__is_fysep=YES,
+            registration__is_native=YES,
+            registration__is_international=NO
         )
         t2 = mommy.make(
             IncomingStudent,
@@ -121,14 +124,20 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': str(t1.trip_assignment),
             'section': str(t1.trip_assignment.section.name),
             'start date': '01/02',
-            'end date': '01/06'
+            'end date': '01/06',
+            'native': 'yes',
+            'fysep': 'yes',
+            'international': ''
         }, {
             'name': t2.name,
             'netid': t2.netid,
             'trip': '',
             'section': '',
             'start date': '',
-            'end date': ''
+            'end date': '',
+            'native': '',
+            'fysep': '',
+            'international': '',
         }]
         self.assertEqual(rows, target)
 

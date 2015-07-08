@@ -209,15 +209,21 @@ class Housing(GenericReportView):
             trips_year=self.kwargs['trips_year']
         )
 
-    header = ['name', 'netid', 'trip', 'section', 'start date', 'end date']
+    header = ['name', 'netid', 'trip', 'section', 'start date', 'end date',
+              'native', 'fysep', 'international']
     def get_row(self, incoming):
         is_assigned = incoming.trip_assignment is not None
+        reg = incoming.get_registration()
+        trip = incoming.trip_assignment
         fmt = "%m/%d"
         return [
             incoming.name,
             incoming.netid,
-            incoming.trip_assignment if is_assigned else "",
-            incoming.trip_assignment.section.name if is_assigned else "",
-            incoming.trip_assignment.section.trippees_arrive.strftime(fmt) if is_assigned else "",
-            incoming.trip_assignment.section.return_to_campus.strftime(fmt) if is_assigned else "",
+            trip if is_assigned else "",
+            trip.section.name if is_assigned else "",
+            trip.section.trippees_arrive.strftime(fmt) if is_assigned else "",
+            trip.section.return_to_campus.strftime(fmt) if is_assigned else "",
+            'yes' if reg and reg.is_native == YES else '',
+            'yes' if reg and reg.is_fysep == YES else '',
+            'yes' if reg and reg.is_international == YES else '',
         ]
