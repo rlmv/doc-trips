@@ -111,6 +111,14 @@ class IncomingStudentManager(models.Manager):
             bus_assignment__route=route,
             trip_assignment__section=section
         )
+
+    def with_trip(self, trips_year):
+        """
+        All trippees who have a trip assignment
+        """
+        return self.filter(
+            trips_year=trips_year, trip_assignment__isnull=False
+        )
      
    
 class RegistrationManager(models.Manager):

@@ -381,6 +381,25 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         ))
         self.assertEqual(target, actual)
 
+    def test_with_trip(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, 
+            trips_year=trips_year
+        )
+        assigned = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment__trips_year=trip
+        )
+        not_assigned = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None
+        )
+        actual = list(IncomingStudent.objects.with_trip(trips_year))
+        self.assertEqual(actual, [assigned])
+
 
 class RegistrationViewsTestCase(WebTestCase):
 

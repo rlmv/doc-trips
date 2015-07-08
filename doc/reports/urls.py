@@ -1,8 +1,8 @@
 from django.conf.urls import url
 
 from doc.reports.views import (
-    VolunteerCSV, TripLeaderApplicationsCSV, CrooApplicationsCSV, 
-    FinancialAidCSV, ExternalBusCSV, Charges, TShirts
+    VolunteerCSV, TripLeaderApplicationsCSV, CrooApplicationsCSV,
+    FinancialAidCSV, ExternalBusCSV, Charges, TShirts, Housing
 )
 
 urlpatterns = [
@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^registrations/bus-stops/$', ExternalBusCSV.as_view(),
         name='bus_stops'),
     url(r'^incoming/charges/$', Charges.as_view(), name="charges"),
+    url(r'^incoming/housing/$', Housing.as_view(), name="housing"),
     url(r'^tshirts/$', TShirts.as_view(), name='tshirts'),
 ]

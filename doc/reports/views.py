@@ -198,3 +198,26 @@ class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
     def get_context_data(self, **kwargs):
         kwargs['tshirt_counts'] = tshirt_counts(self.kwargs['trips_year'])
         return super(TShirts, self).get_context_data(**kwargs)
+
+
+class Housing(GenericReportView):
+    
+    file_prefix = 'Housing'
+
+    def get_queryset(self):
+        return IncomingStudent.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = ['name', 'netid', 'trip', 'section', 'start date', 'end date']
+    def get_row(self, incoming):
+        is_assigned = incoming.trip_assignment is not None
+        fmt = "%m/%d"
+        return [
+            incoming.name,
+            incoming.netid,
+            incoming.trip_assignment if is_assigned else "",
+            incoming.trip_assignment.section.name if is_assigned else "",
+            incoming.trip_assignment.section.trippees_arrive.strftime(fmt) if is_assigned else "",
+            incoming.trip_assignment.section.return_to_campus.strftime(fmt) if is_assigned else "",
+        ]

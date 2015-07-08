@@ -2,6 +2,7 @@ import io
 import csv
 import tempfile
 import unittest
+from datetime import date
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
@@ -94,6 +95,40 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'bus': '',
             'doc membership': '',
             'green fund donation': '',
+        }]
+        self.assertEqual(rows, target)
+
+    def test_housing_report(self):
+        trips_year = self.init_trips_year()
+        t1 = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment__trips_year=trips_year,
+            trip_assignment__section__leaders_arrive=date(2015, 1, 1)
+        )
+        t2 = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None
+        )
+        url = reverse('db:reports:housing', kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+        
+        rows = list(save_and_open_csv(resp))
+        target = [{
+            'name': t1.name,
+            'netid': t1.netid,
+            'trip': str(t1.trip_assignment),
+            'section': str(t1.trip_assignment.section.name),
+            'start date': '01/02',
+            'end date': '01/06'
+        }, {
+            'name': t2.name,
+            'netid': t2.netid,
+            'trip': '',
+            'section': '',
+            'start date': '',
+            'end date': ''
         }]
         self.assertEqual(rows, target)
 
