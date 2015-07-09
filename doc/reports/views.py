@@ -14,6 +14,7 @@ from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
 from doc.utils.choices import YES, S, M, L, XL
 
+# TODO use a ListView here?
 
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
@@ -226,4 +227,41 @@ class Housing(GenericReportView):
             'yes' if reg and reg.is_native == YES else '',
             'yes' if reg and reg.is_fysep == YES else '',
             'yes' if reg and reg.is_international == YES else '',
+        ]
+
+
+class DietaryRestrictions(GenericReportView):
+    
+    file_prefix = 'Dietary-Restrictions'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = [
+        'name', 'netid', 'trip',
+        'allergies',
+        'allergen information',
+        'food allergy reaction',
+        'food allergy severity (1-5)',
+        'dietary restrictions',
+        'medical conditions',
+    ]
+    def get_row(self, reg):
+        
+        if reg.get_incoming_student():
+            trip = reg.get_incoming_student.trip_assignment
+        else:
+            trip = None
+        return [
+            reg.name,
+            reg.user.netid,
+            trip,
+            reg.allergies,
+            reg.allergen_information,
+            reg.allergy_reaction,
+            reg.allergy_severity,
+            reg.dietary_restrictions,
+            reg.medical_conditions,
         ]

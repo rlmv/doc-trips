@@ -141,6 +141,39 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         }]
         self.assertEqual(rows, target)
 
+    def test_dietary_restrictions(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            Registration,
+            trips_year=trips_year
+        )
+        reg = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            trippee__trip_assignment=trip,
+            medical_conditions='none',
+            allergies='peaches',
+            allergen_information='I go into shock',
+            allergy_severity=1,
+            dietary_restrictions='gluten free',
+            allergy_reaction='hives',
+        )
+        url = reverse('db:reports:dietary', kwargs={'trips_year': trips_year})
+        resp  = self.app.get(url, user=self.mock_director())
+
+        rows = list(save_and_open_csv(resp))
+        target = [{
+            'name': reg.name,
+            'netid': reg.user.netid,
+            'trip': trip,
+            'allergies': 'peaches',
+            'allergen information': 'I go into shock',
+            'food allergy reaction': 'hives',
+            'food allergy severity (1-5)': 1,
+            'dietary restrictions': 'gluten free',
+            'medical conditions': 'none',
+        }]
+
 
 class TShirtCountTestCase(TripsTestCase):
     
