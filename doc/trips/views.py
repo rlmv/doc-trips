@@ -4,6 +4,7 @@ from collections import defaultdict
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
 from django.utils.safestring import mark_safe
+from django.forms.models import modelformset_factory
 from vanilla import FormView, UpdateView, TemplateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -12,7 +13,7 @@ from braces.views import FormValidMessageMixin, SetHeadlineMixin
 from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
 from doc.trips.forms import (
     TripLeaderAssignmentForm, SectionForm, AssignmentForm,
-    TrippeeAssignmentForm
+    TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.incoming.models import IncomingStudent, Registration
@@ -20,7 +21,8 @@ from doc.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import (
-    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired
+    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired,
+    DatabaseEditPermissionRequired
 )
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
@@ -519,3 +521,33 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
         context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
         return context
 
+
+class FoodboxRules(
+        DatabaseEditPermissionRequired, TripsYearMixin, 
+        SetHeadlineMixin, FormView):
+
+    template_name = 'db/form.html'
+    headline = 'Foodbox Rules'
+
+    def get_queryset(self):
+        return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
+    
+    def get_form(self, **kwargs):
+        FoodRulesFormset = modelformset_factory(
+            TripType, fields=['name', 'half_kickin', 'gets_supplemental'],
+            extra=0
+        )
+        formset = FoodRulesFormset(queryset=self.get_queryset(), **kwargs)
+        formset.helper = FoodboxFormsetHelper()
+        formset.helper.form_class = 'form-inline'
+#        formset.helper.field_template = 'bootstrap3/layout/inline_field.html'
+#        formset.helper.template = 'bootstrap3-redux/table_inline_formset.html'
+        formset.helper.add_input(Submit('submit', 'Save'))
+        return formset
+
+    def form_valid(self, formset):
+        formset.save()
+        return super(FoodboxRules, self).form_valid(formset)
+        
+    def get_success_url(self):
+        return self.request.path

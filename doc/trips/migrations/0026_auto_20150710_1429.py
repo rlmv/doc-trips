@@ -12,6 +12,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddField(
+            model_name='triptype',
+            name='gets_supplemental',
+            field=models.BooleanField(verbose_name='does this triptype get a supplemental foodbox?', default=False),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='triptype',
+            name='half_kickin',
+            field=models.PositiveSmallIntegerField(default=10),
+            preserve_default=True,
+        ),
         migrations.AlterField(
             model_name='scheduledtrip',
             name='section',

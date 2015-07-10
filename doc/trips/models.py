@@ -278,6 +278,14 @@ class TripType(DatabaseModel):
     # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
+   # --- foodbox info ----
+    half_kickin = models.PositiveSmallIntegerField(
+        'minimum # for a HALF foodbox', default=10
+    )
+    gets_supplemental = models.BooleanField(
+        'gets a SUPPLEMENTAL foodbox?', default=False
+    )
+
     class Meta:
         ordering = ['name']
 

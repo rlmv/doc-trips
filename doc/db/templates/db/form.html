@@ -1,6 +1,12 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+<h2>
+  {{ headline }}
+</h2>
+{% endblock header %}
+
 {% block content %}
 {% crispy form %}
 {% endblock content %}
