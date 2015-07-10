@@ -299,10 +299,10 @@ class TripType(DatabaseModel):
 
    # --- foodbox info ----
     half_kickin = models.PositiveSmallIntegerField(
-        'minimum # for a HALF foodbox', default=10
+        'minimum # for a half foodbox', default=10
     )
     gets_supplemental = models.BooleanField(
-        'gets a SUPPLEMENTAL foodbox?', default=False
+        'gets a supplemental foodbox?', default=False
     )
 
     class Meta:
