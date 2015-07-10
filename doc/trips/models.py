@@ -28,7 +28,9 @@ class ScheduledTrip(DatabaseModel):
     objects = ScheduledTripManager()
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
-    section = models.ForeignKey('Section', on_delete=models.PROTECT)
+    section = models.ForeignKey(
+        'Section', on_delete=models.PROTECT, related_name='trips'
+    )
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
