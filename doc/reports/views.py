@@ -251,7 +251,7 @@ class DietaryRestrictions(GenericReportView):
     def get_row(self, reg):
         
         if reg.get_incoming_student():
-            trip = reg.get_incoming_student.trip_assignment
+            trip = reg.get_incoming_student().trip_assignment
         else:
             trip = None
         return [
@@ -265,3 +265,40 @@ class DietaryRestrictions(GenericReportView):
             reg.dietary_restrictions,
             reg.medical_conditions,
         ]
+
+
+class MedicalInfo(GenericReportView):
+    
+    file_prefix = 'Medical-Info'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = [
+        'name', 'netid', 'trip',
+        'medical conditions',
+        'allergies',
+        'allergen information',
+        'food allergy reaction',
+        'food allergy severity',
+        'epipen',
+        'needs',
+    ]
+    def get_row(self, reg):
+        if reg.get_incoming_student():
+            trip = reg.get_incoming_student().trip_assignment
+        else:
+            trip = None
+        return [
+            reg.name, reg.user.netid, trip,
+            reg.medical_conditions,
+            reg.allergies,
+            reg.allergen_information,
+            reg.allergy_reaction,
+            reg.allergy_severity,
+            reg.epipen,
+            reg.needs,
+        ]
+            
