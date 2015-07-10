@@ -250,15 +250,10 @@ class DietaryRestrictions(GenericReportView):
         'medical conditions',
     ]
     def get_row(self, reg):
-        
-        if reg.get_incoming_student():
-            trip = reg.get_incoming_student().trip_assignment
-        else:
-            trip = None
         return [
             reg.name,
             reg.user.netid,
-            trip,
+            reg.get_trip_assignment(),
             reg.allergies,
             reg.allergen_information,
             reg.allergy_reaction,
