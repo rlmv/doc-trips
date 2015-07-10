@@ -16,6 +16,7 @@
     <th> Trip </th>
     <th> Trip Type </th>
     <th> Size </th>
+    <th> Full Box? </th>
     <th> Half Box? </th>
     <th> Supplemental Box? </th>
   </tr>
@@ -23,6 +24,7 @@
     <th class="text-muted"> totals </th>
     <th/>
     <th/>
+    <th class="text-muted"> {{ full }} </th>
     <th class="text-muted"> {{ half }} </th>
     <th class="text-muted"> {{ supp }} </th>
     
@@ -31,6 +33,7 @@
     <td> {{ trip }} </td>
     <td> {{ trip.template.triptype }} </td>
     <td> {{ trip.size }} </td>
+    <td> <i class="fa fa-check-square-o"></i> </td>
     <td> {{ trip.half_foodbox|checkmark_if_true }} </td>
     <td> {{ trip.supplemental_foodbox|checkmark_if_true }} </td>
   </tr>

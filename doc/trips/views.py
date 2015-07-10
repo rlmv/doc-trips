@@ -538,17 +538,15 @@ class FoodboxCounts(DatabaseListView):
     def get_context_data(self, **kwargs):
         # hack hack TODO: compute this with a query
         qs = self.object_list
+        kwargs['full'] = len(qs)
         kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
         kwargs['supp'] = len(list(filter(lambda x: x.supplemental_foodbox, qs)))
         return super(FoodboxCounts, self).get_context_data(**kwargs)
 
 
-class FoodboxRules(
-        DatabaseEditPermissionRequired, TripsYearMixin,
-        SetHeadlineMixin, FormView):
+class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
-    template_name = 'db/form.html'
-    headline = 'Foodbox Rules'
+    template_name = 'trip/foodbox_rules.html'
 
     def get_queryset(self):
         return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
