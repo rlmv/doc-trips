@@ -13,6 +13,7 @@ from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
 from doc.utils.choices import YES, S, M, L, XL
+from doc.trips.models import ScheduledTrip
 
 # TODO use a ListView here?
 
@@ -301,4 +302,20 @@ class MedicalInfo(GenericReportView):
             reg.epipen,
             reg.needs,
         ]
-            
+
+class Foodboxes(GenericReportView):
+    
+    file_prefix = 'Foodboxes'
+    
+    def get_queryset(self):
+        return ScheduledTrip.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = ['trip', 'section', 'size']
+    def get_row(self, trip):
+        return [
+            trip,
+            trip.section.name,
+            trip.size(),
+        ]

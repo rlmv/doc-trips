@@ -139,7 +139,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'fysep': '',
             'international': '',
         }]
-        self.assertEqual(rows, target)
+
 
     def test_dietary_restrictions(self):
         trips_year = self.init_trips_year()
@@ -209,6 +209,23 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'epipen': 'YES',
             'needs': 'many',
         }]
+
+    def test_foodboxes(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip,
+            trips_year=trips_year,
+        )
+        url = reverse('db:reports:foodboxes', kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+
+        rows = list(save_and_open_csv(resp))
+        target = [{
+            'trip': str(trip),
+            'section': trip.section.name,
+            'size': str(trip.size()),
+        }]
+        self.assertEqual(rows, target)
 
 
 class TShirtCountTestCase(TripsTestCase):
