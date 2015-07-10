@@ -177,13 +177,12 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     def test_medical_info(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            Registration,
+            ScheduledTrip,
             trips_year=trips_year
         )
         reg = mommy.make(
             Registration,
             trips_year=trips_year,
-            trippee__trip_assignment=trip,
             medical_conditions='none',
             allergies='peaches',
             allergen_information='I go into shock',
@@ -193,22 +192,29 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             epipen='YES',
             needs='many',
         )
+        inc = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=trip,
+            registration=reg,
+        )
         url = reverse('db:reports:medical', kwargs={'trips_year': trips_year})
-        resp  = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.mock_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
             'name': reg.name,
             'netid': reg.user.netid,
-            'trip': trip,
+            'trip': str(trip),
             'medical conditions': 'none',
             'allergies': 'peaches',
             'allergen information': 'I go into shock',
             'food allergy reaction': 'hives',
-            'food allergy severity (1-5)': 1,
+            'food allergy severity (1-5)': '1',
             'epipen': 'YES',
             'needs': 'many',
         }]
+        self.assertEqual(rows, target)
 
     def test_foodboxes(self):
         trips_year = self.init_trips_year()

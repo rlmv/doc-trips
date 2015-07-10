@@ -283,17 +283,13 @@ class MedicalInfo(GenericReportView):
         'allergies',
         'allergen information',
         'food allergy reaction',
-        'food allergy severity',
+        'food allergy severity (1-5)',
         'epipen',
         'needs',
     ]
     def get_row(self, reg):
-        if reg.get_incoming_student():
-            trip = reg.get_incoming_student().trip_assignment
-        else:
-            trip = None
         return [
-            reg.name, reg.user.netid, trip,
+            reg.name, reg.user.netid, reg.get_trip_assignment(),
             reg.medical_conditions,
             reg.allergies,
             reg.allergen_information,
