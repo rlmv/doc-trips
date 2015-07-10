@@ -173,6 +173,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'dietary restrictions': 'gluten free',
             'medical conditions': 'none',
         }]
+        self.assertEqual(rows, target)
 
     def test_medical_info(self):
         trips_year = self.init_trips_year()
