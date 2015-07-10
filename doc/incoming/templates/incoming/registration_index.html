@@ -4,7 +4,12 @@
 
 {% block header %}
 <h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations 
+</h2>
+{% endblock %}
 
+{% block content %}
+
+<div>
   <a class="btn btn-success" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Financial Aid Requests
   </a>
@@ -20,12 +25,9 @@
   <a class="btn btn-success" href="{% url 'db:reports:medical' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Medical Info
   </a>
+</div>
 
-
-</h2>
-{% endblock %}
-
-{% block content %}
+<br>
 
 {% if unmatched %}
 <div class="alert alert-danger alert-dismissible">
