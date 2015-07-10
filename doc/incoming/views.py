@@ -3,7 +3,7 @@ import logging
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -165,6 +165,9 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
             )
         except IncomingStudent.DoesNotExist:
             return None
+        except MultipleObjectsReturned as exc:
+            logger.error(exc, extra={'request': self.request, 'stack': True})
+            raise exc
 
     def get_context_data(self, **kwargs):
         timetable = Timetable.objects.timetable()
