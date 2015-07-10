@@ -91,4 +91,5 @@ leader_urlpatterns = [
 
 foodbox_urlpatterns = [
     url(r'^rules/$', FoodboxRules.as_view(), name='rules'),
+    url(r'^counts/$', FoodboxCounts.as_view(), name='counts'),
 ]

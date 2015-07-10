@@ -59,6 +59,46 @@ class ScheduledTripTestCase(WebTestCase):
             self.app.get(reverse('db:scheduledtrip_index', kwargs={'trips_year': self.trips_year}), user=user)
 
 
+class ScheduledTripModelTestCase(TripsTestCase):
+
+    def test_gets_half_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__half_kickin=3
+        )
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        self.assertTrue(trip.half_foodbox)
+
+    def test_does_not_get_half_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__half_kickin=3
+        )
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        self.assertFalse(trip.half_foodbox)
+
+    def test_gets_supplemental_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=True
+        )
+        self.assertTrue(trip.supplemental_foodbox)
+
+    def test_does_not_get_supplemental_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=False
+        )
+        self.assertFalse(trip.supplemental_foodbox)
+        
+
 class ScheduledTripRouteOverridesTestCase(WebTestCase):
 
     def test_override_routes_in_trip_update_form(self):

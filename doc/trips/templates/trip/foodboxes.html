@@ -1,0 +1,39 @@
+{% extends "db/base.html" %}
+{% load icons %}
+
+{% block header %}
+<h2> Foodboxes </h2>
+{% endblock %}
+
+{% block content %}
+<p>
+  <a href="{% url 'db:foodbox:rules' trips_year=trips_year %}"> <i class="fa fa-sign-out"></i> Edit Foodbox Rules </a>
+</p>
+
+{{ half }} {{ supp }}
+<table class="table table-condensed">
+  <tr>
+    <th> Trip </th>
+    <th> Trip Type </th>
+    <th> Size </th>
+    <th> Half Box? </th>
+    <th> Supplemental Box? </th>
+  </tr>
+  <tr> 
+    <th class="text-muted"> totals </th>
+    <th/>
+    <th/>
+    <th class="text-muted"> {{ half }} </th>
+    <th class="text-muted"> {{ supp }} </th>
+    
+  {% for trip in object_list %}
+  <tr>
+    <td> {{ trip }} </td>
+    <td> {{ trip.template.triptype }} </td>
+    <td> {{ trip.size }} </td>
+    <td> {{ trip.half_foodbox|checkmark_if_true }} </td>
+    <td> {{ trip.supplemental_foodbox|checkmark_if_true }} </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

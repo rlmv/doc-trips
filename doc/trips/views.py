@@ -522,8 +522,29 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
         return context
 
 
+class FoodboxCounts(DatabaseListView):
+
+    model = ScheduledTrip
+    template_name = 'trip/foodboxes.html'
+    context_object_name = 'trips'
+
+    def get_queryset(self):
+        return ScheduledTrip.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        ).select_related(
+            'section', 'template', 'template__triptype'
+        )
+
+    def get_context_data(self, **kwargs):
+        # hack hack TODO: compute this with a query
+        qs = self.object_list
+        kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
+        kwargs['supp'] = len(list(filter(lambda x: x.supplemental_foodbox, qs)))
+        return super(FoodboxCounts, self).get_context_data(**kwargs)
+
+
 class FoodboxRules(
-        DatabaseEditPermissionRequired, TripsYearMixin, 
+        DatabaseEditPermissionRequired, TripsYearMixin,
         SetHeadlineMixin, FormView):
 
     template_name = 'db/form.html'

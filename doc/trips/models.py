@@ -82,8 +82,12 @@ class ScheduledTrip(DatabaseModel):
     def size(self):
         """ 
         Return the number trippees + leaders on this trip 
+
+        HACK: is it safe to cache like this?
         """
-        return self.leaders.count() + self.trippees.count()
+        if not hasattr(self, '_size'):
+            self._size = self.leaders.count() + self.trippees.count()
+        return self._size
 
     @property 
     def dropoff_date(self):
@@ -96,6 +100,21 @@ class ScheduledTrip(DatabaseModel):
     @property
     def return_date(self):
         return self.section.return_to_campus
+
+    @property
+    def half_foodbox(self):
+        """ 
+        A trip gets an additional half foodbox if it is larger 
+        than the kickin limit specified by the triptype.
+        """
+        return self.size() >= self.template.triptype.half_kickin 
+
+    @property
+    def supplemental_foodbox(self):
+        """
+        Does the trip get a supplemental foodbox?
+        """
+        return self.template.triptype.gets_supplemental
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)
