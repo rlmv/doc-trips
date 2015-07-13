@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
@@ -142,7 +143,13 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             registration__green_fund_donation=290
         )
         self.assertEqual(inc.compute_cost(), 421.25)
-        
+
+    def test_netid_and_trips_year_are_unique(self):
+        trips_year = self.init_trips_year()
+        mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
+        with self.assertRaises(IntegrityError):
+            mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
+
 
 class RegistrationModelTestCase(TripsYearTestCase):
 

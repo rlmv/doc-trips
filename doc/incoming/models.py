@@ -41,6 +41,9 @@ class IncomingStudent(DatabaseModel):
 
     objects = IncomingStudentManager()
 
+    class Meta:
+        unique_together = ('netid', 'trips_year')
+
     registration = models.OneToOneField(
         'Registration', editable=False, related_name='trippee', null=True
     )
