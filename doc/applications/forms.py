@@ -1,11 +1,12 @@
 from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, MultiField, Row, Column
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, Row
 from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
 
-from doc.applications.models import (GeneralApplication, CrooSupplement, LeaderSupplement,
-                                     CrooApplicationGrade, LeaderApplicationGrade)
+from doc.applications.models import (
+    GeneralApplication, CrooSupplement, LeaderSupplement,
+    CrooApplicationGrade, LeaderApplicationGrade)
 from doc.db.models import TripsYear
 from doc.trips.models import Section, TripType, ScheduledTrip
 from doc.trips.fields import LeaderSectionChoiceField, ScheduledTripChoiceField
@@ -13,8 +14,9 @@ from doc.utils.forms import crispify
 
 
 class TripAssignmentForm(forms.ModelForm):
-    """ Update a leader's assigned trip """
-
+    """
+    Update a leader's assigned trip
+    """
     class Meta:
         model = GeneralApplication
         fields = ['assigned_trip']
@@ -36,13 +38,15 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = (
-            'class_year', 'hinman_box', 'phone', 'gender', 'race_ethnicity', 
+            'class_year', 'hinman_box', 'phone',
+            'gender', 'race_ethnicity',
             'summer_address', 'tshirt_size',
-            'from_where', 'what_do_you_like_to_study', 
+            'from_where', 'what_do_you_like_to_study',
             'personal_activities', 'feedback',
-            'dietary_restrictions', 'allergen_information', 
-            'medical_certifications', 'medical_experience', 'peer_training',
-            'trippee_confidentiality', 'in_goodstanding_with_college',
+            'dietary_restrictions', 'allergen_information',
+            'medical_certifications', 'medical_experience',
+            'peer_training', 'trippee_confidentiality',
+            'in_goodstanding_with_college',
             'trainings', 'spring_training_ok', 'summer_training_ok',
             'hanover_in_fall', 'role_preference',
         )
@@ -69,9 +73,10 @@ class CrooSupplementForm(forms.ModelForm):
     class Meta:
         model = CrooSupplement
         fields = (
-            'document', 
-            'safety_lead_willing', 
-            'kitchen_lead_willing', 'kitchen_lead_qualifications',
+            'document',
+            'safety_lead_willing',
+            'kitchen_lead_willing',
+            'kitchen_lead_qualifications',
         )
         widgets = {
             'kitchen_lead_qualifications': forms.Textarea(attrs={'rows': 2}),
@@ -157,7 +162,7 @@ class ApplicationStatusForm(forms.ModelForm):
 
 class ApplicationAdminForm(forms.ModelForm):
     
-    class Meta: 
+    class Meta:
         model = GeneralApplication
         fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
         
@@ -165,7 +170,7 @@ class ApplicationAdminForm(forms.ModelForm):
         super(ApplicationAdminForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
-            'status', 
+            'status',
             HTML("{% include 'applications/_trip_preferences.html' %}"),
             'assigned_trip',
             HTML("{% include 'applications/_croo_members.html' %}"),
@@ -173,17 +178,17 @@ class ApplicationAdminForm(forms.ModelForm):
             'safety_lead',
             Submit('submit', 'Update'),
         )
-        
+
 
 TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
 
-class TrainingsForm(forms.ModelForm):
+class CertificationForm(forms.ModelForm):
 
     class Meta:
         model = GeneralApplication
         fields = (
             'community_building', 'risk_management',
-            'wilderness_skills', 'croo_training', 
+            'wilderness_skills', 'croo_training',
             'fa_cert', 'fa_other'
         )
         widgets = {
@@ -194,41 +199,62 @@ class TrainingsForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(TrainingsForm, self).__init__(*args, **kwargs)
+        super(CertificationForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.all().wrap(Div, css_class='col-sm-3')
         self.helper.all().wrap(Row)
         self.helper.add_input(Submit('submit', 'Update'))
 
 
+NOT_USED_IN_SCORING = (
+    "Answers in this section will not be used in the scoring process"
+)
+
+
 class ApplicationLayout(Layout):
 
     def __init__(self):
         super(ApplicationLayout, self).__init__(
-                Alert(content='Answers in this section will NOT be used in the scoring process', dismiss=False, css_class='alert-info'),
-                Row(
-                    Div('class_year', css_class='col-sm-3'),
-                    Div('gender', css_class='col-sm-3'),
-                    Div('race_ethnicity', css_class='col-sm-3'),
-                ),
-                Row(
-                    Div('hinman_box', css_class='col-sm-3'),
-                    Div('phone', css_class='col-sm-3'),
-                    Div('summer_address', css_class='col-sm-5'),
-                ),
-                Row(
-                    Div('tshirt_size', css_class='col-sm-3'),
-                ),
-                Field('from_where'), #disabled=True),
-                Field('what_do_you_like_to_study'), # disabled=True),
-                'personal_activities',
-                'feedback',
+            Alert(
+                content=NOT_USED_IN_SCORING,
+                dismiss=False, css_class='alert-info'
+            ),
+            Row(
+                Div('class_year', css_class='col-sm-3'),
+                Div('gender', css_class='col-sm-3'),
+                Div('race_ethnicity', css_class='col-sm-3'),
+            ),
+            Row(
+                Div('hinman_box', css_class='col-sm-3'),
+                Div('phone', css_class='col-sm-3'),
+                Div('summer_address', css_class='col-sm-5'),
+            ),
+            Row(
+                Div('tshirt_size', css_class='col-sm-3'),
+            ),
+            Field('from_where'),
+            Field('what_do_you_like_to_study'),
+            'personal_activities',
+            'feedback',
             Fieldset(
                 'Trainings',
-                'medical_certifications', 
-                'medical_experience', 
+                'medical_certifications',
+                'medical_experience',
                 'peer_training',
-                HTML("<p><strong>If selected to be a DOC trip leader, you must complete various trainings before Trips begins. These trainings are important in providing leaders with the proper skills to lead a fun and safe trip. The training program includes 10-12 hours (not necessarily all at once) of training sessions covering First Aid/CPR, Community Building, Wilderness Skills, Risk Management, and Trip-specific outdoor experience. Leaders can get PE credit for the trainings. Croo members are also required to complete First Aid and CPR training, as well as attend Croo specific trainings. Sessions are offered throughout the spring and summer terms.</strong></p>"),
+                HTML(
+                    "<p><strong>If selected to be a DOC trip leader, you must "
+                    "complete various trainings before Trips begins. These "
+                    "trainings are important in providing leaders with the "
+                    "proper skills to lead a fun and safe trip. The training "
+                    "program includes 10-12 hours (not necessarily all at once) "
+                    "of training sessions covering First Aid/CPR, Community "
+                    "Building, Wilderness Skills, Risk Management, and "
+                    "Trip-specific outdoor experience. Leaders can get PE "
+                    "credit for the trainings. Croo members are also required "
+                    "to complete First Aid and CPR training, as well as attend "
+                    "Croo specific trainings. Sessions are offered throughout "
+                    "the spring and summer terms.</strong></p>"
+                ),
                 'spring_training_ok',
                 'summer_training_ok',
             ),
@@ -239,16 +265,24 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Dietary restrictions', 
-                HTML('<p>(We use this information in packing food for Trips and it will not affect your candidacy)</p>'),
+                HTML(
+                    "<p>(We use this information in packing food for Trips "
+                    "and it will not affect your candidacy)</p>"
+                 ),
                 'dietary_restrictions',
-                'allergen_information', 
-            ), 
+                'allergen_information',
+            ),
             Fieldset(
                 'Notices',
-                HTML("<p>You must agree to the following statements in order to lead a Trip or participate on a Croo. Checking each box indicates your acceptance of the conditions for your participation in DOC Trips.</p>"),
+                HTML(
+                    "<p>You must agree to the following statements in order "
+                    "to lead a Trip or participate on a Croo. Checking each "
+                    "box indicates your acceptance of the conditions for your "
+                    "participation in DOC Trips.</p>"
+                ),
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
-                'trainings', 
+                'trainings',
             ),
         )
 
@@ -259,18 +293,40 @@ class LeaderSupplementLayout(Layout):
         super(LeaderSupplementLayout, self).__init__(
             Fieldset(
                 'Application',
-                HTML('<p> Download the <a href="{% if information.leader_supplement_questions %}{{ information.leader_supplement_questions.url }}{% endif %}">Trip Leader Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Trip Leader application will not be considered complete until you have uploaded answers to these questions. Be sure to save your application after uploading.</p>'),
+                HTML(
+                    '<p> Download the <a href="{% if information.leader_supplement_questions %}{{ information.leader_supplement_questions.url }}{% endif %}"> '
+                    'Trip Leader Application</a>. Thoughtfully answer the '
+                    'questions and upload your responses in a Word (.docx) '
+                    'document. <strong>Leave the original application questions '
+                    'in the document with your responses.</strong> Your Trip '
+                    'Leader application will not be considered complete until '
+                    'you have uploaded answers to these questions. Be sure to '
+                    'save your application after uploading.</p>'
+                ),
                 'document',
             ),
             Fieldset(
                 'Trip Leader Availability',
-                Alert(content='Answers in this section will NOT be used in the scoring process', dismiss=False, css_class='alert-info'),
-                HTML('<p>Please indicate your availibity for each section and type of trip. <strong>Preferred</strong> means you will be most satisfied with this option; you can prefer more than one option. <strong>Available</strong> means you could do it. If you leave a choice blank it means you absolutely cannot participate on those dates or in that activity.</p>'),
+                Alert(
+                    content=NOT_USED_IN_SCORING,
+                    dismiss=False, css_class='alert-info'
+                ),
+                HTML(
+                    "<p>Please indicate your availibity for each section and "
+                    "type of trip. <strong>Preferred</strong> means you will "
+                    "be most satisfied with this option; you can prefer more "
+                    "than one option. <strong>Available</strong> means you "
+                    "could do it. If you leave a choice blank it means you "
+                    "absolutely cannot participate on those dates or in that "
+                    "activity.</p>"
+                ),
                 Row(
                     Div('preferred_sections', css_class='col-sm-3'),
                     Div('available_sections', css_class='col-sm-3'),
                 ),
-                HTML('<p> {% include "applications/triptype_modal.html" %}</p>'),
+                HTML(
+                    '<p> {% include "applications/triptype_modal.html" %}</p>'
+                ),
                 Row(
                     Div('preferred_triptypes', css_class='col-sm-3'),
                     Div('available_triptypes', css_class='col-sm-3'),
@@ -293,9 +349,30 @@ class CrooSupplementLayout(Layout):
             ),
             Fieldset(
                 'Croo Positions',
-                HTML("<p>Every croo has at least one or more <strong>Safety Leads</strong> who are responsible for medical care & evacuations at their respective location (Hanover, the Grant, etc). Safety Leads are an integral part of each croo and, in addition to their medical responsibilities, are included in all other croo activities.  If you have a WFR, EMT, W-EMT, OEC, or equivalent medical certification, you are qualified to be a Safety Lead. We will prioritize people who have higher safety certifications (EMT, W-EMT) and extensive safety experience.</p>"),
+                HTML(
+                    "<p>Every croo has at least one or more <strong>Safety "
+                    "Leads</strong> who are responsible for medical care & "
+                    "evacuations at their respective location (Hanover, the "
+                    "Grant, etc). Safety Leads are an integral part of each "
+                    "croo and, in addition to their medical responsibilities, "
+                    "are included in all other croo activities.  If you have a "
+                    "WFR, EMT, W-EMT, OEC, or equivalent medical certification, "
+                    "you are qualified to be a Safety Lead. We will prioritize "
+                    "people who have higher safety certifications (EMT, W-EMT) "
+                    "and extensive safety experience.</p>"
+                ),
                 'safety_lead_willing',
-                HTML("<p>Lodj Croo has two <strong>Kitchen Witches/Wizards</strong> who are responsible for ordering, preparing, and cooking all the food at the Lodj during Trips. This role includes a significant amount of responsibility and requires some additional time before Trips begins to assist in ordering all the necessary food items for the Lodj. You are eligible to be a Kitchen Witch/Wizard if you have worked at the Moosilauke Ravine Lodge during its normal operations (non-Trips).</p>"),
+                HTML(
+                    "<p>Lodj Croo has two <strong>Kitchen Witches/Wizards</strong> "
+                    "who are responsible for ordering, preparing, and cooking "
+                    "all the food at the Lodj during Trips. This role includes "
+                    "a significant amount of responsibility and requires some "
+                    "additional time before Trips begins to assist in ordering "
+                    "all the necessary food items for the Lodj. You are eligible "
+                    "to be a Kitchen Witch/Wizard if you have worked at the "
+                    "Moosilauke Ravine Lodge during its normal operations "
+                    "(non-Trips).</p>"
+                ),
                 'kitchen_lead_willing',
                 'kitchen_lead_qualifications',
             )
@@ -303,26 +380,22 @@ class CrooSupplementLayout(Layout):
 
 
 class CrooApplicationGradeForm(forms.ModelForm):
-    """ Form for scoring Croo applications """
+    """ 
+    Form for scoring Croo applications
+    """
     class Meta:
         model = CrooApplicationGrade
-        widgets = {
-            'scratchpad': forms.Textarea(attrs=dict(rows=3)),
-        }
 
     def __init__(self, *args, **kwargs):
         super(CrooApplicationGradeForm, self).__init__(*args, **kwargs)
-        # CheckboxSelectMultiple in __init__ because 
+        # CheckboxSelectMultiple in __init__ because
         # https://github.com/maraujop/django-crispy-forms/issues/303
         self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()
 
 
 class LeaderApplicationGradeForm(forms.ModelForm):
-    """ Form for scoring Leader applications """
+    """ 
+    Form for scoring Leader applications
+    """
     class Meta:
         model = LeaderApplicationGrade
-        widgets = {
-            'scratchpad': forms.Textarea(attrs=dict(rows=3)),
-        }
-
-
