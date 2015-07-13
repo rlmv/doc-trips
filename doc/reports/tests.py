@@ -228,6 +228,10 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             ScheduledTrip,
             trips_year=trips_year,
         )
+        mommy.make(
+            IncomingStudent, 3,
+            trips_year=trips_year
+        )
         url = reverse('db:reports:foodboxes', kwargs={'trips_year': trips_year})
         resp = self.app.get(url, user=self.mock_director())
 
@@ -236,6 +240,10 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': str(trip),
             'section': trip.section.name,
             'size': str(trip.size()),
+            'full box': '1',
+            'half box': '1' if trip.half_foodbox else '',
+            'supplement': '1' if trip.supplemental_foodbox else '',
+            'bagels': str(trip.bagels),
         }]
         self.assertEqual(rows, target)
 

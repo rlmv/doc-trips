@@ -11,6 +11,7 @@
   <strong> Bagels: </strong> Each trip gets {{ bagel_ratio }} bagels per person. Trips that receive a supplemental foodbox get {{ supp_bagel_ratio }} bagels per person.
 </p>
 <p>
+<a class="btn btn-success" href="{% url 'db:reports:foodboxes' trips_year=trips_year %}"> <i class="fa fa-download"></i> Foodboxes</a>
   <a href="{% url 'db:foodbox:rules' trips_year=trips_year %}"> <i class="fa fa-sign-out"></i> Edit Foodbox Algorithm </a>
 </p>
 

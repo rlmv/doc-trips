@@ -294,6 +294,7 @@ class MedicalInfo(GenericReportView):
             reg.needs,
         ]
 
+
 class Foodboxes(GenericReportView):
     
     file_prefix = 'Foodboxes'
@@ -303,10 +304,22 @@ class Foodboxes(GenericReportView):
             trips_year=self.kwargs['trips_year']
         )
 
-    header = ['trip', 'section', 'size']
+    header = [
+        'trip',
+        'section',
+        'size',
+        'full box',
+        'half box',
+        'supplement',
+        'bagels'
+    ]
     def get_row(self, trip):
         return [
             trip,
             trip.section.name,
             trip.size(),
+            '1',
+            '1' if trip.half_foodbox else '',
+            '1' if trip.supplemental_foodbox else '',
+            trip.bagels
         ]
