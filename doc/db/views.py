@@ -2,23 +2,21 @@ import logging
 
 from django.db import models
 from django.http import Http404, HttpResponseRedirect
-from django.conf.urls import url
 from django.contrib import messages
-from django.core.urlresolvers import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.forms.models import modelform_factory
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured, PermissionDenied
-from vanilla import (ListView, UpdateView, CreateView, DeleteView, 
-                     TemplateView, DetailView, RedirectView)
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from vanilla import (
+    ListView, UpdateView, CreateView, DeleteView,
+    TemplateView, DetailView, RedirectView)
 from braces.views import FormInvalidMessageMixin
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, HTML, ButtonHolder, Layout
+from crispy_forms.layout import Submit, HTML, ButtonHolder
 
-from doc.db.models import DatabaseModel, TripsYear
+from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
-from doc.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
+from doc.permissions.views import (
+    DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
 from doc.utils.views import CrispyFormMixin
 
 
@@ -34,7 +32,7 @@ class TripsYearMixin():
     Filters objects by the trips_year named group in the url.
 
     Plugs into ModelViews. The url is a database url of the form
-    /something/{{trips_year}}/something. The ListView will only display 
+    /something/{{trips_year}}/something. The ListView will only display
     objects for the specified trips_year.
     """
 
@@ -43,7 +41,7 @@ class TripsYearMixin():
         Make sure the request is for a valid trips year.
         
         Requesting trips_years that don't exist in the db will
-        cause problems. Block 'em here. 
+        cause problems. Block 'em here.
         
         TODO: test cases.
         """
@@ -58,7 +56,9 @@ class TripsYearMixin():
         return self.kwargs['trips_year']
 
     def get_queryset(self):
-        """ Get objects for requested trips_year """
+        """ 
+        Filter objects for the trips_year of the request.
+        """
         qs = super(TripsYearMixin, self).get_queryset()
         return qs.filter(trips_year=self.get_trips_year())
 
@@ -69,41 +69,45 @@ class TripsYearMixin():
 
         Because we can't use an F() object in limit_choices_to.
 
-        formfield_callback is responsible for constructing a FormField 
+        formfield_callback is responsible for constructing a FormField
         from a passed ModelField. Our callback intercepts the usual ForeignKey
-        implementation, and only lists choices which have trips_year == to 
-        the trips_year matched in the url.
+        implementation, and only lists choices which have trips_year equal
+        to the trips_year matched in the url.
         """
 
         if self.form_class is not None:
-            msg = ('Specifying form_class on %s means that ForeignKey querysets will '
-                   'contain objects for ALL trips_years. You must explicitly restrict '
-                   'the querysets for these fields, or bad things will happen')
+            msg = (
+                "Specifying form_class on %s means that ForeignKey "
+                "querysets will contain objects for ALL trips_years. "
+                "You must explicitly restrict the querysets for these "
+                "fields, or bad things will happen"
+            )
             logger.warn(msg % self.__class__.__name__)
             return self.form_class
             
         if hasattr(self, 'model') and self.model is not None:
-            trips_year = self.get_trips_year()
-            return tripsyear_modelform_factory(self.model, trips_year,
-                                               fields=self.fields)
-        
-        msg = ("'%s' must either define 'form_class' or 'model' " 
-            "Or CAREFULLY override 'get_form_class()'")
+            return tripsyear_modelform_factory(
+                self.model, self.kwargs['trips_year'], fields=self.fields
+            )
+        msg = (
+            "'%s' must either define 'form_class' or 'model' "
+            "Or CAREFULLY override 'get_form_class()'"
+        )
         raise ImproperlyConfigured(msg % self.__class__.__name__)
 
     def form_valid(self, form):
         """ 
         Called for valid forms - specifically Create and Update
  
-        This deals with a corner case of form validation. Uniqueness 
-        constraints don't get caught til the object is saved and raises 
-        an IntegrityError.
+        This deals with a corner case of form validation. Uniqueness
+        constraints don't get caught til the object is saved and
+        raises an IntegrityError.
 
-        We catch this error and pass it to form_valid.
+        We catch this error and pass it to form_invalid.
 
         TODO: parse and prettify the error message. Can we look at 
-        object._meta.unique_together? Can we make sure it is a uniqueness
-        error?
+        object._meta.unique_together? Can we make sure it is a 
+        uniqueness error?
         """
         try:
             with transaction.atomic():
@@ -113,7 +117,9 @@ class TripsYearMixin():
             return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        """ Add the trips_year for this request to the context. """
+        """ 
+        Add the trips_year for this request to the context.
+        """
         context = super(TripsYearMixin, self).get_context_data(**kwargs)
         context['trips_year'] = self.get_trips_year()
         return context
@@ -146,8 +152,6 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin
         """ Add 'Create' button to crispy form. """
         helper = FormHelper(form)
         helper.add_input(Submit('submit', 'Create'))
-
-        
         return helper
 
     def get_success_url(self):
@@ -188,30 +192,38 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteV
     success_url_pattern = None
 
     def get_success_url(self):
-        """ Helper method for getting the success url based on 
-        succes_url_pattern. 
+        """ 
+        Helper method for getting the success url based on the
+        succes_url_pattern property.
 
         CreateView and UpdateView use the models get_absolute_url
         to find the success_url. DeleteView cannot do this because the
         target object hsa been deleted.
         """
-
         if self.success_url_pattern:
             kwargs = {'trips_year': self.get_trips_year()}
             return reverse(self.success_url_pattern, kwargs=kwargs)
         return super(DatabaseDeleteView, self).get_success_url()
 
     def post(self, request, *args, **kwargs):
-
+        """
+        Warn when a foreign key is protected and the object
+        cannot be deleted.
+        """
         try:
             resp = super(DatabaseDeleteView, self).post(request, *args, **kwargs)
-            msg = "Succesfully deleted {}".format(self.object)
-            messages.success(request, msg)
+            messages.success(
+                request, "Succesfully deleted {}".format(self.object)
+            )
             return resp
-
         except models.ProtectedError as e:
-            msg = "Oops, you can't delete {} {} because the following objects reference it: {}." 
-            msg = msg.format(self.object._meta.model.__name__, self.object, e.protected_objects)
+            msg = (
+                "Oops, you can't delete {} {} because the "
+                "following objects reference it: {}."
+            ).format(
+                self.object._meta.model.__name__,
+                self.object, e.protected_objects
+            )
             messages.error(request, msg)
             return HttpResponseRedirect(request.path)
 
@@ -227,14 +239,14 @@ class DatabaseLandingPage(DatabaseReadPermissionRequired, TripsYearMixin, Templa
     """ 
     Landing page of a particular trips_year in the database
 
-    TODO: should this display the ScheduledTrips index? 
+    TODO: should this display the ScheduledTrips index?
     """
     template_name = 'db/landing_page.html'
 
 
 class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     """ 
-    Redirect to the trips database for the current year. 
+    Redirect to the trips database for the current year.
 
     This view is the target of database urls.
     """

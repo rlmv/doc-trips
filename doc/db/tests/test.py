@@ -16,7 +16,6 @@ from doc.trips.models import Campsite, TripTemplate
 from doc.db.forms import tripsyear_modelform_factory
 
 
-
 class DatabaseModelTestCase(TripsYearTestCase):
 
     def setUp(self):
