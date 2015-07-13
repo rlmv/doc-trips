@@ -1,4 +1,5 @@
 import unittest
+import math
 from datetime import date, timedelta
 from django.db import transaction
 from django.test.utils import override_settings
@@ -108,7 +109,7 @@ class ScheduledTripModelTestCase(TripsTestCase):
             template__triptype__gets_supplemental=False
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
-        self.assertEqual(trip.bagels, round(2 * NUM_BAGELS_REGULAR))
+        self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_REGULAR))
 
     def test_bagels_supplemental(self):
         trips_year = self.init_trips_year()
@@ -116,8 +117,8 @@ class ScheduledTripModelTestCase(TripsTestCase):
             ScheduledTrip, trips_year=trips_year,
             template__triptype__gets_supplemental=True
         )
-        mommy.make(IncomingStudent, 3, trips_year=trips_year, trip_assignment=trip)
-        self.assertEqual(trip.bagels, round(3 * NUM_BAGELS_SUPPLEMENT))
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_SUPPLEMENT))
     
 
 class ScheduledTripRouteOverridesTestCase(WebTestCase):

@@ -1,5 +1,5 @@
+import math
 import collections
-
 from datetime import timedelta
 
 from django.conf import settings
@@ -129,7 +129,7 @@ class ScheduledTrip(DatabaseModel):
             num = NUM_BAGELS_SUPPLEMENT
         else:
             num = NUM_BAGELS_REGULAR
-        return round(num * self.size())
+        return math.ceil(num * self.size())
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)
