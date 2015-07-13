@@ -114,7 +114,7 @@ class ScheduledTrip(DatabaseModel):
         return self.size() >= self.template.triptype.half_kickin 
 
     @property
-    def supplemental_foodbox(self):
+    def supp_foodbox(self):
         """
         Does the trip get a supplemental foodbox?
         """
@@ -125,7 +125,7 @@ class ScheduledTrip(DatabaseModel):
         """
         How many bagels does to the trip get?
         """
-        if self.supplemental_foodbox:
+        if self.supp_foodbox:
             num = NUM_BAGELS_SUPPLEMENT
         else:
             num = NUM_BAGELS_REGULAR

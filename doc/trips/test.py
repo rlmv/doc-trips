@@ -91,7 +91,7 @@ class ScheduledTripModelTestCase(TripsTestCase):
             ScheduledTrip, trips_year=trips_year,
             template__triptype__gets_supplemental=True
         )
-        self.assertTrue(trip.supplemental_foodbox)
+        self.assertTrue(trip.supp_foodbox)
 
     def test_does_not_get_supplemental_foodbox(self):
         trips_year = self.init_trips_year()
@@ -99,7 +99,7 @@ class ScheduledTripModelTestCase(TripsTestCase):
             ScheduledTrip, trips_year=trips_year,
             template__triptype__gets_supplemental=False
         )
-        self.assertFalse(trip.supplemental_foodbox)
+        self.assertFalse(trip.supp_foodbox)
 
     def test_bagels_not_supplement(self):
         trips_year = self.init_trips_year()

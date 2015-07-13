@@ -320,6 +320,6 @@ class Foodboxes(GenericReportView):
             trip.size(),
             '1',
             '1' if trip.half_foodbox else '',
-            '1' if trip.supplemental_foodbox else '',
+            '1' if trip.supp_foodbox else '',
             trip.bagels
         ]

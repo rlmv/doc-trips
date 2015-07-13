@@ -242,7 +242,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'size': str(trip.size()),
             'full box': '1',
             'half box': '1' if trip.half_foodbox else '',
-            'supplement': '1' if trip.supplemental_foodbox else '',
+            'supplement': '1' if trip.supp_foodbox else '',
             'bagels': str(trip.bagels),
         }]
         self.assertEqual(rows, target)

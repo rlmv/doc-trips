@@ -543,7 +543,7 @@ class FoodboxCounts(DatabaseListView):
         qs = self.object_list
         kwargs['full'] = len(qs)
         kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
-        kwargs['supp'] = len(list(filter(lambda x: x.supplemental_foodbox, qs)))
+        kwargs['supp'] = len(list(filter(lambda x: x.supp_foodbox, qs)))
         kwargs['bagels'] = sum(map(lambda x: x.bagels, qs))
         kwargs['bagel_ratio'] = NUM_BAGELS_REGULAR
         kwargs['supp_bagel_ratio'] = NUM_BAGELS_SUPPLEMENT
