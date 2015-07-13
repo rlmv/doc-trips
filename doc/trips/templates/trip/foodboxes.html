@@ -14,7 +14,6 @@
 <a class="btn btn-success" href="{% url 'db:reports:foodboxes' trips_year=trips_year %}"> <i class="fa fa-download"></i> Foodboxes</a>
   <a href="{% url 'db:foodbox:rules' trips_year=trips_year %}"> <i class="fa fa-sign-out"></i> Edit Foodbox Algorithm </a>
 </p>
-
 <table class="table table-condensed">
   <tr>
     <th> Trip </th>
@@ -33,6 +32,7 @@
     <th class="text-muted"> {{ half }} </th>
     <th class="text-muted"> {{ supp }} </th>
     <th class="text-muted"> {{ bagels }} </th>
+  </tr>
     
   {% for trip in object_list %}
   <tr>
