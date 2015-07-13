@@ -170,6 +170,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         target = [{
             'name': reg.name,
             'netid': reg.user.netid,
+            'section': trip.section.name,
             'trip': str(trip),
             'allergies': 'peaches',
             'allergen information': 'I go into shock',

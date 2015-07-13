@@ -241,7 +241,7 @@ class DietaryRestrictions(GenericReportView):
         )
 
     header = [
-        'name', 'netid', 'trip',
+        'name', 'netid', 'section', 'trip',
         'allergies',
         'allergen information',
         'food allergy reaction',
@@ -250,10 +250,12 @@ class DietaryRestrictions(GenericReportView):
         'medical conditions',
     ]
     def get_row(self, reg):
+        trip = reg.get_trip_assignment()
         return [
             reg.name,
             reg.user.netid,
-            reg.get_trip_assignment(),
+            trip.section.name if trip else '',
+            trip,
             reg.allergies,
             reg.allergen_information,
             reg.allergy_reaction,
