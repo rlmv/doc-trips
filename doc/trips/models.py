@@ -20,7 +20,11 @@ INTVL_CAMPSITE_1
 INTVL_CAMPSITE_2
 INTVL_LODGE
 INTVL_CAMPUS
-""" 
+"""
+
+NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
+NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
+
 
 class ScheduledTrip(DatabaseModel):
 
@@ -115,6 +119,17 @@ class ScheduledTrip(DatabaseModel):
         Does the trip get a supplemental foodbox?
         """
         return self.template.triptype.gets_supplemental
+
+    @property
+    def bagels(self):
+        """
+        How many bagels does to the trip get?
+        """
+        if self.supplemental_foodbox:
+            num = NUM_BAGELS_SUPPLEMENT
+        else:
+            num = NUM_BAGELS_REGULAR
+        return round(num * self.size())
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)

@@ -6,7 +6,10 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
-from doc.trips.models import ScheduledTrip, Section, TripTemplate, validate_triptemplate_name
+from doc.trips.models import (
+    ScheduledTrip, Section, TripTemplate, validate_triptemplate_name,
+    NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
+)
 from doc.transport.models import Route
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
@@ -97,7 +100,25 @@ class ScheduledTripModelTestCase(TripsTestCase):
             template__triptype__gets_supplemental=False
         )
         self.assertFalse(trip.supplemental_foodbox)
-        
+
+    def test_bagels_not_supplement(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=False
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.bagels, round(2 * NUM_BAGELS_REGULAR))
+
+    def test_bagels_supplemental(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=True
+        )
+        mommy.make(IncomingStudent, 3, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.bagels, round(3 * NUM_BAGELS_SUPPLEMENT))
+    
 
 class ScheduledTripRouteOverridesTestCase(WebTestCase):
 

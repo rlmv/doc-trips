@@ -10,7 +10,10 @@ from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
-from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from doc.trips.models import (
+    ScheduledTrip, TripTemplate, TripType, Campsite, Section,
+    NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
+)
 from doc.trips.forms import (
     TripLeaderAssignmentForm, SectionForm, AssignmentForm,
     TrippeeAssignmentForm, FoodboxFormsetHelper
@@ -541,6 +544,9 @@ class FoodboxCounts(DatabaseListView):
         kwargs['full'] = len(qs)
         kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
         kwargs['supp'] = len(list(filter(lambda x: x.supplemental_foodbox, qs)))
+        kwargs['bagels'] = len(list(filter(lambda x: x.bagels, qs)))
+        kwargs['bagel_ratio'] = NUM_BAGELS_REGULAR
+        kwargs['supp_bagel_ratio'] = NUM_BAGELS_SUPPLEMENT
         return super(FoodboxCounts, self).get_context_data(**kwargs)
 
 

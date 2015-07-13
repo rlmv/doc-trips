@@ -1,3 +1,4 @@
+
 {% extends "db/base.html" %}
 {% load icons %}
 
@@ -6,6 +7,9 @@
 {% endblock %}
 
 {% block content %}
+<p>
+  <strong> Bagels: </strong> Each trip gets {{ bagel_ratio }} bagels per person. Trips that receive a supplemental foodbox get {{ supp_bagel_ratio }} bagels per person.
+</p>
 <p>
   <a href="{% url 'db:foodbox:rules' trips_year=trips_year %}"> <i class="fa fa-sign-out"></i> Edit Foodbox Algorithm </a>
 </p>
@@ -17,7 +21,8 @@
     <th> Size </th>
     <th> Full Box? </th>
     <th> Half Box? </th>
-    <th> Supplemental Box? </th>
+    <th> Supp Box? </th>
+    <th> Bagels </th>
   </tr>
   <tr> 
     <th class="text-muted"> totals </th>
@@ -26,6 +31,7 @@
     <th class="text-muted"> {{ full }} </th>
     <th class="text-muted"> {{ half }} </th>
     <th class="text-muted"> {{ supp }} </th>
+    <th class="text-muted"> {{ bagels }} </th>
     
   {% for trip in object_list %}
   <tr>
@@ -35,6 +41,7 @@
     <td> <i class="fa fa-check-square-o"></i> </td>
     <td> {{ trip.half_foodbox|checkmark_if_true }} </td>
     <td> {{ trip.supplemental_foodbox|checkmark_if_true }} </td>
+    <td> {{ trip.bagels }} </td>
   </tr>
   {% endfor %}
 </table>
