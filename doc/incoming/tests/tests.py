@@ -384,13 +384,13 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
     def test_with_trip(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            ScheduledTrip, 
+            ScheduledTrip,
             trips_year=trips_year
         )
         assigned = mommy.make(
             IncomingStudent,
             trips_year=trips_year,
-            trip_assignment__trips_year=trip
+            trip_assignment=trip
         )
         not_assigned = mommy.make(
             IncomingStudent,
