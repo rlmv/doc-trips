@@ -16,10 +16,8 @@ install:
 	$(PIP) install --upgrade -r requirements.txt
 
 deploy: 
-	heroku maintenance:on
-	git push heroku master
-	heroku run migrate
-	heroku maintenance:off
+	git push production master
+	heroku run migrate -a doc-trips
 
 migrations:
 	$(MANAGE) makemigrations
