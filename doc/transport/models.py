@@ -17,7 +17,6 @@ class Stop(DatabaseModel):
     Represents a pickup or dropoff point for a trip OR a
     bus stop where local sections are picked up.
     """
-
     class Meta:
         ordering = ['route__category', 'route', 'name']
 
@@ -25,23 +24,29 @@ class Stop(DatabaseModel):
 
     name = models.CharField(max_length=255)
     # TODO: validate that lat and long are interdependet / location is there?
-    address = models.CharField(max_length=255, help_text='Plain text address, eg. Hanover, NH 03755. This must take you to the location in Google maps.')
+    address = models.CharField(
+        max_length=255, help_text=(
+            "Plain text address, eg. Hanover, NH 03755. This must "
+            "take you to the location in Google maps."
+        )
+    )
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
 
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
-    route = models.ForeignKey('Route', null=True, blank=True,
-                              on_delete=models.PROTECT, related_name='stops')
-
+    route = models.ForeignKey(
+        'Route', null=True, blank=True,
+        on_delete=models.PROTECT, related_name='stops'
+    )
     # TODO: validate that this only is used if route.category==EXTERNAL?
-    cost = models.DecimalField(max_digits=5, decimal_places=2,
-                               blank=True, null=True)
+    cost = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True
+    )
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
-    # legacy data from old db - hide on site?
     distance = models.IntegerField(null=True)
 
     @property
@@ -63,7 +68,6 @@ class Route(DatabaseModel):
     trip dropoffs/pickups, and the lodge) or EXTERNAl (moving local
     students to and from campus before and after their trips.)
     """
-
     name = models.CharField(max_length=255)
     INTERNAL = 'INTERNAL'
     EXTERNAL = 'EXTERNAL'
@@ -84,8 +88,9 @@ class Route(DatabaseModel):
 
 
 class Vehicle(DatabaseModel):
-    """ A type of vehicle """
-
+    """
+    A type of vehicle
+    """
     # eg. Internal Bus, Microbus,
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
@@ -98,7 +103,7 @@ class Vehicle(DatabaseModel):
 
 
 class ScheduledTransport(DatabaseModel):
-    """ 
+    """
     Represents a scheduled internal transport.
     """
     objects = ScheduledTransportManager()
