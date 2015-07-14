@@ -13,7 +13,7 @@ from doc.trips.models import (
 )
 from doc.transport.models import Route
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
-from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
+from doc.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from doc.applications.tests import make_application
 from doc.applications.models import GeneralApplication
 from doc.incoming.models import IncomingStudent
@@ -23,22 +23,24 @@ class ScheduledTripTestCase(WebTestCase):
     csrf_checks = False
 
     def setUp(self):
-        self.init_current_trips_year()
+        self.init_trips_year()
 
     def test_unique_validation_in_create_view(self):
-        """ See the comment in DatabaseMixin.form_valid """
-        self.mock_director()
-
-        trip = mommy.make(ScheduledTrip, trips_year=self.trips_year, 
-                        template__trips_year=self.trips_year,
-                        section__trips_year=self.trips_year)
+        """ 
+        See the comment in DatabaseMixin.form_valid 
+        """
+        trip = mommy.make(
+            ScheduledTrip, trips_year=self.trips_year,
+            template__trips_year=self.trips_year,
+            section__trips_year=self.trips_year)
         trip.save()
 
         #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(reverse_create_url(ScheduledTrip, self.trips_year), 
-                                 {'template': trip.template.pk, 
-                                  'section': trip.section.pk}, 
-                                 user=self.director.netid)
+        response = self.app.post(
+            reverse_create_url(ScheduledTrip, self.trips_year),
+            {'template': trip.template.pk, 'section': trip.section.pk},
+            user=self.mock_director()
+        )
         # should have unique constraint error
         self.assertIn('unique constraint failed', str(response.content).lower())
         # should not create the trip
@@ -124,7 +126,7 @@ class ScheduledTripModelTestCase(TripsTestCase):
 class ScheduledTripRouteOverridesTestCase(WebTestCase):
 
     def test_override_routes_in_trip_update_form(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         template = mommy.make(TripTemplate, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
         trip = mommy.make(ScheduledTrip, trips_year=trips_year,
@@ -142,7 +144,7 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.return_route, route)
 
     def test_get_dropoff_route_method(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year, 
                           template__dropoff__route=mommy.make(Route, trips_year=trips_year))
         self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff.route)
@@ -152,7 +154,7 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.get_dropoff_route(), trip.dropoff_route)
 
     def test_get_pickup_route_method(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
 
         self.assertEqual(trip.get_pickup_route(), trip.template.pickup.route)
@@ -162,7 +164,7 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.get_pickup_route(), trip.pickup_route)
 
     def test_get_return_route_method(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         self.assertEqual(trip.get_return_route(), trip.template.return_route)
         # override default route
@@ -171,18 +173,18 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.get_return_route(), trip.return_route)
 
     def test_size_method_with_noone(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         self.assertEqual(trip.size(), 0)
 
     def test_size_method_with_1_leader(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         make_application(trips_year=trips_year, assigned_trip=trip)
         self.assertEqual(trip.size(), 1)
 
     def test_size_method_with_1_leader_and_2_trippees(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         make_application(trips_year=trips_year, assigned_trip=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
@@ -190,12 +192,10 @@ class ScheduledTripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.size(), 3)
 
 
-
 class QuickTestViews(WebTestCase):
 
     def test_index_views(self):
-        
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         director = self.mock_director()
         
         names = [
@@ -215,49 +215,49 @@ class SectionManagerTestCase(TripsTestCase):
     
     def test_local(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
         self.assertEqual([section1], list(Section.objects.local(trips_year)))
 
     def test_not_local(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_local=False)
         self.assertEqual([section2], list(Section.objects.not_local(trips_year)))
 
     def test_international(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_international=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_international=False)
         self.assertEqual([section1], list(Section.objects.international(trips_year)))
 
     def test_transfer(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_transfer=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_transfer=False)
         self.assertEqual([section1], list(Section.objects.transfer(trips_year)))
 
     def test_native(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_native=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_native=False)
         self.assertEqual([section1], list(Section.objects.native(trips_year)))
 
     def test_fysep(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_fysep=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_fysep=False)
         self.assertEqual([section1], list(Section.objects.fysep(trips_year)))
 
     def test_exchange(self):
         
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=trips_year, is_exchange=True)
         section2 = mommy.make(Section, trips_year=trips_year, is_exchange=False)
         self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
@@ -266,7 +266,7 @@ class SectionManagerTestCase(TripsTestCase):
 class SectionModelTestCase(TripsTestCase):
     
     def test_model_trip_dates(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         self.assertEqual(section.trip_dates, 
                          [date(2015, 1, 2), date(2015, 1, 3), date(2015, 1, 4), date(2015, 1, 5), date(2015, 1, 6)])
@@ -275,13 +275,13 @@ class SectionModelTestCase(TripsTestCase):
 class SectionDateManagerTestCase(TripsTestCase):
     
     def test_trips_dates_with_one_section(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         leaders_arrive = date(2015, 1, 1)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=leaders_arrive)
         self.assertEqual(section.trip_dates, Section.dates.trip_dates(ty))
 
     def test_trips_dates_with_multiple_sections(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 4))
         self.assertEqual(Section.dates.trip_dates(ty),
@@ -302,7 +302,7 @@ class TripTemplateValidatorTest(unittest.TestCase):
 class AssignLeaderTestCase(WebTestCase):
 
     def test_trip_assignment_automatically_sets_LEADER_status(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.available_sections.add(trip.section)
@@ -316,7 +316,7 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(volunteer.status, GeneralApplication.LEADER)
 
     def test_assign_trip_computes_section_and_type_preferences(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.available_sections.add(trip.section)
@@ -334,7 +334,7 @@ class AssignLeaderTestCase(WebTestCase):
 class AssignTrippeeTestCase(WebTestCase):
 
     def test_trip_assignment(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         trip = mommy.make(ScheduledTrip, trips_year=trips_year)
         trippee = mommy.make(
             IncomingStudent, trips_year=trips_year,
@@ -350,9 +350,20 @@ class AssignTrippeeTestCase(WebTestCase):
 
 
 class ScheduledTripManagerTestCase(TripsTestCase):
+
+    def test_manager_automatically_selects_section_and_template(self):
+        trips_year = self.init_trips_year()
+        mommy.make(ScheduledTrip, trips_year=trips_year)
+        with self.assertNumQueries(1):
+            trip = ScheduledTrip.objects.get()
+            trip.section.name
+            trip.template.name
+        mommy.make(ScheduledTrip, trips_year=trips_year)
+        with self.assertNumQueries(1):
+            str(ScheduledTrip.objects.all())
     
     def test_simple_matrix(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         template = mommy.make(TripTemplate, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
         trip = mommy.make(ScheduledTrip, section=section,
@@ -361,7 +372,7 @@ class ScheduledTripManagerTestCase(TripsTestCase):
         self.assertEqual(ScheduledTrip.objects.matrix(trips_year), target)
 
     def test_another_matrix(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         template1 = mommy.make(TripTemplate, trips_year=trips_year)
         section1 = mommy.make(Section, trips_year=trips_year)
         template2 = mommy.make(TripTemplate, trips_year=trips_year)
@@ -379,7 +390,7 @@ class ScheduledTripManagerTestCase(TripsTestCase):
 
     def test_counts_are_equal(self):
         # tests that we are using Count(distinct=True)
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         template = mommy.make(TripTemplate, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
         trip = mommy.make(ScheduledTrip, section=section,
@@ -393,7 +404,7 @@ class ScheduledTripManagerTestCase(TripsTestCase):
 
 
     def test_dropoffs(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
         dropoff = mommy.make(ScheduledTrip, trips_year=trips_year,
@@ -406,43 +417,56 @@ class ScheduledTripManagerTestCase(TripsTestCase):
                                 template__dropoff__route=route,
                                 section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
 
-        self.assertEqual(set([dropoff, overridden_dropoff]), 
-                         set(ScheduledTrip.objects.dropoffs(route, section.at_campsite1, trips_year=trips_year)))
+        qs = ScheduledTrip.objects.dropoffs(
+            route, section.at_campsite1, trips_year=trips_year
+        )
+        self.assertQsEqual(qs, [dropoff, overridden_dropoff])
 
     def test_pickups(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
-        pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
-                            section=section, template__pickup__route=route)
-        overridden_pickup = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                       section=section, pickup_route=route)
-        other_route = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                 section=section)
-        other_date = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                template__pickup__route=route,
-                                section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
+        pickup = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            section=section, template__pickup__route=route)
+        overridden_pickup = mommy.make(
+            ScheduledTrip, trips_year=trips_year, section=section, pickup_route=route)
+        other_route = mommy.make(
+            ScheduledTrip, trips_year=trips_year, section=section)
+        other_date = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__pickup__route=route,
+            section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
 
-        self.assertEqual(set([pickup, overridden_pickup]),
-                         set(ScheduledTrip.objects.pickups(route, section.arrive_at_lodge, trips_year=trips_year)))
+        qs = ScheduledTrip.objects.pickups(
+            route, section.arrive_at_lodge, trips_year=trips_year
+        )
+        self.assertQsEqual(qs, [pickup, overridden_pickup])
         
     def test_returns(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
-        returning = mommy.make(ScheduledTrip, trips_year=trips_year,
-                            section=section, template__return_route=route)
-        overridden_return = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                       section=section, return_route=route)
-        other_route = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                 section=section)
-        other_date = mommy.make(ScheduledTrip, trips_year=trips_year,
-                                template__return_route=route,
-                                section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
-
-        self.assertEqual(set([returning, overridden_return]),
-                         set(ScheduledTrip.objects.returns(route, section.return_to_campus, trips_year=trips_year)))
-
+        returning = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            section=section, template__return_route=route
+        )
+        overridden_return = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            section=section, return_route=route
+        )
+        other_route = mommy.make(
+            ScheduledTrip, trips_year=trips_year, section=section
+        )
+        other_date = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__return_route=route,
+            section__leaders_arrive=section.leaders_arrive+timedelta(days=100)
+        )
+        qs = ScheduledTrip.objects.returns(
+            route, section.return_to_campus, trips_year=trips_year
+        )
+        self.assertQsEqual(qs, [returning, overridden_return])
+         
 
 class ViewsTestCase(WebTestCase):
     

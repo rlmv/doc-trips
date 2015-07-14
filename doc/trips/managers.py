@@ -61,6 +61,14 @@ class SectionManager(models.Manager):
 
 class ScheduledTripManager(models.Manager):
 
+    def get_queryset(self):
+        """
+        Go ahead and pull in section and template since we
+        use them with basically every queryset.
+        """
+        qs = super(ScheduledTripManager, self).get_queryset()
+        return qs.select_related('section', 'template')
+
     def matrix(self, trips_year):
         """
         Return a matrix of scheduled trips.
@@ -87,7 +95,6 @@ class ScheduledTripManager(models.Manager):
         # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations
         trips = (
             self.filter(trips_year=trips_year)
-            .select_related('section', 'template')
             .annotate(num_trippees=models.Count('trippees', distinct=True))
             .annotate(num_leaders=models.Count('leaders', distinct=True))
         )

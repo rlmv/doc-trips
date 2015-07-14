@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from doc.test.fixtures import TripsYearTestCase
+from doc.test.testcases import TripsYearTestCase
 
 class GroupPermissionsTest(TripsYearTestCase):
 

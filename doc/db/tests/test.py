@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError, FieldError
 from model_mommy import mommy
 
-from doc.test.fixtures import WebTestCase, TripsYearTestCase
+from doc.test.testcases import WebTestCase, TripsYearTestCase
 from doc.db.models import DatabaseModel, TripsYear
 from doc.db.urlhelpers import reverse_update_url, reverse_create_url, reverse_index_url
 from doc.trips.models import Campsite, TripTemplate

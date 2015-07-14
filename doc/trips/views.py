@@ -216,10 +216,7 @@ class LeaderTrippeeIndexView(DatabaseListView):
     def get_queryset(self):
         return (
             super(LeaderTrippeeIndexView, self).get_queryset()
-            .select_related('section', 'template')
-            .prefetch_related('leaders', 'leaders__applicant')
-            .prefetch_related('trippees')
-            .order_by('section', 'template')
+            .prefetch_related('leaders', 'leaders__applicant', 'trippees')
         )
 
 FIRST_CHOICE = 'first choice'
@@ -372,16 +369,21 @@ class AssignTripLeaderView(DatabaseListView):
     def get_queryset(self):
         qs = (
             self.model.objects.prospective_leaders_for_trip(self.get_trip())
-            .select_related('applicant')
-            .select_related('assigned_trip', 'assigned_trip__template')
-            .select_related('assigned_trip__section')
-            .prefetch_related('leader_supplement__grades')
-            .only('trips_year', 'gender',
-                  'applicant__name',
-                  'assigned_trip__trips_year_id',
-                  'assigned_trip__template__name',
-                  'assigned_trip__section__name',
-                  'status')
+            .select_related(
+                'applicant',
+                'assigned_trip',
+                'assigned_trip__template',
+                'assigned_trip__section'
+            ).prefetch_related(
+                'leader_supplement__grades'
+            ).only(
+                'trips_year', 'gender',
+                'applicant__name',
+                'assigned_trip__trips_year_id',
+                'assigned_trip__template__name',
+                'assigned_trip__section__name',
+                'status'
+            )
         )
 
         # For some reason, annotating grades using Avg adds an 
@@ -535,7 +537,7 @@ class FoodboxCounts(DatabaseListView):
         return ScheduledTrip.objects.filter(
             trips_year=self.kwargs['trips_year']
         ).select_related(
-            'section', 'template', 'template__triptype'
+            'template__triptype'
         )
 
     def get_context_data(self, **kwargs):

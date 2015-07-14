@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from vanilla import DetailView, TemplateView, View
 from model_mommy import mommy
 
-from doc.test.fixtures import WebTestCase
+from doc.test.testcases import WebTestCase
 from doc.db.views import TripsYearMixin
 from doc.trips.models import Campsite, TripTemplate, Section
 

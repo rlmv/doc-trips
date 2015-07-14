@@ -1,6 +1,6 @@
 from model_mommy import mommy
 
-from doc.test.fixtures import TripsYearTestCase as TripsTestCase
+from doc.test.testcases import TripsYearTestCase as TripsTestCase
 from doc.croos.models import Croo
 from doc.applications.models import GeneralApplication
 

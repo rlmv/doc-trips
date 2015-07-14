@@ -3,7 +3,7 @@ import unittest
 from django.template import Context, Template
 from model_mommy import mommy
 
-from doc.test.fixtures import TripsTestCase
+from doc.test.testcases import TripsTestCase
 from doc.trips.models import Section
 from doc.db.templatetags.links import pass_null
 
