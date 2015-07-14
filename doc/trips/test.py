@@ -350,6 +350,17 @@ class AssignTrippeeTestCase(WebTestCase):
 
 
 class ScheduledTripManagerTestCase(TripsTestCase):
+
+    def test_manager_automatically_selects_section_and_template(self):
+        trips_year = self.init_trips_year()
+        mommy.make(ScheduledTrip, trips_year=trips_year)
+        with self.assertNumQueries(1):
+            trip = ScheduledTrip.objects.get()
+            trip.section.name
+            trip.template.name
+        mommy.make(ScheduledTrip, trips_year=trips_year)
+        with self.assertNumQueries(1):
+            str(ScheduledTrip.objects.all())
     
     def test_simple_matrix(self):
         trips_year = self.init_current_trips_year()
