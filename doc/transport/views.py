@@ -11,6 +11,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus)
+from doc.transport.maps import get_hanover, get_lodge, get_directions
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
