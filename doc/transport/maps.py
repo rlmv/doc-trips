@@ -1,3 +1,4 @@
+import json
 
 import googlemaps
 from django.conf import settings 
@@ -8,9 +9,9 @@ from doc.transport.models import Stop
 Interface with the Google maps API
 """
 
-TIMEOUT = 1  # -> settings
+TIMEOUT = 10  # -> settings
 
-class MapsError(Exception):
+class MapError(Exception):
     pass
 
 def get_hanover():
@@ -30,14 +31,20 @@ def get_directions(stops):
     
     if len(waypoints) > 8:
         # TODO: recurse
-        raise MapsError('Too many waypoints: %s' % waypoints)
+        raise MapError('Too many waypoints: %s' % waypoints)
         
     client = googlemaps.Client(
         key=settings.GOOGLE_MAPS_KEY,
         timeout=TIMEOUT
     )
 
-    client.directions(
-        origin=orig, destination=dest,
-        waypoints=waypoints, optimize_waypoints=True
-    )
+    try:
+        return client.directions(
+            origin=orig, destination=dest,
+            waypoints=waypoints, optimize_waypoints=True
+        )
+    except googlemaps.exceptions.TransportError as exc:
+        raise MapError(exc)
+
+
+    

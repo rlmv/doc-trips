@@ -30,13 +30,19 @@
 {% endfor %}
 </ul>
 
-{{ waypoints }}
+<ul>
+{% for stop in stops %}
+<li>{{ stop }} {{ stop.distance }}</li>
+{% endfor %}
+</ul>
+
+<p> {{ error }} </p>
 
 <iframe
   width="450"
   height="250"
   frameborder="0" style="border:0"
-  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints=optimize:true|{{ waypoints }}"
+  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints={{ waypoints }}"
 </iframe>
 
 {% endblock %}

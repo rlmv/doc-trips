@@ -11,7 +11,7 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus)
-from doc.transport.maps import get_hanover, get_lodge, get_directions
+from doc.transport.maps import get_hanover, get_lodge, get_directions, MapError
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
@@ -337,6 +337,8 @@ class TransportChecklist(DatabaseReadPermissionRequired,
             list(map(lambda x: x.template.dropoff, context['dropoffs'])) +
             list(map(lambda x: x.template.pickup, context['pickups']))
         )
+        stops = sorted(stops, key=lambda x: x.distance)
+        context['stops'] = stops
 
         context['waypoints'] = '|'.join(map(lambda x: x.address, stops))
         context['origin'] = get_hanover().address
@@ -344,7 +346,12 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
 
         stops = [get_hanover()] + list(stops) + [get_lodge()]
-        get_directions(stops)
+        try:
+            resp = get_directions(stops)
+            from pprint import pprint
+            pprint(resp)
+        except MapError as exc:
+            context['error'] = exc
         
         return context
 
