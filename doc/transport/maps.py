@@ -18,16 +18,16 @@ def get_hanover():
     return Stop(name='Hanover, NH', address='Hanover, NH')
 
 def get_lodge():
-    return Stop(name='Lodge', address='1 Ravine Lodge Rd, Woodstock NH')
+    return Stop(name='The Moosilauke Ravine Lodge', address='43.977253,-71.8154831')
 
 
 def get_directions(stops):
 
-    stops = list(map(lambda x: x.address, stops))
+    addrs = list(map(lambda x: x.address, stops))
 
-    orig = stops[0]
-    dest = stops[-1]
-    waypoints = stops[1:-1]
+    orig = addrs[0]
+    dest = addrs[-1]
+    waypoints = addrs[1:-1]
     
     if len(waypoints) > 8:
         # TODO: recurse
@@ -39,12 +39,35 @@ def get_directions(stops):
     )
 
     try:
-        return client.directions(
+        resp = client.directions(
             origin=orig, destination=dest,
-            waypoints=waypoints, optimize_waypoints=True
+            waypoints=waypoints
         )
+        if len(resp) != 1:
+            raise MapError('Expecting one route')
+        if resp[0]['waypoint_order'] != list(range(len(waypoints))):
+            raise MapError('Waypoints out of order')
+        
+        return _integrate_stops(resp[0], stops)
+
     except googlemaps.exceptions.TransportError as exc:
         raise MapError(exc)
 
 
-    
+def _integrate_stops(directions, stops):
+    """
+    Given a google maps route, add a start_stop
+    and end_stop object to each leg.
+
+    The passed stops must be the stops used to generate 
+    the directions. This only works if waypoints are not
+    optimized.
+    """
+    if len(stops) != len(directions['legs']) + 1:
+        raise MapError('mismatched stops and legs')
+
+    for i, leg in enumerate(directions['legs']):
+        leg['start_stop'] = stops[i]
+        leg['end_stop'] = stops[i + 1]
+        
+    return directions

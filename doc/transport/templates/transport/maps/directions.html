@@ -1,0 +1,17 @@
+<ul class="list-group">
+  {% for leg in directions.legs %}
+  <li class="list-group-item">
+    <h4 class="list-group-item-heading"> From {{ leg.start_stop }}: </h4>
+  </li>
+
+  {% for step in leg.steps %}
+  <li class="list-group-item"> 
+    {{ step.html_instructions|safe }} &mdash; {{ step.distance.text }}
+  </li>
+  {% endfor %}
+  <li class="list-group-item">
+    <h4 class="list-group-item-heading"> Arrive at {{ leg.end_stop }} </h4> {{ leg.end_stop.directions }} 
+  </li>
+
+  {% endfor %}
+</ul>

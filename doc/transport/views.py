@@ -345,10 +345,12 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
 
         stops = [get_hanover()] + list(stops) + [get_lodge()]
+        # add context to the stops (dropoffs, pickups) to display
         try:
             resp = get_directions(stops)
             from pprint import pprint
             pprint(resp)
+            context['directions'] = resp
         except MapError as exc:
             context['error'] = exc
         
