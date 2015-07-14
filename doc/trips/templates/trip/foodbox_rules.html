@@ -1,0 +1,18 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Foodbox Rules </h2>
+{% endblock %}
+
+{% block content %}
+<p>
+  <a href="{% url 'db:foodbox:counts' trips_year=trips_year %}"> Foodbox Counts </a>
+</p>
+
+<p> Every trip gets one full foodbox. This page lets you adjust which triptypes get additional half and supplemental foodboxes. (We can come up with more descriptive names for these if that's useful.) </p>
+
+<p>If the size of a trip (leaders + trippees) is greater than or equal to the "Minimum # for a half foodbox" field, the trip will get a half foodbox. You can set this to 0 to automatically give half foodboxes to all trips of a certain triptype. If you check the "Gets a supplemental foodbox?" field then all trips of that triptype will be given a supplemental foodbox. Make sense? Sorry for the ugly layout &mdash; I'll clean it up later. </p>
+
+{% crispy form %}
+{% endblock %}

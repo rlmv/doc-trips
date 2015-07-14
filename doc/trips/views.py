@@ -4,15 +4,19 @@ from collections import defaultdict
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
 from django.utils.safestring import mark_safe
+from django.forms.models import modelformset_factory
 from vanilla import FormView, UpdateView, TemplateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
-from doc.trips.models import ScheduledTrip, TripTemplate, TripType, Campsite, Section
+from doc.trips.models import (
+    ScheduledTrip, TripTemplate, TripType, Campsite, Section,
+    NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
+)
 from doc.trips.forms import (
     TripLeaderAssignmentForm, SectionForm, AssignmentForm,
-    TrippeeAssignmentForm
+    TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.incoming.models import IncomingStudent, Registration
@@ -20,10 +24,12 @@ from doc.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import (
-    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired
+    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired,
+    DatabaseEditPermissionRequired
 )
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
+from doc.utils.views import PopulateMixin
 from doc.transport.models import ExternalBus
 
 
@@ -68,26 +74,9 @@ class ScheduledTripDetailView(DatabaseDetailView):
         'revision_notes']
     
 
-class ScheduledTripCreateView(DatabaseCreateView):
+class ScheduledTripCreateView(PopulateMixin, DatabaseCreateView):
     model = ScheduledTrip
     fields = ['section', 'template']
-
-    def get_form(self, data=None, files=None, **kwargs):
-        """ Populate the CreateForm with query parameters
-
-        Used by the trip_index.html template to link to a create form 
-        for a template-section pair
-
-        TODO: make the form fields uneditable.
-        """
-
-        cls = self.get_form_class()
-
-        GET = self.request.GET
-        if data is None and 'section' in GET and 'template' in GET:
-            data = {'section': GET['section'], 'template': GET['template']}
-        
-        return super(ScheduledTripCreateView, self).get_form(data=data, files=files, **kwargs)
         
 
 class ScheduledTripDeleteView(DatabaseDeleteView):
@@ -535,3 +524,55 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
         context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
         return context
 
+
+class FoodboxCounts(DatabaseListView):
+
+    model = ScheduledTrip
+    template_name = 'trip/foodboxes.html'
+    context_object_name = 'trips'
+
+    def get_queryset(self):
+        return ScheduledTrip.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        ).select_related(
+            'section', 'template', 'template__triptype'
+        )
+
+    def get_context_data(self, **kwargs):
+        # hack hack TODO: compute this with a query
+        qs = self.object_list
+        kwargs['full'] = len(qs)
+        kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
+        kwargs['supp'] = len(list(filter(lambda x: x.supp_foodbox, qs)))
+        kwargs['bagels'] = sum(map(lambda x: x.bagels, qs))
+        kwargs['bagel_ratio'] = NUM_BAGELS_REGULAR
+        kwargs['supp_bagel_ratio'] = NUM_BAGELS_SUPPLEMENT
+        return super(FoodboxCounts, self).get_context_data(**kwargs)
+
+
+class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
+
+    template_name = 'trip/foodbox_rules.html'
+
+    def get_queryset(self):
+        return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
+    
+    def get_form(self, **kwargs):
+        FoodRulesFormset = modelformset_factory(
+            TripType, fields=['name', 'half_kickin', 'gets_supplemental'],
+            extra=0
+        )
+        formset = FoodRulesFormset(queryset=self.get_queryset(), **kwargs)
+        formset.helper = FoodboxFormsetHelper()
+        formset.helper.form_class = 'form-inline'
+#        formset.helper.field_template = 'bootstrap3/layout/inline_field.html'
+#        formset.helper.template = 'bootstrap3-redux/table_inline_formset.html'
+        formset.helper.add_input(Submit('submit', 'Save'))
+        return formset
+
+    def form_valid(self, formset):
+        formset.save()
+        return super(FoodboxRules, self).form_valid(formset)
+        
+    def get_success_url(self):
+        return self.request.path

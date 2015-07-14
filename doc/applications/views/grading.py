@@ -54,7 +54,6 @@ then skips the application (eg. because the Head sees that a co-head has
 already graded it) then the application will not be shown to the Head again.
 
 Whew.
-
 """
 
 SHOW_GRADE_AVG_INTERVAL = 10
@@ -75,8 +74,9 @@ class GraderLandingPage(TemplateView):
 
 
 class IfGradingAvailable():
-    """ Only allow grading once applications are closed """
-
+    """ 
+    Only allow grading once applications are closed
+    """
     def dispatch(self, request, *args, **kwargs):
         if not Timetable.objects.timetable().grading_available():
             return render(request, 'applications/grading_not_available.html')
@@ -84,8 +84,9 @@ class IfGradingAvailable():
 
 
 class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
-    """ Shared logic for grading Croo and Leader applications. """
-
+    """
+    Shared logic for grading Croo and Leader applications.
+    """
     grade_model = None
     application_model = None
     skipped_grade_model = None
@@ -101,23 +102,31 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         )
 
     def get(self, request, *args, **kwargs):
-        """ Message the grader their average grade """
+        """ 
+        Message the grader their average grade 
+        """
         self.check_and_show_average_grade(request.user)
         return super(GenericGradingView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        """ Check whether the grader is skipping this application """
-
+        """ 
+        Check whether the grader is skipping this application 
+        """
         if SKIP in request.POST:
-            logger.info('%s skipped %s %s' % (self.request.user,
-                                              self.verbose_application_name,
-                                              self.kwargs['pk']))
+            logger.info(
+                '%s skipped %s %s' % (
+                    self.request.user,
+                    self.verbose_application_name,
+                    self.kwargs['pk']
+                ))
             self.skip_application()
             return HttpResponseRedirect(self.get_success_url())
         return super(GenericGradingView, self).post(request, *args, **kwargs)
 
     def get_application(self):
-        """ Return the Croo or Leader application to grade """
+        """ 
+        Return the Croo or Leader application to grade
+        """
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
 
     def skip_application(self):
@@ -144,8 +153,9 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
             self.verbose_application_name, self.kwargs['pk'],
             application.application.applicant.netid
         )
-        context['score_choices'] = map(lambda c: c[1],
-                                       self.grade_model.SCORE_CHOICES)
+        context['score_choices'] = map(
+            lambda c: c[1], self.grade_model.SCORE_CHOICES
+        )
         return context
 
     def check_and_show_average_grade(self, grader):
@@ -156,30 +166,36 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         average grade has been (for this year, of course). Displayed
         in a message.
         """
-
         ct = ContentType.objects.get_for_model(self.grade_model)
-        grades = (getattr(self.request.user, ct.model + 's')
-                  .filter(trips_year=TripsYear.objects.current()))
+        grades = (
+            getattr(self.request.user, ct.model + 's')
+            .filter(trips_year=TripsYear.objects.current())
+        )
         if (grades.count() % SHOW_GRADE_AVG_INTERVAL == 0 and grades.count() != 0):
             avg_grade = grades.aggregate(models.Avg('grade'))['grade__avg']
-            msg = ("Hey, just FYI your average awarded %s is %s. "
-                   "We'll show you your average score every %s grades.")
-            self.messages.info(msg % (self.grade_model._meta.verbose_name,
-                                      avg_grade, SHOW_GRADE_AVG_INTERVAL))
+            msg = (
+                "Hey, just FYI your average awarded %s is %s. "
+                "We'll show you your average score every %s grades."
+            )
+            self.messages.info(msg % (
+                self.grade_model._meta.verbose_name,
+                avg_grade, SHOW_GRADE_AVG_INTERVAL
+            ))
 
     def form_valid(self, form):
-        """ Add the grader and application to the grade """
-
+        """
+        Add the grader and application to the grade
+        """
         form.instance.grader = self.request.user
         form.instance.application = self.get_application()
         form.instance.trips_year = TripsYear.objects.current()
         form.save()
-
         return HttpResponseRedirect(self.get_success_url())
 
     def get_form(self, **kwargs):
-        """ Add a Skip button to the form """
-
+        """
+        Add a Skip button to the form
+        """
         form = super(GenericGradingView, self).get_form(**kwargs)
         form.helper = FormHelper(form)
         form.helper.layout.append(
@@ -192,15 +208,14 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         return form
 
 
-class RedirectToNextGradableCrooApplication(CrooGraderPermissionRequired,
-                                            IfGradingAvailable, RedirectView):
+class RedirectToNextGradableCrooApplication(
+        CrooGraderPermissionRequired, IfGradingAvailable, RedirectView):
     """
     Grading portal, redirects to next app to grade.
     Identical to the corresponding LeaderGrade view
 
     Restricted to directorate members.
     """
-
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
@@ -221,7 +236,6 @@ class RedirectToNextGradableCrooApplicationForQualification(
     qualification. This view is intended for Croo heads to use to do 
     once-over grading for all potential people on their croos.
     """
-
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
@@ -247,8 +261,9 @@ class RedirectToNextGradableCrooApplicationForQualification(
 
 
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
-    """ Grade a croo application """
-
+    """ 
+    Grade a croo application
+    """
     grade_model = CrooApplicationGrade
     application_model = CrooSupplement
     skipped_grade_model = SkippedCrooGrade
@@ -287,7 +302,6 @@ class GradeCrooApplicationForQualification(GradeCrooApplication):
     This view passes along the target croo to the redirect dispatch
     view.
     """
-
     def skip_application(self):
         """ 
         Skip this application.
@@ -296,7 +310,6 @@ class GradeCrooApplicationForQualification(GradeCrooApplication):
         this application again. Since we are grading for a particular
         qualification, add the qualification to the Skip.
         """
-        
         application = self.get_application()
         self.skipped_grade_model.objects.create(
             trips_year=application.trips_year,
@@ -306,27 +319,24 @@ class GradeCrooApplicationForQualification(GradeCrooApplication):
         )
 
     def get_success_url(self):
-
         qual_pk = self.kwargs.get('qualification_pk')
-        return reverse('applications:grade:next_croo', 
+        return reverse('applications:grade:next_croo',
                        kwargs=dict(qualification_pk=qual_pk))
 
 
-class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired, 
+class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired,
                                     IfGradingAvailable, TemplateView):
-    
     template_name = 'applications/no_applications.html'
     
 
 class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired, 
                                               IfGradingAvailable, RedirectView):
-    
-    # from RedirectView
     permanent = False 
     
     def get_redirect_url(self, *args, **kwargs):
-        """ Return the url of the next LeaderApplication that needs grading """
-        
+        """ 
+        Return the url of the next LeaderApplication that needs grading
+        """
         application = LeaderSupplement.objects.next_to_grade(
             self.request.user
         )
@@ -339,7 +349,6 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
 
 class GradeLeaderApplication(LeaderGraderPermissionRequired, 
                              GenericGradingView):
-
     grade_model = LeaderApplicationGrade
     application_model = LeaderSupplement
     skipped_grade_model = SkippedLeaderGrade
@@ -348,10 +357,11 @@ class GradeLeaderApplication(LeaderGraderPermissionRequired,
     verbose_application_name = 'Trip Leader Application'
 
 
-class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired, 
+class NoLeaderApplicationsLeftToGrade(LeaderGraderPermissionRequired,
                                       IfGradingAvailable, TemplateView):
-    """ Tell user there are no more applications for her to grade """
-
+    """
+    Tell user there are no more applications for her to grade
+    """
     template_name = 'applications/no_applications.html'
 
 

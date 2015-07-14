@@ -3,7 +3,7 @@ import logging
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -43,12 +43,15 @@ logger = logging.getLogger(__name__)
 
 
 class IfRegistrationAvailable():
-    """ Redirect if trippee registration is not currently available """
-
+    """ 
+    Redirect if trippee registration is not currently available 
+    """
     def dispatch(self, request, *args, **kwargs):
         
         if not Timetable.objects.timetable().registration_available():
-            return HttpResponseRedirect(reverse('incoming:registration_not_available'))
+            return HttpResponseRedirect(
+                reverse('incoming:registration_not_available')
+            )
         return super(IfRegistrationAvailable, self).dispatch(request, *args, **kwargs)
 
 
@@ -67,8 +70,8 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     success_url = reverse_lazy('incoming:portal')
     form_valid_message = "Your registration has been saved"
     form_invalid_message = (
-        "Uh oh, it looks like there's an error somewhere in your registration. "
-        "Please fix the error and submit the form again."
+        "Uh oh, it looks like there's an error somewhere in your "
+        "registration. Please fix the error and submit the form again."
     )
 
     def get_context_data(self, **kwargs):
@@ -84,9 +87,9 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
 
 class Register(BaseRegistrationView, CreateView):
     """
-    Register for trips 
+    Register for trips
     
-    Redirects to the edit view if this incoming student 
+    Redirects to the edit view if this incoming student
     has already registered.
     """
 
@@ -124,10 +127,13 @@ class Register(BaseRegistrationView, CreateView):
 
 
 class EditRegistration(BaseRegistrationView, UpdateView):
-    """ Edit a trippee registration """
-
+    """ 
+    Edit a trips registration.
+    """
     def get_object(self):
-        """ Get registration for user """        
+        """ 
+        Get registration for user 
+        """
         return get_object_or_404(
             self.model, user=self.request.user,
             trips_year=TripsYear.objects.current()
@@ -143,8 +149,8 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
     template_name = 'incoming/portal.html'
     
     def get_registration(self):
-        """ 
-        Return current user's registration, or None if DNE 
+        """
+        Return current user's registration, or None if DNE.
         """
         try:
             return Registration.objects.get(
@@ -156,7 +162,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
     def get_incoming_student(self):
         """
-        Return user's incomings student data, or None if DNE
+        Return user's incoming student data, or None if DNE.
         """
         try:
             return IncomingStudent.objects.get(
@@ -165,6 +171,9 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
             )
         except IncomingStudent.DoesNotExist:
             return None
+        except MultipleObjectsReturned as exc:
+            logger.error(exc, extra={'request': self.request, 'stack': True})
+            raise exc
 
     def get_context_data(self, **kwargs):
         timetable = Timetable.objects.timetable()
@@ -173,7 +182,8 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
         kwargs['trip'] = inc.trip_assignment if inc else None
         kwargs['registration_available'] = timetable.registration_available()
         kwargs['registration_closes'] = timetable.trippee_registrations_close
-        kwargs['after_deadline'] = timetable.trippee_registrations_close > timezone.now()
+        kwargs['after_deadline'] = (
+            timetable.trippee_registrations_close > timezone.now())
         kwargs['assignment_available'] = timetable.trippee_assignment_available
         kwargs['contact_url'] = Settings.objects.get().contact_url
         kwargs['trips_year'] = TripsYear.objects.current()
@@ -183,19 +193,19 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 # ----- database internal views --------
 
 
-class RegistrationIndexView(DatabaseListView):
+class RegistrationIndex(DatabaseListView):
     """ 
-    All trippee registrations 
+    All trippee registrations.
     """
     model = Registration
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
     
     def get_queryset(self):
-        qs = super(RegistrationIndexView, self).get_queryset()
+        qs = super(RegistrationIndex, self).get_queryset()
         return qs.select_related(
             'user',
-            'trippee', 
+            'trippee',
             'trippee__trip_assignment__section',
             'trippee__trip_assignment__template',
         )
@@ -206,11 +216,11 @@ class RegistrationIndexView(DatabaseListView):
         )
         kwargs['table'] = RegistrationTable(self.object_list)
         RequestConfig(self.request, paginate=False).configure(kwargs['table'])
-        return super(RegistrationIndexView, self).get_context_data(**kwargs)
+        return super(RegistrationIndex, self).get_context_data(**kwargs)
 
 
-class RegistrationDetailView(DatabaseReadPermissionRequired,
-                             TripsYearMixin, DetailView):
+class RegistrationDetail(DatabaseReadPermissionRequired,
+                         TripsYearMixin, DetailView):
     model = Registration
     template_name = 'incoming/registration_detail.html'
     
@@ -237,14 +247,17 @@ class RegistrationDetailView(DatabaseReadPermissionRequired,
     ]
 
 
-class RegistrationUpdateView(DatabaseEditPermissionRequired, 
-                             TripsYearMixin, UpdateView):
+class RegistrationUpdate(DatabaseEditPermissionRequired,
+                         TripsYearMixin, UpdateView):
+    """ 
+    Edit a registration.
+    """
     form_class = RegistrationForm
     model = Registration
     template_name = 'db/update.html'
 
 
-class RegistrationDeleteView(DatabaseDeleteView):
+class RegistrationDelete(DatabaseDeleteView):
     """
     Delete a registration.
     """
@@ -252,8 +265,8 @@ class RegistrationDeleteView(DatabaseDeleteView):
     success_url_pattern = 'db:registration_index'
     
 
-class IncomingStudentIndexView(DatabaseReadPermissionRequired,
-                               TripsYearMixin, ListView):
+class IncomingStudentIndex(DatabaseReadPermissionRequired,
+                           TripsYearMixin, ListView):
     """ 
     All incoming students
     """
@@ -262,7 +275,7 @@ class IncomingStudentIndexView(DatabaseReadPermissionRequired,
     context_object_name = 'trippees'
 
     def get_queryset(self):
-        qs = super(IncomingStudentIndexView, self).get_queryset()
+        qs = super(IncomingStudentIndex, self).get_queryset()
         return qs.select_related(
             'registration__user',
             'registration__bus_stop',
@@ -272,8 +285,8 @@ class IncomingStudentIndexView(DatabaseReadPermissionRequired,
         )
 
 
-class IncomingStudentDetailView(DatabaseReadPermissionRequired,
-                                TripsYearMixin, DetailView):
+class IncomingStudentDetail(DatabaseReadPermissionRequired,
+                            TripsYearMixin, DetailView):
     model = IncomingStudent
     template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
@@ -296,10 +309,10 @@ class IncomingStudentDetailView(DatabaseReadPermissionRequired,
         kwargs['edit_assignment_url'] = reverse(
             'db:incomingstudent_update_assignment', kwargs=self.kwargs
         )
-        return super(IncomingStudentDetailView, self).get_context_data(**kwargs)
+        return super(IncomingStudentDetail, self).get_context_data(**kwargs)
 
 
-class IncomingStudentDeleteView(DatabaseDeleteView):
+class IncomingStudentDelete(DatabaseDeleteView):
     """ 
     Delete an incoming student.
     """
@@ -310,8 +323,8 @@ class IncomingStudentDeleteView(DatabaseDeleteView):
                        kwargs={'trips_year': self.get_trips_year()})
 
 
-class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
-                               TripsYearMixin, UpdateView):
+class UpdateTripAssignment(DatabaseEditPermissionRequired,
+                           TripsYearMixin, UpdateView):
     model = IncomingStudent
     template_name = 'incoming/update_trip.html'
     form_class = TripAssignmentForm
@@ -323,15 +336,18 @@ class UpdateTripAssignmentView(DatabaseEditPermissionRequired,
             kwargs['preferred_trips'] = reg.get_preferred_trips()
             kwargs['available_trips'] = reg.get_available_trips()
         kwargs['registration'] = reg
-        return super(UpdateTripAssignmentView, self).get_context_data(**kwargs)
+        return super(UpdateTripAssignment, self).get_context_data(**kwargs)
 
     def get_form(self, **kwargs):
-        form = super(UpdateTripAssignmentView, self).get_form(**kwargs)
+        form = super(UpdateTripAssignment, self).get_form(**kwargs)
         return crispify(form)
 
 
-class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
-                                TripsYearMixin, UpdateView):
+class IncomingStudentUpdate(DatabaseEditPermissionRequired,
+                            TripsYearMixin, UpdateView):
+    """
+    Edit an incoming student
+    """
     model = IncomingStudent
     template_name = 'db/update.html'
     context_object_name = 'trippee'
@@ -344,19 +360,19 @@ class IncomingStudentUpdateView(DatabaseEditPermissionRequired,
     ]
 
     def get_form(self, **kwargs):
-        form = super(IncomingStudentUpdateView, self).get_form(**kwargs)
+        form = super(IncomingStudentUpdate, self).get_form(**kwargs)
         return crispify(form)
     
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                                 TripsYearMixin, FormView):
     """
-    Accept an upload of CSV file of incoming students. 
+    Accept an upload of CSV file of incoming students.
 
     Parses the CSV file and adds the data to the database as
     CollegeInfo objects.
 
-    TODO: parse or input the status of the incoming student 
+    TODO: parse or input the status of the incoming student
     (eg first year, transfer, etc.)
     """
 

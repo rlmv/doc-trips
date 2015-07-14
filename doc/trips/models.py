@@ -1,5 +1,5 @@
+import math
 import collections
-
 from datetime import timedelta
 
 from django.conf import settings
@@ -20,7 +20,11 @@ INTVL_CAMPSITE_1
 INTVL_CAMPSITE_2
 INTVL_LODGE
 INTVL_CAMPUS
-""" 
+"""
+
+NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
+NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
+
 
 class ScheduledTrip(DatabaseModel):
 
@@ -28,7 +32,9 @@ class ScheduledTrip(DatabaseModel):
     objects = ScheduledTripManager()
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
-    section = models.ForeignKey('Section', on_delete=models.PROTECT)
+    section = models.ForeignKey(
+        'Section', on_delete=models.PROTECT, related_name='trips'
+    )
 
     # The leaders for this trip can be accessed through the 'leaders' field.
     # See LeaderApplication.assigned_trip.
@@ -80,8 +86,12 @@ class ScheduledTrip(DatabaseModel):
     def size(self):
         """ 
         Return the number trippees + leaders on this trip 
+
+        HACK: is it safe to cache like this?
         """
-        return self.leaders.count() + self.trippees.count()
+        if not hasattr(self, '_size'):
+            self._size = self.leaders.count() + self.trippees.count()
+        return self._size
 
     @property 
     def dropoff_date(self):
@@ -94,6 +104,32 @@ class ScheduledTrip(DatabaseModel):
     @property
     def return_date(self):
         return self.section.return_to_campus
+
+    @property
+    def half_foodbox(self):
+        """ 
+        A trip gets an additional half foodbox if it is larger 
+        than the kickin limit specified by the triptype.
+        """
+        return self.size() >= self.template.triptype.half_kickin 
+
+    @property
+    def supp_foodbox(self):
+        """
+        Does the trip get a supplemental foodbox?
+        """
+        return self.template.triptype.gets_supplemental
+
+    @property
+    def bagels(self):
+        """
+        How many bagels does to the trip get?
+        """
+        if self.supp_foodbox:
+            num = NUM_BAGELS_SUPPLEMENT
+        else:
+            num = NUM_BAGELS_REGULAR
+        return math.ceil(num * self.size())
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)
@@ -275,6 +311,14 @@ class TripType(DatabaseModel):
     packing_list = models.TextField(blank=True)
     # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
+
+   # --- foodbox info ----
+    half_kickin = models.PositiveSmallIntegerField(
+        'minimum # for a half foodbox', default=10
+    )
+    gets_supplemental = models.BooleanField(
+        'gets a supplemental foodbox?', default=False
+    )
 
     class Meta:
         ordering = ['name']

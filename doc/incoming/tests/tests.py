@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
@@ -57,6 +58,13 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             IncomingStudent.objects.create_from_csv_file(f, trips_year.pk)
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
+        
+    def test_get_hometown_parsing_with_bad_formatting(self):
+        trips_year = self.init_trips_year()
+        incoming = mommy.make(
+            IncomingStudent, trips_year=trips_year, address='what\nblah'
+        )
+        self.assertEqual(incoming.get_hometown(), 'what\nblah')
 
     def test_get_gender_without_registration(self):
         trips_year = self.init_trips_year()
@@ -135,7 +143,13 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             registration__green_fund_donation=290
         )
         self.assertEqual(inc.compute_cost(), 421.25)
-        
+
+    def test_netid_and_trips_year_are_unique(self):
+        trips_year = self.init_trips_year()
+        mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
+        with self.assertRaises(IntegrityError):
+            mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
+
 
 class RegistrationModelTestCase(TripsYearTestCase):
 
@@ -373,6 +387,25 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
             trips_year, rte, sxn
         ))
         self.assertEqual(target, actual)
+
+    def test_with_trip(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip,
+            trips_year=trips_year
+        )
+        assigned = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=trip
+        )
+        not_assigned = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None
+        )
+        actual = list(IncomingStudent.objects.with_trip(trips_year))
+        self.assertEqual(actual, [assigned])
 
 
 class RegistrationViewsTestCase(WebTestCase):

@@ -85,7 +85,9 @@ def login(request, next_page=None):
         try:
             user = auth.authenticate(ticket=ticket, service=service)
         except EmailLookupException as e:
-            return render('webauth/email_lookup_error.html', {'exception': e})
+            return render(
+                request, 'webauth/email_lookup_error.html', {'exception': e}
+            )
 
         if user is not None:
             #Has ticket, logs in fine

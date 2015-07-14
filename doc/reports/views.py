@@ -1,16 +1,21 @@
 import csv
+from collections import defaultdict
 
 from braces.views import AllVerbsMixin
-from vanilla import View
+from vanilla import View, TemplateView
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.db.models import Avg
 
 from doc.db.views import TripsYearMixin
-from doc.applications.models import GeneralApplication
+from doc.applications.models import GeneralApplication as Application 
 from doc.permissions.views import DatabaseReadPermissionRequired
-from doc.incoming.models import Registration
+from doc.incoming.models import Registration, IncomingStudent
+from doc.core.models import Settings
+from doc.utils.choices import YES, S, M, L, XL
+from doc.trips.models import ScheduledTrip
 
+# TODO use a ListView here?
 
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
@@ -52,7 +57,7 @@ class VolunteerCSV(GenericReportView):
     header = ['name', 'class year', 'netid']
 
     def get_queryset(self):
-        return GeneralApplication.objects.leader_or_croo_applications(self.kwargs['trips_year'])
+        return Application.objects.leader_or_croo_applications(self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
@@ -65,7 +70,7 @@ class TripLeaderApplicationsCSV(GenericReportView):
     header = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return (GeneralApplication.objects
+        return (Application.objects
                 .leader_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('leader_supplement__grades__grade'))
                 .select_related('leader_supplement')
@@ -89,7 +94,7 @@ class CrooApplicationsCSV(GenericReportView):
     header = ['name', 'class year', 'netid', 'avg score']
     
     def get_queryset(self):
-        return (GeneralApplication.objects
+        return (Application.objects
                 .croo_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('croo_supplement__grades__grade'))
                 .select_related('croo_supplement')
@@ -131,3 +136,192 @@ class ExternalBusCSV(GenericReportView):
     def get_row(self, reg):
         user = reg.user
         return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
+
+
+class Charges(GenericReportView):
+    """
+    CSV file of charges to be applied to each trippee.
+    """
+    file_prefix = 'Charges'
+    
+    def get_queryset(self):
+        return IncomingStudent.objects.filter(
+            trips_year=self.get_trips_year(), trip_assignment__isnull=False
+        )
+
+    header = [
+        'name', 'netid', 'total charge', 'aid award (percentage)',
+        'bus', 'doc membership', 'green fund donation'
+    ]
+    def get_row(self, incoming):
+        reg = incoming.get_registration()
+        return [
+            incoming.name,
+            incoming.netid,
+            incoming.compute_cost(),
+            incoming.financial_aid if incoming.financial_aid != 0 else '',
+            incoming.bus_assignment.cost if incoming.bus_assignment else '',
+            self.membership_cost() if reg and reg.doc_membership == YES else '',
+            reg.green_fund_donation if reg and reg.green_fund_donation else ''
+        ]
+
+    def membership_cost(self):
+        return Settings.objects.get().doc_membership_cost
+
+
+def tshirt_counts(trips_year):
+    """
+    Return a dict with S, M, L, XL keys, each
+    with the number of shirts needed in that size.
+    """
+    counts = {S: 0, M: 0, L: 0, XL: 0}
+
+    leaders = Application.objects.filter(
+        trips_year=trips_year, status=Application.LEADER
+    )
+    croos = Application.objects.filter(
+        trips_year=trips_year, status=Application.CROO
+    )
+    trippees = Registration.objects.filter(
+        trips_year=trips_year
+    )
+    for qs in [leaders, croos, trippees]:
+        for size in [S, M, L, XL]:
+            counts[size] += qs.filter(tshirt_size=size).count()
+    return counts
+
+
+class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+    """
+    Counts of all tshirt sizes requested by leaders, croos, and trippees.
+    """
+    template_name = "reports/tshirts.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs['tshirt_counts'] = tshirt_counts(self.kwargs['trips_year'])
+        return super(TShirts, self).get_context_data(**kwargs)
+
+
+class Housing(GenericReportView):
+    
+    file_prefix = 'Housing'
+
+    def get_queryset(self):
+        return IncomingStudent.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = ['name', 'netid', 'trip', 'section', 'start date', 'end date',
+              'native', 'fysep', 'international']
+    def get_row(self, incoming):
+        is_assigned = incoming.trip_assignment is not None
+        reg = incoming.get_registration()
+        trip = incoming.trip_assignment
+        fmt = "%m/%d"
+        return [
+            incoming.name,
+            incoming.netid,
+            trip if is_assigned else "",
+            trip.section.name if is_assigned else "",
+            trip.section.trippees_arrive.strftime(fmt) if is_assigned else "",
+            trip.section.return_to_campus.strftime(fmt) if is_assigned else "",
+            'yes' if reg and reg.is_native == YES else '',
+            'yes' if reg and reg.is_fysep == YES else '',
+            'yes' if reg and reg.is_international == YES else '',
+        ]
+
+
+class DietaryRestrictions(GenericReportView):
+    
+    file_prefix = 'Dietary-Restrictions'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = [
+        'name', 'netid', 'section', 'trip',
+        'allergies',
+        'allergen information',
+        'food allergy reaction',
+        'food allergy severity (1-5)',
+        'dietary restrictions',
+        'medical conditions',
+    ]
+    def get_row(self, reg):
+        trip = reg.get_trip_assignment()
+        return [
+            reg.name,
+            reg.user.netid,
+            trip.section.name if trip else '',
+            trip,
+            reg.allergies,
+            reg.allergen_information,
+            reg.allergy_reaction,
+            reg.allergy_severity,
+            reg.dietary_restrictions,
+            reg.medical_conditions,
+        ]
+
+
+class MedicalInfo(GenericReportView):
+    
+    file_prefix = 'Medical-Info'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = [
+        'name', 'netid', 'trip',
+        'medical conditions',
+        'allergies',
+        'allergen information',
+        'food allergy reaction',
+        'food allergy severity (1-5)',
+        'epipen',
+        'needs',
+    ]
+    def get_row(self, reg):
+        return [
+            reg.name, reg.user.netid, reg.get_trip_assignment(),
+            reg.medical_conditions,
+            reg.allergies,
+            reg.allergen_information,
+            reg.allergy_reaction,
+            reg.allergy_severity,
+            reg.epipen,
+            reg.needs,
+        ]
+
+
+class Foodboxes(GenericReportView):
+    
+    file_prefix = 'Foodboxes'
+    
+    def get_queryset(self):
+        return ScheduledTrip.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = [
+        'trip',
+        'section',
+        'size',
+        'full box',
+        'half box',
+        'supplement',
+        'bagels'
+    ]
+    def get_row(self, trip):
+        return [
+            trip,
+            trip.section.name,
+            trip.size(),
+            '1',
+            '1' if trip.half_foodbox else '',
+            '1' if trip.supp_foodbox else '',
+            trip.bagels
+        ]

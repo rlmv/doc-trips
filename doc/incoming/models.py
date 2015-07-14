@@ -41,6 +41,9 @@ class IncomingStudent(DatabaseModel):
 
     objects = IncomingStudentManager()
 
+    class Meta:
+        unique_together = ('netid', 'trips_year')
+
     registration = models.OneToOneField(
         'Registration', editable=False, related_name='trippee', null=True
     )
@@ -100,6 +103,8 @@ class IncomingStudent(DatabaseModel):
         Hack hack parse the town, state, and nation from address.
         """
         parts = self.address.split('\n')
+        if len(parts) != 4:  # bad formatting - manually input?
+            return self.address
         city_state = ' '.join(parts[2].split(' ')[0:-1])
         return "%s %s" % (city_state, parts[3])
 

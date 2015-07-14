@@ -1,4 +1,5 @@
 import unittest
+import math
 from datetime import date, timedelta
 from django.db import transaction
 from django.test.utils import override_settings
@@ -6,7 +7,10 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
-from doc.trips.models import ScheduledTrip, Section, TripTemplate, validate_triptemplate_name
+from doc.trips.models import (
+    ScheduledTrip, Section, TripTemplate, validate_triptemplate_name,
+    NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
+)
 from doc.transport.models import Route
 from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.fixtures import WebTestCase, TripsYearTestCase as TripsTestCase
@@ -58,6 +62,64 @@ class ScheduledTripTestCase(WebTestCase):
         with self.assertNumQueries(18):
             self.app.get(reverse('db:scheduledtrip_index', kwargs={'trips_year': self.trips_year}), user=user)
 
+
+class ScheduledTripModelTestCase(TripsTestCase):
+
+    def test_gets_half_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__half_kickin=3
+        )
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        self.assertTrue(trip.half_foodbox)
+
+    def test_does_not_get_half_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__half_kickin=3
+        )
+        make_application(trips_year=trips_year, assigned_trip=trip)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        self.assertFalse(trip.half_foodbox)
+
+    def test_gets_supplemental_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=True
+        )
+        self.assertTrue(trip.supp_foodbox)
+
+    def test_does_not_get_supplemental_foodbox(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=False
+        )
+        self.assertFalse(trip.supp_foodbox)
+
+    def test_bagels_not_supplement(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=False
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_REGULAR))
+
+    def test_bagels_supplemental(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year,
+            template__triptype__gets_supplemental=True
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_SUPPLEMENT))
+    
 
 class ScheduledTripRouteOverridesTestCase(WebTestCase):
 
@@ -380,4 +442,21 @@ class ScheduledTripManagerTestCase(TripsTestCase):
 
         self.assertEqual(set([returning, overridden_return]),
                          set(ScheduledTrip.objects.returns(route, section.return_to_campus, trips_year=trips_year)))
+
+
+class ViewsTestCase(WebTestCase):
     
+    csrf_checks = False
+
+    def test_create_scheduled_trip_from_matrix(self):
+        trips_year = self.init_trips_year()
+        section = mommy.make(Section, trips_year=trips_year)
+        template = mommy.make(TripTemplate, trips_year=trips_year)
+        url = reverse('db:scheduledtrip_index', kwargs={'trips_year': trips_year})
+        # get matrix
+        resp = self.app.get(url, user=self.mock_director())
+        # click add -> CreateView
+        resp = resp.click(description='add')
+        # submit create form
+        resp.form.submit()
+        ScheduledTrip.objects.get(section=section, template=template)

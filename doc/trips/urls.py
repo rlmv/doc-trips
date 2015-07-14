@@ -88,3 +88,8 @@ leader_urlpatterns = [
     url(r'^remove/leader/(?P<leader_pk>[0-9]+)$',
         RemoveAssignedTrip.as_view(), name='remove_leader_from_trip'),
 ]
+
+foodbox_urlpatterns = [
+    url(r'^rules/$', FoodboxRules.as_view(), name='rules'),
+    url(r'^counts/$', FoodboxCounts.as_view(), name='counts'),
+]

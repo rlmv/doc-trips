@@ -3,7 +3,8 @@
 from django import forms
 from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.bootstrap import InlineField
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from doc.applications.models import LeaderSupplement, GeneralApplication
@@ -101,3 +102,12 @@ class TrippeeAssignmentForm(forms.ModelForm):
             ScheduledTrip.objects.get(pk=self.data['trip_assignment'])
         )
         self.helper.add_input(Submit('submit', label))
+
+
+class FoodboxFormsetHelper(FormHelper):
+
+    layout = Layout(
+        InlineField('name', readonly=True),
+        Field('half_kickin'),
+        InlineField('gets_supplemental'),
+    )

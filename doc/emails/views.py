@@ -39,6 +39,20 @@ def emails(qs):
     return list(map(lambda x: x['applicant__email'], values))
 
 
+def personal_emails(qs):
+    """ 
+    List of trippee emails from IncomingStudent qs
+    """
+    return list(map(lambda x: x.email, qs))
+
+
+def blitz(qs):
+    """
+    List of trippee blitzes from IncomingStudent qs
+    """
+    return list(map(lambda x: x.blitz, qs))
+
+
 class Applicants(BaseEmailList):
 
     headline = "Applicant Emails"
@@ -116,15 +130,41 @@ class IncomingStudents(BaseEmailList):
             trips_year=self.get_trips_year()
         )
         email_list = [
-            ('unregistered personal emails', self.personal(unregistered)),
-            ('unregistered blitz', self.blitz(unregistered)),
-            ('registrations', self.personal(registered)),
+            ('unregistered personal emails', personal_emails(unregistered)),
+            ('unregistered blitz', blitz(unregistered)),
+            ('registrations', personal_emails(registered)),
         ]
         
         return email_list
 
-    def personal(self, qs):
-        return list(map(lambda x: x.email, qs))
 
-    def blitz(self, qs):
-        return list(map(lambda x: x.blitz, qs))
+class Trippees(BaseEmailList):
+    
+    headline = "Trippees"
+
+    def get_email_lists(self):
+        trips_year = self.get_trips_year()
+        sections = Section.objects.filter(trips_year=trips_year)
+        trippees = IncomingStudent.objects.filter(
+            trips_year=trips_year, trip_assignment__isnull=False
+        )
+        email_list = [
+            ("All Trippees (Incoming Students with a trip assignment)",
+             personal_emails(trippees)),
+            ("All Trippees - blitz",
+             blitz(trippees))
+        ]
+        for sxn in sections:
+            trpz = trippees.filter(trip_assignment__section=sxn)
+            email_list.append((
+                "Section %s trippees" % sxn.name,
+                personal_emails(trpz)
+            ))
+            email_list.append((
+                "Section %s trippees - blitz" % sxn.name,
+                blitz(trpz)
+            ))
+        return email_list
+            
+        
+        

@@ -336,11 +336,11 @@ class ExternalBusManager(TripsYearTestCase):
         self.assertEqual(target, actual)
 
 
-class ExternalBusView(WebTestCase):
+class TransportViewsTestCase(WebTestCase):
 
     csrf_checks = False
 
-    def test_create_from_matrix(self):
+    def test_create_external_bus_from_matrix(self):
         
         trips_year=self.init_current_trips_year()
         route = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
@@ -356,6 +356,21 @@ class ExternalBusView(WebTestCase):
         res = res.form.submit()
         # and hopefully creates a new tranport
         ExternalBus.objects.get(route=route, section=section)
+
+    def test_schedule_internal_bus_from_matrix(self):
+        trips_year = self.init_trips_year()
+        route = mommy.make(
+            Route, trips_year=trips_year, category=Route.INTERNAL, pk=1)
+        section = mommy.make(
+            Section, trips_year=trips_year, leaders_arrive=date(2015, 1, 1))
+        # visit matrix
+        url = reverse('db:scheduledtransport_index',
+                      kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+        # click add
+        resp = resp.click(linkid="1-2-2015-create-1")
+        resp.form.submit()
+        ScheduledTransport.objects.get(date=date(2015, 1, 2), route=route)
 
 
 class InternalTransportModelTestCase(TripsYearTestCase):

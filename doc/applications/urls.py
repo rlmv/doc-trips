@@ -3,14 +3,15 @@ from django.conf.urls import url, include
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.applications.views.application import (
-    NewApplication, ContinueApplication,
+    NewApplication,
+    ContinueApplication,
     SetupApplication,
-    ApplicationDatabaseListView,
-    ApplicationDatabaseDetailView,
-    ApplicationDatabaseUpdateView,
-    ApplicationStatusUpdateView,
-    ApplicationTrainingsUpdateView,
-    ApplicationAdminUpdateView)
+    ApplicationIndex,
+    ApplicationDetail,
+    ApplicationUpdate,
+    ApplicationStatusUpdate,
+    ApplicationCertsUpdate,
+    ApplicationAdminUpdate)
 from doc.applications.views.grading import(
     RedirectToNextGradableCrooApplication,
     RedirectToNextGradableCrooApplicationForQualification,
@@ -24,7 +25,7 @@ from doc.applications.views.grading import(
     DeleteCrooGrade,
     DeleteLeaderGrade)
 from doc.applications.views.assign import AssignToTrip, AssignToCroo
-from doc.applications.views.graders import GraderListView
+from doc.applications.views.graders import GraderList
 from doc.applications.views.portal import (
     VolunteerPortalView, EditVolunteerPortalContent
 )
@@ -66,33 +67,33 @@ urlpatterns = [
 # TODO: fix leaderapplication, leadersupplement mismatch
 
 application_urlpatterns = [
-    url(DB_REGEX['LIST'], ApplicationDatabaseListView.as_view(),
+    url(DB_REGEX['LIST'], ApplicationIndex.as_view(),
         name='application_index'),
-    url(DB_REGEX['DETAIL'], ApplicationDatabaseDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], ApplicationDetail.as_view(),
         name='generalapplication_detail'),
-    url(DB_REGEX['UPDATE'], ApplicationDatabaseUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], ApplicationUpdate.as_view(),
         name='generalapplication_update'),
     url(r'^(?P<pk>[0-9]+)/update/status/$',
-        ApplicationStatusUpdateView.as_view(),
+        ApplicationStatusUpdate.as_view(),
         name='update_application_status'),
     url(r'^(?P<pk>[0-9]+)/update/trainings/$',
-        ApplicationTrainingsUpdateView.as_view(),
+        ApplicationCertsUpdate.as_view(),
         name='update_application_trainings'),
     url(r'^(?P<pk>[0-9]+)/update/trip$', AssignToTrip.as_view(),
         name='update_trip_assignment'),
     url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
         name='update_croo_assignment'),
     url(r'^(?P<pk>[0-9]+)/update/admin/$',
-        ApplicationAdminUpdateView.as_view(),
+        ApplicationAdminUpdate.as_view(),
         name='update_application_admin'),
 ]
 
 grader_urlpatterns = [
-    url(DB_REGEX['LIST'], GraderListView.as_view(), name='graders_index'),
+    url(DB_REGEX['LIST'], GraderList.as_view(), name='graders_index'),
 ]
 
 grade_urlpatterns = [
-     url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
+    url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
         name='leaderapplicationgrade_delete'),
     url(r'^croo/(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(),
         name='crooapplicationgrade_delete'),

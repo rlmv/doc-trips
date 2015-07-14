@@ -1,35 +1,39 @@
 {% extends "base.html" %}
 
 {% block header %}
-<h2> Incoming Students </h2>
+<h2> Incoming Students <small> Trips {{ trips_year }} </small></h2>
 {% endblock %}
 
 {% block content %}
 <p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
-<h3> Trips Registration </h3>
-
-{% if registration %}
-<p> You have successfully registered for Trips {{ trips_year }}! </p>
-{% endif %}
-
-{% if registration_available %}
-<div>
-  <p> You can edit your registration any time before {{ registration_closes }} </p>
-  {% if registration %}
-  <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Edit Registration </a>
-  {% else %}
-  <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Register for Trips {{ trips_year }} </a>
-  {% endif %}
-</div>
-{% elif not registration and after_deadline %}
-<p> The deadline for registering online has passed. Don't despair though! <a href="{{ contact_url }}"> Contact us </a> and we can get you on a trip. </p>
-{% elif not registration %}
-<p> Registration is not available at this time </p>
-{% endif %}
-
 {% if assignment_available %}
 {% include "incoming/_trip_assignment.html" %} 
 {% endif %}
+
+<ul class="list-group">
+  <li class="list-group-item">
+    <h3 class="list-group-item-heading"> Trips Registration </h3>
+
+    {% if registration %}
+    <p> You have registered for Trips {{ trips_year }}! </p>
+    {% endif %}
+
+    {% if registration_available %}
+    <div>
+      <p> You can edit your registration any time before {{ registration_closes }} </p>
+      {% if registration %}
+      <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Edit Registration </a>
+      {% else %}
+      <a href="{% url 'incoming:register' %}"> <i class="fa fa-edit"></i> Register for Trips {{ trips_year }} </a>
+      {% endif %}
+    </div>
+    {% elif not registration and after_deadline %}
+    <p> The deadline for registering online has passed. Don't despair though! <a href="{{ contact_url }}"> Contact us </a> and we can get you on a trip. </p>
+    {% elif not registration %}
+    <p> Registration is not available at this time </p>
+    {% endif %}
+  </li>
+</ul>
 
 {% endblock content %}

@@ -13,11 +13,13 @@ from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus)
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
+from doc.utils.views import PopulateMixin
 from doc.incoming.models import IncomingStudent
-from doc.transport.maps import get_directions, get_hanover, get_lodge
+
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
+
 
 def get_internal_route_matrix(trips_year):
 
@@ -170,7 +172,7 @@ class TransportCounts(DatabaseReadPermissionRequired,
         return context
 
 
-class ScheduledTransportCreateView(DatabaseCreateView):
+class ScheduledTransportCreateView(PopulateMixin, DatabaseCreateView):
     
     model = ScheduledTransport
     fields = ('route', 'date')
@@ -178,34 +180,10 @@ class ScheduledTransportCreateView(DatabaseCreateView):
     def get_success_url(self):
         return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
 
-    def get(self, request, *args, **kwargs):
-        
-        data = None
-        GET = request.GET
-        if 'route' in GET and 'date' in GET:
-            data = {'route': GET['route'], 'date': GET['date']}
-
-        form = self.get_form(data=data)
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
-
 
 class ScheduledTransportDeleteView(DatabaseDeleteView):
     model = ScheduledTransport
     success_url_pattern = 'db:scheduledtransport_index'
-
-
-class PopulateMixin():
-    
-    def get(self, request, *args, **kwargs):
-        """
-        Populate the create form with data passed 
-        in the url querystring.
-        """
-        data = request.GET or None
-        form = self.get_form(data=data)
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
 
 
 class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
@@ -226,7 +204,7 @@ class ExternalBusDelete(DatabaseDeleteView):
 
 
 class ExternalBusMatrix(DatabaseReadPermissionRequired,
-                              TripsYearMixin, TemplateView):
+                        TripsYearMixin, TemplateView):
 
     template_name = 'transport/external_matrix.html'
 
@@ -260,7 +238,7 @@ class StopDetailView(DatabaseDetailView):
         'name', 'address', 'route', 'directions',
         'picked_up_trips', 'dropped_off_trips',
         'latitude', 'longitude', 'cost',
-        'pickup_time', 'dropoff_time', 'distance',    
+        'pickup_time', 'dropoff_time', 'distance',
     ]
 
 

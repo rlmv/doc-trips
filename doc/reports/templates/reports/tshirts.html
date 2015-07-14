@@ -1,0 +1,19 @@
+{% extends "db/base.html" %}
+
+
+{% block header %}
+<h2> T-Shirt Sizes </h2>
+{% endblock header %}
+
+{% block content %}
+<p> This is the total count of tshirt sizes requested by Trip Leaders, Croo Members, and Registered Trippees. </p>
+
+<ul class="list-group col-sm-2">
+  <li class="list-group-item"> <strong> S: </strong> {{ tshirt_counts.S }}</li>
+  <li class="list-group-item"> <strong> M: </strong> {{ tshirt_counts.M }}</li>
+  <li class="list-group-item"> <strong> L: </strong> {{ tshirt_counts.L }}</li>
+  <li class="list-group-item"> <strong> XL: </strong> {{ tshirt_counts.XL }}</li> 
+</ul>
+
+
+{% endblock %}
