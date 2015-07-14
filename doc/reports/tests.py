@@ -7,7 +7,7 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from doc.test.fixtures import WebTestCase, TripsTestCase
+from doc.test.testcases import WebTestCase, TripsTestCase
 from doc.applications.tests import ApplicationTestMixin
 from doc.applications.models import GeneralApplication
 from doc.incoming.models import Registration, IncomingStudent

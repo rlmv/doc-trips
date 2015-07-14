@@ -1,4 +1,4 @@
 
 
-from doc.test.fixtures import TestCase
+from doc.test.testcases import TestCase
 

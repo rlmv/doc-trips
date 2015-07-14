@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from doc.test.fixtures import TripsYearTestCase, WebTestCase
+from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders, 

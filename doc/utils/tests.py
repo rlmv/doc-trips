@@ -5,7 +5,7 @@ from model_mommy import mommy
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.fmt import section_range
 from doc.trips.models import Section
-from doc.test.fixtures import TripsYearTestCase
+from doc.test.testcases import TripsYearTestCase
 
 
 class OrderedMatrixTestCase(unittest.TestCase):

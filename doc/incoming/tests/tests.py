@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from doc.test.fixtures import TripsYearTestCase, WebTestCase
+from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import RegistrationForm
 from doc.trips.models import ScheduledTrip, TripType, Section
