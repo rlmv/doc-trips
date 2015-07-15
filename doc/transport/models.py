@@ -10,6 +10,7 @@ from doc.transport.managers import (
     ExternalBusManager, ExternalPassengerManager
 )
 from doc.transport.maps import get_directions
+from doc.utils.lat_lng import validate_lat_lng
 
 
 class Stop(DatabaseModel):
@@ -25,15 +26,20 @@ class Stop(DatabaseModel):
     objects = StopManager()
 
     name = models.CharField(max_length=255)
-    # TODO: validate that lat and long are interdependet / location is there?
+    # TODO: validate that lat_long or an address are filled?
     address = models.CharField(
         max_length=255, help_text=(
             "Plain text address, eg. Hanover, NH 03755. This must "
             "take you to the location in Google maps."
         )
     )
-    lat_lng = models.CharField(max_length=255, blank=True, default='')
-    
+    lat_lng = models.CharField(
+        'coordinates', max_length=255, blank=True, default='',
+        validators=[validate_lat_lng], help_text=(
+            "Latitude & longitude coordinates, eg. 43.7030,-72.2895"
+        )
+    )
+   
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 

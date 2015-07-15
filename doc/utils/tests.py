@@ -1,12 +1,13 @@
 import unittest
 
 from model_mommy import mommy
+from django.core.exceptions import ValidationError
 
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.fmt import section_range
 from doc.trips.models import Section
 from doc.test.testcases import TripsYearTestCase
-from doc.utils.lat_lng import parse_lat_lng
+from doc.utils.lat_lng import parse_lat_lng, validate_lat_lng
 
 
 class OrderedMatrixTestCase(unittest.TestCase):
@@ -61,3 +62,11 @@ class LatLngRegex(unittest.TestCase):
         ]
         for string, target in tests:
             self.assertEqual(target, parse_lat_lng(string))
+
+    def test_validate_lat_lng(self):
+        validate_lat_lng('13.0,153.5')
+        validate_lat_lng(' 13.0,153.5 ')
+        with self.assertRaises(ValidationError):
+            validate_lat_lng('g 13.0,153.5 ')
+        with self.assertRaises(ValidationError):
+            validate_lat_lng('13.0,153.5  13.0,153.5 ')
