@@ -6,6 +6,7 @@ from doc.utils.matrix import OrderedMatrix
 from doc.utils.fmt import section_range
 from doc.trips.models import Section
 from doc.test.testcases import TripsYearTestCase
+from doc.utils.lat_lng import parse_lat_lng
 
 
 class OrderedMatrixTestCase(unittest.TestCase):
@@ -45,3 +46,18 @@ class FmtUtilsTest(TripsYearTestCase):
         mommy.make(Section, name="C")
         with self.assertRaises(AssertionError):
             section_range(Section.objects.all())
+
+
+class LatLngRegex(unittest.TestCase):
+
+    def test_lat_lng(self):
+        tests = [
+            ('13.0,153.5', '13.0,153.5'),
+            ('23.0, 153.5', '23.0,153.5'),
+            ('33.0,153.5', '33.0,153.5'),
+            ('-43.0, -153.5', '-43.0,-153.5'),
+            ("""44° 2'39.67"N 71°47'31.72"W""", None)  # no match
+            # ...
+        ]
+        for string, target in tests:
+            self.assertEqual(target, parse_lat_lng(string))
