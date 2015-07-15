@@ -9,6 +9,8 @@
 
 {% include "transport/_scheduled_alert.html" %}
 
+<div class="row">
+<div class="col-sm-6">
 {% if dropoffs %}
 <h4> Dropping Off </h4>
 <ul>
@@ -36,21 +38,23 @@
 </ul>
 {% endif %}
 
-<ul>
-{% for stop in stops %}
-<li>{{ stop }} {{ stop.distance }}</li>
-{% endfor %}
-</ul>
+</div>
 
-<p> {{ error }} </p>
-
-{% include "transport/maps/directions.html" %}
-
+<div class="col-sm-6">
+<div class="map-embed">
 <iframe
   width="450"
   height="250"
   frameborder="0" style="border:0"
-  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints={{ waypoints }}"
+  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints={{ waypoints }}">
 </iframe>
+</div>
+</div>
+
+</div>
+
+<p> {{ error }} </p>
+{% include "transport/maps/directions.html" %}
+
 
 {% endblock %}
