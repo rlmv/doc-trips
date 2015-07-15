@@ -9,26 +9,32 @@
 
 {% include "transport/_scheduled_alert.html" %}
 
+{% if dropoffs %}
 <h4> Dropping Off </h4>
 <ul>
-{% for trip in dropoffs %}
-<li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff|detail_link }}</li>
-{% endfor %}
+  {% for trip in dropoffs %}
+  <li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff|detail_link }}</li>
+  {% endfor %}
 </ul>
+{% endif %}
 
+{% if pickups %}
 <h4> Picking Up </h4>
 <ul>
-{% for trip in pickups %}
-<li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup|detail_link }}</li>
-{% endfor %}
+  {% for trip in pickups %}
+  <li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup|detail_link }}</li>
+  {% endfor %}
 </ul>
+{% endif %}
 
+{% if returns %}
 <h4> Returning to Campus </h4>
 <ul>
-{% for trip in returns %}
-<li>{{ trip|detail_link }}</li>
-{% endfor %}
+  {% for trip in returns %}
+  <li>{{ trip|detail_link }}</li>
+  {% endfor %}
 </ul>
+{% endif %}
 
 <ul>
 {% for stop in stops %}
