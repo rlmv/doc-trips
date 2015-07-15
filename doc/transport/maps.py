@@ -16,7 +16,7 @@ class MapError(Exception):
 
 def get_directions(stops):
 
-    addrs = list(map(lambda x: x.address, stops))
+    addrs = list(map(lambda x: x.location, stops))
 
     orig = addrs[0]
     dest = addrs[-1]

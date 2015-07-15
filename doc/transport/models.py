@@ -26,9 +26,8 @@ class Stop(DatabaseModel):
     objects = StopManager()
 
     name = models.CharField(max_length=255)
-    # TODO: validate that lat_long or an address are filled?
     address = models.CharField(
-        max_length=255, help_text=(
+        max_length=255, blank=True, default='', help_text=(
             "Plain text address, eg. Hanover, NH 03755. This must "
             "take you to the location in Google maps."
         )
@@ -54,11 +53,26 @@ class Stop(DatabaseModel):
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
-    distance = models.IntegerField(null=True)
+    distance = models.IntegerField(blank=True, null=True)
+
+    def clean(self):
+        if not self.lat_lng and not self.address:
+            raise ValidationError(
+                "%s must set either lat_lng or address" % self)
 
     @property
     def category(self):
         return self.route.category
+
+    @property
+    def location(self):
+        """
+        Get the location of the stop. Coordinates are
+        probably more accurate so we return them if possible.
+        """
+        if self.lat_lng:
+            return self.lat_lng
+        return self.address
 
     def get_detail_url(self):
         return reverse('db:stop_detail', kwargs=self.obj_kwargs())

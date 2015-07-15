@@ -26,7 +26,6 @@ TODO: rewrite matrix tests to only test _rider_matrix
 class TransportModelTestCase(TripsYearTestCase):
 
     def test_stop_is_protected_on_route_fk_deletion(self):
-
         trips_year = self.init_current_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         stop = mommy.make(Stop, route=route, trips_year=trips_year)
@@ -34,10 +33,36 @@ class TransportModelTestCase(TripsYearTestCase):
             route.delete()
 
 
+class StopModelTestCase(TripsYearTestCase):
+
+    def test_get_location_with_coords(self):
+        trips_year = self.init_trips_year()
+        stop = mommy.make(
+            Stop, trips_year=trips_year, 
+            lat_lng='43.7030,-72.2895', address='address'
+        )
+        self.assertEqual(stop.location, '43.7030,-72.2895')
+
+    def test_get_location_with_address(self):
+        trips_year = self.init_trips_year()
+        stop = mommy.make(Stop, trips_year=trips_year, lat_lng='', address='address')
+        self.assertEqual(stop.location, 'address')
+    
+    def test_get_location_with_address(self):
+        trips_year = self.init_trips_year()
+        stop = mommy.make(Stop, trips_year=trips_year, lat_lng='', address='address')
+        self.assertEqual(stop.location, 'address')
+
+    def test_no_lat_lng_or_address_raises_validation_error(self):
+        trips_year = self.init_trips_year()
+        stop = mommy.prepare(Stop, trips_year=trips_year, lat_lng='', address='')
+        with self.assertRaises(ValidationError):
+            stop.full_clean()
+        
+
 class StopManagerTestCase(TripsYearTestCase):
 
     def test_external(self):
-        
         trips_year = self.init_current_trips_year()
         external_stop = mommy.make(Stop, trips_year=trips_year, route__category=Route.EXTERNAL)
         internal_stop = mommy.make(Stop, trips_year=trips_year, route__category=Route.INTERNAL)
