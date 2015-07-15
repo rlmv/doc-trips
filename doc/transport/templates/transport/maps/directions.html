@@ -4,6 +4,9 @@
   {% for leg in directions.legs %}
   <li class="list-group-item">
     <h4 class="list-group-item-heading"> From {{ leg.start_stop }}: </h4>
+    {% if forloop.first and leg.start_stop.trips_picked_up %}
+    <p class="h5"> Pickup {{ leg.start_stop.trips_picked_up|detail_link }} </p>
+    {% endif %}
   </li>
 
   {% for step in leg.steps %}

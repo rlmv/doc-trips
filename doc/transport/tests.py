@@ -10,7 +10,7 @@ from model_mommy import mommy
 
 from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
-from doc.transport.constants import hanover, lodge
+from doc.transport.constants import Hanover, Lodge
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders,
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
@@ -404,7 +404,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             ScheduledTransport, trips_year=trips_year,
             route__category=Route.INTERNAL
         )
-        self.assertEqual(bus.dropoff_and_pickup_stops(), [hanover, lodge])
+        self.assertEqual(bus.dropoff_and_pickup_stops(), [Hanover(), Lodge()])
 
     def test_dropoff_and_pickup_stops_with_intermediate(self):
         trips_year = self.init_trips_year()
@@ -427,7 +427,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         self.assertEqual(bus.dropoff_and_pickup_stops(),
-                         [hanover, stop2, stop1, lodge])
+                         [Hanover(), stop2, stop1, Lodge()])
 
     def test_trips_are_added_to_stops(self):
         trips_year = self.init_trips_year()
@@ -445,10 +445,12 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             ScheduledTrip, trips_year=trips_year, template__pickup=stop,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
-        stop = bus.dropoff_and_pickup_stops()[1]  # intermediate stop
+        (hanover, stop, lodge) = bus.dropoff_and_pickup_stops()
         #  should set these fields:
+        self.assertEqual(hanover.trips_picked_up, [trip1])
         self.assertEqual(stop.trips_dropped_off, [trip1])
         self.assertEqual(stop.trips_picked_up, [trip2])
+        self.assertEqual(lodge.trips_dropped_off, [trip2])
 
 
 class ExternalBusModelTestCase(TripsYearTestCase):

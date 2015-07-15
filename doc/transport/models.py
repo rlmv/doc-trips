@@ -34,7 +34,7 @@ class Stop(DatabaseModel):
     )
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-
+    
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
@@ -161,7 +161,7 @@ class ScheduledTransport(DatabaseModel):
         The properties contain the list of trips which are dropped
         off and picked up at this stop by this bus.
         """
-        from doc.transport.constants import hanover, lodge
+        from doc.transport.constants import Hanover, Lodge
 
         dropoff_dict = defaultdict(list)
         for trip in self.dropping_off():
@@ -175,6 +175,12 @@ class ScheduledTransport(DatabaseModel):
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]
             stop.trips_picked_up = pickup_dict[stop]
+
+        # all buses go from Hanover to the Lodge
+        hanover = Hanover()
+        hanover.trips_picked_up = list(self.dropping_off())
+        lodge = Lodge()
+        lodge.trips_dropped_off = list(self.picking_up())
 
         stops = sorted(stops, key=lambda x: x.distance)
         return [hanover] + list(stops) + [lodge]

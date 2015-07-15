@@ -12,9 +12,7 @@ from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus
 )
-from doc.transport.constants import hanover, lodge
-
-from doc.transport.maps import get_directions, MapError
+from doc.transport.maps import MapError
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
