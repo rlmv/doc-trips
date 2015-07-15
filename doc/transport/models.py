@@ -1,3 +1,4 @@
+from collections import defaultdict
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -153,13 +154,28 @@ class ScheduledTransport(DatabaseModel):
         and picks them up. The first stop is Hanover, the last
         is the Lodge. Intermediate stops are ordered by their
         distance from Hanover.
+
+        Each stop has a trips_dropped_off and trips_picked_up
+        property added to it (TODO: change these names; they 
+        conflict with the triptemplate related_names.)
+        The properties contain the list of trips which are dropped
+        off and picked up at this stop by this bus.
         """
         from doc.transport.constants import hanover, lodge
 
-        stops = set(
-            list(map(lambda x: x.template.dropoff, self.dropping_off())) +
-            list(map(lambda x: x.template.pickup, self.picking_up()))
-        )
+        dropoff_dict = defaultdict(list)
+        for trip in self.dropping_off():
+            dropoff_dict[trip.template.dropoff] += [trip]
+
+        pickup_dict = defaultdict(list)
+        for trip in self.picking_up():
+            pickup_dict[trip.template.pickup] += [trip]
+            
+        stops = set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
+        for stop in stops:
+            stop.trips_dropped_off = dropoff_dict[stop]
+            stop.trips_picked_up = pickup_dict[stop]
+
         stops = sorted(stops, key=lambda x: x.distance)
         return [hanover] + list(stops) + [lodge]
 

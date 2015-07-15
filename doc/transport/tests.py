@@ -429,6 +429,27 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         self.assertEqual(bus.dropoff_and_pickup_stops(),
                          [hanover, stop2, stop1, lodge])
 
+    def test_trips_are_added_to_stops(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL
+        )
+        stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+
+        trip1 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        trip2 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__pickup=stop,
+            section__leaders_arrive=bus.date - timedelta(days=4)
+        )
+        stop = bus.dropoff_and_pickup_stops()[1]  # intermediate stop
+        #  should set these fields:
+        self.assertEqual(stop.trips_dropped_off, [trip1])
+        self.assertEqual(stop.trips_picked_up, [trip2])
+
 
 class ExternalBusModelTestCase(TripsYearTestCase):
 

@@ -1,3 +1,5 @@
+{% load links %}
+
 <ul class="list-group">
   {% for leg in directions.legs %}
   <li class="list-group-item">
@@ -10,7 +12,16 @@
   </li>
   {% endfor %}
   <li class="list-group-item">
-    <h4 class="list-group-item-heading"> Arrive at {{ leg.end_stop }} </h4> {{ leg.end_stop.directions }} 
+    <h4 class="list-group-item-heading"> Arrive at {{ leg.end_stop }} </h4> 
+    <p> {{ leg.end_stop.directions }} </p>
+
+    {% if leg.end_stop.trips_dropped_off %}
+    <p class="h5"> Dropoff {{ leg.end_stop.trips_dropped_off|detail_link }} </p>
+    {% endif %}
+    
+    {% if leg.end_stop.trips_picked_up %}
+    <p class="h5"> Pickup {{ leg.end_stop.trips_picked_up|detail_link }} </p>
+    {% endif %}
   </li>
 
   {% endfor %}

@@ -1,6 +1,7 @@
 import json
 
 import googlemaps
+from googlemaps.exceptions import TransportError, ApiError
 from django.conf import settings 
 
 """
@@ -39,10 +40,10 @@ def get_directions(stops):
             raise MapError('Expecting one route')
         if resp[0]['waypoint_order'] != list(range(len(waypoints))):
             raise MapError('Waypoints out of order')
-        
+
         return _integrate_stops(resp[0], stops)
 
-    except googlemaps.exceptions.TransportError as exc:
+    except (TransportError, ApiError) as exc:
         raise MapError(exc)
 
 

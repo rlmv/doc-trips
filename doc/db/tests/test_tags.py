@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import MagicMock
 
 from django.template import Context, Template
 from model_mommy import mommy
@@ -6,6 +7,7 @@ from model_mommy import mommy
 from doc.test.testcases import TripsTestCase
 from doc.trips.models import Section
 from doc.db.templatetags.links import pass_null
+from doc.db.urlhelpers import reverse_detail_url
 
 class NullPassThroughDecorator(unittest.TestCase):
 
@@ -31,10 +33,7 @@ class LinkTagTestCase(TripsTestCase):
             'obj': obj
         }))
 
-
     def test_detail_link_null_input(self):
-        trips_year = self.init_trips_year()
-        # for example
         out = Template(
             "{% load links %}"
             "{{ obj|detail_link|default:'*' }}"
@@ -42,6 +41,32 @@ class LinkTagTestCase(TripsTestCase):
             'obj': None
         }))
         self.assertEqual(out, '*')
+
+    def test_detail_link_with_unary_iterable(self):
+        trips_year = self.init_trips_year()
+        # for example
+        obj = mommy.make(Section, trips_year=trips_year)
+        out = Template(
+            "{% load links %}"
+            "{{ obj_list|detail_link }}"
+        ).render(Context({
+            'obj_list': [obj]
+        }))
+        target = '<a href="%s">%s</a>' % (reverse_detail_url(obj), str(obj))
+        self.assertEqual(out, target)
         
-            
-        
+    def test_detail_link_with_iterable(self):
+        trips_year = self.init_trips_year()
+        obj1 = mommy.make(Section, trips_year=trips_year)
+        obj2 = mommy.make(Section, trips_year=trips_year)
+        out = Template(
+            "{% load links %}"
+            "{{ obj_list|detail_link }}"
+        ).render(Context({
+            'obj_list': [obj1, obj2]
+        }))
+        target = '<a href="{}">{}</a>, <a href="{}">{}</a>'.format(
+            reverse_detail_url(obj1), str(obj1),
+            reverse_detail_url(obj2), str(obj2)
+        )
+        self.assertEqual(out, target)

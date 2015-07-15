@@ -58,13 +58,50 @@ def create_url(model, trips_year_str):
     trips_year = TripsYear.objects.get(pk=trips_year_str)
 
     return reverse_create_url(model, trips_year)
-    
+   
 
 @register.filter
 @pass_null
-def detail_link(db_object, text=None):
-    """ Html link to detailed view for object. """
-    if text is None:
-        text = str(db_object)
-    return _make_link(reverse_detail_url(db_object), text)
+def detail_link(db_obj, text=None):
+    """
+    Html link to detailed view for object.
+    """
+    def to_str(obj):
+        if text is None:
+            return str(obj)
+        return text
 
+    to_link = lambda obj: _make_link(reverse_detail_url(obj), to_str(obj))
+    return mark_safe(', '.join(map(to_link, as_list(db_obj))))
+
+
+# Lifted from googlemaps.convert
+
+def as_list(arg):
+    """
+    Coerces arg into a list. If arg is already list-like, returns arg.
+    Otherwise, returns a one-element list containing arg.
+    """
+    if _is_list(arg):
+        return arg
+    return [arg]
+
+
+def _is_list(arg):
+    """
+    Checks if arg is list-like. This excludes strings and dicts.
+    """
+    if isinstance(arg, dict):
+        return False
+    if isinstance(arg, str): # Python 3-only, as str has __iter__
+        return False
+    return (not _has_method(arg, "strip")
+            and _has_method(arg, "__getitem__")
+            or _has_method(arg, "__iter__"))
+
+
+def _has_method(arg, method):
+    """
+    Returns true if the given object has a method with the given name.
+    """
+    return hasattr(arg, method) and callable(getattr(arg, method))
