@@ -32,8 +32,7 @@ class Stop(DatabaseModel):
             "take you to the location in Google maps."
         )
     )
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
+    lat_lng = models.CharField(max_length=255, blank=True, default='')
     
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
