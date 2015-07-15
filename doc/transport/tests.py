@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 import unittest
 
 from django.core.exceptions import ValidationError
@@ -10,8 +10,9 @@ from model_mommy import mommy
 
 from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
+from doc.transport.constants import hanover, lodge
 from doc.transport.views import (
-    get_internal_route_matrix, get_internal_rider_matrix, Riders, 
+    get_internal_route_matrix, get_internal_rider_matrix, Riders,
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
     get_actual_rider_matrix, TransportChecklist
 )
@@ -396,10 +397,41 @@ class InternalTransportModelTestCase(TripsYearTestCase):
                 route=transport.route,
                 date=transport.date
             )
-        
-    
+
+    def test_dropoff_and_pickup_stops_with_no_intermediate(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL
+        )
+        self.assertEqual(bus.dropoff_and_pickup_stops(), [hanover, lodge])
+
+    def test_dropoff_and_pickup_stops_with_intermediate(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL
+        )
+        stop1 = mommy.make(
+            Stop, trips_year=trips_year, route=bus.route, distance=100
+        )
+        trip1 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__dropoff=stop1,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        stop2 = mommy.make(
+            Stop, trips_year=trips_year, route=bus.route, distance=1
+        )
+        trip2 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__pickup=stop2,
+            section__leaders_arrive=bus.date - timedelta(days=4)
+        )
+        self.assertEqual(bus.dropoff_and_pickup_stops(),
+                         [hanover, stop2, stop1, lodge])
+
+
 class ExternalBusModelTestCase(TripsYearTestCase):
-    
+
     def test_EXTERNAL_validation(self):
         trips_year = self.init_trips_year()
         transport = mommy.make(

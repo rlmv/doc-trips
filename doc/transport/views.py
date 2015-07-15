@@ -1,5 +1,5 @@
-from collections import namedtuple
 from datetime import datetime
+from pprint import pprint
 
 from vanilla.views import TemplateView
 from django.core.urlresolvers import reverse
@@ -10,8 +10,11 @@ from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDetailView, TripsYearMixin)
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.transport.models import (
-    Stop, Route, Vehicle, ScheduledTransport, ExternalBus)
-from doc.transport.maps import get_hanover, get_lodge, get_directions, MapError
+    Stop, Route, Vehicle, ScheduledTransport, ExternalBus
+)
+from doc.transport.constants import hanover, lodge
+
+from doc.transport.maps import get_directions, MapError
 from doc.trips.models import Section, ScheduledTrip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
@@ -311,7 +314,9 @@ class TransportChecklist(DatabaseReadPermissionRequired,
     template_name = 'transport/transport_checklist.html'
 
     def get_date(self):
-        """ Convert from ISO date format """
+        """ 
+        Convert from ISO date format
+        """
         return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
 
     def get_route(self):
@@ -327,33 +332,27 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['pickups'] = ScheduledTrip.objects.pickups(*args)
         context['returns'] = ScheduledTrip.objects.returns(*args)
 
-        context['scheduled'] = ScheduledTransport.objects.filter(
-            trips_year=self.get_trips_year(), date=self.get_date(),
+        context['scheduled'] = bus = ScheduledTransport.objects.filter(
+            trips_year=self.get_trips_year(),
+            date=self.get_date(),
             route=self.get_route()
-        )
-        # Hanover -> dropoffs & pickups -> Lodge -> Hanover
-        stops = set(
-            list(map(lambda x: x.template.dropoff, context['dropoffs'])) +
-            list(map(lambda x: x.template.pickup, context['pickups']))
-        )
-        stops = sorted(stops, key=lambda x: x.distance)
-        context['stops'] = stops
+        ).first()
 
-        context['waypoints'] = '|'.join(map(lambda x: x.address, stops))
-        context['origin'] = get_hanover().address
-        context['destination'] = get_lodge().address
-        context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
+        if bus:
+            stops = bus.dropoff_and_pickup_stops()
+            context['waypoints'] = '|'.join(map(lambda x: x.address, stops[1:-1]))
+            context['origin'] = stops[0].address
+            context['destination'] = stops[-1].address
+            context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
 
-        stops = [get_hanover()] + list(stops) + [get_lodge()]
-        # add context to the stops (dropoffs, pickups) to display
-        try:
-            resp = get_directions(stops)
-            from pprint import pprint
-            pprint(resp)
-            context['directions'] = resp
-        except MapError as exc:
-            context['error'] = exc
-        
+            # add context to the stops (dropoffs, pickups) to display
+            try:
+                resp = bus.directions()
+                pprint(resp)
+                context['directions'] = resp
+            except MapError as exc:
+                context['error'] = exc
+           
         return context
 
 

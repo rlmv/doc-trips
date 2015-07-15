@@ -3,8 +3,6 @@ import json
 import googlemaps
 from django.conf import settings 
 
-from doc.transport.models import Stop
-
 """
 Interface with the Google maps API
 """
@@ -13,12 +11,6 @@ TIMEOUT = 10  # -> settings
 
 class MapError(Exception):
     pass
-
-def get_hanover():
-    return Stop(name='Hanover, NH', address='Hanover, NH')
-
-def get_lodge():
-    return Stop(name='The Moosilauke Ravine Lodge', address='43.977253,-71.8154831')
 
 
 def get_directions(stops):

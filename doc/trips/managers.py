@@ -119,7 +119,7 @@ class ScheduledTripManager(models.Manager):
         )
 
     def pickups(self, route, date, trips_year):
-        """ 
+        """
         All trips which are picked up on route and taken to the lodge on date.
         """
         return (
@@ -128,9 +128,9 @@ class ScheduledTripManager(models.Manager):
             .filter(Q(pickup_route=route) |
                     Q(pickup_route=None, template__pickup__route=route))
         )
-        
+       
     def returns(self, route, date, trips_year):
-        """ 
+        """
         All trips which return to campus via route on date.
         """
         return (

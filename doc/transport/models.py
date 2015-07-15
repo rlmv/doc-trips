@@ -8,6 +8,7 @@ from doc.transport.managers import (
     StopManager, RouteManager, ScheduledTransportManager,
     ExternalBusManager, ExternalPassengerManager
 )
+from doc.transport.maps import get_directions
 
 
 class Stop(DatabaseModel):
@@ -118,13 +119,64 @@ class ScheduledTransport(DatabaseModel):
         if self.route.category == Route.EXTERNAL:
             raise ValidationError("route must be internal")
 
+    # TODO: move the main implementation of the trip methods to here?
+    # We could just instantiate a transport object without saving and
+    # call the methods on it.
+
+    def dropping_off(self):
+        """
+        All trips which this transport drops off (on the trip's day 2)
+        """
+        from doc.trips.models import ScheduledTrip
+        return ScheduledTrip.objects.dropoffs(self.route, self.date,
+                                              self.trips_year)
+
+    def picking_up(self):
+        """
+        All trips which this transport picks up (on trip's day 4)
+        """
+        from doc.trips.models import ScheduledTrip
+        return ScheduledTrip.objects.pickups(self.route, self.date,
+                                             self.trips_year)
+
+    def returning(self):
+        """
+        All trips which this transport returns to Hanover (on day 5)
+        """
+        from doc.trips.models import ScheduledTrip
+        return ScheduledTrip.objects.returns(self.route, self.date,
+                                             self.trips_year)
+
+    def dropoff_and_pickup_stops(self):
+        """
+        All stops which the bus makes as it drops trips off
+        and picks them up. The first stop is Hanover, the last
+        is the Lodge. Intermediate stops are ordered by their
+        distance from Hanover.
+        """
+        from doc.transport.constants import hanover, lodge
+
+        stops = set(
+            list(map(lambda x: x.template.dropoff, self.dropping_off())) +
+            list(map(lambda x: x.template.pickup, self.picking_up()))
+        )
+        stops = sorted(stops, key=lambda x: x.distance)
+        return [hanover] + list(stops) + [lodge]
+
+    def directions(self):
+        """
+        Directions from Hanover to the Lodge, with information
+        about where to dropoff and pick up each trip.
+        """
+        return get_directions(self.dropoff_and_pickup_stops())
+
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))
 
 
 class ExternalBus(DatabaseModel):
     """
-    Bus used to transport local-section students to and 
+    Bus used to transport local-section students to and
     from campus.
     """
     objects = ExternalBusManager()
