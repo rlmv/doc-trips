@@ -237,9 +237,10 @@ class StopCreateView(DatabaseCreateView):
 class StopDetailView(DatabaseDetailView):
     model = Stop
     fields = [
-        'name', 'address', 'route', 'directions',
+        'name', 'address', 'lat_lng',
+        'route', 'directions',
         'picked_up_trips', 'dropped_off_trips',
-        'latitude', 'longitude', 'cost',
+        'cost',
         'pickup_time', 'dropoff_time', 'distance',
     ]
 
