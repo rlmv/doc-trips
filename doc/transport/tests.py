@@ -11,6 +11,7 @@ from model_mommy import mommy
 from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
 from doc.transport.constants import Hanover, Lodge
+from doc.transport.maps import _split_stops
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders,
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
@@ -502,6 +503,12 @@ class ExternalBusModelTestCase(TripsYearTestCase):
                 section=transport.section
             )
                 
-        
 
+class MapsTestCases(TripsYearTestCase):
 
+    def test_split_stops_handling(self):
+        trips_year = self.init_trips_year()
+        orig, waypoints, dest = _split_stops([Hanover(), Lodge()])
+        self.assertEqual(orig, Hanover().location)
+        self.assertEqual(waypoints, [])
+        self.assertEqual(dest, Lodge().location)

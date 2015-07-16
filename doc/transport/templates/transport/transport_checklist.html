@@ -42,13 +42,21 @@
 </div>
 
 <div class="col-sm-6">
+{% if scheduled %}
 {% embed_map stops %}
+{% endif %}
 </div>
 
 </div>
 
-<p> {{ error }} </p>
+{% if not scheduled %}
+<p class="h4"> Directions are only shown for scheduled buses. </p>
+{% endif %}
+
+{% if error %}
+<p class="h4"> Maps Error: {{ error }} </p>
+{% endif %}
+
 {% include "transport/maps/directions.html" %}
-
 
 {% endblock %}

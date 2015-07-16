@@ -348,9 +348,7 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         if bus:
             context['stops'] = bus.dropoff_and_pickup_stops()
             try:
-                resp = bus.directions()
-                pprint(resp)
-                context['directions'] = resp
+                context['directions'] = bus.directions()
             except MapError as exc:
                 context['error'] = exc
            
