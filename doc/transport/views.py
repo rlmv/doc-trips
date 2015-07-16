@@ -103,10 +103,18 @@ def _rider_matrix(trips_year, size_key):
 
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
-    trips = (ScheduledTrip.objects.filter(trips_year=trips_year)
-             .select_related('template', 'section', 'template__dropoff__route',
-                             'template__pickup__route', 'template__return_route'))
-      
+    trips = (
+        ScheduledTrip.objects.filter(trips_year=trips_year)
+        .select_related(
+            'template', 'section',
+            'pickup_route',
+            'dropoff_route',
+            'return_route',
+            'template__dropoff__route',
+            'template__pickup__route',
+            'template__return_route'
+        )
+    )
     matrix = OrderedMatrix(routes, dates, lambda: Riders(0, 0, 0))
 
     for trip in trips:
@@ -147,7 +155,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
 
 class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
-    template_name = 'transport/transport_list.html'
+    template_name = 'transport/internal_matrix.html'
 
     def get_context_data(self, **kwargs):
         context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
