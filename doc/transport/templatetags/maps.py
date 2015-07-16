@@ -14,6 +14,7 @@ def embed_map(stops):
     waypoints on the route.
     """
     orig, waypoints, dest = _split_stops(stops)
+
     return loader.get_template(
         'transport/maps/embed.html'
     ).render(Context({

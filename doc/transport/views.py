@@ -166,19 +166,13 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context['issues'] = get_internal_issues_matrix(matrix, riders)
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
-        return context
 
-
-class TransportCounts(DatabaseReadPermissionRequired,
-                      TripsYearMixin, TemplateView):
-    template_name = 'transport/transport_counts.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(TransportCounts, self).get_context_data(**kwargs)
-        m = get_actual_rider_matrix(self.kwargs['trips_year'])
+        # transport count info
+        m = get_actual_rider_matrix(trips_year)
         context['dropoff_matrix'] = m.map(lambda x: x.dropping_off).truncate()
         context['pickup_matrix'] = m.map(lambda x: x.picking_up).truncate()
         context['return_matrix'] = m.map(lambda x: x.returning).truncate()
+
         return context
 
 

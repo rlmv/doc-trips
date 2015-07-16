@@ -20,7 +20,7 @@ from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
 
 from doc.trips.views import TrippeeLeaderCounts
 from doc.transport.views import (
-    TransportCounts, TransportChecklist, ExternalBusChecklist
+    TransportChecklist, ExternalBusChecklist
 )
 
 """
@@ -48,7 +48,6 @@ database_urlpatterns = [
     url(r'^emails/', include('doc.emails.urls', namespace='emails')),
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
     url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),
-    url(r'^counts/transport/', TransportCounts.as_view(), name='transport_counts'),
     url(r'^checklists/transport/(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         TransportChecklist.as_view(), name='transport_checklist'),
     url(r'^checklists/external/(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',

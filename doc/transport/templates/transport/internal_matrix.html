@@ -3,11 +3,15 @@
 {% load links %}
 
 {% block header %}
-<h2> Scheduled Transportation </h2>
+<h2> Internal Buses </h2>
 {% endblock %}
 
 {% block content %}
-<p> Each entry in the matrix represents a Scheduled Transport. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p> 
+<div class="alert alert-info">
+  <a href="#numbers"><i class="fa fa-toggle-down"></i> Scroll down</a> for actual transport numbers.
+</div>
+
+<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p> 
 <p> Mouseover a block in the matrix to see the number of riders <em>if all trips are maxed out</em>. The matrix will warn you if transportation is not scheduled for a trip. The matrix will also warn you if the trips riding on a bus exceed the capacity of a bus (based on the max trippees of the trip). </p>
 
 <table class="table table-condensed table-bordered">
@@ -31,6 +35,12 @@
   </tr>
   {% endfor %}
 </table>
+
+<div class="page-header">
+  <h2 id="numbers"> Internal Bus Numbers </h2>
+</div>
+
+{% include "transport/internal_counts.html" %}
 
 {% endblock content %}
 
