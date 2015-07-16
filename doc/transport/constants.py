@@ -7,8 +7,8 @@ from doc.transport.models import Stop
 
 
 class ConstantStop(Stop):
-    def __eq__(x, y):
-        return (x.name == y.name and x.address == y.address)
+    def __eq__(self, other):
+        return (self.name == other.name and self.location == other.location)
 
 def Hanover():
     return ConstantStop(
