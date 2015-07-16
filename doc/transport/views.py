@@ -338,13 +338,7 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         ).first()
 
         if bus:
-            stops = bus.dropoff_and_pickup_stops()
-            context['waypoints'] = '|'.join(map(lambda x: x.location, stops[1:-1]))
-            context['origin'] = stops[0].location
-            context['destination'] = stops[-1].location
-            context['key'] = settings.GOOGLE_MAPS_BROWSER_KEY
-
-            # add context to the stops (dropoffs, pickups) to display
+            context['stops'] = bus.dropoff_and_pickup_stops()
             try:
                 resp = bus.directions()
                 pprint(resp)

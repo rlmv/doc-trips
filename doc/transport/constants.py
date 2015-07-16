@@ -12,7 +12,7 @@ class ConstantStop(Stop):
 
 def Hanover():
     return ConstantStop(
-        name='Hanover, NH', address='Hanover, NH'
+        name='Hanover, NH', address='6 N Main St, Hanover, NH 03755'
     )
 
 def Lodge():

@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load maps %}
 
 {% block header %}
 <h2> {{ route|detail_link }} <small>{{ date|date:"n/j" }}</small> </h2>
@@ -41,14 +42,7 @@
 </div>
 
 <div class="col-sm-6">
-<div class="map-embed">
-<iframe
-  width="450"
-  height="250"
-  frameborder="0" style="border:0"
-  src="https://www.google.com/maps/embed/v1/directions?key={{ key }}&origin={{ origin }}&destination={{ destination }}&waypoints={{ waypoints }}">
-</iframe>
-</div>
+{% embed_map stops %}
 </div>
 
 </div>

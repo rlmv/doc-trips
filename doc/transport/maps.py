@@ -14,13 +14,19 @@ class MapError(Exception):
     pass
 
 
+def _split_stops(stops):
+    """ 
+    Given an ordered route of stops, return a tuple
+    (origin, waypoints, destion) of address or geo
+    coordinates.
+    """
+    addrs = list(map(lambda x: x.location, stops))
+    return (addrs[0], addrs[1:-1], addrs[-1])
+
+
 def get_directions(stops):
 
-    addrs = list(map(lambda x: x.location, stops))
-
-    orig = addrs[0]
-    dest = addrs[-1]
-    waypoints = addrs[1:-1]
+    orig, waypoints, dest = _split_stops(stops)
     
     if len(waypoints) > 8:
         # TODO: recurse
