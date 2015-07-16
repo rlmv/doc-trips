@@ -189,7 +189,7 @@ class ScheduledTransport(DatabaseModel):
         pickup_dict = defaultdict(list)
         for trip in self.picking_up():
             pickup_dict[trip.template.pickup] += [trip]
-            
+           
         stops = set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]
@@ -198,11 +198,29 @@ class ScheduledTransport(DatabaseModel):
         # all buses go from Hanover to the Lodge
         hanover = Hanover()
         hanover.trips_picked_up = list(self.dropping_off())
+        hanover.trips_dropped_off = []
         lodge = Lodge()
         lodge.trips_dropped_off = list(self.picking_up())
+        lodge.trips_picked_up = []
 
         stops = sorted(stops, key=lambda x: x.distance)
         return [hanover] + list(stops) + [lodge]
+
+    def over_capacity(self):
+        """
+        Returns True if the bus will be too full at
+        some point on it's route.
+        """
+        stops = self.dropoff_and_pickup_stops()
+        load = 0
+        for stop in stops:
+            for trip in stop.trips_picked_up:
+                load += trip.size()
+            for trip in stop.trips_dropped_off:
+                load -= trip.size()
+            if load > self.route.vehicle.capacity:
+                return True
+        return False
 
     def directions(self):
         """

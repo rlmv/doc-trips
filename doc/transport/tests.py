@@ -649,10 +649,71 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         (hanover, stop, lodge) = bus.dropoff_and_pickup_stops()
         #  should set these fields:
+        self.assertEqual(hanover.trips_dropped_off, [])
         self.assertEqual(hanover.trips_picked_up, [trip1])
         self.assertEqual(stop.trips_dropped_off, [trip1])
         self.assertEqual(stop.trips_picked_up, [trip2])
         self.assertEqual(lodge.trips_dropped_off, [trip2])
+        self.assertEqual(lodge.trips_picked_up, [])
+
+    def test_capacity_still_has_space(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL,
+            route__vehicle__capacity=2
+        )
+        stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertFalse(bus.over_capacity())
+
+    def test_capacity_check(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL,
+            route__vehicle__capacity=1
+        )
+        stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+        trip = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
+        self.assertTrue(bus.over_capacity())
+
+    def test_capacity_check(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route__category=Route.INTERNAL,
+            route__vehicle__capacity=2
+        )
+        stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=1)
+        stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=2)
+        trip1 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__dropoff=stop2,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        trip2 = mommy.make(
+            ScheduledTrip, trips_year=trips_year, template__pickup=stop1,
+            section__leaders_arrive=bus.date - timedelta(days=4)
+        )
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip1)
+        mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip2)
+
+        # Route looks like this:
+        # Hanover - pickup trip1
+        # stop1 - pickup trip2
+        # stop2 - dropoff trip1
+        # Lodge - dropoff trip2
+        # ...which, since both trips have 2 people, is over capacity.
+
+        self.assertTrue(bus.over_capacity())
 
 
 class ExternalBusModelTestCase(TripsYearTestCase):

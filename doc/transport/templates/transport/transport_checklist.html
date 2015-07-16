@@ -10,6 +10,12 @@
 
 {% include "transport/_scheduled_alert.html" %}
 
+{% if over_capacity %}
+<div class="alert alert-danger">
+  <i class="fa fa-warning"></i> This bus is over capacity! At some point there are too many passengers on the bus.
+</div>
+{% endif %}
+
 <div class="row">
 <div class="col-sm-6">
 {% if dropoffs %}
