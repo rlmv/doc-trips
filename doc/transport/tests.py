@@ -115,29 +115,60 @@ class TestViews(WebTestCase):
 class ScheduledTransportMatrixTestCase(TripsYearTestCase):
 
     def test_internal_matrix(self):
-        ty = self.init_current_trips_year()
-        route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
-        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
-        transport = mommy.make(ScheduledTransport, trips_year=ty,
-                               route=route, date=date(2015, 1, 2))
-
-        target = {route: {date(2015,1,2): transport, date(2015,1,3): None, date(2015, 1,4): None, date(2015,1,5): None, date(2015,1,6):None}}
-        matrix = get_internal_route_matrix(ty)
+        trips_year = self.init_trips_year()
+        route = mommy.make(
+            Route, trips_year=trips_year, category=Route.INTERNAL
+        )
+        section = mommy.make(
+            Section, trips_year=trips_year, 
+            leaders_arrive=date(2015, 1, 1)
+        )
+        transport = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route=route, date=date(2015, 1, 2)
+        )
+        target = {
+            route: {
+                date(2015,1,2): transport, 
+                date(2015,1,3): None, 
+                date(2015,1,4): None, 
+                date(2015,1,5): None, 
+                date(2015,1,6): None,
+            }
+        }
+        matrix = get_internal_route_matrix(trips_year)
         self.assertEqual(target, matrix)
 
     def test_internal_matrix_again(self):
-        ty = self.init_current_trips_year()
-        route1 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
-        route2 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
-        mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
-        mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 2))
-        transport1 = mommy.make(ScheduledTransport, trips_year=ty,
-                               route=route1, date=date(2015, 1, 2))
-        transport2 = mommy.make(ScheduledTransport, trips_year=ty,
-                                route=route2, date=date(2015, 1, 4))
-        target = {route1: {date(2015,1,2): transport1, date(2015,1,3): None, date(2015, 1,4): None, date(2015,1,5): None, date(2015,1,6):None, date(2015,1,7):None},
-                  route2: {date(2015,1,2): None, date(2015,1,3): None, date(2015, 1,4): transport2, date(2015,1,5): None, date(2015,1,6):None, date(2015,1,7):None}}
-        matrix = get_internal_route_matrix(ty)
+        trips_year = self.init_current_trips_year()
+        route1 = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
+        route2 = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
+        mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015, 1, 1))
+        mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015, 1, 2))
+        transport1 = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route=route1, date=date(2015, 1, 2))
+        transport2 = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            route=route2, date=date(2015, 1, 4))
+        target = {
+            route1: {
+                date(2015,1,2): transport1, 
+                date(2015,1,3): None,
+                date(2015,1,4): None, 
+                date(2015,1,5): None,
+                date(2015,1,6): None,
+                date(2015,1,7): None
+            }, route2: {
+                date(2015,1,2): None,
+                date(2015,1,3): None,
+                date(2015,1,4): transport2, 
+                date(2015,1,5): None, 
+                date(2015,1,6): None, 
+                date(2015,1,7): None
+            }
+        }
+        matrix = get_internal_route_matrix(trips_year)
         self.assertEqual(target, matrix)
 
 

@@ -15,18 +15,22 @@
 <p> Mouseover a block in the matrix to see the number of riders <em>if all trips are maxed out</em>. The matrix will warn you if transportation is not scheduled for a trip. The matrix will also warn you if the trips riding on a bus exceed the capacity of a bus (based on the max trippees of the trip). </p>
 
 <table class="table table-condensed table-bordered">
+
+  {% for route, dates in matrix.items %}
+
+  {% if forloop.first %}
   <tr>
     <th> Route </th>
     {% for date in dates %}
     <th> {{ date|date:"n/j" }} </th>
     {% endfor %}
   </tr>
+  {% endif %}
 
-  {% for route, transport_by_date in matrix.items %}
   <tr> 
     <td> {{ route|detail_link }} </td>
-    {% for date in dates %}
-    {% with transport=transport_by_date|get:date riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date %}
+    {% for date, transport in dates.items %}
+    {% with riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date %}
     <td> 
       {% include "transport/_transport_detail.html" %}
     </td>

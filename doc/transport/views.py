@@ -25,13 +25,13 @@ EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
 
 def get_internal_route_matrix(trips_year):
 
-    routes = (Route.objects.internal(trips_year)
-              .select_related('vehicle'))
+    routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
-   
-    matrix = {route: {date: None for date in dates} for route in routes}
-    scheduled = (ScheduledTransport.objects.internal(trips_year)
-                 .select_related('route'))
+    matrix = OrderedMatrix(routes, dates)
+    scheduled = (
+        ScheduledTransport.objects.internal(trips_year)
+        .select_related('route')
+    )
     for transport in scheduled:
         matrix[transport.route][transport.date] = transport
 
@@ -39,9 +39,9 @@ def get_internal_route_matrix(trips_year):
 
 
 class Riders:
-    """ 
+    """
     Utility class to represent the number of riders on a route.
-    
+
     Riders objects can be added to each other. An empty Riders object 
     evaluates to False for convenience.
 
@@ -136,9 +136,9 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
 
     assert len(transport_matrix.keys()) == len(riders_matrix.keys())
 
-    dates = transport_matrix[next(iter(transport_matrix))].keys()
-    matrix = {route: {date: None for date in dates} for route in transport_matrix.keys()}
-    for route in matrix.keys():
+    matrix = riders_matrix.map(lambda x: None)  # new matrix w/ null entries
+
+    for route, dates in matrix.items():
         for date in dates:
             transport = transport_matrix[route][date]
             riders = riders_matrix[route][date]
@@ -161,7 +161,6 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
         context['matrix'] = matrix = get_internal_route_matrix(trips_year)
-        context['dates'] = sorted(matrix[next(iter(matrix))].keys())  # dates in matrix
         context['riders'] = riders = get_internal_rider_matrix(trips_year)
         context['issues'] = get_internal_issues_matrix(matrix, riders)
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
