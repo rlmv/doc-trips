@@ -297,6 +297,20 @@ class MedicalInfo(GenericReportView):
         ]
 
 
+class Feelings(GenericReportView):
+
+    file_prefix = 'Feelings'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        )
+
+    header = ['']
+    def get_row(self, reg):
+        return [reg.final_request]
+
+
 class Foodboxes(GenericReportView):
     
     file_prefix = 'Foodboxes'

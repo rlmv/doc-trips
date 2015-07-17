@@ -3,7 +3,7 @@ from django.conf.urls import url
 from doc.reports.views import (
     VolunteerCSV, TripLeaderApplicationsCSV, CrooApplicationsCSV,
     FinancialAidCSV, ExternalBusCSV, Charges, TShirts, Housing,
-    DietaryRestrictions, MedicalInfo, Foodboxes
+    DietaryRestrictions, MedicalInfo, Foodboxes, Feelings
 )
 
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^incoming/housing/$', Housing.as_view(), name="housing"),
     url(r'^registrations/dietary/$', DietaryRestrictions.as_view(), name='dietary'),
     url(r'^registrations/medical/$', MedicalInfo.as_view(), name="medical"),
+    url(r'^registrations/feelings/$', Feelings.as_view(), name="feelings"),
     url(r'^tshirts/$', TShirts.as_view(), name='tshirts'),
     url(r'^foodboxes/$', Foodboxes.as_view(), name='foodboxes'),
 ]
