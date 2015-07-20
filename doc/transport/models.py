@@ -11,6 +11,7 @@ from doc.transport.managers import (
 )
 from doc.transport.maps import get_directions
 from doc.utils.lat_lng import validate_lat_lng
+from doc.utils.cache import cache_as
 
 
 class Stop(DatabaseModel):
@@ -146,6 +147,7 @@ class ScheduledTransport(DatabaseModel):
     # We could just instantiate a transport object without saving and
     # call the methods on it.
 
+    @cache_as('_dropping_off')
     def dropping_off(self):
         """
         All trips which this transport drops off (on the trip's day 2)
@@ -154,6 +156,7 @@ class ScheduledTransport(DatabaseModel):
         return ScheduledTrip.objects.dropoffs(self.route, self.date,
                                               self.trips_year)
 
+    @cache_as('_picking_up')
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
@@ -162,6 +165,7 @@ class ScheduledTransport(DatabaseModel):
         return ScheduledTrip.objects.pickups(self.route, self.date,
                                              self.trips_year)
 
+    @cache_as('_returning')
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
@@ -170,6 +174,7 @@ class ScheduledTransport(DatabaseModel):
         return ScheduledTrip.objects.returns(self.route, self.date,
                                              self.trips_year)
 
+    @cache_as('_all_stops')
     def dropoff_and_pickup_stops(self):
         """
         All stops which the bus makes as it drops trips off
@@ -192,7 +197,7 @@ class ScheduledTransport(DatabaseModel):
         pickup_dict = defaultdict(list)
         for trip in self.picking_up():
             pickup_dict[trip.template.pickup] += [trip]
-           
+
         stops = set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]

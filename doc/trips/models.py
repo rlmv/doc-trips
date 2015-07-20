@@ -12,6 +12,7 @@ from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
 from doc.trips.managers import (SectionDatesManager, SectionManager,
                                 ScheduledTripManager)
+from doc.utils.cache import cache_as
 """
 TODO: use these in place of magic numbers?
 INTVL_LEADERS = timedelta(days=0)
@@ -83,15 +84,14 @@ class ScheduledTrip(DatabaseModel):
             return self.return_route
         return self.template.return_route
 
+    @cache_as('_size')
     def size(self):
-        """ 
+        """
         Return the number trippees + leaders on this trip 
 
         HACK: is it safe to cache like this?
         """
-        if not hasattr(self, '_size'):
-            self._size = self.leaders.count() + self.trippees.count()
-        return self._size
+        return self.leaders.count() + self.trippees.count()
 
     @property 
     def dropoff_date(self):

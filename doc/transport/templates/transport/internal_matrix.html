@@ -32,6 +32,7 @@
     {% for date, transport in dates.items %}
     {% with riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date %}
     <td> 
+      {{ transport.over_capacity }}
       {% include "transport/_transport_detail.html" %}
     </td>
     {% endwith %}
