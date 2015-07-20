@@ -223,6 +223,39 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         }]
         self.assertEqual(rows, target)
 
+    def test_volunteer_dietary_restrictions(self):
+        trips_year = self.init_trips_year()
+
+        leader = mommy.make(
+            GeneralApplication, trips_year=trips_year,
+            status=GeneralApplication.LEADER
+        )
+        croo = mommy.make(
+            GeneralApplication, trips_year=trips_year,
+            status=GeneralApplication.CROO
+        )
+        neither = mommy.make(
+            GeneralApplication, trips_year=trips_year,
+            status=GeneralApplication.PENDING
+        )
+        url = reverse('db:reports:volunteer_dietary', kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+        rows = list(save_and_open_csv(resp))
+        target = [{
+            'name': croo.applicant.name,
+            'netid': croo.applicant.netid,
+            'role': GeneralApplication.CROO,
+            'dietary restrictions': croo.dietary_restrictions,
+            'allergen information': croo.allergen_information,
+        }, {
+            'name': leader.applicant.name,
+            'netid': leader.applicant.netid,
+            'role': GeneralApplication.LEADER,
+            'dietary restrictions': leader.dietary_restrictions,
+            'allergen information': leader.allergen_information,
+        }]
+        self.assertEqual(rows, target)
+
     def test_foodboxes(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(

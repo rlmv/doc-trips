@@ -5,7 +5,7 @@ from braces.views import AllVerbsMixin
 from vanilla import View, TemplateView
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
-from django.db.models import Avg
+from django.db.models import Avg, Q
 
 from doc.db.views import TripsYearMixin
 from doc.applications.models import GeneralApplication as Application 
@@ -294,6 +294,33 @@ class MedicalInfo(GenericReportView):
             reg.allergy_severity,
             reg.epipen,
             reg.needs,
+        ]
+
+class VolunteerDietaryRestrictions(GenericReportView):
+    
+    file_prefix = 'Volunteer-Dietary-Restrictions'
+
+    def get_queryset(self):
+        return Application.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        ).filter(
+            Q(status=Application.LEADER) | Q(status=Application.CROO)
+        ).order_by(
+            'status'
+        )
+
+    header = [
+        'name', 'netid', 'role',
+        'dietary restrictions',
+        'allergen information'
+    ]
+    def get_row(self, app):
+        return [
+            app.applicant.name,
+            app.applicant.netid,
+            app.status,
+            app.dietary_restrictions,
+            app.allergen_information
         ]
 
 
