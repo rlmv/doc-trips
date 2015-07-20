@@ -671,7 +671,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
         self.assertFalse(bus.over_capacity())
 
-    def test_capacity_check(self):
+    def test_capacity_over(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(
             ScheduledTransport, trips_year=trips_year,
@@ -686,7 +686,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
         self.assertTrue(bus.over_capacity())
 
-    def test_capacity_check(self):
+    def test_capacity_complex(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(
             ScheduledTransport, trips_year=trips_year,
