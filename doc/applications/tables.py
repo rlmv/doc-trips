@@ -7,14 +7,18 @@ from doc.utils.templatetags.icons import ok_if_true
 
 
 def tooltip_wrap(target, tooltip):
-    """ Wrap a string with a Bootstrap tooltip """
+    """
+    Wrap a string with a Bootstrap tooltip
+    """
     return mark_safe(
         '<span data-toggle="tooltip" data-placement="top" title="{}"> {} </span>'.format(tooltip, target)
     )
 
 
 class TrainingColumn(tables.Column):
-    """ Column with a tooltip """
+    """
+    Column with a tooltip
+    """
 
     def __init__(self, verbose_name, tooltip, *args, **kwargs):
         self.tooltip = tooltip
@@ -60,9 +64,9 @@ class ApplicationTable(tables.Table):
         verbose_name='CT', tooltip="Croo Training"
     )
     first_aid = tables.Column(
-        verbose_name='med cert', accessor='get_first_aid_cert'
+        verbose_name='med cert',
+        accessor='get_first_aid_cert', orderable=False
     )
-
 
     class Meta:
         attrs = {
@@ -88,10 +92,9 @@ class ApplicationTable(tables.Table):
 
     def render_croo_application(self, value):
         return ok_if_true(value)
-    
+
     def render_first_aid(self, value):
         if len(value) > 6:
             return tooltip_wrap(value[:6], value)
         return value
-
 
