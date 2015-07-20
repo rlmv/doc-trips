@@ -3,7 +3,7 @@
 <ul class="list-group">
   {% for leg in directions.legs %}
   <li class="list-group-item">
-    <h4 class="list-group-item-heading"> From {{ leg.start_stop }}: </h4>
+    <h4 class="list-group-item-heading"> From {{ leg.start_stop.location_str }}: </h4>
     {% if forloop.first and leg.start_stop.trips_picked_up %}
     <p class="h5"> Pickup {{ leg.start_stop.trips_picked_up|detail_link }} </p>
     {% endif %}
@@ -17,7 +17,7 @@
 
   <li class="list-group-item">
     <h4 class="list-group-item-heading"> 
-      Arrive at {{ leg.end_stop }} 
+      Arrive at {{ leg.end_stop.location_str }} 
       {% if leg.end_stop.distance %}
       <small>distance: {{ leg.end_stop.distance }}</small>
       {% endif %}

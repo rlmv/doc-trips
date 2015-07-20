@@ -78,6 +78,9 @@ class Stop(DatabaseModel):
         return reverse('db:stop_detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
+        return self.name
+
+    def location_str(self):
         return "%s (%s)" % (self.name, self.location)
 
 

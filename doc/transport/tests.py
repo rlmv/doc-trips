@@ -59,6 +59,9 @@ class StopModelTestCase(TripsYearTestCase):
         stop = mommy.prepare(Stop, trips_year=trips_year, lat_lng='', address='')
         with self.assertRaises(ValidationError):
             stop.full_clean()
+
+    def test___str__(self):
+        self.assertEqual(str(mommy.prepare(Stop, name='Boston')), 'Boston')
         
 
 class StopManagerTestCase(TripsYearTestCase):
