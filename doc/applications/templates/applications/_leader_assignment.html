@@ -23,21 +23,21 @@
 {{ content.day1_description|safe }}
 
 <h3> Day 2 &mdash; {{ trip.section.at_campsite1 }} </h3>
-<p> {{ trip.template.description_day1|linebreaks }} </p>
+<p> {{ trip.template.desc_day1|linebreaks }} </p>
 <p><strong> Campsite: </strong> {{ trip.template.campsite1 }} </p>
 
 <h3> Day 3 &mdash; {{ trip.section.at_campsite2 }} </h3>
-<p> {{ trip.template.description_day2|linebreaks }} </p>
+<p> {{ trip.template.desc_day2|linebreaks }} </p>
 <p><strong> Campsite: </strong> {{ trip.template.campsite2 }} </p>
 
 <h3> Day 4 &mdash; {{ trip.section.arrive_at_lodge }} </h3>
-<p> {{ trip.template.description_day3|linebreaks }} </p>
+<p> {{ trip.template.desc_day3|linebreaks }} </p>
 
 <h3> Day 5 &mdash; {{ trip.section.return_to_campus }} </h3>
 {{ content.day5_description|safe }}
 
 <h3> Notes </h3>
-<p> {{ trip.template.description_conclusion|linebreaks }} </p>
+<p> {{ trip.template.desc_conc|linebreaks }} </p>
 
 <h3> Packing List </h3>
 <p> {{ trip.template.triptype.packing_list|linebreaks }}

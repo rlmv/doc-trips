@@ -66,12 +66,12 @@ class ScheduledTripDetailView(DatabaseDetailView):
 
     triptemplate_fields = [
         'triptype', 'max_trippees', 'non_swimmers_allowed', 
-        'description_introduction', 
-        'dropoff', 'description_day1', 'campsite1',
-        'description_day2', 'campsite2',
-        'description_day3', 'pickup',
-        'description_conclusion', 
-        'revision_notes']
+        'desc_intro', 
+        'dropoff', 'desc_day1', 'campsite1',
+        'desc_day2', 'campsite2',
+        'desc_day3', 'pickup',
+        'desc_conc', 
+        'revisions']
     
 
 class ScheduledTripCreateView(PopulateMixin, DatabaseCreateView):
@@ -105,9 +105,9 @@ class TripTemplateDetailView(DatabaseDetailView):
     fields = ['name', 'description_summary', 'triptype', 
               'max_trippees', 'non_swimmers_allowed', 'dropoff', 
               'campsite1', 'campsite2', 'pickup', 'return_route',
-              'description_introduction', 'description_day1', 
-              'description_day2', 'description_day3', 
-              'description_conclusion', 'revision_notes']
+              'desc_intro', 'desc_day1',
+              'desc_day2', 'desc_day3',
+              'desc_conc', 'revisions']
 
 
 class TripTemplateUpdateView(DatabaseUpdateView):

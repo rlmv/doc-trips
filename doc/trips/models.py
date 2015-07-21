@@ -285,12 +285,12 @@ class TripTemplate(DatabaseModel):
         'Campsite', related_name='trip_night_2', on_delete=models.PROTECT, 
         verbose_name='campsite 2')
 
-    description_introduction = models.TextField('Introduction', blank=True)
-    description_day1 = models.TextField('Day 1', blank=True)
-    description_day2 = models.TextField('Day 2', blank=True)
-    description_day3 = models.TextField('Day 3', blank=True)
-    description_conclusion = models.TextField('Conclusion', blank=True)
-    revision_notes = models.TextField(blank=True)
+    desc_intro = models.TextField('Introduction', blank=True)
+    desc_day1 = models.TextField('Day 1', blank=True)
+    desc_day2 = models.TextField('Day 2', blank=True)
+    desc_day3 = models.TextField('Day 3', blank=True)
+    desc_conc = models.TextField('Conclusion', blank=True)
+    revisions = models.TextField(blank=True)
 
     class Meta:
         ordering = ['name']
