@@ -25,7 +25,12 @@ def _split_stops(stops):
 
 
 def get_directions(stops):
+    """
+    Do a Google maps directions lookup.
 
+    Returns a maps json response, with a start_stop
+    and end_stop Stop objects added to each leg.
+    """
     orig, waypoints, dest = _split_stops(stops)
     
     if len(waypoints) > 8:

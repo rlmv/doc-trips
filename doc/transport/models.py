@@ -241,8 +241,22 @@ class ScheduledTransport(DatabaseModel):
         """
         Directions from Hanover to the Lodge, with information
         about where to dropoff and pick up each trip.
+
+        TODO: refactor
         """
-        return get_directions(self.dropoff_and_pickup_stops())
+        stops = self.dropoff_and_pickup_stops()
+        load = 0
+        for stop in stops:
+            for trip in stop.trips_picked_up:
+                load += trip.size()
+            for trip in stop.trips_dropped_off:
+                load -= trip.size()
+            if load > self.route.vehicle.capacity:
+                stop.over_capacity = True
+            else:
+                stop.over_capacity = False
+            stop.passenger_count = load
+        return get_directions(stops)
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))

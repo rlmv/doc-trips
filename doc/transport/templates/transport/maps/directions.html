@@ -4,9 +4,17 @@
   {% for leg in directions.legs %}
   <li class="list-group-item">
     <h4 class="list-group-item-heading"> From {{ leg.start_stop.location_str }}: </h4>
+
     {% if forloop.first and leg.start_stop.trips_picked_up %}
     <p class="h5"> Pickup {{ leg.start_stop.trips_picked_up|detail_link }} </p>
     {% endif %}
+
+    {% if leg.start_stop.over_capacity %}
+    <div class="alert alert-danger">
+      <i class="fa fa-warning"></i> Over capacity! There are <strong>{{ leg.start_stop.passenger_count }}</strong> passengers on this leg.
+    </div>
+    {% endif %}
+
   </li>
 
   {% for step in leg.steps %}
@@ -31,6 +39,7 @@
     {% if leg.end_stop.trips_picked_up %}
     <p class="h5"> Pickup {{ leg.end_stop.trips_picked_up|detail_link }} </p>
     {% endif %}
+
   </li>
 
   {% endfor %}
