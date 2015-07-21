@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.trips.views import *
-from doc.trips.views import (LeaderTrippeeIndexView, 
+from doc.trips.views import (LeaderTrippeeIndexView,
                              RemoveAssignedTrip, AssignLeaderToTrip)
 
 """
@@ -11,67 +11,62 @@ database urlpatterns.
 """
 
 trip_urlpatterns = [
-    url(DB_REGEX['LIST'], TripListView.as_view(),
-        name='scheduledtrip_index'),
-    url(DB_REGEX['CREATE'], TripCreateView.as_view(),
-        name='scheduledtrip_create'),
-    url(DB_REGEX['DETAIL'], TripDetailView.as_view(),
-        name='scheduledtrip_detail'),
-    url(DB_REGEX['UPDATE'], TripUpdateView.as_view(),
-        name='scheduledtrip_update'),
-    url(DB_REGEX['DELETE'], TripDeleteView.as_view(),
-        name='scheduledtrip_delete'),
+    url(DB_REGEX['LIST'], TripList.as_view(), name='trip_index'),
+    url(DB_REGEX['CREATE'], TripCreate.as_view(), name='trip_create'),
+    url(DB_REGEX['DETAIL'], TripDetail.as_view(), name='trip_detail'),
+    url(DB_REGEX['UPDATE'], TripUpdate.as_view(), name='trip_update'),
+    url(DB_REGEX['DELETE'], TripDelete.as_view(), name='trip_delete'),
 ]
 
 template_urlpatterns = [
-    url(DB_REGEX['LIST'], TripTemplateListView.as_view(),
+    url(DB_REGEX['LIST'], TripTemplateList.as_view(),
         name='triptemplate_index'),
-    url(DB_REGEX['CREATE'], TripTemplateCreateView.as_view(),
+    url(DB_REGEX['CREATE'], TripTemplateCreate.as_view(),
         name='triptemplate_create'),
-    url(DB_REGEX['DETAIL'], TripTemplateDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], TripTemplateDetail.as_view(),
         name='triptemplate_detail'),
-    url(DB_REGEX['UPDATE'], TripTemplateUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], TripTemplateUpdate.as_view(),
         name='triptemplate_update'),
-    url(DB_REGEX['DELETE'], TripTemplateDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], TripTemplateDelete.as_view(),
         name='triptemplate_delete'),
 ]
 
 triptype_urlpatterns = [
-    url(DB_REGEX['LIST'], TripTypeListView.as_view(),
+    url(DB_REGEX['LIST'], TripTypeList.as_view(),
         name='triptype_index'),   
-    url(DB_REGEX['CREATE'], TripTypeCreateView.as_view(),
+    url(DB_REGEX['CREATE'], TripTypeCreate.as_view(),
         name='triptype_create'),
-    url(DB_REGEX['DETAIL'], TripTypeDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], TripTypeDetail.as_view(),
         name='triptype_detail'),
-    url(DB_REGEX['UPDATE'], TripTypeUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], TripTypeUpdate.as_view(),
         name='triptype_update'),
-    url(DB_REGEX['DELETE'], TripTypeDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], TripTypeDelete.as_view(),
         name='triptype_delete'),
 ]
 
 campsite_urlpatterns = [
-     url(DB_REGEX['LIST'], CampsiteListView.as_view(),
+    url(DB_REGEX['LIST'], CampsiteList.as_view(),
         name='campsite_index'),
-    url(DB_REGEX['CREATE'], CampsiteCreateView.as_view(),
+    url(DB_REGEX['CREATE'], CampsiteCreate.as_view(),
         name='campsite_create'),
-    url(DB_REGEX['DETAIL'], CampsiteDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], CampsiteDetail.as_view(),
         name='campsite_detail'),
-    url(DB_REGEX['UPDATE'], CampsiteUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], CampsiteUpdate.as_view(),
         name='campsite_update'),
-    url(DB_REGEX['DELETE'], CampsiteDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], CampsiteDelete.as_view(),
         name='campsite_delete'),
 ]
 
 section_urlpatterns = [
-    url(DB_REGEX['LIST'], SectionListView.as_view(),
+    url(DB_REGEX['LIST'], SectionList.as_view(),
         name='section_index'),
-    url(DB_REGEX['CREATE'], SectionCreateView.as_view(),
+    url(DB_REGEX['CREATE'], SectionCreate.as_view(),
         name='section_create'),
-    url(DB_REGEX['DETAIL'], SectionDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], SectionDetail.as_view(),
         name='section_detail'),
-    url(DB_REGEX['UPDATE'], SectionUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], SectionUpdate.as_view(),
         name='section_update'),
-    url(DB_REGEX['DELETE'], SectionDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], SectionDelete.as_view(),
         name='section_delete'),
 ]
 

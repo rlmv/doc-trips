@@ -33,17 +33,16 @@ from doc.utils.views import PopulateMixin
 from doc.transport.models import ExternalBus
 
 
-class TripListView(DatabaseReadPermissionRequired,
-                            TripsYearMixin, TemplateView):
+class TripList(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
     template_name = 'trip/trip_index.html'
 
     def get_context_data(self, **kwargs):
-        context = super(TripListView, self).get_context_data(**kwargs)
+        context = super(TripList, self).get_context_data(**kwargs)
         context['matrix'] = Trip.objects.matrix(self.kwargs['trips_year'])
         return context
 
 
-class TripUpdateView(SetHeadlineMixin, DatabaseUpdateView):
+class TripUpdate(SetHeadlineMixin, DatabaseUpdateView):
     model = Trip
     fields = ['dropoff_route', 'pickup_route', 'return_route']
 
@@ -53,7 +52,7 @@ class TripUpdateView(SetHeadlineMixin, DatabaseUpdateView):
         )
 
 
-class TripDetailView(DatabaseDetailView):
+class TripDetail(DatabaseDetailView):
     model = Trip
     template_name = 'trip/trip_detail.html'
 
@@ -74,33 +73,33 @@ class TripDetailView(DatabaseDetailView):
         'revisions']
     
 
-class TripCreateView(PopulateMixin, DatabaseCreateView):
+class TripCreate(PopulateMixin, DatabaseCreateView):
     model = Trip
     fields = ['section', 'template']
         
 
-class TripDeleteView(DatabaseDeleteView):
+class TripDelete(DatabaseDeleteView):
     model = Trip
-    success_url_pattern = 'db:scheduledtrip_index'
+    success_url_pattern = 'db:trip_index'
 
 
-class TripTemplateListView(DatabaseListView):
+class TripTemplateList(DatabaseListView):
     model = TripTemplate
     context_object_name = 'templates' 
     template_name = 'trip/template_index.html'
     
     def get_queryset(self):
-        qs = super(TripTemplateListView, self).get_queryset()
+        qs = super(TripTemplateList, self).get_queryset()
         return qs.select_related(
             'triptype', 'campsite1', 'campsite2', 'dropoff', 'pickup'
         )
 
 
-class TripTemplateCreateView(DatabaseCreateView):
+class TripTemplateCreate(DatabaseCreateView):
     model = TripTemplate
 
 
-class TripTemplateDetailView(DatabaseDetailView):
+class TripTemplateDetail(DatabaseDetailView):
     model = TripTemplate
     fields = ['name', 'description_summary', 'triptype', 
               'max_trippees', 'non_swimmers_allowed', 'dropoff', 
@@ -110,95 +109,95 @@ class TripTemplateDetailView(DatabaseDetailView):
               'desc_conc', 'revisions']
 
 
-class TripTemplateUpdateView(DatabaseUpdateView):
+class TripTemplateUpdate(DatabaseUpdateView):
     model = TripTemplate
 
 
-class TripTemplateDeleteView(DatabaseDeleteView):
+class TripTemplateDelete(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:triptemplate_index'
     
 
-class TripTypeListView(DatabaseListView):
+class TripTypeList(DatabaseListView):
     model = TripType
-    context_object_name = '{}s'.format(TripType.get_model_name_lower())
+    context_object_name = 'triptypes'
     template_name = 'trip/triptype_index.html'
 
 
-class TripTypeCreateView(DatabaseCreateView):
+class TripTypeCreate(DatabaseCreateView):
     model = TripType
 
 
-class TripTypeDetailView(DatabaseDetailView):
+class TripTypeDetail(DatabaseDetailView):
     model = TripType
-    fields = ['name', 'trippee_description', 'leader_description', 
+    fields = ['name', 'trippee_description', 'leader_description',
               'packing_list']
 
 
-class TripTypeUpdateView(DatabaseUpdateView):
+class TripTypeUpdate(DatabaseUpdateView):
     model = TripType
 
 
-class TripTypeDeleteView(DatabaseDeleteView):
+class TripTypeDelete(DatabaseDeleteView):
     model = TripType
     success_url_pattern = 'db:triptype_index'
 
 
-class CampsiteListView(DatabaseListView):
+class CampsiteList(DatabaseListView):
     model = Campsite
     context_object_name = 'campsites'
     template_name = 'trip/campsite_index.html'
     
     def get_context_data(self, **kwargs):
         trips_year = self.kwargs['trips_year']
-        context = super(CampsiteListView, self).get_context_data(**kwargs)
+        context = super(CampsiteList, self).get_context_data(**kwargs)
         context['camping_dates'] = Section.dates.camping_dates(trips_year)
         return context
 
 
-class CampsiteCreateView(DatabaseCreateView):
+class CampsiteCreate(DatabaseCreateView):
     model = Campsite
 
 
-class CampsiteDetailView(DatabaseDetailView):
+class CampsiteDetail(DatabaseDetailView):
     model = Campsite
     fields = ['name', 'capacity', 'directions', 'bugout', 'secret']
 
 
-class CampsiteUpdateView(DatabaseUpdateView):
+class CampsiteUpdate(DatabaseUpdateView):
     model = Campsite
 
 
-class CampsiteDeleteView(DatabaseDeleteView):
+class CampsiteDelete(DatabaseDeleteView):
     model = Campsite
     success_url_pattern = 'db:campsite_index'
 
 
-class SectionListView(DatabaseListView):
+class SectionList(DatabaseListView):
     model = Section
     context_object_name = 'sections'
     template_name = 'trip/section_index.html'
 
 
-class SectionCreateView(DatabaseCreateView):
+class SectionCreate(DatabaseCreateView):
     model = Section
     form_class = SectionForm
     template_name = 'trip/section_create.html'
 
 
-class SectionDetailView(DatabaseDetailView):
+class SectionDetail(DatabaseDetailView):
     model = Section
     fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange', 
               'is_transfer', 'is_international', 'is_native', 'is_fysep']
 
 
-class SectionUpdateView(DatabaseUpdateView):
+class SectionUpdate(DatabaseUpdateView):
     model = Section
     form_class = SectionForm
     template_name = 'trip/section_update.html'
 
 
-class SectionDeleteView(DatabaseDeleteView):
+class SectionDelete(DatabaseDeleteView):
     model = Section
     success_url_pattern = 'db:section_index'
                                

@@ -29,7 +29,6 @@ NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
 
 class Trip(DatabaseModel):
 
-    model_name = 'scheduledtrip'
     objects = TripManager()
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)

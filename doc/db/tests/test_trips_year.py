@@ -72,8 +72,8 @@ class TripsYearMixinTestCase(WebTestCase):
 
         response = self.app.get(reverse_index_url(ex1), user=self.director.netid)
         
-        from doc.trips.views import CampsiteListView
-        objects = response.context[CampsiteListView.context_object_name]
+        from doc.trips.views import CampsiteList
+        objects = response.context[CampsiteList.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object with matching trips_year')
 

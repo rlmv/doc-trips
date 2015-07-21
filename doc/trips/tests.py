@@ -62,7 +62,7 @@ class TripTestCase(WebTestCase):
                    template=template2, trips_year=trips_year)
         user = self.mock_director()
         with self.assertNumQueries(18):
-            self.app.get(reverse('db:scheduledtrip_index', kwargs={'trips_year': self.trips_year}), user=user)
+            self.app.get(reverse('db:trip_index', kwargs={'trips_year': self.trips_year}), user=user)
 
 
 class TripModelTestCase(TripsTestCase):
@@ -199,7 +199,7 @@ class QuickTestViews(WebTestCase):
         director = self.mock_director()
         
         names = [
-            'db:scheduledtrip_index',
+            'db:trip_index',
             'db:triptemplate_index',
             'db:triptype_index',
             'db:campsite_index',
@@ -484,7 +484,7 @@ class ViewsTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         section = mommy.make(Section, trips_year=trips_year)
         template = mommy.make(TripTemplate, trips_year=trips_year)
-        url = reverse('db:scheduledtrip_index', kwargs={'trips_year': trips_year})
+        url = reverse('db:trip_index', kwargs={'trips_year': trips_year})
         # get matrix
         resp = self.app.get(url, user=self.mock_director())
         # click add -> CreateView
