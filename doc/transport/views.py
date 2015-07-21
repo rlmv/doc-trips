@@ -104,7 +104,7 @@ def _rider_matrix(trips_year, size_key):
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
     trips = (
-        ScheduledTrip.objects.filter(trips_year=trips_year)
+        ScheduledTrip.objects.with_counts(trips_year)
         .select_related(
             'template', 'section',
             'pickup_route',

@@ -466,7 +466,15 @@ class ScheduledTripManagerTestCase(TripsTestCase):
             route, section.return_to_campus, trips_year=trips_year
         )
         self.assertQsEqual(qs, [returning, overridden_return])
-         
+        
+    def test_with_counts_shortcuts_size_db_query(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
+        trip = ScheduledTrip.objects.with_counts(trips_year)[0]
+        with self.assertNumQueries(0):
+            self.assertEqual(trip.size(), 1)
+
 
 class ViewsTestCase(WebTestCase):
     

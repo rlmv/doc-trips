@@ -153,8 +153,11 @@ class ScheduledTransport(DatabaseModel):
         All trips which this transport drops off (on the trip's day 2)
         """
         from doc.trips.models import ScheduledTrip
-        return ScheduledTrip.objects.dropoffs(self.route, self.date,
-                                              self.trips_year)
+        return (
+            ScheduledTrip.objects
+            .dropoffs(self.route, self.date, self.trips_year_id)
+            .select_related('template__dropoff')
+        )
 
     @cache_as('_picking_up')
     def picking_up(self):
@@ -162,8 +165,11 @@ class ScheduledTransport(DatabaseModel):
         All trips which this transport picks up (on trip's day 4)
         """
         from doc.trips.models import ScheduledTrip
-        return ScheduledTrip.objects.pickups(self.route, self.date,
-                                             self.trips_year)
+        return (
+            ScheduledTrip.objects
+            .pickups(self.route, self.date, self.trips_year_id)
+            .select_related('template__pickup')
+        )
 
     @cache_as('_returning')
     def returning(self):
@@ -172,7 +178,8 @@ class ScheduledTransport(DatabaseModel):
         """
         from doc.trips.models import ScheduledTrip
         return ScheduledTrip.objects.returns(self.route, self.date,
-                                             self.trips_year)
+                                             self.trips_year_id)
+
 
     @cache_as('_all_stops')
     def dropoff_and_pickup_stops(self):

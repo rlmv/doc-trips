@@ -93,16 +93,22 @@ class ScheduledTripManager(models.Manager):
 
         # see https://docs.djangoproject.com/en/dev/ref/models/querysets/#id7
         # http://stackoverflow.com/questions/6795202/django-count-in-multiple-annotations
-        trips = (
-            self.filter(trips_year=trips_year)
-            .annotate(num_trippees=models.Count('trippees', distinct=True))
-            .annotate(num_leaders=models.Count('leaders', distinct=True))
-        )
-        
+        trips = self.with_counts(trips_year)
+
         for trip in trips:
             matrix[trip.template][trip.section] = trip
 
         return matrix
+
+    def with_counts(self, trips_year):
+        """
+        Add the number of trippees and leaders to each obj.
+        """
+        return (
+            self.filter(trips_year=trips_year)
+            .annotate(num_trippees=models.Count('trippees', distinct=True))
+            .annotate(num_leaders=models.Count('leaders', distinct=True))
+        )
     
     def dropoffs(self, route, date, trips_year):
         """
@@ -111,8 +117,9 @@ class ScheduledTripManager(models.Manager):
         This returns all trips which have overridden the dropoff
         route, or whose template drops off with this route.
         """
+
         return (
-            self.filter(trips_year=trips_year)
+            self.with_counts(trips_year)
             .filter(section__leaders_arrive=date-timedelta(days=2))
             .filter(Q(dropoff_route=route) |
                     Q(dropoff_route=None, template__dropoff__route=route))
@@ -123,7 +130,7 @@ class ScheduledTripManager(models.Manager):
         All trips which are picked up on route and taken to the lodge on date.
         """
         return (
-            self.filter(trips_year=trips_year)
+            self.with_counts(trips_year)
             .filter(section__leaders_arrive=date-timedelta(days=4))
             .filter(Q(pickup_route=route) |
                     Q(pickup_route=None, template__pickup__route=route))
@@ -134,7 +141,7 @@ class ScheduledTripManager(models.Manager):
         All trips which return to campus via route on date.
         """
         return (
-            self.filter(trips_year=trips_year)
+            self.with_counts(trips_year)
             .filter(section__leaders_arrive=date-timedelta(days=5))
             .filter(Q(return_route=route) |
                     Q(return_route=None, template__return_route=route))

@@ -90,7 +90,10 @@ class ScheduledTrip(DatabaseModel):
         Return the number trippees + leaders on this trip 
 
         HACK: is it safe to cache like this?
+        TODO: use a constant, NUM_TRIPPEES
         """
+        if hasattr(self, 'num_trippees') and hasattr(self, 'num_leaders'):
+            return self.num_trippees + self.num_leaders
         return self.leaders.count() + self.trippees.count()
 
     @property 
