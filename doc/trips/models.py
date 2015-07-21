@@ -11,7 +11,7 @@ from django.core.exceptions import ValidationError
 from doc.db.models import DatabaseModel
 from doc.transport.models import Stop, Route
 from doc.trips.managers import (SectionDatesManager, SectionManager,
-                                ScheduledTripManager)
+                                TripManager)
 from doc.utils.cache import cache_as
 """
 TODO: use these in place of magic numbers?
@@ -27,10 +27,10 @@ NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
 NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
 
 
-class ScheduledTrip(DatabaseModel):
+class Trip(DatabaseModel):
 
     model_name = 'scheduledtrip'
-    objects = ScheduledTripManager()
+    objects = TripManager()
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
     section = models.ForeignKey(
@@ -55,7 +55,7 @@ class ScheduledTrip(DatabaseModel):
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
 
     class Meta:
-        # no two ScheduledTrips can have the same template-section-trips_year
+        # no two Trips can have the same template-section-trips_year
         # combination; we don't want to schedule two identical trips
         unique_together = ('template', 'section', 'trips_year')
         ordering = ('section__name', 'template__name')
@@ -315,7 +315,7 @@ class TripType(DatabaseModel):
     # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
 
-   # --- foodbox info ----
+    # --- foodbox info ----
     half_kickin = models.PositiveSmallIntegerField(
         'minimum # for a half foodbox', default=10
     )
@@ -343,7 +343,7 @@ class Campsite(DatabaseModel):
 
     def get_occupancy(self):
         """ 
-        Get all ScheduledTrips staying at this campsite
+        Get all Trips staying at this campsite
         
         Returns a dictionary of date:list(trips) pairs. 
         """
@@ -353,7 +353,7 @@ class Campsite(DatabaseModel):
 
         # all trips which stay at campsite
         resident_trips = (
-            ScheduledTrip.objects
+            Trip.objects
             .filter(trips_year=trips_year)
             .filter(Q(template__campsite1=self) |
                     Q(template__campsite2=self))
@@ -372,7 +372,7 @@ class Campsite(DatabaseModel):
         return trips_by_date
 
     def get_occupancy_list(self):
-        """ List of ScheduledTrips at campsite
+        """ List of Trips at campsite
 
         The occupancy has a one-to-one correspondance with 
         Section.dates.camping_dates

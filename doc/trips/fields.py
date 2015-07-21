@@ -20,9 +20,9 @@ class TrippeeSectionChoiceField(forms.ModelMultipleChoiceField):
         return mark_safe(label)
 
 
-class ScheduledTripChoiceField(forms.ModelChoiceField):
+class TripChoiceField(forms.ModelChoiceField):
     """ 
-    Field with verbose ScheduledTrip labels .
+    Field with verbose Trip labels .
     """
     def label_from_instance(self, obj):
         return "{}{}: {}: {}".format(

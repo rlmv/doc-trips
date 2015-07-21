@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 
 from doc.db.models import DatabaseModel, TripsYear
-from doc.trips.models import ScheduledTrip, Section, TripType
+from doc.trips.models import Trip, Section, TripType
 from doc.croos.models import Croo
 from doc.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
 from doc.applications.managers import CrooApplicationManager, LeaderApplicationManager, GeneralApplicationManager
@@ -99,7 +99,7 @@ class GeneralApplication(DatabaseModel):
         "Application status", max_length=15, choices=STATUS_CHOICES, default=PENDING,
     )
     assigned_trip = models.ForeignKey(
-        ScheduledTrip, blank=True, null=True,
+        Trip, blank=True, null=True,
         related_name='leaders', on_delete=models.PROTECT
     )
     assigned_croo = models.ForeignKey(
@@ -252,7 +252,7 @@ class LeaderSupplement(DatabaseModel):
         """ All trips which this applicant prefers to lead """
 
         return (
-            ScheduledTrip.objects
+            Trip.objects
             .filter(trips_year=self.trips_year)
             .filter(Q(section__in=self.preferred_sections.all()) &
                     Q(template__triptype__in=self.preferred_triptypes.all()))
@@ -261,14 +261,14 @@ class LeaderSupplement(DatabaseModel):
 
     def get_available_trips(self):
         """
-        Return all ScheduledTrips which this leader is available to lead.
+        Return all Trips which this leader is available to lead.
         
         Contains all permutations of available and preferred sections and 
         trips types, excluding the results of get_preferred_trips.
         """
         
         return (
-            ScheduledTrip.objects
+            Trip.objects
             .filter(trips_year=self.trips_year)
             .filter(Q(section__in=self.preferred_sections.all()) |
                     Q(section__in=self.available_sections.all()),

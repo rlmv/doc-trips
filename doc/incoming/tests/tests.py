@@ -11,7 +11,7 @@ from model_mommy import mommy
 from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.forms import RegistrationForm
-from doc.trips.models import ScheduledTrip, TripType, Section
+from doc.trips.models import Trip, TripType, Section
 from doc.core.models import Settings
 from doc.timetable.models import Timetable
 from doc.transport.models import Stop, Route
@@ -155,7 +155,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_get_trip_assignment_returns_assignment(self):
         trips_year = self.init_current_trips_year()
-        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        trip = mommy.make(Trip, trips_year=trips_year)
         reg = mommy.make(Registration, trips_year=trips_year)
         trippee = mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip, registration=reg)
         self.assertEqual(trip, reg.get_trip_assignment())
@@ -181,17 +181,17 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_base_trip_choice_queryset_filters_for_nonswimmers(self):
         trips_year = self.init_current_trips_year()
-        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, template__non_swimmers_allowed=False)
-        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, template__non_swimmers_allowed=True)
+        trip1 = mommy.make(Trip, trips_year=trips_year, template__non_swimmers_allowed=False)
+        trip2 = mommy.make(Trip, trips_year=trips_year, template__non_swimmers_allowed=True)
         reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.NON_SWIMMER,
                          preferred_sections=[trip1.section, trip2.section])
         self.assertEqual(list(reg._base_trips_qs()), [trip2])
 
     def test_base_trips_qs_filters_for_preferred_and_available_sections(self):
         trips_year = self.init_current_trips_year()
-        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year)
-        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year)
-        trip3 = mommy.make(ScheduledTrip, trips_year=trips_year)
+        trip1 = mommy.make(Trip, trips_year=trips_year)
+        trip2 = mommy.make(Trip, trips_year=trips_year)
+        trip3 = mommy.make(Trip, trips_year=trips_year)
         reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.COMPETENT,
                          preferred_sections=[trip1.section], available_sections=[trip2.section])
         self.assertEqual(set(reg._base_trips_qs()), set([trip1, trip2]))
@@ -201,8 +201,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
         section1 = mommy.make('Section', trips_year=trips_year)
         section2 = mommy.make('Section', trips_year=trips_year)
         firstchoice_triptype = mommy.make('TripType', trips_year=trips_year)
-        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1, template__triptype=firstchoice_triptype)
-        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section2, template__triptype=firstchoice_triptype)
+        trip1 = mommy.make(Trip, trips_year=trips_year, section=section1, template__triptype=firstchoice_triptype)
+        trip2 = mommy.make(Trip, trips_year=trips_year, section=section2, template__triptype=firstchoice_triptype)
         reg = mommy.make(Registration, trips_year=trips_year,
                          firstchoice_triptype=firstchoice_triptype,
                          swimming_ability=Registration.COMPETENT,
@@ -215,9 +215,9 @@ class RegistrationModelTestCase(TripsYearTestCase):
         section1 = mommy.make('Section', trips_year=trips_year)
         section2 = mommy.make('Section', trips_year=trips_year)
         triptype = mommy.make('TripType', trips_year=trips_year)
-        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1, template__triptype=triptype)
-        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section2, template__triptype=triptype)
-        trip3 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1)
+        trip1 = mommy.make(Trip, trips_year=trips_year, section=section1, template__triptype=triptype)
+        trip2 = mommy.make(Trip, trips_year=trips_year, section=section2, template__triptype=triptype)
+        trip3 = mommy.make(Trip, trips_year=trips_year, section=section1)
         reg = mommy.make(Registration, trips_year=trips_year,
                          preferred_triptypes=[triptype],
                          swimming_ability=Registration.COMPETENT,
@@ -226,7 +226,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_get_preferred_trips_excludes_firstchoice_trips(self):
         trips_year = self.init_trips_year()
-        firstchoice_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        firstchoice_trip = mommy.make(Trip, trips_year=trips_year)
         reg = mommy.make(Registration, trips_year=trips_year, 
                          firstchoice_triptype=firstchoice_trip.template.triptype,
                          preferred_triptypes=[firstchoice_trip.template.triptype],
@@ -240,9 +240,9 @@ class RegistrationModelTestCase(TripsYearTestCase):
         section1 = mommy.make('Section', trips_year=trips_year)
         section2 = mommy.make('Section', trips_year=trips_year)
         triptype = mommy.make('TripType', trips_year=trips_year)
-        trip1 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1, template__triptype=triptype)
-        trip2 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section2, template__triptype=triptype)
-        trip3 = mommy.make(ScheduledTrip, trips_year=trips_year, section=section1)
+        trip1 = mommy.make(Trip, trips_year=trips_year, section=section1, template__triptype=triptype)
+        trip2 = mommy.make(Trip, trips_year=trips_year, section=section2, template__triptype=triptype)
+        trip3 = mommy.make(Trip, trips_year=trips_year, section=section1)
         reg = mommy.make(Registration, trips_year=trips_year,
                          available_triptypes=[triptype],
                          swimming_ability=Registration.COMPETENT,
@@ -252,8 +252,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_get_available_trips_excludes_firstchoice_and_preffed_trips(self):
         trips_year = self.init_trips_year()
-        firstchoice_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
-        preffed_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        firstchoice_trip = mommy.make(Trip, trips_year=trips_year)
+        preffed_trip = mommy.make(Trip, trips_year=trips_year)
         reg = mommy.make(Registration, trips_year=trips_year, 
                          firstchoice_triptype=firstchoice_trip.template.triptype,
                          preferred_triptypes=[firstchoice_trip.template.triptype, preffed_trip.template.triptype],
@@ -337,7 +337,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
 
     def test_availability_for_trip(self):
         trips_year = self.init_current_trips_year()
-        trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        trip = mommy.make(Trip, trips_year=trips_year)
         available = mommy.make(
             IncomingStudent, trips_year=trips_year, 
             registration__preferred_sections=[trip.section],
@@ -353,7 +353,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
     def test_non_swimmer_availability_for_trip(self):
         trips_year = self.init_current_trips_year()
         trip = mommy.make(
-            ScheduledTrip, trips_year=trips_year, 
+            Trip, trips_year=trips_year, 
             template__non_swimmers_allowed=False
         )
         available = mommy.make(
@@ -391,7 +391,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
     def test_with_trip(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            ScheduledTrip,
+            Trip,
             trips_year=trips_year
         )
         assigned = mommy.make(

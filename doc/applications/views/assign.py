@@ -11,7 +11,7 @@ from doc.applications.forms import TripAssignmentForm
 class AssignToTrip(ApplicationEditPermissionRequired, TripsYearMixin,
                    UpdateView):
     """
-    Assign LEADER to a ScheduledTrip.
+    Assign LEADER to a Trip.
 
     Shows availability, preferences
     """

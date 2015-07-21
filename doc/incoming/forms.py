@@ -6,8 +6,8 @@ from crispy_forms.layout import Layout, Field, Row, Submit, Div
 from doc.db.models import TripsYear
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.layouts import RegistrationFormLayout, join_with_and
-from doc.trips.models import Section, TripType, ScheduledTrip
-from doc.trips.fields import TrippeeSectionChoiceField, ScheduledTripChoiceField
+from doc.trips.models import Section, TripType, Trip
+from doc.trips.fields import TrippeeSectionChoiceField, TripChoiceField
 from doc.transport.models import Stop, ExternalBus
 
 
@@ -86,10 +86,10 @@ class TripAssignmentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)
         trips_year = kwargs['instance'].trips_year
-        self.fields['trip_assignment'] = ScheduledTripChoiceField(
+        self.fields['trip_assignment'] = TripChoiceField(
             required=False,
             queryset=(
-                ScheduledTrip.objects
+                Trip.objects
                 .filter(trips_year=trips_year)
                 .select_related('template', 'template__triptype', 'section')
             )

@@ -9,7 +9,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.incoming.models import IncomingStudent
-from doc.trips.models import Section, ScheduledTrip
+from doc.trips.models import Section, Trip
 
 
 class SectionForm(forms.ModelForm):
@@ -67,11 +67,11 @@ class AssignmentForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super(AssignmentForm, self).__init__(*args, **kwargs)
         self.fields['assigned_trip'].queryset = (
-            ScheduledTrip.objects.filter(trips_year=trips_year)
+            Trip.objects.filter(trips_year=trips_year)
         )
         self.helper = FormHelper(self)
         label = 'Assign to %s' % (
-            ScheduledTrip.objects.get(pk=self.data['assigned_trip'])
+            Trip.objects.get(pk=self.data['assigned_trip'])
         )
         self.helper.add_input(Submit('submit', label))
 
@@ -95,11 +95,11 @@ class TrippeeAssignmentForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super(TrippeeAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['trip_assignment'].queryset = (
-            ScheduledTrip.objects.filter(trips_year=trips_year)
+            Trip.objects.filter(trips_year=trips_year)
         )
         self.helper = FormHelper(self)
         label = 'Assign to %s' % (
-            ScheduledTrip.objects.get(pk=self.data['trip_assignment'])
+            Trip.objects.get(pk=self.data['trip_assignment'])
         )
         self.helper.add_input(Submit('submit', label))
 

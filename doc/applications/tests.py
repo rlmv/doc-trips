@@ -19,7 +19,7 @@ from doc.applications.models import (
         PortalContent)
 from doc.timetable.models import Timetable
 from doc.croos.models import Croo
-from doc.trips.models import Section, ScheduledTrip, TripType
+from doc.trips.models import Section, Trip, TripType
 from doc.applications.views.graders import get_graders
 from doc.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
 from doc.db.urlhelpers import reverse_detail_url
@@ -77,7 +77,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
                 application = mommy.make(GeneralApplication, 
                                          status=getattr(GeneralApplication, status), 
                                          trips_year=trips_year)
-                application.assigned_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+                application.assigned_trip = mommy.make(Trip, trips_year=trips_year)
                 with self.assertRaises(ValidationError):
                         application.full_clean()
                         
@@ -104,11 +104,11 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
             trips_year = self.init_current_trips_year()
             application = self.make_application(trips_year=trips_year)
             ls = application.leader_supplement
-            preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+            preferred_trip = mommy.make(Trip, trips_year=trips_year)
             ls.preferred_sections = [preferred_trip.section]
             ls.preferred_triptypes = [preferred_trip.template.triptype]
             ls.save()
-            not_preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+            not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
             self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
 
         
@@ -126,14 +126,14 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         ls.available_triptypes = [available_triptype]
         ls.save()
 
-        make = lambda s,t: mommy.make(ScheduledTrip, trips_year=trips_year, section=s, template__triptype=t)
+        make = lambda s,t: mommy.make(Trip, trips_year=trips_year, section=s, template__triptype=t)
         preferred_trip = make(preferred_section, preferred_triptype)
         available_trips = [  # all other permutations
                 make(preferred_section, available_triptype),
                 make(available_section, preferred_triptype),
                 make(available_section, available_triptype),
         ]
-        not_preferred_trip = mommy.make(ScheduledTrip, trips_year=trips_year)
+        not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
 
     def test_get_first_aid_cert(self):
@@ -309,7 +309,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_prospective_leader_with_preferred_choices(self):
 
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         
         app = self.make_application(status=GeneralApplication.LEADER)
         app.leader_supplement.preferred_sections.add(trip.section)
@@ -322,7 +322,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_prospective_leader_with_available_choices(self):
 
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         
         app = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
         app.leader_supplement.available_sections.add(trip.section)
@@ -333,7 +333,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         self.assertEquals(list(prospects), [app])
 
     def test_only_complete_applications(self):
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         prospective = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
         prospective.leader_supplement.available_sections.add(trip.section)
         prospective.leader_supplement.available_triptypes.add(trip.template.triptype)
@@ -350,7 +350,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_without_section_preference(self):
             
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         
         # otherwise available
         app = self.make_application(status=GeneralApplication.LEADER)
@@ -362,7 +362,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_without_triptype_preference(self):
 
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         
         app = self.make_application(status=GeneralApplication.LEADER)
         app.leader_supplement.preferred_sections.add(trip.section)
@@ -373,7 +373,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_prospective_leaders_are_distinct(self):
 
-        trip = mommy.make(ScheduledTrip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.current_trips_year)
         
         # set up a situation where JOINS will return the same app multiple times
         app = self.make_application(status=GeneralApplication.LEADER)

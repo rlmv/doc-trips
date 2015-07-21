@@ -239,7 +239,7 @@ class DatabaseLandingPage(DatabaseReadPermissionRequired, TripsYearMixin, Templa
     """ 
     Landing page of a particular trips_year in the database
 
-    TODO: should this display the ScheduledTrips index?
+    TODO: should this display the Trips index?
     """
     template_name = 'db/landing_page.html'
 

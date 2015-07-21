@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.db.models import Q
 
 from doc.db.models import TripsYear
-from doc.trips.models import Campsite, TripType, TripTemplate, ScheduledTrip, Section
+from doc.trips.models import Campsite, TripType, TripTemplate, Trip, Section
 
 
 class CampsiteAdmin(admin.ModelAdmin):
@@ -41,7 +41,7 @@ class CampsiteAdmin(admin.ModelAdmin):
         # TODO: set table header of dates, instead of literal 'dates' string
 
         # all trips which stay at campsite
-        resident_trips = (ScheduledTrip.objects
+        resident_trips = (Trip.objects
                           .filter(trips_year=trips_year)
                           .filter(Q(template__campsite_1=campsite) |
                                   Q(template__campsite_2=campsite)))
@@ -97,7 +97,7 @@ class CampsiteAdmin(admin.ModelAdmin):
                 # timedelta do the same thing as at_campsite_1/2 properties.
                 # We want all trips which are staying at campsite on date.
                 resident_trips = (
-                    ScheduledTrip.objects
+                    Trip.objects
                     .filter(trips_year=trips_year)
                     .filter(Q(template__campsite_1=campsite,
                               section__leaders_arrive=date-timedelta(days=2)) |
@@ -142,5 +142,5 @@ class TripTemplateAdmin(admin.ModelAdmin):
 admin.site.register(Campsite, CampsiteAdmin)
 admin.site.register(TripType, TripTypeAdmin)
 admin.site.register(TripTemplate, TripTemplateAdmin)
-admin.site.register(ScheduledTrip)
+admin.site.register(Trip)
 admin.site.register(Section)

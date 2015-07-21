@@ -11,7 +11,7 @@ from doc.test.testcases import WebTestCase, TripsTestCase
 from doc.applications.tests import ApplicationTestMixin
 from doc.applications.models import GeneralApplication
 from doc.incoming.models import Registration, IncomingStudent
-from doc.trips.models import ScheduledTrip
+from doc.trips.models import Trip
 from doc.core.models import Settings
 from doc.utils.choices import YES, NO, S, M, L, XL
 from doc.reports.views import tshirt_counts
@@ -144,7 +144,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     def test_dietary_restrictions(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            ScheduledTrip,
+            Trip,
             trips_year=trips_year
         )
         reg = mommy.make(
@@ -184,7 +184,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     def test_medical_info(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            ScheduledTrip,
+            Trip,
             trips_year=trips_year
         )
         reg = mommy.make(
@@ -259,7 +259,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     def test_foodboxes(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(
-            ScheduledTrip,
+            Trip,
             trips_year=trips_year,
         )
         mommy.make(

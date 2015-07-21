@@ -13,7 +13,7 @@ from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
 from doc.utils.choices import YES, S, M, L, XL
-from doc.trips.models import ScheduledTrip
+from doc.trips.models import Trip
 
 # TODO use a ListView here?
 
@@ -343,7 +343,7 @@ class Foodboxes(GenericReportView):
     file_prefix = 'Foodboxes'
     
     def get_queryset(self):
-        return ScheduledTrip.objects.filter(
+        return Trip.objects.filter(
             trips_year=self.kwargs['trips_year']
         )
 

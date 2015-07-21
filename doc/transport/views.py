@@ -13,7 +13,7 @@ from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus
 )
 from doc.transport.maps import MapError
-from doc.trips.models import Section, ScheduledTrip
+from doc.trips.models import Section, Trip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
 from doc.incoming.models import IncomingStudent
@@ -104,7 +104,7 @@ def _rider_matrix(trips_year, size_key):
     routes = Route.objects.internal(trips_year)
     dates = Section.dates.trip_dates(trips_year)
     trips = (
-        ScheduledTrip.objects.with_counts(trips_year)
+        Trip.objects.with_counts(trips_year)
         .select_related(
             'template', 'section',
             'pickup_route',
@@ -328,9 +328,9 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         context['date'] = self.get_date()
 
         args = (self.get_route(), self.get_date(), self.get_trips_year())
-        context['dropoffs'] = ScheduledTrip.objects.dropoffs(*args)
-        context['pickups'] = ScheduledTrip.objects.pickups(*args)
-        context['returns'] = ScheduledTrip.objects.returns(*args)
+        context['dropoffs'] = Trip.objects.dropoffs(*args)
+        context['pickups'] = Trip.objects.pickups(*args)
+        context['returns'] = Trip.objects.returns(*args)
 
         context['scheduled'] = bus = ScheduledTransport.objects.filter(
             trips_year=self.get_trips_year(),

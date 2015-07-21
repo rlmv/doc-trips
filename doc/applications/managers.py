@@ -112,7 +112,7 @@ class GeneralApplicationManager(models.Manager):
 
     def prospective_leaders_for_trip(self, trip):
         """ 
-        Get prospective leaders who can lead ScheduledTrip trip.
+        Get prospective leaders who can lead Trip trip.
         
         Returns all GeneralApplications which 
         (1) are for the same trips_year as trip

@@ -59,14 +59,14 @@ class SectionManager(models.Manager):
         return self.filter(trips_year=trips_year, is_exchange=True)
         
 
-class ScheduledTripManager(models.Manager):
+class TripManager(models.Manager):
 
     def get_queryset(self):
         """
         Go ahead and pull in section and template since we
         use them with basically every queryset.
         """
-        qs = super(ScheduledTripManager, self).get_queryset()
+        qs = super(TripManager, self).get_queryset()
         return qs.select_related('section', 'template')
 
     def matrix(self, trips_year):

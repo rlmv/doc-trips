@@ -8,8 +8,8 @@ from doc.applications.models import (
     GeneralApplication, CrooSupplement, LeaderSupplement,
     CrooApplicationGrade, LeaderApplicationGrade)
 from doc.db.models import TripsYear
-from doc.trips.models import Section, TripType, ScheduledTrip
-from doc.trips.fields import LeaderSectionChoiceField, ScheduledTripChoiceField
+from doc.trips.models import Section, TripType, Trip
+from doc.trips.fields import LeaderSectionChoiceField, TripChoiceField
 from doc.utils.forms import crispify
 
 
@@ -20,12 +20,12 @@ class TripAssignmentForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = ['assigned_trip']
-    assigned_trip = ScheduledTripChoiceField(queryset=None)
+    assigned_trip = TripChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['assigned_trip'].queryset = (
-            ScheduledTrip.objects
+            Trip.objects
             .filter(trips_year=kwargs['instance'].trips_year)
             .select_related('section', 'template', 'template__triptype')
         )

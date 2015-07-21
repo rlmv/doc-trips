@@ -17,7 +17,7 @@ from doc.transport.views import (
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
     get_actual_rider_matrix, TransportChecklist
 )
-from doc.trips.models import Section, ScheduledTrip
+from doc.trips.models import Section, Trip
 from doc.incoming.models import IncomingStudent
 
 """
@@ -191,7 +191,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
             leaders_arrive=date(2015, 1, 1)
         )
         trip = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section, 
             template__dropoff__route=route, 
             template__pickup__route=route, 
@@ -215,14 +215,14 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         # trips share dropoff locations and dates
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section, 
             template__dropoff__route=route, 
             template__pickup__route=route, 
             template__return_route=route
         )
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section, 
             template__dropoff__route=route, 
             template__pickup__route=route, 
@@ -247,14 +247,14 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 2))
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section1, 
             template__dropoff__route=route1, 
             template__pickup__route=route1, 
             template__return_route=route1
         )
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section2, 
             template__dropoff__route=route2, 
             template__pickup__route=route1, 
@@ -288,7 +288,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
         # route is set *directly* on scheduled trip
         trip = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section,
             dropoff_route=route, 
             pickup_route=route, 
@@ -314,7 +314,7 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         route = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015,1,1))
         trip = mommy.make(
-            ScheduledTrip, trips_year=trips_year, 
+            Trip, trips_year=trips_year, 
             section=section,
             template__dropoff__route=route,
             template__pickup__route=route, 
@@ -339,13 +339,13 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,2))
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section1,
             template__dropoff__route=route1, 
             template__pickup__route=route1, 
             template__return_route=route1)
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section2,
             template__dropoff__route=route2, 
             template__pickup__route=route1, 
@@ -379,7 +379,7 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         trip = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section, 
             template__dropoff__route=route, 
             template__pickup__route=route, 
@@ -406,7 +406,7 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
 
         trip = mommy.make(
-            ScheduledTrip, trips_year=ty, 
+            Trip, trips_year=ty, 
             section=section, 
             template__dropoff__route=route, 
             template__pickup__route=route, 
@@ -621,14 +621,14 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             Stop, trips_year=trips_year, route=bus.route, distance=100
         )
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__dropoff=stop1,
+            Trip, trips_year=trips_year, template__dropoff=stop1,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         stop2 = mommy.make(
             Stop, trips_year=trips_year, route=bus.route, distance=1
         )
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__pickup=stop2,
+            Trip, trips_year=trips_year, template__pickup=stop2,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         self.assertEqual(bus.dropoff_and_pickup_stops(),
@@ -643,11 +643,11 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
 
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__pickup=stop,
+            Trip, trips_year=trips_year, template__pickup=stop,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         (hanover, stop, lodge) = bus.dropoff_and_pickup_stops()
@@ -668,7 +668,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
         trip = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
@@ -683,7 +683,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
         trip = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
@@ -699,11 +699,11 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=1)
         stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=2)
         trip1 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__dropoff=stop2,
+            Trip, trips_year=trips_year, template__dropoff=stop2,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         trip2 = mommy.make(
-            ScheduledTrip, trips_year=trips_year, template__pickup=stop1,
+            Trip, trips_year=trips_year, template__pickup=stop1,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip1)

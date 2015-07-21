@@ -11,15 +11,15 @@ database urlpatterns.
 """
 
 trip_urlpatterns = [
-    url(DB_REGEX['LIST'], ScheduledTripListView.as_view(),
+    url(DB_REGEX['LIST'], TripListView.as_view(),
         name='scheduledtrip_index'),
-    url(DB_REGEX['CREATE'], ScheduledTripCreateView.as_view(),
+    url(DB_REGEX['CREATE'], TripCreateView.as_view(),
         name='scheduledtrip_create'),
-    url(DB_REGEX['DETAIL'], ScheduledTripDetailView.as_view(),
+    url(DB_REGEX['DETAIL'], TripDetailView.as_view(),
         name='scheduledtrip_detail'),
-    url(DB_REGEX['UPDATE'], ScheduledTripUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], TripUpdateView.as_view(),
         name='scheduledtrip_update'),
-    url(DB_REGEX['DELETE'], ScheduledTripDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], TripDeleteView.as_view(),
         name='scheduledtrip_delete'),
 ]
 

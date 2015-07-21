@@ -152,9 +152,9 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport drops off (on the trip's day 2)
         """
-        from doc.trips.models import ScheduledTrip
+        from doc.trips.models import Trip
         return (
-            ScheduledTrip.objects
+            Trip.objects
             .dropoffs(self.route, self.date, self.trips_year_id)
             .select_related('template__dropoff')
         )
@@ -164,9 +164,9 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport picks up (on trip's day 4)
         """
-        from doc.trips.models import ScheduledTrip
+        from doc.trips.models import Trip
         return (
-            ScheduledTrip.objects
+            Trip.objects
             .pickups(self.route, self.date, self.trips_year_id)
             .select_related('template__pickup')
         )
@@ -176,8 +176,8 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport returns to Hanover (on day 5)
         """
-        from doc.trips.models import ScheduledTrip
-        return ScheduledTrip.objects.returns(self.route, self.date,
+        from doc.trips.models import Trip
+        return Trip.objects.returns(self.route, self.date,
                                              self.trips_year_id)
 
 

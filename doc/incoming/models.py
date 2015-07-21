@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from doc.transport.models import Stop, ExternalBus
-from doc.trips.models import ScheduledTrip, Section, TripType
+from doc.trips.models import Trip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
 from doc.db.models import DatabaseModel
 from doc.incoming.managers import IncomingStudentManager, RegistrationManager
@@ -48,7 +48,7 @@ class IncomingStudent(DatabaseModel):
         'Registration', editable=False, related_name='trippee', null=True
     )
     trip_assignment = models.ForeignKey(
-        ScheduledTrip, on_delete=models.PROTECT,
+        Trip, on_delete=models.PROTECT,
         related_name='trippees', null=True, blank=True
     )
     bus_assignment = models.ForeignKey(
@@ -452,7 +452,7 @@ class Registration(DatabaseModel):
         
         If the registration is NON_SWIMMER, exclude all swimming trips.
         """
-        qs = (ScheduledTrip.objects
+        qs = (Trip.objects
               .filter(trips_year=self.trips_year)
               .filter(
                   models.Q(section__in=self.preferred_sections.all()) |
@@ -465,7 +465,7 @@ class Registration(DatabaseModel):
     
     def get_firstchoice_trips(self):
         """ 
-        Return first choice ScheduledTrips 
+        Return first choice Trips 
         
         For both preferred and available Sections
         """
@@ -475,7 +475,7 @@ class Registration(DatabaseModel):
 
     def get_preferred_trips(self):
         """ 
-        Return preferred ScheduledTrips 
+        Return preferred Trips 
         
         For both preferred and available Sections
         """
@@ -487,7 +487,7 @@ class Registration(DatabaseModel):
 
     def get_available_trips(self):
         """ 
-        Return available ScheduledTrips 
+        Return available Trips 
         
         For both preferred and available Sections
         """

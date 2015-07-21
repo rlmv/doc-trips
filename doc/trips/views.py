@@ -11,7 +11,7 @@ from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from doc.trips.models import (
-    ScheduledTrip, TripTemplate, TripType, Campsite, Section,
+    Trip, TripTemplate, TripType, Campsite, Section,
     NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
 )
 from doc.trips.forms import (
@@ -33,28 +33,28 @@ from doc.utils.views import PopulateMixin
 from doc.transport.models import ExternalBus
 
 
-class ScheduledTripListView(DatabaseReadPermissionRequired,
+class TripListView(DatabaseReadPermissionRequired,
                             TripsYearMixin, TemplateView):
     template_name = 'trip/trip_index.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ScheduledTripListView, self).get_context_data(**kwargs)
-        context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
+        context = super(TripListView, self).get_context_data(**kwargs)
+        context['matrix'] = Trip.objects.matrix(self.kwargs['trips_year'])
         return context
 
 
-class ScheduledTripUpdateView(SetHeadlineMixin, DatabaseUpdateView):
-    model = ScheduledTrip
+class TripUpdateView(SetHeadlineMixin, DatabaseUpdateView):
+    model = Trip
     fields = ['dropoff_route', 'pickup_route', 'return_route']
 
     def get_headline(self):
         return mark_safe(
-            "Edit %s <small> ScheduledTrip </small>" % self.object
+            "Edit %s <small> Trip </small>" % self.object
         )
 
 
-class ScheduledTripDetailView(DatabaseDetailView):
-    model = ScheduledTrip
+class TripDetailView(DatabaseDetailView):
+    model = Trip
     template_name = 'trip/trip_detail.html'
 
     fields = [
@@ -74,13 +74,13 @@ class ScheduledTripDetailView(DatabaseDetailView):
         'revisions']
     
 
-class ScheduledTripCreateView(PopulateMixin, DatabaseCreateView):
-    model = ScheduledTrip
+class TripCreateView(PopulateMixin, DatabaseCreateView):
+    model = Trip
     fields = ['section', 'template']
         
 
-class ScheduledTripDeleteView(DatabaseDeleteView):
-    model = ScheduledTrip
+class TripDeleteView(DatabaseDeleteView):
+    model = Trip
     success_url_pattern = 'db:scheduledtrip_index'
 
 
@@ -205,11 +205,11 @@ class SectionDeleteView(DatabaseDeleteView):
 
 class LeaderTrippeeIndexView(DatabaseListView):
     """ 
-    Show all ScheduledTrips with leaders and trippees.
+    Show all Trips with leaders and trippees.
     
     Links to pages to assign leaders and trippees.
     """
-    model = ScheduledTrip
+    model = Trip
     template_name = 'trip/leaders.html'
     context_object_name = 'trips'
     
@@ -227,7 +227,7 @@ class _AssignMixin():
     
     def get_trip(self):
         if not hasattr(self, 'trip'):
-            self.trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+            self.trip = Trip.objects.get(pk=self.kwargs['trip'])
         return self.trip
 
 
@@ -345,7 +345,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, SetHeadlineMixin,
 
 class AssignTripLeaderView(DatabaseListView):
     """ 
-    Assign a leader to a ScheduledTrip.
+    Assign a leader to a Trip.
 
     Takes the trip's pk as a url arg.
     The template is passed a list of tuples in context_object_name:
@@ -363,7 +363,7 @@ class AssignTripLeaderView(DatabaseListView):
 
     def get_trip(self):
         if not hasattr(self, 'trip'):
-            self.trip = ScheduledTrip.objects.get(pk=self.kwargs['trip'])
+            self.trip = Trip.objects.get(pk=self.kwargs['trip'])
         return self.trip
 
     def get_queryset(self):
@@ -523,18 +523,18 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super(TrippeeLeaderCounts, self).get_context_data(**kwargs)
-        context['matrix'] = ScheduledTrip.objects.matrix(self.kwargs['trips_year'])
+        context['matrix'] = Trip.objects.matrix(self.kwargs['trips_year'])
         return context
 
 
 class FoodboxCounts(DatabaseListView):
 
-    model = ScheduledTrip
+    model = Trip
     template_name = 'trip/foodboxes.html'
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return ScheduledTrip.objects.filter(
+        return Trip.objects.filter(
             trips_year=self.kwargs['trips_year']
         ).select_related(
             'template__triptype'
