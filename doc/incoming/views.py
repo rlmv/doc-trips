@@ -22,13 +22,15 @@ from doc.incoming.forms import (
 from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import (
-    TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView
+    TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
+    DatabaseCreateView
 )
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
 from doc.trips.models import TripType
 from doc.utils.forms import crispify
+from doc.users.models import DartmouthUser
 
 """ 
 Views for incoming students.
@@ -217,6 +219,38 @@ class RegistrationIndex(DatabaseListView):
         kwargs['table'] = RegistrationTable(self.object_list)
         RequestConfig(self.request, paginate=False).configure(kwargs['table'])
         return super(RegistrationIndex, self).get_context_data(**kwargs)
+
+
+class NonStudentRegistration(DatabaseCreateView):
+    """
+    Used to register a non-student for trips.
+
+    This was needed because a TA was going on trips but
+    would not be assigned a netid until mid-September.
+    We needed some way to put her in the system. She won't
+    be able to log in and see her assignment, but she can be 
+    assigned to a trip.
+
+    This view creates a registration linked to the sentinel
+    user, and an associated incoming student object.
+    """
+    model = Registration
+    form_class = RegistrationForm
+
+    def form_valid(self, form):
+        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.user = DartmouthUser.objects.sentinel()
+        self.object = form.save()
+        IncomingStudent.objects.create(
+            trips_year_id=self.kwargs['trips_year'],
+            name=self.object.name,
+            email=self.object.email,
+            blitz=self.object.email,
+            phone=self.object.phone,
+            gender=self.object.gender,
+            registration=self.object
+        )
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class RegistrationDetail(DatabaseReadPermissionRequired,

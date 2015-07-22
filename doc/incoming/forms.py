@@ -9,6 +9,7 @@ from doc.incoming.layouts import RegistrationFormLayout, join_with_and
 from doc.trips.models import Section, TripType, Trip
 from doc.trips.fields import TrippeeSectionChoiceField, TripChoiceField
 from doc.transport.models import Stop, ExternalBus
+from doc.core.models import Settings
 
 
 class StopChoiceField(forms.ModelChoiceField):
@@ -63,7 +64,6 @@ class RegistrationForm(forms.ModelForm):
 
         self.helper = FormHelper(self)
 
-        from doc.core.models import Settings
         settings = Settings.objects.get()
         kwargs = {
             'local_sections': Section.objects.local(trips_year),

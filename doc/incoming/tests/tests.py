@@ -16,6 +16,7 @@ from doc.core.models import Settings
 from doc.timetable.models import Timetable
 from doc.transport.models import Stop, Route
 from doc.utils.choices import YES
+from doc.users.models import DartmouthUser
 
 class IncomingStudentModelsTestCase(TripsYearTestCase):
 
@@ -446,6 +447,37 @@ class RegistrationViewsTestCase(WebTestCase):
         registration = Registration.objects.get()
         student = IncomingStudent.objects.get()
         self.assertEqual(registration.trippee, student)
+
+    def test_non_student_registration(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings)
+        url = reverse('db:nonstudent_registration', kwargs={'trips_year': trips_year})
+        data = {
+            'name': 'test',
+            'gender': 'm',
+            'previous_school': 'nah',
+            'phone': '134',
+            'email': 'asf@gmail.com',
+            'tshirt_size': 'L',
+            'regular_exercise': 'NO',
+            'swimming_ability': 'BEGINNER',
+            'camping_experience': 'NO',
+            'hiking_experience': 'YES',
+            'financial_assistance': 'YES',
+            'waiver': 'YES',
+            'doc_membership': 'NO',
+            'green_fund_donation': 0,
+        }
+        self.app.post(url, data, user=self.mock_director())
+        registration = Registration.objects.get()
+        trippee = registration.trippee
+        self.assertEqual(registration.user, DartmouthUser.objects.sentinel())
+        self.assertEqual(trippee.name, 'test')
+        self.assertEqual(trippee.netid, '')
+        self.assertEqual(trippee.email, 'asf@gmail.com')
+        self.assertEqual(trippee.blitz, 'asf@gmail.com')
+        self.assertEqual(trippee.phone, '134')
+        self.assertEqual(trippee.gender, 'm')
 
 
 class RegistrationFormTestCase(TripsYearTestCase):

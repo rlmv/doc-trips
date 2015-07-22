@@ -44,6 +44,7 @@ class IncomingStudentManager(models.Manager):
             .distinct()
         )
 
+
     def create_from_csv_file(self, file, trips_year):
         """
         Import incoming students from a CSV file. 
