@@ -54,7 +54,9 @@ class Stop(DatabaseModel):
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
     dropoff_time = models.TimeField(blank=True, null=True)
-    distance = models.IntegerField(blank=True, null=True)
+    distance = models.IntegerField(help_text=(
+        "this rough distance from Hanover is used for bus routing"
+    ))
 
     def clean(self):
         if not self.lat_lng and not self.address:
@@ -178,8 +180,7 @@ class ScheduledTransport(DatabaseModel):
         """
         from doc.trips.models import Trip
         return Trip.objects.returns(self.route, self.date,
-                                             self.trips_year_id)
-
+                                    self.trips_year_id)
 
     @cache_as('_all_stops')
     def dropoff_and_pickup_stops(self):
@@ -194,6 +195,8 @@ class ScheduledTransport(DatabaseModel):
         conflict with the triptemplate related_names.)
         The properties contain the list of trips which are dropped
         off and picked up at this stop by this bus.
+
+        TODO: rename to get_route or something?
         """
         from doc.transport.constants import Hanover, Lodge
 
@@ -206,6 +209,7 @@ class ScheduledTransport(DatabaseModel):
             pickup_dict[trip.template.pickup] += [trip]
 
         stops = set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
+        stops = self._order_stops(stops)
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]
             stop.trips_picked_up = pickup_dict[stop]
@@ -218,9 +222,31 @@ class ScheduledTransport(DatabaseModel):
         lodge.trips_dropped_off = list(self.picking_up())
         lodge.trips_picked_up = []
 
-        stops = sorted(stops, key=lambda x: x.distance)
         return [hanover] + list(stops) + [lodge]
 
+    def _order_stops(self, stops):
+        """ 
+        Query StopOrder objects and order
+        """
+        ordering = StopOrder.objects.filter(
+            trips_year=self.trips_year_id, bus=self
+        ).order_by(
+            'distance'
+        ).select_related(
+            'stop'
+        )
+        if len(ordering) < len(stops):
+            # we are missing some ordering objects
+            unordered_stops = set(stops) - set(map(lambda x: x.stop, ordering))
+            ordering = list(ordering) + [
+                StopOrder(
+                    distance=stop.distance, stop=stop
+                ) for stop in unordered_stops
+            ]
+            ordering.sort(key=lambda x: x.distance)
+
+        return list(map(lambda x: x.stop, ordering))
+        
     def over_capacity(self):
         """
         Returns True if the bus will be too full at
@@ -260,6 +286,28 @@ class ScheduledTransport(DatabaseModel):
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))
+
+
+class StopOrder(DatabaseModel):
+    """
+    Ordering of stops on an internal bus.
+
+    We are using a separate model instead of a comma 
+    separated list on the internal bus since we want 
+    to remember the relative distances of the stops so 
+    we can integrate stops into the order as they are 
+    added to a route.
+
+    This is just a M2M relationship with a through field.
+    """
+    bus = models.ForeignKey(ScheduledTransport)
+    stop = models.ForeignKey(Stop)
+    distance = models.PositiveSmallIntegerField(blank=True)
+
+    def save(self, **kwargs):
+        if self.distance is None and self.stop:
+            self.distance = self.stop.distance
+        return super(StopOrder, self).save(**kwargs)
 
 
 class ExternalBus(DatabaseModel):

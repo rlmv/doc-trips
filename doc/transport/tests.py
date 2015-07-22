@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from doc.test.testcases import TripsYearTestCase, WebTestCase
-from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus
+from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder
 from doc.transport.constants import Hanover, Lodge
 from doc.transport.maps import _split_stops
 from doc.transport.views import (
@@ -717,6 +717,42 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         # ...which, since both trips have 2 people, is over capacity.
 
         self.assertTrue(bus.over_capacity())
+
+    def test_order_stops(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(ScheduledTransport, trips_year=trips_year)
+        stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+        stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+        order = mommy.make(
+            StopOrder, trips_year=trips_year, 
+            bus=bus, stop=stop1, distance=60)
+        order = mommy.make(
+            StopOrder, trips_year=trips_year, 
+            bus=bus, stop=stop2, distance=35)
+        self.assertEqual(bus._order_stops([stop1, stop2]), [stop2, stop1])
+
+    def test_order_stops_with_missing_ordering(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(ScheduledTransport, trips_year=trips_year)
+        stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
+        stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=30)
+        order = mommy.make(
+            StopOrder, trips_year=trips_year, 
+            bus=bus, stop=stop1, distance=60)
+        self.assertEqual(bus._order_stops([stop1, stop2]), [stop2, stop1])
+
+
+class StopOrderModelTestCase(TripsYearTestCase):
+    
+    def test_stoporder_distance_is_automatically_populated(self):
+        trips_year = self.init_trips_year()
+        order = StopOrder(
+            trips_year=trips_year,
+            bus=mommy.make(ScheduledTransport, trips_year=trips_year),
+            stop=mommy.make(Stop, trips_year=trips_year, distance=3)
+        )
+        order.save()
+        self.assertEqual(order.distance, 3)
 
 
 class ExternalBusModelTestCase(TripsYearTestCase):
