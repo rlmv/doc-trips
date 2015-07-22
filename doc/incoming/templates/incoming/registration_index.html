@@ -7,30 +7,38 @@
 </h2>
 {% endblock %}
 
-{% block content %}
+{% block right_column %}
+<br><br><br><br><br>
+<ul class="list-group">
 
-<div>
-  <a class="btn btn-success" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Financial Aid Requests
   </a>
 
-  <a class="btn btn-success" href="{% url 'db:reports:bus_stops' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:reports:bus_stops' trips_year=trips_year %}">
     <i class="fa fa-download"></i> External Bus Requests
   </a>
 
-  <a class="btn btn-success" href="{% url 'db:reports:dietary' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:reports:dietary' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Dietary Info
   </a>
 
-  <a class="btn btn-success" href="{% url 'db:reports:medical' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:reports:medical' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Medical Info
   </a>
 
-  <a class="btn btn-success" href="{% url 'db:reports:feelings' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:reports:feelings' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Feelings
   </a>
 
-</div>
+  <a class="list-group-item" href="{% url 'db:nonstudent_registration' trips_year=trips_year %}">
+    <i class="fa fa-plus"></i> Non-Student Registration
+  </a>
+<ul>
+
+{% endblock right_column %}
+
+{% block content %}
 
 <br>
 
