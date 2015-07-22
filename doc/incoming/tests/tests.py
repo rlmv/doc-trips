@@ -468,9 +468,10 @@ class RegistrationViewsTestCase(WebTestCase):
             'doc_membership': 'NO',
             'green_fund_donation': 0,
         }
-        self.app.post(url, data, user=self.mock_director())
+        resp = self.app.post(url, data, user=self.mock_director()).follow()
         registration = Registration.objects.get()
         trippee = registration.trippee
+        self.assertEqual(resp.request.path, trippee.get_detail_url())
         self.assertEqual(registration.user, DartmouthUser.objects.sentinel())
         self.assertEqual(trippee.name, 'test')
         self.assertEqual(trippee.netid, '')

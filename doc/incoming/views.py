@@ -236,6 +236,11 @@ class NonStudentRegistration(DatabaseCreateView):
     """
     model = Registration
     form_class = RegistrationForm
+    explanation = (
+        "<p> Upload a registration for a non-student. Use this only "
+        "if, for some reason, the trippee does not have a NetId. "
+        "An Incoming Student object will be automatically created "
+        "and filled in with information from the registration. </p>")
 
     def form_valid(self, form):
         form.instance.trips_year_id = self.kwargs['trips_year']
@@ -251,6 +256,9 @@ class NonStudentRegistration(DatabaseCreateView):
             registration=self.object
         )
         return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.object.trippee.get_detail_url()
 
 
 class RegistrationDetail(DatabaseReadPermissionRequired,

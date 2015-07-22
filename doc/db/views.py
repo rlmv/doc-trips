@@ -17,7 +17,7 @@ from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.permissions.views import (
     DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
-from doc.utils.views import CrispyFormMixin
+from doc.utils.views import CrispyFormMixin, SetExplanationMixin
 
 
 logger = logging.getLogger(__name__)
@@ -129,7 +129,8 @@ class DatabaseListView(DatabaseReadPermissionRequired, TripsYearMixin, ListView)
     pass
 
 
-class DatabaseCreateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin,
+class DatabaseCreateView(DatabaseEditPermissionRequired,
+                         FormInvalidMessageMixin, SetExplanationMixin,
                          TripsYearMixin, CrispyFormMixin, CreateView):
 
     template_name = 'db/create.html'

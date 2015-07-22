@@ -7,5 +7,12 @@
 {% endblock %}
 
 {% block content %}
+
+{% if explanation %}
+<div>
+  <p> {{ explanation|safe }} </p>
+</div>
+{% endif %}
+
 {% crispy form %}
 {% endblock %}

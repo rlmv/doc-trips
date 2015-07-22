@@ -121,6 +121,22 @@ class PopulateMixin():
         return self.render_to_response(context)
 
 
+class SetExplanationMixin():
+    """
+    Like the SetHeadline mixin.
+
+    Exposes an 'explanation' in the template context.
+    """
+    explanation = None
+
+    def get_explanation(self):
+        return self.explanation
+
+    def get_context_data(self, **kwargs):
+        kwargs['explanation'] = self.get_explanation()
+        return super(SetExplanationMixin, self).get_context_data(**kwargs)
+
+
 # TODO: these aren't used anywhere. Use or remove
 
 class PassesTestMixin():
