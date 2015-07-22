@@ -11,6 +11,8 @@ scheduledtransport_urlpatterns = [
         name='scheduledtransport_create'),
     url(DB_REGEX['DELETE'], ScheduledTransportDeleteView.as_view(),
         name='scheduledtransport_delete'),
+    url(r'^ordering/(?P<bus_pk>[0-9]+)/$', OrderStops.as_view(),
+        name='scheduledtransport_order'),
 ]
 
 externalbus_urlpatterns = [

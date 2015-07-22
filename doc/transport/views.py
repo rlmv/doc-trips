@@ -1,16 +1,21 @@
 from datetime import datetime
 from pprint import pprint
 
-from vanilla.views import TemplateView
+from vanilla.views import TemplateView, FormView
 from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.forms.models import modelformset_factory
+from django.http import HttpResponseRedirect
+from crispy_forms.layout import Submit
+from crispy_forms.helper import FormHelper
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
                           DatabaseDetailView, TripsYearMixin)
-from doc.permissions.views import DatabaseReadPermissionRequired
+from doc.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
 from doc.transport.models import (
-    Stop, Route, Vehicle, ScheduledTransport, ExternalBus
+    Stop, Route, Vehicle, ScheduledTransport, ExternalBus, StopOrder
 )
 from doc.transport.maps import MapError
 from doc.trips.models import Section, Trip
@@ -200,7 +205,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
 
 class ExternalBusDelete(DatabaseDeleteView):
     model = ExternalBus
-    
+   
     def get_success_url(self):
         return reverse('db:externalbus_matrix',
                        kwargs={'trips_year': self.kwargs['trips_year']})
@@ -373,4 +378,38 @@ class ExternalBusChecklist(DatabaseReadPermissionRequired,
         )
         return context
 
-    
+
+class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
+   
+    template_name = 'transport/internal_order.html'
+
+    def get_queryset(self): 
+        # hackity hakity blah
+        ordering = self.get_bus()._get_stop_ordering()
+        for o in ordering:
+            if not o.pk:
+                o.save()
+        return StopOrder.objects.filter(bus=self.get_bus()).order_by('distance')
+
+    def get_bus(self):
+        return get_object_or_404(
+            ScheduledTransport, pk=self.kwargs['bus_pk'],
+            trips_year=self.kwargs['trips_year']
+        )
+
+    def get_form(self, **kwargs):
+        StopOrderFormset = modelformset_factory(
+            StopOrder, fields=['stop', 'distance'], extra=0
+        )
+        formset = StopOrderFormset(queryset=self.get_queryset(), **kwargs)
+        formset.helper = FormHelper()
+        formset.helper.add_input(Submit('submit', 'Save'))
+        return formset
+
+    def form_valid(self, formset):
+        formset.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.request.path
+        

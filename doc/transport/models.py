@@ -182,6 +182,12 @@ class ScheduledTransport(DatabaseModel):
         return Trip.objects.returns(self.route, self.date,
                                     self.trips_year_id)
 
+    def all_stops(self):
+        return set(
+            list(map(lambda x: x.template.pickup, self.picking_up())) +
+            list(map(lambda x: x.template.dropoff, self.dropping_off()))
+        )
+        
     @cache_as('_all_stops')
     def dropoff_and_pickup_stops(self):
         """
@@ -208,7 +214,8 @@ class ScheduledTransport(DatabaseModel):
         for trip in self.picking_up():
             pickup_dict[trip.template.pickup] += [trip]
 
-        stops = set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
+        stops = self.all_stops() 
+        #set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
         stops = self._order_stops(stops)
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]
@@ -224,10 +231,14 @@ class ScheduledTransport(DatabaseModel):
 
         return [hanover] + list(stops) + [lodge]
 
-    def _order_stops(self, stops):
-        """ 
-        Query StopOrder objects and order
+    def _get_stop_ordering(self, stops=None):
         """
+        Return a list of StopOrders for each stop 
+        that this bus is making (excluding Hanover and 
+        the Lodge).
+        """
+        if stops is None:
+            stops = self.all_stops()
         ordering = StopOrder.objects.filter(
             trips_year=self.trips_year_id, bus=self
         ).order_by(
@@ -240,12 +251,18 @@ class ScheduledTransport(DatabaseModel):
             unordered_stops = set(stops) - set(map(lambda x: x.stop, ordering))
             ordering = list(ordering) + [
                 StopOrder(
-                    distance=stop.distance, stop=stop
+                    distance=stop.distance, stop=stop, 
+                    bus=self, trips_year_id=self.trips_year_id
                 ) for stop in unordered_stops
             ]
             ordering.sort(key=lambda x: x.distance)
+        return ordering
 
-        return list(map(lambda x: x.stop, ordering))
+    def _order_stops(self, stops):
+        """ 
+        Query StopOrder objects and order
+        """
+        return list(map(lambda x: x.stop, self._get_stop_ordering(stops)))
         
     def over_capacity(self):
         """
