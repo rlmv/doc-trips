@@ -7,6 +7,7 @@ from django.dispatch import receiver
 from doc.views import HomePage
 from doc.permissions import initialize_groups_and_permissions
 from doc.core import urls as core_urls
+from doc.users.models import DartmouthUser
 
 admin.autodiscover()
 
@@ -14,6 +15,10 @@ admin.autodiscover()
 @receiver(post_migrate)
 def sync_auth(**kwargs):
     initialize_groups_and_permissions()
+
+@receiver(post_migrate)
+def make_sentinel_user(**kwargs):
+    DartmouthUser.objects.sentinel()
 
 handler403 = 'doc.views.permission_denied'
 

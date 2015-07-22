@@ -9,6 +9,11 @@ from doc.dartdm.lookup import lookup_email
 
 logger = logging.getLogger(__name__)
 
+SENTINEL_NETID = 'SENTINEL'
+SENTINEL_NAME = 'SENTINEL'
+SENTINEL_PK = 1
+
+
 class DartmouthUserManager(BaseUserManager):
 
     def get_or_create_by_netid(self, netid, name, did=None):
@@ -49,12 +54,21 @@ class DartmouthUserManager(BaseUserManager):
         user = self.create(netid=netid, did=did, email=email, name=name)
 
         return user
-        
+       
     def create_superuser(self, **kwargs):
-        
-        msg = ("create_superuser not implemented. "
-               "Use 'manage.py setsuperuser' instead.")
-        raise Exception(msg)
+        raise Exception("create_superuser not implemented. "
+                        "Use 'manage.py setsuperuser' instead.")
+
+    def sentinel(self):
+        """
+        Sentinel user for edge cases.
+        """
+        user, _ = self.get_or_create(
+            name=SENTINEL_NAME,
+            netid=SENTINEL_NETID,
+            pk=SENTINEL_PK,
+        )
+        return user
 
 
 class NetIdField(models.CharField):
