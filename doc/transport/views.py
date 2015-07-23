@@ -344,7 +344,7 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         ).first()
 
         if bus:
-            context['stops'] = bus.dropoff_and_pickup_stops()
+            context['stops'] = bus.get_stops()
             context['over_capacity'] = bus.over_capacity()
             try:
                 context['directions'] = bus.directions()
@@ -366,25 +366,25 @@ class ExternalBusChecklist(DatabaseReadPermissionRequired,
         return Route.objects.get(pk=self.kwargs['route_pk'])
 
     def get_context_data(self, **kwargs):
-        context = super(ExternalBusChecklist, self).get_context_data(**kwargs)
-        context['route'] = self.get_route()
-        context['section'] = self.get_section()
-        context['scheduled'] = ExternalBus.objects.filter(
-            trips_year=self.get_trips_year(),
-            route=self.get_route(), section=self.get_section()
-        ).first()
-        context['passengers'] = IncomingStudent.objects.passengers(
-            self.get_trips_year(), self.get_route(), self.get_section()
-        )
-        return context
+        kwargs.update({
+            'route': self.get_route(),
+            'section': self.get_section(),
+            'scheduled': ExternalBus.objects.filter(
+                trips_year=self.get_trips_year(),
+                route=self.get_route(), section=self.get_section()
+            ).first(),
+            'passengers': IncomingStudent.objects.passengers(
+                self.get_trips_year(), self.get_route(), self.get_section())
+        })
+        return super(ExternalBusChecklist, self).get_context_data(**kwargs)
 
 
 class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
    
     template_name = 'transport/internal_order.html'
 
-    def get_queryset(self): 
-        return self.get_bus()._get_stop_ordering()
+    def get_queryset(self):
+        return self.get_bus().update_stop_ordering()
 
     def get_bus(self):
         return get_object_or_404(

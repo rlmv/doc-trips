@@ -188,8 +188,8 @@ class ScheduledTransport(DatabaseModel):
             list(map(lambda x: x.template.dropoff, self.dropping_off()))
         )
         
-    @cache_as('_all_stops')
-    def dropoff_and_pickup_stops(self):
+    @cache_as('_get_stops')
+    def get_stops(self):
         """
         All stops which the bus makes as it drops trips off
         and picks them up. The first stop is Hanover, the last
@@ -201,8 +201,6 @@ class ScheduledTransport(DatabaseModel):
         conflict with the triptemplate related_names.)
         The properties contain the list of trips which are dropped
         off and picked up at this stop by this bus.
-
-        TODO: rename to get_route or something?
         """
         from doc.transport.constants import Hanover, Lodge
 
@@ -214,9 +212,7 @@ class ScheduledTransport(DatabaseModel):
         for trip in self.picking_up():
             pickup_dict[trip.template.pickup] += [trip]
 
-        stops = self.all_stops() 
-        #set(list(pickup_dict.keys()) + list(dropoff_dict.keys()))
-        stops = self._order_stops(stops)
+        stops = self._order_stops()
         for stop in stops:
             stop.trips_dropped_off = dropoff_dict[stop]
             stop.trips_picked_up = pickup_dict[stop]
@@ -231,52 +227,60 @@ class ScheduledTransport(DatabaseModel):
 
         return [hanover] + list(stops) + [lodge]
 
-    def _get_stop_ordering(self, stops=None):
+    def update_stop_ordering(self):
         """
-        Return a list of StopOrders for each stop 
-        that this bus is making (excluding Hanover and 
-        the Lodge).
+        Update the ordering of all stops this bus makes.
+        Create any missing StopOrder objects, and delete 
+        extra objects.
 
-        We create missing order objects in here. Yes, this
-        is poor http semantics, but there are more corner 
-        cases of when routes change than I want to deal with
-        right now.
+        (Yes, using this in GET requests is poor http semantics,
+        but there are more corner cases of when routes change than 
+        I want to deal with using signals.)
+
+        Returns a list of StopOrders for each stop that this bus is
+        making (excluding Hanover and the Lodge).
         """
-        if stops is None:
-            stops = self.all_stops()
+        stops = self.all_stops()
+        ordered_stops = set([x.stop for x in self._get_stoporder_set()])
+        unordered_stops = set(stops) - ordered_stops
+        surplus_stops = ordered_stops - set(stops)
 
-        ordering = StopOrder.objects.filter(
-            trips_year=self.trips_year_id, bus=self
-        ).order_by(
-            'distance'
-        ).select_related(
-            'stop'
-        )
-
-        if len(ordering) < len(stops):
+        if unordered_stops:
             # we are missing some ordering objects
-            unordered_stops = set(stops) - set(map(lambda x: x.stop, ordering))
-            ordering = list(ordering) + [
+            for stop in unordered_stops:
                 StopOrder.objects.create(
                     distance=stop.distance, stop=stop,
                     bus=self, trips_year_id=self.trips_year_id
-                ) for stop in unordered_stops
-            ]
-            ordering.sort(key=lambda x: x.distance)
-        return ordering
+                )
 
-    def _order_stops(self, stops):
-        """ 
+        elif surplus_stops:
+            # a stop has been removed from the route
+            StopOrder.objects.filter(
+                trips_year=self.trips_year_id,
+                stop__in=surplus_stops, bus=self
+            ).delete()
+
+        return self._get_stoporder_set()
+
+    def _get_stoporder_set(self):
+        return (
+            self.stoporder_set.all()
+            .order_by('distance')
+            .select_related('stop')
+        )
+
+    def _order_stops(self):
+        """
         Query StopOrder objects and order
         """
-        return list(map(lambda x: x.stop, self._get_stop_ordering(stops)))
-        
+        return list(map(lambda x: x.stop, self.update_stop_ordering()))
+
     def over_capacity(self):
         """
         Returns True if the bus will be too full at
         some point on it's route.
         """
-        stops = self.dropoff_and_pickup_stops()
+        stops = self.get_stops()
         load = 0
         for stop in stops:
             for trip in stop.trips_picked_up:
@@ -294,7 +298,7 @@ class ScheduledTransport(DatabaseModel):
 
         TODO: refactor
         """
-        stops = self.dropoff_and_pickup_stops()
+        stops = self.get_stops()
         load = 0
         for stop in stops:
             for trip in stop.trips_picked_up:

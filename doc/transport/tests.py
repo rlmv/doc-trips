@@ -603,15 +603,15 @@ class InternalTransportModelTestCase(TripsYearTestCase):
                 date=transport.date
             )
 
-    def test_dropoff_and_pickup_stops_with_no_intermediate(self):
+    def test_get_stops_with_no_intermediate(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(
             ScheduledTransport, trips_year=trips_year,
             route__category=Route.INTERNAL
         )
-        self.assertEqual(bus.dropoff_and_pickup_stops(), [Hanover(), Lodge()])
+        self.assertEqual(bus.get_stops(), [Hanover(), Lodge()])
 
-    def test_dropoff_and_pickup_stops_with_intermediate(self):
+    def test_get_stops_with_intermediate(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(
             ScheduledTransport, trips_year=trips_year,
@@ -631,7 +631,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             Trip, trips_year=trips_year, template__pickup=stop2,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
-        self.assertEqual(bus.dropoff_and_pickup_stops(),
+        self.assertEqual(bus.get_stops(),
                          [Hanover(), stop2, stop1, Lodge()])
 
     def test_trips_are_added_to_stops(self):
@@ -650,7 +650,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             Trip, trips_year=trips_year, template__pickup=stop,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
-        (hanover, stop, lodge) = bus.dropoff_and_pickup_stops()
+        (hanover, stop, lodge) = bus.get_stops()
         #  should set these fields:
         self.assertEqual(hanover.trips_dropped_off, [])
         self.assertEqual(hanover.trips_picked_up, [trip1])
@@ -721,25 +721,45 @@ class InternalTransportModelTestCase(TripsYearTestCase):
     def test_order_stops(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
-        stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
-        stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
-        order = mommy.make(
+        stop1 = mommy.make(
+            Trip, trips_year=trips_year, dropoff_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        ).template.dropoff
+        stop2 = mommy.make(
+            Trip, trips_year=trips_year, dropoff_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        ).template.dropoff
+        mommy.make(
             StopOrder, trips_year=trips_year, 
             bus=bus, stop=stop1, distance=60)
-        order = mommy.make(
+        mommy.make(
             StopOrder, trips_year=trips_year, 
             bus=bus, stop=stop2, distance=35)
-        self.assertEqual(bus._order_stops([stop1, stop2]), [stop2, stop1])
+        self.assertEqual(bus._order_stops(), [stop2, stop1])
 
     def test_order_stops_with_missing_ordering(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
-        stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route)
-        stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=30)
+        stop1 = mommy.make(
+            Trip, trips_year=trips_year, dropoff_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        ).template.dropoff
+        stop2 = mommy.make(
+            Trip, trips_year=trips_year, dropoff_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2),
+            template__dropoff__distance=30
+        ).template.dropoff
         order = mommy.make(
             StopOrder, trips_year=trips_year, 
             bus=bus, stop=stop1, distance=60)
-        self.assertEqual(bus._order_stops([stop1, stop2]), [stop2, stop1])
+        self.assertEqual(bus._order_stops(), [stop2, stop1])
+
+    def test_order_stops_deletes_extra_ordering(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(ScheduledTransport, trips_year=trips_year)
+        order = mommy.make(StopOrder, trips_year=trips_year, bus=bus)
+        self.assertEqual(bus._order_stops(), [])
+        self.assertQsEqual(StopOrder.objects.all(), [])
 
 
 class StopOrderingTestCase(WebTestCase):
