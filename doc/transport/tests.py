@@ -790,7 +790,12 @@ class StopOrderingTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         o1 = mommy.make(StopOrder, distance=4)
         o2 = mommy.make(StopOrder, distance=1)
-        self.assertQsEqual(StopOrder.objects.all(), [o2, o1])
+        self.assertQsEqual(StopOrder.objects.all(), [o2, o1], ordered=True)
+
+    def test_select_related_stop(self):
+        mommy.make(StopOrder)
+        with self.assertNumQueries(1):
+            [so.stop for so in StopOrder.objects.all()]
         
         
 class ExternalBusModelTestCase(TripsYearTestCase):

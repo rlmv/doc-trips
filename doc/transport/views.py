@@ -18,6 +18,7 @@ from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus, StopOrder
 )
 from doc.transport.maps import MapError
+from doc.transport.forms import StopOrderFormHelper
 from doc.trips.models import Section, Trip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
@@ -396,9 +397,9 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
         StopOrderFormset = modelformset_factory(
             StopOrder, fields=['stop', 'distance'], extra=0
         )
+#        import pdb; pdb.set_trace()
         formset = StopOrderFormset(queryset=self.get_queryset(), **kwargs)
-        formset.helper = FormHelper()
-        formset.helper.add_input(Submit('submit', 'Save'))
+        formset.helper = StopOrderFormHelper()
         return formset
 
     def form_valid(self, formset):

@@ -88,3 +88,6 @@ class ExternalPassengerManager(models.Manager):
 
 class StopOrderManager(models.Manager):
     
+    def get_queryset(self):
+        qs = super(StopOrderManager, self).get_queryset()
+        return qs.select_related('stop')

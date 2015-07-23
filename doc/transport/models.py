@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from doc.db.models import DatabaseModel
 from doc.transport.managers import (
     StopManager, RouteManager, ScheduledTransportManager,
-    ExternalBusManager, ExternalPassengerManager,
+    ExternalBusManager, ExternalPassengerManager, 
     StopOrderManager
 )
 from doc.transport.maps import get_directions
@@ -242,7 +242,7 @@ class ScheduledTransport(DatabaseModel):
         making (excluding Hanover and the Lodge).
         """
         stops = self.all_stops()
-        ordered_stops = set([x.stop for x in self._get_stoporder_set()])
+        ordered_stops = set([x.stop for x in self.stoporder_set.all()])
         unordered_stops = set(stops) - ordered_stops
         surplus_stops = ordered_stops - set(stops)
 
@@ -261,14 +261,7 @@ class ScheduledTransport(DatabaseModel):
                 stop__in=surplus_stops, bus=self
             ).delete()
 
-        return self._get_stoporder_set()
-
-    def _get_stoporder_set(self):
-        return (
-            self.stoporder_set.all()
-            .order_by('distance')
-            .select_related('stop')
-        )
+        return self.stoporder_set.all()
 
     def _order_stops(self):
         """
@@ -333,10 +326,11 @@ class StopOrder(DatabaseModel):
     stop = models.ForeignKey(Stop)
     distance = models.PositiveSmallIntegerField(blank=True)
 
-    class Meta:
-        unique_together = ('trips_year', 'bus', 'stop')
+    objects = StopOrderManager()
 
-    objects = StopOrderManager
+    class Meta:
+        unique_together = ['trips_year', 'bus', 'stop']
+        ordering = ['distance']
 
     def save(self, **kwargs):
         if self.distance is None and self.stop:
