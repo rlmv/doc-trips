@@ -786,7 +786,13 @@ class StopOrderingTestCase(WebTestCase):
         self.app.get(url, user=self.mock_director())
         StopOrder.objects.get(bus=bus)
 
-
+    def test_default_ordering_by_distance(self):
+        trips_year = self.init_trips_year()
+        o1 = mommy.make(StopOrder, distance=4)
+        o2 = mommy.make(StopOrder, distance=1)
+        self.assertQsEqual(StopOrder.objects.all(), [o2, o1])
+        
+        
 class ExternalBusModelTestCase(TripsYearTestCase):
 
     def test_EXTERNAL_validation(self):

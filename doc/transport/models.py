@@ -7,7 +7,8 @@ from django.core.urlresolvers import reverse
 from doc.db.models import DatabaseModel
 from doc.transport.managers import (
     StopManager, RouteManager, ScheduledTransportManager,
-    ExternalBusManager, ExternalPassengerManager
+    ExternalBusManager, ExternalPassengerManager,
+    StopOrderManager
 )
 from doc.transport.maps import get_directions
 from doc.utils.lat_lng import validate_lat_lng
@@ -334,6 +335,8 @@ class StopOrder(DatabaseModel):
 
     class Meta:
         unique_together = ('trips_year', 'bus', 'stop')
+
+    objects = StopOrderManager
 
     def save(self, **kwargs):
         if self.distance is None and self.stop:

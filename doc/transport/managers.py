@@ -84,3 +84,7 @@ class ExternalPassengerManager(models.Manager):
             matrix[p.bus_assignment.route][p.trip_assignment.section] += 1
 
         return matrix
+
+
+class StopOrderManager(models.Manager):
+    
