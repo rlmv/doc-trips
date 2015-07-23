@@ -742,7 +742,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         self.assertEqual(bus._order_stops([stop1, stop2]), [stop2, stop1])
 
 
-class StopOrderModelTestCase(TripsYearTestCase):
+class StopOrderingTestCase(WebTestCase):
     
     def test_stoporder_distance_is_automatically_populated(self):
         trips_year = self.init_trips_year()
@@ -753,6 +753,18 @@ class StopOrderModelTestCase(TripsYearTestCase):
         )
         order.save()
         self.assertEqual(order.distance, 3)
+
+    def test_stoporder_view_creates_missing_objects(self):
+        trips_year = self.init_trips_year()
+        bus = mommy.make(ScheduledTransport, trips_year=trips_year)
+        trip = mommy.make(
+            Trip, trips_year=trips_year, dropoff_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2)
+        )
+        url = reverse('db:scheduledtransport_order', 
+                      kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
+        self.app.get(url, user=self.mock_director())
+        StopOrder.objects.get(bus=bus)
 
 
 class ExternalBusModelTestCase(TripsYearTestCase):

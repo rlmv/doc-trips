@@ -236,9 +236,15 @@ class ScheduledTransport(DatabaseModel):
         Return a list of StopOrders for each stop 
         that this bus is making (excluding Hanover and 
         the Lodge).
+
+        We create missing order objects in here. Yes, this
+        is poor http semantics, but there are more corner 
+        cases of when routes change than I want to deal with
+        right now.
         """
         if stops is None:
             stops = self.all_stops()
+
         ordering = StopOrder.objects.filter(
             trips_year=self.trips_year_id, bus=self
         ).order_by(
@@ -246,12 +252,13 @@ class ScheduledTransport(DatabaseModel):
         ).select_related(
             'stop'
         )
+
         if len(ordering) < len(stops):
             # we are missing some ordering objects
             unordered_stops = set(stops) - set(map(lambda x: x.stop, ordering))
             ordering = list(ordering) + [
-                StopOrder(
-                    distance=stop.distance, stop=stop, 
+                StopOrder.objects.create(
+                    distance=stop.distance, stop=stop,
                     bus=self, trips_year_id=self.trips_year_id
                 ) for stop in unordered_stops
             ]
@@ -320,6 +327,9 @@ class StopOrder(DatabaseModel):
     bus = models.ForeignKey(ScheduledTransport)
     stop = models.ForeignKey(Stop)
     distance = models.PositiveSmallIntegerField(blank=True)
+
+    class Meta:
+        unique_together = ('trips_year', 'bus', 'stop')
 
     def save(self, **kwargs):
         if self.distance is None and self.stop:

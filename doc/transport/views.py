@@ -384,12 +384,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     template_name = 'transport/internal_order.html'
 
     def get_queryset(self): 
-        # hackity hakity blah
-        ordering = self.get_bus()._get_stop_ordering()
-        for o in ordering:
-            if not o.pk:
-                o.save()
-        return StopOrder.objects.filter(bus=self.get_bus()).order_by('distance')
+        return self.get_bus()._get_stop_ordering()
 
     def get_bus(self):
         return get_object_or_404(
