@@ -254,7 +254,7 @@ class ScheduledTransport(DatabaseModel):
                     bus=self, trips_year_id=self.trips_year_id
                 )
 
-        elif surplus_stops:
+        if surplus_stops:
             # a stop has been removed from the route
             StopOrder.objects.filter(
                 trips_year=self.trips_year_id,

@@ -5,7 +5,6 @@ from vanilla.views import TemplateView, FormView
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.shortcuts import get_object_or_404
-from django.forms.models import modelformset_factory
 from django.http import HttpResponseRedirect
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -18,7 +17,7 @@ from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus, StopOrder
 )
 from doc.transport.maps import MapError
-from doc.transport.forms import StopOrderFormHelper
+from doc.transport.forms import StopOrderFormHelper, StopOrderFormset
 from doc.trips.models import Section, Trip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
@@ -394,10 +393,6 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
         )
 
     def get_form(self, **kwargs):
-        StopOrderFormset = modelformset_factory(
-            StopOrder, fields=['stop', 'distance'], extra=0
-        )
-#        import pdb; pdb.set_trace()
         formset = StopOrderFormset(queryset=self.get_queryset(), **kwargs)
         formset.helper = StopOrderFormHelper()
         return formset

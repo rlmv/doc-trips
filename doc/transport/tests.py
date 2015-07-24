@@ -796,6 +796,25 @@ class StopOrderingTestCase(WebTestCase):
         mommy.make(StopOrder)
         with self.assertNumQueries(1):
             [so.stop for so in StopOrder.objects.all()]
+
+    def test_cannot_update_stop_field_in_form(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(Trip, trips_year=trips_year, 
+                          dropoff_route=mommy.make(Route, trips_year=trips_year))
+        bus = mommy.make(ScheduledTransport, trips_year=trips_year,
+                         route=trip.get_dropoff_route(), date=trip.dropoff_date)
+        order = mommy.make(StopOrder, trips_year=trips_year, 
+                           stop=trip.template.dropoff, bus=bus)
+        other_stop = mommy.make(Stop, trips_year=trips_year)
+
+        url = reverse('db:scheduledtransport_order', 
+                      kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
+        form = self.app.get(url, user=self.mock_director()).form
+        form['form-0-stop'] = other_stop.pk
+        form.submit()
+        
+        order = StopOrder.objects.get(pk=order.pk)
+        self.assertEqual(order.stop, trip.template.dropoff)
         
         
 class ExternalBusModelTestCase(TripsYearTestCase):
