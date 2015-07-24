@@ -2,9 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h2> Reorder Route </h2>
+<h2> Reorder Route <small>{{ bus }}</small></h2>
 {% endblock %}
 
 {% block content %}
+<ol class="breadcrumb">
+  <li><a href="{{ checklist_url }}"> <i class="fa fa-caret-left"></i> Directions </a></li>
+</ol>
 {% crispy form %}
 {% endblock %}

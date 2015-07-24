@@ -16,6 +16,13 @@
 </div>
 {% endif %}
 
+{% if scheduled %}
+<ol class="breadcrumb">
+  <li><a href="{% url 'db:scheduledtransport_order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route </a></li>
+</ol>
+<ol>
+{% endif %}
+
 <div class="row">
 <div class="col-sm-6">
 {% if dropoffs %}

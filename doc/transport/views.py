@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
+from braces.views import FormValidMessageMixin
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
@@ -21,6 +22,7 @@ from doc.transport.forms import StopOrderFormHelper, StopOrderFormset
 from doc.trips.models import Section, Trip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
+from doc.utils.cache import cache_as
 from doc.incoming.models import IncomingStudent
 
 
@@ -379,13 +381,16 @@ class ExternalBusChecklist(DatabaseReadPermissionRequired,
         return super(ExternalBusChecklist, self).get_context_data(**kwargs)
 
 
-class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
-   
+class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
+                 FormValidMessageMixin, FormView):
+  
     template_name = 'transport/internal_order.html'
+    form_valid_message = 'Route order has been updated'
 
     def get_queryset(self):
         return self.get_bus().update_stop_ordering()
 
+    @cache_as('_bus')
     def get_bus(self):
         return get_object_or_404(
             ScheduledTransport, pk=self.kwargs['bus_pk'],
@@ -403,4 +408,14 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
     def get_success_url(self):
         return self.request.path
-        
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({
+            'bus': self.get_bus(),
+            'checklist_url': reverse('db:transport_checklist', kwargs={
+                'trips_year': self.kwargs['trips_year'],
+                'route_pk': self.get_bus().route.pk,
+                'date': self.get_bus().date
+            })
+        })
+        return super(OrderStops, self).get_context_data(**kwargs)
