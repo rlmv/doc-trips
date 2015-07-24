@@ -11,7 +11,7 @@ from model_mommy import mommy
 from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder
 from doc.transport.constants import Hanover, Lodge
-from doc.transport.maps import _split_stops
+from doc.transport import maps
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders,
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
@@ -846,7 +846,30 @@ class MapsTestCases(TripsYearTestCase):
 
     def test_split_stops_handling(self):
         trips_year = self.init_trips_year()
-        orig, waypoints, dest = _split_stops([Hanover(), Lodge()])
+        orig, waypoints, dest = maps._split_stops([Hanover(), Lodge()])
         self.assertEqual(orig, Hanover().location)
         self.assertEqual(waypoints, [])
         self.assertEqual(dest, Lodge().location)
+
+    def test_directions_handles_more_than_eight_waypoints(self):
+        """ Google maps restricts us to 8 waypoints per request """
+        trips_year = self.init_trips_year()
+        stops = [mommy.make(Stop, trips_year=trips_year, lat_lng=coord) 
+                 for coord in (
+                         '43.705639,-72.297404',
+                         '43.680288,-72.527876',
+                         '43.779934,-72.042908',
+                         '43.753303,-72.124643',
+                         '43.703049,-72.289567',
+                         '43.705639,-72.297404',
+                         '44.831956,-71.075664',
+                         '44.875039,-71.05471',
+                         '43.736252,-72.2519',
+                         '43.788074,-72.099655',
+                         '44.227489,-71.477737')]
+        directions = maps.get_directions(stops)
+        self.assertEqual(len(stops), len(directions['legs']) + 1)
+        for i, leg in enumerate(directions['legs']):
+            self.assertEqual(leg['start_stop'], stops[i])
+            self.assertEqual(leg['end_stop'], stops[i + 1])
+

@@ -9,6 +9,7 @@ Interface with the Google maps API
 """
 
 TIMEOUT = 10  # -> settings
+MAX_WAYPOINTS = 8  # imposed by Google Maps
 
 class MapError(Exception):
     pass
@@ -30,17 +31,22 @@ def get_directions(stops):
 
     Returns a maps json response, with a start_stop
     and end_stop Stop objects added to each leg.
+
+    TODO: just return the 'legs' value
     """
     orig, waypoints, dest = _split_stops(stops)
     
-    if len(waypoints) > 8:
-        # TODO: recurse
-        raise MapError('Too many waypoints: %s' % waypoints)
-        
-    client = googlemaps.Client(
-        key=settings.GOOGLE_MAPS_KEY,
-        timeout=TIMEOUT
-    )
+    if len(waypoints) > MAX_WAYPOINTS:
+        d1 = get_directions(stops[:MAX_WAYPOINTS])
+        d2 = get_directions(stops[MAX_WAYPOINTS - 1:])
+
+        # sanity check
+        if d1['legs'][-1]['end_stop'] != d2['legs'][0]['start_stop']:
+            raise MapError('mismatched end and start stops on recursion')
+
+        return {'legs': d1['legs'] + d2['legs']}
+      
+    client = googlemaps.Client(key=settings.GOOGLE_MAPS_KEY, timeout=TIMEOUT)
 
     try:
         resp = client.directions(
