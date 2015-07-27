@@ -46,11 +46,13 @@ class Stop(DatabaseModel):
 
     route = models.ForeignKey(
         'Route', null=True, blank=True,
-        on_delete=models.PROTECT, related_name='stops'
+        on_delete=models.PROTECT, related_name='stops',
+        help_text="default bus route",
     )
     # TODO: validate that this only is used if route.category==EXTERNAL?
     cost = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True
+        max_digits=5, decimal_places=2, blank=True, null=True,
+        help_text="for external buses"
     )
     # mostly used for external routes
     pickup_time = models.TimeField(blank=True, null=True)
@@ -66,6 +68,9 @@ class Stop(DatabaseModel):
 
     @property
     def category(self):
+        """
+        Either INTERNAL or EXTERNAL
+        """
         return self.route.category
 
     @property
@@ -90,7 +95,9 @@ class Stop(DatabaseModel):
 
 class Route(DatabaseModel):
     """
-    A transportation route.
+    A transportation route. This is essentially a template for bus
+    routes which identifies stops that the same bus should pick
+    up.
 
     A route is either INTERNAL (transporting students to/from Hanover,
     trip dropoffs/pickups, and the lodge) or EXTERNAl (moving local
@@ -99,11 +106,12 @@ class Route(DatabaseModel):
     name = models.CharField(max_length=255)
     INTERNAL = 'INTERNAL'
     EXTERNAL = 'EXTERNAL'
-    TRANSPORT_CATEGORIES = (
-        (INTERNAL, 'Internal'),
-        (EXTERNAL, 'External'),
+    category = models.CharField(
+        max_length=20, choices=(
+            (INTERNAL, 'Internal'),
+            (EXTERNAL, 'External'),
+        )
     )
-    category = models.CharField(max_length=20, choices=TRANSPORT_CATEGORIES)
     vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
 
     objects = RouteManager()
@@ -140,7 +148,7 @@ class ScheduledTransport(DatabaseModel):
     date = models.DateField()
 
     class Meta:
-        unique_together = ('trips_year', 'route', 'date')
+        unique_together = ['trips_year', 'route', 'date']
 
     def clean(self):
         if self.route.category == Route.EXTERNAL:
@@ -267,7 +275,7 @@ class ScheduledTransport(DatabaseModel):
         """
         Query StopOrder objects and order
         """
-        return list(map(lambda x: x.stop, self.update_stop_ordering()))
+        return [o.stop for o in self.update_stop_ordering()]
 
     def over_capacity(self):
         """
@@ -314,13 +322,10 @@ class StopOrder(DatabaseModel):
     """
     Ordering of stops on an internal bus.
 
-    We are using a separate model instead of a comma 
-    separated list on the internal bus since we want 
-    to remember the relative distances of the stops so 
-    we can integrate stops into the order as they are 
-    added to a route.
+    The ordering field is called 'distance' to match the same
+    field on the Stop model.
 
-    This is just a M2M relationship with a through field.
+    This is basically the through model of an M2M relationship.
     """
     bus = models.ForeignKey(ScheduledTransport)
     stop = models.ForeignKey(Stop)
@@ -333,6 +338,9 @@ class StopOrder(DatabaseModel):
         ordering = ['distance']
 
     def save(self, **kwargs):
+        """ 
+        Automatically populate distance from self.stop
+        """
         if self.distance is None and self.stop:
             self.distance = self.stop.distance
         return super(StopOrder, self).save(**kwargs)

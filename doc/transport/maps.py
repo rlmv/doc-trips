@@ -21,7 +21,7 @@ def _split_stops(stops):
     (origin, waypoints, destion) of address or geo
     coordinates.
     """
-    addrs = list(map(lambda x: x.location, stops))
+    addrs = [x.location for x in stops]
     return (addrs[0], addrs[1:-1], addrs[-1])
 
 
@@ -45,7 +45,7 @@ def get_directions(stops):
             raise MapError('mismatched end and start stops on recursion')
 
         return {'legs': d1['legs'] + d2['legs']}
-      
+     
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_KEY, timeout=TIMEOUT)
 
     try:
