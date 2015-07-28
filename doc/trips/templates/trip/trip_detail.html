@@ -3,7 +3,7 @@
 {% load links %}
 
 {% block content %}
-<p> Click {{ object|edit_link }} to change the default transportation routes for this trip. </p>
+<p> Click {{ object|edit_link }} to add notes and change the default transportation routes for this trip. </p>
 {{ block.super }}
 
 {% detail object.template view.triptemplate_fields %}

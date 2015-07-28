@@ -44,7 +44,7 @@ class TripList(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
 
 class TripUpdate(SetHeadlineMixin, DatabaseUpdateView):
     model = Trip
-    fields = ['dropoff_route', 'pickup_route', 'return_route']
+    fields = ['dropoff_route', 'pickup_route', 'return_route', 'notes']
 
     def get_headline(self):
         return mark_safe(
@@ -57,7 +57,9 @@ class TripDetail(DatabaseDetailView):
     template_name = 'trip/trip_detail.html'
 
     fields = [
-        'section', 'template', 'leaders', 'trippees',
+        'section', 'template',
+        'leaders', 'trippees',
+        'notes',
         ('dropoff route', 'get_dropoff_route'),
         ('pickup route', 'get_pickup_route'),
         ('return route', 'get_return_route')

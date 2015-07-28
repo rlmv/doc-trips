@@ -36,10 +36,14 @@ class Trip(DatabaseModel):
         'Section', on_delete=models.PROTECT, related_name='trips'
     )
 
-    # The leaders for this trip can be accessed through the 'leaders' field.
-    # See LeaderApplication.assigned_trip.
+    # 'leaders' and 'trippees' point to Applications and IncomingStudents
 
-    # Fields to override the default transport routes. If any of these 
+    notes = models.TextField(blank=True, help_text=(
+        "Trip-specific details such as weird timing. "
+        "This information will be added to leader packets."
+    ))
+
+    # Theses fields override the default transport routes. If any of these 
     # routes are set, they are used instead of trip.template.*_route.
     # Is there a way to easily tell when a route is way off for a stop?
     ROUTE_HELP_TEXT = 'leave blank to use default route from template'
