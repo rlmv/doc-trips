@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load raids %}
+
+{% block header %}
+<h2></h2>
+{% endblock %}
+
+{% block content %}
+
+{% url 'db:raids:create' trips_year=trips_year as raid_url %}
+
+<table class="table table-condensed">
+  {% for trip in object_list %}
+  <tr>
+    <th> {{ trip }} </th>
+    <th> 
+      {{ trip.template.campsite1 }} {{ trip.section.at_campsite1|date:"n/j" }} <br>
+      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite1 %}">raid</a>
+    </th>
+    
+    <th> 
+      {{ trip.template.campsite2 }} {{ trip.section.at_campsite2|date:"n/j" }} <br>
+      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}">raid</a>
+    </th>
+    
+    <th> {{ trip.raid_set.all }} </th>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock content %}
