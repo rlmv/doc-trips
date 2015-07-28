@@ -1,9 +1,22 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
+
 
 {% block header %}
-<h2> Raid detail </h2>
+<h2> Raid </h2>
 {% endblock %}
 
 {% block content %}
-
+{{ raid }}
+<ul class="list-group">
+  {% for comment in raid.comment_set.all %}
+  <li class="list-group-item"> 
+    <h5 class="list-group-item-heading"> 
+      {{ comment.user }} <span class="text-muted">{{ comment.created}}</span> 
+    </h5>
+    {{ comment.comment }} 
+  </li>
+  {% endfor %}
+  <li class="list-group-item"> {% crispy form %} </li>
+<ul>
 {% endblock content %}

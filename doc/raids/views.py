@@ -1,8 +1,10 @@
 from braces.views import LoginRequiredMixin
-from vanilla import ListView, DetailView, CreateView
+from vanilla import ListView, DetailView, CreateView, FormView
+from django.http import HttpResponseRedirect
 
 from doc.db.views import TripsYearMixin
-from doc.raids.models import Raid
+from doc.raids.models import Raid, Comment
+from doc.raids.forms import CommentForm
 from doc.trips.models import Trip
 from doc.utils.views import PopulateMixin
 from doc.utils.forms import crispify
@@ -46,5 +48,19 @@ class RaidTrip(_RaidMixin, PopulateMixin, CreateView):
         return self.object.detail_url()
 
 
-class RaidDetail(_RaidMixin, DetailView):
+class RaidDetail(_RaidMixin, FormView, DetailView):
     model = Raid
+    form_class = CommentForm
+    template_name = 'raids/raid_detail.html'
+    context_object_name = 'raid'
+
+    def get_context_data(self, **kwargs):
+        kwargs[self.get_context_object_name()] = self.get_object()
+        return super(RaidDetail, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.user = self.request.user
+        form.instance.raid = self.get_object()
+        form.save()
+        return HttpResponseRedirect(self.request.path)
