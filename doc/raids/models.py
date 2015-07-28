@@ -25,9 +25,6 @@ class Raid(DatabaseModel):
     def detail_url(self):
         return reverse('db:raids:detail', kwargs=self.obj_kwargs())
 
-    def __str__(self):
-        return self.plan
-
 
 class Comment(DatabaseModel):
     """
@@ -37,6 +34,9 @@ class Comment(DatabaseModel):
     raid = models.ForeignKey(Raid, editable=False)
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
-    
+
+    class Meta:
+        ordering = ['created']
+
     def __str__(self):
         return "%s: %s" % (self.user, self.comment)

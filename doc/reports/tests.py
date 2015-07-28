@@ -14,7 +14,7 @@ from doc.incoming.models import Registration, IncomingStudent
 from doc.trips.models import Trip
 from doc.core.models import Settings
 from doc.utils.choices import YES, NO, S, M, L, XL
-from doc.reports.views import tshirt_counts
+from doc.reports.views import leader_tshirts, croo_tshirts, trippee_tshirts
 
 
 def save_and_open_csv(resp):
@@ -296,7 +296,7 @@ class TShirtCountTestCase(TripsTestCase):
         target = {
             S: 1, M: 0, L: 0, XL: 0
         }
-        self.assertEqual(target, tshirt_counts(trips_year))
+        self.assertEqual(target, leader_tshirts(trips_year))
         
     def test_tshirt_count_croos(self):
         trips_year = self.init_trips_year()
@@ -309,7 +309,7 @@ class TShirtCountTestCase(TripsTestCase):
         target = {
             S: 0, M: 1, L: 0, XL: 0
         }
-        self.assertEqual(target, tshirt_counts(trips_year))
+        self.assertEqual(target, croo_tshirts(trips_year))
 
     def test_tshirt_count_trippees(self):
         trips_year = self.init_trips_year()
@@ -321,7 +321,7 @@ class TShirtCountTestCase(TripsTestCase):
         target = {
             S: 0, M: 0, L: 1, XL: 0
         }
-        self.assertEqual(target, tshirt_counts(trips_year))
+        self.assertEqual(target, trippee_tshirts(trips_year))
         
 
         

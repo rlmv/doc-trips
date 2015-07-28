@@ -169,26 +169,30 @@ class Charges(GenericReportView):
         return Settings.objects.get().doc_membership_cost
 
 
-def tshirt_counts(trips_year):
+def _tshirt_count(qs):
     """
     Return a dict with S, M, L, XL keys, each
     with the number of shirts needed in that size.
     """
     counts = {S: 0, M: 0, L: 0, XL: 0}
-
-    leaders = Application.objects.filter(
-        trips_year=trips_year, status=Application.LEADER
-    )
-    croos = Application.objects.filter(
-        trips_year=trips_year, status=Application.CROO
-    )
-    trippees = Registration.objects.filter(
-        trips_year=trips_year
-    )
-    for qs in [leaders, croos, trippees]:
-        for size in [S, M, L, XL]:
-            counts[size] += qs.filter(tshirt_size=size).count()
+    for size in [S, M, L, XL]:
+        counts[size] += qs.filter(tshirt_size=size).count()
     return counts
+
+def leader_tshirts(trips_year):
+    return _tshirt_count(Application.objects.filter(
+        trips_year=trips_year, status=Application.LEADER
+    ))
+
+def croo_tshirts(trips_year):
+    return _tshirt_count(Application.objects.filter(
+        trips_year=trips_year, status=Application.CROO
+    ))
+
+def trippee_tshirts(trips_year):
+    return _tshirt_count(Registration.objects.filter(
+        trips_year=trips_year
+    ))
 
 
 class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
@@ -198,7 +202,11 @@ class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
     template_name = "reports/tshirts.html"
 
     def get_context_data(self, **kwargs):
-        kwargs['tshirt_counts'] = tshirt_counts(self.kwargs['trips_year'])
+        kwargs.update({
+            'leaders': leader_tshirts(self.kwargs['trips_year']),
+            'croos': croo_tshirts(self.kwargs['trips_year']),
+            'trippees': trippee_tshirts(self.kwargs['trips_year'])
+        })
         return super(TShirts, self).get_context_data(**kwargs)
 
 
