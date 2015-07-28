@@ -1,0 +1,31 @@
+<!-- Button trigger modal -->
+<a href="#" data-toggle="modal" data-target="#tripModal{{ trip.pk }}">
+  {{ trip }}
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="tripModal{{ trip.pk }}" tabindex="-1" role="dialog" aria-labelledby="tripModal{{ trip.pk }}Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="tripModal{{ trip.pk }}Label">{{ trip.verbose_str }}</h4>
+      </div>
+
+      <div class="modal-body">
+	<h4> Day 1 </h4>
+	<p> {{ trip.template.desc_day1|linebreaks }} </p>
+	<p> {{ trip.template.campsite1 }} </p>
+	<h4> Campsite 1: {{ trip.template.campsite1.name }} </h4>
+	<p> {{ trip.template.campsite1.directions }} </h4>
+	<h4> Day 2 </h4>
+	<p> {{ trip.template.desc_day2|linebreaks }} </p>
+	<h4> Campsite 2: {{ trip.template.campsite2.name }} </h4>
+	<p> {{ trip.template.campsite2.directions }} </p>
+	<h4> Day 3 </h4>
+	<p> {{ trip.template.desc_day3|linebreaks }} </p>
+      </div>
+    </div>
+  </div>
+</div
+>

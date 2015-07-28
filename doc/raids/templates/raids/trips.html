@@ -1,30 +1,45 @@
 {% extends "base.html" %}
 {% load raids %}
+{% load links %}
 
 {% block header %}
-<h2></h2>
+<h2>Trips to Raid</h2>
 {% endblock %}
 
 {% block content %}
 
-{% url 'db:raids:create' trips_year=trips_year as raid_url %}
+<p> Click on each trip for a full itinerary. Click on each campsite for directions to the campsite.</p>
 
 <table class="table table-condensed">
-  {% for trip in object_list %}
-  <tr>
-    <th> {{ trip }} </th>
-    <th> 
-      {{ trip.template.campsite1 }} {{ trip.section.at_campsite1|date:"n/j" }} <br>
-      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite1 %}">raid</a>
-    </th>
-    
-    <th> 
-      {{ trip.template.campsite2 }} {{ trip.section.at_campsite2|date:"n/j" }} <br>
-      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}">raid</a>
-    </th>
-    
-    <th> {{ trip.raid_set.all }} </th>
+  {% regroup object_list by section as grouped %}
+  {% for group in grouped %}
+  <tr class="bg-info"> 
+    {% with group.grouper as section %}
+    <th> Section {{ section.name }} </th>
+    <th> {{ section.at_campsite1|date:"n/j" }} </th>
+    <th> {{ section.at_campsite2|date:"n/j" }} </th>
+    <th> Raids </th>
+    {% endwith %}
   </tr>
+
+  {% for trip in group.list %}
+  <tr>
+    <td> 
+      {% include "raids/trip_modal.html" %}
+    </td>
+    <td> 
+      {% include "raids/campsite_modal.html" with campsite=trip.template.campsite1 %}
+      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite1 %}"><i class="fa fa-plus text-bright-success"></i></a>
+    </td>
+    
+    <td> 
+      {% include "raids/campsite_modal.html" with campsite=trip.template.campsite2 %}
+      <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}"><i class="fa fa-plus text-bright-success"></i></a>
+    </td>
+    
+    <td> {{ trip.raid_set.all|detail_link|default:"" }} </td>
+  </tr>
+  {% endfor %}
   {% endfor %}
 </table>
 

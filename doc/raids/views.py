@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from doc.db.views import TripsYearMixin
 from doc.raids.models import Raid, Comment
 from doc.raids.forms import CommentForm
-from doc.trips.models import Trip
+from doc.trips.models import Trip, Campsite
 from doc.utils.views import PopulateMixin
 from doc.utils.forms import crispify
 
@@ -64,3 +64,4 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
         form.instance.raid = self.get_object()
         form.save()
         return HttpResponseRedirect(self.request.path)
+

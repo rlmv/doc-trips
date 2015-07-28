@@ -1,0 +1,20 @@
+<!-- Button trigger modal -->
+<a href="#" data-toggle="modal" data-target="#campsiteModal{{ campsite.pk }}">
+  {{ campsite }}
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="campsiteModal{{ campsite.pk }}" tabindex="-1" role="dialog" aria-labelledby="campsiteModal{{ campsite.pk }}Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="campsiteModal{{ campsite.pk }}Label">{{ campsite }}</h4>
+      </div>
+      <div class="modal-body">
+	{{ campsite.directions }}
+      </div>
+    </div>
+  </div>
+</div
+>

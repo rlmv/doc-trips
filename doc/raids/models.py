@@ -15,7 +15,10 @@ class Raid(DatabaseModel):
     trip = models.ForeignKey(Trip, null=True, blank=True)
     campsite = models.ForeignKey(Campsite, null=True, blank=True)
     date = models.DateField()
-    plan = models.TextField(blank=True)
+    plan = models.TextField(blank=True, help_text=(
+        "Do you have a theme? Are you going to intercept "
+        "the trip on the trail or at their campsite?"
+    ))
     created = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
@@ -25,6 +28,10 @@ class Raid(DatabaseModel):
     def detail_url(self):
         return reverse('db:raids:detail', kwargs=self.obj_kwargs())
 
+    def __str__(self):
+        return "Raid %s" % self.date
+
+        
 
 class Comment(DatabaseModel):
     """
