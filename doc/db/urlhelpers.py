@@ -33,7 +33,7 @@ def _reverse_db_url(db_object, urlpattern_suffix):
 
 def reverse_detail_url(db_object):
     try:
-        return db_object.get_detail_url()
+        return db_object.detail_url()
     except AttributeError:
         return _reverse_db_url(db_object, 'detail')
 

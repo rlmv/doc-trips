@@ -471,7 +471,7 @@ class RegistrationViewsTestCase(WebTestCase):
         resp = self.app.post(url, data, user=self.mock_director()).follow()
         registration = Registration.objects.get()
         trippee = registration.trippee
-        self.assertEqual(resp.request.path, trippee.get_detail_url())
+        self.assertEqual(resp.request.path, trippee.detail_url())
         self.assertEqual(registration.user, DartmouthUser.objects.sentinel())
         self.assertEqual(trippee.name, 'test')
         self.assertEqual(trippee.netid, '')
@@ -506,7 +506,7 @@ class IncomingStudentViewsTestCase(WebTestCase):
     def test_delete_view(self):
         trips_year = self.init_current_trips_year()
         incoming = mommy.make(IncomingStudent, trips_year=trips_year)
-        url = incoming.get_delete_url()
+        url = incoming.delete_url()
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit().follow()
         self.assertEqual(res.request.path, 

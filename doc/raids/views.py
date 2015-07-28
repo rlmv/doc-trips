@@ -45,6 +45,6 @@ class RaidTrip(_RaidMixin, PopulateMixin, CreateView):
     def get_success_url(self):
         return self.object.detail_url()
 
-    
+
 class RaidDetail(_RaidMixin, DetailView):
     model = Raid

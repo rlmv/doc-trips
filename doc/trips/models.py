@@ -142,7 +142,7 @@ class Trip(DatabaseModel):
             self.template.description_summary
         )
    
-    def get_detail_url(self):
+    def detail_url(self):
         return reverse('db:trip_detail', kwargs=self.obj_kwargs())
 
 

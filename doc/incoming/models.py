@@ -140,10 +140,10 @@ class IncomingStudent(DatabaseModel):
 
         return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
 
-    def get_delete_url(self):
+    def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
         
-    def get_detail_url(self):
+    def detail_url(self):
         return reverse('db:incomingstudent_detail', kwargs=self.obj_kwargs())
         
     def __str__(self):

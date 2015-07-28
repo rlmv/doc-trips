@@ -258,7 +258,7 @@ class NonStudentRegistration(DatabaseCreateView):
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return self.object.trippee.get_detail_url()
+        return self.object.trippee.detail_url()
 
 
 class RegistrationDetail(DatabaseReadPermissionRequired,
