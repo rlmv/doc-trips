@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> Raid Blog </h2>
+{% endblock %}
+
+{% block content %}
+<p>
+  <a class="btn btn-info" href="{% url 'db:raids:trips' trips_year=trips_year %}"> Browse Trips </a>
+</p>
+
+<table class="table table-condensed">
+  <tr>
+    <th> Raid </th>
+    <th> By </th>
+    <th> Posts </th>
+  </tr>
+  {% for raid in raids %}
+  <tr>
+    <td>{{ raid|detail_link:raid.verbose_str }}</td>
+    <td>{{ raid.user }}</td>
+    <td>{{ raid.num_comments|add:1 }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

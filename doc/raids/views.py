@@ -1,6 +1,7 @@
 from braces.views import LoginRequiredMixin
 from vanilla import ListView, DetailView, CreateView, FormView
 from django.http import HttpResponseRedirect
+from django.db.models import Count
 
 from doc.db.views import TripsYearMixin
 from doc.raids.models import Raid, Comment
@@ -17,6 +18,16 @@ class _RaidMixin(LoginRequiredMixin, TripsYearMixin):
 class RaidHome(TripsYearMixin, ListView):
     model = Raid
     template_name = 'raids/home.html'
+
+
+class RaidList(_RaidMixin, ListView):
+    model = Raid
+    template_name = 'raids/list.html'
+    context_object_name = 'raids'
+
+    def get_queryset(self):
+        qs = super(RaidList, self).get_queryset()
+        return qs.annotate(num_comments=Count('comment'))
 
 
 class TripsToRaid(_RaidMixin, ListView):
