@@ -37,7 +37,11 @@
       <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}"><i class="fa fa-plus text-bright-success"></i></a>
     </td>
     
-    <td> {{ trip.raid_set.all|detail_link|default:"" }} </td>
+    <td> 
+      {% for raid in trip.raid_set.all %}
+      {{ raid|detail_link }} <br>
+      {% endfor %}
+    </td>
   </tr>
   {% endfor %}
   {% endfor %}

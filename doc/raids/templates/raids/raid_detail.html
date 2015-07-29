@@ -1,18 +1,31 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load raids %}
 
 
 {% block header %}
-<h2> Raid </h2>
+<h2> Raid <small>{{ raid.verbose_str }} </small> </h2>
 {% endblock %}
 
 {% block content %}
-{{ raid }}
+
+{% if raid.trip %}
+<p> {% trip_modal raid.trip "Click here for details about the trip" %} </p>
+{% endif %}
+
 <ul class="list-group">
+  
+  <li class="list-group-item">
+    <h5 class="list-group-item-heading"> {{ raid.user }}
+      <span class="text-muted">{{ raid.created }}
+    </h5>
+    {{ raid.plan }}
+  </li>
+    
   {% for comment in raid.comment_set.all %}
   <li class="list-group-item"> 
-    <h5 class="list-group-item-heading"> 
-      {{ comment.user }} <span class="text-muted">{{ comment.created}}</span> 
+    <h5 class="list-group-item-heading"> {{ comment.user }} 
+      <span class="text-muted">{{ comment.created }}</span> 
     </h5>
     {{ comment.comment }} 
   </li>

@@ -29,9 +29,15 @@ class Raid(DatabaseModel):
         return reverse('db:raids:detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
-        return "Raid %s" % self.date
+        return "%s %s" % (self.user, self.date.strftime('%m/%d'))
 
-        
+    def verbose_str(self):
+        if self.trip:
+            return "%s on %s" % (
+                self.trip.verbose_str(),
+                self.date.strftime('%m/%d')
+            )
+       
 
 class Comment(DatabaseModel):
     """

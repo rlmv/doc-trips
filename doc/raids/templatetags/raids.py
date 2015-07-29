@@ -20,8 +20,10 @@ def new_raid_url(trips_year, **kwargs):
 
 
 @register.inclusion_tag('raids/trip_modal.html')
-def trip_modal(trip):
-    return {'trip': trip}
+def trip_modal(trip, link_text=None):
+    if link_text is None:
+        link_text = str(trip)
+    return {'trip': trip, 'link_text': link_text}
 
 
 @register.inclusion_tag('raids/campsite_modal.html')
