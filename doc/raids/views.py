@@ -27,7 +27,15 @@ class RaidList(_RaidMixin, ListView):
 
     def get_queryset(self):
         qs = super(RaidList, self).get_queryset()
-        return qs.annotate(num_comments=Count('comment'))
+        return qs.annotate(
+            num_comments=Count('comment')
+        ).select_related(
+            'trip__template',
+            'trip__section'
+        ).prefetch_related(
+            'user',
+            'trip__leaders__applicant'
+        )
 
 
 class TripsToRaid(_RaidMixin, ListView):
@@ -40,7 +48,9 @@ class TripsToRaid(_RaidMixin, ListView):
             'template__campsite1',
             'template__campsite2',
         ).prefetch_related(
-            'raid_set'
+            'raid_set',
+            'raid_set__user',
+            'leaders__applicant'
         )
 
 

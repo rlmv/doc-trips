@@ -13,12 +13,14 @@
 <table class="table table-condensed">
   <tr>
     <th> Raid </th>
+    <th> Leaders </th>
     <th> By </th>
     <th> Posts </th>
   </tr>
   {% for raid in raids %}
   <tr>
     <td>{{ raid|detail_link:raid.verbose_str }}</td>
+    <td> {{ raid.trip.leaders.all|join:"<br>" }} </td>
     <td>{{ raid.user }}</td>
     <td>{{ raid.num_comments|add:1 }} </td>
   </tr>

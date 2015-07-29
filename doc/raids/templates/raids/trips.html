@@ -18,6 +18,7 @@
     <th> Section {{ section.name }} </th>
     <th> {{ section.at_campsite1|date:"n/j" }} </th>
     <th> {{ section.at_campsite2|date:"n/j" }} </th>
+    <th> Leaders </th>
     <th> Raids </th>
     {% endwith %}
   </tr>
@@ -37,6 +38,8 @@
       <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}"><i class="fa fa-plus text-bright-success"></i></a>
     </td>
     
+    <td> {{ trip.leaders.all|join:"<br>" }} </td>
+
     <td> 
       {% for raid in trip.raid_set.all %}
       {{ raid|detail_link }} <br>
