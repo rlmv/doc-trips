@@ -14,8 +14,9 @@ class _RaidMixin(LoginRequiredMixin, TripsYearMixin):
     pass
 
 
-class RaidIndex(_RaidMixin, ListView):
+class RaidHome(TripsYearMixin, ListView):
     model = Raid
+    template_name = 'raids/home.html'
 
 
 class TripsToRaid(_RaidMixin, ListView):

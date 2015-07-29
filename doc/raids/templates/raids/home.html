@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block header %}
+<h2> Raid Blog <small> Trips {{ trips_year }} </small> </h2>
+{% endblock %}
+
+{% block content %}
+{% include "raids/instructions.html" %}
+
+<div class="alert alert-info">
+This website is a work in progress. If you are having any issues signing in with your Dartmouth ID (alums especially), or think of anything that would make the Raid Blog more useful to you, please email <strong>bo.marchman at gmail.com</strong>.
+</div>
+
+<a href="{% url 'db:raids:trips' trips_year=trips_year %}" class="btn btn-primary"> View the Raid Blog </a>
+
+{% endblock %}
