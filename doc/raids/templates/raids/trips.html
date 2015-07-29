@@ -25,15 +25,15 @@
   {% for trip in group.list %}
   <tr>
     <td> 
-      {% include "raids/trip_modal.html" %}
+      {% trip_modal trip %}
     </td>
     <td> 
-      {% include "raids/campsite_modal.html" with campsite=trip.template.campsite1 %}
+      {% campsite_modal trip.template.campsite1 %}
       <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite1 %}"><i class="fa fa-plus text-bright-success"></i></a>
     </td>
     
     <td> 
-      {% include "raids/campsite_modal.html" with campsite=trip.template.campsite2 %}
+      {% campsite_modal trip.template.campsite2 %}
       <a href="{% new_raid_url trips_year trip=trip.pk date=trip.section.at_campsite2 %}"><i class="fa fa-plus text-bright-success"></i></a>
     </td>
     

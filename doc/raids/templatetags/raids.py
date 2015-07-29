@@ -17,3 +17,13 @@ def new_raid_url(trips_year, **kwargs):
     if kwargs:
         url += '?' + '&'.join(['%s=%s' % (k, v) for (k, v) in kwargs.items()])
     return url
+
+
+@register.inclusion_tag('raids/trip_modal.html')
+def trip_modal(trip):
+    return {'trip': trip}
+
+
+@register.inclusion_tag('raids/campsite_modal.html')
+def campsite_modal(campsite):
+    return {'campsite': campsite}
