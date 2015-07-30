@@ -188,8 +188,10 @@ class ScheduledTransport(DatabaseModel):
         All trips which this transport returns to Hanover (on day 5)
         """
         from doc.trips.models import Trip
-        return Trip.objects.returns(self.route, self.date,
-                                    self.trips_year_id)
+        return (
+            Trip.objects
+            .returns(self.route, self.date, self.trips_year_id)
+        )
 
     def all_stops(self):
         return set(
@@ -236,15 +238,21 @@ class ScheduledTransport(DatabaseModel):
             else:  # another trip for the same stop
                 set_trip_attr(stops[-1], order)
 
-        # all buses go from Hanover to the Lodge
+        # all buses start from Hanover
         hanover = Hanover()
         hanover.trips_picked_up = list(self.dropping_off())
         hanover.trips_dropped_off = []
-        lodge = Lodge()
-        lodge.trips_dropped_off = list(self.picking_up())
-        lodge.trips_picked_up = []
 
-        return [hanover] + list(stops) + [lodge]
+        stops = [hanover] + stops
+
+        if self.picking_up() or self.returning():
+            # otherwise we can bypass the lodge
+            lodge = Lodge()
+            lodge.trips_dropped_off = list(self.picking_up())
+            lodge.trips_picked_up = list(self.returning())
+            stops += [lodge]
+
+        return stops
 
     def update_stop_ordering(self):
         """
