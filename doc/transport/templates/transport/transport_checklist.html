@@ -20,45 +20,45 @@
 <ol class="breadcrumb">
   <li><a href="{% url 'db:scheduledtransport_order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route </a></li>
 </ol>
-<ol>
+
 {% endif %}
 
 <div class="row">
-<div class="col-sm-6">
-{% if dropoffs %}
-<h4> Dropping Off </h4>
-<ul>
-  {% for trip in dropoffs %}
-  <li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff|detail_link }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+  <div class="col-sm-6">
+    {% if dropoffs %}
+    <h4> Dropping Off </h4>
+    <ul>
+      {% for trip in dropoffs %}
+      <li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff|detail_link }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if pickups %}
-<h4> Picking Up </h4>
-<ul>
-  {% for trip in pickups %}
-  <li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup|detail_link }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+    {% if pickups %}
+    <h4> Picking Up </h4>
+    <ul>
+      {% for trip in pickups %}
+      <li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup|detail_link }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
-{% if returns %}
-<h4> Returning to Campus </h4>
-<ul>
-  {% for trip in returns %}
-  <li>{{ trip|detail_link }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+    {% if returns %}
+    <h4> Returning to Campus </h4>
+    <ul>
+      {% for trip in returns %}
+      <li>{{ trip|detail_link }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
-</div>
+  </div>
 
-<div class="col-sm-6">
-{% if scheduled %}
-{% embed_map stops %}
-{% endif %}
-</div>
+  <div class="col-sm-6">
+    {% if scheduled %}
+    {% embed_map stops %}
+    {% endif %}
+  </div>
 
 </div>
 
