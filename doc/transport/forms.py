@@ -10,14 +10,14 @@ class StopOrderForm(forms.ModelForm):
     
     class Meta:
         model = StopOrder
-        fields = ('stop', 'distance')
+        fields = ('trip', 'order')
 
-    def clean_stop(self):
+    def clean_trip(self):
         """
         Really disable the stop field. There's now no
         way to update it's value.
         """
-        return self.instance.stop
+        return self.instance.trip
 
 StopOrderFormset = forms.models.modelformset_factory(
     StopOrder, form=StopOrderForm, extra=0
@@ -26,8 +26,8 @@ StopOrderFormset = forms.models.modelformset_factory(
 
 class StopOrderFormHelper(FormHelper):
     layout = Layout(
-        Field('stop', readonly=True),
-        'distance',
+        Field('trip', readonly=True),
+        'order',
     )
     form_class = 'form-inline'
 

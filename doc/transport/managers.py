@@ -90,4 +90,9 @@ class StopOrderManager(models.Manager):
     
     def get_queryset(self):
         qs = super(StopOrderManager, self).get_queryset()
-        return qs.select_related('stop')
+        return qs.select_related(
+            'trip__template',
+            'trip__section',
+            'trip__template__dropoff',
+            'trip__template__pickup',
+        )

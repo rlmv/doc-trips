@@ -213,18 +213,28 @@ class ScheduledTransport(DatabaseModel):
         """
         from doc.transport.constants import Hanover, Lodge
 
-        dropoff_dict = defaultdict(list)
-        for trip in self.dropping_off():
-            dropoff_dict[trip.template.dropoff] += [trip]
+        DROPOFF_ATTR = 'trips_dropped_off'
+        PICKUP_ATTR = 'trips_picked_up'
 
-        pickup_dict = defaultdict(list)
-        for trip in self.picking_up():
-            pickup_dict[trip.template.pickup] += [trip]
+        def set_trip_attr(stop, order):
+            for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
+                if not hasattr(stop, attr):
+                    setattr(stop, attr, [])
+              
+            if order.stop_type == StopOrder.DROPOFF:
+                getattr(stop, DROPOFF_ATTR).append(order.trip)
 
-        stops = self._order_stops()
-        for stop in stops:
-            stop.trips_dropped_off = dropoff_dict[stop]
-            stop.trips_picked_up = pickup_dict[stop]
+            if order.stop_type == StopOrder.PICKUP:
+                getattr(stop, PICKUP_ATTR).append(order.trip)
+
+            return stop
+                
+        stops = []
+        for order in self.update_stop_ordering():
+            if len(stops) == 0 or stops[-1] != order.stop:  # new stop
+                stops.append(set_trip_attr(order.stop, order))
+            else:  # another trip for the same stop
+                set_trip_attr(stops[-1], order)
 
         # all buses go from Hanover to the Lodge
         hanover = Hanover()
@@ -249,29 +259,40 @@ class ScheduledTransport(DatabaseModel):
         Returns a list of StopOrders for each stop that this bus is
         making (excluding Hanover and the Lodge).
         """
-        stops = self.all_stops()
-        ordered_stops = set([x.stop for x in self.stoporder_set.all()])
-        unordered_stops = set(stops) - ordered_stops
-        surplus_stops = ordered_stops - set(stops)
+        
+        opts = (
+            (StopOrder.PICKUP, self.picking_up(),
+             lambda x: x.template.pickup),
+            (StopOrder.DROPOFF, self.dropping_off(),
+             lambda x: x.template.dropoff)
+        )
 
-        if unordered_stops:
-            # we are missing some ordering objects
-            for stop in unordered_stops:
-                StopOrder.objects.create(
-                    distance=stop.distance, stop=stop,
-                    bus=self, trips_year_id=self.trips_year_id
-                )
+        for stop_type, trips, getter in opts:
+            ordered_trips = set([x.trip for x in self.stoporder_set.filter(stop_type=stop_type)])
+            unordered_trips = set(trips) - ordered_trips
+            surplus_trips = ordered_trips - set(trips)
 
-        if surplus_stops:
-            # a stop has been removed from the route
-            StopOrder.objects.filter(
-                trips_year=self.trips_year_id,
-                stop__in=surplus_stops, bus=self
-            ).delete()
+            if unordered_trips:
+                # we are missing some ordering objects
+                for trip in unordered_trips:
+                    StopOrder.objects.create(
+                        order=getter(trip).distance,
+                        bus=self, trips_year_id=self.trips_year_id,
+                        stop_type=stop_type, trip=trip
+                    )
+
+            if surplus_trips:
+                # a trip has been removed from the route
+                StopOrder.objects.filter(
+                    trips_year=self.trips_year_id,
+                    trip__in=surplus_trips, bus=self,
+                    stop_type=stop_type
+                ).delete()
 
         return self.stoporder_set.all()
 
-    def _order_stops(self):
+
+    def order_stops(self):
         """
         Query StopOrder objects and order
         """
@@ -328,21 +349,37 @@ class StopOrder(DatabaseModel):
     This is basically the through model of an M2M relationship.
     """
     bus = models.ForeignKey(ScheduledTransport)
-    stop = models.ForeignKey(Stop)
-    distance = models.PositiveSmallIntegerField(blank=True)
+    order = models.PositiveSmallIntegerField(blank=True)
+    trip = models.ForeignKey('trips.Trip')
+    PICKUP = 'PICKUP'
+    DROPOFF = 'DROPOFF'
+    stop_type = models.CharField(
+        max_length=10, choices=(
+            (PICKUP, PICKUP),
+            (DROPOFF, DROPOFF),
+        )
+    )
 
     objects = StopOrderManager()
 
     class Meta:
-        unique_together = ['trips_year', 'bus', 'stop']
-        ordering = ['distance']
+        unique_together = ['trips_year', 'bus', 'trip']
+        ordering = ['order']
+        
+    @property
+    def stop(self):
+        if self.stop_type == self.DROPOFF:
+            return self.trip.template.dropoff
+        elif self.stop_type == self.PICKUP:
+            return self.trip.template.pickup
+        raise Exception('bad stop_type %s' % self.stop_type)
 
     def save(self, **kwargs):
         """ 
-        Automatically populate distance from self.stop
+        Automatically populate order from self.stop
         """
-        if self.distance is None and self.stop:
-            self.distance = self.stop.distance
+        if self.order is None and self.stop:
+            self.order = self.stop.distance
         return super(StopOrder, self).save(**kwargs)
 
 
