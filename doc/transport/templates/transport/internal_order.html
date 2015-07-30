@@ -9,5 +9,9 @@
 <ol class="breadcrumb">
   <li><a href="{{ checklist_url }}"> <i class="fa fa-caret-left"></i> Directions </a></li>
 </ol>
-{% crispy form %}
+
+<p> Use this page to reorder stops on {{ bus }} on a trip-by-trip level. The bus travels through each of these stops from smallest to largest 'order' value. </p>
+<div>
+  {% crispy form %}
+</div>
 {% endblock %}
