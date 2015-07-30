@@ -12,16 +12,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='stoporder',
-            name='stop_type',
-            field=models.CharField(choices=[('PICKUP', 'PICKUP'), ('DROPOFF', 'DROPOFF')], default='DROPOFF', max_length=10),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='stoporder',
-            name='trip',
-            field=models.ForeignKey(default=0, to='trips.Trip'),
-            preserve_default=False,
-        ),
+        migrations.DeleteModel('StopOrder')
     ]
