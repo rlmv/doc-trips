@@ -690,6 +690,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             section__leaders_arrive=bus.date - timedelta(days=5)
         )
         self.assertEqual(bus.get_stops(), [Hanover(), Lodge()])
+        self.assertQsEqual(bus.returning(), bus.get_stops()[1].trips_picked_up)
 
     def test_capacity_still_has_space(self):
         trips_year = self.init_trips_year()

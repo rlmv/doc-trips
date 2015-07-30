@@ -240,16 +240,15 @@ class ScheduledTransport(DatabaseModel):
 
         # all buses start from Hanover
         hanover = Hanover()
-        hanover.trips_picked_up = list(self.dropping_off())
-        hanover.trips_dropped_off = []
-
+        setattr(hanover, PICKUP_ATTR, list(self.dropping_off()))
+        setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
         if self.picking_up() or self.returning():
             # otherwise we can bypass the lodge
             lodge = Lodge()
-            lodge.trips_dropped_off = list(self.picking_up())
-            lodge.trips_picked_up = list(self.returning())
+            setattr(lodge, DROPOFF_ATTR, list(self.picking_up()))
+            setattr(lodge, PICKUP_ATTR, list(self.returning()))
             stops += [lodge]
 
         return stops
