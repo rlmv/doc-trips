@@ -714,9 +714,8 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             route__category=Route.INTERNAL,
             route__vehicle__capacity=1
         )
-        stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
         trip = mommy.make(
-            Trip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff__route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
@@ -789,7 +788,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             StopOrder, trips_year=trips_year, 
             bus=bus, trip=trip1, order=60)
         self.assertEqual(bus.get_stops()[1:], [trip2.template.dropoff, 
-                                                 trip1.template.dropoff])
+                                               trip1.template.dropoff])
 
     def test_order_stops_deletes_extra_ordering(self):
         trips_year = self.init_trips_year()
@@ -797,7 +796,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         order = mommy.make(StopOrder, trips_year=trips_year, bus=bus)
         self.assertEqual(bus.order_stops(), [])
         self.assertQsEqual(StopOrder.objects.all(), [])
-  
+
 
 class StopOrderingTestCase(WebTestCase):
 

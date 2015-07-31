@@ -284,8 +284,9 @@ class ScheduledTransport(DatabaseModel):
                 for trip in unordered_trips:
                     StopOrder.objects.create(
                         order=getter(trip).distance,
-                        bus=self, trips_year_id=self.trips_year_id,
-                        stop_type=stop_type, trip=trip
+                        bus=self, trip=trip,
+                        trips_year_id=self.trips_year_id,
+                        stop_type=stop_type
                     )
 
             if surplus_trips:
@@ -297,7 +298,6 @@ class ScheduledTransport(DatabaseModel):
                 ).delete()
 
         return self.stoporder_set.all()
-
 
     def order_stops(self):
         """
@@ -382,8 +382,8 @@ class StopOrder(DatabaseModel):
         raise Exception('bad stop_type %s' % self.stop_type)
 
     def save(self, **kwargs):
-        """ 
-        Automatically populate order from self.stop
+        """
+        Automatically populate order from self.stop.distance
         """
         if self.order is None and self.stop:
             self.order = self.stop.distance
@@ -397,7 +397,7 @@ class ExternalBus(DatabaseModel):
     """
     objects = ExternalBusManager()
     passengers = ExternalPassengerManager()
-    
+   
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)
 
