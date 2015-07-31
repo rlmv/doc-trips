@@ -356,7 +356,7 @@ class StopOrder(DatabaseModel):
     This is basically the through model of an M2M relationship.
     """
     bus = models.ForeignKey(ScheduledTransport)
-    order = models.PositiveSmallIntegerField(blank=True)
+    order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey('trips.Trip')
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
