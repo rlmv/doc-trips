@@ -45,7 +45,7 @@ class TransportModelTestCase(TripsYearTestCase):
 
 class StopModelTestCase(TripsYearTestCase):
 
-    def test_get_location_with_coords(self):
+    def test_location_prioritizes_lat_lng_if_available(self):
         trips_year = self.init_trips_year()
         stop = mommy.make(
             Stop, trips_year=trips_year, 
@@ -53,16 +53,11 @@ class StopModelTestCase(TripsYearTestCase):
         )
         self.assertEqual(stop.location, '43.7030,-72.2895')
 
-    def test_get_location_with_address(self):
+    def test_location_with_address(self):
         trips_year = self.init_trips_year()
         stop = mommy.make(Stop, trips_year=trips_year, lat_lng='', address='address')
         self.assertEqual(stop.location, 'address')
     
-    def test_get_location_with_address(self):
-        trips_year = self.init_trips_year()
-        stop = mommy.make(Stop, trips_year=trips_year, lat_lng='', address='address')
-        self.assertEqual(stop.location, 'address')
-
     def test_no_lat_lng_or_address_raises_validation_error(self):
         trips_year = self.init_trips_year()
         stop = mommy.prepare(Stop, trips_year=trips_year, lat_lng='', address='')
@@ -106,13 +101,12 @@ class RouteManagerTestCase(TripsYearTestCase):
 class ScheduledTransportManagerTestCase(TripsYearTestCase):
     
     def test_internal(self):
-
         ty = self.init_current_trips_year()
-        external_transport = mommy.make(
+        external = mommy.make(
             ScheduledTransport, trips_year=ty, route__category=Route.EXTERNAL)
-        internal_transport = mommy.make(
+        internal = mommy.make(
             ScheduledTransport, trips_year=ty, route__category=Route.INTERNAL)
-        self.assertQsEqual(ScheduledTransport.objects.internal(ty), [internal_transport])
+        self.assertQsEqual(ScheduledTransport.objects.internal(ty), [internal])
      
    
 class TestViews(WebTestCase):
