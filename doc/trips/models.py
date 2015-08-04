@@ -56,6 +56,9 @@ class Trip(DatabaseModel):
     return_route =  models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
+    
+    dropoff_time = models.TimeField(blank=True, null=True)
+    pickup_time = models.TimeField(blank=True, null=True)
 
     class Meta:
         # no two Trips can have the same template-section-trips_year
@@ -86,6 +89,22 @@ class Trip(DatabaseModel):
         if self.return_route:
             return self.return_route
         return self.template.return_route
+
+    def get_dropoff_time(self):
+        """
+        Returns overridden dropoff time.
+        """
+        if self.dropoff_time:
+            return self.dropoff_time
+        return self.template.dropoff.dropoff_time
+
+    def get_pickup_time(self):
+        """
+        Override pickup time
+        """
+        if self.pickup_time:
+            return self.pickup_time
+        return self.template.pickup.pickup_time
 
     @cache_as('_size')
     def size(self):

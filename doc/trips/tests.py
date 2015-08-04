@@ -1,6 +1,6 @@
 import unittest
 import math
-from datetime import date, timedelta
+from datetime import date, timedelta, time
 from django.db import transaction
 from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
@@ -171,6 +171,22 @@ class TripRouteOverridesTestCase(WebTestCase):
         trip.return_route = mommy.make(Route, trips_year=trips_year)
         trip.save()
         self.assertEqual(trip.get_return_route(), trip.return_route)
+
+    def test_get_dropoff_time(self):
+        trip = mommy.make(Trip, template__dropoff__dropoff_time=time(12))
+        self.assertEqual(trip.get_dropoff_time(), time(12))
+        # override 
+        trip.dropoff_time = time(13)
+        trip.save()
+        self.assertEqual(trip.get_dropoff_time(), time(13))
+
+    def test_get_pickup_time(self):
+        trip = mommy.make(Trip, template__pickup__pickup_time=time(12))
+        self.assertEqual(trip.get_pickup_time(), time(12))
+        # override 
+        trip.pickup_time = time(13)
+        trip.save()
+        self.assertEqual(trip.get_pickup_time(), time(13))
 
     def test_size_method_with_noone(self):
         trips_year = self.init_trips_year()
