@@ -50,8 +50,7 @@ def get_directions(stops):
 
     try:
         resp = client.directions(
-            origin=orig, destination=dest,
-            waypoints=waypoints
+            origin=orig, destination=dest, waypoints=waypoints
         )
         if len(resp) != 1:
             raise MapError('Expecting one route')
