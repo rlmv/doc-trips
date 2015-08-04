@@ -29,7 +29,7 @@
     <h4> Dropping Off </h4>
     <ul>
       {% for trip in dropoffs %}
-      <li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff|detail_link }}</li>
+      <li>{{ trip|detail_link }} &mdash; {{ trip.template.dropoff_stop|detail_link }}</li>
       {% endfor %}
     </ul>
     {% endif %}
@@ -38,7 +38,7 @@
     <h4> Picking Up </h4>
     <ul>
       {% for trip in pickups %}
-      <li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup|detail_link }}</li>
+      <li>{{ trip|detail_link }} &mdash; {{ trip.template.pickup_stop|detail_link }}</li>
       {% endfor %}
     </ul>
     {% endif %}

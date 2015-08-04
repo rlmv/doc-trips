@@ -93,6 +93,6 @@ class StopOrderManager(models.Manager):
         return qs.select_related(
             'trip__template',
             'trip__section',
-            'trip__template__dropoff',
-            'trip__template__pickup',
+            'trip__template__dropoff_stop',
+            'trip__template__pickup_stop',
         )

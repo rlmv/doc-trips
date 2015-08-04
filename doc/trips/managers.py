@@ -122,7 +122,7 @@ class TripManager(models.Manager):
             self.with_counts(trips_year)
             .filter(section__leaders_arrive=date-timedelta(days=2))
             .filter(Q(dropoff_route=route) |
-                    Q(dropoff_route=None, template__dropoff__route=route))
+                    Q(dropoff_route=None, template__dropoff_stop__route=route))
         )
 
     def pickups(self, route, date, trips_year):
@@ -133,7 +133,7 @@ class TripManager(models.Manager):
             self.with_counts(trips_year)
             .filter(section__leaders_arrive=date-timedelta(days=4))
             .filter(Q(pickup_route=route) |
-                    Q(pickup_route=None, template__pickup__route=route))
+                    Q(pickup_route=None, template__pickup_stop__route=route))
         )
        
     def returns(self, route, date, trips_year):

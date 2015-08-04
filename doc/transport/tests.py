@@ -196,8 +196,8 @@ class RidersMatrixTestCase(TripsYearTestCase):
         trip = mommy.make(
             Trip, trips_year=ty, 
             section=section, 
-            template__dropoff__route=route, 
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route, 
+            template__pickup_stop__route=route, 
             template__return_route=route
         )
         n = trip.template.max_num_people
@@ -220,15 +220,15 @@ class RidersMatrixTestCase(TripsYearTestCase):
         trip1 = mommy.make(
             Trip, trips_year=ty, 
             section=section, 
-            template__dropoff__route=route, 
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route, 
+            template__pickup_stop__route=route, 
             template__return_route=route
         )
         trip2 = mommy.make(
             Trip, trips_year=ty, 
             section=section, 
-            template__dropoff__route=route, 
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route, 
+            template__pickup_stop__route=route, 
             template__return_route=route
         )
         n = trip1.template.max_num_people + trip2.template.max_num_people
@@ -252,15 +252,15 @@ class RidersMatrixTestCase(TripsYearTestCase):
         trip1 = mommy.make(
             Trip, trips_year=ty, 
             section=section1, 
-            template__dropoff__route=route1, 
-            template__pickup__route=route1, 
+            template__dropoff_stop__route=route1, 
+            template__pickup_stop__route=route1, 
             template__return_route=route1
         )
         trip2 = mommy.make(
             Trip, trips_year=ty, 
             section=section2, 
-            template__dropoff__route=route2, 
-            template__pickup__route=route1, 
+            template__dropoff_stop__route=route2, 
+            template__pickup_stop__route=route1, 
             template__return_route=route2
         )
         n = trip1.template.max_num_people 
@@ -319,8 +319,8 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         trip = mommy.make(
             Trip, trips_year=trips_year, 
             section=section,
-            template__dropoff__route=route,
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route, 
             template__return_route=route
         )
         n = trip.size()
@@ -344,14 +344,14 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         trip1 = mommy.make(
             Trip, trips_year=ty, 
             section=section1,
-            template__dropoff__route=route1, 
-            template__pickup__route=route1, 
+            template__dropoff_stop__route=route1, 
+            template__pickup_stop__route=route1, 
             template__return_route=route1)
         trip2 = mommy.make(
             Trip, trips_year=ty, 
             section=section2,
-            template__dropoff__route=route2, 
-            template__pickup__route=route1, 
+            template__dropoff_stop__route=route2, 
+            template__pickup_stop__route=route1, 
             template__return_route=route2)
         n = trip1.size() 
         m = trip2.size()
@@ -384,8 +384,8 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         trip = mommy.make(
             Trip, trips_year=ty, 
             section=section, 
-            template__dropoff__route=route, 
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route, 
+            template__pickup_stop__route=route, 
             template__return_route=route
         )
         target = {
@@ -411,8 +411,8 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         trip = mommy.make(
             Trip, trips_year=ty, 
             section=section, 
-            template__dropoff__route=route, 
-            template__pickup__route=route, 
+            template__dropoff_stop__route=route, 
+            template__pickup_stop__route=route, 
             template__return_route=route, 
             template__max_trippees=route.vehicle.capacity + 1000 # exceeds capacity
         )
@@ -616,14 +616,14 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             Stop, trips_year=trips_year, route=bus.route, distance=100
         )
         trip1 = mommy.make(
-            Trip, trips_year=trips_year, template__dropoff=stop1,
+            Trip, trips_year=trips_year, template__dropoff_stop=stop1,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         stop2 = mommy.make(
             Stop, trips_year=trips_year, route=bus.route, distance=1
         )
         trip2 = mommy.make(
-            Trip, trips_year=trips_year, template__pickup=stop2,
+            Trip, trips_year=trips_year, template__pickup_stop=stop2,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         self.assertEqual(bus.get_stops(),
@@ -638,11 +638,11 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
 
         trip1 = mommy.make(  # dropping off
-            Trip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff_stop=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         trip2 = mommy.make(  # picking up
-            Trip, trips_year=trips_year, template__pickup=stop,
+            Trip, trips_year=trips_year, template__pickup_stop=stop,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         trip3 = mommy.make(  # returning
@@ -667,7 +667,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
         trip1 = mommy.make(  # dropping off
-            Trip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff_stop=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         stops = bus.get_stops()
@@ -695,7 +695,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         stop = mommy.make(Stop, trips_year=trips_year, route=bus.route)
         trip = mommy.make(
-            Trip, trips_year=trips_year, template__dropoff=stop,
+            Trip, trips_year=trips_year, template__dropoff_stop=stop,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
@@ -709,7 +709,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             route__vehicle__capacity=1
         )
         trip = mommy.make(
-            Trip, trips_year=trips_year, template__dropoff__route=bus.route,
+            Trip, trips_year=trips_year, template__dropoff_stop__route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
@@ -725,11 +725,11 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         stop1 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=1)
         stop2 = mommy.make(Stop, trips_year=trips_year, route=bus.route, distance=2)
         trip1 = mommy.make(
-            Trip, trips_year=trips_year, template__dropoff=stop2,
+            Trip, trips_year=trips_year, template__dropoff_stop=stop2,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         trip2 = mommy.make(
-            Trip, trips_year=trips_year, template__pickup=stop1,
+            Trip, trips_year=trips_year, template__pickup_stop=stop1,
             section__leaders_arrive=bus.date - timedelta(days=4)
         )
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip1)
@@ -763,8 +763,8 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             StopOrder, trips_year=trips_year, 
             bus=bus, trip=trip2, order=35, 
             stop_type=StopOrder.DROPOFF)
-        self.assertEqual(bus.order_stops(), [trip2.template.dropoff, 
-                                             trip1.template.dropoff])
+        self.assertEqual(bus.order_stops(), [trip2.template.dropoff_stop, 
+                                             trip1.template.dropoff_stop])
 
     def test_order_stops_with_missing_ordering(self):
         trips_year = self.init_trips_year()
@@ -776,13 +776,13 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         trip2 = mommy.make(
             Trip, trips_year=trips_year, dropoff_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2),
-            template__dropoff__distance=30
+            template__dropoff_stop__distance=30
         )
         order = mommy.make(
             StopOrder, trips_year=trips_year, 
             bus=bus, trip=trip1, order=60)
-        self.assertEqual(bus.get_stops()[1:], [trip2.template.dropoff, 
-                                               trip1.template.dropoff])
+        self.assertEqual(bus.get_stops()[1:], [trip2.template.dropoff_stop, 
+                                               trip1.template.dropoff_stop])
 
     def test_order_stops_deletes_extra_ordering(self):
         trips_year = self.init_trips_year()
@@ -796,9 +796,9 @@ class StopOrderingTestCase(WebTestCase):
 
     def test_stop_property(self):
         stop = mommy.make(Stop)
-        o = mommy.make(StopOrder, trip__template__dropoff=stop, stop_type=StopOrder.DROPOFF)
+        o = mommy.make(StopOrder, trip__template__dropoff_stop=stop, stop_type=StopOrder.DROPOFF)
         self.assertEqual(o.stop, stop)
-        o = mommy.make(StopOrder, trip__template__pickup=stop, stop_type=StopOrder.PICKUP)
+        o = mommy.make(StopOrder, trip__template__pickup_stop=stop, stop_type=StopOrder.PICKUP)
         self.assertEqual(o.stop, stop)
     
     def test_stoporder_order_is_automatically_populated(self):
@@ -806,7 +806,7 @@ class StopOrderingTestCase(WebTestCase):
         order = StopOrder(
             trips_year=trips_year,
             bus=mommy.make(ScheduledTransport, trips_year=trips_year),
-            trip=mommy.make(Trip, trips_year=trips_year, template__dropoff__distance=3),
+            trip=mommy.make(Trip, trips_year=trips_year, template__dropoff_stop__distance=3),
             stop_type=StopOrder.DROPOFF
         )
         order.save()
@@ -824,7 +824,7 @@ class StopOrderingTestCase(WebTestCase):
         self.app.get(url, user=self.mock_director())
         so = StopOrder.objects.get(
             bus=bus, trip=trip, stop_type=StopOrder.DROPOFF, 
-            order=trip.template.dropoff.distance
+            order=trip.template.dropoff_stop.distance
         )
 
     def test_default_manager_ordering(self):
@@ -855,7 +855,7 @@ class StopOrderingTestCase(WebTestCase):
         form.submit()
         
         order = StopOrder.objects.get(pk=order.pk)
-        self.assertEqual(order.stop, trip.template.dropoff)
+        self.assertEqual(order.stop, trip.template.dropoff_stop)
         
         
 class ExternalBusModelTestCase(TripsYearTestCase):

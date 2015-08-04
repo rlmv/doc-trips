@@ -117,8 +117,8 @@ def _rider_matrix(trips_year, size_key):
             'pickup_route',
             'dropoff_route',
             'return_route',
-            'template__dropoff__route',
-            'template__pickup__route',
+            'template__dropoff_stop__route',
+            'template__pickup_stop__route',
             'template__return_route'
         )
     )

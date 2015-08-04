@@ -75,9 +75,9 @@ class TripDetail(DatabaseDetailView):
         'triptype', 'max_trippees',
         'non_swimmers_allowed',
         'desc_intro',
-        'dropoff', 'desc_day1', 'campsite1',
+        'dropoff_stop', 'desc_day1', 'campsite1',
         'desc_day2', 'campsite2',
-        'desc_day3', 'pickup',
+        'desc_day3', 'pickup_stop',
         'desc_conc', 
         'revisions']
     
@@ -100,7 +100,7 @@ class TripTemplateList(DatabaseListView):
     def get_queryset(self):
         qs = super(TripTemplateList, self).get_queryset()
         return qs.select_related(
-            'triptype', 'campsite1', 'campsite2', 'dropoff', 'pickup'
+            'triptype', 'campsite1', 'campsite2', 'dropoff_stop', 'pickup_stop'
         )
 
 
@@ -111,8 +111,8 @@ class TripTemplateCreate(DatabaseCreateView):
 class TripTemplateDetail(DatabaseDetailView):
     model = TripTemplate
     fields = ['name', 'description_summary', 'triptype', 
-              'max_trippees', 'non_swimmers_allowed', 'dropoff', 
-              'campsite1', 'campsite2', 'pickup', 'return_route',
+              'max_trippees', 'non_swimmers_allowed', 'dropoff_stop',
+              'campsite1', 'campsite2', 'pickup_stop', 'return_route',
               'desc_intro', 'desc_day1',
               'desc_day2', 'desc_day3',
               'desc_conc', 'revisions']

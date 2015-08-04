@@ -167,7 +167,7 @@ class ScheduledTransport(DatabaseModel):
         return (
             Trip.objects
             .dropoffs(self.route, self.date, self.trips_year_id)
-            .select_related('template__dropoff')
+            .select_related('template__dropoff_stop')
         )
 
     @cache_as('_picking_up')
@@ -179,7 +179,7 @@ class ScheduledTransport(DatabaseModel):
         return (
             Trip.objects
             .pickups(self.route, self.date, self.trips_year_id)
-            .select_related('template__pickup')
+            .select_related('template__pickup_stop')
         )
 
     @cache_as('_returning')
@@ -195,8 +195,8 @@ class ScheduledTransport(DatabaseModel):
 
     def all_stops(self):
         return set(
-            list(map(lambda x: x.template.pickup, self.picking_up())) +
-            list(map(lambda x: x.template.dropoff, self.dropping_off()))
+            list(map(lambda x: x.template.pickup_stop, self.picking_up())) +
+            list(map(lambda x: x.template.dropoff_stop, self.dropping_off()))
         )
         
     @cache_as('_get_stops')
@@ -269,9 +269,9 @@ class ScheduledTransport(DatabaseModel):
         
         opts = (
             (StopOrder.PICKUP, self.picking_up(),
-             lambda x: x.template.pickup),
+             lambda x: x.template.pickup_stop),
             (StopOrder.DROPOFF, self.dropping_off(),
-             lambda x: x.template.dropoff)
+             lambda x: x.template.dropoff_stop)
         )
 
         for stop_type, trips, getter in opts:
@@ -376,9 +376,9 @@ class StopOrder(DatabaseModel):
     @property
     def stop(self):
         if self.stop_type == self.DROPOFF:
-            return self.trip.template.dropoff
+            return self.trip.template.dropoff_stop
         elif self.stop_type == self.PICKUP:
-            return self.trip.template.pickup
+            return self.trip.template.pickup_stop
         raise Exception('bad stop_type %s' % self.stop_type)
 
     def save(self, **kwargs):

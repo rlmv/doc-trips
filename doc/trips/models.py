@@ -72,7 +72,7 @@ class Trip(DatabaseModel):
         """
         if self.dropoff_route:
             return self.dropoff_route
-        return self.template.dropoff.route
+        return self.template.dropoff_stop.route
 
     def get_pickup_route(self):
         """ 
@@ -80,7 +80,7 @@ class Trip(DatabaseModel):
         """
         if self.pickup_route:
             return self.pickup_route
-        return self.template.pickup.route
+        return self.template.pickup_stop.route
 
     def get_return_route(self):
         """ 
@@ -96,7 +96,7 @@ class Trip(DatabaseModel):
         """
         if self.dropoff_time:
             return self.dropoff_time
-        return self.template.dropoff.dropoff_time
+        return self.template.dropoff_stop.dropoff_time
 
     def get_pickup_time(self):
         """
@@ -104,7 +104,7 @@ class Trip(DatabaseModel):
         """
         if self.pickup_time:
             return self.pickup_time
-        return self.template.pickup.pickup_time
+        return self.template.pickup_stop.pickup_time
 
     @cache_as('_size')
     def size(self):
@@ -294,9 +294,9 @@ class TripTemplate(DatabaseModel):
             "at least 'BEGINNER' swimmers"
         )
     )
-    dropoff = models.ForeignKey(
+    dropoff_stop = models.ForeignKey(
         Stop, related_name='dropped_off_trips', on_delete=models.PROTECT)
-    pickup = models.ForeignKey(
+    pickup_stop = models.ForeignKey(
         Stop, related_name='picked_up_trips', on_delete=models.PROTECT)
     # TODO: remove null=True. All templates need a return route.
     return_route = models.ForeignKey(

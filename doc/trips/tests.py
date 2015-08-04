@@ -146,8 +146,8 @@ class TripRouteOverridesTestCase(WebTestCase):
     def test_get_dropoff_route_method(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year, 
-                          template__dropoff__route=mommy.make(Route, trips_year=trips_year))
-        self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff.route)
+                          template__dropoff_stop__route=mommy.make(Route, trips_year=trips_year))
+        self.assertEqual(trip.get_dropoff_route(), trip.template.dropoff_stop.route)
         # override default route
         trip.dropoff_route = mommy.make(Route, trips_year=trips_year)
         trip.save()
@@ -157,7 +157,7 @@ class TripRouteOverridesTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
 
-        self.assertEqual(trip.get_pickup_route(), trip.template.pickup.route)
+        self.assertEqual(trip.get_pickup_route(), trip.template.pickup_stop.route)
         # override default route
         trip.pickup_route = mommy.make(Route, trips_year=trips_year)
         trip.save()
@@ -173,7 +173,7 @@ class TripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.get_return_route(), trip.return_route)
 
     def test_get_dropoff_time(self):
-        trip = mommy.make(Trip, template__dropoff__dropoff_time=time(12))
+        trip = mommy.make(Trip, template__dropoff_stop__dropoff_time=time(12))
         self.assertEqual(trip.get_dropoff_time(), time(12))
         # override 
         trip.dropoff_time = time(13)
@@ -181,7 +181,7 @@ class TripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.get_dropoff_time(), time(13))
 
     def test_get_pickup_time(self):
-        trip = mommy.make(Trip, template__pickup__pickup_time=time(12))
+        trip = mommy.make(Trip, template__pickup_stop__pickup_time=time(12))
         self.assertEqual(trip.get_pickup_time(), time(12))
         # override 
         trip.pickup_time = time(13)
@@ -424,13 +424,13 @@ class TripManagerTestCase(TripsTestCase):
         route = mommy.make(Route, trips_year=trips_year)
         section = mommy.make(Section, trips_year=trips_year)
         dropoff = mommy.make(Trip, trips_year=trips_year,
-                             section=section, template__dropoff__route=route)
+                             section=section, template__dropoff_stop__route=route)
         overridden_dropoff = mommy.make(Trip, trips_year=trips_year,
                                         section=section, dropoff_route=route)
         other_route = mommy.make(Trip, trips_year=trips_year, 
                                  section=section)
         other_date = mommy.make(Trip, trips_year=trips_year, 
-                                template__dropoff__route=route,
+                                template__dropoff_stop__route=route,
                                 section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
 
         qs = Trip.objects.dropoffs(
@@ -444,14 +444,14 @@ class TripManagerTestCase(TripsTestCase):
         section = mommy.make(Section, trips_year=trips_year)
         pickup = mommy.make(
             Trip, trips_year=trips_year,
-            section=section, template__pickup__route=route)
+            section=section, template__pickup_stop__route=route)
         overridden_pickup = mommy.make(
             Trip, trips_year=trips_year, section=section, pickup_route=route)
         other_route = mommy.make(
             Trip, trips_year=trips_year, section=section)
         other_date = mommy.make(
             Trip, trips_year=trips_year,
-            template__pickup__route=route,
+            template__pickup_stop__route=route,
             section__leaders_arrive=section.leaders_arrive+timedelta(days=100))
 
         qs = Trip.objects.pickups(
