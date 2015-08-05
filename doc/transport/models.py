@@ -249,7 +249,14 @@ class ScheduledTransport(DatabaseModel):
             lodge = Lodge()
             setattr(lodge, DROPOFF_ATTR, list(self.picking_up()))
             setattr(lodge, PICKUP_ATTR, list(self.returning()))
-            stops += [lodge]
+            stops.append(lodge)
+
+        if self.returning():
+            # take trips back to Hanover
+            hanover = Hanover()
+            setattr(hanover, DROPOFF_ATTR, list(self.returning()))
+            setattr(hanover, PICKUP_ATTR, [])
+            stops.append(hanover)
 
         return stops
 
