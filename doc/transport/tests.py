@@ -36,7 +36,7 @@ stoporder_recipe = Recipe(
 class TransportModelTestCase(TripsYearTestCase):
 
     def test_stop_is_protected_on_route_fk_deletion(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         stop = mommy.make(Stop, route=route, trips_year=trips_year)
         with self.assertRaises(ProtectedError):
@@ -46,21 +46,15 @@ class TransportModelTestCase(TripsYearTestCase):
 class StopModelTestCase(TripsYearTestCase):
 
     def test_location_prioritizes_lat_lng_if_available(self):
-        trips_year = self.init_trips_year()
-        stop = mommy.make(
-            Stop, trips_year=trips_year, 
-            lat_lng='43.7030,-72.2895', address='address'
-        )
+        stop = mommy.make(Stop, lat_lng='43.7030,-72.2895', address='address')
         self.assertEqual(stop.location, '43.7030,-72.2895')
 
     def test_location_with_address(self):
-        trips_year = self.init_trips_year()
-        stop = mommy.make(Stop, trips_year=trips_year, lat_lng='', address='address')
+        stop = mommy.make(Stop, lat_lng='', address='address')
         self.assertEqual(stop.location, 'address')
     
     def test_no_lat_lng_or_address_raises_validation_error(self):
-        trips_year = self.init_trips_year()
-        stop = mommy.prepare(Stop, trips_year=trips_year, lat_lng='', address='')
+        stop = mommy.prepare(Stop, lat_lng='', address='')
         with self.assertRaises(ValidationError):
             stop.full_clean()
 
@@ -71,7 +65,7 @@ class StopModelTestCase(TripsYearTestCase):
 class StopManagerTestCase(TripsYearTestCase):
 
     def test_external(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         external_stop = mommy.make(
             Stop, trips_year=trips_year, route__category=Route.EXTERNAL)
         internal_stop = mommy.make(
@@ -82,7 +76,7 @@ class StopManagerTestCase(TripsYearTestCase):
 class RouteManagerTestCase(TripsYearTestCase):
     
     def test_external(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         external_route = mommy.make(
             Route, category=Route.EXTERNAL, trips_year=trips_year)
         internal_route = mommy.make(
@@ -90,7 +84,7 @@ class RouteManagerTestCase(TripsYearTestCase):
         self.assertQsEqual(Route.objects.external(trips_year), [external_route])
 
     def test_internal(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         external_route = mommy.make(
             Route, category=Route.EXTERNAL, trips_year=trips_year)
         internal_route = mommy.make(
@@ -101,7 +95,7 @@ class RouteManagerTestCase(TripsYearTestCase):
 class ScheduledTransportManagerTestCase(TripsYearTestCase):
     
     def test_internal(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         external = mommy.make(
             ScheduledTransport, trips_year=ty, route__category=Route.EXTERNAL)
         internal = mommy.make(
@@ -112,7 +106,7 @@ class ScheduledTransportManagerTestCase(TripsYearTestCase):
 class TestViews(WebTestCase):
 
     def test_index_views(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         director = self.mock_director()
         names = [
             'db:stop_index',
@@ -152,7 +146,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, matrix)
 
     def test_internal_matrix_again(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route1 = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
         route2 = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
         mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015, 1, 1))
@@ -187,7 +181,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
 class RidersMatrixTestCase(TripsYearTestCase):
 
     def test_internal_riders_matrix_with_single_trip(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(
             Section, trips_year=ty, 
@@ -213,7 +207,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_internal_rider_matrix(ty))
 
     def test_internal_riders_matrix_with_multiple_trips(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         # trips share dropoff locations and dates
@@ -244,7 +238,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_internal_rider_matrix(ty))
 
     def test_internal_riders_matrix_with_multiple_trips_overlap(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route1 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         route2 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
@@ -286,7 +280,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_internal_rider_matrix(ty))
 
     def test_internal_riders_matrix_with_overriden_routes(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
         # route is set *directly* on scheduled trip
@@ -313,7 +307,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
 class ActualRidersMatrixTestCase(TripsYearTestCase):
 
     def test_basic_matrix(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015,1,1))
         trip = mommy.make(
@@ -336,7 +330,7 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_actual_rider_matrix(trips_year))
 
     def test_actual_riders_matrix_with_multiple_trips_overlap(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route1 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         route2 = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
@@ -378,7 +372,7 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
 class IssuesMatrixTestCase(TripsYearTestCase):
 
     def test_unscheduled(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         trip = mommy.make(
@@ -404,7 +398,7 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, matrix)
 
     def test_exceeds_capacity(self):
-        ty = self.init_current_trips_year()
+        ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
 
@@ -476,7 +470,7 @@ class TransportChecklistTest(TripsYearTestCase):
 class ExternalBusManager(TripsYearTestCase):
 
     def test_schedule_matrix(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         
         sxn1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         sxn2 = mommy.make(Section, trips_year=trips_year, is_local=True)
@@ -550,8 +544,7 @@ class TransportViewsTestCase(WebTestCase):
     csrf_checks = False
 
     def test_create_external_bus_from_matrix(self):
-        
-        trips_year=self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         section = mommy.make(Section, trips_year=trips_year, is_local=True)
         
@@ -861,11 +854,7 @@ class StopOrderingTestCase(WebTestCase):
 class ExternalBusModelTestCase(TripsYearTestCase):
 
     def test_EXTERNAL_validation(self):
-        trips_year = self.init_trips_year()
-        transport = mommy.make(
-            ExternalBus, trips_year=trips_year,
-            route__category=Route.INTERNAL
-        )
+        transport = mommy.make(ExternalBus, route__category=Route.INTERNAL)
         with self.assertRaises(ValidationError):
             transport.full_clean()
 
@@ -886,7 +875,6 @@ class ExternalBusModelTestCase(TripsYearTestCase):
 class MapsTestCases(TripsYearTestCase):
 
     def test_split_stops_handling(self):
-        trips_year = self.init_trips_year()
         orig, waypoints, dest = maps._split_stops([Hanover(), Lodge()])
         self.assertEqual(orig, Hanover().location)
         self.assertEqual(waypoints, [])
