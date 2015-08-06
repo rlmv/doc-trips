@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'doc.permissions',
     'doc.raids',
     'doc.reports',
+    'doc.safety',
     'doc.timetable',
     'doc.transport',
     'doc.trips',

@@ -55,6 +55,7 @@ database_urlpatterns = [
         ExternalBusChecklist.as_view(), name='external_checklist'),
     url(r'^foodbox/', include(foodbox_urlpatterns, namespace='foodbox')),
     url(r'^packets/', include(packet_urlpatterns, namespace='packets')),
+    url(r'^incidents/', include('doc.safety.urls', namespace='safety')),
 ]
 
 urlpatterns = [
