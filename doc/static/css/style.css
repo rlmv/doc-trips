@@ -1,99 +1,111 @@
-
-body {
-    padding-bottom: 3em;
-}
+@media all {
+    body {
+	padding-bottom: 3em;
+    }
     
-.expand-whitespace {
-    white-space: pre-line;
+    .expand-whitespace {
+	white-space: pre-line;
+    }
+
+    /* push 'Filter' button inline with input boxes */
+    .filter-submit {
+	position: absolute;
+	top: 1.7em;
+    }
+
+    /* line roles checkboxes up with text */
+    .filter-checkbox {
+	position: absolute;
+	top: -.7em;
+    }
+
+    /* shrink suggested croos filter */
+    .filter-croos div {
+	margin-bottom: 0;
+    }
+
+    th[data-sort] {
+	cursor: pointer;
+    }
+
+    /* shrink navbar */
+    /* move to Bootstrap Less if we use it */
+    .navbar-nav > li > a, .navbar-header > a.navbar-brand {
+	padding-top: 11px !important;
+	padding-bottom: 11px !important;
+    }
+
+    .navbar {
+	min-height: 42px !important;
+    }
+
+    .navbar {
+	height: 42px;
+    }
+
+    /* sidebar */
+
+    .sidebar .sidebar-nav.navbar-collapse {
+	padding-right: 0;
+	padding-left: 0;
+    }
+
+    .sidebar ul li {
+	border-bottom: 1px solid #e7e7e7;
+    }
+
+    .sidebar ul li a.active {
+	background-color: #eee;
+    }
+
+    .sidebar .fa.arrow {
+	float: right;
+    }
+
+    .sidebar .fa.arrow:before {
+	content: "\f104";
+    }
+
+    .sidebar .active>a>.fa.arrow:before {
+	content: "\f107";
+    }
+
+    .sidebar ul li ul li {
+	border-bottom: 0!important;
+    }
+
+    .sidebar ul li ul li a {
+	padding-left: 30px;
+    }
+
+    .sidebar a {
+	color: inherit;
+    }
+
+    /* / sidebar */
+
+    a.no-color-link {
+	color: inherit;
+    }
+
+    .text-bright-danger {
+	color: red !important;
+    }
+
+    .text-bright-success {
+	color: yellowgreen !important;
+    }
+
+    hr.hr-sm {
+	margin-bottom: 0.5em;
+	margin-top: 0.5em;
+    }
 }
 
-/* push 'Filter' button inline with input boxes */
-.filter-submit {
-    position: absolute;
-    top: 1.7em;
-}
-
-/* line roles checkboxes up with text */
-.filter-checkbox {
-    position: absolute;
-    top: -.7em;
-}
-
-/* shrink suggested croos filter */
-.filter-croos div {
-    margin-bottom: 0;
-}
-
-th[data-sort] {
-    cursor: pointer;
-}
-
-/* shrink navbar */
-/* move to Bootstrap Less if we use it */
-.navbar-nav > li > a, .navbar-header > a.navbar-brand {
-    padding-top: 11px !important;
-    padding-bottom: 11px !important;
-}
-
-.navbar {
-    min-height: 42px !important;
-}
-
-.navbar {
-    height: 42px;
-}
-
-/* sidebar */
-
-.sidebar .sidebar-nav.navbar-collapse {
-    padding-right: 0;
-    padding-left: 0;
-}
-
-.sidebar ul li {
-    border-bottom: 1px solid #e7e7e7;
-}
-
-.sidebar ul li a.active {
-    background-color: #eee;
-}
-
-.sidebar .fa.arrow {
-    float: right;
-}
-
-.sidebar .fa.arrow:before {
-    content: "\f104";
-}
-
-.sidebar .active>a>.fa.arrow:before {
-    content: "\f107";
-}
-
-.sidebar ul li ul li {
-    border-bottom: 0!important;
-}
-
-.sidebar ul li ul li a {
-    padding-left: 30px;
-}
-
-.sidebar a {
-    color: inherit;
-}
-
-/* / sidebar */
-
-a.no-color-link {
-    color: inherit;
-}
-
-.text-bright-danger {
-    color: red !important;
-}
-
-.text-bright-success {
-    color: yellowgreen !important;
+@media print {
+    .no-print {
+	display: none !important;
+    }
 }
 
     

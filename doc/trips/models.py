@@ -167,6 +167,12 @@ class Trip(DatabaseModel):
    
     def detail_url(self):
         return reverse('db:trip_detail', kwargs=self.obj_kwargs())
+        
+    def update_url(self):
+        return reverse('db:trip_update', kwargs=self.obj_kwargs())
+    
+    def delete_url(self):
+        return reverse('db:trip_delete', kwargs=self.obj_kwargs())
 
 
 class Section(DatabaseModel):

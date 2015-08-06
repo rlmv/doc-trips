@@ -3,7 +3,14 @@
 {% load links %}
 
 {% block content %}
-<p> Click {{ object|edit_link }} to add notes and change the default transportation routes and times for this trip. </p>
+
+<p> 
+  <a href="{{ object.update_url }}" class="btn btn-primary"> Edit </a>
+  <a href="{{ object.delete_url }}" class="btn btn-danger"> Delete </a>
+  <a href="{% url 'db:packets:trip' trips_year=trips_year pk=trip.pk %}" class="btn btn-info"> Leader Packet </a> 
+</p>
+
 {% detail object view.fields %}
 {% detail object.template view.triptemplate_fields %}
+
 {% endblock content %}

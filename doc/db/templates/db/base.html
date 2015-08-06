@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block left_column %}
-<div class="sidebar navbar-default" role="navigation">
+<div class="sidebar navbar-default no-print" role="navigation">
   <div class="sidebar-nav navbar-collapse">
 
   <ul id="sidebar-menu" class="nav text-muted">
@@ -67,8 +67,6 @@
     <li>
       <a href="{% url 'db:foodbox:counts' trips_year=trips_year %}"> <i class="fa"></i> <i class="fa fa-spoon"></i> Foodboxes </a>
     </li>
-
-   </nav>
   </div>
 </div>
 {% endblock %}
