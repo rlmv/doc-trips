@@ -34,7 +34,7 @@ from doc.transport.models import ExternalBus
 
 
 class TripList(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
-    template_name = 'trip/trip_index.html'
+    template_name = 'trips/trip_index.html'
 
     def get_context_data(self, **kwargs):
         context = super(TripList, self).get_context_data(**kwargs)
@@ -58,7 +58,7 @@ class TripUpdate(SetHeadlineMixin, DatabaseUpdateView):
 
 class TripDetail(DatabaseDetailView):
     model = Trip
-    template_name = 'trip/trip_detail.html'
+    template_name = 'trips/trip_detail.html'
 
     fields = [
         'section', 'template',
@@ -95,7 +95,7 @@ class TripDelete(DatabaseDeleteView):
 class TripTemplateList(DatabaseListView):
     model = TripTemplate
     context_object_name = 'templates' 
-    template_name = 'trip/template_index.html'
+    template_name = 'trips/template_index.html'
     
     def get_queryset(self):
         qs = super(TripTemplateList, self).get_queryset()
@@ -130,7 +130,7 @@ class TripTemplateDelete(DatabaseDeleteView):
 class TripTypeList(DatabaseListView):
     model = TripType
     context_object_name = 'triptypes'
-    template_name = 'trip/triptype_index.html'
+    template_name = 'trips/triptype_index.html'
 
 
 class TripTypeCreate(DatabaseCreateView):
@@ -155,7 +155,7 @@ class TripTypeDelete(DatabaseDeleteView):
 class CampsiteList(DatabaseListView):
     model = Campsite
     context_object_name = 'campsites'
-    template_name = 'trip/campsite_index.html'
+    template_name = 'trips/campsite_index.html'
     
     def get_context_data(self, **kwargs):
         trips_year = self.kwargs['trips_year']
@@ -185,13 +185,13 @@ class CampsiteDelete(DatabaseDeleteView):
 class SectionList(DatabaseListView):
     model = Section
     context_object_name = 'sections'
-    template_name = 'trip/section_index.html'
+    template_name = 'trips/section_index.html'
 
 
 class SectionCreate(DatabaseCreateView):
     model = Section
     form_class = SectionForm
-    template_name = 'trip/section_create.html'
+    template_name = 'trips/section_create.html'
 
 
 class SectionDetail(DatabaseDetailView):
@@ -203,7 +203,7 @@ class SectionDetail(DatabaseDetailView):
 class SectionUpdate(DatabaseUpdateView):
     model = Section
     form_class = SectionForm
-    template_name = 'trip/section_update.html'
+    template_name = 'trips/section_update.html'
 
 
 class SectionDelete(DatabaseDeleteView):
@@ -218,7 +218,7 @@ class LeaderTrippeeIndexView(DatabaseListView):
     Links to pages to assign leaders and trippees.
     """
     model = Trip
-    template_name = 'trip/leaders.html'
+    template_name = 'trips/leaders.html'
     context_object_name = 'trips'
     
     def get_queryset(self):
@@ -246,7 +246,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
     The trip's pk is passed in the url arg.
     """
     model = IncomingStudent
-    template_name = 'trip/assign_trippee.html'
+    template_name = 'trips/assign_trippee.html'
     context_object_name = 'available_trippees'
 
     def get_queryset(self):
@@ -366,7 +366,7 @@ class AssignTripLeaderView(DatabaseListView):
     """
 
     model = GeneralApplication
-    template_name = 'trip/assign_leader.html'
+    template_name = 'trips/assign_leader.html'
     context_object_name = 'leader_applications'
 
     def get_trip(self):
@@ -502,7 +502,7 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
 
     model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
-    template_name = 'trip/remove_leader_assignment.html'
+    template_name = 'trips/remove_leader_assignment.html'
 
     def get_form(self, **kwargs):
         # save the old assigned trip so we can show it in a message after deletion
@@ -527,7 +527,7 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
     Shows a matrix of the number of tripees and leaders for all trips 
     """
    
-    template_name = 'trip/trippee_leader_counts.html'
+    template_name = 'trips/trippee_leader_counts.html'
 
     def get_context_data(self, **kwargs):
         context = super(TrippeeLeaderCounts, self).get_context_data(**kwargs)
@@ -538,7 +538,7 @@ class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
 class FoodboxCounts(DatabaseListView):
 
     model = Trip
-    template_name = 'trip/foodboxes.html'
+    template_name = 'trips/foodboxes.html'
     context_object_name = 'trips'
 
     def get_queryset(self):
@@ -562,7 +562,7 @@ class FoodboxCounts(DatabaseListView):
 
 class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
-    template_name = 'trip/foodbox_rules.html'
+    template_name = 'trips/foodbox_rules.html'
 
     def get_queryset(self):
         return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
@@ -583,6 +583,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     def form_valid(self, formset):
         formset.save()
         return super(FoodboxRules, self).form_valid(formset)
-        
+       
     def get_success_url(self):
         return self.request.path
+
