@@ -61,6 +61,20 @@ class IncomingStudent(DatabaseModel):
         ]
     )
 
+    med_info = models.TextField(
+        blank=True, help_text=(
+            "Additional medical info not provided in the registration, "
+            "or simplified information if some details do not need to be "
+            "provided to leaders and croos."
+        )
+    )
+    hide_med_info = models.BooleanField(
+        "Hide registration med info?", default=False, help_text=(
+            "Medical information in this trippee's registration "
+            "will NOT be exported to leader and croo packets."
+        )
+    )
+
     # gear requested
     
     decline_reason = models.CharField(max_length=50, blank=True)

@@ -17,7 +17,8 @@ from django_tables2 import RequestConfig
 from doc.incoming.models import Registration, IncomingStudent
 from doc.incoming.tables import RegistrationTable
 from doc.incoming.forms import (
-    RegistrationForm, UploadIncomingStudentsForm, TripAssignmentForm
+    RegistrationForm, UploadIncomingStudentsForm, TripAssignmentForm,
+    TrippeeInfoForm
 )
 from doc.core.models import Settings
 from doc.db.models import TripsYear
@@ -339,6 +340,7 @@ class IncomingStudentDetail(DatabaseReadPermissionRequired,
     admin_fields = (
         'registration', 'financial_aid',
         ('total cost', 'compute_cost'),
+        'med_info', 'hide_med_info',
         'decline_reason', 'notes'
     )
     college_fields = (
@@ -393,18 +395,12 @@ class IncomingStudentUpdate(DatabaseEditPermissionRequired,
     model = IncomingStudent
     template_name = 'db/update.html'
     context_object_name = 'trippee'
-
-    fields = [
-        'decline_reason', 'financial_aid', 'notes', 'name',
-        'netid', 'class_year',
-        'ethnic_code', 'gender', 'birthday', 'incoming_status',
-        'email', 'blitz', 'phone', 'address'
-    ]
+    form_class = TrippeeInfoForm
 
     def get_form(self, **kwargs):
         form = super(IncomingStudentUpdate, self).get_form(**kwargs)
         return crispify(form)
-    
+   
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                                 TripsYearMixin, FormView):

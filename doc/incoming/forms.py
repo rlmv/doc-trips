@@ -13,14 +13,17 @@ from doc.core.models import Settings
 
 
 class StopChoiceField(forms.ModelChoiceField):
-    """ Field for displaying an external transport Stop, with prices """
+    """
+    Field for displaying an external transport Stop, with prices
+    """
     def label_from_instance(self, obj):
         return "{} - ${}".format(obj.name, obj.cost)
 
 
 class RegistrationForm(forms.ModelForm):
-    """ Form for incoming student trippee registration """
-
+    """
+    Form for incoming student trippee registration 
+    """
     class Meta:
         model = Registration
 
@@ -77,8 +80,9 @@ class RegistrationForm(forms.ModelForm):
 
 
 class TripAssignmentForm(forms.ModelForm):
-    """ Form for assigning a trippee to a trip """
-
+    """
+    Form for assigning a trippee to a trip
+    """
     class Meta:
         model = IncomingStudent
         fields = ['trip_assignment', 'bus_assignment']
@@ -107,17 +111,34 @@ class TripAssignmentForm(forms.ModelForm):
         )
 
 
-class UploadIncomingStudentsForm(forms.Form):
-    """ Form used to upload data about incoming students """
+class TrippeeInfoForm(forms.ModelForm):
+    """
+    Form for editing administrative trippee info
+    """
+    class Meta:
+        model = IncomingStudent
+        fields = (
+            'decline_reason', 'financial_aid', 'notes',
+            'med_info', 'hide_med_info',
+            'name', 'netid', 'class_year',
+            'ethnic_code', 'gender', 'birthday',
+            'incoming_status',
+            'email', 'blitz', 'phone', 'address'
+        )
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
+            'med_info': forms.Textarea(attrs={'rows': 3}),
+        }
 
+
+class UploadIncomingStudentsForm(forms.Form):
+    """
+    Form used to upload data about incoming students
+    """
     csv_file = forms.FileField(label='CSV file')
 
     def __init__(self, *args, **kwargs):
-
         super(UploadIncomingStudentsForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
-        
-
-
