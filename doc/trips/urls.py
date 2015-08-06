@@ -2,8 +2,6 @@ from django.conf.urls import patterns, url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.trips.views import *
-from doc.trips.views import (LeaderTrippeeIndexView,
-                             RemoveAssignedTrip, AssignLeaderToTrip)
 
 """
 OOdles of urls. These patterns all included in the main
@@ -87,4 +85,8 @@ leader_urlpatterns = [
 foodbox_urlpatterns = [
     url(r'^rules/$', FoodboxRules.as_view(), name='rules'),
     url(r'^counts/$', FoodboxCounts.as_view(), name='counts'),
+]
+
+packet_urlpatterns = [
+    url(r'^for/trip/(?P<pk>[0-9]+)$', LeaderPacket.as_view(), name='trip'),
 ]

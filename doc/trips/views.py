@@ -587,3 +587,11 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     def get_success_url(self):
         return self.request.path
 
+
+class LeaderPacket(DatabaseDetailView):
+    """ 
+    All information that leader's need: schedule, directions, 
+    medical info, etc.
+    """
+    model = Trip
+    template_name = 'trips/leader_packet.html'

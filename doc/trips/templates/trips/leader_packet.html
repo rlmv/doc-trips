@@ -1,0 +1,110 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h3> {{ trip.verbose_str }} </h3>
+{% endblock %}
+
+{% block content %}
+
+<ul class="list-group">
+
+  <li class="list-group-item">
+    <h4 class="list-group-item-heading"> Leaders </h4>
+    <p>
+      <ul class="list-group">
+	{% for leader in trip.leaders.all %}
+	<li class="list-group-item">
+	  <h5 class="list-group-item-heading"> {{ leader }} ({{ leader.class_year }}) </h5>
+	  {% if leader.dietary_restrictions %}
+	  Dietary Restrictions: {{ leader.dietary_restrictions }}
+	  {% endif %}
+	  
+	  {% if leader.allergen_information %}
+	  Allergen Information: {{ leader.allergen_information }}
+	  {% endif %}
+	</li>
+	{% endfor %}
+      </ul>
+    </p>
+    {# TODO: leader medical info #}
+  </li>
+  
+  <li class="list-group-item">
+    <h4 class="list-group-item-heading"> Trippees </h4>
+    <p>
+    <ul class="list-group">
+      {% for trippee in trip.trippees.all %}
+      <li class="list-group-item">
+	<h5 class="list-group-item-heading">{{ trippee.name }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }} &mdash; born {{ trippee.birthday }})</h5>
+	
+	Medical Conditions: {{ trippee.med_info }}
+
+	{% with reg=trippee.get_registration %}
+	{% if reg %}
+
+	{% if not trippee.hide_med_info %}
+	  {{ reg.medical_conditions }}
+	  {% if reg.needs %}
+	  <br> Other Needs and Conditions: {{ reg.needs }}
+	  {% endif %}
+	{% endif %}
+
+	{% if reg.allergies %}
+	<br> Allergies: {{ reg.allergies }}
+	{% endif %}
+
+	{% if reg.allergen_information %}
+	<br> Allergen Information: {{ reg.allergen_information }} 
+	{% endif %}
+
+	{% if reg.epipen == 'YES' %} 
+	<strong> Carries an EpiPen </strong> 
+	{% endif %}
+
+	<br> Dietary Restrictions: {{ reg.dietary_restrictions|default:"None" }}
+
+	{% if reg.allergy_reaction %}
+	<br> Food allergy reaction: {{ reg.allergy_reaction }}
+	{% endif %}
+
+	{% if reg.allergy_severity %}
+	<br> Food allergy severity (1-5): {{ reg.allergy_severity }}
+	{% endif %}
+	
+	{% endif %}
+	{% endwith %}
+      </li>
+      {% endfor %}
+    </ul>
+    </p>
+  </li>
+
+  <li class="list-group-item">
+    <h4> Introduction </h4>
+    <p> {{ trip.template.desc_intro|linebreaks }} </p>
+
+    <h4> Dropoff: {{ trip.template.dropoff_stop }} </h4>
+
+    <h4> Day 1 ({{ trip.section.at_campsite1|date:"n/j" }}) </h4>
+    <p> {{ trip.template.desc_day1|linebreaks }} </p>
+
+    <h4> Campsite 1: {{ trip.template.campsite1.name }} </h4>
+    <p> {{ trip.template.campsite1.secret }} </p>
+
+    <h4> Day 2 ({{ trip.section.at_campsite2|date:"n/j" }}) </h4>
+    <p> {{ trip.template.desc_day2|linebreaks }} </p>
+
+    <h4> Campsite 2: {{ trip.template.campsite2.name }} </h4>
+    <p> {{ trip.template.campsite2.secret }} </p>
+
+    <h4> Day 3 ({{ trip.section.arrive_at_lodge|date:"n/j" }}) </h4>
+    <p> {{ trip.template.desc_day3|linebreaks }} </p>
+
+    <h4> Pickup: {{ trip.template.pickup_stop }} </h4>
+
+    <h4> Notes </h4>
+    <p> {{ trip.template.desc_conc|linebreaks }} </p>
+  </li>
+  
+</ul>
+{% endblock %}
