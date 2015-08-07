@@ -24,10 +24,25 @@ ROLE_CHOICES = (
     ('OTHER', 'Other')
 )
 
-class Incident(DatabaseModel):
+class _IncidentBase(DatabaseModel):
+    """ 
+    Base fields for Incident and IncidentUpdate
+    """
+    class Meta:
+        abstract = True
 
-    # reporting user
+    # inputing user
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    created = models.DateTimeField(auto_now_add=True, editable=False)
+
+    caller = models.CharField("Who called?", max_length=255)
+    caller_role = models.CharField(choices=ROLE_CHOICES, max_length=20)
+    # TODO fill in other
+    caller_number = models.CharField(max_length=20)  # phone number
+
+
+class Incident(_IncidentBase):
+
     role = models.CharField('What is your role on Trips?', max_length=255)
     trip = models.ForeignKey(
         Trip, verbose_name='On what trip did this incident occur?'
@@ -37,11 +52,6 @@ class Incident(DatabaseModel):
         help_text="trail name, campsite, Hanover, Lodge, etc"
     )
     when = models.DateTimeField("When did this incident occur?")
-
-    caller = models.CharField("Who called?", max_length=255)
-    caller_role = models.CharField(choices=ROLE_CHOICES, max_length=20)
-    # TODO fill in other
-    caller_number = models.CharField(max_length=20)  # phone number
 
     injuries = YesNoField('Did any injuries take place during this incident?')
     subject = models.CharField("Who did this happen to?", blank=True, max_length=255)
@@ -56,7 +66,18 @@ class Incident(DatabaseModel):
         'Is any additional follow-up needed? If so, what?'
     )
 
-    # TODO: closed?
+    # TODO: closed? resolved?
 
     def detail_url(self):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
+
+    def __str__(self):
+        return "%s %s" % (self.trip, self.when)
+
+
+class IncidentUpdate(_IncidentBase):
+    incident = models.ForeignKey(Incident, editable=False)  # parent
+    update = models.TextField()
+
+    class Meta:
+        ordering = ['created']

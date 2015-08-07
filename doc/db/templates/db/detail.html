@@ -4,13 +4,13 @@
 {% load links %}
 
 {% block header %}
-<h3>{{ view.model | verbose_name | title }} <small> {{ object }} </small></h3>
+<h3> {{ view.model|verbose_name|title }} <small> {{ object }} </small></h3>
 {% endblock header %}
 
 {% block content %}
 {% block links %}
-{{ object | edit_link }}
-{{ object | delete_link }}
+{{ object|edit_link }}
+{{ object|delete_link }}
 {% endblock links %}
 
 {% block description %}

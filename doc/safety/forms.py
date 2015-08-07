@@ -1,11 +1,11 @@
 
 from django import forms
-from crispy_forms.layout import Submit, Layout, Field, Submit, Row, Div, HTML
+from crispy_forms.layout import Submit, Layout, Field, Submit, Row, Div, HTML, Fieldset
 from crispy_forms.helper import FormHelper
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from doc.trips.models import Trip
-from doc.safety.models import Incident
+from doc.safety.models import Incident, IncidentUpdate
 
 
 class IncidentForm(forms.ModelForm):
@@ -64,3 +64,26 @@ IncidentFormLayout = lambda: Layout(
     Field('follow_up', rows=3),
     Submit('submit', 'Report'),
 )
+
+
+IncidentUpdateFormLayout = lambda: Layout(
+    Fieldset(
+        'Add an update to the incident as {{ user }}',
+        Row(
+            Div('caller', css_class='col-sm-3'),
+            Div('caller_role', css_class='col-sm-3'),
+            Div('caller_number', css_class='col-sm-3'),
+        ),
+        Field('update', rows=4),
+    ),
+    Submit('submit', 'Update')
+)
+
+
+class IncidentUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = IncidentUpdate
+
+    helper = FormHelper()
+    helper.layout = IncidentUpdateFormLayout()

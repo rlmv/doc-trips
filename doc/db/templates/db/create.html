@@ -3,7 +3,13 @@
 {% load verbose_name %}
 
 {% block header %}
-<h3> Add a new {{ view.model | verbose_name | title }} </h3>
+<h3>
+  {% if headline %}
+  {{ headline }}
+  {% else %}
+  Add a new {{ view.model|verbose_name|title }}
+  {% endif %}
+</h3>
 {% endblock %}
 
 {% block content %}

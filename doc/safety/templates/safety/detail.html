@@ -1,0 +1,15 @@
+{% extends "db/detail.html" %}
+{% load detail_view %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% detail incident view.fields %}
+
+{% for update in incident.incidentupdate_set.all %}
+{% detail update view.update_fields %}
+{% endfor %}
+
+{% crispy form %}
+
+{% endblock %}
