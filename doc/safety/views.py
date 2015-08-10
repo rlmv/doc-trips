@@ -1,7 +1,7 @@
-from vanilla import FormView, DetailView
+from vanilla import FormView, DetailView, ListView, CreateView
 from django.http import HttpResponseRedirect
 
-from doc.permissions.views import DatabaseEditPermissionRequired
+from doc.permissions.views import SafetyLogPermissionRequired
 from doc.db.views import (
     DatabaseCreateView, DatabaseDetailView, TripsYearMixin,
     DatabaseListView
@@ -10,12 +10,16 @@ from doc.safety.models import Incident, IncidentUpdate
 from doc.safety.forms import IncidentForm, IncidentUpdateForm
 
 
-class IncidentList(DatabaseListView):
+class _IncidentMixin(SafetyLogPermissionRequired, TripsYearMixin):
+    pass
+
+
+class IncidentList(_IncidentMixin, ListView):
     model = Incident
     context_object_name = 'incidents'
 
 
-class NewIncident(DatabaseCreateView):
+class NewIncident(_IncidentMixin, CreateView):
     model = Incident
 
     def get_form(self, **kwargs):
@@ -26,8 +30,7 @@ class NewIncident(DatabaseCreateView):
         return super(NewIncident, self).form_valid(form)
 
 
-class IncidentDetail(DatabaseEditPermissionRequired, TripsYearMixin,
-                     FormView, DetailView):
+class IncidentDetail(_IncidentMixin, FormView, DetailView):
     model = Incident
     template_name = 'safety/detail.html'
     fields = (

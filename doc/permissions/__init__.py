@@ -34,6 +34,7 @@ def initialize_groups_and_permissions():
     directors()
     directorate()
     graders()
+    safety_leads()
 
 
 def can_set_access():
@@ -73,9 +74,9 @@ def can_edit_applications_and_assign_trip_leaders():
     return get_permission('can_edit_applications_and_assign_leaders', 
                           'Can change apps in DB and assign leaders')
 
-
-# TODO: can_edit_safety_log
-
+def can_report_incidents():
+    return get_permission('can_report_incidents',
+                          'Can report incidents in the safety log')
 
 # TODO: should we implement a proxy Group class and move these
 # to the model manager? e.g. ProxyGroup.directors() or ProxyGroup.objects.directors()
@@ -91,6 +92,7 @@ def directors():
         can_grade_leader_applications(), 
         can_create_applications(), 
         can_edit_applications_and_assign_trip_leaders(),
+        can_report_incidents()
     ]
     directors.save()
     return directors
@@ -119,6 +121,15 @@ def trip_leader_trainers():
     return tlts
 
 
+def safety_leads():
+    leads, _ = Group.objects.get_or_create(name='safety leads')
+    leads.permissions = [
+        can_report_incidents()
+    ]
+    leads.save()
+    return leads
+
+
 def graders():
     graders, created = Group.objects.get_or_create(name='graders')
     graders.permissions = [
@@ -126,3 +137,4 @@ def graders():
     ]
     graders.save()
     return graders
+

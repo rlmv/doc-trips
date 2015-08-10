@@ -6,7 +6,7 @@ from model_mommy import mommy
 from django_webtest import WebTest
 
 from doc.db.models import TripsYear
-from doc.permissions import directors, graders, directorate, trip_leader_trainers
+from doc.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
 
 
 class TripsYearTestCaseUtils():
@@ -93,12 +93,21 @@ class TripsYearTestCaseUtils():
 
     def mock_grader(self):
         netid = 'grader'
-        email = 'netid' + '@dartmouth.edu'
+        email = netid + '@dartmouth.edu'
         self.grader = get_user_model().objects.create_user(netid, netid, email)
         self.grader.groups.add(graders())
         self.grader.save()
 
         return self.grader
+
+    def mock_safety_lead(self):
+        netid = 'safety'
+        email = netid + '@dartmouth.edu'
+        self.safety_lead = get_user_model().objects.create_user(netid, netid, email)
+        self.safety_lead.groups.add(safety_leads())
+        self.safety_lead.save()
+
+        return self.safety_lead
 
     def assertQsEqual(self, qs, values, transform=lambda x: x, ordered=False, msg=None):
         """

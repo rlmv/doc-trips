@@ -13,7 +13,7 @@ from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Row, Column
 
-from doc.permissions import directors, graders, directorate, trip_leader_trainers
+from doc.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
 from doc.permissions.models import SitePermission
 from doc.dartdm.forms import DartmouthDirectoryLookupField
 
@@ -76,6 +76,13 @@ class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
 class CreateApplicationPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to create/edit croo and leader applications """
     permission_required = 'permissions.can_create_applications'
+
+
+class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    """
+    For users allowed to report incidents in the safety log
+    """
+    permission_required = 'permissions.can_report_incidents'
 
 
 class GenericGroupForm(forms.Form):
@@ -159,9 +166,12 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
     success_url = reverse_lazy('permissions:set_permissions')
 
     def get_forms(self, *args, **kwargs):
-        
-        groups = [directors(), trip_leader_trainers(), 
-                  directorate(), graders()]
+        groups = [
+            directors(),
+            trip_leader_trainers(),
+            directorate(),
+            safety_leads(),
+            graders()]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
             
     def get(self, request, *args, **kwargs):
