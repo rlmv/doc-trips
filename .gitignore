@@ -5,6 +5,9 @@ config.sh
 # python virtual environment
 venv/
 
+temp
+docs
+
 # static file directory
 staticfiles
 
