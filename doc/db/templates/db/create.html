@@ -1,15 +1,8 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
-{% load verbose_name %}
 
 {% block header %}
-<h3>
-  {% if headline %}
-  {{ headline }}
-  {% else %}
-  Add a new {{ view.model|verbose_name|title }}
-  {% endif %}
-</h3>
+<h3> {{ headline }} </h3>
 {% endblock %}
 
 {% block content %}

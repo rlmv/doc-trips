@@ -28,6 +28,9 @@ class Raid(DatabaseModel):
     def detail_url(self):
         return reverse('db:raids:detail', kwargs=self.obj_kwargs())
 
+    def delete_url(self):
+        return reverse('db:raids:delete', kwargs=self.obj_kwargs())
+
     def __str__(self):
         return "%s %s" % (self.user, self.date.strftime('%m/%d'))
 

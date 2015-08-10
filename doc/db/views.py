@@ -9,7 +9,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import (
     ListView, UpdateView, CreateView, DeleteView,
     TemplateView, DetailView, RedirectView)
-from braces.views import FormInvalidMessageMixin
+from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder
 
@@ -130,11 +130,15 @@ class DatabaseListView(DatabaseReadPermissionRequired, TripsYearMixin, ListView)
 
 
 class DatabaseCreateView(DatabaseEditPermissionRequired,
-                         FormInvalidMessageMixin, SetExplanationMixin,
+                         FormInvalidMessageMixin,
+                         SetExplanationMixin, SetHeadlineMixin,
                          TripsYearMixin, CrispyFormMixin, CreateView):
 
     template_name = 'db/create.html'
     form_invalid_message = FORM_INVALID_MESSAGE
+
+    def get_headline(self):
+        return "Add a new %s" % self.model._meta.verbose_name.title()
 
     def post(self, request, *args, **kwargs):
         """ 
@@ -191,10 +195,16 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin
         return helper
     
 
-class DatabaseDeleteView(DatabaseEditPermissionRequired, TripsYearMixin, DeleteView):
+class DatabaseDeleteView(DatabaseEditPermissionRequired, SetHeadlineMixin,
+                         TripsYearMixin, DeleteView):
 
     template_name = 'db/delete.html'
     success_url_pattern = None
+
+    def get_headline(self):
+        return "Are you sure you want to delete %s %s?" % (
+            self.object.get_model_name(), self.object
+        )
 
     def get_success_url(self):
         """ 

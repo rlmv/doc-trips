@@ -4,7 +4,12 @@
 
 
 {% block header %}
-<h2> Raid <small>{{ raid.verbose_str }} </small> </h2>
+<h2> 
+  Raid <small>{{ raid.verbose_str }} </small> 
+  {% if perms.permissions.can_edit_db %}
+  <a href="{{ raid.delete_url }}" class="btn btn-danger"> Delete </a>
+  {% endif %}
+</h2>
 {% endblock %}
 
 {% block content %}

@@ -1,11 +1,12 @@
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, SetHeadlineMixin
 from vanilla import ListView, DetailView, CreateView, FormView, TemplateView
 from django.http import HttpResponseRedirect
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
-from doc.db.views import TripsYearMixin, DatabaseUpdateView
+from doc.db.views import TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView
 from doc.raids.models import Raid, Comment, RaidInfo
 from doc.raids.forms import CommentForm
 from doc.trips.models import Trip, Campsite
@@ -59,9 +60,12 @@ class TripsToRaid(_RaidMixin, ListView):
         )
 
 
-class RaidTrip(_RaidMixin, PopulateMixin, CreateView):
+class RaidTrip(_RaidMixin, PopulateMixin, SetHeadlineMixin, CreateView):
     model = Raid
     fields = ['trip', 'date', 'plan']
+    
+    def get_headline(self):
+        return mark_safe("New Raid <small> %s </small>" % self.request.user)
 
     def get_form(self, **kwargs):
         return crispify(super(RaidTrip, self).get_form(**kwargs))
@@ -91,6 +95,18 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
         form.instance.raid = self.get_object()
         form.save()
         return HttpResponseRedirect(self.request.path)
+
+
+class RaidDelete(DatabaseDeleteView):
+    model = Raid
+
+    def get_headline(self):
+        return "Delete %s's raid of %s?" % (
+            self.object.user, self.object.verbose_str())
+
+    def get_success_url(self):
+        kwargs={'trips_year': self.kwargs['trips_year']}
+        return reverse('db:raids:list', kwargs=kwargs)
 
 
 class UpdateRaidInfo(DatabaseUpdateView):
