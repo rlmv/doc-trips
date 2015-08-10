@@ -10,6 +10,7 @@ from doc.raids.models import Raid, Comment, RaidInfo
 from doc.raids.forms import CommentForm
 from doc.trips.models import Trip, Campsite
 from doc.utils.views import PopulateMixin
+from doc.utils.forms import crispify
 
 
 class _RaidMixin(LoginRequiredMixin, TripsYearMixin):

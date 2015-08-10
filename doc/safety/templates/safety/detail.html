@@ -4,12 +4,27 @@
 
 {% block content %}
 
-{% detail incident view.fields %}
+<ul class="list-group">
+  <li class="list-group-item">
+    <h5 class="list-group-item-heading"> {{ incident.user }} ({{ incident.user_role }}) 
+      <span class="text-muted"> {{ incident.created }} </span>
+    </h5>
+    {% detail incident view.fields %}
+  </li>
 
-{% for update in incident.incidentupdate_set.all %}
-{% detail update view.update_fields %}
-{% endfor %}
+  {% for update in incident.incidentupdate_set.all %}
+  <li class="list-group-item">
+    <h5 class="list-group-item-heading"> {{ update.user }} ({{ update.user_role }}) 
+      <span class="text-muted"> {{ update.created }} </span>
+    </h5>
+    {% detail update view.update_fields %}
+  </li>
+  {% endfor %}
+  
+  <li class="list-group-item">
+    {% crispy form %}
+  </li>
 
-{% crispy form %}
+</ul>
 
 {% endblock %}

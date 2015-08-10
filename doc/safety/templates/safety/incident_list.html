@@ -1,0 +1,14 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> Incident Reports <a href="{% url 'db:safety:create' trips_year=trips_year %}" class="btn btn-danger">New Incident</a></h2>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for incident in incidents %}
+<li> {{ incident|detail_link }} </li>
+{% endfor %}
+</ul>
+{% endblock %}

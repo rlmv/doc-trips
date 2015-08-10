@@ -33,6 +33,9 @@ class _IncidentBase(DatabaseModel):
 
     # inputing user
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    user_role = models.CharField(
+        'What is your role on Trips?', choices=ROLE_CHOICES, max_length=20
+    )
     created = models.DateTimeField(auto_now_add=True, editable=False)
 
     caller = models.CharField("Who called?", max_length=255)
@@ -43,7 +46,6 @@ class _IncidentBase(DatabaseModel):
 
 class Incident(_IncidentBase):
 
-    role = models.CharField('What is your role on Trips?', max_length=255)
     trip = models.ForeignKey(
         Trip, verbose_name='On what trip did this incident occur?'
     )
@@ -59,20 +61,20 @@ class Incident(_IncidentBase):
     # TODO fill in other
 
     desc = models.TextField('Describe the incident')
-    resp = models.TextField('What was the response to the incident')
-    outcome = models.TextField('What was the outcome of the response')
+    resp = models.TextField('What was the response to the incident?')
+    outcome = models.TextField('What was the outcome of the response?')
   
     follow_up = models.TextField(
         'Is any additional follow-up needed? If so, what?'
     )
 
     # TODO: closed? resolved?
-
+    
     def detail_url(self):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
-        return "%s %s" % (self.trip, self.when)
+        return "%s: %s" % (self.trip, self.when)
 
 
 class IncidentUpdate(_IncidentBase):
