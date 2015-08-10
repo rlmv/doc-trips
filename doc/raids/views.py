@@ -1,23 +1,27 @@
 from braces.views import LoginRequiredMixin
-from vanilla import ListView, DetailView, CreateView, FormView
+from vanilla import ListView, DetailView, CreateView, FormView, TemplateView
 from django.http import HttpResponseRedirect
 from django.db.models import Count
+from django.shortcuts import get_object_or_404
+from django.core.urlresolvers import reverse
 
-from doc.db.views import TripsYearMixin
-from doc.raids.models import Raid, Comment
+from doc.db.views import TripsYearMixin, DatabaseUpdateView
+from doc.raids.models import Raid, Comment, RaidInfo
 from doc.raids.forms import CommentForm
 from doc.trips.models import Trip, Campsite
 from doc.utils.views import PopulateMixin
-from doc.utils.forms import crispify
 
 
 class _RaidMixin(LoginRequiredMixin, TripsYearMixin):
     pass
 
 
-class RaidHome(TripsYearMixin, ListView):
-    model = Raid
+class RaidHome(TripsYearMixin, DetailView):
+    model = RaidInfo
     template_name = 'raids/home.html'
+
+    def get_object(self):
+        return self.model.objects.get(trips_year=self.kwargs['trips_year'])
 
 
 class RaidList(_RaidMixin, ListView):
@@ -87,3 +91,13 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
         form.save()
         return HttpResponseRedirect(self.request.path)
 
+
+class UpdateRaidInfo(DatabaseUpdateView):
+    model = RaidInfo
+    delete_button = False
+
+    def get_object(self):
+        return self.model.objects.get(trips_year=self.kwargs['trips_year'])
+
+    def get_success_url(self):
+        return reverse('db:raids:home', kwargs=self.kwargs)

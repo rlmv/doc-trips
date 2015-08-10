@@ -166,6 +166,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin
 
     template_name ='db/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
+    delete_button = True # button to delete this object?
 
     def get_success_url(self):
         """ Redirect to same update page for now. """
@@ -177,13 +178,16 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin
 
         from doc.db.urlhelpers import reverse_delete_url
         helper = FormHelper(form)
-        helper.layout.append(
-            ButtonHolder(
-                Submit('submit', 'Update'),
+
+        buttons = [Submit('submit', 'Update')]
+
+        if self.delete_button:
+            buttons.append(
                 HTML('<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
-                    reverse_delete_url(self.object)))
-            )
-        )
+                    reverse_delete_url(self.object)
+                )))
+
+        helper.layout.append(ButtonHolder(*buttons))
         return helper
     
 

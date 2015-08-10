@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block content %}
-{% include "raids/instructions.html" %}
+
+{{ object.instructions|safe }}
 
 <div class="alert alert-info">
 This website is a work in progress. If you are having any issues signing in with your Dartmouth ID (alums especially), or think of anything that would make the Raid Blog more useful to you, please email <strong>bo.marchman at gmail.com</strong>.
 </div>
 
-<a href="{% url 'db:raids:list' trips_year=trips_year %}" class="btn btn-primary"> View the Raid Blog </a>
+<a href="{% url 'db:raids:list' trips_year=trips_year %}" class="btn btn-primary"> Viebw the Raid Blog </a>
 
 {% endblock %}

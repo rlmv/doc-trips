@@ -53,3 +53,14 @@ class Comment(DatabaseModel):
 
     def __str__(self):
         return "%s: %s" % (self.user, self.comment)
+
+
+class RaidInfo(DatabaseModel):
+    """
+    Raid information
+    """
+
+    instructions = models.TextField()
+
+    class Meta:
+        unique_together = ['trips_year']
