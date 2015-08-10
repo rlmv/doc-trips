@@ -45,7 +45,9 @@ IncidentFormLayout = lambda: Layout(
     'user_role',
     'trip',
     Field('where', rows=2),
-    Div('when', css_class='col-sm-4'),
+    Row(
+        Div('when', css_class='col-sm-4')
+    ),
     Row(
         Div('caller', css_class='col-sm-3'),
         Div('caller_role', css_class='col-sm-3'),
