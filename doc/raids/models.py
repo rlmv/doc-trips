@@ -21,6 +21,9 @@ class Raid(DatabaseModel):
     ))
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created']
+
     def clean(self):
         if self.trip is None and self.campsite is None:
             raise ValidationError('raid must have a campsite or trip')
