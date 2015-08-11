@@ -23,33 +23,33 @@
 	<li><a href="{% url 'applications:portal' %}">Volunteers</a></li>
 
 	{% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
-	<li><a href="{% url 'applications:grade:graders' %}"><span class="fa fa-pencil-square-o"></span> Grade Applications</a></li>
+	<li><a href="{% url 'applications:grade:graders' %}"><span class="fa fa-fw fa-pencil-square-o"></span> Grade Applications</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
-	<li><a href="{% url 'db:db_redirect' %}"><span class="fa fa-database"></span> Database</a></li>
+	<li><a href="{% url 'db:db_redirect' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
 	{% endif %}
 
 	{% if perms.permissions.can_set_access or perms.permissions.can_edit_timetable or perms.permissions.can_create_applications %}
 	<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-fw fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
           <ul class="dropdown-menu" role="menu">
 
 	    {% if perms.permissions.can_set_access %}
-	    <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-user-plus"></span> User Permissions </a></li>
+	    <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-fw fa-user-plus"></span> User Permissions </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_edit_timetable %}
-	    <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-calendar"></span> Calendar and Access </a></li>
+	    <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-fw fa-calendar"></span> Calendar and Access </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_create_applications %}
-	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-file-word-o"></span> Volunteer Applications</a></li>
-	    <li><a href="{% url 'core:settings' %}"><span class="fa fa-file-word-o"></span> Registration </a></li>
+	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-fw fa-file-word-o"></span> Volunteer Applications</a></li>
+	    <li><a href="{% url 'core:settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_edit_db %}
-	    <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
+	    <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-fw fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
 	    {% endif %}
 
           </ul>
@@ -63,14 +63,14 @@
 	{% if user.is_authenticated %}
 	<li class="dropdown">
 	  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-	    	<span class="fa fa-user"></span> {{ user }} <span class="fa fa-caret-down">
+	    	<span class="fa fa-fw fa-user"></span> {{ user }} <span class="fa fa-caret-down">
 	  </a>
 	  <ul class="dropdown-menu" role="menu">
-	    <li><a href="{% url 'users:logout' %}"> Logout <span class="fa fa-sign-out"></span></a></li>
+	    <li><a href="{% url 'users:logout' %}"> Logout <span class="fa fa-fw fa-sign-out"></span></a></li>
 	  </ul>
 	</li>
 	{% else %} 
-	<li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-sign-in"></span> Login</a></li>
+	<li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-fw fa-sign-in"></span> Login</a></li>
 	{% endif %}
       </ul>
 
