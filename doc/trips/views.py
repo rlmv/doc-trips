@@ -31,6 +31,7 @@ from doc.permissions.views import (
 from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
 from doc.utils.views import PopulateMixin
+from doc.utils.cache import cache_as
 from doc.transport.models import ExternalBus
 
 
@@ -607,8 +608,19 @@ class PacketsForSection(DatabaseListView):
     def get_queryset(self):
         return super(PacketsForSection, self).get_queryset().filter(
             section=self.get_section()
+        ).select_related(
+            'template__campsite1',
+            'template__campsite2',
+            'template__dropoff_stop',
+            'template__pickup_stop'
+        ).prefetch_related(
+            'leaders',
+            'leaders__applicant',
+            'trippees',
+            'trippees__registration'
         )
 
+    @cache_as('_section')
     def get_section(self):
         return get_object_or_404(Section, pk=self.kwargs['section_pk'])
 

@@ -6,6 +6,11 @@
 {% endblock %}
 
 {% block content %}
+
+<div class="no-print alert alert-warning">
+  <i class="fa fa-warning"></i> Print this packet <strong>single-sided</strong> to keep all trip information togeher.
+</div>
+
 {% for trip in trips %}
 <div class="page-break-after">
   <div class="page-header">
