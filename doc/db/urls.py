@@ -49,8 +49,6 @@ database_urlpatterns = [
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
     url(r'^raids/', include('doc.raids.urls', namespace='raids')),
     url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),
-    url(r'^checklists/transport/(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
-        TransportChecklist.as_view(), name='transport_checklist'),
     url(r'^checklists/external/(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
         ExternalBusChecklist.as_view(), name='external_checklist'),
     url(r'^foodbox/', include(foodbox_urlpatterns, namespace='foodbox')),

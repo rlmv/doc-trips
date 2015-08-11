@@ -183,12 +183,20 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
 
 
 class ScheduledTransportCreateView(PopulateMixin, DatabaseCreateView):
-    
     model = ScheduledTransport
-    fields = ('route', 'date')
+    fields = ['route', 'date']
     
     def get_success_url(self):
         return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
+
+
+class ScheduledTransportUpdateView(DatabaseUpdateView):
+    model = ScheduledTransport
+    fields = ['notes']
+    delete_button = False
+
+    def get_headline(self):
+        return "Add notes to %s" % self.object
 
 
 class ScheduledTransportDeleteView(DatabaseDeleteView):
@@ -383,7 +391,6 @@ class ExternalBusChecklist(DatabaseReadPermissionRequired,
 
 class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
                  FormValidMessageMixin, FormView):
-  
     template_name = 'transport/internal_order.html'
     form_valid_message = 'Route order has been updated'
 
@@ -412,10 +419,6 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     def get_context_data(self, **kwargs):
         kwargs.update({
             'bus': self.get_bus(),
-            'checklist_url': reverse('db:transport_checklist', kwargs={
-                'trips_year': self.kwargs['trips_year'],
-                'route_pk': self.get_bus().route.pk,
-                'date': self.get_bus().date
-            })
+            'checklist_url': self.get_bus().detail_url()
         })
         return super(OrderStops, self).get_context_data(**kwargs)

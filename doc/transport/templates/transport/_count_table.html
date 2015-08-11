@@ -16,7 +16,7 @@
   <th class="text-muted"> {{ route.vehicle.capacity }} </th>
   {% for date, num_riders in dates.items %}
   <td>
-     <a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ num_riders|default:'<span class="text-muted">&mdash;</span>' }} 
+     <a href="{% url 'db:scheduledtransport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"> {{ num_riders|default:'<span class="text-muted">&mdash;</span>' }} 
      </a>
   </td>
   {% endfor %}

@@ -17,9 +17,24 @@
 {% endif %}
 
 {% if scheduled %}
-<ol class="breadcrumb">
-  <li><a href="{% url 'db:scheduledtransport_order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route </a></li>
-</ol>
+
+<div class="row">
+  <div class="col-sm-6">
+    <ol class="breadcrumb">
+      <li><a href="{% url 'db:scheduledtransport_order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route </a></li>
+    </ol>
+  </div>
+  <div class="col-sm-6">
+    <ol class="breadcrumb">
+      <li><a href="{{ scheduled.update_url }}"> <i class="fa fa-caret-right"></i> Add notes </a></li>
+    </ol>
+  </div>
+</div>
+
+{% if scheduled.notes %}
+<h4> Notes </h4>
+<p> {{ scheduled.notes|linebreaks }} </p>
+{% endif %}
 
 {% endif %}
 

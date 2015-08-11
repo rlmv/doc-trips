@@ -9,10 +9,14 @@ scheduledtransport_urlpatterns = [
         name='scheduledtransport_index'),
     url(DB_REGEX['CREATE'], ScheduledTransportCreateView.as_view(),
         name='scheduledtransport_create'),
+    url(DB_REGEX['UPDATE'], ScheduledTransportUpdateView.as_view(),
+        name='scheduledtransport_update'),
     url(DB_REGEX['DELETE'], ScheduledTransportDeleteView.as_view(),
         name='scheduledtransport_delete'),
     url(r'^ordering/(?P<bus_pk>[0-9]+)/$', OrderStops.as_view(),
         name='scheduledtransport_order'),
+    url(r'^(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
+        TransportChecklist.as_view(), name='scheduledtransport_checklist'),
 ]
 
 externalbus_urlpatterns = [
@@ -33,7 +37,7 @@ transportstop_urlpatterns = [
 ]
 
 route_urlpatterns = [
-     url(DB_REGEX['LIST'], RouteListView.as_view(), name='route_index'),
+    url(DB_REGEX['LIST'], RouteListView.as_view(), name='route_index'),
     url(DB_REGEX['CREATE'], RouteCreateView.as_view(), name='route_create'),
     url(DB_REGEX['DETAIL'], RouteDetailView.as_view(), name='route_detail'),
     url(DB_REGEX['UPDATE'], RouteUpdateView.as_view(), name='route_update'),

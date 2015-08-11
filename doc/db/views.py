@@ -165,15 +165,23 @@ class DatabaseCreateView(DatabaseEditPermissionRequired,
         return reverse_detail_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseEditPermissionRequired, FormInvalidMessageMixin,
-                         TripsYearMixin, CrispyFormMixin, UpdateView):
+class DatabaseUpdateView(DatabaseEditPermissionRequired, SetHeadlineMixin,
+                         FormInvalidMessageMixin, TripsYearMixin,
+                         CrispyFormMixin, UpdateView):
+    """
+    Base view for updating an object in the database.
 
+    If 'delete_button' is True, a link to the delete view for
+    this object will be added to the form's button holder.
+    """
     template_name ='db/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
-    delete_button = True # button to delete this object?
+    delete_button = True  # add a "Delete" button?
+
+    def get_headline(self):
+        return "Edit %s" % self.model._meta.verbose_name.title()
 
     def get_success_url(self):
-        """ Redirect to same update page for now. """
         from doc.db.urlhelpers import reverse_detail_url
         return reverse_detail_url(self.object)
 

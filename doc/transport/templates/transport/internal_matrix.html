@@ -34,7 +34,7 @@
     {% for date, transport in dates.items %}
     <td class="text-center"> 
       {% if transport.over_capacity %}
-      <a href="{% url 'db:transport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
+      <a href="{% url 'db:scheduledtransport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
       {% endif %}
     </td>
     {% endfor %}

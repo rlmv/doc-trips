@@ -146,6 +146,7 @@ class ScheduledTransport(DatabaseModel):
 
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     date = models.DateField()
+    notes = models.TextField(help_text='for the bus driver')
 
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
@@ -348,6 +349,17 @@ class ScheduledTransport(DatabaseModel):
                 stop.over_capacity = False
             stop.passenger_count = load
         return get_directions(stops)
+
+    def update_url(self):
+        return reverse('db:scheduledtransport_update', kwargs=self.obj_kwargs())
+
+    def detail_url(self):
+        kwargs = {
+            'trips_year': self.trips_year_id,
+            'route_pk': self.route_id,
+            'date': self.date
+        }
+        return reverse('db:scheduledtransport_checklist', kwargs=kwargs)
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))

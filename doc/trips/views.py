@@ -42,7 +42,7 @@ class TripList(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
         return context
 
 
-class TripUpdate(SetHeadlineMixin, DatabaseUpdateView):
+class TripUpdate(DatabaseUpdateView):
     model = Trip
     fields = [
         'dropoff_time', 'pickup_time',
@@ -317,8 +317,7 @@ class AssignTrippee(DatabaseListView, _AssignMixin):
         return context
 
 
-class AssignTrippeeToTrip(FormValidMessageMixin, SetHeadlineMixin,
-                          DatabaseUpdateView):
+class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     model = IncomingStudent
     lookup_url_kwarg = 'trippee_pk'
@@ -460,8 +459,7 @@ class AssignTripLeaderView(DatabaseListView):
 # should these volunteer specific views go to the applications app?
 
 class AssignLeaderToTrip(ApplicationEditPermissionRequired,
-                         FormValidMessageMixin, SetHeadlineMixin,
-                         TripsYearMixin, UpdateView):
+                         FormValidMessageMixin, TripsYearMixin, UpdateView):
 
     model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
