@@ -23,3 +23,10 @@ def embed_map(stops):
         'dest': dest,
         'key': settings.GOOGLE_MAPS_BROWSER_KEY
     }))
+
+
+@register.inclusion_tag('transport/maps/_trips_with_counts.html')
+def trips_with_counts(trips):
+    """
+    """
+    return {'trips': trips}

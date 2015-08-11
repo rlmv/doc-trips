@@ -36,7 +36,13 @@
 <p> {{ scheduled.notes|linebreaks }} </p>
 {% endif %}
 
-{% endif %}
+<div class="row">
+  <div class="col-sm-8">
+    {% embed_map stops %}
+  </div>
+</div>
+
+{% else %}
 
 <div class="row">
   <div class="col-sm-6">
@@ -69,13 +75,9 @@
 
   </div>
 
-  <div class="col-sm-6">
-    {% if scheduled %}
-    {% embed_map stops %}
-    {% endif %}
-  </div>
-
 </div>
+
+{% endif %}
 
 {% if not scheduled %}
 <p class="h4"> Directions are only shown for scheduled buses. </p>
@@ -85,6 +87,8 @@
 <p class="h4"> Maps Error: {{ error }} </p>
 {% endif %}
 
-{% include "transport/maps/directions.html" %}
+<p>
+  {% include "transport/maps/directions.html" %}
+</p>
 
 {% endblock %}

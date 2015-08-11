@@ -1,4 +1,5 @@
 {% load links %}
+{% load maps %}
 
 <ul class="list-group">
   {% for leg in directions.legs %}
@@ -9,8 +10,10 @@
     <h3 class="list-group-item-heading"> From {{ leg.start_stop.location_str }} </h3>
 
     {% if leg.start_stop.trips_picked_up %}
-    <p class="h5"> Pickup {{ leg.start_stop.trips_picked_up|detail_link }} </p>
+    <p class="h5"> Pickup {% trips_with_counts leg.start_stop.trips_picked_up %} </p>
     {% endif %}
+
+    <p class="h5 text-muted"> You should have {{ leg.start_stop.passenger_count }} passengers. </p>
 
   </li>
   {% endif %}
@@ -27,17 +30,25 @@
     </h3> 
     <p> {{ leg.end_stop.directions }} </p>
 
-    {% if leg.end_stop.trips_dropped_off %}
-    <p class="h5"> Dropoff {{ leg.end_stop.trips_dropped_off|detail_link }} </p>
-    {% endif %}
-    
-    {% if leg.end_stop.trips_picked_up %}
-    <p class="h5"> Pickup {{ leg.end_stop.trips_picked_up|detail_link }} </p>
-    {% endif %}
+    <div class="row">
+      {% if leg.end_stop.trips_dropped_off %}
+      <div class="col-sm-3">
+	<p class="h5"> Dropoff {% trips_with_counts leg.end_stop.trips_dropped_off %} </p>
+      </div>
+      {% endif %}
+      
+      {% if leg.end_stop.trips_picked_up %}
+      <div class="col-sm-3">
+	<p class="h5"> Pickup {% trips_with_counts leg.end_stop.trips_picked_up %} </p> 
+      </div>
+      {% endif %}
+     </div>
 
     {% if leg.end_stop.over_capacity %}
     <p class="h5"> <i class="fa fa-warning"></i> Over capacity! There are <strong>{{ leg.end_stop.passenger_count }}</strong> passengers on this leg. </p>
     {% endif %}
+
+    <p class="h5 text-muted"> You should have {{ leg.end_stop.passenger_count }} passengers. </p>
 
   </li>
   {% endfor %}

@@ -1,0 +1,7 @@
+{% load links %}
+
+<ul class="fa-ul">
+  {% for trip in trips %}
+  <li> <i class="fa-li fa fa-square-o"></i> {{ trip|detail_link }} ({{ trip.size }} people)</li>
+  {% endfor %}
+</ul>
