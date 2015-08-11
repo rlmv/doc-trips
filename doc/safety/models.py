@@ -33,9 +33,6 @@ class _IncidentBase(DatabaseModel):
 
     # inputing user
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    user_role = models.CharField(
-        'What is your role on Trips?', choices=ROLE_CHOICES, max_length=20
-    )
     created = models.DateTimeField(auto_now_add=True, editable=False)
 
     caller = models.CharField("Who called?", max_length=255)

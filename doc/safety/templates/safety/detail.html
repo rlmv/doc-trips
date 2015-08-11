@@ -6,7 +6,7 @@
 
 <ul class="list-group">
   <li class="list-group-item">
-    <h5 class="list-group-item-heading"> {{ incident.user }} ({{ incident.user_role }}) 
+    <h5 class="list-group-item-heading"> {{ incident.user }} 
       <span class="text-muted"> {{ incident.created }} </span>
     </h5>
     {% detail incident view.fields %}
@@ -14,7 +14,7 @@
 
   {% for update in incident.incidentupdate_set.all %}
   <li class="list-group-item">
-    <h5 class="list-group-item-heading"> {{ update.user }} ({{ update.user_role }}) 
+    <h5 class="list-group-item-heading"> {{ update.user }}
       <span class="text-muted"> {{ update.created }} </span>
     </h5>
     {% detail update view.update_fields %}

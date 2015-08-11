@@ -13,7 +13,6 @@ class IncidentForm(forms.ModelForm):
     class Meta:
         model = Incident
         fields = [
-            'user_role',
             'trip',
             'where',
             'when',
@@ -42,12 +41,11 @@ class IncidentForm(forms.ModelForm):
 
 IncidentFormLayout = lambda: Layout(
     HTML('<p><strong> Your are logged in as {{ user }} </strong></p>'),
-    'user_role',
-    'trip',
-    Field('where', rows=2),
     Row(
-        Div('when', css_class='col-sm-4')
+        Div('trip', css_class='col-sm-6'),
+        Div('when', css_class='col-sm-6'),
     ),
+    Field('where', rows=2),
     Row(
         Div('caller', css_class='col-sm-3'),
         Div('caller_role', css_class='col-sm-3'),
@@ -71,7 +69,6 @@ IncidentFormLayout = lambda: Layout(
 IncidentUpdateFormLayout = lambda: Layout(
     Fieldset(
         'Update the incident (logged in as {{ user }})',
-        'user_role',
         Row(
             Div('caller', css_class='col-sm-3'),
             Div('caller_role', css_class='col-sm-3'),

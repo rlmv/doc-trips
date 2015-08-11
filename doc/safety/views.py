@@ -1,4 +1,5 @@
 from vanilla import FormView, DetailView, ListView, CreateView
+from braces.views import SetHeadlineMixin
 from django.http import HttpResponseRedirect
 
 from doc.permissions.views import SafetyLogPermissionRequired
@@ -19,8 +20,10 @@ class IncidentList(_IncidentMixin, ListView):
     context_object_name = 'incidents'
 
 
-class NewIncident(_IncidentMixin, CreateView):
+class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
     model = Incident
+    template_name = 'db/create.html'
+    headline = 'New Incident'
 
     def get_form(self, **kwargs):
         return IncidentForm(self.kwargs['trips_year'], **kwargs)
