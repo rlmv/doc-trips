@@ -94,3 +94,7 @@ packet_urlpatterns = [
     url(r'^medical/for/section/(?P<section_pk>[0-9]+)/$',
         MedicalInfoForSection.as_view(), name='medical'),
 ]
+
+checklist_urlpatterns = [
+    url(r'^$', Checklists.as_view(), name='all'),
+]

@@ -247,8 +247,19 @@ class Section(DatabaseModel):
         
         Excludes the day leaders arrive.
         """
-        return [self.trippees_arrive, self.at_campsite1, self.at_campsite2,
-                self.arrive_at_lodge, self.return_to_campus]
+        return [
+            self.trippees_arrive,
+            self.at_campsite1,
+            self.at_campsite2,
+            self.arrive_at_lodge,
+            self.return_to_campus]
+
+    @property
+    def leader_dates(self):
+        """
+        All dates when leaders are here for trips.
+        """
+        return [self.leaders_arrive] + self.trip_dates
 
     def __str__(self):
         return 'Section ' + self.name

@@ -5,7 +5,7 @@ from doc.croos.urls import croo_urlpatterns
 from doc.trips.urls import (
     trip_urlpatterns, template_urlpatterns, triptype_urlpatterns,
     campsite_urlpatterns, section_urlpatterns, leader_urlpatterns,
-    foodbox_urlpatterns, packet_urlpatterns
+    foodbox_urlpatterns, packet_urlpatterns, checklist_urlpatterns
 )
 from doc.transport.urls import (
     scheduledtransport_urlpatterns, transportstop_urlpatterns,
@@ -54,6 +54,7 @@ database_urlpatterns = [
     url(r'^foodbox/', include(foodbox_urlpatterns, namespace='foodbox')),
     url(r'^packets/', include(packet_urlpatterns, namespace='packets')),
     url(r'^incidents/', include('doc.safety.urls', namespace='safety')),
+    url(r'^checklists/', include(checklist_urlpatterns, namespace='checklists')),
 ]
 
 urlpatterns = [

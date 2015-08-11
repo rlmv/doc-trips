@@ -278,18 +278,6 @@ class SectionManagerTestCase(TripsTestCase):
         section2 = mommy.make(Section, trips_year=trips_year, is_exchange=False)
         self.assertEqual([section1], list(Section.objects.exchange(trips_year)))
 
-
-class SectionModelTestCase(TripsTestCase):
-    
-    def test_model_trip_dates(self):
-        ty = self.init_trips_year()
-        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
-        self.assertEqual(section.trip_dates, 
-                         [date(2015, 1, 2), date(2015, 1, 3), date(2015, 1, 4), date(2015, 1, 5), date(2015, 1, 6)])
-        
-
-class SectionDateManagerTestCase(TripsTestCase):
-    
     def test_trips_dates_with_one_section(self):
         ty = self.init_trips_year()
         leaders_arrive = date(2015, 1, 1)
@@ -302,6 +290,41 @@ class SectionDateManagerTestCase(TripsTestCase):
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 4))
         self.assertEqual(Section.dates.trip_dates(ty),
                          sorted(list(set(section1.trip_dates + section2.trip_dates))))
+
+    def test_leader_dates(self):
+        trips_year = self.init_trips_year()
+        section1 = mommy.make(
+            Section, trips_year=trips_year,
+            leaders_arrive=date(2015, 1, 1))
+        section2 = mommy.make(
+            Section, trips_year=trips_year,
+            leaders_arrive=date(2015, 1, 4))
+        self.assertEqual(Section.dates.leader_dates(trips_year),
+                         sorted(list(set(section1.leader_dates + section2.leader_dates))))
+
+
+class SectionModelTestCase(TripsTestCase):
+    
+    def test_model_trip_dates(self):
+        ty = self.init_trips_year()
+        section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
+        self.assertEqual(section.trip_dates, 
+                         [date(2015, 1, 2), date(2015, 1, 3), date(2015, 1, 4), date(2015, 1, 5), date(2015, 1, 6)])
+
+    def test_leader_dates(self):
+        trips_year = self.init_trips_year()
+        section = mommy.make(
+            Section, trips_year=trips_year,
+            leaders_arrive=date(2015, 1, 1)
+        )
+        self.assertEqual(section.leader_dates, [
+            date(2015, 1, 1),
+            date(2015, 1, 2),
+            date(2015, 1, 3),
+            date(2015, 1, 4),
+            date(2015, 1, 5),
+            date(2015, 1, 6)
+        ])
 
 
 class TripTemplateValidatorTest(unittest.TestCase):

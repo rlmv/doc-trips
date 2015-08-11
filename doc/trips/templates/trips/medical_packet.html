@@ -8,9 +8,8 @@
 {% block content %}
 
 {% for trip in trips %}
-<div class="page-header">
-  <h2> {{ trip.verbose_str }} </h2>
-</div>
+<h2> {{ trip.verbose_str }} </h2>
+<hr class="hr-sm">
 {% medical_packet trip %}
 {% endfor %}
 

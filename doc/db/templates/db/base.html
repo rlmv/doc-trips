@@ -71,6 +71,11 @@
     <li>
       <a href="{% url 'db:foodbox:counts' trips_year=trips_year %}"> <i class="fa fa-fw fa-spoon"></i> Foodboxes </a>
     </li>
+
+    <li>
+      <a href="{% url 'db:checklists:all' trips_year=trips_year %}"> <i class="fa fa-fw fa-list-ul"></i> Packets </a>
+    </li>
+
   </div>
 </div>
 {% endblock %}

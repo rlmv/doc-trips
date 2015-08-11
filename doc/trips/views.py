@@ -630,3 +630,16 @@ class MedicalInfoForSection(PacketsForSection):
     Contains leader and trippee med information.
     """
     template_name = 'trips/medical_packet.html'
+
+
+class Checklists(DatabaseTemplateView):
+    """
+    Central list of all checklists"
+    """
+    template_name = 'trips/checklists.html'
+
+    def extra_context(self):
+        sxns = Section.objects.filter(trips_year=self.kwargs['trips_year'])
+        return {
+            'sections': sxns,
+        }

@@ -14,7 +14,6 @@ class SectionDatesManager(models.Manager):
 
         Return a sorted list of dates.
         """
-
         sections = self.filter(trips_year=trips_year)
         nights_camping = set()
         for section in sections:
@@ -27,11 +26,17 @@ class SectionDatesManager(models.Manager):
 
         Excludes day 0 when leaders arrive for training.
         """
-
         sections = self.filter(trips_year=trips_year)
         dates = set()
         for section in sections:
             dates.update(section.trip_dates)
+        return sorted(list(dates))
+
+    def leader_dates(self, trips_year):
+        sections = self.filter(trips_year=trips_year)
+        dates = set()
+        for section in sections:
+            dates.update(section.leader_dates)
         return sorted(list(dates))
 
 
