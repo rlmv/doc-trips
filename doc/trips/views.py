@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
 from django.utils.safestring import mark_safe
 from django.forms.models import modelformset_factory
+from django.shortcuts import get_object_or_404
 from vanilla import FormView, UpdateView, TemplateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
@@ -593,3 +594,24 @@ class LeaderPacket(DatabaseDetailView):
     """
     model = Trip
     template_name = 'trips/leader_packet.html'
+
+
+class PacketsForSection(DatabaseListView):
+    """
+    All leader packets for a section.
+    """
+    model = Trip
+    template_name = 'trips/section_packet.html'
+    context_object_name = 'trips'
+
+    def get_queryset(self):
+        return super(PacketsForSection, self).get_queryset().filter(
+            section=self.get_section()
+        )
+
+    def get_section(self):
+        return get_object_or_404(Section, pk=self.kwargs['section_pk'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['section'] = self.get_section()
+        return super(PacketsForSection, self).get_context_data(**kwargs)

@@ -106,6 +106,10 @@
     .no-print {
 	display: none !important;
     }
+
+    .page-break-after {
+	page-break-after: always;
+    }
 }
 
     

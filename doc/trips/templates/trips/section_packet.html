@@ -1,0 +1,17 @@
+{% extends "db/base.html" %}
+{% load trips %}
+
+{% block header %}
+<h1 class="no-print"> Leader Packets <small> {{ section }} </small></h1>
+{% endblock %}
+
+{% block content %}
+{% for trip in trips %}
+<div class="page-break-after">
+  <div class="page-header">
+    <h2> {{ trip.verbose_str }} </h2>
+  </div>
+  {% leader_packet trip %}
+</div>
+{% endfor %}
+{% endblock %}
