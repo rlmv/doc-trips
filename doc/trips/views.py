@@ -620,4 +620,13 @@ class PacketsForSection(DatabaseListView):
         return get_object_or_404(Section, pk=self.kwargs['section_pk'])
 
     def extra_context(self):
-        return {'section': self.get_section()}
+        return {'section': self.get_section()}  
+
+
+class MedicalInfoForSection(PacketsForSection):
+    """
+    Packets for croos, by section.
+    
+    Contains leader and trippee med information.
+    """
+    template_name = 'trips/medical_packet.html'

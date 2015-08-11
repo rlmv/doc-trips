@@ -110,6 +110,10 @@
     .page-break-after {
 	page-break-after: always;
     }
+    
+    .no-page-break-inside {
+	page-break-inside: avoid;
+    }
 }
 
     

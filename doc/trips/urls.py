@@ -91,4 +91,6 @@ packet_urlpatterns = [
     url(r'^for/trip/(?P<pk>[0-9]+)/$', LeaderPacket.as_view(), name='trip'),
     url(r'^for/section/(?P<section_pk>[0-9]+)/$',
         PacketsForSection.as_view(), name='section'),
+    url(r'^medical/for/section/(?P<section_pk>[0-9]+)/$',
+        MedicalInfoForSection.as_view(), name='medical'),
 ]
