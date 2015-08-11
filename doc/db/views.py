@@ -17,7 +17,7 @@ from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
 from doc.permissions.views import (
     DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
-from doc.utils.views import CrispyFormMixin, SetExplanationMixin
+from doc.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
 
 
 logger = logging.getLogger(__name__)
@@ -125,11 +125,12 @@ class TripsYearMixin():
         return context
 
 
-class DatabaseListView(DatabaseReadPermissionRequired, TripsYearMixin, ListView):
+class DatabaseListView(DatabaseReadPermissionRequired, ExtraContextMixin,
+                       TripsYearMixin, ListView):
     pass
 
 
-class DatabaseCreateView(DatabaseEditPermissionRequired,
+class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
                          FormInvalidMessageMixin,
                          SetExplanationMixin, SetHeadlineMixin,
                          TripsYearMixin, CrispyFormMixin, CreateView):
@@ -165,8 +166,8 @@ class DatabaseCreateView(DatabaseEditPermissionRequired,
         return reverse_detail_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseEditPermissionRequired, SetHeadlineMixin,
-                         FormInvalidMessageMixin, TripsYearMixin,
+class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
+                         SetHeadlineMixin, FormInvalidMessageMixin, TripsYearMixin,
                          CrispyFormMixin, UpdateView):
     """
     Base view for updating an object in the database.
@@ -203,9 +204,8 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, SetHeadlineMixin,
         return helper
     
 
-class DatabaseDeleteView(DatabaseEditPermissionRequired, SetHeadlineMixin,
-                         TripsYearMixin, DeleteView):
-
+class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
+                         SetHeadlineMixin,TripsYearMixin, DeleteView):
     template_name = 'db/delete.html'
     success_url_pattern = None
 
@@ -251,14 +251,19 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, SetHeadlineMixin,
             return HttpResponseRedirect(request.path)
 
 
-class DatabaseDetailView(DatabaseReadPermissionRequired, TripsYearMixin, DetailView):
-
+class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
+                         TripsYearMixin, DetailView):
     template_name = 'db/detail.html'
     # Fields to display in the view. Passed in the template.
     fields = None
-        
 
-class DatabaseLandingPage(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+
+class DatabaseTemplateView(DatabaseReadPermissionRequired, ExtraContextMixin,
+                           TripsYearMixin, TemplateView):
+    pass
+
+
+class DatabaseLandingPage(DatabaseTemplateView):
     """ 
     Landing page of a particular trips_year in the database
 

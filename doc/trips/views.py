@@ -23,7 +23,9 @@ from doc.applications.models import LeaderSupplement, GeneralApplication
 from doc.incoming.models import IncomingStudent, Registration
 from doc.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
-    DatabaseListView, DatabaseDetailView, TripsYearMixin)
+    DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
+    TripsYearMixin
+)
 from doc.permissions.views import (
     ApplicationEditPermissionRequired, DatabaseReadPermissionRequired,
     DatabaseEditPermissionRequired
@@ -35,13 +37,11 @@ from doc.utils.cache import cache_as
 from doc.transport.models import ExternalBus
 
 
-class TripList(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+class TripList(DatabaseTemplateView):
     template_name = 'trips/trip_index.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(TripList, self).get_context_data(**kwargs)
-        context['matrix'] = Trip.objects.matrix(self.kwargs['trips_year'])
-        return context
+    def extra_context(self):
+        return {'matrix': Trip.objects.matrix(self.kwargs['trips_year'])}
 
 
 class TripUpdate(DatabaseUpdateView):
@@ -158,12 +158,11 @@ class CampsiteList(DatabaseListView):
     model = Campsite
     context_object_name = 'campsites'
     template_name = 'trips/campsite_index.html'
-    
-    def get_context_data(self, **kwargs):
-        trips_year = self.kwargs['trips_year']
-        context = super(CampsiteList, self).get_context_data(**kwargs)
-        context['camping_dates'] = Section.dates.camping_dates(trips_year)
-        return context
+
+    def extra_context(self):
+        return {
+            'camping_dates': Section.dates.camping_dates(self.kwargs['trips_year'])
+        }
 
 
 class CampsiteCreate(DatabaseCreateView):
@@ -521,18 +520,16 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
         return reverse_detail_url(self.object)
 
 
-class TrippeeLeaderCounts(DatabaseReadPermissionRequired,
-                          TripsYearMixin, TemplateView):
+class TrippeeLeaderCounts(DatabaseTemplateView):
     """
-    Shows a matrix of the number of tripees and leaders for all trips 
+    Shows a matrix of the number of tripees and leaders for all trips
     """
-   
     template_name = 'trips/trippee_leader_counts.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(TrippeeLeaderCounts, self).get_context_data(**kwargs)
-        context['matrix'] = Trip.objects.matrix(self.kwargs['trips_year'])
-        return context
+    def extra_context(self):
+        return {
+            'matrix': Trip.objects.matrix(self.kwargs['trips_year'])
+        }
 
 
 class FoodboxCounts(DatabaseListView):
@@ -548,16 +545,16 @@ class FoodboxCounts(DatabaseListView):
             'template__triptype'
         )
 
-    def get_context_data(self, **kwargs):
-        # hack hack TODO: compute this with a query
+    def extra_context(self):
         qs = self.object_list
-        kwargs['full'] = len(qs)
-        kwargs['half'] = len(list(filter(lambda x: x.half_foodbox, qs)))
-        kwargs['supp'] = len(list(filter(lambda x: x.supp_foodbox, qs)))
-        kwargs['bagels'] = sum(map(lambda x: x.bagels, qs))
-        kwargs['bagel_ratio'] = NUM_BAGELS_REGULAR
-        kwargs['supp_bagel_ratio'] = NUM_BAGELS_SUPPLEMENT
-        return super(FoodboxCounts, self).get_context_data(**kwargs)
+        return {
+            'full': len(qs),
+            'half': len(list(filter(lambda x: x.half_foodbox, qs))),
+            'supp': len(list(filter(lambda x: x.supp_foodbox, qs))),
+            'bagels': sum(map(lambda x: x.bagels, qs)),
+            'bagel_ratio': NUM_BAGELS_REGULAR,
+            'supp_bagel_ratio': NUM_BAGELS_SUPPLEMENT,
+        }
 
 
 class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
@@ -575,8 +572,6 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
         formset = FoodRulesFormset(queryset=self.get_queryset(), **kwargs)
         formset.helper = FoodboxFormsetHelper()
         formset.helper.form_class = 'form-inline'
-#        formset.helper.field_template = 'bootstrap3/layout/inline_field.html'
-#        formset.helper.template = 'bootstrap3-redux/table_inline_formset.html'
         formset.helper.add_input(Submit('submit', 'Save'))
         return formset
 
@@ -589,7 +584,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
 
 class LeaderPacket(DatabaseDetailView):
-    """ 
+    """
     All information that leader's need: schedule, directions, 
     medical info, etc.
     """
@@ -624,6 +619,5 @@ class PacketsForSection(DatabaseListView):
     def get_section(self):
         return get_object_or_404(Section, pk=self.kwargs['section_pk'])
 
-    def get_context_data(self, **kwargs):
-        kwargs['section'] = self.get_section()
-        return super(PacketsForSection, self).get_context_data(**kwargs)
+    def extra_context(self):
+        return {'section': self.get_section()}

@@ -135,3 +135,19 @@ class SetExplanationMixin():
     def get_context_data(self, **kwargs):
         kwargs['explanation'] = self.get_explanation()
         return super(SetExplanationMixin, self).get_context_data(**kwargs)
+
+
+class ExtraContextMixin():
+    """
+    A cleaner way to add to the template context.
+   
+    Instead of overridding get_context_data, implement
+    a 'extra_context' method which returns a dictionary to 
+    update the context with.
+    """
+    def extra_context(self):
+        return {}
+
+    def get_context_data(self, **kwargs):
+        kwargs.update(self.extra_context())
+        return super(ExtraContextMixin, self).get_context_data(**kwargs)
