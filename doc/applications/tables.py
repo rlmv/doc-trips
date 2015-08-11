@@ -19,7 +19,6 @@ class TrainingColumn(tables.Column):
     """
     Column with a tooltip
     """
-
     def __init__(self, verbose_name, tooltip, *args, **kwargs):
         self.tooltip = tooltip
         verbose_name = tooltip_wrap(verbose_name, self.tooltip)
@@ -33,6 +32,9 @@ class ApplicationTable(tables.Table):
     
     applicant = tables.Column(
         verbose_name='Applications'
+    )
+    netid = tables.Column(
+        verbose_name='NetId', accessor='applicant.netid'
     )
     status = tables.Column(
         verbose_name='Status'
