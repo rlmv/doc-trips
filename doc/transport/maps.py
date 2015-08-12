@@ -34,6 +34,9 @@ def get_directions(stops):
 
     TODO: just return the 'legs' value
     """
+    if len(stops) < 2:
+        raise MapError('Only one stop provided')
+    
     orig, waypoints, dest = _split_stops(stops)
     
     if len(waypoints) > MAX_WAYPOINTS:
@@ -56,7 +59,7 @@ def get_directions(stops):
             raise MapError('Expecting one route')
         if resp[0]['waypoint_order'] != list(range(len(waypoints))):
             raise MapError('Waypoints out of order')
-
+            
         return _integrate_stops(resp[0], stops)
 
     except (TransportError, ApiError) as exc:

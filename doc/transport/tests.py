@@ -906,3 +906,7 @@ class MapsTestCases(TripsYearTestCase):
             self.assertEqual(leg['start_stop'], stops[i])
             self.assertEqual(leg['end_stop'], stops[i + 1])
 
+    def test_directions_with_one_stop_raises_error(self):
+        with self.assertRaisesRegexp(maps.MapError, 'Only one stop provided'):
+            maps.get_directions([Hanover()])
+
