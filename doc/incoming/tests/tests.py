@@ -120,7 +120,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost=25
+            financial_aid=25, bus_assignment__cost_round_trip=25
         )
         self.assertEqual(inc.compute_cost(), 93.75)
 
@@ -129,7 +129,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost=25,
+            financial_aid=25, bus_assignment__cost_round_trip=25,
             registration__doc_membership=YES
         )
         self.assertEqual(inc.compute_cost(), 131.25)
@@ -139,7 +139,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost=25,
+            financial_aid=25, bus_assignment__cost_round_trip=25,
             registration__doc_membership=YES,
             registration__green_fund_donation=290
         )
@@ -151,6 +151,49 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         with self.assertRaises(IntegrityError):
             mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
 
+    def test_bus_assignment_is_either_one_way_or_round_trip(self):
+        trips_year = self.init_trips_year()
+        msg = "Cannot have round-trip AND one-way bus assignments"
+        with self.assertRaisesRegexp(ValidationError, msg):
+            mommy.prepare(
+                IncomingStudent, 
+                trips_year=trips_year,
+                bus_assignment=mommy.make(Stop),
+                bus_assignment_to_hanover=mommy.make(Stop)
+            ).full_clean()
+        with self.assertRaisesRegexp(ValidationError, msg):
+            mommy.prepare(
+                IncomingStudent,
+                trips_year=trips_year,
+                bus_assignment=mommy.make(Stop),
+                bus_assignment_from_hanover=mommy.make(Stop)
+            ).full_clean()
+
+    def test_bus_cost_with_round_trip(self):
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment=mommy.make(Stop, cost_round_trip=30, cost_one_way=15)
+        )
+        self.assertEqual(inc.bus_cost(), 30)
+
+    def test_bus_cost_with_one_way(self):
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment_to_hanover=mommy.make(
+                Stop, cost_round_trip=3, cost_one_way=100),
+            bus_assignment_from_hanover=mommy.make(
+                Stop, cost_round_trip=1, cost_one_way=200)
+        )
+        self.assertEqual(inc.bus_cost(), 300)
+
+    def test_bus_cost_is_zero_if_no_bus(self):
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment=None,
+            bus_assignment_to_hanover=None,
+            bus_assignment_from_hanover=None,
+        )
+        self.assertEqual(inc.bus_cost(), 0)
 
 class RegistrationModelTestCase(TripsYearTestCase):
 

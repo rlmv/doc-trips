@@ -85,7 +85,12 @@ class TripAssignmentForm(forms.ModelForm):
     """
     class Meta:
         model = IncomingStudent
-        fields = ['trip_assignment', 'bus_assignment']
+        fields = [
+            'trip_assignment',
+            'bus_assignment',
+            'bus_assignment_to_hanover',
+            'bus_assignment_from_hanover'
+        ]
 
     def __init__(self, *args, **kwargs):
         super(TripAssignmentForm, self).__init__(*args, **kwargs)

@@ -21,6 +21,8 @@
     <th> Registration </th>
     <th> Trip Assignment </th>
     <th> Bus Assignment </th>
+    <th> Bus TO Hanover </th>
+    <th> Bus FROM Hanover </th>
     <th> Bus Request </th>
   </tr>
   {% for trippee in trippees %}
@@ -29,6 +31,8 @@
     <td> {{ trippee.get_registration|detail_link|default:"" }} </td>
     <td> {{ trippee.trip_assignment|detail_link|default:"" }} </td>
     <td> {{ trippee.bus_assignment|detail_link|default:"" }} </td>
+    <td> {{ trippee.bus_assignment_to_hanover|detail_link|default:"" }} </td>
+    <td> {{ trippee.bus_assignment_from_hanover|detail_link|default:"" }} </td>
     <td> {{ trippee.get_registration.bus_stop|detail_link|default:"" }} </td>
   </tr>
   {% endfor %}

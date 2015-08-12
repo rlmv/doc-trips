@@ -22,6 +22,11 @@
   <td class="col-sm-3 text-right"> <strong> Requested Bus: </strong> </td> 
   <td> {{ object.get_registration.bus_stop|detail_link|default:"*" }} </td>
 </tr>
+<tr>
+  <td class="col-sm-3 text-right"><strong> Bus Assignment to Hanover</strong></td>
+  <td> {{ object.bus_assignment_to_hanover|detail_link|default:"*" }} </td>
+  <td class="col-sm-3 text-right"><strong> Bus Assignment from Hanover</strong></td>
+  <td> {{ object.bus_assignment_from_hanover|detail_link|default:"*" }} </td>
 </table>
 
 <h4> Admin Info {{ object|edit_link }}</h4>

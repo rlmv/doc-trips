@@ -4,7 +4,7 @@ from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 
@@ -52,8 +52,21 @@ class IncomingStudent(DatabaseModel):
         related_name='trippees', null=True, blank=True
     )
     bus_assignment = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, null=True, blank=True
+        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        related_name='riders_round_trip',
+        verbose_name="bus assignment (round-trip)"
     )
+    bus_assignment_to_hanover = models.ForeignKey(
+        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        related_name='riders_to_hanover',
+        verbose_name="bus assignment TO Hanover (one-way)"
+    )
+    bus_assignment_from_hanover = models.ForeignKey(
+        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        related_name='riders_from_hanover',
+        verbose_name="bus assignment FROM Hanover (one-way)"
+    )
+
     financial_aid = models.PositiveSmallIntegerField(
         'percentage financial assistance',
         default=0, validators=[
@@ -133,6 +146,22 @@ class IncomingStudent(DatabaseModel):
             gender = self.gender
         return gender.lower()
 
+    def bus_cost(self):
+        """
+        Compute the cost of buses for this student.
+
+        There is either a round-trip bus or one-way buses,
+        never both.
+        """
+        if self.bus_assignment:
+            return self.bus_assignment.cost_round_trip
+
+        one_way_cost = lambda x: x.cost_one_way if x else 0
+        return (
+            one_way_cost(self.bus_assignment_to_hanover) +
+            one_way_cost(self.bus_assignment_from_hanover)
+        )
+
     def compute_cost(self):
         """
         Compute the total charge for this student.
@@ -142,10 +171,7 @@ class IncomingStudent(DatabaseModel):
         any green fund donation.
         """
         costs = Settings.objects.get()
-        base_cost = costs.trips_cost
-        
-        if self.bus_assignment:
-            base_cost += self.bus_assignment.cost
+        base_cost = costs.trips_cost + self.bus_cost()
 
         reg = self.get_registration()
         if reg and reg.doc_membership == YES:
@@ -153,6 +179,16 @@ class IncomingStudent(DatabaseModel):
         green_fund = reg.green_fund_donation if reg else 0
 
         return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
+
+    def clean(self):
+        """
+        TODO: uncomment this
+        one_way = (self.bus_assignment_to_hanover or
+                   self.bus_assignment_from_hanover)
+        if one_way and self.bus_assignment:
+            raise ValidationError(
+                "Cannot have round-trip AND one-way bus assignments")
+        """
 
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())

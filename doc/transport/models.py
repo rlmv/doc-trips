@@ -50,7 +50,11 @@ class Stop(DatabaseModel):
         help_text="default bus route",
     )
     # TODO: validate that this only is used if route.category==EXTERNAL?
-    cost = models.DecimalField(
+    cost_round_trip = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True,
+        help_text="for external buses"
+    )
+    cost_one_way = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True,
         help_text="for external buses"
     )
