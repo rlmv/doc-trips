@@ -281,8 +281,7 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        
+       
         trips_year = TripsYear.objects.current()
         return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
-    
 

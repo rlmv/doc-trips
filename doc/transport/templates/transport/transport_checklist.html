@@ -83,12 +83,6 @@
 <p class="h4"> Directions are only shown for scheduled buses. </p>
 {% endif %}
 
-{% if error %}
-<p class="h4"> Maps Error: {{ error }} </p>
-{% endif %}
-
-<p>
-  {% include "transport/maps/directions.html" %}
-</p>
+{% directions bus %}
 
 {% endblock %}

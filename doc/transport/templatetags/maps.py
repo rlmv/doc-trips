@@ -1,7 +1,7 @@
 from django.template import Library, loader, Context
 from django.conf import settings
 
-from doc.transport.maps import _split_stops
+from doc.transport.maps import _split_stops, MapError
 
 register = Library()
 
@@ -23,6 +23,17 @@ def embed_map(stops):
         'dest': dest,
         'key': settings.GOOGLE_MAPS_BROWSER_KEY
     }))
+
+
+@register.inclusion_tag('transport/maps/directions.html')
+def directions(bus):
+    """
+    Given an internal bus, display directions or MapError.
+    """
+    try:
+        return {'directions': bus.directions()}
+    except MapError as exc:
+        return {'error': exc}
 
 
 @register.inclusion_tag('transport/maps/_trips_with_counts.html')

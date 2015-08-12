@@ -12,7 +12,8 @@ from braces.views import FormValidMessageMixin
 
 from doc.db.views import (DatabaseCreateView, DatabaseUpdateView,
                           DatabaseDeleteView, DatabaseListView,
-                          DatabaseDetailView, TripsYearMixin)
+                          DatabaseDetailView, DatabaseTemplateView,
+                          TripsYearMixin)
 from doc.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
 from doc.transport.models import (
     Stop, Route, Vehicle, ScheduledTransport, ExternalBus, StopOrder
@@ -318,8 +319,18 @@ class VehicleDeleteView(DatabaseDeleteView):
     success_url_pattern = 'db:vehicle_index'
 
 
-class TransportChecklist(DatabaseReadPermissionRequired,
-                         TripsYearMixin, TemplateView):
+class _DateMixin():
+    """
+    Mixin to get a date object from url kwargs.
+    """
+    def get_date(self):
+        """
+        Convert from ISO date format
+        """
+        return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
+
+
+class TransportChecklist(_DateMixin, DatabaseTemplateView):
     """ 
     Shows all trips which are supposed to be dropped off,
     picked up, or returned to campus on the date and route
@@ -327,12 +338,6 @@ class TransportChecklist(DatabaseReadPermissionRequired,
     """
 
     template_name = 'transport/transport_checklist.html'
-
-    def get_date(self):
-        """ 
-        Convert from ISO date format
-        """
-        return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
 
     def get_route(self):
         return Route.objects.get(pk=self.kwargs['route_pk'])
@@ -356,17 +361,12 @@ class TransportChecklist(DatabaseReadPermissionRequired,
         if bus:
             context['stops'] = bus.get_stops()
             context['over_capacity'] = bus.over_capacity()
-            try:
-                context['directions'] = bus.directions()
-            except MapError as exc:
-                context['error'] = exc
-           
+
         return context
 
 
-class ExternalBusChecklist(DatabaseReadPermissionRequired,
-                           TripsYearMixin, TemplateView):
-    
+class ExternalBusChecklist(DatabaseTemplateView):
+   
     template_name = 'transport/externalbus_checklist.html'
 
     def get_section(self):
@@ -422,3 +422,19 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
             'checklist_url': self.get_bus().detail_url()
         })
         return super(OrderStops, self).get_context_data(**kwargs)
+
+
+class InternalBusPacketForDate(_DateMixin, DatabaseListView):
+    """
+    All internal bus directions for a certain date.
+    """
+    model = ScheduledTransport
+    template_name = 'transport/internal_packet.html'
+    context_object_name = 'bus_list'
+
+    def get_queryset(self):
+        qs = super(InternalBusPacketForDate, self).get_queryset()
+        return qs.filter(date=self.get_date())
+
+    def extra_context(self):
+        return {'date': self.get_date()}
