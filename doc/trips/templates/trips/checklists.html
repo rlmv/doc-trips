@@ -7,6 +7,15 @@
 {% endblock %}
 
 {% block content %} 
+
+<div class="alert alert-info">
+  To save any of these packets in PDF format: Go to the page, print, and choose 'Save as PDF'.
+</div>
+  
+<ol class="breadcrumb">
+  <li><a href="{% url 'db:internal_packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
+</ol>
+
 {% for date in date_dict %}
 <h3> {{ date }} </h3>
 
