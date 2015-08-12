@@ -1,5 +1,5 @@
 from statistics import mean
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Avg
@@ -34,7 +34,7 @@ from doc.db.urlhelpers import reverse_detail_url
 from doc.utils.forms import crispify
 from doc.utils.views import PopulateMixin
 from doc.utils.cache import cache_as
-from doc.transport.models import ExternalBus
+from doc.transport.models import ExternalBus, ScheduledTransport
 
 
 class TripList(DatabaseTemplateView):
@@ -639,7 +639,36 @@ class Checklists(DatabaseTemplateView):
     template_name = 'trips/checklists.html'
 
     def extra_context(self):
-        sxns = Section.objects.filter(trips_year=self.kwargs['trips_year'])
-        return {
-            'sections': sxns,
-        }
+
+        trips_year = self.kwargs['trips_year']
+
+        dates = Section.dates.leader_dates(trips_year)
+        d = OrderedDict([date, []] for date in dates)
+
+        for sxn in Section.objects.filter(trips_year=trips_year):
+            d[sxn.trippees_arrive].append((
+                'Section %s Leader Packets' % sxn.name,
+                reverse('db:packets:section', kwargs={
+                    'trips_year': trips_year,
+                    'section_pk': sxn.pk
+                })
+            ))
+
+            d[sxn.trippees_arrive].append((
+                'Section %s Medical Information' % sxn.name,
+                reverse('db:packets:medical', kwargs={
+                    'trips_year': trips_year,
+                    'section_pk': sxn.pk
+                })
+            ))
+
+        buses = ScheduledTransport.objects.filter(trips_year=trips_year)
+        for date in set(map(lambda x: x.date, buses)):
+            d[date].append((
+                'Internal Bus Directions for %s' % date.strftime('%m/%d'),
+                reverse('db:internal_packet_for_date', kwargs={
+                    'trips_year': trips_year, 'date': date
+                })
+            ))
+        
+        return {'date_dict': d}
