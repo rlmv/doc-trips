@@ -424,14 +424,19 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
         return super(OrderStops, self).get_context_data(**kwargs)
 
 
-class InternalBusPacketForDate(_DateMixin, DatabaseListView):
+class InternalBusPacket(DatabaseListView):
     """
-    All internal bus directions for a certain date.
+    Directions and notes for all internal buses.
     """
     model = ScheduledTransport
     template_name = 'transport/internal_packet.html'
     context_object_name = 'bus_list'
 
+
+class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
+    """
+    All internal bus directions for a certain date.
+    """
     def get_queryset(self):
         qs = super(InternalBusPacketForDate, self).get_queryset()
         return qs.filter(date=self.get_date())

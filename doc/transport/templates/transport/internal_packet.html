@@ -1,0 +1,31 @@
+{% extends "db/base.html" %}
+{% load maps %}
+
+{% block header %}
+<h1 class="no-print"> Internal Bus Packets <small> {{ date|date:"n/j" }} </small> </h1>
+{% endblock %}
+
+{% block content %}
+
+<div class="no-print alert alert-warning">
+  <i class="fa fa-warning"></i> Print this packet <strong>single-sided</strong> to keep all bus information togeher.
+</div>
+
+{% for bus in bus_list %}
+
+<div class="page-break-after">
+  <div class="page-header">
+    <h2> {{ bus.route }} <small> {{ bus.date|date:"n/j" }} </small></h2>
+  </div>
+
+  {% if bus.notes %}
+  <h3> Notes </h3>
+  <p> {{ bus.notes|linebreaks }} </p>
+  {% endif %}
+
+  {% directions bus %}
+</div>
+
+{% endfor %}
+
+{% endblock %}

@@ -17,6 +17,7 @@ scheduledtransport_urlpatterns = [
         name='scheduledtransport_order'),
     url(r'^(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         TransportChecklist.as_view(), name='scheduledtransport_checklist'),
+    url(r'^packet/$', InternalBusPacket.as_view(), name='internal_packet'),
     url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         InternalBusPacketForDate.as_view(), name='internal_packet_for_date'),
 ]

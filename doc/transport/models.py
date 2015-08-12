@@ -150,6 +150,7 @@ class ScheduledTransport(DatabaseModel):
 
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
+        ordering = ['date']
 
     def clean(self):
         if self.route.category == Route.EXTERNAL:
