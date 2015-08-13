@@ -49,7 +49,8 @@ class Stop(DatabaseModel):
         on_delete=models.PROTECT, related_name='stops',
         help_text="default bus route",
     )
-    # TODO: validate that this only is used if route.category==EXTERNAL?
+
+    # costs are required for EXTERNAL stops
     cost_round_trip = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True,
         help_text="for external buses"
@@ -58,6 +59,7 @@ class Stop(DatabaseModel):
         max_digits=5, decimal_places=2, blank=True, null=True,
         help_text="for external buses"
     )
+
     # mostly used for external routes
     dropoff_time = models.TimeField(blank=True, null=True)
     pickup_time = models.TimeField(blank=True, null=True)
@@ -69,6 +71,16 @@ class Stop(DatabaseModel):
         if not self.lat_lng and not self.address:
             raise ValidationError(
                 "%s must set either lat_lng or address" % self)
+
+        if self.category == Route.EXTERNAL:
+            if not self.cost_round_trip:
+                raise ValidationError("%s requires round-trip cost" % self)
+            if not self.cost_one_way:
+                raise ValidationError("%s requires one-way cost" % self)
+
+        elif self.category == Route.INTERNAL:
+            if self.cost_round_trip or self.cost_one_way:
+                raise ValidationError("internal stop cannot have cost")
 
     @property
     def category(self):

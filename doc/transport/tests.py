@@ -60,7 +60,39 @@ class StopModelTestCase(TripsYearTestCase):
 
     def test___str__(self):
         self.assertEqual(str(mommy.prepare(Stop, name='Boston')), 'Boston')
-        
+
+    def test_external_requires_round_trip_cost(self):
+        with self.assertRaisesRegex(ValidationError, 'requires round-trip cost'):
+            mommy.make(
+                Stop, address='stub',
+                cost_round_trip=None, cost_one_way=5,
+                route__category=Route.EXTERNAL
+            ).full_clean()
+
+    def test_external_requires_one_way_cost(self):
+        with self.assertRaisesRegex(ValidationError, 'requires one-way cost'):
+            mommy.make(
+                Stop, address='stub', 
+                cost_one_way=None, cost_round_trip=3,
+                route__category=Route.EXTERNAL
+            ).full_clean()
+
+    def test_internal_cannot_set_round_trip_cost(self):
+        with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
+            mommy.make(
+                Stop, address='stub', 
+                cost_one_way=None, cost_round_trip=3,
+                route__category=Route.INTERNAL
+            ).full_clean()
+
+    def test_internal_cannot_set_one_way_cost(self):
+        with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
+            mommy.make(
+                Stop, address='stub', 
+                cost_one_way=15, cost_round_trip=None,
+                route__category=Route.INTERNAL
+            ).full_clean()
+
 
 class StopManagerTestCase(TripsYearTestCase):
 
