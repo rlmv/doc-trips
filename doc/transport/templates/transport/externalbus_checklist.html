@@ -7,13 +7,29 @@
 
 {% block content %}
 
-{% include "transport/_scheduled_alert.html" %}
+{% include "transport/_scheduled_alert.html" with scheduled=bus %}
 
-<h4> Passengers </h4>
+<h4> Passengers To Hanover</h4>
+{% regroup passengers_to_hanover by get_bus_to_hanover as grouping %}
+{% for stop in grouping %}
+<h5> {{ stop.grouper }} </h5>
 <ul>
-  {% for trippee in passengers %}
+  {% for trippee in stop.list %}
   <li> {{ trippee|detail_link }} </li>
   {% endfor %}
 </ul>
+{% endfor %}
+
+
+<h4> Passengers From Hanover</h4>
+{% regroup passengers_from_hanover by get_bus_from_hanover as grouping %}
+{% for stop in grouping %}
+<h5> {{ stop.grouper }} </h5>
+<ul>
+  {% for trippee in stop.list %}
+  <li> {{ trippee|detail_link }} </li>
+  {% endfor %}
+</ul>
+{% endfor %}
 
 {% endblock content %}

@@ -378,12 +378,14 @@ class ExternalBusChecklist(DatabaseTemplateView):
         return {
             'route': self.get_route(),
             'section': self.get_section(),
-            'scheduled': ExternalBus.objects.filter(
+            'bus': ExternalBus.objects.filter(
                 trips_year=self.get_trips_year(),
                 route=self.get_route(), section=self.get_section()
             ).first(),
-            'passengers': IncomingStudent.objects.passengers(
-                self.get_trips_year(), self.get_route(), self.get_section())
+            'passengers_to_hanover': IncomingStudent.objects.passengers_to_hanover(
+                self.get_trips_year(), self.get_route(), self.get_section()),
+            'passengers_from_hanover': IncomingStudent.objects.passengers_from_hanover(
+                self.get_trips_year(), self.get_route(), self.get_section()),
         }
 
 

@@ -107,12 +107,13 @@ class IncomingStudentManager(models.Manager):
         from doc.transport.models import Route
         assert route.category == Route.EXTERNAL
 
-        return self.filter(
+        qs = self.filter(
             (Q(bus_assignment_round_trip__route=route) |
              Q(bus_assignment_to_hanover__route=route)),
             trips_year=trips_year,
             trip_assignment__section=section
         )
+        return sorted(qs, key=lambda x: x.get_bus_to_hanover().distance)
 
     def passengers_from_hanover(self, trips_year, route, section):
         """ 
@@ -122,12 +123,13 @@ class IncomingStudentManager(models.Manager):
         from doc.transport.models import Route
         assert route.category == Route.EXTERNAL
 
-        return self.filter(
+        qs = self.filter(
             (Q(bus_assignment_round_trip__route=route) |
              Q(bus_assignment_from_hanover__route=route)),
             trips_year=trips_year,
             trip_assignment__section=section
         )
+        return sorted(qs, key=lambda x: x.get_bus_from_hanover().distance)
 
     def with_trip(self, trips_year):
         """

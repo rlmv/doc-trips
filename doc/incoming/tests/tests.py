@@ -18,7 +18,7 @@ from doc.transport.models import Stop, Route
 from doc.utils.choices import YES
 from doc.users.models import DartmouthUser
 
-class IncomingStudentModelsTestCase(TripsYearTestCase):
+class IncomingStudentModelTestCase(TripsYearTestCase):
 
     
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
@@ -194,6 +194,32 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             bus_assignment_from_hanover=None,
         )
         self.assertEqual(inc.bus_cost(), 0)
+
+    def test_get_bus_stop_to_and_from_hanover_with_round_trip(self):
+        stop = mommy.make(Stop)
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment_round_trip=stop
+        )
+        self.assertEqual(inc.get_bus_to_hanover(), stop)
+        self.assertEqual(inc.get_bus_from_hanover(), stop)
+
+    def test_get_bus_stop_to_hanover_one_way(self):
+        stop = mommy.make(Stop)
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment_to_hanover=stop
+        )
+        self.assertEqual(inc.get_bus_to_hanover(), stop)
+
+    def test_get_bus_stop_from_hanover_one_way(self):
+        stop = mommy.make(Stop)
+        inc = mommy.make(
+            IncomingStudent,
+            bus_assignment_from_hanover=stop
+        )
+        self.assertEqual(inc.get_bus_from_hanover(), stop)
+        
 
 class RegistrationModelTestCase(TripsYearTestCase):
 

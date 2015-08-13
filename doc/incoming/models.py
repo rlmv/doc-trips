@@ -146,6 +146,12 @@ class IncomingStudent(DatabaseModel):
             gender = self.gender
         return gender.lower()
 
+    def get_bus_to_hanover(self):
+        return self.bus_assignment_round_trip or self.bus_assignment_to_hanover
+
+    def get_bus_from_hanover(self):
+        return self.bus_assignment_round_trip or self.bus_assignment_from_hanover
+
     def bus_cost(self):
         """
         Compute the cost of buses for this student.
