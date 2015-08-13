@@ -63,25 +63,50 @@ class ExternalBusManager(models.Manager):
 
     
 class ExternalPassengerManager(models.Manager):
-    """
-    """
-    def matrix(self, trips_year):
+
+    def matrix_to_hanover(self, trips_year):
         """ 
         Each entry in the matrix contains the number of 
-        trippees riding [route] on [section].
+        trippees riding [route] on [section] TO Hanover.
+        """
+        return self._matrix(
+            trips_year,
+            (models.Q(bus_assignment_round_trip__isnull=False) |
+             models.Q(bus_assignment_to_hanover__isnull=False)),
+            lambda p: p.bus_assignment_to_hanover
+        )
+
+    def matrix_from_hanover(self, trips_year):
+        """ 
+        Each entry in the matrix contains the number of 
+        trippees riding [route] on [section] FROM Hanover.
+        """
+        return self._matrix(
+            trips_year,
+            (models.Q(bus_assignment_round_trip__isnull=False) |
+             models.Q(bus_assignment_from_hanover__isnull=False)),
+            lambda p: p.bus_assignment_from_hanover
+        )
+
+    def _matrix(self, trips_year, condition, getter):
+        """
+        getter returns the one-way bus stop from the IncStudent
         """
         from doc.incoming.models import IncomingStudent
         matrix = external_route_matrix(trips_year, default=0)
         passengers = IncomingStudent.objects.filter(
+            condition,
             trips_year=trips_year,
-            bus_assignment__isnull=False,
             trip_assignment__isnull=False
         ).select_related(
-            'bus_assignment__route',
+            'bus_assignment_round_trip__route',
+            'bus_assignment_to_hanover__route',
+            'bus_assignment_from_hanover__route',
             'trip_assignment__section'
         )
         for p in passengers:
-            matrix[p.bus_assignment.route][p.trip_assignment.section] += 1
+            bus = p.bus_assignment_round_trip or getter(p)
+            matrix[bus.route][p.trip_assignment.section] += 1
 
         return matrix
 

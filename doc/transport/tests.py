@@ -524,39 +524,40 @@ class ExternalBusManager(TripsYearTestCase):
         }
         self.assertEqual(matrix, target)
 
-    def test_simple_passengers_matrix(self):
+    def test_simple_passengers_matrix_to_hanover(self):
         trips_year = self.init_trips_year()
         sxn = mommy.make(Section, trips_year=trips_year, is_local=True)
         rt = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         passenger = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment__route=rt,
+            bus_assignment_round_trip__route=rt,
             trip_assignment__section=sxn
         )
         target = {rt: {sxn: 1}}
-        actual = ExternalBus.passengers.matrix(trips_year)
+        actual = ExternalBus.passengers.matrix_to_hanover(trips_year)
         
         self.assertEqual(target, actual)
 
-    def test_passengers_matrix_with_multiples(self):
+    def test_passengers_matrix_to_hanover_with_multiples(self):
         trips_year = self.init_trips_year()
         sxn1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         sxn2 = mommy.make(Section, trips_year=trips_year, is_local=True)
         rt1 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         psgr1 = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment__route=rt1,
+            bus_assignment_round_trip__route=rt1,
             trip_assignment__section=sxn1
         )
         psgr2 = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment__route=rt1,
+            bus_assignment_to_hanover__route=rt1,
             trip_assignment__section=sxn1
         )
         psgr3 = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment__route=rt1,
-            trip_assignment__section=sxn2,
+            bus_assignment_to_hanover__route=rt1,
+            bus_assignment_from_hanover__route=rt1,
+            trip_assignment__section=sxn2
         )
         not_psgr1 = mommy.make(
             IncomingStudent, trips_year=trips_year,
@@ -566,8 +567,51 @@ class ExternalBusManager(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             trip_assignment__section=sxn2
         )
+        not_psgr3 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment__section=sxn2,
+            bus_assignment_from_hanover__route=rt1
+        )
         target = {rt1: {sxn1: 2, sxn2: 1}}
-        actual = ExternalBus.passengers.matrix(trips_year)
+        actual = ExternalBus.passengers.matrix_to_hanover(trips_year)
+        self.assertEqual(target, actual)
+
+    def test_passengers_matrix_from_hanover(self):
+        trips_year = self.init_trips_year()
+        sxn1 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        sxn2 = mommy.make(Section, trips_year=trips_year, is_local=True)
+        rt1 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        psgr1 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_round_trip__route=rt1,
+            trip_assignment__section=sxn1
+        )
+        psgr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_from_hanover__route=rt1,
+            trip_assignment__section=sxn1
+        )
+        psgr3 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_to_hanover__route=rt1,
+            bus_assignment_from_hanover__route=rt1,
+            trip_assignment__section=sxn2
+        )
+        not_psgr1 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment__route=rt1
+        )
+        not_psgr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment__section=sxn2
+        )
+        not_psgr3 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment__section=sxn2,
+            bus_assignment_to_hanover__route=rt1
+        )
+        target = {rt1: {sxn1: 2, sxn2: 1}}
+        actual = ExternalBus.passengers.matrix_from_hanover(trips_year)
         self.assertEqual(target, actual)
 
 

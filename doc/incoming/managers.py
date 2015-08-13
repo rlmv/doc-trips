@@ -99,17 +99,33 @@ class IncomingStudentManager(models.Manager):
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
 
-    def passengers(self, trips_year, route, section):
+    def passengers_to_hanover(self, trips_year, route, section):
         """ 
         Return all trippees assigned to ride on external 
-        bus route on section.
+        bus route on section TO Hanover
         """
         from doc.transport.models import Route
         assert route.category == Route.EXTERNAL
 
         return self.filter(
+            (Q(bus_assignment_round_trip__route=route) |
+             Q(bus_assignment_to_hanover__route=route)),
             trips_year=trips_year,
-            bus_assignment__route=route,
+            trip_assignment__section=section
+        )
+
+    def passengers_from_hanover(self, trips_year, route, section):
+        """ 
+        Return all trippees assigned to ride on external 
+        bus route on section FROM Hanover
+        """
+        from doc.transport.models import Route
+        assert route.category == Route.EXTERNAL
+
+        return self.filter(
+            (Q(bus_assignment_round_trip__route=route) |
+             Q(bus_assignment_from_hanover__route=route)),
+            trips_year=trips_year,
             trip_assignment__section=section
         )
 

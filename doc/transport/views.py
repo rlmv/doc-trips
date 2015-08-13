@@ -222,19 +222,18 @@ class ExternalBusDelete(DatabaseDeleteView):
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
-class ExternalBusMatrix(DatabaseReadPermissionRequired,
-                        TripsYearMixin, TemplateView):
-
+class ExternalBusMatrix(DatabaseTemplateView):
     template_name = 'transport/external_matrix.html'
 
-    def get_context_data(self, **kwargs):
-        kwargs['matrix'] = ExternalBus.objects.schedule_matrix(
-            self.kwargs['trips_year']
-        )
-        kwargs['passengers'] = ExternalBus.passengers.matrix(
-            self.kwargs['trips_year']
-        )
-        return super(ExternalBusMatrix, self).get_context_data(**kwargs)
+    def extra_context(self):
+        return {
+            'matrix': ExternalBus.objects.schedule_matrix(
+                self.kwargs['trips_year']),
+            'to_hanover': ExternalBus.passengers.matrix_to_hanover(
+                self.kwargs['trips_year']),
+            'from_hanover': ExternalBus.passengers.matrix_from_hanover(
+                self.kwargs['trips_year'])
+        }
 
 
 class StopListView(DatabaseListView):

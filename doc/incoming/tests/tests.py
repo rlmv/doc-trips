@@ -414,23 +414,55 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         )
         self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
 
-    def test_passengers(self):
+    def test_passengers_to_hanover(self):
         trips_year = self.init_trips_year()
         rte = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         sxn = mommy.make(Section, trips_year=trips_year)
-        psngr = mommy.make(
+        psngr1 = mommy.make(
             IncomingStudent, trips_year=trips_year,
             bus_assignment_round_trip__route=rte,
             trip_assignment__section=sxn
         )
-        not_psngr = mommy.make(
-            IncomingStudent, trips_year=trips_year
+        psngr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_to_hanover__route=rte,
+            trip_assignment__section=sxn
         )
-        target = [psngr]
-        actual = list(IncomingStudent.objects.passengers(
+        not_psngr = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            bus_assignment_from_hanover__route=rte,
+            trips_assignment__section=sxn
+        )
+        target = [psngr1, psngr2]
+        actual = IncomingStudent.objects.passengers_to_hanover(
             trips_year, rte, sxn
-        ))
-        self.assertEqual(target, actual)
+        )
+        self.assertQsEqual(actual, target)
+
+    def test_passengers_from_hanover(self):
+        trips_year = self.init_trips_year()
+        rte = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        sxn = mommy.make(Section, trips_year=trips_year)
+        psngr1 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_round_trip__route=rte,
+            trip_assignment__section=sxn
+        )
+        psngr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_from_hanover__route=rte,
+            trip_assignment__section=sxn
+        )
+        not_psngr = mommy.make(
+            IncomingStudent, trips_year=trips_year, 
+            bus_assignment_to_hanover__route=rte,
+            trips_assignment__section=sxn
+        )
+        target = [psngr1, psngr2]
+        actual = IncomingStudent.objects.passengers_from_hanover(
+            trips_year, rte, sxn
+        )
+        self.assertQsEqual(actual, target)
 
     def test_with_trip(self):
         trips_year = self.init_trips_year()

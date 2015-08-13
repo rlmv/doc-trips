@@ -2,11 +2,11 @@
 {% load links dict %}
 
 {% block header %}
-<h2> External Transport </h2>
+<h2> External Buses </h2>
 {% endblock %}
 
 {% block content %}
-<p> Click <i class="fa fa-plus"></i> to schedule an external bus for the specified section and route. Click on the passenger count to see a full list of passengers. </p>
+<p> Click <i class="fa fa-plus text-info"></i> to schedule an external bus for the specified section and route. A number like <kbd>5 &mdash; 17</kbd> means that there are 5 people riding the bus to Hanover and 17 riding back home from Hanover. Click on the passenger count to see a full list of passengers. </p>
 
 <table class="table table-condensed">
   {% for route, sections in matrix.items %}
@@ -15,6 +15,7 @@
   {% if forloop.first %}
   <tr> 
     <th> Route </th>
+    <th> Capacity </th>
     {% for section in sections %}
     <th> Section {{ section.name }} </th>
     {% endfor %}
@@ -23,10 +24,11 @@
 
   <tr>
     <td> {{ route | detail_link }} </td>
+    <td class="text-muted text-center"> {{ route.vehicle.capacity }} </td>
     {% for section, transport in sections.items %}
     <td>
       <a href="{% url 'db:external_checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">       
-	<kbd> {{ passengers|get:route|get:section }}/{{ route.vehicle.capacity }}</kbd> 
+	<kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd> 
       </a>
       {% if transport %}
       {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}
