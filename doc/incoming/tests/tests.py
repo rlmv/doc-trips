@@ -102,7 +102,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=0, bus_assignment=None
+            financial_aid=0, bus_assignment_round_trip=None
         )
         self.assertEqual(inc.compute_cost(), 100)
 
@@ -111,7 +111,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=35, bus_assignment=None
+            financial_aid=35, bus_assignment_round_trip=None
         )
         self.assertEqual(inc.compute_cost(), 65)
 
@@ -120,7 +120,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost_round_trip=25
+            financial_aid=25, bus_assignment_round_trip__cost_round_trip=25
         )
         self.assertEqual(inc.compute_cost(), 93.75)
 
@@ -129,7 +129,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost_round_trip=25,
+            financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
             registration__doc_membership=YES
         )
         self.assertEqual(inc.compute_cost(), 131.25)
@@ -139,7 +139,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
         mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
-            financial_aid=25, bus_assignment__cost_round_trip=25,
+            financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
             registration__doc_membership=YES,
             registration__green_fund_donation=290
         )
@@ -158,21 +158,21 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
             mommy.prepare(
                 IncomingStudent, 
                 trips_year=trips_year,
-                bus_assignment=mommy.make(Stop),
+                bus_assignment_round_trip=mommy.make(Stop),
                 bus_assignment_to_hanover=mommy.make(Stop)
             ).full_clean()
         with self.assertRaisesRegexp(ValidationError, msg):
             mommy.prepare(
                 IncomingStudent,
                 trips_year=trips_year,
-                bus_assignment=mommy.make(Stop),
+                bus_assignment_round_trip=mommy.make(Stop),
                 bus_assignment_from_hanover=mommy.make(Stop)
             ).full_clean()
 
     def test_bus_cost_with_round_trip(self):
         inc = mommy.make(
             IncomingStudent,
-            bus_assignment=mommy.make(Stop, cost_round_trip=30, cost_one_way=15)
+            bus_assignment_round_trip=mommy.make(Stop, cost_round_trip=30, cost_one_way=15)
         )
         self.assertEqual(inc.bus_cost(), 30)
 
@@ -189,7 +189,7 @@ class IncomingStudentModelsTestCase(TripsYearTestCase):
     def test_bus_cost_is_zero_if_no_bus(self):
         inc = mommy.make(
             IncomingStudent,
-            bus_assignment=None,
+            bus_assignment_round_trip=None,
             bus_assignment_to_hanover=None,
             bus_assignment_from_hanover=None,
         )
@@ -420,7 +420,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         sxn = mommy.make(Section, trips_year=trips_year)
         psngr = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment__route=rte,
+            bus_assignment_round_trip__route=rte,
             trip_assignment__section=sxn
         )
         not_psngr = mommy.make(
@@ -576,16 +576,20 @@ class RegistrationManagerTestCase(TripsYearTestCase):
 
     def test_requesting_bus(self):
         trips_year = self.init_current_trips_year()
-        external_stop = mommy.make(
+        stop = mommy.make(
             Stop, trips_year=trips_year, route__category=Route.EXTERNAL
         )
-        requesting = mommy.make(
-            Registration, trips_year=trips_year, bus_stop=external_stop
+        r1 = mommy.make(
+            Registration, trips_year=trips_year, bus_stop_round_trip=stop
         )
-        not_requesting = mommy.make(
-            Registration, trips_year=trips_year
+        r2 = mommy.make(
+            Registration, trips_year=trips_year, bus_stop_to_hanover=stop
         )
-        self.assertEqual([requesting], list(Registration.objects.want_bus(trips_year)))
+        r3 = mommy.make(
+            Registration, trips_year=trips_year, bus_stop_from_hanover=stop
+        )
+        not_requesting = mommy.make(Registration, trips_year=trips_year)
+        self.assertQsEqual(Registration.objects.want_bus(trips_year), [r1, r2, r3])
 
     def test_unmatched(self):
         trips_year = self.init_current_trips_year()

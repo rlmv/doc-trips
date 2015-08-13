@@ -12,12 +12,20 @@ from doc.transport.models import Stop, ExternalBus
 from doc.core.models import Settings
 
 
-class StopChoiceField(forms.ModelChoiceField):
+class RoundTripStopChoiceField(forms.ModelChoiceField):
     """
-    Field for displaying an external transport Stop, with prices
+    Field for displaying an external transport Stop, with round trip prices
     """
     def label_from_instance(self, obj):
-        return "{} - ${}".format(obj.name, obj.cost)
+        return "{} - ${}".format(obj.name, obj.cost_round_trip)
+
+
+class OneWayStopChoiceField(forms.ModelChoiceField):
+    """
+    Field for displaying an external transport Stop, with one-way prices
+    """
+    def label_from_instance(self, obj):
+        return "{} - ${}".format(obj.name, obj.cost_one_way)
 
 
 class RegistrationForm(forms.ModelForm):
@@ -35,10 +43,21 @@ class RegistrationForm(forms.ModelForm):
             trips_year = instance.trips_year
         else:
             trips_year = TripsYear.objects.current()
-            
-        self.fields['bus_stop'] = StopChoiceField(
-            queryset=Stop.objects.external(trips_year), required=False
+
+        external_stops = Stop.objects.external(trips_year)
+        self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
+            label="Bus stop (round-trip)",
+            queryset=external_stops, required=False
         )
+        self.fields['bus_stop_to_hanover'] = OneWayStopChoiceField(
+            label="Bus stop (one-way TO Hanover)",
+            queryset=external_stops, required=False
+        )
+        self.fields['bus_stop_from_hanover'] = OneWayStopChoiceField(
+            label="Bus stop (one-way FROM Hanover)",
+            queryset=external_stops, required=False
+        )
+
         # show which sections are available for these choices
         self.fields['is_exchange'].help_text = join_with_and(Section.objects.exchange(trips_year))
         self.fields['is_international'].help_text = join_with_and(Section.objects.international(trips_year))
@@ -87,7 +106,7 @@ class TripAssignmentForm(forms.ModelForm):
         model = IncomingStudent
         fields = [
             'trip_assignment',
-            'bus_assignment',
+            'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
             'bus_assignment_from_hanover'
         ]
@@ -103,15 +122,19 @@ class TripAssignmentForm(forms.ModelForm):
                 .select_related('template', 'template__triptype', 'section')
             )
         )
-        self.fields['bus_assignment'].queryset = (
-            Stop.objects.external(trips_year)
-        )
+        ext_stops = Stop.objects.external(trips_year)
+        self.fields['bus_assignment_round_trip'].queryset = ext_stops
+        self.fields['bus_assignment_to_hanover'].queryset = ext_stops
+        self.fields['bus_assignment_from_hanover'].queryset = ext_stops
+
         self.helper = FormHelper(self)
         self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-7'    
+        self.helper.field_class = 'col-lg-7'
         self.helper.layout = Layout(
             'trip_assignment',
-            'bus_assignment', 
+            'bus_assignment_round_trip',
+            'bus_assignment_to_hanover',
+            'bus_assignment_from_hanover',
             Submit('submit', 'Update'),
         )
 

@@ -51,7 +51,7 @@ class IncomingStudent(DatabaseModel):
         Trip, on_delete=models.PROTECT,
         related_name='trippees', null=True, blank=True
     )
-    bus_assignment = models.ForeignKey(
+    bus_assignment_round_trip = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_round_trip',
         verbose_name="bus assignment (round-trip)"
@@ -153,8 +153,8 @@ class IncomingStudent(DatabaseModel):
         There is either a round-trip bus or one-way buses,
         never both.
         """
-        if self.bus_assignment:
-            return self.bus_assignment.cost_round_trip
+        if self.bus_assignment_round_trip:
+            return self.bus_assignment_round_trip.cost_round_trip
 
         one_way_cost = lambda x: x.cost_one_way if x else 0
         return (
@@ -185,7 +185,7 @@ class IncomingStudent(DatabaseModel):
         TODO: uncomment this
         one_way = (self.bus_assignment_to_hanover or
                    self.bus_assignment_from_hanover)
-        if one_way and self.bus_assignment:
+        if one_way and self.bus_assignment_round_trip:
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
         """
@@ -448,10 +448,20 @@ class Registration(DatabaseModel):
 
     # ----- other deets ----
 
-    bus_stop = models.ForeignKey(
+    bus_stop_round_trip = models.ForeignKey(
         Stop, on_delete=models.PROTECT, blank=True, null=True,
-        verbose_name="Where would you like to be bussed from/to?"
+        verbose_name="Where would you like to be bussed from/to?",
+        related_name='requests_round_trip',
     )
+    bus_stop_to_hanover = models.ForeignKey(
+        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        related_name='requests_to_hanover',
+    )
+    bus_stop_from_hanover = models.ForeignKey(
+        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        related_name='requests_from_hanover',
+    )
+
     financial_assistance = YesNoField(
         "Are you requesting financial assistance from DOC Trips? If "
         "'yes' we will contact you in July with more information about "

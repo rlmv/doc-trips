@@ -18,17 +18,21 @@
   </tr>
   <tr>
     <td class="col-sm-3 text-right"><strong> Bus Assignment <br>(round-trip)</strong></td>
-    <td> {{ object.bus_assignment|detail_link|default:"*" }} </td>
-    <td class="col-sm-3 text-right"> <strong> Requested Bus: </strong> </td> 
-    <td> {{ object.get_registration.bus_stop|detail_link|default:"*" }} </td>
+    <td> {{ object.bus_assignment_round_trip|detail_link|default:"*" }} </td>
+    <td class="col-sm-3 text-right"> <strong> Bus Request <br> (round-trip) </strong> </td> 
+    <td> {{ object.get_registration.bus_stop_round_trip|detail_link|default:"*" }} </td>
   </tr>
   <tr>
     <td class="col-sm-3 text-right"><strong> Bus Assignment <br> TO Hanover (one-way)</strong></td>
     <td > {{ object.bus_assignment_to_hanover|detail_link|default:"*" }} </td>
+    <td class="col-sm-3 text-right"> <strong> Bus Request <br> TO Hanover (one-way) </strong> </td> 
+    <td> {{ object.get_registration.bus_stop_to_hanover|detail_link|default:"*" }} </td>
   </tr>
   <tr>
     <td class="col-sm-3 text-right"><strong> Bus Assignment <br> FROM Hanover (one-way)</strong></td>
     <td> {{ object.bus_assignment_from_hanover|detail_link|default:"*" }} </td>
+    <td class="col-sm-3 text-right"> <strong> Bus Request <br> FROM Hanover (one-way) </strong> </td> 
+    <td> {{ object.get_registration.bus_stop_from_hanover|detail_link|default:"*" }} </td>
   </tr>
 </table>
 

@@ -285,7 +285,10 @@ class RegistrationDetail(DatabaseReadPermissionRequired,
         'other_boating_experience', 'fishing_experience',
         'horseback_riding_experience', 'mountain_biking_experience',
         'sailing_experience', 'anything_else',
-        'bus_stop', 'financial_assistance', 'waiver', 'doc_membership',
+        'bus_stop_round_trip',
+        'bus_stop_to_hanover',
+        'bus_stop_from_hanover',
+        'financial_assistance', 'waiver', 'doc_membership',
         'green_fund_donation', 'final_request'
     ]
 
@@ -324,7 +327,7 @@ class IncomingStudentIndex(DatabaseReadPermissionRequired,
             'registration__bus_stop',
             'trip_assignment__section',
             'trip_assignment__template',
-            'bus_assignment'
+            'bus_assignment_round_trip'
         )
 
 
@@ -334,9 +337,6 @@ class IncomingStudentDetail(DatabaseReadPermissionRequired,
     template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
 
-    assignment_fields = (
-        'trip_assignment', 'bus_assignment',
-    )
     admin_fields = (
         'registration', 'financial_aid',
         ('total cost', 'compute_cost'),

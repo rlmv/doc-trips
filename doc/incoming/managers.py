@@ -136,7 +136,11 @@ class RegistrationManager(models.Manager):
         """
         All registrations for trips_year requesting an external bus
         """
-        return self.filter(trips_year=trips_year).exclude(bus_stop=None)
+        return self.filter(trips_year=trips_year).exclude(
+            bus_stop_round_trip=None,
+            bus_stop_to_hanover=None,
+            bus_stop_from_hanover=None
+        )
 
     def unmatched(self, trips_year):
         """

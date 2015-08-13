@@ -60,7 +60,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             IncomingStudent,
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # force trip to exist
-            bus_assignment__cost=37,
+            bus_assignment_round_trip__cost_round_trip=37,
             financial_aid=15,
             registration__doc_membership=YES,
             registration__green_fund_donation=20

@@ -159,8 +159,8 @@ class Charges(GenericReportView):
             incoming.name,
             incoming.netid,
             incoming.compute_cost(),
-            incoming.financial_aid if incoming.financial_aid != 0 else '',
-            incoming.bus_assignment.cost if incoming.bus_assignment else '',
+            incoming.financial_aid or '',
+            incoming.bus_cost() or '',
             self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''
         ]

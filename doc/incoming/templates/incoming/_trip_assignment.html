@@ -18,7 +18,7 @@
 
   <li class="list-group-item">
     <strong> Bus </strong> <br> 
-    {% with bus=incoming_student.bus_assignment bus_to_hanover=incoming_student.bus_assignment_to_hanover bus_from_hanover=incoming_student.bus_assignment_from_hanover %}
+    {% with bus=incoming_student.bus_assignment_round_trip bus_to_hanover=incoming_student.bus_assignment_to_hanover bus_from_hanover=incoming_student.bus_assignment_from_hanover %}
     {% if bus %}
     <div>
       <p> You are assigned to the <strong>{{ bus }}</strong> bus. {{ bus.directions }} </p>
