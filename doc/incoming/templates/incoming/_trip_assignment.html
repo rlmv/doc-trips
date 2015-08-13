@@ -18,21 +18,25 @@
 
   <li class="list-group-item">
     <strong> Bus </strong> <br> 
-    {% with bus=incoming_student.bus_assignment %}
+    {% with bus=incoming_student.bus_assignment bus_to_hanover=incoming_student.bus_assignment_to_hanover bus_from_hanover=incoming_student.bus_assignment_from_hanover %}
     {% if bus %}
     <div>
       <p> You are assigned to the <strong>{{ bus }}</strong> bus. {{ bus.directions }} </p>
-      
-      {% if bus.pickup_time %}
       <p> The bus to Hanover will leave the stop at <strong>{{ bus.pickup_time }}, {{ trip.section.trippees_arrive|date:fmt }}</strong>. Please show up early! </p>
+      <p> The bus bringing you back from Hanover will drop you off at <strong>{{ bus.dropoff_time }}, {{ section.return_to_campus|date:fmt }}</strong>. </p>
+    </div>
+    {% elif bus_to_hanover or bus_from_hanover %}
+    <div>
+      {% if bus_to_hanover %}
+      <p> You are assigned to the <strong>{{ bus_to_hanover }}</strong> bus <strong>one-way TO</strong> Hanover. {{ bus_to_hanover.directions }} The bus will leave the stop at <strong>{{ bus_to_hanover.pickup_time }}, {{ trip.section.trippees_arrive|date:fmt }}</strong>. Please show up early! </p>
       {% endif %}
 
-      {% if bus.dropoff_time %}
-      <p> The bus bringing you back from Hanover will drop you off at <strong>{{ bus.dropoff_time }}, {{ section.return_to_campus|date:fmt }}</strong>. </p>
+      {% if bus_from_hanover %}
+      <p> You are assigned to the <strong>{{ bus_from_hanover }}</strong> bus <strong>one-way FROM</strong> Hanover. {{ bus_from_hanover.directions }} The bus will drop you off at <strong>{{ bus_from_hanover.dropoff_time }}, {{ section.return_to_campus|date:fmt }}</strong>. </p>
       {% endif %}
     </div>
     {% else %}
-    You are not assigned to a local bus. If you think this is a mistake please <a href="{{ contact_url }}">contact us</a>. 
+    <p> You are not assigned to a local bus. If you think this is a mistake please <a href="{{ contact_url }}">contact us</a>. </>
     {% endif %}
     {% endwith %}
   </li>
