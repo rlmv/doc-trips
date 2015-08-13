@@ -950,6 +950,34 @@ class ExternalBusModelTestCase(TripsYearTestCase):
                 route=transport.route,
                 section=transport.section
             )
+
+    def test_get_stops_to_hanover(self):
+        trips_year = self.init_trips_year()
+        sxn = mommy.make(
+            Section, trips_year=trips_year, is_local=True
+        )
+        stop = mommy.make(
+            Stop, trips_year=trips_year, 
+            route__category=Route.EXTERNAL
+        )
+        psngr = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_round_trip=stop,
+            trip_assignment__section=sxn
+        )
+        bus = mommy.make(
+            ExternalBus, trips_year=trips_year,
+            route=stop.route,
+            section=sxn
+        )
+        stops = bus.get_stops_to_hanover()
+        self.assertEqual(stops[0], stop)
+        self.assertEqual(getattr(stops[0], bus.DROPOFF_ATTR), [])
+        self.assertEqual(getattr(stops[0], bus.PICKUP_ATTR), [psngr])
+        self.assertEqual(stops[1], Hanover())
+        self.assertEqual(getattr(stops[1], bus.DROPOFF_ATTR), [psngr])
+        self.assertEqual(getattr(stops[1], bus.PICKUP_ATTR), [])
+        self.assertEqual(len(stops), 2)
                 
 
 class MapsTestCases(TripsYearTestCase):

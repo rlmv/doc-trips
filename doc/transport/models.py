@@ -444,5 +444,54 @@ class ExternalBus(DatabaseModel):
         if self.route.category == Route.INTERNAL:
             raise ValidationError("route must be external")
 
+    @cache_as('_psngrs_to_hanover')
+    def passengers_to_hanover(self):
+        from doc.incoming.models import IncomingStudent
+        return IncomingStudent.objects.passengers_to_hanover(
+            self.trips_year_id, self.route, self.section
+        )
+
+    @cache_as('_psngrs_from_hanover')
+    def passengers_from_hanover(self):
+        from doc.incoming.models import IncomingStudent
+        return IncomingStudent.objects.passengers_from_hanover(
+            self.trips_year_id, self.route, self.section
+        )
+
+    DROPOFF_ATTR = 'dropoff'
+    PICKUP_ATTR = 'pickup'
+    def get_stops_to_hanover(self):
+        """
+        All stops the bus makes on it's way to Hanover.
+       
+        The passengers who are picked up and dropped off
+        at each stop are stored in DROPOFF_ATTR and PICKUP_ATTR.
+        """
+        from doc.transport.constants import Hanover
+        
+        d = defaultdict(list)
+        for p in self.passengers_to_hanover():
+            d[p.get_bus_to_hanover()].append(p)
+        for stop, psngrs in d.items():
+            setattr(stop, self.DROPOFF_ATTR, [])
+            setattr(stop, self.PICKUP_ATTR, psngrs)
+
+        hanover = Hanover()
+        setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
+        setattr(hanover, self.PICKUP_ATTR, [])
+
+        return list(sorted(d.keys(), key=lambda x: x.distance)) + [hanover]
+
+    def directions_to_hanover(self):
+        stops = self.get_stops_to_hanover()
+        load = 0
+        for stop in stops:
+            load -= len(getattr(stop, self.DROPOFF_ATTR))
+            load += len(getattr(stop, self.PICKUP_ATTR))
+            if load > self.route.vehicle.capacity:
+                stop.over_capacity = True
+            stop.passenger_count = load
+        return get_directions(stops)
+
     def __str__(self):
         return "Section %s %s" % (self.section.name, self.route)
