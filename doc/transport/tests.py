@@ -11,7 +11,7 @@ from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 
 from doc.test.testcases import TripsYearTestCase, WebTestCase
-from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder
+from doc.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder, sort_by_distance
 from doc.transport.constants import Hanover, Lodge
 from doc.transport import maps
 from doc.transport.views import (
@@ -92,6 +92,11 @@ class StopModelTestCase(TripsYearTestCase):
                 cost_one_way=15, cost_round_trip=None,
                 route__category=Route.INTERNAL
             ).full_clean()
+
+    def test_sort_by_distance(self):
+        stop1 = mommy.make(Stop, distance=13)
+        stop2 = mommy.make(Stop, distance=2)
+        self.assertEqual([stop1, stop2], sort_by_distance([stop2, stop1]))
 
 
 class StopManagerTestCase(TripsYearTestCase):

@@ -16,11 +16,12 @@ from doc.utils.cache import cache_as
 
 
 def sort_by_distance(stops):
-    """ 
-    Given an iterable of stops, return a list
-    sorted by the distance field.
     """
-    return sorted(stops, key=lambda x: x.distance)
+    Given an iterable of stops, return a list
+    sorted by the distance field, in descending 
+    order.
+    """
+    return sorted(stops, key=lambda x: x.distance, reverse=True)
 
 
 class Stop(DatabaseModel):
