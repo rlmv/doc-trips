@@ -16,6 +16,11 @@
   <li><a href="{% url 'db:internal_packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
 </ol>
 
+<ol class="breadcrumb">
+  <li><a href="{% url 'db:external_packet' trips_year=trips_year %}"> All External Bus Directions <i class="fa fa-caret-right"></i></a></li>
+</ol>
+
+
 {% for date in date_dict %}
 <h3> {{ date }} </h3>
 
