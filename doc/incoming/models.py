@@ -90,10 +90,11 @@ class IncomingStudent(DatabaseModel):
             "provided to leaders and croos."
         )
     )
-    hide_med_info = models.BooleanField(
-        "Hide registration med info?", default=False, help_text=(
+    show_med_info = models.BooleanField(
+        "Show registration med info?", default=False, help_text=(
             "Medical information in this trippee's registration "
-            "will NOT be exported to leader and croo packets."
+            "will be displayed in leader and croo packets. (This "
+            "information is hidden by default.)"
         )
     )
 

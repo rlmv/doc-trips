@@ -16,7 +16,7 @@ from doc.db.urlhelpers import reverse_create_url, reverse_update_url
 from doc.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from doc.applications.tests import make_application
 from doc.applications.models import GeneralApplication
-from doc.incoming.models import IncomingStudent
+from doc.incoming.models import IncomingStudent, Registration
 
 class TripTestCase(WebTestCase):
     
@@ -531,3 +531,44 @@ class ViewsTestCase(WebTestCase):
         # submit create form
         resp.form.submit()
         Trip.objects.get(section=section, template=template)
+
+    def test_trippee_packet_hides_med_info_by_default(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(Trip, trips_year=trips_year)
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=trip,
+            med_info='sparkles',
+            registration=mommy.make(
+                Registration, trips_year=trips_year,
+                medical_conditions='magic',
+                needs='dinosaurs',
+            )
+        )
+        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        resp = self.app.get(url, user=self.mock_director())
+        self.assertNotContains(resp, 'magic')
+        self.assertNotContains(resp, 'dinosaurs')
+        self.assertContains(resp, 'sparkles')
+
+    def test_trip_packet_can_show_med_info(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(Trip, trips_year=trips_year)
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=trip,
+            show_med_info=True,
+            med_info='sparkles',
+            registration=mommy.make(
+                Registration, trips_year=trips_year,
+                medical_conditions='magic',
+                needs='dinosaurs',
+            )
+        )
+        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        resp = self.app.get(url, user=self.mock_director())
+        self.assertContains(resp, 'magic')
+        self.assertContains(resp, 'dinosaurs')
+        self.assertContains(resp, 'sparkles')

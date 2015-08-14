@@ -340,7 +340,7 @@ class IncomingStudentDetail(DatabaseReadPermissionRequired,
     admin_fields = (
         'registration', 'financial_aid',
         ('total cost', 'compute_cost'),
-        'med_info', 'hide_med_info',
+        'med_info', 'show_med_info',
         'decline_reason', 'notes'
     )
     college_fields = (

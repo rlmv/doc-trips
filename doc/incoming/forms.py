@@ -147,7 +147,7 @@ class TrippeeInfoForm(forms.ModelForm):
         model = IncomingStudent
         fields = (
             'decline_reason', 'financial_aid', 'notes',
-            'med_info', 'hide_med_info',
+            'med_info', 'show_med_info',
             'name', 'netid', 'class_year',
             'ethnic_code', 'gender', 'birthday',
             'incoming_status',

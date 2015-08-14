@@ -31,7 +31,7 @@
     {% with reg=trippee.get_registration %}
     {% if reg %}
 
-    {% if not trippee.hide_med_info %}
+    {% if trippee.show_med_info %}
     {# med info from registration #}
     {{ reg.medical_conditions }}
     {% if reg.needs %}
