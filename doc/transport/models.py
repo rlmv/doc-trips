@@ -452,6 +452,20 @@ class ExternalBus(DatabaseModel):
         if self.route.category == Route.INTERNAL:
             raise ValidationError("route must be external")
 
+    @property
+    def date_to_hanover(self):
+        """
+        Date bus takes trippees to Hanover
+        """
+        return self.section.trippees_arrive
+
+    @property
+    def date_from_hanover(self):
+        """
+        Date bus takes trippees home after trips
+        """
+        return self.section.return_to_campus
+
     @cache_as('_psngrs_to_hanover')
     def passengers_to_hanover(self):
         from doc.incoming.models import IncomingStudent

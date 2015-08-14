@@ -1018,7 +1018,15 @@ class ExternalBusModelTestCase(TripsYearTestCase):
         self.assertEqual(getattr(stops[2], bus.DROPOFF_ATTR), [psngr2])
         self.assertEqual(getattr(stops[2], bus.PICKUP_ATTR), [])
         self.assertEqual(len(stops), 3)
-                
+
+    def test_date_to_hanover(self):
+        bus = mommy.make(ExternalBus, section__leaders_arrive=date(2015, 1, 1))
+        self.assertEqual(bus.date_to_hanover, date(2015, 1, 2))
+
+    def test_date_from_hanover(self):
+        bus = mommy.make(ExternalBus, section__leaders_arrive=date(2015, 1, 1))
+        self.assertEqual(bus.date_from_hanover, date(2015, 1, 6))
+
 
 class MapsTestCases(TripsYearTestCase):
 
