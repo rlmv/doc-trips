@@ -30,6 +30,8 @@ externalbus_urlpatterns = [
     url(DB_REGEX['DELETE'], ExternalBusDelete.as_view(),
         name='externalbus_delete'),
     url(r'^packet/$', ExternalBusPacket.as_view(), name='external_packet'),
+    url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
+        ExternalBusPacketForDate.as_view(), name='external_packet_for_date'),
 ]
 
 transportstop_urlpatterns = [

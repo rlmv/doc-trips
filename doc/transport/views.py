@@ -328,6 +328,10 @@ class _DateMixin():
         """
         return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
 
+    def get_context_data(self, **kwargs):
+        kwargs['date'] = self.get_date()
+        return super(_DateMixin, self).get_context_data(**kwargs)
+
 
 class TransportChecklist(_DateMixin, DatabaseTemplateView):
     """ 
@@ -441,9 +445,6 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
         qs = super(InternalBusPacketForDate, self).get_queryset()
         return qs.filter(date=self.get_date())
 
-    def extra_context(self):
-        return {'date': self.get_date()}
-
 
 class ExternalBusPacket(DatabaseListView):
     """
@@ -454,13 +455,36 @@ class ExternalBusPacket(DatabaseListView):
     TO_HANOVER = 'to Hanover'
     FROM_HANOVER = 'from Hanover'
 
-    def extra_context(self):
+    def get_bus_list(self):
         bus_list = []
         for bus in self.get_queryset():
             bus_list += [
-                (bus.date_to_hanover, self.TO_HANOVER, bus),
-                (bus.date_from_hanover, self.FROM_HANOVER, bus)
+                self.to_hanover_tuple(bus),
+                self.from_hanover_tuple(bus)
             ]
+        return bus_list
+
+    def extra_context(self):
         return {
-            'bus_list': sorted(bus_list, key=lambda x: x[0])
+            'bus_list': sorted(self.get_bus_list(), key=lambda x: x[0])
         }
+
+    def to_hanover_tuple(self, bus):
+        return (bus.date_to_hanover, self.TO_HANOVER, bus)
+
+    def from_hanover_tuple(self, bus):
+        return (bus.date_from_hanover, self.FROM_HANOVER, bus)
+
+
+class ExternalBusPacketForDate(_DateMixin, ExternalBusPacket):
+    """
+    External bus directions for a certain date.
+    """
+    def get_bus_list(self):
+        bus_list = []
+        for bus in self.get_queryset():
+            if self.get_date() == bus.date_to_hanover:
+                bus_list.append(self.to_hanover_tuple(bus))
+            elif self.get_date() == bus.date_from_hanover:
+                bus_list.append(self.from_hanover_tuple(bus))
+        return bus_list
