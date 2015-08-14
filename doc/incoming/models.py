@@ -189,14 +189,11 @@ class IncomingStudent(DatabaseModel):
         return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
 
     def clean(self):
-        """
-        TODO: uncomment this
         one_way = (self.bus_assignment_to_hanover or
                    self.bus_assignment_from_hanover)
         if one_way and self.bus_assignment_round_trip:
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
-        """
 
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
