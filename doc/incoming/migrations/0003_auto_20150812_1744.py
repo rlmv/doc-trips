@@ -33,6 +33,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('incoming', '0002_auto_20150812_1738'),
+        ('transport', '0043_auto_20150812_1905'),
     ]
 
     operations = [
