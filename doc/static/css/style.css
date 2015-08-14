@@ -114,6 +114,11 @@
     .no-page-break-inside {
 	page-break-inside: avoid;
     }
+
+    /* dont insert (/link/url) after links */
+    body a:link:after, body a:visited:after {    
+	content: "";
+    }
 }
 
     
