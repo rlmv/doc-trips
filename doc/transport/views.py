@@ -455,6 +455,13 @@ class ExternalBusPacket(DatabaseListView):
     TO_HANOVER = 'to Hanover'
     FROM_HANOVER = 'from Hanover'
 
+    def get_queryset(self):
+        qs = super(ExternalBusPacket, self).get_queryset()
+        return qs.select_related(
+            'section',
+            'route',
+        )
+
     def get_bus_list(self):
         bus_list = []
         for bus in self.get_queryset():

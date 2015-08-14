@@ -99,35 +99,45 @@ class IncomingStudentManager(models.Manager):
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
 
-    def passengers_to_hanover(self, trips_year, route, section):
-        """ 
-        Return all trippees assigned to ride on external 
-        bus route on section TO Hanover
+    def _passengers_base_qs(self, trips_year, route, section):
+        """
+        Base queryset for passengers_to/from_hanover.
         """
         from doc.transport.models import Route
         assert route.category == Route.EXTERNAL
 
-        qs = self.filter(
-            (Q(bus_assignment_round_trip__route=route) |
-             Q(bus_assignment_to_hanover__route=route)),
+        return self.filter(
             trips_year=trips_year,
             trip_assignment__section=section
+        ).select_related(
+            'bus_assignment_round_trip',
+            'bus_assignment_to_hanover',
+            'bus_assignment_from_hanover',
+        )
+
+    def passengers_to_hanover(self, trips_year, route, section):
+        """
+        Return all trippees assigned to ride on external
+        bus route on section TO Hanover
+        """
+        qs = self._passengers_base_qs(
+            trips_year, route, section
+        ).filter(
+            (Q(bus_assignment_round_trip__route=route) |
+             Q(bus_assignment_to_hanover__route=route)),
         )
         return sorted(qs, key=lambda x: x.get_bus_to_hanover().distance)
 
     def passengers_from_hanover(self, trips_year, route, section):
-        """ 
-        Return all trippees assigned to ride on external 
+        """
+        Return all trippees assigned to ride on external
         bus route on section FROM Hanover
         """
-        from doc.transport.models import Route
-        assert route.category == Route.EXTERNAL
-
-        qs = self.filter(
+        qs = self._passengers_base_qs(
+            trips_year, route, section
+        ).filter(
             (Q(bus_assignment_round_trip__route=route) |
              Q(bus_assignment_from_hanover__route=route)),
-            trips_year=trips_year,
-            trip_assignment__section=section
         )
         return sorted(qs, key=lambda x: x.get_bus_from_hanover().distance)
 
