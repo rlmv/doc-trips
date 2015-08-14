@@ -31,7 +31,25 @@ def directions(bus):
     Given an internal bus, display directions or MapError.
     """
     try:
-        return {'directions': bus.directions()}
+        return {
+            'directions': bus.directions(),
+            'start_stop_template': 'transport/maps/_internal_start_stop.html',
+            'end_stop_template': 'transport/maps/_internal_end_stop.html'
+        }
+    except MapError as exc:
+        return {'error': exc}
+
+
+@register.inclusion_tag('transport/maps/directions.html')
+def external_directions_to_hanover(bus):
+    """
+    """
+    try:
+        return {
+            'directions': bus.directions_to_hanover(),
+            'start_stop_template': 'transport/maps/_external_start_stop.html',
+            'end_stop_template': 'transport/maps/_external_end_stop.html'
+        }
     except MapError as exc:
         return {'error': exc}
 
@@ -39,5 +57,18 @@ def directions(bus):
 @register.inclusion_tag('transport/maps/_trips_with_counts.html')
 def trips_with_counts(trips):
     """
+    Checklist of trips with size of trips.
     """
     return {'trips': trips}
+
+
+@register.inclusion_tag('transport/maps/_trippees.html')
+def trippees(trippees):
+    """ 
+    Checklist of trippees
+    """
+    return {
+        'trippees': trippees
+    }
+
+

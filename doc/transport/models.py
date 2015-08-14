@@ -476,6 +476,8 @@ class ExternalBus(DatabaseModel):
             setattr(stop, self.DROPOFF_ATTR, [])
             setattr(stop, self.PICKUP_ATTR, psngrs)
 
+        # TODO: sort passengers by last name
+
         hanover = Hanover()
         setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
         setattr(hanover, self.PICKUP_ATTR, [])
