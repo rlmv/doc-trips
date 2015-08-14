@@ -41,13 +41,28 @@ def directions(bus):
 
 
 @register.inclusion_tag('transport/maps/directions.html')
-def external_directions_to_hanover(bus):
+def directions_to_hanover(bus):
     """
-    Directions for an external bus.
+    Directions for an external bus to hanover.
     """
     try:
         return {
             'directions': bus.directions_to_hanover(),
+            'start_stop_template': 'transport/maps/_external_start_stop.html',
+            'end_stop_template': 'transport/maps/_external_end_stop.html'
+        }
+    except MapError as exc:
+        return {'error': exc}
+
+
+@register.inclusion_tag('transport/maps/directions.html')
+def directions_from_hanover(bus):
+    """
+    Directions for an external bus from hanover.
+    """
+    try:
+        return {
+            'directions': bus.directions_from_hanover(),
             'start_stop_template': 'transport/maps/_external_start_stop.html',
             'end_stop_template': 'transport/maps/_external_end_stop.html'
         }

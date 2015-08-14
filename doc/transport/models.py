@@ -15,6 +15,14 @@ from doc.utils.lat_lng import validate_lat_lng
 from doc.utils.cache import cache_as
 
 
+def sort_by_distance(stops):
+    """ 
+    Given an iterable of stops, return a list
+    sorted by the distance field.
+    """
+    return sorted(stops, key=lambda x: x.distance)
+
+
 class Stop(DatabaseModel):
     """
     A stop on a transportation route.
@@ -460,6 +468,7 @@ class ExternalBus(DatabaseModel):
 
     DROPOFF_ATTR = 'dropoff'
     PICKUP_ATTR = 'pickup'
+
     def get_stops_to_hanover(self):
         """
         All stops the bus makes on it's way to Hanover.
@@ -482,10 +491,40 @@ class ExternalBus(DatabaseModel):
         setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
         setattr(hanover, self.PICKUP_ATTR, [])
 
-        return list(sorted(d.keys(), key=lambda x: x.distance)) + [hanover]
+        return sort_by_distance(d.keys()) + [hanover]
+
+    def get_stops_from_hanover(self):
+        """
+        All stops the bus makes as it drop trippees off after trips.
+        """
+        from doc.transport.constants import Hanover
+        
+        d = defaultdict(list)
+        for p in self.passengers_from_hanover():
+            d[p.get_bus_from_hanover()].append(p)
+        for stop, psngrs in d.items():
+            setattr(stop, self.DROPOFF_ATTR, psngrs)
+            setattr(stop, self.PICKUP_ATTR, [])
+
+        # TODO: sort passengers by last name
+
+        hanover = Hanover()
+        setattr(hanover, self.DROPOFF_ATTR, [])
+        setattr(hanover, self.PICKUP_ATTR, self.passengers_from_hanover())
+
+        return [hanover] + sort_by_distance(d.keys())
 
     def directions_to_hanover(self):
-        stops = self.get_stops_to_hanover()
+        return self._directions(self.get_stops_to_hanover())
+
+    def directions_from_hanover(self):
+        return self._directions(self.get_stops_from_hanover())
+
+    def _directions(self, stops):
+        """
+        Compute capacity and passenger count, then return 
+        Google Maps directions.
+        """
         load = 0
         for stop in stops:
             load -= len(getattr(stop, self.DROPOFF_ATTR))

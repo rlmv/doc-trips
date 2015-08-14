@@ -978,6 +978,46 @@ class ExternalBusModelTestCase(TripsYearTestCase):
         self.assertEqual(getattr(stops[1], bus.DROPOFF_ATTR), [psngr])
         self.assertEqual(getattr(stops[1], bus.PICKUP_ATTR), [])
         self.assertEqual(len(stops), 2)
+
+    def test_get_stops_from_hanover(self):
+        trips_year = self.init_trips_year()
+        sxn = mommy.make(
+            Section, trips_year=trips_year, is_local=True
+        )
+        rt = mommy.make(
+            Route, trips_year=trips_year, category=Route.EXTERNAL
+        )
+        stop1 = mommy.make(
+            Stop, trips_year=trips_year, route=rt, distance=5
+        )
+        psngr1 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_round_trip=stop1,
+            trip_assignment__section=sxn
+        )
+        stop2 = mommy.make(
+            Stop, trips_year=trips_year, route=rt, distance=100
+        )
+        psngr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_from_hanover=stop2,
+            trip_assignment__section=sxn
+        )
+        bus = mommy.make(
+            ExternalBus, trips_year=trips_year,
+            route=rt, section=sxn
+        )
+        stops = bus.get_stops_from_hanover()
+        self.assertEqual(stops[0], Hanover())
+        self.assertEqual(getattr(stops[0], bus.DROPOFF_ATTR), [])
+        self.assertEqual(getattr(stops[0], bus.PICKUP_ATTR), [psngr1, psngr2])
+        self.assertEqual(stops[1], stop1)
+        self.assertEqual(getattr(stops[1], bus.DROPOFF_ATTR), [psngr1])
+        self.assertEqual(getattr(stops[1], bus.PICKUP_ATTR), [])
+        self.assertEqual(stops[2], stop2)
+        self.assertEqual(getattr(stops[2], bus.DROPOFF_ATTR), [psngr2])
+        self.assertEqual(getattr(stops[2], bus.PICKUP_ATTR), [])
+        self.assertEqual(len(stops), 3)
                 
 
 class MapsTestCases(TripsYearTestCase):

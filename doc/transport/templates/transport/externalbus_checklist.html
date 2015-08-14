@@ -10,7 +10,11 @@
 
 {% include "transport/_scheduled_alert.html" with scheduled=bus %}
 
-{% external_directions_to_hanover bus %}
+{% if bus %}
+{% directions_to_hanover bus %}
+
+{% directions_from_hanover bus %}
+{% endif %}
 
 <h4> Passengers To Hanover</h4>
 {% regroup passengers_to_hanover by get_bus_to_hanover as grouping %}

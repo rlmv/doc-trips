@@ -83,6 +83,8 @@
 <p class="h4"> Directions are only shown for scheduled buses. </p>
 {% endif %}
 
+{% if scheduled %}
 {% directions scheduled %}
+{% endif %}
 
 {% endblock %}
