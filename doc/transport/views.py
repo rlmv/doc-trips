@@ -472,8 +472,14 @@ class ExternalBusPacket(DatabaseListView):
         return bus_list
 
     def extra_context(self):
+        # sort by date, then bus name, then direction
+        order = {
+            self.TO_HANOVER: 0,
+            self.FROM_HANOVER: 1
+        }
+        key = lambda x: (x[0], x[2].route.name, order[x[1]])
         return {
-            'bus_list': sorted(self.get_bus_list(), key=lambda x: x[0])
+            'bus_list': sorted(self.get_bus_list(), key=key)
         }
 
     def to_hanover_tuple(self, bus):
