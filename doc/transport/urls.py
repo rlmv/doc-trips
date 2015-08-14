@@ -29,6 +29,7 @@ externalbus_urlpatterns = [
         name='externalbus_create'),
     url(DB_REGEX['DELETE'], ExternalBusDelete.as_view(),
         name='externalbus_delete'),
+    url(r'^packet/$', ExternalBusPacket.as_view(), name='external_packet'),
 ]
 
 transportstop_urlpatterns = [

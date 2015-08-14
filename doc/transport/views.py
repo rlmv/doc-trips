@@ -443,3 +443,24 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
 
     def extra_context(self):
         return {'date': self.get_date()}
+
+
+class ExternalBusPacket(DatabaseListView):
+    """
+    """
+    model = ExternalBus
+    template_name = 'transport/external_packet.html'
+
+    TO_HANOVER = 'to Hanover'
+    FROM_HANOVER = 'from Hanover'
+
+    def extra_context(self):
+        bus_list = []
+        for bus in self.get_queryset():
+            bus_list += [
+                (bus.date_to_hanover, self.TO_HANOVER, bus),
+                (bus.date_from_hanover, self.FROM_HANOVER, bus)
+            ]
+        return {
+            'bus_list': sorted(bus_list, key=lambda x: x[0])
+        }
