@@ -43,6 +43,7 @@ def directions(bus):
 @register.inclusion_tag('transport/maps/directions.html')
 def external_directions_to_hanover(bus):
     """
+    Directions for an external bus.
     """
     try:
         return {
@@ -62,13 +63,24 @@ def trips_with_counts(trips):
     return {'trips': trips}
 
 
+def split(a, n):
+    """
+    http://stackoverflow.com/a/2135920/3818777
+    """
+    import math
+    k, m = math.floor(len(a) / n), len(a) % n
+    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+
+
 @register.inclusion_tag('transport/maps/_trippees.html')
 def trippees(trippees):
-    """ 
-    Checklist of trippees
     """
+    Checklist of trippees, split into 3 columns.
+    """
+    col1, col2, col3 = split(trippees, 3)
     return {
-        'trippees': trippees
+        'trippees': trippees,
+        'col1': col1,
+        'col2': col2,
+        'col3': col3,
     }
-
-

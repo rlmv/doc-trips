@@ -1,0 +1,5 @@
+{% load maps %}
+
+{% if start_stop.trips_picked_up %}
+<p class="h5">  Pickup {% trips_with_counts start_stop.trips_picked_up %} </p>
+{% endif %}

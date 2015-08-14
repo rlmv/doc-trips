@@ -1,0 +1,11 @@
+{% load maps %}
+
+<div>
+{% if end_stop.dropoff %}
+<p class="h5"> Dropoff {% trippees end_stop.dropoff %} </p>
+{% endif %}
+
+{% if end_stop.pickup %}
+<p class="h5"> Pickup {% trippees end_stop.pickup %} </p>
+{% endif %}
+</div>
