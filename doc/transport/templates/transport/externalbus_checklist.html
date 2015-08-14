@@ -18,26 +18,18 @@
 {% directions_from_hanover bus %}
 {% endif %}
 
-<h4> Passengers To Hanover</h4>
+<h3> Passengers To Hanover</h3>
 {% regroup passengers_to_hanover by get_bus_to_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-<ul>
-  {% for trippee in stop.list %}
-  <li> {{ trippee|detail_link }} </li>
-  {% endfor %}
-</ul>
+{% trippees stop.list %}
 {% endfor %}
 
-<h4> Passengers From Hanover</h4>
+<h3> Passengers From Hanover</h3>
 {% regroup passengers_from_hanover by get_bus_from_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-<ul>
-  {% for trippee in stop.list %}
-  <li> {{ trippee|detail_link }} </li>
-  {% endfor %}
-</ul>
+{% trippees stop.list %}
 {% endfor %}
 
 {% endblock content %}
