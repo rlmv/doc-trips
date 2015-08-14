@@ -26,6 +26,15 @@ def YesNoField(*args, **kwargs):
     return models.CharField(*args, **kwargs)
 
 
+def sort_by_lastname(students):
+    """
+    Sort an iterable of IncomingStudents by last name.
+
+    We have to do some parsing since 'name' is one field.
+    """
+    return sorted(students, key=lambda x: x.name.split()[-1])
+
+
 class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.

@@ -1,6 +1,7 @@
 from django.template import Library, loader, Context
 from django.conf import settings
 
+from doc.incoming.models import sort_by_lastname
 from doc.transport.maps import _split_stops, MapError
 
 register = Library()
@@ -92,6 +93,7 @@ def trippees(trippees):
     """
     Checklist of trippees, split into 3 columns.
     """
+    trippees = sort_by_lastname(trippees)
     col1, col2, col3 = split(trippees, 3)
     return {
         'trippees': trippees,

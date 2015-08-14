@@ -9,7 +9,7 @@ from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from doc.test.testcases import TripsYearTestCase, WebTestCase
-from doc.incoming.models import Registration, IncomingStudent
+from doc.incoming.models import Registration, IncomingStudent, sort_by_lastname
 from doc.incoming.forms import RegistrationForm
 from doc.trips.models import Trip, TripType, Section
 from doc.core.models import Settings
@@ -219,6 +219,12 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             bus_assignment_from_hanover=stop
         )
         self.assertEqual(inc.get_bus_from_hanover(), stop)
+
+    def test_sort_by_lastname(self):
+        inc1 = mommy.make(IncomingStudent, name='Rachel Zhao')
+        inc2 = mommy.make(IncomingStudent, name='Lara P. Balick')
+        inc3 = mommy.make(IncomingStudent, name='William A. P. Wolfe-McGuire')
+        self.assertEqual([inc2, inc3, inc1], sort_by_lastname([inc1, inc2, inc3]))
         
 
 class RegistrationModelTestCase(TripsYearTestCase):
