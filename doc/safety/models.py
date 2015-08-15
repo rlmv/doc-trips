@@ -4,18 +4,11 @@ from django.core.urlresolvers import reverse
 
 from doc.db.models import DatabaseModel
 from doc.trips.models import Trip
+from doc.utils.model_fields import YesNoField
 
 """
 Models for Incident Reports
 """
-
-def YesNoField(*args, **kwargs):
-    kwargs['choices'] = (
-        (True, 'Yes'), (False, 'No')
-    )
-    kwargs['default'] = False
-    return models.BooleanField(*args, **kwargs)
-
 
 ROLE_CHOICES = (
     ('TRIP_LEADER', 'Trip Leader'),
