@@ -121,4 +121,9 @@
     }
 }
 
+/* increase top margin of printed page */
+@page {
+    margin-top: 1.5cm;
+}
+
     
