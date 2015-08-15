@@ -93,10 +93,10 @@ class StopModelTestCase(TripsYearTestCase):
                 route__category=Route.INTERNAL
             ).full_clean()
 
-    def test_sort_by_distance(self):
+    def test_sort_by_distance_reverse(self):
         stop1 = mommy.make(Stop, distance=13)
         stop2 = mommy.make(Stop, distance=2)
-        self.assertEqual([stop1, stop2], sort_by_distance([stop2, stop1]))
+        self.assertEqual([stop1, stop2], sort_by_distance([stop2, stop1], reverse=True))
 
 
 class StopManagerTestCase(TripsYearTestCase):
@@ -961,28 +961,40 @@ class ExternalBusModelTestCase(TripsYearTestCase):
         sxn = mommy.make(
             Section, trips_year=trips_year, is_local=True
         )
-        stop = mommy.make(
-            Stop, trips_year=trips_year, 
-            route__category=Route.EXTERNAL
+        rt = mommy.make(
+            Route, trips_year=trips_year, category=Route.EXTERNAL
         )
-        psngr = mommy.make(
+        stop1 = mommy.make(
+            Stop, trips_year=trips_year, route=rt, distance=3
+        )
+        psngr1 = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            bus_assignment_round_trip=stop,
+            bus_assignment_round_trip=stop1,
+            trip_assignment__section=sxn
+        )
+        stop2 = mommy.make(
+            Stop, trips_year=trips_year, route=rt, distance=100
+        )
+        psngr2 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            bus_assignment_to_hanover=stop2,
             trip_assignment__section=sxn
         )
         bus = mommy.make(
             ExternalBus, trips_year=trips_year,
-            route=stop.route,
-            section=sxn
+            route=rt, section=sxn
         )
         stops = bus.get_stops_to_hanover()
-        self.assertEqual(stops[0], stop)
+        self.assertEqual(stops[0], stop2)
         self.assertEqual(getattr(stops[0], bus.DROPOFF_ATTR), [])
-        self.assertEqual(getattr(stops[0], bus.PICKUP_ATTR), [psngr])
-        self.assertEqual(stops[1], Hanover())
-        self.assertEqual(getattr(stops[1], bus.DROPOFF_ATTR), [psngr])
-        self.assertEqual(getattr(stops[1], bus.PICKUP_ATTR), [])
-        self.assertEqual(len(stops), 2)
+        self.assertEqual(getattr(stops[0], bus.PICKUP_ATTR), [psngr2])
+        self.assertEqual(stops[1], stop1)
+        self.assertEqual(getattr(stops[1], bus.DROPOFF_ATTR), [])
+        self.assertEqual(getattr(stops[1], bus.PICKUP_ATTR), [psngr1])
+        self.assertEqual(stops[2], Hanover())
+        self.assertEqual(getattr(stops[2], bus.DROPOFF_ATTR), [psngr1, psngr2])
+        self.assertEqual(getattr(stops[2], bus.PICKUP_ATTR), [])
+        self.assertEqual(len(stops), 3)
 
     def test_get_stops_from_hanover(self):
         trips_year = self.init_trips_year()

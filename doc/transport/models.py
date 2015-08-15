@@ -15,13 +15,12 @@ from doc.utils.lat_lng import validate_lat_lng
 from doc.utils.cache import cache_as
 
 
-def sort_by_distance(stops):
+def sort_by_distance(stops, reverse=False):
     """
     Given an iterable of stops, return a list
-    sorted by the distance field, in descending 
-    order.
+    sorted by the distance field.
     """
-    return sorted(stops, key=lambda x: x.distance, reverse=True)
+    return sorted(stops, key=lambda x: x.distance, reverse=reverse)
 
 
 class Stop(DatabaseModel):
@@ -506,7 +505,7 @@ class ExternalBus(DatabaseModel):
         setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
         setattr(hanover, self.PICKUP_ATTR, [])
 
-        return sort_by_distance(d.keys()) + [hanover]
+        return sort_by_distance(d.keys(), reverse=True) + [hanover]
 
     def get_stops_from_hanover(self):
         """
