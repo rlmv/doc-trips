@@ -30,6 +30,7 @@ class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.trips_year_id = self.kwargs['trips_year']
         return super(NewIncident, self).form_valid(form)
 
 
