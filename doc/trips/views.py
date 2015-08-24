@@ -672,13 +672,17 @@ class Checklists(DatabaseTemplateView):
             ))
 
         buses = ExternalBus.objects.filter(trips_year=trips_year)
-        for date in set([x.date_to_hanover for x in buses] +
-                        [x.date_from_hanover for x in buses]):
-            d[date].append((
-                'External Bus Directions for %s' % date.strftime('%m/%d'),
-                reverse('db:external_packet_for_date', kwargs={
-                    'trips_year': trips_year, 'date': date
-                })
-            ))
+        route_dict = defaultdict(set)
+        for bus in buses:
+            route_dict[bus.date_to_hanover].add(bus.route)
+            route_dict[bus.date_from_hanover].add(bus.route)
+        for date, routes in route_dict.items():
+            for route in routes:
+                d[date].append((
+                    '%s Directions for %s' % (route, date.strftime('%m/%d')),
+                    reverse('db:external_packet_for_date_and_route', kwargs={
+                        'trips_year': trips_year, 'date': date, 'route_pk': route.pk
+                    })
+                ))
         
         return {'date_dict': d}

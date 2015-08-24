@@ -504,3 +504,12 @@ class ExternalBusPacketForDate(_DateMixin, ExternalBusPacket):
             elif self.get_date() == bus.date_from_hanover:
                 bus_list.append(self.from_hanover_tuple(bus))
         return bus_list
+
+
+class ExternalBusPacketForDateAndRoute(_RouteMixin, ExternalBusPacketForDate):
+    """
+    External bus directions for a date and route
+    """
+    def get_queryset(self):
+        qs = super(ExternalBusPacketForDateAndRoute, self).get_queryset()
+        return qs.filter(route=self.get_route())

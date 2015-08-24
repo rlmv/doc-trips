@@ -32,6 +32,9 @@ externalbus_urlpatterns = [
     url(r'^packet/$', ExternalBusPacket.as_view(), name='external_packet'),
     url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         ExternalBusPacketForDate.as_view(), name='external_packet_for_date'),
+    url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/(?P<route_pk>[0-9]+)$',
+        ExternalBusPacketForDateAndRoute.as_view(),
+        name='external_packet_for_date_and_route'),
 ]
 
 transportstop_urlpatterns = [
