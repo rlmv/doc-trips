@@ -333,22 +333,29 @@ class _DateMixin():
         return super(_DateMixin, self).get_context_data(**kwargs)
 
 
-class TransportChecklist(_DateMixin, DatabaseTemplateView):
+class _RouteMixin():
+    """
+    Mixin to get a route object from url kwargs.
+    """
+    @cache_as('_route')
+    def get_route(self):
+        return Route.objects.get(pk=self.kwargs['route_pk'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['route'] = self.get_route()
+        return super(_RouteMixin, self).get_context_data(**kwargs)
+
+
+class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
     """ 
     Shows all trips which are supposed to be dropped off,
     picked up, or returned to campus on the date and route
     in the kwargs.
     """
-
     template_name = 'transport/transport_checklist.html'
-
-    def get_route(self):
-        return Route.objects.get(pk=self.kwargs['route_pk'])
 
     def get_context_data(self, **kwargs):
         context = super(TransportChecklist, self).get_context_data(**kwargs)
-        context['route'] = self.get_route()
-        context['date'] = self.get_date()
 
         args = (self.get_route(), self.get_date(), self.get_trips_year())
         context['dropoffs'] = Trip.objects.dropoffs(*args)
@@ -368,19 +375,15 @@ class TransportChecklist(_DateMixin, DatabaseTemplateView):
         return context
 
 
-class ExternalBusChecklist(DatabaseTemplateView):
-   
+class ExternalBusChecklist(_RouteMixin, DatabaseTemplateView):
+  
     template_name = 'transport/externalbus_checklist.html'
 
     def get_section(self):
         return Section.objects.get(pk=self.kwargs['section_pk'])
-        
-    def get_route(self):
-        return Route.objects.get(pk=self.kwargs['route_pk'])
 
     def extra_context(self):
         return {
-            'route': self.get_route(),
             'section': self.get_section(),
             'bus': ExternalBus.objects.filter(
                 trips_year=self.get_trips_year(),
