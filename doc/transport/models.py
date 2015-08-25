@@ -30,8 +30,9 @@ class Stop(DatabaseModel):
     Represents a pickup or dropoff point for a trip OR a
     bus stop where local sections are picked up.
     """
+
     class Meta:
-        ordering = ['route__category', 'route', 'name']
+        ordering = ['name']
 
     objects = StopManager()
 

@@ -243,7 +243,11 @@ class StopListView(DatabaseListView):
 
     def get_queryset(self):
         qs = super(StopListView, self).get_queryset()
-        return qs.select_related('route')
+        return qs.select_related(
+            'route'
+        ).order_by(
+            'route__category', 'route', 'name'
+        )
 
 
 class StopCreateView(DatabaseCreateView):
