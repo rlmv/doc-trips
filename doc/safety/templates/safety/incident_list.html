@@ -6,9 +6,22 @@
 {% endblock %}
 
 {% block content %}
-<ul>
-{% for incident in incidents %}
-<li> {{ incident|detail_link }} </li>
-{% endfor %}
-</ul>
+<table class="table table-condensed">
+  <tr>
+    <th> Incident </th>
+    <th> When </th>
+    <th> Where </th>
+    <th> Injuries? </th>
+    <th> Caller </th>
+  </tr>
+  {% for incident in incidents %}
+  <tr> 
+    <td> {{ incident|detail_link:incident.trip }} </td>
+    <td> {{ incident.when }} </td>
+    <td> {{ incident.where }} </td>
+    <td> {{ incident.injuries|yesno }} </td>
+    <td> {{ incident.caller }} </td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
