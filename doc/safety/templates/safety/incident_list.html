@@ -9,15 +9,17 @@
 <table class="table table-condensed">
   <tr>
     <th> Incident </th>
-    <th> When </th>
+    <th> Trip </th>
     <th> Where </th>
     <th> Injuries? </th>
     <th> Caller </th>
   </tr>
   {% for incident in incidents %}
   <tr> 
-    <td> {{ incident|detail_link:incident.trip }} </td>
-    <td> {{ incident.when }} </td>
+    {% with when=incident.when|time %}
+    <td> {{ incident|detail_link }} </td>
+    {% endwith %}
+    <td> {{ incident.trip|detail_link|default:"" }} </td>
     <td> {{ incident.where }} </td>
     <td> {{ incident.injuries|yesno }} </td>
     <td> {{ incident.caller }} </td>

@@ -36,8 +36,13 @@ class _IncidentBase(DatabaseModel):
 
 class Incident(_IncidentBase):
 
+    class Meta:
+        ordering = ['-when']
+
     trip = models.ForeignKey(
-        Trip, verbose_name='On what trip did this incident occur?'
+        Trip, blank=True, null=True,
+        verbose_name='On what trip did this incident occur?',
+        help_text='leave blank if incident did not occur on a trip'
     )
     where = models.TextField(
         "Where during the trip did this occur?",
@@ -64,7 +69,10 @@ class Incident(_IncidentBase):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
-        return "%s: %s" % (self.trip, self.when)
+        fmt = lambda x: x.strftime("%m/%d %X")
+        if self.trip:
+            return "%s: %s" % (fmt(self.when), self.trip)
+        return fmt(self.when)
 
 
 class IncidentUpdate(_IncidentBase):
