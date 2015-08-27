@@ -69,9 +69,9 @@ class Incident(_IncidentBase):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
-        fmt = lambda x: x.strftime("%m/%d %X")
+        fmt = lambda x: x.strftime("%m/%d %H:%M")
         if self.trip:
-            return "%s: %s" % (fmt(self.when), self.trip)
+            return "%s - %s" % (fmt(self.when), self.trip)
         return fmt(self.when)
 
 
