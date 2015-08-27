@@ -5,11 +5,8 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from doc.permissions.views import SafetyLogPermissionRequired
-from doc.db.views import (
-    DatabaseCreateView, DatabaseDetailView, TripsYearMixin,
-    DatabaseListView
-)
-from doc.safety.models import Incident, IncidentUpdate
+from doc.db.views import TripsYearMixin
+from doc.safety.models import Incident
 from doc.safety.forms import IncidentForm, IncidentUpdateForm
 
 

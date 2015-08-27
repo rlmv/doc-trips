@@ -1,6 +1,5 @@
-
 from django import forms
-from crispy_forms.layout import Submit, Layout, Field, Submit, Row, Div, HTML, Fieldset
+from crispy_forms.layout import Layout, Field, Submit, Row, Div, HTML, Fieldset
 from crispy_forms.helper import FormHelper
 from bootstrap3_datetime.widgets import DateTimePicker
 

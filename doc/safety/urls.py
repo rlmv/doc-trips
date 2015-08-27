@@ -1,5 +1,4 @@
-
-from django.conf.urls import url, include
+from django.conf.urls import url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.safety.views import *
