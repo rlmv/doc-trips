@@ -1,6 +1,8 @@
-from vanilla import FormView, DetailView, ListView, CreateView
+from vanilla import FormView, DetailView, ListView, CreateView, DeleteView
 from braces.views import SetHeadlineMixin
 from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.contrib import messages
 
 from doc.permissions.views import SafetyLogPermissionRequired
 from doc.db.views import (
@@ -70,3 +72,22 @@ class IncidentDetail(_IncidentMixin, FormView, DetailView):
         form.instance.incident = self.get_object()
         form.save()
         return HttpResponseRedirect(self.request.path)
+
+
+class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
+    model = Incident
+    template_name = 'db/delete.html'
+
+    def get_headline(self):
+        return ("Are you sure you want to delete Incident %s? "
+                "You will not be able to undo this." % self.object)
+
+    def get_success_url(self):
+        return reverse('db:safety:list', kwargs={
+            'trips_year': self.kwargs['trips_year']
+        })
+
+    def post(self, request, *args, **kwargs):
+        resp = super(DeleteIncident, self).post(request, *args, **kwargs)
+        messages.success(request, "Deleted Incident %s" % self.object)
+        return resp

@@ -2,6 +2,10 @@
 {% load detail_view %}
 {% load crispy_forms_tags %}
 
+{% block header %}
+<h2> Incident {{ incident }} <a href="{{ incident.delete_url }}" class="btn btn-danger">Delete</a></h2>
+{% endblock %}
+
 {% block content %}
 
 <ul class="list-group">
@@ -9,7 +13,7 @@
     <h5 class="list-group-item-heading"> {{ incident.user }} 
       <span class="text-muted"> {{ incident.created }} </span>
     </h5>
-    {% detail incident view.fields %}
+    <p> {% detail incident view.fields %} </p>
   </li>
 
   {% for update in incident.incidentupdate_set.all %}
@@ -17,7 +21,7 @@
     <h5 class="list-group-item-heading"> {{ update.user }}
       <span class="text-muted"> {{ update.created }} </span>
     </h5>
-    {% detail update view.update_fields %}
+    <p> {% detail update view.update_fields %} </p>
   </li>
   {% endfor %}
   

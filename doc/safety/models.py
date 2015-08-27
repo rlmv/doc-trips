@@ -68,6 +68,9 @@ class Incident(_IncidentBase):
     def detail_url(self):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
 
+    def delete_url(self):
+        return reverse('db:safety:delete', kwargs=self.obj_kwargs())
+
     def __str__(self):
         fmt = lambda x: x.strftime("%m/%d %H:%M")
         if self.trip:
