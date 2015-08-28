@@ -37,6 +37,32 @@ from doc.utils.cache import cache_as
 from doc.transport.models import ExternalBus, ScheduledTransport
 
 
+class _SectionMixin():
+    """
+    Utility mixin for CBVs which have a section_pk url kwarg.
+    """
+    @cache_as('_section')
+    def get_section(self):
+        return Section.objects.get(pk=self.kwargs['section_pk'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['section'] = self.get_section()
+        return super(_SectionMixin, self).get_context_data(**kwargs)
+
+
+class _TripMixin():
+    """
+    Mixin to pull a trip object from a trip_pk url kwarg
+    """
+    @cache_as('_trip')
+    def get_trip(self):
+        return Trip.objects.get(pk=self.kwargs['trip_pk'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['trip'] = self.get_trip()
+        return super(_TripMixin, self).get_context_data(**kwargs)
+
+
 class TripList(DatabaseTemplateView):
     template_name = 'trips/trip_index.html'
 
@@ -232,15 +258,8 @@ FIRST_CHOICE = 'first choice'
 PREFER = 'prefer'
 AVAILABLE = 'available'
 
-class _AssignMixin():
-    
-    def get_trip(self):
-        if not hasattr(self, 'trip'):
-            self.trip = Trip.objects.get(pk=self.kwargs['trip'])
-        return self.trip
 
-
-class AssignTrippee(DatabaseListView, _AssignMixin):
+class AssignTrippee(_TripMixin, DatabaseListView):
     """ 
     Assign trippees to a trip.
 
@@ -351,7 +370,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
                        kwargs={'trips_year': self.get_trips_year()})
 
 
-class AssignTripLeaderView(DatabaseListView):
+class AssignTripLeaderView(_TripMixin, DatabaseListView):
     """ 
     Assign a leader to a Trip.
 
@@ -364,15 +383,9 @@ class AssignTripLeaderView(DatabaseListView):
     - section preference is a string describing whether the leader prefers or 
     is available for the section.
     """
-
     model = GeneralApplication
     template_name = 'trips/assign_leader.html'
     context_object_name = 'leader_applications'
-
-    def get_trip(self):
-        if not hasattr(self, 'trip'):
-            self.trip = Trip.objects.get(pk=self.kwargs['trip'])
-        return self.trip
 
     def get_queryset(self):
         qs = (
@@ -593,7 +606,7 @@ class LeaderPacket(DatabaseDetailView):
     template_name = 'trips/leader_packet.html'
 
 
-class PacketsForSection(DatabaseListView):
+class PacketsForSection(_SectionMixin, DatabaseListView):
     """
     All leader packets for a section.
     """
@@ -615,13 +628,6 @@ class PacketsForSection(DatabaseListView):
             'trippees',
             'trippees__registration'
         )
-
-    @cache_as('_section')
-    def get_section(self):
-        return get_object_or_404(Section, pk=self.kwargs['section_pk'])
-
-    def extra_context(self):
-        return {'section': self.get_section()}  
 
 
 class MedicalInfoForSection(PacketsForSection):
