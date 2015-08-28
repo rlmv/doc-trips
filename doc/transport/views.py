@@ -38,7 +38,13 @@ def get_internal_route_matrix(trips_year):
     dates = Section.dates.trip_dates(trips_year)
     matrix = OrderedMatrix(routes, dates)
     scheduled = preload_transported_trips(
-        ScheduledTransport.objects.internal(trips_year).select_related('route__vehicle'), trips_year
+        ScheduledTransport.objects.internal(
+            trips_year
+        ).select_related(
+            'route__vehicle'
+        ).prefetch_related(
+            'stoporder_set'
+        ), trips_year
     )
     for transport in scheduled:
         matrix[transport.route][transport.date] = transport

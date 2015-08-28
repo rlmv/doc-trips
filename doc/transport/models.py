@@ -312,15 +312,19 @@ class ScheduledTransport(DatabaseModel):
         making (excluding Hanover and the Lodge).
         """
         
+        # the manual stoporder filtering saves us a query if
+        # stoporder_set is already loaded by prefetch_related
         opts = (
             (StopOrder.PICKUP, self.picking_up(),
-             lambda x: x.template.pickup_stop),
+             lambda x: x.template.pickup_stop,
+             filter(lambda x: x.stop_type == StopOrder.PICKUP, self.stoporder_set.all())),
             (StopOrder.DROPOFF, self.dropping_off(),
-             lambda x: x.template.dropoff_stop)
+             lambda x: x.template.dropoff_stop,
+             filter(lambda x: x.stop_type == StopOrder.DROPOFF, self.stoporder_set.all()))
         )
 
-        for stop_type, trips, getter in opts:
-            ordered_trips = set([x.trip for x in self.stoporder_set.filter(stop_type=stop_type)])
+        for stop_type, trips, getter, stoporders in opts:
+            ordered_trips = set([x.trip for x in stoporders])
             unordered_trips = set(trips) - ordered_trips
             surplus_trips = ordered_trips - set(trips)
 
@@ -341,8 +345,9 @@ class ScheduledTransport(DatabaseModel):
                     trip__in=surplus_trips, bus=self,
                     stop_type=stop_type
                 ).delete()
-
-        return self.stoporder_set.all()
+        
+        # be sure we return a fresh qs, in case stoporders are prefetched
+        return StopOrder.objects.filter(bus=self)
 
     def order_stops(self):
         """
