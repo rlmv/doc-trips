@@ -24,7 +24,7 @@ from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import (
     TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
-    DatabaseCreateView
+    DatabaseCreateView, DatabaseDetailView
 )
 from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
@@ -331,8 +331,7 @@ class IncomingStudentIndex(DatabaseReadPermissionRequired,
         )
 
 
-class IncomingStudentDetail(DatabaseReadPermissionRequired,
-                            TripsYearMixin, DetailView):
+class IncomingStudentDetail(DatabaseDetailView):
     model = IncomingStudent
     template_name = 'incoming/trippee_detail.html'
     context_object_name = 'trippee'
@@ -367,8 +366,10 @@ class IncomingStudentDelete(DatabaseDeleteView):
                        kwargs={'trips_year': self.get_trips_year()})
 
 
-class UpdateTripAssignment(DatabaseEditPermissionRequired,
-                           TripsYearMixin, UpdateView):
+class UpdateTripAssignment(DatabaseUpdateView):
+    """
+    Edit trip and bus assignments for an incoming student.
+    """
     model = IncomingStudent
     template_name = 'incoming/update_trip.html'
     form_class = TripAssignmentForm
@@ -382,25 +383,16 @@ class UpdateTripAssignment(DatabaseEditPermissionRequired,
         kwargs['registration'] = reg
         return super(UpdateTripAssignment, self).get_context_data(**kwargs)
 
-    def get_form(self, **kwargs):
-        form = super(UpdateTripAssignment, self).get_form(**kwargs)
-        return crispify(form)
 
-
-class IncomingStudentUpdate(DatabaseEditPermissionRequired,
-                            TripsYearMixin, UpdateView):
+class IncomingStudentUpdate(DatabaseUpdateView):
     """
     Edit an incoming student
     """
     model = IncomingStudent
-    template_name = 'db/update.html'
     context_object_name = 'trippee'
     form_class = TrippeeInfoForm
+    delete_button = False
 
-    def get_form(self, **kwargs):
-        form = super(IncomingStudentUpdate, self).get_form(**kwargs)
-        return crispify(form)
-   
 
 class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                                 TripsYearMixin, FormView):

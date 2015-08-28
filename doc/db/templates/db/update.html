@@ -5,13 +5,13 @@
 {% load verbose_name %}
 
 {% block header %}
-<h3>
+<h2>
   {% if headline %}
   {{ headline }}
   {% else %}
   Edit {{ view.model|verbose_name|title }} 
   {% endif %}
-</h3>
+</h2>
 {% endblock header %}
 
 {% block content %}

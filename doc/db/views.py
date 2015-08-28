@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError, transaction
+from django.utils.safestring import mark_safe
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import (
     ListView, UpdateView, CreateView, DeleteView,
@@ -180,7 +181,9 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
     delete_button = True  # add a "Delete" button?
 
     def get_headline(self):
-        return "Edit %s" % self.model._meta.verbose_name.title()
+        return mark_safe("Edit %s <small> %s </small>" % (
+            self.model._meta.verbose_name.title(), self.object)
+        )
 
     def get_success_url(self):
         from doc.db.urlhelpers import reverse_detail_url

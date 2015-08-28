@@ -146,8 +146,9 @@ class TrippeeInfoForm(forms.ModelForm):
     class Meta:
         model = IncomingStudent
         fields = (
-            'decline_reason', 'financial_aid', 'notes',
+            'financial_aid', 'notes',
             'med_info', 'show_med_info',
+            'decline_reason',
             'name', 'netid', 'class_year',
             'ethnic_code', 'gender', 'birthday',
             'incoming_status',

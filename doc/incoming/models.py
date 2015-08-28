@@ -85,9 +85,9 @@ class IncomingStudent(DatabaseModel):
 
     med_info = models.TextField(
         blank=True, help_text=(
-            "Additional medical info not provided in the registration, "
-            "or simplified information if some details do not need to be "
-            "provided to leaders and croos."
+            "Use this field for additional medical info not provided in "
+            "the registration, or simplified information if some details "
+            "do not need to be provided to leaders and croos."
         )
     )
     show_med_info = models.BooleanField(
@@ -98,10 +98,13 @@ class IncomingStudent(DatabaseModel):
         )
     )
 
-    # gear requested
-    
     decline_reason = models.CharField(max_length=50, blank=True)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(
+        blank=True, help_text=(
+            "These notes are displayed to the trippee along "
+            "with their trip assignment."
+        )
+    )
 
     # --- information provided by the college ----
     
