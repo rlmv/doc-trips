@@ -67,7 +67,7 @@ IncidentFormLayout = lambda: Layout(
 
 IncidentUpdateFormLayout = lambda: Layout(
     Fieldset(
-        'Update the incident (logged in as {{ user }})',
+        'Add an Update (logged in as {{ user }})',
         Row(
             Div('caller', css_class='col-sm-3'),
             Div('caller_role', css_class='col-sm-3'),

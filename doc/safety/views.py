@@ -1,4 +1,4 @@
-from vanilla import FormView, DetailView, ListView, CreateView, DeleteView
+from vanilla import FormView, DetailView, ListView, CreateView, DeleteView, UpdateView
 from braces.views import SetHeadlineMixin
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -8,6 +8,7 @@ from doc.permissions.views import SafetyLogPermissionRequired
 from doc.db.views import TripsYearMixin
 from doc.safety.models import Incident
 from doc.safety.forms import IncidentForm, IncidentUpdateForm
+from doc.utils.forms import crispify
 
 
 class _IncidentMixin(SafetyLogPermissionRequired, TripsYearMixin):
@@ -88,3 +89,12 @@ class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
         resp = super(DeleteIncident, self).post(request, *args, **kwargs)
         messages.success(request, "Deleted Incident %s" % self.object)
         return resp
+
+
+class UpdateIncident(_IncidentMixin, UpdateView):
+    model = Incident
+    template_name = 'db/update.html'
+    fields = ['status']
+
+    def get_form(self, **kwargs):
+        return crispify(super(UpdateIncident, self).get_form(**kwargs))

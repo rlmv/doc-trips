@@ -1,14 +1,16 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load safety %}
 
 {% block header %}
-<h2> Incident Reports <a href="{% url 'db:safety:create' trips_year=trips_year %}" class="btn btn-danger">New Incident</a></h2>
+<h2> Incident Reports <a href="{% url 'db:safety:create' trips_year=trips_year %}" class="btn btn-danger"> <i class="fa fa-plus"></i>  New Incident </a></h2>
 {% endblock %}
 
 {% block content %}
 <table class="table table-condensed">
   <tr>
     <th> Incident </th>
+    <th> Status </th>
     <th> Trip </th>
     <th> Where </th>
     <th> Injuries? </th>
@@ -16,9 +18,8 @@
   </tr>
   {% for incident in incidents %}
   <tr> 
-    {% with when=incident.when|time %}
     <td> {{ incident|detail_link }} </td>
-    {% endwith %}
+    <td> {{ incident|status_label }} </td>
     <td> {{ incident.trip|detail_link|default:"" }} </td>
     <td> {{ incident.where }} </td>
     <td> {{ incident.injuries|yesno }} </td>

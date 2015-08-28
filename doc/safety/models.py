@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from doc.db.models import DatabaseModel
 from doc.trips.models import Trip
@@ -37,7 +38,15 @@ class _IncidentBase(DatabaseModel):
 class Incident(_IncidentBase):
 
     class Meta:
-        ordering = ['-when']
+        ordering = ['status', '-when']
+
+    OPEN = 'OPEN'
+    RESOLVED = 'RESOLVED'
+    status = models.CharField(
+        max_length=10, default=OPEN, choices=(
+            (OPEN, 'open'),
+            (RESOLVED, 'resolved')
+        ))
 
     trip = models.ForeignKey(
         Trip, blank=True, null=True,
@@ -58,15 +67,16 @@ class Incident(_IncidentBase):
     desc = models.TextField('Describe the incident')
     resp = models.TextField('What was the response to the incident?')
     outcome = models.TextField('What was the outcome of the response?')
-  
+
     follow_up = models.TextField(
         'Is any additional follow-up needed? If so, what?'
     )
 
-    # TODO: closed? resolved?
-    
     def detail_url(self):
         return reverse('db:safety:detail', kwargs=self.obj_kwargs())
+
+    def update_url(self):
+        return reverse('db:safety:update', kwargs=self.obj_kwargs())
 
     def delete_url(self):
         return reverse('db:safety:delete', kwargs=self.obj_kwargs())

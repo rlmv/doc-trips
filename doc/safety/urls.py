@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^new/$', NewIncident.as_view(), name='create'),
     url(DB_REGEX['DETAIL'], IncidentDetail.as_view(), name='detail'),
     url(DB_REGEX['DELETE'], DeleteIncident.as_view(), name='delete'),
+    url(DB_REGEX['UPDATE'], UpdateIncident.as_view(), name='update'),
 ]
