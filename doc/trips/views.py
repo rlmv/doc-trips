@@ -652,6 +652,19 @@ class TrippeeChecklist(_SectionMixin, DatabaseListView):
         return qs.filter(trip_assignment__section=self.get_section())
 
 
+class LeaderChecklist(_SectionMixin, DatabaseListView):
+    """
+    All leaders for a section.
+    """
+    model = GeneralApplication
+    template_name = 'trips/person_checklist.html'
+    header_text = 'Leader'
+
+    def get_queryset(self):
+        qs = super(LeaderChecklist, self).get_queryset()
+        return qs.filter(assigned_trip__section=self.get_section())
+   
+
 class Checklists(DatabaseTemplateView):
     """
     Central list of all checklists"
@@ -666,21 +679,25 @@ class Checklists(DatabaseTemplateView):
         d = OrderedDict([date, []] for date in dates)
 
         for sxn in Section.objects.filter(trips_year=trips_year):
+            kwargs = {
+                'trips_year': trips_year,
+                'section_pk': sxn.pk
+            }
+            d[sxn.leaders_arrive].append((
+                'Section %s Leader Checkin' % sxn.name,
+                reverse('db:checklists:leaders', kwargs=kwargs)))
+
+            d[sxn.trippees_arrive].append((
+                'Section %s Trippee Checkin' % sxn.name,
+                reverse('db:checklists:trippees', kwargs=kwargs)))
+            
             d[sxn.trippees_arrive].append((
                 'Section %s Leader Packets' % sxn.name,
-                reverse('db:packets:section', kwargs={
-                    'trips_year': trips_year,
-                    'section_pk': sxn.pk
-                })
-            ))
+                reverse('db:packets:section', kwargs=kwargs)))
 
             d[sxn.trippees_arrive].append((
                 'Section %s Medical Information' % sxn.name,
-                reverse('db:packets:medical', kwargs={
-                    'trips_year': trips_year,
-                    'section_pk': sxn.pk
-                })
-            ))
+                reverse('db:packets:medical', kwargs=kwargs)))
 
         buses = ScheduledTransport.objects.filter(trips_year=trips_year)
         for date in set(map(lambda x: x.date, buses)):

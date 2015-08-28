@@ -98,4 +98,5 @@ packet_urlpatterns = [
 checklist_urlpatterns = [
     url(r'^$', Checklists.as_view(), name='all'),
     url(r'^trippees/(?P<section_pk>[0-9]+)/$', TrippeeChecklist.as_view(), name='trippees'),
+    url(r'^leaders/(?P<section_pk>[0-9]+)/$', LeaderChecklist.as_view(), name='leaders'),
 ]

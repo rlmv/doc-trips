@@ -191,6 +191,9 @@ class GeneralApplication(DatabaseModel):
                    "Change status to %s or remove Croo assignment")
             raise ValidationError(msg % (self, self.status, self.CROO))
 
+    @property
+    def name(self):
+        return self.applicant.name
 
     # Croo and Leader applications are considered complete if the questionaire
     # document answers have been uploaded.
