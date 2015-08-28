@@ -639,6 +639,19 @@ class MedicalInfoForSection(PacketsForSection):
     template_name = 'trips/medical_packet.html'
 
 
+class TrippeeChecklist(_SectionMixin, DatabaseListView):
+    """
+    Checklist of a trippees for a section.
+    """
+    model = IncomingStudent
+    template_name = 'trips/person_checklist.html'
+    header_text = 'Trippee'
+
+    def get_queryset(self):
+        qs = super(TrippeeChecklist, self).get_queryset()
+        return qs.filter(trip_assignment__section=self.get_section())
+
+
 class Checklists(DatabaseTemplateView):
     """
     Central list of all checklists"
@@ -691,5 +704,5 @@ class Checklists(DatabaseTemplateView):
                         'trips_year': trips_year, 'date': date, 'route_pk': route.pk
                     })
                 ))
-        
+       
         return {'date_dict': d}

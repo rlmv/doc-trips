@@ -1,0 +1,10 @@
+{% extends "db/base.html" %}
+{% load checklists %}
+
+{% block header %}
+<h2> {{ view.header_text }} Checkins <small> Section {{ section.name }} </small> </h2>
+{% endblock %}
+
+{% block content %}
+{% person_checklist object_list %}
+{% endblock %}
