@@ -408,7 +408,8 @@ class AssignTripLeaderView(DatabaseListView):
                 )
             else:
                 app.avg_grade = None
-        return sorted(qs, key=lambda x: x.avg_grade, reverse=True)
+        # return 0 in case someone has no grades
+        return sorted(qs, key=lambda x: x.avg_grade or 0, reverse=True)
 
     def get_assign_url(self, leader, trip):
         """ Return the url used to assign leader to trip """
