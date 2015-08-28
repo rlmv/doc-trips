@@ -1,6 +1,7 @@
 {% extends "db/base.html" %}
 {% load links %}
 {% load maps %}
+{% load checklists %}
 
 {% block header %}
 <h2> {{ route }} <small> {{ section }} </small></h2>
@@ -22,14 +23,14 @@
 {% regroup passengers_to_hanover by get_bus_to_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-{% trippees stop.list %}
+{% person_checklist stop.list %}
 {% endfor %}
 
 <h3> Passengers From Hanover</h3>
 {% regroup passengers_from_hanover by get_bus_from_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-{% trippees stop.list %}
+{% person_checklist stop.list %}
 {% endfor %}
 
 {% endblock content %}
