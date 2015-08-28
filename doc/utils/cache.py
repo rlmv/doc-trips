@@ -26,3 +26,16 @@ def cache_as(name):
             return getattr(obj, name)
         return wrapper
     return decorator
+
+
+def preload(obj, name, value):
+    """
+    Companion to cache_as. Stores a value so that a method
+    cached under the same name returns the preloaded value
+    instead of calling the method.
+
+    Useful for doing batch computations, particularly the
+    transport matrices.
+    """
+    setattr(obj, name, value)
+    

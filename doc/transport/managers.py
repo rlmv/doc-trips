@@ -24,6 +24,10 @@ class RouteManager(models.Manager):
 
 class ScheduledTransportManager(models.Manager):
 
+    def get_queryset(self):
+        qs = super(ScheduledTransportManager, self).get_queryset()
+        return qs.select_related('route')
+
     def internal(self, trips_year):
         from doc.transport.models import Route
         return self.filter(trips_year=trips_year, route__category=Route.INTERNAL)

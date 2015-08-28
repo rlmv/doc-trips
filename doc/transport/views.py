@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from pprint import pprint
 
@@ -23,7 +24,7 @@ from doc.transport.forms import StopOrderFormHelper, StopOrderFormset
 from doc.trips.models import Section, Trip
 from doc.utils.matrix import OrderedMatrix
 from doc.utils.views import PopulateMixin
-from doc.utils.cache import cache_as
+from doc.utils.cache import cache_as, preload
 from doc.incoming.models import IncomingStudent
 
 
@@ -36,14 +37,47 @@ def get_internal_route_matrix(trips_year):
     routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     matrix = OrderedMatrix(routes, dates)
-    scheduled = (
-        ScheduledTransport.objects.internal(trips_year)
-        .select_related('route')
+    scheduled = preload_transported_trips(
+        ScheduledTransport.objects.internal(trips_year).select_related('route__vehicle'), trips_year
     )
     for transport in scheduled:
         matrix[transport.route][transport.date] = transport
 
     return matrix
+
+
+def preload_transported_trips(buses, trips_year):
+    """
+    Given a qs of internal buses, preload all trips are
+    picked up, dropped off, and returned to hanover by 
+    each bus.
+    """
+    trips = Trip.objects.with_counts(
+        trips_year=trips_year
+    ).select_related(
+        'dropoff_route',
+        'pickup_route',
+        'return_route',
+        'template__pickup_stop__route',
+        'template__dropoff_stop__route',
+        'template__return_route',
+    )
+
+    dropoffs = defaultdict(lambda: defaultdict(list))
+    pickups = defaultdict(lambda: defaultdict(list))
+    returns = defaultdict(lambda: defaultdict(list))
+
+    for trip in trips:
+        dropoffs[trip.get_dropoff_route()][trip.dropoff_date].append(trip)
+        pickups[trip.get_pickup_route()][trip.pickup_date].append(trip)
+        returns[trip.get_return_route()][trip.return_date].append(trip)
+        
+    for bus in buses:
+        preload(bus, bus.DROPOFF_CACHE_NAME, dropoffs[bus.route][bus.date])
+        preload(bus, bus.PICKUP_CACHE_NAME, pickups[bus.route][bus.date])
+        preload(bus, bus.RETURN_CACHE_NAME, returns[bus.route][bus.date])
+
+    return buses
 
 
 class Riders:

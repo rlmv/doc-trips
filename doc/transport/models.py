@@ -185,7 +185,11 @@ class ScheduledTransport(DatabaseModel):
     # We could just instantiate a transport object without saving and
     # call the methods on it.
 
-    @cache_as('_dropping_off')
+    DROPOFF_CACHE_NAME = '_dropping_off'
+    PICKUP_CACHE_NAME = '_picking_up'
+    RETURN_CACHE_NAME = '_returning'
+
+    @cache_as(DROPOFF_CACHE_NAME)
     def dropping_off(self):
         """
         All trips which this transport drops off (on the trip's day 2)
@@ -197,7 +201,7 @@ class ScheduledTransport(DatabaseModel):
             .select_related('template__dropoff_stop')
         )
 
-    @cache_as('_picking_up')
+    @cache_as(PICKUP_CACHE_NAME)
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
@@ -209,7 +213,7 @@ class ScheduledTransport(DatabaseModel):
             .select_related('template__pickup_stop')
         )
 
-    @cache_as('_returning')
+    @cache_as(RETURN_CACHE_NAME)
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
@@ -245,16 +249,23 @@ class ScheduledTransport(DatabaseModel):
         DROPOFF_ATTR = 'trips_dropped_off'
         PICKUP_ATTR = 'trips_picked_up'
 
+        # HACK HACK. These dicts let us attach trips which have preloaded
+        # attributes (such as size) to stops. This is basically so that 
+        # the capacity matrix is efficient. Hopefully there is a better
+        # way to do this...
+        _dropping_off_map = {trip: trip for trip in self.dropping_off()}
+        _picking_up_map = {trip: trip for trip in self.picking_up()}
+        
         def set_trip_attr(stop, order):
             for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
                 if not hasattr(stop, attr):
                     setattr(stop, attr, [])
               
             if order.stop_type == StopOrder.DROPOFF:
-                getattr(stop, DROPOFF_ATTR).append(order.trip)
+                getattr(stop, DROPOFF_ATTR).append(_dropping_off_map[order.trip])
 
             if order.stop_type == StopOrder.PICKUP:
-                getattr(stop, PICKUP_ATTR).append(order.trip)
+                getattr(stop, PICKUP_ATTR).append(_picking_up_map[order.trip])
 
             return stop
                 
@@ -342,7 +353,7 @@ class ScheduledTransport(DatabaseModel):
     def over_capacity(self):
         """
         Returns True if the bus will be too full at
-        some point on it's route.
+        some point on its route.
         """
         stops = self.get_stops()
         load = 0

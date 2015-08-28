@@ -17,7 +17,7 @@ from doc.transport import maps
 from doc.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders,
     get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
-    get_actual_rider_matrix, TransportChecklist
+    get_actual_rider_matrix, TransportChecklist, preload_transported_trips
 )
 from doc.trips.models import Section, Trip
 from doc.incoming.models import IncomingStudent
@@ -213,6 +213,33 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
         }
         matrix = get_internal_route_matrix(trips_year)
         self.assertEqual(target, matrix)
+
+    def test_preload_trips(self):
+        trips_year = self.init_trips_year()
+        route = mommy.make(Route, trips_year=trips_year)
+        trip = mommy.make(
+            Trip, trips_year=trips_year, 
+            dropoff_route=route, 
+            pickup_route=route,
+            return_route=route
+        )
+        dropoff_bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year, 
+            date=trip.dropoff_date, route=route
+        )
+        pickup_bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year, 
+            date=trip.pickup_date, route=route
+        )
+        return_bus = mommy.make(
+            ScheduledTransport, trips_year=trips_year,
+            date=trip.return_date, route=route
+        )
+        preload_transported_trips([dropoff_bus, pickup_bus, return_bus], trips_year)
+        with self.assertNumQueries(0):
+            self.assertQsEqual(dropoff_bus.dropping_off(), [trip])
+            self.assertQsEqual(pickup_bus.picking_up(), [trip])
+            self.assertQsEqual(return_bus.returning(), [trip])
 
 
 class RidersMatrixTestCase(TripsYearTestCase):
