@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from doc.db.models import DatabaseModel
 from doc.transport.managers import (
     StopManager, RouteManager, ScheduledTransportManager,
-    ExternalBusManager, ExternalPassengerManager, 
+    ExternalBusManager, ExternalPassengerManager,
     StopOrderManager
 )
 from doc.transport.maps import get_directions
@@ -305,20 +305,22 @@ class ScheduledTransport(DatabaseModel):
         Returns a list of StopOrders for each stop that this bus is
         making (excluding Hanover and the Lodge).
         """
-        
-        # the manual stoporder filtering saves us a query if
-        # stoporder_set is already loaded by prefetch_related
+        def stoporders_by_type(type):
+            """
+            Manual stoporder filtering saves us a query if
+            stoporder_set is already loaded by prefetch_related
+            """
+            return filter(lambda x: x.stop_type == type, self.stoporder_set.all())
+
         opts = (
             (StopOrder.PICKUP, self.picking_up(),
-             lambda x: x.template.pickup_stop,
-             filter(lambda x: x.stop_type == StopOrder.PICKUP, self.stoporder_set.all())),
+             lambda x: x.template.pickup_stop),
             (StopOrder.DROPOFF, self.dropping_off(),
-             lambda x: x.template.dropoff_stop,
-             filter(lambda x: x.stop_type == StopOrder.DROPOFF, self.stoporder_set.all()))
+             lambda x: x.template.dropoff_stop)
         )
 
-        for stop_type, trips, getter, stoporders in opts:
-            ordered_trips = set([x.trip for x in stoporders])
+        for stop_type, trips, stop_getter in opts:
+            ordered_trips = set([x.trip for x in stoporders_by_type(stop_type)])
             unordered_trips = set(trips) - ordered_trips
             surplus_trips = ordered_trips - set(trips)
 
@@ -326,7 +328,7 @@ class ScheduledTransport(DatabaseModel):
                 # we are missing some ordering objects
                 for trip in unordered_trips:
                     StopOrder.objects.create(
-                        order=getter(trip).distance,
+                        order=stop_getter(trip).distance,
                         bus=self, trip=trip,
                         trips_year_id=self.trips_year_id,
                         stop_type=stop_type
@@ -399,8 +401,9 @@ class StopOrder(DatabaseModel):
     """
     Ordering of stops on an internal bus.
 
-    The ordering field is called 'distance' to match the same
-    field on the Stop model.
+    StopOrder objects are created by ScheduledTransport.update_stop_ordering.
+    One such object exists for each stop that the bus makes to dropoff
+    and pickup trips in between Hanover and the Lodge.
 
     This is basically the through model of an M2M relationship.
     """
@@ -504,8 +507,6 @@ class ExternalBus(DatabaseModel):
             setattr(stop, self.DROPOFF_ATTR, [])
             setattr(stop, self.PICKUP_ATTR, psngrs)
 
-        # TODO: sort passengers by last name
-
         hanover = Hanover()
         setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
         setattr(hanover, self.PICKUP_ATTR, [])
@@ -524,8 +525,6 @@ class ExternalBus(DatabaseModel):
         for stop, psngrs in d.items():
             setattr(stop, self.DROPOFF_ATTR, psngrs)
             setattr(stop, self.PICKUP_ATTR, [])
-
-        # TODO: sort passengers by last name
 
         hanover = Hanover()
         setattr(hanover, self.DROPOFF_ATTR, [])
