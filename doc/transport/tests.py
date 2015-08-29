@@ -849,7 +849,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
 
         self.assertTrue(bus.over_capacity())
 
-    def test_order_stops(self):
+    def test_get_stops_with_explicit_stoporders(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
         trip1 = mommy.make(
@@ -868,15 +868,17 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             StopOrder, trips_year=trips_year, 
             bus=bus, trip=trip2, order=35, 
             stop_type=StopOrder.DROPOFF)
-        self.assertEqual(bus.order_stops(), [trip2.template.dropoff_stop, 
-                                             trip1.template.dropoff_stop])
+        self.assertEqual(bus.get_stops(), [Hanover(),
+                                           trip2.template.dropoff_stop, 
+                                           trip1.template.dropoff_stop])
 
-    def test_order_stops_with_missing_ordering(self):
+    def test_get_stops_with_missing_ordering(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
         trip1 = mommy.make(
             Trip, trips_year=trips_year, dropoff_route=bus.route,
-            section__leaders_arrive=bus.date - timedelta(days=2)
+            section__leaders_arrive=bus.date - timedelta(days=2), 
+            template__dropoff_stop__distance=1
         )
         trip2 = mommy.make(
             Trip, trips_year=trips_year, dropoff_route=bus.route,
@@ -885,15 +887,15 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         )
         order = mommy.make(
             StopOrder, trips_year=trips_year, stop_type=StopOrder.DROPOFF,
-            bus=bus, trip=trip1, order=60)
-        self.assertEqual(bus.get_stops()[1:], [trip2.template.dropoff_stop, 
-                                               trip1.template.dropoff_stop])
+            bus=bus, trip=trip1, order=60)  # should override dropoff stop distance
+        target = [Hanover(), trip2.template.dropoff_stop, trip1.template.dropoff_stop]
+        self.assertEqual(bus.get_stops(), target)
 
-    def test_order_stops_deletes_extra_ordering(self):
+    def test_get_stops_deletes_extra_ordering(self):
         trips_year = self.init_trips_year()
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
         order = mommy.make(StopOrder, trips_year=trips_year, bus=bus)
-        self.assertEqual(bus.order_stops(), [])
+        self.assertEqual(bus.get_stops(), [Hanover()])
         self.assertQsEqual(StopOrder.objects.all(), [])
 
 

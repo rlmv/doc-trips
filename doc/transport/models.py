@@ -223,12 +223,6 @@ class ScheduledTransport(DatabaseModel):
             Trip.objects
             .returns(self.route, self.date, self.trips_year_id)
         )
-
-    def all_stops(self):
-        return set(
-            list(map(lambda x: x.template.pickup_stop, self.picking_up())) +
-            list(map(lambda x: x.template.dropoff_stop, self.dropping_off()))
-        )
         
     @cache_as('_get_stops')
     def get_stops(self):
@@ -345,15 +339,9 @@ class ScheduledTransport(DatabaseModel):
                     trip__in=surplus_trips, bus=self,
                     stop_type=stop_type
                 ).delete()
-        
-        # be sure we return a fresh qs, in case stoporders are prefetched
-        return StopOrder.objects.filter(bus=self)
 
-    def order_stops(self):
-        """
-        Query StopOrder objects and order
-        """
-        return [o.stop for o in self.update_stop_ordering()]
+        # return a fresh qs in case stoporders are prefetched
+        return StopOrder.objects.filter(bus=self)
 
     def over_capacity(self):
         """
