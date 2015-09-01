@@ -10,10 +10,11 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-	    
+
+   deploy
+   users
    models
    testing
-   deploy
 
 
 

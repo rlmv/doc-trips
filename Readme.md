@@ -1,26 +1,8 @@
-
 This is the DOC First Year trips website.
-
-
-Deployment
-=========
-* Install git, heroku toolbelt.
-* Trips Directors and Bo have the passwords for the current Heroku and AWS accounts.
-* Heroku:
-* AWS S3 (for file uploads): 
-  1) Create AWS account 
-  2) Create an AWS bucket, e.g. 'doc-trips'. Set the environment variable AWS_STORAGE_BUCKET_NAME to be the bucket name.
-  3) Create a new user in the AWS IAM manager. Give the user the AmazonS3FullAccess permission. Save the user's security credentials, setting the AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables. (Don't use the master user's login credentials!)
-* I *highly recommend* setting up a [Heroku dev/staging instance](https://devcenter.heroku.com/articles/multiple-environments), with a development AWS bucket.
-* Sentry ?
 
 Dependencies
 ===========
 *django-bootstrap3-datetimepicker Need version>2.2.3. need PR #14 which fixes an early jquery dependency:
-
-### User models:
-
-Custom DartmouthUser in doc-trips/users.
 
 ### Database forms
 

@@ -44,5 +44,5 @@ flush:
 	$(MANAGE) sqlflush | $(MANAGE) dbshell
 
 docs:
-	sphinx-build -b html ./sphinx ./sphinx/_build
+	cd sphinx && make html
 
