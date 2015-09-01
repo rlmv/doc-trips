@@ -13,6 +13,7 @@ Contents:
 	    
    models
    testing
+   deploy
 
 
 
