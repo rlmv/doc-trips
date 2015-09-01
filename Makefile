@@ -6,7 +6,7 @@ COVERAGE=$(VENV)/bin/coverage
 MANAGE=$(PYTHON) manage.py
 DB=doc/db.sqlite3
 
-.PHONY: install migrations migrate test coverage clean deploy
+.PHONY: install migrations migrate test coverage clean deploy docs
 
 all:
 	$(MANAGE) runserver
@@ -42,4 +42,7 @@ clean:
 
 flush:
 	$(MANAGE) sqlflush | $(MANAGE) dbshell
+
+docs:
+	sphinx-build -b html ./sphinx ./sphinx/_build
 

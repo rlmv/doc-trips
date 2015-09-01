@@ -6,7 +6,7 @@ config.sh
 venv/
 
 temp
-docs
+sphinx/_build
 
 # static file directory
 staticfiles
