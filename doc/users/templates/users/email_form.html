@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Update Email Address <small> {{ user }} </small> </h2>
+{% endblock %}
+
+{% block content %}
+
+{% if not object.email %}
+<p> We couldn't find your email address in the Dartmouth Directory Manger. Please update it here. </p>
+{% endif %}
+
+{% crispy form %}
+{% endblock %}

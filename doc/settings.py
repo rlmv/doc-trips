@@ -88,6 +88,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'doc.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
+    'doc.users.middleware.UserEmailRequiredMiddleware',  # fix email lookup failures
 )
 
 AUTH_USER_MODEL = 'users.DartmouthUser'

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 
-from doc.dartdm.lookup import lookup_email
+from doc.dartdm.lookup import lookup_email, EmailLookupException
 
 logger = logging.getLogger(__name__)
 
@@ -15,20 +15,21 @@ SENTINEL_PK = 1
 
 
 class DartmouthUserManager(BaseUserManager):
-
+    """
+    Object manager for DartmouthUser
+    """
     def get_or_create_by_netid(self, netid, name, did=None):
         """ 
-        Return the user with netid. 
+        Return the user with netid.
 
-        Create the user if necesarry. Does not search via name, since 
-        names from different sources (CAS, DartDm lookup) can be slightly 
+        Create the user if necessary. Does not search via name, since
+        names from different sources (CAS, DartDm lookup) can be slightly
         different.
 
         Because we added the did field, some users do not have it set. 
         Also, users added via the permissions/access page don't have a
         did set. Check and fix it if possible. 
         """
-
         try:
             user = self.get(netid=netid)
             if user.did == '' and did is not None:
@@ -43,9 +44,16 @@ class DartmouthUserManager(BaseUserManager):
         return (user, created)
 
     def create_user(self, netid, name, email=None, did=None):
-
+        """
+        Create a user. Try and lookup user's email in the
+        Dartmouth Directory manager. If not found email is
+        left empty.
+        """
         if email is None:
-            email = lookup_email(netid)
+            try:
+                email = lookup_email(netid)
+            except EmailLookupException:
+                email = ''
 
         if did is None:
             did = ''
