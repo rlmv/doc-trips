@@ -54,7 +54,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     
     def test_charges_report(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, doc_membership_cost=91)
+        mommy.make(Settings, doc_membership_cost=91, trips_cost=250)
         # incoming student to be charged:
         incoming1 = mommy.make(
             IncomingStudent,
@@ -72,7 +72,15 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trip_assignment__trips_year=trips_year,  # ditto
             financial_aid=0
         )
-        # not charged because no trip assignment:
+        # another with no trip but with doc membership
+        incoming3 = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            financial_aid=0,
+            registration__doc_membership=YES
+        )
+        # not charged because no trip assignment AND no DOC membership
         mommy.make(IncomingStudent, trips_year=trips_year)
 
         url = reverse('db:reports:charges', kwargs={'trips_year': trips_year})
@@ -84,6 +92,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
             'aid award (percentage)': '15',
+            'trip': '250',
             'bus': '37',
             'doc membership': '91',
             'green fund donation': '20',
@@ -92,8 +101,18 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'netid': incoming2.netid,
             'total charge': str(incoming2.compute_cost()),
             'aid award (percentage)': '',
+            'trip': '250',
             'bus': '',
             'doc membership': '',
+            'green fund donation': '',
+        }, {
+            'name': incoming3.name,
+            'netid': incoming3.netid,
+            'total charge': str(incoming3.compute_cost()),
+            'aid award (percentage)': '',
+            'trip': '',
+            'bus': '',
+            'doc membership': '91',
             'green fund donation': '',
         }]
         self.assertEqual(rows, target)

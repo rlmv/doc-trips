@@ -155,14 +155,15 @@ class Charges(GenericReportView):
     
     def get_queryset(self):
         return IncomingStudent.objects.filter(
-            trips_year=self.get_trips_year(), trip_assignment__isnull=False
+            Q(trip_assignment__isnull=False) | Q(registration__doc_membership=YES),
+            trips_year=self.get_trips_year(),
         ).prefetch_related(
             'registration'
         )
 
     header = [
         'name', 'netid', 'total charge', 'aid award (percentage)',
-        'bus', 'doc membership', 'green fund donation'
+        'trip', 'bus', 'doc membership', 'green fund donation'
     ]
     def get_row(self, incoming):
         reg = incoming.get_registration()
@@ -171,6 +172,7 @@ class Charges(GenericReportView):
             incoming.netid,
             incoming.compute_cost(),
             incoming.financial_aid or '',
+            self.trips_cost() if incoming.trip_assignment else '',
             incoming.bus_cost() or '',
             self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''
@@ -179,6 +181,10 @@ class Charges(GenericReportView):
     @cache_as('_membership_cost')
     def membership_cost(self):
         return Settings.objects.get().doc_membership_cost
+
+    @cache_as('_trip_cost')
+    def trips_cost(self):
+        return Settings.objects.get().trips_cost
 
 
 class DocMembers(GenericReportView):

@@ -192,7 +192,10 @@ class IncomingStudent(DatabaseModel):
         any green fund donation.
         """
         costs = Settings.objects.get()
-        base_cost = costs.trips_cost + self.bus_cost()
+        base_cost = self.bus_cost()
+
+        if self.trip_assignment:
+            base_cost += costs.trips_cost
 
         reg = self.get_registration()
         if reg and reg.doc_membership == YES:
