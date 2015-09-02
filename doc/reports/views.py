@@ -13,6 +13,7 @@ from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
 from doc.core.models import Settings
 from doc.utils.choices import YES, S, M, L, XL
+from doc.utils.cache import cache_as
 from doc.trips.models import Trip
 
 # TODO use a ListView here?
@@ -57,7 +58,9 @@ class VolunteerCSV(GenericReportView):
     header = ['name', 'class year', 'netid']
 
     def get_queryset(self):
-        return Application.objects.leader_or_croo_applications(self.kwargs['trips_year'])
+        return Application.objects.leader_or_croo_applications(
+            self.kwargs['trips_year']
+        ).select_related('applicant')
 
     def get_row(self, application):
         user = application.applicant
@@ -118,7 +121,9 @@ class FinancialAidCSV(GenericReportView):
     header = ['name', 'preferred name', 'netid', 'blitz', 'email']
     
     def get_queryset(self):
-        return Registration.objects.want_financial_aid(self.get_trips_year())
+        return Registration.objects.want_financial_aid(
+            self.get_trips_year()
+        ).select_related('user')
 
     def get_row(self, reg):
         user = reg.user
@@ -131,7 +136,11 @@ class ExternalBusCSV(GenericReportView):
     header = ['name', 'preferred_name', 'netid', 'requested stop', 'on route']
     
     def get_queryset(self):
-        return Registration.objects.want_bus(self.get_trips_year())
+        return Registration.objects.want_bus(
+            self.get_trips_year()
+        ).select_related(
+            'user', 'bus_stop', 'bus_stop__route'
+        )
         
     def get_row(self, reg):
         user = reg.user
@@ -147,6 +156,8 @@ class Charges(GenericReportView):
     def get_queryset(self):
         return IncomingStudent.objects.filter(
             trips_year=self.get_trips_year(), trip_assignment__isnull=False
+        ).prefetch_related(
+            'registration'
         )
 
     header = [
@@ -164,7 +175,8 @@ class Charges(GenericReportView):
             self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''
         ]
-        
+
+    @cache_as('_membership_cost')
     def membership_cost(self):
         return Settings.objects.get().doc_membership_cost
 
@@ -233,6 +245,8 @@ class Housing(GenericReportView):
     def get_queryset(self):
         return IncomingStudent.objects.filter(
             trips_year=self.kwargs['trips_year']
+        ).prefetch_related(
+            'registration'
         )
 
     header = ['name', 'netid', 'trip', 'section', 'start date', 'end date',
@@ -262,6 +276,11 @@ class DietaryRestrictions(GenericReportView):
     def get_queryset(self):
         return Registration.objects.filter(
             trips_year=self.kwargs['trips_year']
+        ).select_related(
+            'user'
+        ).prefetch_related(
+            'trippee__trip_assignment',
+            'trippee__trip_assignment__section'
         )
 
     header = [
@@ -331,6 +350,8 @@ class VolunteerDietaryRestrictions(GenericReportView):
             Q(status=Application.LEADER) | Q(status=Application.CROO)
         ).order_by(
             'status'
+        ).select_related(
+            'applicant'
         )
 
     header = [
