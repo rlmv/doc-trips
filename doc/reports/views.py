@@ -164,9 +164,25 @@ class Charges(GenericReportView):
             self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''
         ]
-
+        
     def membership_cost(self):
         return Settings.objects.get().doc_membership_cost
+
+
+class DocMembers(GenericReportView):
+    """
+    CSV file of registrations requesting DOC memberships.
+    """
+    file_prefix = 'DOC-Members'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year'], doc_membership=YES
+        ).select_related('user')
+
+    header = ['name', 'netid']
+    def get_row(self, reg):
+        return [reg.user.name, reg.user.netid]
 
 
 def _tshirt_count(qs):

@@ -1,11 +1,6 @@
 from django.conf.urls import url
 
-from doc.reports.views import (
-    VolunteerCSV, TripLeaderApplicationsCSV, CrooApplicationsCSV,
-    FinancialAidCSV, ExternalBusCSV, Charges, TShirts, Housing,
-    DietaryRestrictions, MedicalInfo, Foodboxes, Feelings,
-    VolunteerDietaryRestrictions
-)
+from doc.reports.views import *
 
 urlpatterns = [
     url(r'^applications/all/$', VolunteerCSV.as_view(), name='all_apps'),
@@ -23,6 +18,7 @@ urlpatterns = [
     url(r'^incoming/housing/$', Housing.as_view(), name="housing"),
     url(r'^registrations/dietary/$', DietaryRestrictions.as_view(), name='dietary'),
     url(r'^registrations/medical/$', MedicalInfo.as_view(), name="medical"),
+    url(r'^registrations/doc-members/$', DocMembers.as_view(), name="doc_members"),
     url(r'^registrations/feelings/$', Feelings.as_view(), name="feelings"),
     url(r'^tshirts/$', TShirts.as_view(), name='tshirts'),
     url(r'^foodboxes/$', Foodboxes.as_view(), name='foodboxes'),

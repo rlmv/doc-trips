@@ -223,6 +223,28 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         }]
         self.assertEqual(rows, target)
 
+    def test_doc_memberships(self):
+        trips_year = self.init_trips_year()
+        reg = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            doc_membership=YES
+        )
+        other_reg = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            doc_membership=NO
+        )
+        url = reverse('db:reports:doc_members', kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+
+        target = [{
+            'name': reg.user.name,
+            'netid': reg.user.netid,
+        }]
+        self.assertEqual(list(save_and_open_csv(resp)), target)
+
+
     def test_volunteer_dietary_restrictions(self):
         trips_year = self.init_trips_year()
 
