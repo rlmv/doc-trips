@@ -279,6 +279,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         target = [{
             'name': reg.user.name,
             'netid': reg.user.netid,
+            'email': reg.user.email
         }]
         self.assertEqual(list(save_and_open_csv(resp)), target)
 

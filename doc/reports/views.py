@@ -198,9 +198,9 @@ class DocMembers(GenericReportView):
             trips_year=self.kwargs['trips_year'], doc_membership=YES
         ).select_related('user')
 
-    header = ['name', 'netid']
+    header = ['name', 'netid', 'email']
     def get_row(self, reg):
-        return [reg.user.name, reg.user.netid]
+        return [reg.user.name, reg.user.netid, reg.user.email]
 
 
 def _tshirt_count(qs):
