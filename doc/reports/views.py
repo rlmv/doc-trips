@@ -155,7 +155,7 @@ class Charges(GenericReportView):
     
     def get_queryset(self):
         return IncomingStudent.objects.filter(
-            Q(trip_assignment__isnull=False) | Q(registration__doc_membership=YES),
+            (Q(trip_assignment__isnull=False) | Q(registration__doc_membership=YES) | Q(registration__green_fund_donation__gt=0)),
             trips_year=self.get_trips_year(),
         ).prefetch_related(
             'registration'

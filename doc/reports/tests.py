@@ -80,6 +80,16 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             financial_aid=0,
             registration__doc_membership=YES
         )
+        # another with no trip, no membership, but green fund donation
+        incoming4 = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            financial_aid=0,
+            registration__doc_membership=NO,
+            registration__green_fund_donation=12
+        )
+
         # not charged because no trip assignment AND no DOC membership
         mommy.make(IncomingStudent, trips_year=trips_year)
 
@@ -108,12 +118,21 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         }, {
             'name': incoming3.name,
             'netid': incoming3.netid,
-            'total charge': str(incoming3.compute_cost()),
+            'total charge': '91.0',
             'aid award (percentage)': '',
             'trip': '',
             'bus': '',
             'doc membership': '91',
             'green fund donation': '',
+        }, {
+            'name': incoming4.name,
+            'netid': incoming4.netid,
+            'total charge': '12.0',
+            'aid award (percentage)': '',
+            'trip': '',
+            'bus': '',
+            'doc membership': '',
+            'green fund donation': '12',
         }]
         self.assertEqual(rows, target)
 
