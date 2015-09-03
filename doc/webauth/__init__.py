@@ -1,4 +1,8 @@
-"""Django CAS 1.0/2.0 authentication backend"""
+"""
+Django CAS 1.0/2.0 authentication backend, adapted from 
+https://github.com/kstateome/django-cas to work with
+Dartmouth WebAuth.
+"""
 
 from django.conf import settings
 from six import iteritems

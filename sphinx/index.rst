@@ -12,7 +12,7 @@ Contents:
    :maxdepth: 2
 
    deploy
-   users
+   auth/index
    models
    testing
 

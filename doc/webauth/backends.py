@@ -3,10 +3,9 @@ from xml.etree import ElementTree
 
 import requests
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 
-UserModel = get_user_model()
+from doc.users.models import DartmouthUser
 
 
 def parse_cas_success(tree):
@@ -22,7 +21,8 @@ def parse_cas_success(tree):
     name = findtext('name')
     netid = findtext('netid')
     did = findtext('did')
-    user, created = UserModel.objects.get_or_create_by_netid(netid, name, did=did)
+    # CAS response does not contain email
+    user, created = DartmouthUser.objects.get_or_create_by_netid(netid, name, did=did)
 
     return user
 
@@ -65,6 +65,6 @@ class WebAuthBackend(ModelBackend):
         Retrieve the user's entry in the User model if it exists 
         """
         try:
-            return UserModel.objects.get(pk=user_id)
-        except UserModel.DoesNotExist:
+            return DartmouthUser.objects.get(pk=user_id)
+        except DartmouthUser.DoesNotExist:
             return None
