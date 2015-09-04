@@ -27,24 +27,21 @@ FORM_INVALID_MESSAGE = "Uh oh! Looks like there's an error in the form"
 
 
 class TripsYearMixin():
-    """ 
-    Mixin for trips_year.
+    """
+    Mixin for ``trips_year``.
 
-    Filters objects by the trips_year named group in the url.
+    Filters objects by the ``trips_year`` named group in the url.
 
     Plugs into ModelViews. The url is a database url of the form
     /something/{{trips_year}}/something. The ListView will only display
     objects for the specified trips_year.
     """
-
     def dispatch(self, request, *args, **kwargs):
         """
         Make sure the request is for a valid trips year.
-        
-        Requesting trips_years that don't exist in the db will
+
+        Requesting a ``trips_year`` that don't exist in the db will
         cause problems. Block 'em here.
-        
-        TODO: test cases.
         """
         trips_year = self.get_trips_year()
         if not TripsYear.objects.filter(year=trips_year).exists():
@@ -52,12 +49,15 @@ class TripsYearMixin():
             raise Http404(msg % trips_year)
 
         return super(TripsYearMixin, self).dispatch(request, *args, **kwargs)
-
+       
     def get_trips_year(self):
+        """
+        Pull trips_year out of url kwargs.
+        """
         return self.kwargs['trips_year']
 
     def get_queryset(self):
-        """ 
+        """
         Filter objects for the trips_year of the request.
         """
         qs = super(TripsYearMixin, self).get_queryset()
@@ -68,14 +68,9 @@ class TripsYearMixin():
         Restricts the choices in foreignkey form fields to objects with the
         same trips year.
 
-        Because we can't use an F() object in limit_choices_to.
-
-        formfield_callback is responsible for constructing a FormField
-        from a passed ModelField. Our callback intercepts the usual ForeignKey
-        implementation, and only lists choices which have trips_year equal
-        to the trips_year matched in the url.
+        This would be straightforward if ``F()`` objects were supported 
+        in ``limit_choices_to``, but they're not.
         """
-
         if self.form_class is not None:
             msg = (
                 "Specifying form_class on %s means that ForeignKey "

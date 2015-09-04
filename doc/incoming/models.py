@@ -147,10 +147,10 @@ class IncomingStudent(DatabaseModel):
 
     def get_hometown(self):
         """
-        Hack hack parse the town, state, and nation from address.
+        Parse the town, state, and nation from ``self.address``.
         """
         parts = self.address.split('\n')
-        if len(parts) != 4:  # bad formatting - manually input?
+        if len(parts) != 4:  # unexpected formatting - manually input?
             return self.address
         city_state = ' '.join(parts[2].split(' ')[0:-1])
         return "%s %s" % (city_state, parts[3])

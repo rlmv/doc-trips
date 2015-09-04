@@ -11,7 +11,7 @@ class UserEmailRequiredMiddleware(object):
     have them to enter it manually.
 
     A user will have a blank email if
-    :meth:`doc.users.models.DartmouthUserManager.create_user`
+    :meth:`~doc.users.models.DartmouthUserManager.create_user`
     fails to lookup the email.
     """
     def process_request(self, request):

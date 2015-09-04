@@ -1,21 +1,20 @@
-.. doc-trips documentation master file, created by
-   sphinx-quickstart on Tue Sep  1 12:30:08 2015.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to doc-trips's documentation!
+DOC Trips Database Documentation
 =====================================
 
+
 Contents:
+=========
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    deploy
+   trips_year
    auth/index
-   models
+   incoming/index
    testing
-
+   todo
 
 
 Indices and tables
