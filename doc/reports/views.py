@@ -155,7 +155,10 @@ class Charges(GenericReportView):
     
     def get_queryset(self):
         return IncomingStudent.objects.filter(
-            (Q(trip_assignment__isnull=False) | Q(registration__doc_membership=YES) | Q(registration__green_fund_donation__gt=0)),
+            (Q(trip_assignment__isnull=False) |
+             Q(cancelled=True) |
+             Q(registration__doc_membership=YES) |
+             Q(registration__green_fund_donation__gt=0)),
             trips_year=self.get_trips_year(),
         ).prefetch_related(
             'registration'
@@ -172,7 +175,7 @@ class Charges(GenericReportView):
             incoming.netid,
             incoming.compute_cost(),
             incoming.financial_aid or '',
-            self.trips_cost() if incoming.trip_assignment else '',
+            self.trips_cost() if incoming.trip_assignment or incoming.cancelled else '',
             incoming.bus_cost() or '',
             self.membership_cost() if reg and reg.doc_membership == YES else '',
             reg.green_fund_donation if reg and reg.green_fund_donation else ''

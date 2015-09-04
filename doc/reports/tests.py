@@ -89,6 +89,15 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             registration__doc_membership=NO,
             registration__green_fund_donation=12
         )
+        # last-minute cancellation
+        incoming5 = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            cancelled=True,
+            financial_aid=0,
+            registration__doc_membership=NO,
+        )
 
         # not charged because no trip assignment AND no DOC membership
         mommy.make(IncomingStudent, trips_year=trips_year)
@@ -133,6 +142,15 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'bus': '',
             'doc membership': '',
             'green fund donation': '12',
+        }, {
+            'name': incoming5.name,
+            'netid': incoming5.netid,
+            'total charge': '250.0',
+            'aid award (percentage)': '',
+            'trip': '250',
+            'bus': '',
+            'doc membership': '',
+            'green fund donation': '',
         }]
         self.assertEqual(rows, target)
 

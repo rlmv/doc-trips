@@ -60,6 +60,12 @@ class IncomingStudent(DatabaseModel):
         Trip, on_delete=models.PROTECT,
         related_name='trippees', null=True, blank=True
     )
+    cancelled = models.BooleanField(
+        'cancelled last-minute?', default=False, help_text=(
+            'this Trippee will still be charged even though '
+            'they are no longer going on a trip'
+        )
+    )
     bus_assignment_round_trip = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_round_trip',
@@ -194,7 +200,8 @@ class IncomingStudent(DatabaseModel):
         costs = Settings.objects.get()
         base_cost = self.bus_cost()
 
-        if self.trip_assignment:
+        # last-minute cancellations are still charged
+        if self.trip_assignment or self.cancelled:
             base_cost += costs.trips_cost
 
         reg = self.get_registration()

@@ -106,6 +106,7 @@ class TripAssignmentForm(forms.ModelForm):
         model = IncomingStudent
         fields = [
             'trip_assignment',
+            'cancelled',
             'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
             'bus_assignment_from_hanover'
@@ -128,10 +129,9 @@ class TripAssignmentForm(forms.ModelForm):
         self.fields['bus_assignment_from_hanover'].queryset = ext_stops
 
         self.helper = FormHelper(self)
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-7'
         self.helper.layout = Layout(
             'trip_assignment',
+            'cancelled',
             'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
             'bus_assignment_from_hanover',
