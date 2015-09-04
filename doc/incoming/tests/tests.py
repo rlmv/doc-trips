@@ -247,6 +247,10 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         )
         self.assertEqual(inc.get_bus_from_hanover(), stop)
 
+    def test_lastname(self):
+        inc = mommy.make(IncomingStudent, name='Rachek Zhao')
+        self.assertEqual(inc.lastname, 'Zhao')
+
     def test_sort_by_lastname(self):
         inc1 = mommy.make(IncomingStudent, name='Rachel Zhao')
         inc2 = mommy.make(IncomingStudent, name='Lara P. Balick')

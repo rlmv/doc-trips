@@ -1,6 +1,6 @@
 import logging
 
-from django.db import models, transaction
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from doc.transport.models import Stop, ExternalBus
+from doc.transport.models import Stop
 from doc.trips.models import Trip, Section, TripType
 from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
 from doc.db.models import DatabaseModel
@@ -29,25 +29,19 @@ def YesNoField(*args, **kwargs):
 def sort_by_lastname(students):
     """
     Sort an iterable of IncomingStudents by last name.
-
-    We have to do some parsing since 'name' is one field.
     """
-    return sorted(students, key=lambda x: x.name.split()[-1])
+    return sorted(students, key=lambda x: x.lastname)
 
 
 class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
-    
-    All important logistical information is stored on this model 
+
+    All logistical information is stored on this model 
     since it is possible for a student to go on a trip without 
     submitting a registration, but a student won't go on a trip
     unless we have received information from the college about her.
-
-    Registrations and IncomingStudents are connected by post_save
-    signals on each model.
     """
-
     objects = IncomingStudentManager()
 
     class Meta:
@@ -134,15 +128,22 @@ class IncomingStudent(DatabaseModel):
     blitz = models.EmailField(max_length=254)
     phone = models.CharField(max_length=30)
     address = models.TextField()
- 
+    
     def get_registration(self):
-        """ 
+        """
         Return this student's registration, or None if DNE 
         """
         try:
             return self.registration
         except ObjectDoesNotExist:
             return None
+
+    @property
+    def lastname(self):
+        """
+        Parse last name from ``self.name``
+        """
+        return self.name.split()[-1]
 
     def get_hometown(self):
         """
