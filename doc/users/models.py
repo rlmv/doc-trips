@@ -1,13 +1,7 @@
-import logging
-
 from django.db import models
-from django.conf import settings
-from django.db.models.signals import post_save
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 
 from doc.dartdm.lookup import lookup_email, EmailLookupException
-
-logger = logging.getLogger(__name__)
 
 SENTINEL_NETID = 'SENTINEL'
 SENTINEL_NAME = 'SENTINEL'
@@ -19,7 +13,7 @@ class DartmouthUserManager(BaseUserManager):
     Object manager for DartmouthUser
     """
     def get_or_create_by_netid(self, netid, name, did=None):
-        """ 
+        """
         Return the user with netid.
 
         Create the user if necessary. Does not search via name, since
@@ -35,7 +29,6 @@ class DartmouthUserManager(BaseUserManager):
             if user.did == '' and did is not None:
                 user.did = did
                 user.save()
-                logger.info("Adding DID %s to existing user %s" % (did, user))
             created = False
         except self.model.DoesNotExist:
             user = self.create_user(netid, name=name, did=did)
@@ -57,11 +50,8 @@ class DartmouthUserManager(BaseUserManager):
 
         if did is None:
             did = ''
-        
-        logger.info("Creating user %r, %r, %r, %r" % (name, email, netid, did))
-        user = self.create(netid=netid, did=did, email=email, name=name)
 
-        return user
+        return self.create(netid=netid, did=did, email=email, name=name)
        
     def create_superuser(self, **kwargs):
         raise Exception("create_superuser not implemented. "

@@ -1,5 +1,3 @@
-import logging
-
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -15,8 +13,6 @@ from doc.db.models import DatabaseModel
 from doc.incoming.managers import IncomingStudentManager, RegistrationManager
 from doc.users.models import NetIdField
 from doc.core.models import Settings
-
-logger = logging.getLogger(__name__)
 
 
 def YesNoField(*args, **kwargs):
@@ -601,9 +597,9 @@ class Registration(DatabaseModel):
         return self.name
 
     def match(self):
-        """ 
+        """
         Try to match this registration with incoming student data.
-        
+       
         Returns the matched IncomingStudent, or None.
         """
         try:
@@ -615,9 +611,8 @@ class Registration(DatabaseModel):
             trippee.save()
             return trippee
         except IncomingStudent.DoesNotExist:
-            msg = "student data not found for registration %s"
-            logger.info(msg % self)
-        
+            pass
+
 
 @receiver(post_save, sender=Registration)
 def connect_registration_to_trippee(instance=None, **kwargs):
