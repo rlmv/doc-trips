@@ -30,7 +30,7 @@ and run `source venv/bin/activate && source config.sh` when I start work.)
 
 ## Documentation
 
-To build the documentation, run `make docs`.
+The latest version of the docs are hosted at <http://doc-trips.rtfd.org>. Run `make docs` to build a local copy.
 
 
 

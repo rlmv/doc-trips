@@ -12,6 +12,7 @@ Contents:
    deploy
    trips_year
    auth/index
+   volunteers/index
    incoming/index
    testing
    todo
