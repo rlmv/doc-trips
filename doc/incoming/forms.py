@@ -1,15 +1,15 @@
 
-from django import forms
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Row, Submit, Div
+from crispy_forms.layout import Layout, Submit
+from django import forms
 
-from doc.db.models import TripsYear
-from doc.incoming.models import Registration, IncomingStudent
-from doc.incoming.layouts import RegistrationFormLayout, join_with_and
-from doc.trips.models import Section, TripType, Trip
-from doc.trips.fields import TrippeeSectionChoiceField, TripChoiceField
-from doc.transport.models import Stop, ExternalBus
+from .models import Registration, IncomingStudent
+from .layouts import RegistrationFormLayout, join_with_and
 from doc.core.models import Settings
+from doc.db.models import TripsYear
+from doc.transport.models import Stop
+from doc.trips.fields import TrippeeSectionChoiceField, TripChoiceField
+from doc.trips.models import Section, TripType, Trip
 
 
 class RoundTripStopChoiceField(forms.ModelChoiceField):
@@ -30,7 +30,7 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
 
 class RegistrationForm(forms.ModelForm):
     """
-    Form for incoming student trippee registration 
+    Form for Trippee registration
     """
     class Meta:
         model = Registration
@@ -98,9 +98,9 @@ class RegistrationForm(forms.ModelForm):
         self.helper.layout = RegistrationFormLayout(**kwargs)
 
 
-class TripAssignmentForm(forms.ModelForm):
+class AssignmentForm(forms.ModelForm):
     """
-    Form for assigning a trippee to a trip
+    Form to assign an IncomingStudent to a trip and bus
     """
     class Meta:
         model = IncomingStudent
@@ -113,7 +113,7 @@ class TripAssignmentForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(TripAssignmentForm, self).__init__(*args, **kwargs)
+        super(AssignmentForm, self).__init__(*args, **kwargs)
         trips_year = kwargs['instance'].trips_year
         self.fields['trip_assignment'] = TripChoiceField(
             required=False,
@@ -162,7 +162,7 @@ class TrippeeInfoForm(forms.ModelForm):
 
 class UploadIncomingStudentsForm(forms.Form):
     """
-    Form used to upload data about incoming students
+    Form to upload data about incoming students
     """
     csv_file = forms.FileField(label='CSV file')
 

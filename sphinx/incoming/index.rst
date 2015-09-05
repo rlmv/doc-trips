@@ -9,6 +9,7 @@ Each trippee is represented by two models: :class:`~doc.incoming.models.Incoming
 
 .. toctree::
    models
+   views
 
 
 

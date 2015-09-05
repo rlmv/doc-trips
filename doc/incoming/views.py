@@ -3,7 +3,7 @@ import logging
 
 from django import forms
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -14,26 +14,24 @@ from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, 
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 from django_tables2 import RequestConfig
 
-from doc.incoming.models import Registration, IncomingStudent
-from doc.incoming.tables import RegistrationTable
-from doc.incoming.forms import (
-    RegistrationForm, UploadIncomingStudentsForm, TripAssignmentForm,
-    TrippeeInfoForm
-)
+from .models import Registration, IncomingStudent
+from .tables import RegistrationTable
+from .forms import (RegistrationForm, UploadIncomingStudentsForm,
+                    AssignmentForm, TrippeeInfoForm)
 from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import (
     TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
     DatabaseCreateView, DatabaseDetailView
 )
-from doc.timetable.models import Timetable
 from doc.permissions.views import (DatabaseReadPermissionRequired,
                                    DatabaseEditPermissionRequired)
+from doc.timetable.models import Timetable
 from doc.trips.models import TripType
-from doc.utils.forms import crispify
 from doc.users.models import DartmouthUser
+from doc.utils.forms import crispify
 
-""" 
+"""
 Views for incoming students.
 
 The first set of views are public facing and allow incoming 
@@ -59,12 +57,15 @@ class IfRegistrationAvailable():
 
 
 class RegistrationNotAvailable(TemplateView):
+    """
+    View shown if registration is not available.
+    """
     template_name = 'incoming/not_available.html'
 
 
 class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
                            FormMessagesMixin):
-    """ 
+    """
     CBV base for registration form with all contextual information 
     """
     model = Registration
@@ -92,18 +93,17 @@ class Register(BaseRegistrationView, CreateView):
     """
     Register for trips
     
-    Redirects to the edit view if this incoming student
+    Redirect to the edit view if this incoming student
     has already registered.
     """
-
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        """ 
+        """
         Redirect to edit existing application 
         
         This is redundantly decorated with login_required to prevent user
         from being anonymous. Otherwise this gets called first in the MRO
-        order *then* passes to the LoginRequiredMixin, which doesn't work.
+        order *then* passed to the LoginRequiredMixin, which doesn't work.
         """
         reg = Registration.objects.filter(
             trips_year=TripsYear.objects.current(),
@@ -234,6 +234,10 @@ class NonStudentRegistration(DatabaseCreateView):
 
     This view creates a registration linked to the sentinel
     user, and an associated incoming student object.
+
+    .. todo::
+       I don't think this will handle more than one no-student
+       registration per year because ``sentinel.netid`` is not unique.
     """
     model = Registration
     form_class = RegistrationForm
@@ -372,7 +376,7 @@ class UpdateTripAssignment(DatabaseUpdateView):
     """
     model = IncomingStudent
     template_name = 'incoming/update_trip.html'
-    form_class = TripAssignmentForm
+    form_class = AssignmentForm
 
     def get_context_data(self, **kwargs):
         reg = self.object.get_registration()
@@ -386,7 +390,7 @@ class UpdateTripAssignment(DatabaseUpdateView):
 
 class IncomingStudentUpdate(DatabaseUpdateView):
     """
-    Edit an incoming student
+    Edit other incoming student information.
     """
     model = IncomingStudent
     context_object_name = 'trippee'
@@ -400,12 +404,11 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     Accept an upload of CSV file of incoming students.
 
     Parses the CSV file and adds the data to the database as
-    CollegeInfo objects.
+    IncomingStudent objects.
 
-    TODO: parse or input the status of the incoming student
-    (eg first year, transfer, etc.)
+    .. todo:: parse or input the status of the incoming student
+    .. todo:: simplify and document the column names
     """
-
     form_class = UploadIncomingStudentsForm
     template_name = 'incoming/upload_incoming_students.html'
 
@@ -416,14 +419,13 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
         )
         try:
             (ctd, skipped) = IncomingStudent.objects.create_from_csv_file(
-                file, self.kwargs['trips_year']
-            )
+                file, self.kwargs['trips_year'])
 
             if ctd:
                 msg = 'Created incoming students with NetIds %s'
                 logger.info(msg % ctd)
                 messages.info(self.request, msg % ctd)
-        
+       
             if skipped:
                 msg = 'Ignored existing incoming students with NetIds %s'
                 logger.info(msg % skipped)
@@ -437,15 +439,17 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     def get_success_url(self):
         return self.request.path
-        
+       
 
 class MatchRegistrations(DatabaseEditPermissionRequired,
                          TripsYearMixin, FormView):
     """
-    Match all registrations for this trips year.
+    Match all registrations for this ``trips_year``.
 
     Backdoor solution in case auto-matching is not
     working.
+
+    .. todo:: expose this with a link
     """
     template_name = 'db/form.html'
 

@@ -1,18 +1,18 @@
-from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
+from .managers import IncomingStudentManager, RegistrationManager
+from doc.core.models import Settings
+from doc.db.models import DatabaseModel
 from doc.transport.models import Stop
 from doc.trips.models import Trip, Section, TripType
-from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
-from doc.db.models import DatabaseModel
-from doc.incoming.managers import IncomingStudentManager, RegistrationManager
 from doc.users.models import NetIdField
-from doc.core.models import Settings
+from doc.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
 
 
 def YesNoField(*args, **kwargs):

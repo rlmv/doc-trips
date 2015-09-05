@@ -16,8 +16,8 @@ The site is deployed on `Heroku`_ and uses `AWS S3`_ for file storage. Trips Dir
 
 #. I highly recommend setting up a `Heroku dev/staging instance <https://devcenter.heroku.com/articles/multiple-environments>`_ with a separate AWS bucket for testing, especially if you are going to make deep changes to the codebase.
 #. Sentry ?
-   
    #. TODO
+#. Google Maps keys. What permissions do you need to set?
 
 .. note::  Most of the time the database runs fine on two Heroku dynos. During high-load periods (when Leader and Croo applications are due, and possibly when Trippee Registrations are due) the site will crash unless you increase the number of dynos. **Be sure to reset the site back to two dynos afterwards, or Trips will have some hefty server bills!**
 

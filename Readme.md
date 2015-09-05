@@ -1,10 +1,38 @@
 This is the DOC First Year trips website.
 
-Dependencies
-===========
-*django-bootstrap3-datetimepicker Need version>2.2.3. need PR #14 which fixes an early jquery dependency:
+## Installation
 
-### Database forms
+To get a local development version running, [install Python 3.4](https://www.python.org/downloads/) and run `make install`. This sets up a virtual environment and installs all dependencies.
 
-Objects for any trip_year may only relate (via ForeignKey, etc.) to objects of the same trips_year. This means we need to be careful to explicitly provide a form class for all objects which have ForeignKeys to other objects, and the form needs to filter field.queryset to only include trips_year. This has been implemented in the get_form_class method of DatabaseMixin, and should just work. Be carefule when setting explicit form_class-es or overriding get_form_class.
+You must also set up some environment variables:
+
+    DEBUG="True"
+    SECRET_KEY="some secret key"
+
+    AWS_ACCESS_KEY_ID="your key id"
+    AWS_SECRET_ACCESS_KEY="your secret key"
+    AWS_STORAGE_BUCKET_NAME="a bucket name"
+
+    GOOGLE_MAPS_KEY="your google maps key"
+    GOOGLE_MAPS_BROWSER_KEY="your google maps browser key"
+
+You only need the AWS keys if you are going to be messing with Leader and Croo applications. Likewise, Google Maps is only used by the transportation app.
+
+Finally, run `make` and visit `localhost:8000`.
+
+(For convenience I put the environment variables in a local `config.sh` file that looks like
+    
+    export DEBUG="True"
+    ...
+
+and run `source venv/bin/activate && source config.sh` when I start work.)
+
+
+## Documentation
+
+To build the documentation, run `make docs`.
+
+
+
+
 
