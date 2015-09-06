@@ -57,4 +57,3 @@ class DatabaseModel(models.Model):
 
     def obj_kwargs(self):
         return {'trips_year': self.trips_year_id, 'pk': self.pk}
-         

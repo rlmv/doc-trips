@@ -1,19 +1,8 @@
 
-from django.conf.urls import url, include
+from django.conf.urls import url
 
 from doc.db.urlhelpers import DB_REGEX
-from doc.incoming.views import (
-    Register, EditRegistration,
-    RegistrationNotAvailable, IncomingStudentPortal,
-    RegistrationIndex, RegistrationDetail,
-    RegistrationUpdate, RegistrationDelete,
-    IncomingStudentIndex, IncomingStudentDelete,
-    IncomingStudentDetail, IncomingStudentUpdate,
-    UpdateTripAssignment,
-    UploadIncomingStudentData,
-    MatchRegistrations,
-    NonStudentRegistration
-)
+from doc.incoming.views import *
 
 urlpatterns = [
     url(r'^$', IncomingStudentPortal.as_view(), name='portal'),
@@ -54,4 +43,8 @@ registration_urlpatterns = [
         name='registration_delete'),
     url(r'^match/$', MatchRegistrations.as_view(),
         name='registration_match'),
+]
+
+settings_urlpatterns = [
+    url(r'^settings$', EditSettings.as_view(), name='settings'),
 ]

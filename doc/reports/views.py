@@ -11,7 +11,7 @@ from doc.db.views import TripsYearMixin
 from doc.applications.models import GeneralApplication as Application 
 from doc.permissions.views import DatabaseReadPermissionRequired
 from doc.incoming.models import Registration, IncomingStudent
-from doc.core.models import Settings
+from doc.incoming.models import Settings
 from doc.utils.choices import YES, S, M, L, XL
 from doc.utils.cache import cache_as
 from doc.trips.models import Trip

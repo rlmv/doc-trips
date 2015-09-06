@@ -7,7 +7,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .managers import IncomingStudentManager, RegistrationManager
-from doc.core.models import Settings
 from doc.db.models import DatabaseModel
 from doc.transport.models import Stop
 from doc.trips.models import Trip, Section, TripType
@@ -612,6 +611,18 @@ class Registration(DatabaseModel):
             return trippee
         except IncomingStudent.DoesNotExist:
             pass
+
+
+class Settings(DatabaseModel):
+    """
+    Contains global configuration values that appear across the site
+    """
+    trips_cost = models.PositiveSmallIntegerField()
+    doc_membership_cost = models.PositiveSmallIntegerField()
+    contact_url = models.URLField(help_text='url of trips directorate contact info')
+
+    class Meta:
+        unique_together = ['trips_year']
 
 
 @receiver(post_save, sender=Registration)

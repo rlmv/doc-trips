@@ -5,7 +5,7 @@ from django import forms
 
 from .models import Registration, IncomingStudent
 from .layouts import RegistrationFormLayout, join_with_and
-from doc.core.models import Settings
+from doc.incoming.models import Settings
 from doc.db.models import TripsYear
 from doc.transport.models import Stop
 from doc.trips.fields import TrippeeSectionChoiceField, TripChoiceField

@@ -6,8 +6,8 @@ from django.dispatch import receiver
 
 from doc.views import HomePage
 from doc.permissions import initialize_groups_and_permissions
-from doc.core.views import EditSettings
 from doc.users.models import DartmouthUser
+from doc.incoming.urls import settings_urlpatterns
 
 admin.autodiscover()
 
@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^volunteers/', include('doc.applications.urls', namespace='applications')),
     url(r'^croos/', include('doc.croos.urls', namespace='croos')),
     url(r'^incoming/', include('doc.incoming.urls', namespace='incoming')),
-    url(r'^settings/$', EditSettings.as_view(), name='settings'),
+    url(r'^', include(settings_urlpatterns)),
     url(r'^admin/', include(admin.site.urls)),
 ]
 

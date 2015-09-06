@@ -12,7 +12,7 @@ from doc.test.testcases import TripsYearTestCase, WebTestCase
 from doc.incoming.models import Registration, IncomingStudent, sort_by_lastname
 from doc.incoming.forms import RegistrationForm
 from doc.trips.models import Trip, TripType, Section
-from doc.core.models import Settings
+from doc.incoming.models import Settings
 from doc.timetable.models import Timetable
 from doc.transport.models import Stop, Route
 from doc.utils.choices import YES

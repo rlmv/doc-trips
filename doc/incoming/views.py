@@ -14,11 +14,10 @@ from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, 
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 from django_tables2 import RequestConfig
 
-from .models import Registration, IncomingStudent
+from .models import Registration, IncomingStudent, Settings
 from .tables import RegistrationTable
 from .forms import (RegistrationForm, UploadIncomingStudentsForm,
                     AssignmentForm, TrippeeInfoForm)
-from doc.core.models import Settings
 from doc.db.models import TripsYear
 from doc.db.views import (
     TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
@@ -469,3 +468,24 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
 
     def get_success_url(self):
         return reverse('db:registration_match', kwargs=self.kwargs)
+
+
+class EditSettings(DatabaseUpdateView):
+    """
+    Edit Registration settings - cost, contact info
+    """
+    model = Settings
+    template_name = 'form.html'
+    delete_button = False
+
+    def get_headline(self):
+        return "Registration Settings"
+
+    def get_trips_year(self):
+        return TripsYear.objects.current().year
+
+    def get_object(self):
+        return Settings.objects.get(trips_year=self.get_trips_year())
+
+    def get_success_url(self):
+        return reverse('settings')

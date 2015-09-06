@@ -10,9 +10,8 @@ from model_mommy import mommy
 from doc.test.testcases import WebTestCase, TripsTestCase
 from doc.applications.tests import ApplicationTestMixin
 from doc.applications.models import GeneralApplication
-from doc.incoming.models import Registration, IncomingStudent
+from doc.incoming.models import Registration, IncomingStudent, Settings
 from doc.trips.models import Trip
-from doc.core.models import Settings
 from doc.utils.choices import YES, NO, S, M, L, XL
 from doc.reports.views import leader_tshirts, croo_tshirts, trippee_tshirts
 
