@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'test_without_migrations',
 
     'doc.applications',
-    'doc.core',
     'doc.croos',
     'doc.dartdm',
     'doc.db',
