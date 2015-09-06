@@ -83,7 +83,7 @@ class TripsYearMixin():
             
         if hasattr(self, 'model') and self.model is not None:
             return tripsyear_modelform_factory(
-                self.model, self.kwargs['trips_year'], fields=self.fields
+                self.model, self.get_trips_year(), fields=self.fields
             )
         msg = (
             "'%s' must either define 'form_class' or 'model' "

@@ -183,11 +183,15 @@ class Charges(GenericReportView):
 
     @cache_as('_membership_cost')
     def membership_cost(self):
-        return Settings.objects.get().doc_membership_cost
+        return Settings.objects.get(
+            trips_year=self.kwargs['trips_year']
+        ).doc_membership_cost
 
     @cache_as('_trip_cost')
     def trips_cost(self):
-        return Settings.objects.get().trips_cost
+        return Settings.objects.get(
+            trips_year=self.kwargs['trips_year']
+        ).trips_cost
 
 
 class DocMembers(GenericReportView):

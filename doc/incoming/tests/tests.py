@@ -99,7 +99,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_base_cost(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
@@ -109,7 +109,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_financial_aid(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
             trip_assignment=mommy.make(Trip),
@@ -119,7 +119,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_bus(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
             trip_assignment=mommy.make(Trip),
@@ -129,7 +129,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_doc_membership(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
@@ -140,7 +140,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_green_fund_contribution(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year, 
             trip_assignment=mommy.make(Trip),
@@ -152,7 +152,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_no_trip_assignment_but_with_doc_membership(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100, doc_membership_cost=50)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
@@ -163,7 +163,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_compute_cost_with_cancelled_trip(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_cost=100)
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
@@ -561,7 +561,7 @@ class RegistrationViewsTestCase(WebTestCase):
         t.trippee_registrations_open += timedelta(-1)
         t.trippee_registrations_close += timedelta(1)
         t.save()
-        mommy.make(Settings)
+        mommy.make(Settings, trips_year=trips_year)
         user = self.mock_incoming_student()
         student = mommy.make(IncomingStudent, trips_year=trips_year, netid=user.netid)
         reg_data = {
@@ -588,7 +588,7 @@ class RegistrationViewsTestCase(WebTestCase):
 
     def test_non_student_registration(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings)
+        mommy.make(Settings, trips_year=trips_year)
         url = reverse('db:nonstudent_registration', kwargs={'trips_year': trips_year})
         data = {
             'name': 'test',
@@ -624,16 +624,16 @@ class RegistrationFormTestCase(TripsYearTestCase):
     def test_registration_form_without_instance_uses_current_trips_year(self):
         trips_year = self.init_current_trips_year()
         tt = mommy.make(TripType, trips_year=trips_year)
-        mommy.make(Settings)  # must exist
+        mommy.make(Settings, trips_year=trips_year)  # must exist
         reg = mommy.make(Registration, trips_year=trips_year)
         form = RegistrationForm()
         self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])
     
     def test_registration_form_uses_trips_year_from_instance(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         prev_trips_year = self.init_previous_trips_year()
         tt = mommy.make(TripType, trips_year=prev_trips_year)
-        mommy.make(Settings)  # must exist
+        mommy.make(Settings, trips_year=prev_trips_year)  # must exist
         reg = mommy.make(Registration, trips_year=prev_trips_year)
         form = RegistrationForm(instance=reg)
         self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])

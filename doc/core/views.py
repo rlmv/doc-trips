@@ -1,22 +1,24 @@
-from vanilla import UpdateView
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse
 
-from doc.core.models import Settings
-from doc.db.views import CrispyFormMixin
-from doc.permissions.views import DatabaseEditPermissionRequired
-from doc.utils.forms import crispify
+from .models import Settings
+from doc.db.views import DatabaseUpdateView
+from doc.db.models import TripsYear
 
 
-class EditSettings(DatabaseEditPermissionRequired,
-                   CrispyFormMixin, UpdateView):
-    
+class EditSettings(DatabaseUpdateView):
+
     model = Settings
-    template_name = 'core/settings.html'
-    success_url = reverse_lazy('core:settings')
-    
-    def get_object(self):
-        return self.model.objects.get_or_create()[0]
+    template_name = 'form.html'
+    delete_button = False
 
-    def get_form(self, **kwargs):
-        form = super(EditSettings, self).get_form(**kwargs)
-        return crispify(form)
+    def get_headline(self):
+        return "Registration Settings"
+
+    def get_trips_year(self):
+        return TripsYear.objects.current().year
+
+    def get_object(self):
+        return Settings.objects.get(trips_year=self.get_trips_year())
+
+    def get_success_url(self):
+        return reverse('settings')

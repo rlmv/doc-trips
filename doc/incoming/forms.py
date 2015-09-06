@@ -86,7 +86,7 @@ class RegistrationForm(forms.ModelForm):
 
         self.helper = FormHelper(self)
 
-        settings = Settings.objects.get()
+        settings = Settings.objects.get(trips_year=trips_year)
         kwargs = {
             'local_sections': Section.objects.local(trips_year),
             'not_local_sections': Section.objects.not_local(trips_year),

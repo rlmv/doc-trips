@@ -80,12 +80,11 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
 
     def get_context_data(self, **kwargs):
         context = super(BaseRegistrationView, self).get_context_data(**kwargs)
-        context['triptypes'] = TripType.objects.filter(
-            trips_year=TripsYear.objects.current())
+        context['trips_year'] = trips_year = TripsYear.objects.current()
+        context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
         context['registration_deadline'] = (
             Timetable.objects.timetable().trippee_registrations_close)
-        context['trips_year'] = TripsYear.objects.current()
-        context['contact_url'] = Settings.objects.get().contact_url
+        context['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
         return context
 
 
@@ -188,8 +187,8 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
         kwargs['after_deadline'] = (
             timetable.trippee_registrations_close > timezone.now())
         kwargs['assignment_available'] = timetable.trippee_assignment_available
-        kwargs['contact_url'] = Settings.objects.get().contact_url
-        kwargs['trips_year'] = TripsYear.objects.current()
+        kwargs['trips_year'] = trips_year = TripsYear.objects.current()
+        kwargs['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
         return super(IncomingStudentPortal, self).get_context_data(**kwargs)
 
 

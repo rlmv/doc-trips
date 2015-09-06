@@ -194,7 +194,7 @@ class IncomingStudent(DatabaseModel):
         doc membership, adjusted by financial aid, plus 
         any green fund donation.
         """
-        costs = Settings.objects.get()
+        costs = Settings.objects.get(trips_year=self.trips_year)
         base_cost = self.bus_cost()
 
         # last-minute cancellations are still charged

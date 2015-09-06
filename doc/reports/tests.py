@@ -54,7 +54,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
     
     def test_charges_report(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, doc_membership_cost=91, trips_cost=250)
+        mommy.make(Settings, trips_year=trips_year, doc_membership_cost=91, trips_cost=250)
         # incoming student to be charged:
         incoming1 = mommy.make(
             IncomingStudent,

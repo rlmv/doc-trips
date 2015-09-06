@@ -17,6 +17,7 @@ from doc.applications.urls import (
 )
 from doc.incoming.urls import trippee_urlpatterns, registration_urlpatterns
 from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
+from doc.core.views import EditSettings
 
 from doc.trips.views import TrippeeLeaderCounts
 from doc.transport.views import (
@@ -55,6 +56,7 @@ database_urlpatterns = [
     url(r'^packets/', include(packet_urlpatterns, namespace='packets')),
     url(r'^incidents/', include('doc.safety.urls', namespace='safety')),
     url(r'^checklists/', include(checklist_urlpatterns, namespace='checklists')),
+    url(r'^settings$', EditSettings.as_view(), name='settings'),
 ]
 
 urlpatterns = [
