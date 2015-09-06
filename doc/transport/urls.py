@@ -35,6 +35,8 @@ externalbus_urlpatterns = [
     url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/(?P<route_pk>[0-9]+)$',
         ExternalBusPacketForDateAndRoute.as_view(),
         name='external_packet_for_date_and_route'),
+    url(r'^(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
+        ExternalBusChecklist.as_view(), name='external_checklist'),
 ]
 
 transportstop_urlpatterns = [

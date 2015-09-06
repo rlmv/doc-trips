@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from doc.db.urlhelpers import DB_REGEX
 from doc.trips.views import *
@@ -14,6 +14,7 @@ trip_urlpatterns = [
     url(DB_REGEX['DETAIL'], TripDetail.as_view(), name='trip_detail'),
     url(DB_REGEX['UPDATE'], TripUpdate.as_view(), name='trip_update'),
     url(DB_REGEX['DELETE'], TripDelete.as_view(), name='trip_delete'),
+    url(r'^counts/', TrippeeLeaderCounts.as_view(), name='people_counts'),
 ]
 
 template_urlpatterns = [
@@ -69,10 +70,11 @@ section_urlpatterns = [
 ]
 
 leader_urlpatterns = [
-    url(r'^$', LeaderTrippeeIndexView.as_view(), name='leader_index'),
-    url(r'^assign/trippee/(?P<trip_pk>[0-9]+)$', 
+    url(r'^$',
+        LeaderTrippeeIndexView.as_view(), name='leader_index'),
+    url(r'^assign/trippee/(?P<trip_pk>[0-9]+)$',
         AssignTrippee.as_view(), name='assign_trippee'),
-    url(r'^assign/trippee/(?P<trippee_pk>[0-9]+)/update/$', 
+    url(r'^assign/trippee/(?P<trippee_pk>[0-9]+)/update/$',
         AssignTrippeeToTrip.as_view(), name='assign_trippee_to_trip'),
     url(r'^assign/leader/(?P<trip_pk>[0-9]+)$',
         AssignTripLeaderView.as_view(), name='assign_leader'),
@@ -88,7 +90,8 @@ foodbox_urlpatterns = [
 ]
 
 packet_urlpatterns = [
-    url(r'^for/trip/(?P<pk>[0-9]+)/$', LeaderPacket.as_view(), name='trip'),
+    url(r'^for/trip/(?P<pk>[0-9]+)/$',
+        LeaderPacket.as_view(), name='trip'),
     url(r'^for/section/(?P<section_pk>[0-9]+)/$',
         PacketsForSection.as_view(), name='section'),
     url(r'^medical/for/section/(?P<section_pk>[0-9]+)/$',
@@ -97,6 +100,8 @@ packet_urlpatterns = [
 
 checklist_urlpatterns = [
     url(r'^$', Checklists.as_view(), name='all'),
-    url(r'^trippees/(?P<section_pk>[0-9]+)/$', TrippeeChecklist.as_view(), name='trippees'),
-    url(r'^leaders/(?P<section_pk>[0-9]+)/$', LeaderChecklist.as_view(), name='leaders'),
+    url(r'^trippees/(?P<section_pk>[0-9]+)/$',
+        TrippeeChecklist.as_view(), name='trippees'),
+    url(r'^leaders/(?P<section_pk>[0-9]+)/$',
+        LeaderChecklist.as_view(), name='leaders'),
 ]

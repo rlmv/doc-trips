@@ -46,5 +46,5 @@ registration_urlpatterns = [
 ]
 
 settings_urlpatterns = [
-    url(r'^settings$', EditSettings.as_view(), name='settings'),
+    url(r'^$', EditSettings.as_view(), name='settings'),
 ]

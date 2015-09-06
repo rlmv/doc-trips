@@ -1,32 +1,28 @@
-
 from django.conf.urls import url, include
 
+from doc.applications.urls import (
+    application_urlpatterns, grade_urlpatterns
+)
 from doc.croos.urls import croo_urlpatterns
-from doc.trips.urls import (
-    trip_urlpatterns, template_urlpatterns, triptype_urlpatterns,
-    campsite_urlpatterns, section_urlpatterns, leader_urlpatterns,
-    foodbox_urlpatterns, packet_urlpatterns, checklist_urlpatterns
+from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
+from doc.incoming.urls import (
+    trippee_urlpatterns, registration_urlpatterns, settings_urlpatterns
 )
 from doc.transport.urls import (
     scheduledtransport_urlpatterns, transportstop_urlpatterns,
     vehicle_urlpatterns, route_urlpatterns,
     externalbus_urlpatterns
 )
-from doc.applications.urls import (
-    application_urlpatterns, grader_urlpatterns, grade_urlpatterns
-)
-from doc.incoming.urls import (
-    trippee_urlpatterns, registration_urlpatterns, settings_urlpatterns)
-from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
-
-from doc.trips.views import TrippeeLeaderCounts
-from doc.transport.views import (
-    TransportChecklist, ExternalBusChecklist
+from doc.trips.urls import (
+    trip_urlpatterns, template_urlpatterns, triptype_urlpatterns,
+    campsite_urlpatterns, section_urlpatterns, leader_urlpatterns,
+    foodbox_urlpatterns, packet_urlpatterns, checklist_urlpatterns
 )
 
 """
 All database urlpatterns take a trips_year param.
 """
+
 database_urlpatterns = [
     url(r'^$', DatabaseLandingPage.as_view(), name='landing_page'),
     url(r'^trips/', include(trip_urlpatterns)),
@@ -41,7 +37,6 @@ database_urlpatterns = [
     url(r'^vehicles/', include(vehicle_urlpatterns)),
     url(r'^applications/', include(application_urlpatterns)),
     url(r'^grades/', include(grade_urlpatterns)),
-    url(r'^graders/', include(grader_urlpatterns)),
     url(r'^trippees/', include(trippee_urlpatterns)),
     url(r'^registrations/', include(registration_urlpatterns)),
     url(r'^', include(settings_urlpatterns)),
@@ -50,9 +45,6 @@ database_urlpatterns = [
     url(r'^emails/', include('doc.emails.urls', namespace='emails')),
     url(r'^reports/', include('doc.reports.urls', namespace='reports')),
     url(r'^raids/', include('doc.raids.urls', namespace='raids')),
-    url(r'^counts/people/', TrippeeLeaderCounts.as_view(), name='people_counts'),
-    url(r'^checklists/external/(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
-        ExternalBusChecklist.as_view(), name='external_checklist'),
     url(r'^foodbox/', include(foodbox_urlpatterns, namespace='foodbox')),
     url(r'^packets/', include(packet_urlpatterns, namespace='packets')),
     url(r'^incidents/', include('doc.safety.urls', namespace='safety')),
@@ -61,6 +53,6 @@ database_urlpatterns = [
 
 urlpatterns = [
     url(r'^$', RedirectToCurrentDatabase.as_view(), name='db_redirect'),
-    # capture the 'trips_year' parameter which is passed to core views
+    # capture the 'trips_year' parameter
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
 ]

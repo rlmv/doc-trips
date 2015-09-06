@@ -88,13 +88,10 @@ application_urlpatterns = [
         name='update_application_admin'),
 ]
 
-grader_urlpatterns = [
-    url(DB_REGEX['LIST'], GraderList.as_view(), name='graders_index'),
-]
-
 grade_urlpatterns = [
     url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
         name='leaderapplicationgrade_delete'),
     url(r'^croo/(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(),
         name='crooapplicationgrade_delete'),
+    url(r'^graders/$', GraderList.as_view(), name='graders_index'),
 ]

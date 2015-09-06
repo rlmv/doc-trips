@@ -45,7 +45,7 @@
 
 	    {% if perms.permissions.can_create_applications %}
 	    <li><a href="{% url 'applications:setup' %}"><span class="fa fa-fw fa-file-word-o"></span> Volunteer Applications</a></li>
-	    <li><a href="{% url 'settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
+	    <li><a href="{% url 'settings:settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
 	    {% endif %}
 
 	    {% if perms.permissions.can_edit_db %}
