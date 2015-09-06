@@ -566,9 +566,8 @@ class SkippedCrooGrade(AbstractSkippedGrade):
     application = models.ForeignKey(
         CrooSupplement, editable=False, related_name='skips'
     )
+    # marks whether the grader was grading for a particular
+    # qualification when they skipped the application
     for_qualification = models.ForeignKey(
-        QualificationTag, null=True, editable=False, verbose_name=(
-            "was the grader grading for a particular qualification "
-            "when they skipped the application?"
-        )
+        QualificationTag, null=True, editable=False
     )

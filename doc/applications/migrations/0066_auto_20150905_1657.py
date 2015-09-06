@@ -20,9 +20,4 @@ class Migration(migrations.Migration):
             name='kitchen_lead_qualifications',
             field=models.TextField(verbose_name='If you are willing to be a Kitchen Witch/Wizard, please briefly describe your qualifications for the position', help_text='(eg. on Moosilauke Lodge crew spring 2014, experience working in industrial kitchens, experience preparing and organizing food for large groups)'),
         ),
-        migrations.AlterField(
-            model_name='skippedcroograde',
-            name='for_qualification',
-            field=models.ForeignKey(to='applications.QualificationTag', verbose_name='was the grader grading for a particular qualification when they skipped the application?', null=True, editable=False),
-        ),
     ]
