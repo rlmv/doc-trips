@@ -1,4 +1,3 @@
 
-
-from doc.test.testcases import TestCase
+from doc.test.testcases import TripsTestCase, WebTestCase
 

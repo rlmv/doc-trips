@@ -62,9 +62,7 @@ urlpatterns = [
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
 ]
 
-
 # ----- protected database views ----------
-# TODO: fix leaderapplication, leadersupplement mismatch
 
 application_urlpatterns = [
     url(DB_REGEX['LIST'], ApplicationIndex.as_view(),

@@ -17,6 +17,21 @@ class TripsYear(models.Model):
 
     objects = TripsYearManager()
 
+    def make_next_year(self):
+        """
+        Instantiate the next ``trips_year``.
+       
+        Only works if this the current trips year.
+        """
+        assert self.is_current
+       
+        self.is_current = False
+        self.save()
+
+        return TripsYear.objects.create(
+            year=self.year + 1, is_current=True
+        )
+
     def __str__(self):
         return str(self.year)
 
