@@ -6,7 +6,7 @@ COVERAGE=$(VENV)/bin/coverage
 MANAGE=$(PYTHON) manage.py
 DB=doc/db.sqlite3
 
-.PHONY: install migrations migrate test coverage clean deploy docs
+.PHONY: install migrations migrate test coverage clean deploy docs from_remote_db
 
 all:
 	$(MANAGE) runserver
@@ -45,4 +45,7 @@ flush:
 
 docs:
 	cd sphinx && make html
+
+from_remote_db:
+	./scripts/load_remote_db.sh
 
