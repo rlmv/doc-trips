@@ -1,21 +1,23 @@
 import logging
 
+from django import forms
 from django.db import models
 from django.http import Http404, HttpResponseRedirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import IntegrityError, transaction
 from django.utils.safestring import mark_safe
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from vanilla import (
     ListView, UpdateView, CreateView, DeleteView,
-    TemplateView, DetailView, RedirectView)
+    TemplateView, DetailView, FormView, RedirectView)
 from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML, ButtonHolder
 
 from doc.db.models import TripsYear
 from doc.db.forms import tripsyear_modelform_factory
+from doc.db import forward
 from doc.permissions.views import (
     DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
 from doc.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
@@ -283,3 +285,25 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
         trips_year = TripsYear.objects.current()
         return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
 
+
+class MigrateForward(DatabaseEditPermissionRequired, SetHeadlineMixin,
+                     ExtraContextMixin, TripsYearMixin, FormView):
+    """
+    Migrate the database to the next ``trips_year`
+    """
+    template_name = 'db/form.html'
+    success_url = reverse_lazy('db:db_redirect')
+    headline = "Migrate"
+
+    def get_trips_year(self):
+        return TripsYear.objects.current().year
+
+    def get_form(self, **kwargs):
+        form = forms.Form(**kwargs)
+        form.helper = FormHelper()
+        form.helper.add_input(Submit('submit', 'Migrate'))
+        return form
+
+    def form_valid(self, form):
+        forward.forward()
+        return super(MigrateForward, self).form_valid(form)

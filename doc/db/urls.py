@@ -4,7 +4,8 @@ from doc.applications.urls import (
     application_urlpatterns, grade_urlpatterns
 )
 from doc.croos.urls import croo_urlpatterns
-from doc.db.views import DatabaseLandingPage, RedirectToCurrentDatabase
+from doc.db.views import (
+    DatabaseLandingPage, RedirectToCurrentDatabase, MigrateForward)
 from doc.incoming.urls import (
     trippee_urlpatterns, registration_urlpatterns, settings_urlpatterns
 )
@@ -53,6 +54,7 @@ database_urlpatterns = [
 
 urlpatterns = [
     url(r'^$', RedirectToCurrentDatabase.as_view(), name='db_redirect'),
+    url(r'^migrate/$', MigrateForward.as_view(), name='migrate'),
     # capture the 'trips_year' parameter
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),
 ]

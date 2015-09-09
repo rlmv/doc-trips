@@ -1,20 +1,24 @@
 import copy
+import logging
 from django.db import models
 from django.db.transaction import atomic
 
 from .models import TripsYear
-from doc.applications.models import ApplicationInfo, PortalContent
+from doc.applications.models import ApplicationInformation, PortalContent
 from doc.incoming.models import Settings
 from doc.raids.models import RaidInfo
 from doc.transport.models import Vehicle, Route, Stop
 from doc.trips.models import TripTemplate, TripType, Campsite
 
+logger = logging.getLogger(__name__)
+
 """
 Migrate the database to the next ``trips_year``
 """
 
+#: all models which need to be migrated
 MODELS_FORWARD = [
-    ApplicationInfo,
+    ApplicationInformation,
     PortalContent,
     Settings,
     RaidInfo,
@@ -56,7 +60,8 @@ class Forward():
             return self.old_to_new[obj]
         except KeyError:
             pass
-
+            
+        logger.info('Copying %s' % obj)
         new_obj = copy.copy(obj)
 
         # recursively copy foreign keys
@@ -68,8 +73,11 @@ class Forward():
 
             if isinstance(field, models.ForeignKey) and (
                     field.related_field.model != TripsYear):
-                rel = self.copy_object_forward(getattr(obj, name))
-                setattr(new_obj, name, rel)
+                if getattr(obj, name) is not None:
+                    new_rel = self.copy_object_forward(getattr(obj, name))
+                else:
+                    new_rel = None
+                setattr(new_obj, name, new_rel)
 
             if isinstance(field, models.ManyToManyField):
                 raise Exception(

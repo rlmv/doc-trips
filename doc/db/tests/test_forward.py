@@ -4,7 +4,7 @@ from model_mommy import mommy
 from ..forward import forward, Forward
 from ..models import TripsYear
 from doc.test import TripsTestCase
-from doc.transport.models import Route, Vehicle
+from doc.transport.models import Route, Vehicle, Stop
 
 
 class MigrateForwardTestCase(TripsTestCase):
@@ -96,3 +96,12 @@ class MigrateForwardTestCase(TripsTestCase):
 
         self.assertDataEqual(route, new_route)
         self.assertNotEqual(route.vehicle, new_route.vehicle)
+
+    def test_copy_object_with_null_foreign_key(self):
+        trips_year = self.init_trips_year()
+        next_year = trips_year.make_next_year()
+        # testing Stop, with nullable Route
+        stop = mommy.make(Stop, trips_year=trips_year, route=None)
+        f = Forward(trips_year, next_year)
+        new_stop = f.copy_object_forward(stop)
+        self.assertIsNone(new_stop.route)
