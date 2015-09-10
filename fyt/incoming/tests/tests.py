@@ -15,7 +15,7 @@ from fyt.trips.models import Trip, TripType, Section
 from fyt.incoming.models import Settings
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Stop, Route
-from fyt.utils.choices import YES
+from fyt.utils.choices import YES, NO
 from fyt.users.models import DartmouthUser
 
 class IncomingStudentModelTestCase(TripsYearTestCase):
@@ -259,6 +259,11 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         
 
 class RegistrationModelTestCase(TripsYearTestCase):
+
+    def test_must_agree_to_waiver(self):
+        with self.assertRaisesMessage(
+                ValidationError, "You must agree to the waiver"):
+            mommy.make(Registration, waiver=NO).full_clean()
 
     def test_get_trip_assignment_returns_assignment(self):
         trips_year = self.init_current_trips_year()

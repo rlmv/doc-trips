@@ -224,6 +224,11 @@ class IncomingStudent(DatabaseModel):
         return self.name
 
 
+def validate_waiver(value):
+    if value != YES:
+        raise ValidationError("You must agree to the waiver")
+
+
 class Registration(DatabaseModel):
     """ 
     Registration information for an incoming student.
@@ -495,7 +500,8 @@ class Registration(DatabaseModel):
         "I certify that I have read this assumption of risk and the "
         "accompanying registration materials. I approve participation "
         "for the student indicated above and this serves as my digital "
-        "signature of this release, waiver and acknowledgement."
+        "signature of this release, waiver and acknowledgement.",
+        validators=[validate_waiver]
     )
     doc_membership = YesNoField(
         "Would you like to purchase a DOC membership?"
@@ -512,7 +518,7 @@ class Registration(DatabaseModel):
         "&mdash; anything goes! All responses will remain anonymous.",
         blank=True
     )
-   
+  
     def get_trip_assignment(self):
         """
         Return the trip assignment for this registration's trippee.
