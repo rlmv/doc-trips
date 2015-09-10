@@ -5,8 +5,8 @@ config.sh
 # python virtual environment
 venv/
 
+# directory for temp files
 temp
-sphinx/_build
 
 # static file directory
 staticfiles
@@ -20,9 +20,9 @@ db.sqlite3
 .#*
 .cask
 
+# javascript creations
 node_modules
 bower_components
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
