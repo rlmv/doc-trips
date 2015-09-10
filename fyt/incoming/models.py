@@ -95,7 +95,7 @@ class IncomingStudent(DatabaseModel):
 
     decline_reason = models.CharField(max_length=50, blank=True)
     notes = models.TextField(
-        blank=True, help_text=(
+        "notes to trippee", blank=True, help_text=(
             "These notes are displayed to the trippee along "
             "with their trip assignment."
         )
