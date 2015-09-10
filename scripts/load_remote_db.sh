@@ -28,5 +28,7 @@ dump 'transport trips croos' $trips
 dump 'applications incoming safety raids' $people
 
 # make db backup?
-./manage.py syncdata $fixtures
+manage=./manage.py
+$manage sqlflush | $manage dbshell
+$manage syncdata $fixtures
 
