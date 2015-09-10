@@ -92,6 +92,11 @@ class PortalContent(DatabaseModel):
         }[status]
 
 
+def validate_condition_true(value):
+    if value is not True:
+        raise ValidationError('You must agree to this condition')
+
+
 class GeneralApplication(DatabaseModel):
     """
     Contains shared information for Croo and Leader applications.
@@ -267,13 +272,13 @@ class GeneralApplication(DatabaseModel):
         "information for safety purposes. I pledge to maintain the "
         "confidentiality of this information, except as is required by "
         "medical or legal concerns",
-        default=False
+        default=False, validators=[validate_condition_true]
     )
     in_goodstanding_with_college = models.BooleanField(
         "By applying to lead a DOC Trip, I acknowledge that I am in good "
         "standing with the College. This may be verified by DOC Trips "
         "through the Undergraduate Dean’s Office.",
-        default=False
+        default=False, validators=[validate_condition_true]
     )
     trainings = models.BooleanField(
         "I understand that if I am accepted as a Crooling or Trip Leader "
@@ -281,7 +286,7 @@ class GeneralApplication(DatabaseModel):
         "attend croo and leader specific training. I understand that if I "
         "do not meet these requirements, I will not be able to be on a "
         "Croo/lead a trip.",
-        default=False
+        default=False, validators=[validate_condition_true]
     )
     spring_training_ok = models.BooleanField(
         "I can attend trainings during the spring term.", default=False

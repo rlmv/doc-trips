@@ -71,34 +71,40 @@ class ApplicationTestMixin():
 class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
 
     def test_must_be_LEADER_to_be_assigned_trip(self):
-            
         trips_year = self.init_current_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
-                application = mommy.make(GeneralApplication, 
-                                         status=getattr(GeneralApplication, status), 
-                                         trips_year=trips_year)
+                application = mommy.make(
+                        GeneralApplication, 
+                        status=getattr(GeneralApplication, status), 
+                        trips_year=trips_year,
+                        trippee_confidentiality=True,
+                        in_goodstanding_with_college=True,
+                        trainings=True
+                )
                 application.assigned_trip = mommy.make(Trip, trips_year=trips_year)
                 with self.assertRaises(ValidationError):
                         application.full_clean()
                         
         application.status = GeneralApplication.LEADER
         application.full_clean()
-        
 
     def test_must_be_CROO_to_be_assigned_croo(self):
-
         trips_year = self.init_current_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'LEADER', 'REJECTED', 'CANCELED']:
-                application = mommy.make(GeneralApplication, 
-                                         status=getattr(GeneralApplication, status), 
-                                         trips_year=trips_year)
+                application = mommy.make(
+                        GeneralApplication, 
+                        status=getattr(GeneralApplication, status), 
+                        trips_year=trips_year,
+                        trippee_confidentiality=True,
+                        in_goodstanding_with_college=True,
+                        trainings=True
+                )
                 application.assigned_croo = mommy.make(Croo, trips_year=trips_year)
                 with self.assertRaises(ValidationError):
                         application.full_clean()
                         
         application.status = GeneralApplication.CROO
         application.full_clean()
-
 
     def test_get_preferred_trips(self):
             trips_year = self.init_current_trips_year()
@@ -110,7 +116,6 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
             ls.save()
             not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
             self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
-
         
     def test_get_available_trips(self):
         trips_year = self.init_current_trips_year()
@@ -143,30 +148,54 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
             self.assertEqual(application.get_first_aid_cert(), 'WFR')
 
     def test_get_first_aid_cert_other(self):
-            trips_year = self.init_current_trips_year()
-            application = mommy.make(GeneralApplication, trips_year=trips_year,
-                                     fa_cert=GeneralApplication.OTHER, 
-                                     fa_other='ABC')
+            application = mommy.make(
+                GeneralApplication,
+                fa_cert=GeneralApplication.OTHER,
+                fa_other='ABC'
+            )
             self.assertEqual(application.get_first_aid_cert(), 'ABC')
 
     def test_get_first_aid_cert_without_explicit_other(self):
-            trips_year = self.init_current_trips_year()
-            application = mommy.make(GeneralApplication, trips_year=trips_year,
-                                     fa_cert="", fa_other='ABC')
+            application = mommy.make(
+                GeneralApplication, 
+                fa_cert="", 
+                fa_other='ABC'
+            )
             self.assertEqual(application.get_first_aid_cert(), 'ABC')
             
+    def test_must_agree_to_trippee_confidentiality(self):
+            with self.assertRaisesMessage(ValidationError, 'condition'):
+                mommy.make(GeneralApplication,
+                           trippee_confidentiality=False,
+                           in_goodstanding_with_college=True,
+                           trainings=True
+                ).full_clean()
+
+    def test_must_be_in_good_standing(self):
+            with self.assertRaisesRegex(ValidationError, 'condition'):
+                mommy.make(GeneralApplication,
+                           trippee_confidentiality=True,
+                           in_goodstanding_with_college=False,
+                           trainings=True
+                ).full_clean()
+
+    def test_must_agree_to_trainings(self):
+            with self.assertRaisesRegex(ValidationError, 'condition'):
+                mommy.make(GeneralApplication,
+                           trippee_confidentiality=True,
+                           in_goodstanding_with_college=True,
+                           trainings=False
+                ).full_clean()
+
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 
-    def setUp(self):
-            self.init_current_trips_year()
-
     def test_anonymous_user_does_not_crash_application(self):
-            
+        self.init_current_trips_year()
         self.app.get(reverse('applications:apply'))
 
     def test_application_not_visible_if_not_available(self):
-            
+        self.init_current_trips_year()
         self.close_application()
         self.mock_user()
         response = self.app.get(reverse('applications:apply'), user=self.user)
