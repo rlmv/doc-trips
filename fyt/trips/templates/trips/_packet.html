@@ -17,12 +17,14 @@
 
 <p class="h4"> Campsite 1: {{ trip.template.campsite1.name }} </p>
 <p> {{ trip.template.campsite1.secret }} </p>
+<p> {{ trip.template.campsite1.bugout }} </p>
 
 <h3> Day 2 ({{ trip.section.at_campsite2|date:"n/j" }}) </h3>
 <p> {{ trip.template.desc_day2|linebreaks }} </p>
 
 <p class="h4"> Campsite 2: {{ trip.template.campsite2.name }} </p>
 <p> {{ trip.template.campsite2.secret }} </p>
+<p> {{ trip.template.campsite2.bugout }} </p>
 
 <h3> Day 3 ({{ trip.section.arrive_at_lodge|date:"n/j" }}) </h3>
 <p> {{ trip.template.desc_day3|linebreaks }} </p>

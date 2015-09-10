@@ -366,8 +366,8 @@ class Campsite(DatabaseModel):
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField(null=True)
     directions = models.TextField()
-    bugout = models.TextField() # directions for quick help/escape
-    secret = models.TextField() # door codes, hidden things, other secret information
+    bugout = models.TextField(help_text="directions for quick help")
+    secret = models.TextField(help_text="door codes and other secret info")
 
     class Meta:
         ordering = ['name']
