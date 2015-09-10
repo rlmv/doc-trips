@@ -44,7 +44,7 @@ flush:
 	$(MANAGE) sqlflush | $(MANAGE) dbshell
 
 docs:
-	cd sphinx && make html
+	cd docs && make html
 
 from_remote_db:
 	./scripts/load_remote_db.sh
