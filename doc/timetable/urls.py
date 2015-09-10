@@ -1,11 +1,9 @@
+from django.conf.urls import url
+
+from .views import EditTimetable
 
 
-from django.conf.urls import patterns, url
-
-from doc.timetable.views import TimetableEditView
-
-
-urlpatterns = patterns('', 
-    url(r'^$', TimetableEditView.as_view(), name='timetable'),    
-)
-        
+urlpatterns = [
+    url(r'^$', EditTimetable.as_view(), name='timetable'),
+]
+      

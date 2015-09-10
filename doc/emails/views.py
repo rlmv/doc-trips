@@ -165,6 +165,3 @@ class Trippees(BaseEmailList):
                 blitz(trpz)
             ))
         return email_list
-            
-        
-        

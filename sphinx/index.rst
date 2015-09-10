@@ -2,6 +2,8 @@
 DOC Trips Database Documentation
 =====================================
 
+This documentation is a work in progress.
+
 
 Contents:
 =========
@@ -15,6 +17,7 @@ Contents:
    volunteers/index
    incoming/index
    testing
+   timetable
    todo
 
 
