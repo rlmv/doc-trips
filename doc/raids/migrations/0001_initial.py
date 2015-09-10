@@ -3,47 +3,53 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.db.models.deletion
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('trips', '0030_rename_ScheduledTrip_to_Trip'),
-        ('db', '__first__'),
+        ('db', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Comment',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('comment', models.TextField()),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('trips_year', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear', editable=False)),
-                ('user', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'abstract': False,
+                'ordering': ['created'],
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Raid',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', auto_created=True, serialize=False, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date', models.DateField()),
-                ('plan', models.TextField()),
+                ('plan', models.TextField(blank=True, help_text='Do you have a theme? Are you going to intercept the trip on the trail or at their campsite?')),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('campsite', models.ForeignKey(blank=True, to='trips.Campsite', null=True)),
-                ('trip', models.ForeignKey(blank=True, to='trips.Trip', null=True)),
-                ('trips_year', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear', editable=False)),
-                ('user', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL)),
             ],
             options={
-                'abstract': False,
+                'ordering': ['-created'],
             },
             bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='RaidInfo',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('instructions', models.TextField()),
+                ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='raidinfo',
+            unique_together=set([('trips_year',)]),
         ),
     ]
