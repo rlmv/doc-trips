@@ -67,51 +67,40 @@ class Trip(DatabaseModel):
         ordering = ('section__name', 'template__name')
 
     def get_dropoff_route(self):
-        """ 
-        Returns the overriden dropoff, if set 
         """
-        if self.dropoff_route:
-            return self.dropoff_route
-        return self.template.dropoff_stop.route
+        Returns the overriden dropoff, if set
+        """
+        return self.dropoff_route or self.template.dropoff_stop.route
 
     def get_pickup_route(self):
-        """ 
-        Returns the overriden pickup, if set 
         """
-        if self.pickup_route:
-            return self.pickup_route
-        return self.template.pickup_stop.route
+        Returns the overriden pickup, if set
+        """
+        return self.pickup_route or self.template.pickup_stop.route
 
     def get_return_route(self):
-        """ 
-        Returns the overriden return route, if set 
         """
-        if self.return_route:
-            return self.return_route
-        return self.template.return_route
+        Returns the overriden return route, if set
+        """
+        return self.return_route or self.template.return_route
 
     def get_dropoff_time(self):
         """
-        Returns overridden dropoff time.
+        Return overridden dropoff time
         """
-        if self.dropoff_time:
-            return self.dropoff_time
-        return self.template.dropoff_stop.dropoff_time
+        return self.dropoff_time or self.template.dropoff_stop.dropoff_time
 
     def get_pickup_time(self):
         """
         Override pickup time
         """
-        if self.pickup_time:
-            return self.pickup_time
-        return self.template.pickup_stop.pickup_time
+        return self.pickup_time or self.template.pickup_stop.pickup_time
 
     @cache_as('_size')
     def size(self):
         """
         Return the number trippees + leaders on this trip 
 
-        HACK: is it safe to cache like this?
         TODO: use a constant, NUM_TRIPPEES
         """
         if hasattr(self, 'num_trippees') and hasattr(self, 'num_leaders'):

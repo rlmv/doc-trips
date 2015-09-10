@@ -104,9 +104,7 @@ class Stop(DatabaseModel):
         Get the location of the stop. Coordinates are
         probably more accurate so we return them if possible.
         """
-        if self.lat_lng:
-            return self.lat_lng
-        return self.address
+        return self.lat_lng or self.address
 
     def detail_url(self):
         return reverse('db:stop_detail', kwargs=self.obj_kwargs())
