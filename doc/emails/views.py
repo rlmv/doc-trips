@@ -32,25 +32,25 @@ class BaseEmailList(DatabaseReadPermissionRequired, TripsYearMixin,
 
 
 def emails(qs):
-    """ 
+    """
     Return a list of applicant emails from GenApp qs 
     """
     values = qs.values('applicant__email')
-    return list(map(lambda x: x['applicant__email'], values))
+    return [x['applicant__email'] for x in values]
 
 
 def personal_emails(qs):
-    """ 
+    """
     List of trippee emails from IncomingStudent qs
     """
-    return list(map(lambda x: x.email, qs))
+    return [x.email for x in qs]
 
 
 def blitz(qs):
     """
     List of trippee blitzes from IncomingStudent qs
     """
-    return list(map(lambda x: x.blitz, qs))
+    return [x.blitz for x in qs]
 
 
 class Applicants(BaseEmailList):
@@ -77,7 +77,7 @@ class Applicants(BaseEmailList):
             ('rejected applicants', emails(
                 qs.filter(status=GeneralApplication.REJECTED))),
         ]
-   
+ 
         return email_list
 
 
