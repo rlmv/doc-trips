@@ -3,7 +3,8 @@ import logging
 from braces.views import FormMessagesMixin
 from vanilla import RedirectView, TemplateView, FormView
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, ButtonHolder
+from crispy_forms.layout import Submit
+from crispy_forms.bootstrap import FormActions
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
@@ -199,7 +200,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         form = super(GenericGradingView, self).get_form(**kwargs)
         form.helper = FormHelper(form)
         form.helper.layout.append(
-            ButtonHolder(
+            FormActions(
                 Submit('submit', 'Submit Score'),
                 Submit('skip', 'Skip this Application',
                        css_class='btn-warning'),

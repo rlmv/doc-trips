@@ -13,7 +13,8 @@ from vanilla import (
     TemplateView, DetailView, FormView, RedirectView)
 from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, HTML, ButtonHolder
+from crispy_forms.layout import Submit, HTML
+from crispy_forms.bootstrap import FormActions
 
 from fyt.db.models import TripsYear
 from fyt.db.forms import tripsyear_modelform_factory
@@ -200,7 +201,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
                     reverse_delete_url(self.object)
                 )))
 
-        helper.layout.append(ButtonHolder(*buttons))
+        helper.layout.append(FormActions(*buttons))
         return helper
     
 
