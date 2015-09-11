@@ -7,14 +7,14 @@ from django.forms.models import modelformset_factory
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from braces.views import FormValidMessageMixin
+from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from .models import (
     Trip, TripTemplate, TripType, Campsite, Section,
     NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
 )
 from .forms import (
-    TripLeaderAssignmentForm, SectionForm, AssignmentForm,
+    SectionForm, LeaderAssignmentForm,
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from fyt.applications.models import LeaderSupplement, GeneralApplication
@@ -31,6 +31,7 @@ from fyt.permissions.views import (
 from fyt.db.urlhelpers import reverse_detail_url
 from fyt.utils.views import PopulateMixin
 from fyt.utils.cache import cache_as
+from fyt.utils.forms import crispify
 from fyt.transport.models import ExternalBus, ScheduledTransport
 
 
@@ -444,12 +445,14 @@ class AssignTripLeaderView(_TripMixin, DatabaseListView):
         return sorted(qs, key=lambda x: x.avg_grade or 0, reverse=True)
 
     def get_assign_url(self, leader, trip):
-        """ Return the url used to assign leader to trip """
+        """
+        Return the url used to assign leader to trip
+        """
         url = reverse('db:assign_leader_to_trip', kwargs={
             'trips_year': self.kwargs['trips_year'],
             'leader_pk': leader.pk
         })
-        return '%s?assign_to=%s' % (url, trip.pk)
+        return '%s?assigned_trip=%s' % (url, trip.pk)
 
     def get_context_data(self, **kwargs):
         context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
@@ -490,28 +493,22 @@ class AssignTripLeaderView(_TripMixin, DatabaseListView):
         context[self.context_object_name] = list(map(process_leader, self.object_list))
         return context
 
-# should these volunteer specific views go to the applications app?
 
-class AssignLeaderToTrip(ApplicationEditPermissionRequired,
-                         FormValidMessageMixin, TripsYearMixin, UpdateView):
-
+class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
+                         SetHeadlineMixin, FormValidMessageMixin,
+                         TripsYearMixin, UpdateView):
     model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
     template_name = 'db/update.html'
-    form_class = AssignmentForm
-
-    def get(self, request, *args, **kwargs):
-        """ Pull the 'assign_to' trip from GET qs """
-        data = {'assigned_trip': request.GET['assign_to']}
-        form = self.get_form(data=data)
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
 
     def get_form(self, **kwargs):
-        return self.get_form_class()(self.kwargs['trips_year'], **kwargs)
-    
+        form = LeaderAssignmentForm(self.kwargs['trips_year'], **kwargs)
+        label = 'Assign to %s' % (
+            Trip.objects.get(pk=self.request.GET['assigned_trip'])
+        )
+        return crispify(form, label)
+   
     def get_form_valid_message(self):
-        """ Flash success message """
         return '{} assigned to lead {}'.format(
             self.object.applicant, self.object.assigned_trip
         )
@@ -523,34 +520,35 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired,
         )
 
     def get_success_url(self):
-        """ Override DatabaseUpdateView default """
-        return reverse('db:leader_index',
-                       kwargs={'trips_year': self.kwargs['trips_year']})
+        return reverse('db:leader_index', kwargs={
+            'trips_year': self.kwargs['trips_year']
+        })
 
 
 class RemoveAssignedTrip(ApplicationEditPermissionRequired,
                          FormValidMessageMixin, TripsYearMixin, UpdateView):
-    """ Remove a leader's assigned trip """
-
+    """
+    Remove a leader's assigned trip
+    """
     model = GeneralApplication
     lookup_url_kwarg = 'leader_pk'
     template_name = 'trips/remove_leader_assignment.html'
 
     def get_form(self, **kwargs):
-        # save the old assigned trip so we can show it in a message after deletion
+        # save old assignment so we can show it after deletion
         self._assigned_trip = kwargs['instance'].assigned_trip
-        form = TripLeaderAssignmentForm(initial={'assigned_trip': None}, **kwargs)
-        form.helper = FormHelper(form)
-        form.helper.add_input(Submit('submit', 'Remove', css_class="btn-danger"))
-        return form
+        form = LeaderAssignmentForm(
+            self.kwargs['trips_year'], initial={'assigned_trip': None}, **kwargs
+        )
+        return crispify(form, 'Remove', 'btn-danger')
 
     def get_form_valid_message(self):
         return 'Leader {} removed from Trip {}'.format(
             self.object.applicant, self._assigned_trip
         )
-        
+
     def get_success_url(self):
-        return reverse_detail_url(self.object)
+        return self.object.detail_url()
 
 
 class TrippeeLeaderCounts(DatabaseTemplateView):

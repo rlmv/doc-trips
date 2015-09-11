@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 
 from .managers import (CrooApplicationManager, LeaderApplicationManager,
                        GeneralApplicationManager)
@@ -332,6 +333,9 @@ class GeneralApplication(DatabaseModel):
 
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
+
+    def detail_url(self):
+        return reverse('db:generalapplication_detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
         return self.applicant.name

@@ -28,35 +28,8 @@ class SectionForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Submit'))
 
 
-class TripLeaderAssignmentForm(forms.ModelForm):
-    
-    class Meta:
-        model = GeneralApplication
-        fields = ['assigned_trip']
-        widgets = {
-            'assigned_trip': forms.HiddenInput(),
-        }
+class LeaderAssignmentForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(TripLeaderAssignmentForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-
-        params = {'trips_year': kwargs['instance'].trips_year_id,
-                  'leader_pk': kwargs['instance'].pk}
-        self.helper.form_action = reverse('db:assign_leader_to_trip', kwargs=params)
-
-        label = 'Assign to %s' % self.initial['assigned_trip']
-        self.helper.add_input(Submit('submit', label, css_class='btn-xs'))
-
-    def clean(self):
-        """ Change status to leader if trip assignment is successful """
-        if self.cleaned_data.get('assigned_trip'):
-            self.instance.status = GeneralApplication.LEADER
-        return super(TripLeaderAssignmentForm, self).clean()
-
-
-class AssignmentForm(forms.ModelForm):
-    
     class Meta:
         model = GeneralApplication
         fields = ['assigned_trip']
@@ -65,22 +38,18 @@ class AssignmentForm(forms.ModelForm):
         }
 
     def __init__(self, trips_year, *args, **kwargs):
-        super(AssignmentForm, self).__init__(*args, **kwargs)
+        super(LeaderAssignmentForm, self).__init__(*args, **kwargs)
         self.fields['assigned_trip'].queryset = (
             Trip.objects.filter(trips_year=trips_year)
         )
-        self.helper = FormHelper(self)
-        label = 'Assign to %s' % (
-            Trip.objects.get(pk=self.data['assigned_trip'])
-        )
-        self.helper.add_input(Submit('submit', label))
-
 
     def clean(self):
-        """ Change status to leader if trip assignment is successful """
+        """
+        Change status to leader if trip assignment is successful
+        """
         if self.cleaned_data.get('assigned_trip'):
             self.instance.status = GeneralApplication.LEADER
-        return super(AssignmentForm, self).clean()
+        return super(LeaderAssignmentForm, self).clean()
 
 
 class TrippeeAssignmentForm(forms.ModelForm):
