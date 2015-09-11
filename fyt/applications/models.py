@@ -338,7 +338,7 @@ class GeneralApplication(DatabaseModel):
         return reverse('db:generalapplication_detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
-        return self.applicant.name
+        return self.name
 
 
 class LeaderSupplement(DatabaseModel):
