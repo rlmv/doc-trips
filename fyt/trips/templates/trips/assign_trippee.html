@@ -45,8 +45,8 @@
       </a>
       {% endif %}
     </td>
-    <td> {{ trippee.triptype_preference }} </td>
-    <td> {{ trippee.section_preference }} </td>
+    <td> {{ trippee.triptype_pref }} </td>
+    <td> {{ trippee.section_pref }} </td>
     <td> {{ trippee.bus_available|ok_if_true }} </td>
     <td> 
       {{ trippee.registration.bus_stop_round_trip|detail_link|default:"" }} 

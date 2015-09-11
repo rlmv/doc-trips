@@ -17,7 +17,7 @@ install:
 
 deploy: 
 	git push production master
-	heroku run migrate -a doc-trips
+	heroku run migrate
 
 migrations:
 	$(MANAGE) makemigrations

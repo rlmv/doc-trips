@@ -6,7 +6,6 @@ from django.utils.safestring import mark_safe
 from django.forms.models import modelformset_factory
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
-from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from .models import (
@@ -28,11 +27,15 @@ from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
     DatabaseEditPermissionRequired
 )
-from fyt.db.urlhelpers import reverse_detail_url
 from fyt.utils.views import PopulateMixin
 from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
 from fyt.transport.models import ExternalBus, ScheduledTransport
+
+
+FIRST_CHOICE = 'first choice'
+PREFER = 'prefer'
+AVAILABLE = 'available'
 
 
 class _SectionMixin():
@@ -252,27 +255,35 @@ class LeaderTrippeeIndexView(DatabaseListView):
             .prefetch_related('leaders', 'leaders__applicant', 'trippees')
         )
 
-FIRST_CHOICE = 'first choice'
-PREFER = 'prefer'
-AVAILABLE = 'available'
-
 
 class AssignTrippee(_TripMixin, DatabaseListView):
-    """ 
+    """
     Assign trippees to a trip.
 
     The trip's pk is passed in the url arg.
+
+    Each trippee passed to the context has the following properties:
+
+    * ``assignment_url`` - the url to assign trippee to this trip
+    * ``triptype_pref`` - 'first choice', 'prefer', or 'available'
+    * ``section_pref`` - 'prefer' or 'available'
+    * ``bus_available`` - ``True`` if trippee requested a bus and it is
+      scheduled this section, otherwise ``False``
+
+    Because of our database structure, preferences are not easy to
+    compute efficiently. See below...
     """
     model = IncomingStudent
     template_name = 'trips/assign_trippee.html'
     context_object_name = 'available_trippees'
 
     def get_queryset(self):
-        """ 
-        All trippees which prefer, are available, or chose this
+        """
+        All trippees who prefer, are available, or chose this
         trip as their first choice.
-
-        All students in the qs have a registration attached.
+        
+        Only pull in required fields because a whole application
+        queryset is big enough to slow down performance.
         """
         return (
             self.model.objects.available_for_trip(
@@ -304,44 +315,69 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         )
 
     def get_context_data(self, **kwargs):
+        """
+        In order to compute each trippee's triptype or section
+        preference,
+
+        Initially I tried using ``prefetch_related`` to load all
+        ``preferred_triptypes``, ``available_triptypes``, etc.
+        However, this requires the database to load each trip, in the
+        worst case, on *every* tripppee, up to ``O(n)`` times for the 
+        entire, queryset. Multiply this by the total number of trips,
+        and there goes performance.
+
+        Perhaps a SQL guru can figure out a clever way to compute this
+        in-database, but I could not.
+
+        The solution: use the ``through`` objects created by ``M2M`` fields.
+        We iterate through these objects for the sections and triptypes in
+        question and save each trippee's preference in a dict.
+        This technique is ``O(1)`` for queries and ``O(n)`` for in-memory 
+        processing, which is quite acceptable. See http://goo.gl/QbK99D
+        """
         context = super(AssignTrippee, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
-
-        # TODO: refactor this...
-        triptype = trip.template.triptype
-        triptype_preference = {}
-        for pair in Registration.available_triptypes.through.objects.filter(triptype=triptype):
-            triptype_preference[pair.registration_id] = AVAILABLE
-        for pair in Registration.preferred_triptypes.through.objects.filter(triptype=triptype):
-            triptype_preference[pair.registration_id] = PREFER
-        for registration in Registration.objects.filter(trips_year=self.get_trips_year()):
-            if registration.firstchoice_triptype_id == triptype.id:
-                triptype_preference[registration.id] = FIRST_CHOICE
-
-        # TODO: refactor this...
         section = trip.section
-        section_preference = {}
-        for pair in Registration.available_sections.through.objects.filter(section=section):
-            section_preference[pair.registration_id] = AVAILABLE
-        for pair in Registration.preferred_sections.through.objects.filter(section=section):
-            section_preference[pair.registration_id] = PREFER
-        
+        triptype = trip.template.triptype
+        trips_year = self.kwargs['trips_year']
+
+        triptype_pref = {}
+        for pair in (Registration.available_triptypes
+                     .through.objects.filter(triptype=triptype)):
+            triptype_pref[pair.registration_id] = AVAILABLE
+
+        for pair in (Registration.preferred_triptypes
+                     .through.objects.filter(triptype=triptype)):
+            triptype_pref[pair.registration_id] = PREFER
+
+        for registration in Registration.objects.filter(trips_year=trips_year):
+            if registration.firstchoice_triptype_id == triptype.id:
+                triptype_pref[registration.id] = FIRST_CHOICE
+
+        section_pref = {}
+
+        for pair in (Registration.available_sections
+                     .through.objects.filter(section=section)):
+            section_pref[pair.registration_id] = AVAILABLE
+
+        for pair in (Registration.preferred_sections
+                     .through.objects.filter(section=section)):
+            section_pref[pair.registration_id] = PREFER
+
         # all external buses for this section
-        buses = ExternalBus.objects.filter(
-            trips_year=self.get_trips_year(), section=section
-        )
+        buses = ExternalBus.objects.filter(trips_year=trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
         
         for trippee in self.object_list:
             reg = trippee.registration
             url = reverse('db:assign_trippee_to_trip', kwargs={
-                'trips_year': self.get_trips_year(),
+                'trips_year': trips_year,
                 'trippee_pk': trippee.pk
             })
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
-            trippee.triptype_preference = triptype_preference[reg.id]
-            trippee.section_preference = section_preference[reg.id]
+            trippee.triptype_pref = triptype_pref[reg.id]
+            trippee.section_pref = section_pref[reg.id]
 
             bus_requests = (
                 reg.bus_stop_round_trip,
@@ -349,7 +385,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
                 reg.bus_stop_from_hanover
             )
             if not any(bus_requests):  # don't want a bus
-                trippee.bus_available = False  
+                trippee.bus_available = False
             else:
                 trippee.bus_available = all([
                     bus.route_id in route_ids for bus in bus_requests if bus
@@ -365,7 +401,9 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
     form_class = TrippeeAssignmentForm
 
     def get(self, request, *args, **kwargs):
-        """ Pull the 'assign_to' trip from GET qs """
+        """
+        Pull the 'assign_to' trip from GET qs 
+        """
         data = {'trip_assignment': request.GET['assign_to']}
         form = self.get_form(data=data)
         context = self.get_context_data(form=form)
@@ -390,18 +428,18 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
                        kwargs={'trips_year': self.get_trips_year()})
 
 
-class AssignTripLeaderView(_TripMixin, DatabaseListView):
+class AssignLeader(_TripMixin, DatabaseListView):
     """ 
-    Assign a leader to a Trip.
+    Assign a leader to a trip.
 
-    Takes the trip's pk as a url arg.
-    The template is passed a list of tuples in context_object_name:
-    (LeaderApplication, assign_link, triptype_preference, section_pref)
-    - assign_link will be None if the leader is already assigned to a trip.
-    - triptype_preference is a string describing whether the leader prefers or
-    is available for the trip type
-    - section preference is a string describing whether the leader prefers or 
-    is available for the section.
+    The trip's pk is passed in the url kwargs.
+
+    The template is passed a list of tuples of the form
+    ``(LeaderApplication, assign_url, triptype_pref, section_pref)``
+
+    * ``assign_url`` will be None if the leader is already assigned to a trip.
+    * ``triptype_pref`` - 'prefer' or 'available'
+    * ``section_pref`` - 'prefer' or 'available'
     """
     model = GeneralApplication
     template_name = 'trips/assign_leader.html'
@@ -455,42 +493,49 @@ class AssignTripLeaderView(_TripMixin, DatabaseListView):
         return '%s?assigned_trip=%s' % (url, trip.pk)
 
     def get_context_data(self, **kwargs):
-        context = super(AssignTripLeaderView, self).get_context_data(**kwargs)
+        """
+        Compute whether each leader prefers or is available for this
+        trip's section and triptype. We use the through fields of the
+        ``M2M`` models because ``prefetch_related`` pulls in *all* related
+        objects--and all fields of the related objects--which is a huge
+        query and kills performance.
+
+        See :class:`~fyt.trips.views.AssignTrippee` for a similar situation
+        and more explanation.
+        """
+        context = super(AssignLeader, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
-
-        # Compute whether each leader prefers or is available for this 
-        # trip's section and triptype. We do this because prefetch_related
-        # pulls in *all* related objects--and all fields of the related 
-        # objects--which is a huge query and kills performance.
-        # This technique is O(1) for queries and O(n) for in-memory 
-        # processing, which is quite acceptable.
-        # PREFERing takes precedence; if a leader both prefers and is 
-        # available we just show that she prefers the option.
-        # See http://stackoverflow.com/questions/10273744/django-many-to-many-field-prefetch-primary-keys-only
-
         triptype = trip.template.triptype
-        triptype_preference = {}
-        for pair in LeaderSupplement.available_triptypes.through.objects.filter(triptype=triptype):
-            triptype_preference[pair.leadersupplement_id] = AVAILABLE
-        for pair in LeaderSupplement.preferred_triptypes.through.objects.filter(triptype=triptype):
-            triptype_preference[pair.leadersupplement_id] = PREFER
-
-        section_preference = {}
         section = trip.section
-        for pair in LeaderSupplement.available_sections.through.objects.filter(section=section):
-            section_preference[pair.leadersupplement_id] = AVAILABLE
-        for pair in LeaderSupplement.preferred_sections.through.objects.filter(section=section):
-            section_preference[pair.leadersupplement_id] = PREFER
+
+        triptype_pref = {}
+        for pair in (LeaderSupplement.available_triptypes
+                     .through.objects.filter(triptype=triptype)):
+            triptype_pref[pair.leadersupplement_id] = AVAILABLE
+
+        for pair in (LeaderSupplement.preferred_triptypes
+                     .through.objects.filter(triptype=triptype)):
+            triptype_pref[pair.leadersupplement_id] = PREFER
+
+        section_pref = {}
+        for pair in (LeaderSupplement.available_sections
+                     .through.objects.filter(section=section)):
+            section_pref[pair.leadersupplement_id] = AVAILABLE
+
+        for pair in (LeaderSupplement.preferred_sections
+                     .through.objects.filter(section=section)):
+            section_pref[pair.leadersupplement_id] = PREFER
 
         def process_leader(leader):
-            if leader.assigned_trip:
-                link = None
-            else:
-                link = self.get_assign_url(leader, trip)
-            return (leader, link, triptype_preference[leader.id],
-                    section_preference[leader.id])
+            return (
+                leader,
+                self.get_assign_url(leader, trip),
+                triptype_pref[leader.id],
+                section_pref[leader.id]
+            )
 
-        context[self.context_object_name] = list(map(process_leader, self.object_list))
+        leaders = [process_leader(x) for x in self.object_list]
+        context[self.context_object_name] = leaders
         return context
 
 

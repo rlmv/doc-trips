@@ -32,3 +32,4 @@ Reference
 
 .. toctree::
    models
+   views

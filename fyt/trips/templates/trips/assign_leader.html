@@ -29,17 +29,18 @@
     <th> {{ trip.template.triptype }} </th>
     <th> {{ trip.section }} </th>
   </tr>
-  {% for leader, assign_link, triptype_pref, section_pref in leader_applications %}
+  {% for leader, assign_url, triptype_pref, section_pref in leader_applications %}
   <tr>
     <td> {{ leader|detail_link:leader }} </td>
     <td> {{ leader.avg_grade|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
     <td> 
-      {% if assign_link %}
-      <a class="btn btn-xs btn-primary" href="{{ assign_link }}">Assign to {{ trip }} </a>
-      {% else %} 
-      {{ leader.assigned_trip | detail_link }}
-      {% endif %}</td>
+      {% if leader.assigned_trip %}
+      {{ leader.assigned_trip|detail_link }}
+      {% else %}
+      <a class="btn btn-xs btn-primary" href="{{ assign_url }}"> Assign to {{ trip }} </a>
+      {% endif %}
+    </td>
     <td> <a href="{% url 'db:update_application_status' trips_year=trip.trips_year_id pk=leader.pk %}"> {{ leader.status }} </a></td>
     <td> {{ triptype_pref }} </td>
     <td> {{ section_pref }} </td>

@@ -16,6 +16,7 @@ Contents:
    auth/index
    volunteers/index
    incoming/index
+   trips/index
    testing
    timetable
    todo

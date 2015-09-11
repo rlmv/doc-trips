@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
+from .views import *
 from fyt.db.urlhelpers import DB_REGEX
-from fyt.trips.views import *
 
 """
 OOdles of urls. These patterns all included in the main
@@ -77,7 +77,7 @@ leader_urlpatterns = [
     url(r'^assign/trippee/(?P<trippee_pk>[0-9]+)/update/$',
         AssignTrippeeToTrip.as_view(), name='assign_trippee_to_trip'),
     url(r'^assign/leader/(?P<trip_pk>[0-9]+)$',
-        AssignTripLeaderView.as_view(), name='assign_leader'),
+        AssignLeader.as_view(), name='assign_leader'),
     url(r'^assign/leader/(?P<leader_pk>[0-9]+)/update/$',
         AssignLeaderToTrip.as_view(), name='assign_leader_to_trip'),
     url(r'^remove/leader/(?P<leader_pk>[0-9]+)$',
