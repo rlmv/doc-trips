@@ -1,21 +1,19 @@
 from statistics import mean
 from collections import defaultdict, OrderedDict
 
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.db.models import Avg
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.forms.models import modelformset_factory
-from django.shortcuts import get_object_or_404
-from vanilla import FormView, UpdateView, TemplateView
+from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
 from crispy_forms.helper import FormHelper
-from braces.views import FormValidMessageMixin, SetHeadlineMixin
+from braces.views import FormValidMessageMixin
 
-from fyt.trips.models import (
+from .models import (
     Trip, TripTemplate, TripType, Campsite, Section,
     NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
 )
-from fyt.trips.forms import (
+from .forms import (
     TripLeaderAssignmentForm, SectionForm, AssignmentForm,
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
@@ -27,11 +25,10 @@ from fyt.db.views import (
     TripsYearMixin
 )
 from fyt.permissions.views import (
-    ApplicationEditPermissionRequired, DatabaseReadPermissionRequired,
+    ApplicationEditPermissionRequired,
     DatabaseEditPermissionRequired
 )
 from fyt.db.urlhelpers import reverse_detail_url
-from fyt.utils.forms import crispify
 from fyt.utils.views import PopulateMixin
 from fyt.utils.cache import cache_as
 from fyt.transport.models import ExternalBus, ScheduledTransport
@@ -239,7 +236,7 @@ class SectionDelete(DatabaseDeleteView):
                                
 
 class LeaderTrippeeIndexView(DatabaseListView):
-    """ 
+    """
     Show all Trips with leaders and trippees.
     
     Links to pages to assign leaders and trippees.
@@ -276,24 +273,34 @@ class AssignTrippee(_TripMixin, DatabaseListView):
 
         All students in the qs have a registration attached.
         """
-        return (self.model.objects.available_for_trip(self.get_trip())
-                .select_related(
-                    'trip_assignment__template',
-                    'trip_assignment__section',
-                    'registration__bus_stop')
-                .only(
-                    'name',
-                    'address',
-                    'trips_year',
-                    'trip_assignment__template__name',
-                    'trip_assignment__section__name',
-                    'trip_assignment__trips_year',
-                    'registration__bus_stop__route_id',
-                    'registration__bus_stop__trips_year_id',
-                    'registration__bus_stop__name',
-                    'registration__gender',
-                )
+        return (
+            self.model.objects.available_for_trip(
+                self.get_trip()
+            ).select_related(
+                'trip_assignment__template',
+                'trip_assignment__section',
+                'registration__bus_stop_round_trip',
+                'registration__bus_stop_to_hanover',
+                'registration__bus_stop_from_hanover'
+            ).only(
+                'name',
+                'address',
+                'trips_year',
+                'trip_assignment__template__name',
+                'trip_assignment__section__name',
+                'trip_assignment__trips_year',
+                'registration__bus_stop_round_trip__route_id',
+                'registration__bus_stop_round_trip__trips_year_id',
+                'registration__bus_stop_round_trip__name',
+                'registration__bus_stop_to_hanover__route_id',
+                'registration__bus_stop_to_hanover__trips_year_id',
+                'registration__bus_stop_to_hanover__name',
+                'registration__bus_stop_from_hanover__route_id',
+                'registration__bus_stop_from_hanover__trips_year_id',
+                'registration__bus_stop_from_hanover__name',
+                'registration__gender',
             )
+        )
 
     def get_context_data(self, **kwargs):
         context = super(AssignTrippee, self).get_context_data(**kwargs)
@@ -318,22 +325,34 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         for pair in Registration.preferred_sections.through.objects.filter(section=section):
             section_preference[pair.registration_id] = PREFER
         
-        # compute all external bus routes for this section
+        # all external buses for this section
         buses = ExternalBus.objects.filter(
             trips_year=self.get_trips_year(), section=section
         )
-        route_ids = list(map(lambda bus: bus.route_id, buses))
+        # all ids of routes running on this section
+        route_ids = [bus.route_id for bus in buses]
         
         for trippee in self.object_list:
+            reg = trippee.registration
             url = reverse('db:assign_trippee_to_trip', kwargs={
                 'trips_year': self.get_trips_year(),
                 'trippee_pk': trippee.pk
             })
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
-            trippee.triptype_preference = triptype_preference[trippee.registration.id]
-            trippee.section_preference = section_preference[trippee.registration.id]
-            if trippee.registration.bus_stop:
-                trippee.bus_available = trippee.registration.bus_stop.route_id in route_ids
+            trippee.triptype_preference = triptype_preference[reg.id]
+            trippee.section_preference = section_preference[reg.id]
+
+            bus_requests = (
+                reg.bus_stop_round_trip,
+                reg.bus_stop_to_hanover,
+                reg.bus_stop_from_hanover
+            )
+            if not any(bus_requests):  # don't want a bus
+                trippee.bus_available = False  
+            else:
+                trippee.bus_available = all([
+                    bus.route_id in route_ids for bus in bus_requests if bus
+                ])
         return context
 
 

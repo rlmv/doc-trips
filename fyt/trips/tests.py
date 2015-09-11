@@ -346,7 +346,7 @@ class AssignLeaderTestCase(WebTestCase):
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.available_sections.add(trip.section)
         volunteer.leader_supplement.available_triptypes.add(trip.template.triptype)
-        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to") 
         res.form.submit()  # assign to trip - first (and only) form on page
@@ -360,7 +360,7 @@ class AssignLeaderTestCase(WebTestCase):
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.available_sections.add(trip.section)
         volunteer.leader_supplement.preferred_triptypes.add(trip.template.triptype)
-        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         leader_list = list(res.context['leader_applications'])
         self.assertEqual(len(leader_list), 1)
@@ -380,7 +380,7 @@ class AssignTrippeeTestCase(WebTestCase):
             registration__preferred_sections=[trip.section],
             registration__preferred_triptypes=[trip.template.triptype]
         )
-        url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip': trip.pk})
+        url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to") 
         res.form.submit()  # assign to trip - first (and only) form on page

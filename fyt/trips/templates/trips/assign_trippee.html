@@ -18,7 +18,7 @@
 </ul>
 
 <h4> Prospective Trippees </h4>
-<p> This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. If a trippee requested an external bus, the 'Bus Available' column indicates whether the requested bus is scheduled to run for this section. </p>
+<p> This list shows all trippees who indicated that they first choice, prefer, or are available for {{ trip.template.triptype | detail_link }} and {{ trip.section | detail_link }}. If a trippee requested an external bus, the 'Bus Available' column indicates whether the requested bus is scheduled to run for {{ trip.section|detail_link }}. </p>
 
 <table class="table table-condensed table=striped">
   <tr>
@@ -29,7 +29,7 @@
     <th> {{ trip.template.triptype }} </th>
     <th> {{ trip.section }} </th>
     <th> Bus Available? </th>
-    <th> Stop Requested </th>
+    <th> Bus Requested </th>
   </tr>
   {% for trippee in available_trippees %}
   <tr>
@@ -48,7 +48,11 @@
     <td> {{ trippee.triptype_preference }} </td>
     <td> {{ trippee.section_preference }} </td>
     <td> {{ trippee.bus_available|ok_if_true }} </td>
-    <td> {{ trippee.registration.bus_stop|detail_link|default:"" }} </td>
+    <td> 
+      {{ trippee.registration.bus_stop_round_trip|detail_link|default:"" }} 
+      {{ trippee.registration.bus_stop_to_hanover|detail_link|default:"" }} 
+      {{ trippee.registration.bus_stop_from_hanover|detail_link|default:"" }} 
+    </td>
 
   {% endfor %}
 

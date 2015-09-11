@@ -214,6 +214,8 @@ class IncomingStudent(DatabaseModel):
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
 
+        
+
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
         
@@ -518,6 +520,13 @@ class Registration(DatabaseModel):
         "&mdash; anything goes! All responses will remain anonymous.",
         blank=True
     )
+
+    def clean(self):
+        one_way = self.bus_stop_to_hanover or self.bus_stop_from_hanover
+        if self.bus_stop_round_trip and one_way:
+            raise ValidationError(
+                "You cannot select both a round-trip AND a one-way bus"
+            )
   
     def get_trip_assignment(self):
         """

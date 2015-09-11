@@ -22,35 +22,27 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
-        
         user = self.mock_incoming_student()
         trips_year = self.init_current_trips_year()
         # make existing info for user with netid
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
-        
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
         self.assertEqual(reg.trippee, incoming)
 
     def test_creating_Registration_without_incoming_info_does_nothing(self):
- 
         user = self.mock_incoming_student()
         trips_year = self.init_current_trips_year()
-        
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
-
         with self.assertRaises(ObjectDoesNotExist):
             reg.trippee
 
     def test_creating_IncomingStudent_connects_to_existing_registration(self):
-        
         user = self.mock_incoming_student()
         trips_year = self.init_current_trips_year()
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
-
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
         # refresh registration
         reg = Registration.objects.get(pk=reg.pk)
-        
         self.assertEqual(incoming.registration, reg) 
 
     def test_get_hometown_parsing(self):
@@ -179,19 +171,16 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
 
     def test_bus_assignment_is_either_one_way_or_round_trip(self):
-        trips_year = self.init_trips_year()
         msg = "Cannot have round-trip AND one-way bus assignments"
         with self.assertRaisesRegexp(ValidationError, msg):
             mommy.prepare(
-                IncomingStudent, 
-                trips_year=trips_year,
+                IncomingStudent,
                 bus_assignment_round_trip=mommy.make(Stop),
                 bus_assignment_to_hanover=mommy.make(Stop)
             ).full_clean()
         with self.assertRaisesRegexp(ValidationError, msg):
             mommy.prepare(
                 IncomingStudent,
-                trips_year=trips_year,
                 bus_assignment_round_trip=mommy.make(Stop),
                 bus_assignment_from_hanover=mommy.make(Stop)
             ).full_clean()
@@ -396,6 +385,21 @@ class RegistrationModelTestCase(TripsYearTestCase):
         reg.match()
         self.assertEqual(reg.trippee, incoming)
 
+    def test_cannot_request_round_trip_and_one_way_bus(self):
+        with self.assertRaisesRegex(ValidationError, "round-trip AND a one-way"):
+            mommy.make(
+                Registration,
+                bus_stop_round_trip=mommy.make(Stop),
+                bus_stop_to_hanover=mommy.make(Stop),
+                waiver=YES
+            ).full_clean()
+        with self.assertRaisesRegex(ValidationError, "round-trip AND a one-way"):
+            mommy.make(
+                Registration,
+                bus_stop_round_trip=mommy.make(Stop),
+                bus_stop_from_hanover=mommy.make(Stop),
+                waiver=YES
+            ).full_clean()
 
 
 def resolve_path(fname):
