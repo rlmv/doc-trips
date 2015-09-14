@@ -226,7 +226,7 @@ LOGGING = {
             'handlers': ['console', 'sentry'],
             'level': 'WARNING',
         },
-        'doc': {  # project namespace
+        'fyt': {  # project namespace
             'handlers': ['console', 'sentry'],
             'level': 'INFO',
         },
