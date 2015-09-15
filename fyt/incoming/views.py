@@ -264,11 +264,10 @@ class NonStudentRegistration(DatabaseCreateView):
         return self.object.trippee.detail_url()
 
 
-class RegistrationDetail(DatabaseReadPermissionRequired,
-                         TripsYearMixin, DetailView):
+class RegistrationDetail(DatabaseDetailView):
     model = Registration
     template_name = 'incoming/registration_detail.html'
-    
+
     fields = [
         'name', 'gender', 'previous_school', 'phone', 'email',
         'guardian_email', 'is_exchange', 'is_transfer', 
@@ -295,14 +294,12 @@ class RegistrationDetail(DatabaseReadPermissionRequired,
     ]
 
 
-class RegistrationUpdate(DatabaseEditPermissionRequired,
-                         TripsYearMixin, UpdateView):
-    """ 
+class RegistrationUpdate(DatabaseUpdateView):
+    """
     Edit a registration.
     """
     form_class = RegistrationForm
     model = Registration
-    template_name = 'db/update.html'
 
 
 class RegistrationDelete(DatabaseDeleteView):
@@ -311,10 +308,9 @@ class RegistrationDelete(DatabaseDeleteView):
     """
     model = Registration
     success_url_pattern = 'db:registration_index'
-    
 
-class IncomingStudentIndex(DatabaseReadPermissionRequired,
-                           TripsYearMixin, ListView):
+
+class IncomingStudentIndex(DatabaseListView):
     """ 
     All incoming students
     """

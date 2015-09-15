@@ -16,9 +16,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, HTML
 from crispy_forms.bootstrap import FormActions
 
-from fyt.db.models import TripsYear
-from fyt.db.forms import tripsyear_modelform_factory
-from fyt.db import forward
+from . import forward
+from .forms import tripsyear_modelform_factory
+from .models import TripsYear
+from .urlhelpers import reverse_update_url, reverse_delete_url
 from fyt.permissions.views import (
     DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
 from fyt.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
@@ -257,6 +258,11 @@ class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
     template_name = 'db/detail.html'
     # Fields to display in the view. Passed in the template.
     fields = None
+
+    def get_context_data(self, **kwargs):
+        kwargs['update_url'] = reverse_update_url(self.object)
+        kwargs['delete_url'] = reverse_delete_url(self.object)
+        return super(DatabaseDetailView, self).get_context_data(**kwargs)
 
 
 class DatabaseTemplateView(DatabaseReadPermissionRequired, ExtraContextMixin,
