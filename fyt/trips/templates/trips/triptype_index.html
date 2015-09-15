@@ -1,9 +1,17 @@
 {% extends "db/base.html" %}
 {% load links %}
 
+{% block header %}
+<h1> 
+  Trip Types 
+  <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
+    <i class="fa fa-plus"></i> New Trip Type
+  </a>
+</h1>
+{% endblock %}
+
 {% block content %}
 
-<h3> Trip Types </h3>
 
 <table class="table">
   <tr>
@@ -21,9 +29,5 @@
   </tr>
   {% endfor %}
 </table>
-
-<a href="{% create_url view.model trips_year %}" class="btn btn-primary" role="button">
-  Add a new type of trip
-</a>
 
 {% endblock %}

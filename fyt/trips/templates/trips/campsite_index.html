@@ -2,7 +2,11 @@
 {% load links %}
 
 {% block header %}
- <h2> Campsites </h2>
+<h1> Campsites 
+  <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
+    <i class="fa fa-plus"></i> New Campsite
+  </a>
+</h1>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +15,7 @@
   <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. If the total number of people staying in a campsite on any given night is greater than the capacity of the campsite, this will be shown in the table. </p>
 </div>
 
-<table class="table table-condensed">
+<table class="table table-condensed table-bordered table-hover">
   <tr>
     <th>Campsite</th>
     <th>Capacity</th>
@@ -39,16 +43,9 @@
     </td>
     {% endfor %}
 
-
-    <td> {{ campsite|edit_link }} </td>
-    <td> {{ campsite|delete_link }} </td>
   </tr>
   {% endfor %}
 </table>
-
-<a href="{% create_url view.model trips_year %}" class="btn btn-primary" role="button">
-  Add a campsite
-</a>
 
 {% endblock %}
 

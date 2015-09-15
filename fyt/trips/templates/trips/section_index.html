@@ -3,41 +3,45 @@
 {% load icons %}
 
 {% block header %}
-<h2> Sections </h2>
+<h1> Sections 
+  <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
+    <i class="fa fa-plus"></i> New Section
+  </a>
+</h1>
 {% endblock %}
+
 {% block content %}
 
+{% with center='class="text-center"' %}
 <table class="table">
   <tr>
-    <th>Section</th>
-    <th>Leaders Arrive</th>
-    <th>Local</th>
-    <th>Exchange</th>
-    <th>Transfer</th>
-    <th>International</th>
-    <th>Native American</th>
-    <th>FYSEP</th>
+    <th {{ center }}>Section</th>
+    <th {{ center }}>Leaders Arrive</th>
+    <th {{ center }}>Local</th>
+    <th {{ center }}>Exchange</th>
+    <th {{ center }}>Transfer</th>
+    <th {{ center }}>International</th>
+    <th {{ center }}>Native American</th>
+    <th {{ center }}>FYSEP</th>
+    <th/>
+    <th/>
   </tr>
   
   {% for section in sections %}
   <tr>
-    <td>{{ section|detail_link:section.name }}</td>
-    <td>{{ section.leaders_arrive }}</td>
-    <td>{{ section.is_local | ok_if_true }}</td>
-    <td>{{ section.is_exchange | ok_if_true }}</td>
-    <td>{{ section.is_transfer | ok_if_true }}</td>
-    <td>{{ section.is_international | ok_if_true }}</td>
-    <td>{{ section.is_native | ok_if_true }}</td>
-    <td>{{ section.is_fysep | ok_if_true }}</td>
-    <td>{{ section|edit_link }}</td>
-    <td>{{ section|delete_link }}</td>
+    <td {{ center }}>{{ section|detail_link:section.name }}</td>
+    <td {{ center }}>{{ section.leaders_arrive|date:"n/d" }}</td>
+    <td {{ center }}>{{ section.is_local | ok_if_true }}</td>
+    <td {{ center }}>{{ section.is_exchange | ok_if_true }}</td>
+    <td {{ center }}>{{ section.is_transfer | ok_if_true }}</td>
+    <td {{ center }}>{{ section.is_international | ok_if_true }}</td>
+    <td {{ center }}>{{ section.is_native | ok_if_true }}</td>
+    <td {{ center }}>{{ section.is_fysep | ok_if_true }}</td>
+    <td {{ center }}>{{ section|edit_link }}</td>
+    <td {{ center }}>{{ section|delete_link }}</td>
   </tr>
   {% endfor %}
 </table
-
-<br>
-<a href="{% create_url view.model trips_year %}" class="btn btn-primary" role="button">
-  Add another section
-</a>
+{% endwith %}
 
 {% endblock %}

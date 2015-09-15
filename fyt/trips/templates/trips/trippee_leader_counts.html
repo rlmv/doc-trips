@@ -1,7 +1,7 @@
 {% extends "db/base.html" %}
 
 {% block header %}
-<h2> Trippee and Leader Counts  </h2>
+<h1> Trippee and Leader Counts  </h1>
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
     <th></th>
     <th class="text-muted"> max </th>
     {% for section in sections %}
-    <th> {{ section.name }} </th>
+    <th class="text-center"> {{ section.name }} </th>
     {% endfor %}
   </tr>
   {% endif %}
@@ -26,7 +26,7 @@
     <td class="text-muted"> {{ template.max_trippees }} &ndash; 2 </td>
     {% for section, trip in sections.items %}
     {% if trip %}
-    <td>
+    <td class="text-center">
       <span data-toggle="tooltip" data-placement="top" title="{{ trip.verbose_str }}">
 	<a class="no-color-link" href="{{ trip.get_absolute_url }}"> 
 	  <span {% if trip.num_trippees < trip.template.max_trippees %} class="text-bright-success" {% elif trip.num_trippees > trip.template.max_trippees %} class="text-bright-danger" {% endif %}> {{ trip.num_trippees }} </span>
@@ -36,7 +36,7 @@
       </span>
     </td>
     {% else %}
-    <td class="text-muted"> &mdash;  </td>
+    <td class="text-muted text-center"> &mdash;  </td>
     {% endif %}
     {% endfor %}
   </tr>

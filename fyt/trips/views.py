@@ -246,7 +246,7 @@ class LeaderTrippeeIndexView(DatabaseListView):
     Links to pages to assign leaders and trippees.
     """
     model = Trip
-    template_name = 'trips/leaders.html'
+    template_name = 'trips/assignments.html'
     context_object_name = 'trips'
     
     def get_queryset(self):
