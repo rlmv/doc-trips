@@ -2,6 +2,8 @@ import unittest
 
 from model_mommy import mommy
 from django.core.exceptions import ValidationError
+from django.template import Context, Template
+from django.test import TestCase
 
 from fyt.utils.matrix import OrderedMatrix
 from fyt.utils.fmt import section_range
@@ -72,3 +74,17 @@ class LatLngRegex(unittest.TestCase):
             validate_lat_lng('g 13.0,153.5 ')
         with self.assertRaises(ValidationError):
             validate_lat_lng('13.0,153.5  13.0,153.5 ')
+
+
+class UrlencodeTagTestCase(TestCase):
+
+    def test_tag(self):
+        out = Template(
+            """
+            {% load urlencode %}
+            {% urlencode param1=value1 param2="test this" %}
+            """
+        ).render(Context({
+            'value1': 1
+        }))
+        self.assertEqual(out.strip(), 'param1=1&param2=test+this')

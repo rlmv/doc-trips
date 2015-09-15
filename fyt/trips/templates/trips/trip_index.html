@@ -1,15 +1,15 @@
 {% extends "db/base.html" %}
-
 {% load links %}
+{% load urlencode %}
 
 {% block header %}
-  <h3> Scheduled Trips </h3>
+  <h2> Scheduled Trips </h2>
 {% endblock %}
 
 {% block content %}
 
 <div>
-  <p> All trips which are scheduled to go out this year. Each Scheduled Trip is identified by a <em>Section</em> and a <em>Trip Template</em>. To schedule a trip, click on the "add" link in the matrix. </p>
+  <p> All trips which are scheduled to run this year. Each trip is identified by a <a href="{% url 'db:section_index' trips_year=trips_year %}">Section</a> and a <a href="{% url 'db:triptype_index' trips_year=trips_year %}">Trip Type</a>. Click <i class="fa fa-plus text-info"></i> to schedule a trip; click on a scheduled trip for more details. </p>
 </div>
 
 <table class="table table-condensed">
@@ -21,7 +21,7 @@
     <th>Template</th>
     <th>Type</th>
     {% for section in sections %}
-    <th> {{ section.name }} </th>
+    <th class="text-center"> {{ section.name }} </th>
     {% endfor %}
   </tr>
   {% endif %}
@@ -31,11 +31,13 @@
     <td> {{ template.triptype.name }} </td>
 
     {% for section, trip in sections.items %}
-    {% if trip %}
-    <td>{{ trip | detail_link }}</td>
-    {% else %}
-    <td><a href="{% url 'db:trip_create' trips_year=trips_year %}?section={{ section.pk }}&template={{ template.pk }}">add</a></td>
-    {% endif %}
+    <td class="text-center">
+      {% if trip %}
+      {{ trip | detail_link }}
+      {% else %}
+      <a href="{% url 'db:trip_create' trips_year=trips_year %}?{% urlencode section=section.pk template=template.pk %}"><i class="fa fa-plus"></i></a>
+      {% endif %}
+    </td>
     {% endfor %}
   </tr>
 
