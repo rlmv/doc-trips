@@ -385,6 +385,7 @@ class CrooApplicationGradeForm(forms.ModelForm):
     """
     class Meta:
         model = CrooApplicationGrade
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(CrooApplicationGradeForm, self).__init__(*args, **kwargs)
@@ -399,3 +400,4 @@ class LeaderApplicationGradeForm(forms.ModelForm):
     """
     class Meta:
         model = LeaderApplicationGrade
+        fields = '__all__'

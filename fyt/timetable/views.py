@@ -16,6 +16,7 @@ class TimetableForm(ModelForm):
     
     class Meta:
         model = Timetable
+        fields = '__all__'
         widgets = {
             'applications_open': DateTimePicker(options=OPTIONS),
             'applications_close': DateTimePicker(options=OPTIONS),

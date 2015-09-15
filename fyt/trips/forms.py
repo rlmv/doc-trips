@@ -13,13 +13,16 @@ from fyt.trips.models import Section, Trip
 
 
 class SectionForm(forms.ModelForm):
-    """ Form for Section Create and Update views. """
-    
+    """
+    Form for Section Create and Update views.
+    """
     class Meta:
         model = Section
+        fields = '__all__'
         widgets = {
-            'leaders_arrive': DateTimePicker(options={'format': 'MM/DD/YYYY', 
-                                                      'pickTime': False})
+            'leaders_arrive': DateTimePicker(options={
+                'format': 'MM/DD/YYYY', 'pickTime': False
+            })
         }
 
     def __init__(self, *args, **kwargs):

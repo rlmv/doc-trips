@@ -34,6 +34,7 @@ class RegistrationForm(forms.ModelForm):
     """
     class Meta:
         model = Registration
+        fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(RegistrationForm, self).__init__(*args, **kwargs)

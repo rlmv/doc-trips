@@ -83,6 +83,7 @@ class IncidentUpdateForm(forms.ModelForm):
 
     class Meta:
         model = IncidentUpdate
+        fields = '__all__'
 
     helper = FormHelper()
     helper.layout = IncidentUpdateFormLayout()
