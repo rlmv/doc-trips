@@ -25,7 +25,7 @@ def make_tripsyear_formfield_callback(trips_year):
         if ((isinstance(model_field, models.ForeignKey) or
              isinstance(model_field, models.ManyToManyField) or
              isinstance(model_field, models.OneToOneField)) and
-            issubclass(model_field.related.parent_model, DatabaseModel)):
+            issubclass(model_field.related_model, DatabaseModel)):
 
             formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
 
@@ -45,6 +45,4 @@ def tripsyear_modelform_factory(model, trips_year, *args, **kwargs):
     """
     callback = make_tripsyear_formfield_callback(trips_year)
     return modelform_factory(model, formfield_callback=callback, *args, **kwargs)
-                             
-
 

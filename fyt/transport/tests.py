@@ -12,7 +12,7 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.test.testcases import TripsYearTestCase, WebTestCase
 from fyt.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder, sort_by_distance
-from fyt.transport.constants import Hanover, Lodge
+from fyt.transport.constants import Hanover, Lodge, ConstantStop
 from fyt.transport import maps
 from fyt.transport.views import (
     get_internal_route_matrix, get_internal_rider_matrix, Riders,
@@ -1107,4 +1107,12 @@ class MapsTestCases(TripsYearTestCase):
     def test_directions_with_one_stop_raises_error(self):
         with self.assertRaisesRegexp(maps.MapError, 'Only one stop provided'):
             maps.get_directions([Hanover()])
+
+
+class ConstantStopTestCase(TripsYearTestCase):
+    
+    def test_cannot_save_ConstantStop(self):
+        stop = ConstantStop()
+        stop.save()
+        self.assertRaises(ConstantStop.DoesNotExist, ConstantStop.objects.get)
 

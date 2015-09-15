@@ -29,7 +29,7 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test: 
-	$(MANAGE) test --nomigrations
+	$(MANAGE) test --keepdb
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations

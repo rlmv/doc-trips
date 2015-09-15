@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'django_tables2',
     'pipeline',
     'raven.contrib.django.raven_compat',
-    'test_without_migrations',
 
     'fyt.applications',
     'fyt.croos',

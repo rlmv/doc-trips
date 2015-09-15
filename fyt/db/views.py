@@ -135,6 +135,7 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
                          SetExplanationMixin, SetHeadlineMixin,
                          TripsYearMixin, CrispyFormMixin, CreateView):
 
+    fields = '__all__'
     template_name = 'db/create.html'
     form_invalid_message = FORM_INVALID_MESSAGE
 
@@ -178,6 +179,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
     template_name ='db/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
     delete_button = True  # add a "Delete" button?
+    fields = '__all__'
 
     def get_headline(self):
         return mark_safe("Edit %s <small> %s </small>" % (
