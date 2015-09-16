@@ -314,6 +314,10 @@ class GeneralApplication(DatabaseModel):
     def name(self):
         return self.applicant.name
 
+    @property
+    def lastname(self):
+        return self.name.split()[-1]
+
     def leader_application_complete(self):
         """
         Leader application is complete if supplement is uploaded
