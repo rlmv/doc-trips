@@ -164,7 +164,7 @@ class Charges(GenericReportView):
             trips_year=self.get_trips_year(),
         ).prefetch_related(
             'registration'
-        )[:999]
+        )
 
     header = [
         'name',
@@ -174,7 +174,7 @@ class Charges(GenericReportView):
         'trip',
         'bus',
         'doc membership',
-        'green fund donation',
+        'green fund',
         'cancellation'
     ]
     def get_row(self, incoming):
@@ -182,27 +182,21 @@ class Charges(GenericReportView):
         return [
             incoming.name,
             incoming.netid,
-            incoming.compute_cost(),
+            incoming.compute_cost(self.costs),
             incoming.financial_aid or '',
-            incoming.trip_cost or '',
+            incoming.trip_cost(self.costs) or '',
             incoming.bus_cost() or '',
-            incoming.doc_membership_cost or '',
-            incoming.green_fund_donation or '',
-            incoming.cancellation_cost or '',
+            incoming.doc_membership_cost(self.costs) or '',
+            incoming.green_fund_donation() or '',
+            incoming.cancellation_cost(self.costs) or '',
         ]
 
-    @cache_as('_membership_cost')
-    def membership_cost(self):
+    @property
+    @cache_as('_costs')
+    def costs(self):
         return Settings.objects.get(
             trips_year=self.kwargs['trips_year']
-        ).doc_membership_cost
-
-    @cache_as('_trip_cost')
-    def trips_cost(self):
-        return Settings.objects.get(
-            trips_year=self.kwargs['trips_year']
-        ).trips_cost
-
+        )
 
 class DocMembers(GenericReportView):
     """

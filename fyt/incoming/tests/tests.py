@@ -175,47 +175,55 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         )
         self.assertEqual(inc.compute_cost(), 13)
 
+    def test_compute_cost_with_passed_costs(self):
+        trips_year = self.init_trips_year()
+        costs = mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        inc = mommy.make(IncomingStudent, trips_year=trips_year)
+        with self.assertNumQueries(0):
+            inc.compute_cost(costs)
+        self.assertEqual(inc.compute_cost(), inc.compute_cost(costs))
+
     def test_cancellation_cost(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        costs = mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
             cancelled=True,
             financial_aid=70
         )
-        self.assertEqual(inc.cancellation_cost, 30)
+        self.assertEqual(inc.cancellation_cost(costs), 30)
 
     def test_cancellation_cost_with_fee_override(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        costs = mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
             cancelled=True,
             cancelled_fee=13
         )
-        self.assertEqual(inc.cancellation_cost, 13)
+        self.assertEqual(inc.cancellation_cost(costs), 13)
 
     def test_trip_cost_with_no_trip(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        costs = mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
         )
-        self.assertEqual(inc.trip_cost, 0)
+        self.assertEqual(inc.trip_cost(costs), 0)
 
     def test_doc_membership_cost(self):
         trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_year=trips_year, doc_membership_cost=100)
+        costs = mommy.make(Settings, trips_year=trips_year, doc_membership_cost=100)
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
             registration__doc_membership=YES,
             financial_aid=60
         )
-        self.assertEqual(inc.doc_membership_cost, 40)
+        self.assertEqual(inc.doc_membership_cost(costs), 40)
 
     def test_netid_and_trips_year_are_unique(self):
         trips_year = self.init_trips_year()

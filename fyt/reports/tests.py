@@ -113,7 +113,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': '225.00',
             'bus': '90.00',
             'doc membership': '81.90',
-            'green fund donation': '20.00',
+            'green fund': '20.00',
             'cancellation': ''
         }, {
             'name': incoming2.name,
@@ -123,7 +123,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': '250.00',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '',
+            'green fund': '',
             'cancellation': ''
         }, {
             'name': incoming3.name,
@@ -133,7 +133,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': '',
             'bus': '',
             'doc membership': '91.00',
-            'green fund donation': '',
+            'green fund': '',
             'cancellation': ''
         }, {
             'name': incoming4.name,
@@ -143,7 +143,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': '',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '12.00',
+            'green fund': '12.00',
             'cancellation': ''
         }, {
             'name': incoming5.name,
@@ -153,7 +153,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': '',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '',
+            'green fund': '',
             'cancellation': '250.00'
         }]
         self.assertEqual(rows, target)

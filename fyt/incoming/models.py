@@ -33,8 +33,13 @@ def sort_by_lastname(students):
 
 def monetize(func):
     """
-    Convert the return value of ``func`` to a 
-    Decimal with two decimal places.
+    Decorator which converts the return value of ``func`` to 
+    a :class:`~decimal.Decimal` with two decimal places.
+    
+    Ex:
+    >>> identity = monetize(lambda x: x)
+    >>> identity(1.2)
+    Decimal('1.20')
     """
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -189,14 +194,11 @@ class IncomingStudent(DatabaseModel):
     def get_bus_from_hanover(self):
         return (self.bus_assignment_round_trip or
                 self.bus_assignment_from_hanover)
-    
+
     @monetize
     def bus_cost(self):
         """
         Compute the cost of buses for this student.
-
-        There is either a round-trip bus or one-way buses,
-        never both.
         """
         if self.bus_assignment_round_trip:
             return self._adjust(self.bus_assignment_round_trip.cost_round_trip)
@@ -207,49 +209,40 @@ class IncomingStudent(DatabaseModel):
             one_way_cost(self.bus_assignment_from_hanover)
         )
 
-    @property
     @monetize
-    def cancellation_cost(self):
+    def trip_cost(self, costs):
+        """
+        Cost of trip assignment, if any, adjusted by financial aid.
+        """
+        if self.trip_assignment:
+            return self._adjust(costs.trips_cost)
+        return 0
+
+    @monetize
+    def cancellation_cost(self, costs):
         """
         Cost if a trippee cancels. Use a custom fee if provided,
         otherwise charge the regular cost of trips (adjusted by
         financial aid).
         """
-        trips_cost = Settings.objects.get(trips_year=self.trips_year).trips_cost
-
         if not self.cancelled:
             return 0
 
         if self.cancelled_fee is None:
-            return self._adjust(trips_cost)
+            return self._adjust(costs.trips_cost)
         else:
             return self.cancelled_fee
 
-    @property
     @monetize
-    def trip_cost(self):
-        """
-        Cost of trip assignment, if any, adjusted by financial aid.
-        """
-        trip_cost = Settings.objects.get(trips_year=self.trips_year).trips_cost
-
-        if self.trip_assignment:
-            return self._adjust(trip_cost)
-        return 0
-
-    @property
-    @monetize
-    def doc_membership_cost(self):
+    def doc_membership_cost(self, costs):
         """
         Financial aid adjusted DOC membership cost, if elected.
         """
-        member_cost = Settings.objects.get(trips_year=self.trips_year).doc_membership_cost
         reg = self.get_registration()
         if reg and reg.doc_membership == YES:
-            return self._adjust(member_cost)
+            return self._adjust(costs.doc_membership_cost)
         return 0
 
-    @property
     @monetize
     def green_fund_donation(self):
         """
@@ -264,20 +257,25 @@ class IncomingStudent(DatabaseModel):
         """
         return value * (100 - self.financial_aid) / 100
 
-    def compute_cost(self):
+    def compute_cost(self, costs=None):
         """
         Compute the total charge for this student.
 
         Cost is the sum of the base cost, bus cost and
         doc membership, adjusted by financial aid, plus 
         any green fund donation and cancellation fees
+
+        ``costs`` is a ``Settings`` instance
         """
+        if costs is None:
+            costs = Settings.objects.get(trips_year=self.trips_year)
+
         return sum([
-            self.trip_cost,
-            self.cancellation_cost,
+            self.trip_cost(costs),
+            self.cancellation_cost(costs),
             self.bus_cost(),
-            self.doc_membership_cost,
-            self.green_fund_donation
+            self.doc_membership_cost(costs),
+            self.green_fund_donation()
         ])
 
     def clean(self):
