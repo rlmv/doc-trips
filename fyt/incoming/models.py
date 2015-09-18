@@ -60,7 +60,8 @@ class IncomingStudent(DatabaseModel):
     objects = IncomingStudentManager()
 
     class Meta:
-        unique_together = ('netid', 'trips_year')
+        unique_together = ['netid', 'trips_year']
+        ordering = ['name']
 
     registration = models.OneToOneField(
         'Registration', editable=False, related_name='trippee', null=True
@@ -305,6 +306,9 @@ class Registration(DatabaseModel):
     Registration information for an incoming student.
     """
     objects = RegistrationManager()
+
+    class Meta:
+        ordering = ['name']
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     
