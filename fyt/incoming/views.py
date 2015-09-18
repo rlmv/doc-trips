@@ -336,6 +336,7 @@ class IncomingStudentDetail(DatabaseDetailView):
 
     admin_fields = (
         'registration', 'financial_aid',
+        'cancelled', 'cancelled_fee',
         ('total cost', 'compute_cost'),
         'med_info', 'show_med_info',
         'decline_reason', 'notes'

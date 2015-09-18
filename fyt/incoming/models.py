@@ -49,12 +49,6 @@ class IncomingStudent(DatabaseModel):
         Trip, on_delete=models.PROTECT,
         related_name='trippees', null=True, blank=True
     )
-    cancelled = models.BooleanField(
-        'cancelled last-minute?', default=False, help_text=(
-            'this Trippee will still be charged even though '
-            'they are no longer going on a trip'
-        )
-    )
     bus_assignment_round_trip = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_round_trip',
@@ -70,14 +64,25 @@ class IncomingStudent(DatabaseModel):
         related_name='riders_from_hanover',
         verbose_name="bus assignment FROM Hanover (one-way)"
     )
-
     financial_aid = models.PositiveSmallIntegerField(
         'percentage financial assistance',
         default=0, validators=[
             MinValueValidator(0), MaxValueValidator(100)
         ]
     )
-
+    cancelled = models.BooleanField(
+        'cancelled last-minute?', default=False, help_text=(
+            'This Trippee will still be charged even though '
+            'they are no longer going on a trip'
+        )
+    )
+    cancelled_fee = models.PositiveSmallIntegerField(
+        'cancellation fee', null=True, blank=True, help_text=(
+            "Customize the cancellation fee. Otherwise, by default a "
+            "'cancelled' student is charged the full cost "
+            "of trips (adjusted by financial aid, if applicable). "
+        )
+    )
     med_info = models.TextField(
         blank=True, help_text=(
             "Use this field for additional medical info not provided in "
@@ -188,24 +193,31 @@ class IncomingStudent(DatabaseModel):
     def compute_cost(self):
         """
         Compute the total charge for this student.
-        
+
         Cost is the sum of the base cost, bus cost and
         doc membership, adjusted by financial aid, plus 
-        any green fund donation.
+        any green fund donation and cancellation fees
         """
         costs = Settings.objects.get(trips_year=self.trips_year)
-        base_cost = self.bus_cost()
 
-        # last-minute cancellations are still charged
-        if self.trip_assignment or self.cancelled:
+        base_cost = self.bus_cost()  # costs adjusted by fin-aid
+        extra = 0  # unadjusted
+
+        if self.trip_assignment:
             base_cost += costs.trips_cost
+        elif self.cancelled:  # last-minute cancellations are still charged
+            if self.cancelled_fee is None:
+                base_cost += costs.trips_cost
+            else:  # ...but sometimes not the full amount
+                extra += self.cancelled_fee
 
         reg = self.get_registration()
         if reg and reg.doc_membership == YES:
             base_cost += costs.doc_membership_cost
-        green_fund = reg.green_fund_donation if reg else 0
+        if reg:
+            extra += reg.green_fund_donation
 
-        return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
+        return (base_cost) * (100 - self.financial_aid) / 100 + extra
 
     def clean(self):
         one_way = (self.bus_assignment_to_hanover or
@@ -213,8 +225,6 @@ class IncomingStudent(DatabaseModel):
         if one_way and self.bus_assignment_round_trip:
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
-
-        
 
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())

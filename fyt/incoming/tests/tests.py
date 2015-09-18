@@ -164,6 +164,17 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         # still charged if cancels last-minute
         self.assertEqual(inc.compute_cost(), 100)
 
+    def test_compute_cost_with_cancelled_trip_and_custom_cancellation_fee(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment=None,
+            cancelled=True,
+            cancelled_fee=13
+        )
+        self.assertEqual(inc.compute_cost(), 13)
+
     def test_netid_and_trips_year_are_unique(self):
         trips_year = self.init_trips_year()
         mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
