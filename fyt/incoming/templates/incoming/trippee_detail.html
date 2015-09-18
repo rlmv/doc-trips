@@ -3,12 +3,12 @@
 {% load links %}
 
 {% block header %}
-<h2> {{ trippee }} <small> Trippee {{ object|delete_link }} </small></h2>
+<h2> {{ trippee }} <small> Trippee {{ object.delete_url|delete_button }} </small></h2>
 {% endblock %}
 
 {% block content %}
 
-<h4> Assignments <a href="{{ edit_assignment_url }}"> edit </a></h4>
+<h3> Assignments {{ edit_assignment_url|edit_button }} </h3>
 <table class="table table-condensed table-striped expand-whitespace">
   <tr>
     <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
@@ -36,9 +36,9 @@
   </tr>
 </table>
 
-<h4> Admin Info {{ object|edit_link }}</h4>
+<h3> Admin Info {{ edit_admin_url|edit_button }}</h3>
 {% detail trippee view.admin_fields %}
-<h4> College Data {{ object|edit_link }}</h4>
+<h3> College Data {{ edit_admin_url|edit_button }}</h3>
 {% detail trippee view.college_fields %}
 
 {% endblock content %}

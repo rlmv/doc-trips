@@ -105,3 +105,19 @@ def _has_method(arg, method):
     Returns true if the given object has a method with the given name.
     """
     return hasattr(arg, method) and callable(getattr(arg, method))
+
+
+@register.filter
+def edit_button(url):
+    return mark_safe(
+        '<a href="%s" class="btn btn-primary"> '
+        '<i class="fa fa-wrench"></i> Edit </a>' % url
+    )
+
+
+@register.filter
+def delete_button(url):
+    return mark_safe(
+        '<a href="%s" class="btn btn-danger"> '
+        '<i class="fa fa-trash"></i> Delete </a>' % url
+    )

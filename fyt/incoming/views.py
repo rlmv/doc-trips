@@ -351,6 +351,9 @@ class IncomingStudentDetail(DatabaseDetailView):
         kwargs['edit_assignment_url'] = reverse(
             'db:incomingstudent_update_assignment', kwargs=self.kwargs
         )
+        kwargs['edit_admin_url'] = reverse(
+            'db:incomingstudent_update', kwargs=self.kwargs
+        )
         return super(IncomingStudentDetail, self).get_context_data(**kwargs)
 
 
