@@ -35,8 +35,7 @@ def monetize(func):
     """
     Decorator which converts the return value of ``func`` to 
     a :class:`~decimal.Decimal` with two decimal places.
-    
-    Ex:
+
     >>> identity = monetize(lambda x: x)
     >>> identity(1.2)
     Decimal('1.20')
@@ -99,23 +98,24 @@ class IncomingStudent(DatabaseModel):
     )
     cancelled_fee = models.PositiveSmallIntegerField(
         'cancellation fee', null=True, blank=True, help_text=(
-            "Customize the cancellation fee. Otherwise, by default a "
-            "'cancelled' student is charged the full cost "
+            "Customize the cancellation fee. Otherwise a "
+            "'cancelled' student is by default charged the full cost "
             "of trips (adjusted by financial aid, if applicable). "
         )
     )
     med_info = models.TextField(
+        'additional med info',
         blank=True, help_text=(
             "Use this field for additional medical info not provided in "
             "the registration, or simplified information if some details "
-            "do not need to be provided to leaders and croos."
+            "do not need to be provided to leaders and croos. This is always "
+            "exported to leader packets."
         )
     )
     show_med_info = models.BooleanField(
         "Show registration med info?", default=False, help_text=(
             "Medical information in this trippee's registration "
-            "will be displayed in leader and croo packets. (This "
-            "information is hidden by default.)"
+            "will be displayed in leader and croo packets."
         )
     )
 
