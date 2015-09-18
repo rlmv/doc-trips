@@ -175,6 +175,48 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         )
         self.assertEqual(inc.compute_cost(), 13)
 
+    def test_cancellation_cost(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment=None,
+            cancelled=True,
+            financial_aid=70
+        )
+        self.assertEqual(inc.cancellation_cost, 30)
+
+    def test_cancellation_cost_with_fee_override(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment=None,
+            cancelled=True,
+            cancelled_fee=13
+        )
+        self.assertEqual(inc.cancellation_cost, 13)
+
+    def test_trip_cost_with_no_trip(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=trips_year, trips_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment=None,
+        )
+        self.assertEqual(inc.trip_cost, 0)
+
+    def test_doc_membership_cost(self):
+        trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=trips_year, doc_membership_cost=100)
+        inc = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment=None,
+            registration__doc_membership=YES,
+            financial_aid=60
+        )
+        self.assertEqual(inc.doc_membership_cost, 40)
+
     def test_netid_and_trips_year_are_unique(self):
         trips_year = self.init_trips_year()
         mommy.make(IncomingStudent, trips_year=trips_year, netid='w')
@@ -199,19 +241,21 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
     def test_bus_cost_with_round_trip(self):
         inc = mommy.make(
             IncomingStudent,
-            bus_assignment_round_trip=mommy.make(Stop, cost_round_trip=30, cost_one_way=15)
+            bus_assignment_round_trip=mommy.make(Stop, cost_round_trip=100, cost_one_way=15),
+            financial_aid=35
         )
-        self.assertEqual(inc.bus_cost(), 30)
+        self.assertEqual(inc.bus_cost(), 65)
 
     def test_bus_cost_with_one_way(self):
         inc = mommy.make(
             IncomingStudent,
             bus_assignment_to_hanover=mommy.make(
-                Stop, cost_round_trip=3, cost_one_way=100),
+                Stop, cost_round_trip=3, cost_one_way=30),
             bus_assignment_from_hanover=mommy.make(
-                Stop, cost_round_trip=1, cost_one_way=200)
+                Stop, cost_round_trip=1, cost_one_way=70),
+            financial_aid=10
         )
-        self.assertEqual(inc.bus_cost(), 300)
+        self.assertEqual(inc.bus_cost(), 90)
 
     def test_bus_cost_is_zero_if_no_bus(self):
         inc = mommy.make(

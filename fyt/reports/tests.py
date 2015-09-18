@@ -59,8 +59,8 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             IncomingStudent,
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # force trip to exist
-            bus_assignment_round_trip__cost_round_trip=37,
-            financial_aid=15,
+            bus_assignment_round_trip__cost_round_trip=100,
+            financial_aid=10,
             registration__doc_membership=YES,
             registration__green_fund_donation=20
         )
@@ -109,47 +109,52 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': incoming1.name,
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
-            'aid award (percentage)': '15',
-            'trip': '250',
-            'bus': '37',
-            'doc membership': '91',
-            'green fund donation': '20',
+            'aid award (percentage)': '10',
+            'trip': '225.00',
+            'bus': '90.00',
+            'doc membership': '81.90',
+            'green fund donation': '20.00',
+            'cancellation': ''
         }, {
             'name': incoming2.name,
             'netid': incoming2.netid,
             'total charge': str(incoming2.compute_cost()),
             'aid award (percentage)': '',
-            'trip': '250',
+            'trip': '250.00',
             'bus': '',
             'doc membership': '',
             'green fund donation': '',
+            'cancellation': ''
         }, {
             'name': incoming3.name,
             'netid': incoming3.netid,
-            'total charge': '91.0',
+            'total charge': '91.00',
             'aid award (percentage)': '',
             'trip': '',
             'bus': '',
-            'doc membership': '91',
+            'doc membership': '91.00',
             'green fund donation': '',
+            'cancellation': ''
         }, {
             'name': incoming4.name,
             'netid': incoming4.netid,
-            'total charge': '12.0',
+            'total charge': '12.00',
             'aid award (percentage)': '',
             'trip': '',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '12',
+            'green fund donation': '12.00',
+            'cancellation': ''
         }, {
             'name': incoming5.name,
             'netid': incoming5.netid,
-            'total charge': '250.0',
+            'total charge': '250.00',
             'aid award (percentage)': '',
-            'trip': '250',
+            'trip': '',
             'bus': '',
             'doc membership': '',
             'green fund donation': '',
+            'cancellation': '250.00'
         }]
         self.assertEqual(rows, target)
 

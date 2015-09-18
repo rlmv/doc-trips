@@ -150,6 +150,8 @@ class ExternalBusCSV(GenericReportView):
 class Charges(GenericReportView):
     """
     CSV file of charges to be applied to each trippee.
+
+    All values are adjusted by financial aid, if applicable
     """
     file_prefix = 'Charges'
     
@@ -162,11 +164,18 @@ class Charges(GenericReportView):
             trips_year=self.get_trips_year(),
         ).prefetch_related(
             'registration'
-        )
+        )[:999]
 
     header = [
-        'name', 'netid', 'total charge', 'aid award (percentage)',
-        'trip', 'bus', 'doc membership', 'green fund donation'
+        'name',
+        'netid',
+        'total charge',
+        'aid award (percentage)',
+        'trip',
+        'bus',
+        'doc membership',
+        'green fund donation',
+        'cancellation'
     ]
     def get_row(self, incoming):
         reg = incoming.get_registration()
@@ -175,10 +184,11 @@ class Charges(GenericReportView):
             incoming.netid,
             incoming.compute_cost(),
             incoming.financial_aid or '',
-            self.trips_cost() if incoming.trip_assignment or incoming.cancelled else '',
+            incoming.trip_cost or '',
             incoming.bus_cost() or '',
-            self.membership_cost() if reg and reg.doc_membership == YES else '',
-            reg.green_fund_donation if reg and reg.green_fund_donation else ''
+            incoming.doc_membership_cost or '',
+            incoming.green_fund_donation or '',
+            incoming.cancellation_cost or '',
         ]
 
     @cache_as('_membership_cost')

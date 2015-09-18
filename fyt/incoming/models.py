@@ -1,3 +1,6 @@
+import functools
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
@@ -26,6 +29,19 @@ def sort_by_lastname(students):
     Sort an iterable of IncomingStudents by last name.
     """
     return sorted(students, key=lambda x: x.lastname)
+
+
+def monetize(func):
+    """
+    Convert the return value of ``func`` to a 
+    Decimal with two decimal places.
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return Decimal(
+            func(*args, **kwargs)
+        ).quantize(Decimal('.01'))
+    return wrapper
 
 
 class IncomingStudent(DatabaseModel):
@@ -173,7 +189,8 @@ class IncomingStudent(DatabaseModel):
     def get_bus_from_hanover(self):
         return (self.bus_assignment_round_trip or
                 self.bus_assignment_from_hanover)
-
+    
+    @monetize
     def bus_cost(self):
         """
         Compute the cost of buses for this student.
@@ -182,13 +199,70 @@ class IncomingStudent(DatabaseModel):
         never both.
         """
         if self.bus_assignment_round_trip:
-            return self.bus_assignment_round_trip.cost_round_trip
+            return self._adjust(self.bus_assignment_round_trip.cost_round_trip)
 
         one_way_cost = lambda x: x.cost_one_way if x else 0
-        return (
+        return self._adjust(
             one_way_cost(self.bus_assignment_to_hanover) +
             one_way_cost(self.bus_assignment_from_hanover)
         )
+
+    @property
+    @monetize
+    def cancellation_cost(self):
+        """
+        Cost if a trippee cancels. Use a custom fee if provided,
+        otherwise charge the regular cost of trips (adjusted by
+        financial aid).
+        """
+        trips_cost = Settings.objects.get(trips_year=self.trips_year).trips_cost
+
+        if not self.cancelled:
+            return 0
+
+        if self.cancelled_fee is None:
+            return self._adjust(trips_cost)
+        else:
+            return self.cancelled_fee
+
+    @property
+    @monetize
+    def trip_cost(self):
+        """
+        Cost of trip assignment, if any, adjusted by financial aid.
+        """
+        trip_cost = Settings.objects.get(trips_year=self.trips_year).trips_cost
+
+        if self.trip_assignment:
+            return self._adjust(trip_cost)
+        return 0
+
+    @property
+    @monetize
+    def doc_membership_cost(self):
+        """
+        Financial aid adjusted DOC membership cost, if elected.
+        """
+        member_cost = Settings.objects.get(trips_year=self.trips_year).doc_membership_cost
+        reg = self.get_registration()
+        if reg and reg.doc_membership == YES:
+            return self._adjust(member_cost)
+        return 0
+
+    @property
+    @monetize
+    def green_fund_donation(self):
+        """
+        Trippee's donation to the green fund
+        """
+        reg = self.get_registration()
+        return reg.green_fund_donation if reg else 0
+
+    def _adjust(self, value):
+        """
+        Adjust a cost by this trippee's financial aid.
+        """
+        return value * (100 - self.financial_aid) / 100
 
     def compute_cost(self):
         """
@@ -198,26 +272,13 @@ class IncomingStudent(DatabaseModel):
         doc membership, adjusted by financial aid, plus 
         any green fund donation and cancellation fees
         """
-        costs = Settings.objects.get(trips_year=self.trips_year)
-
-        base_cost = self.bus_cost()  # costs adjusted by fin-aid
-        extra = 0  # unadjusted
-
-        if self.trip_assignment:
-            base_cost += costs.trips_cost
-        elif self.cancelled:  # last-minute cancellations are still charged
-            if self.cancelled_fee is None:
-                base_cost += costs.trips_cost
-            else:  # ...but sometimes not the full amount
-                extra += self.cancelled_fee
-
-        reg = self.get_registration()
-        if reg and reg.doc_membership == YES:
-            base_cost += costs.doc_membership_cost
-        if reg:
-            extra += reg.green_fund_donation
-
-        return (base_cost) * (100 - self.financial_aid) / 100 + extra
+        return sum([
+            self.trip_cost,
+            self.cancellation_cost,
+            self.bus_cost(),
+            self.doc_membership_cost,
+            self.green_fund_donation
+        ])
 
     def clean(self):
         one_way = (self.bus_assignment_to_hanover or
