@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^registrations/feelings/$', Feelings.as_view(), name="feelings"),
     url(r'^tshirts/$', TShirts.as_view(), name='tshirts'),
     url(r'^foodboxes/$', Foodboxes.as_view(), name='foodboxes'),
+    url(r'^statistics/$', Statistics.as_view(), name='statistics'),
 ]

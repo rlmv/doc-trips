@@ -1,25 +1,24 @@
 import csv
-from collections import defaultdict
 
 from braces.views import AllVerbsMixin
-from vanilla import View, TemplateView
+from vanilla import View
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.db.models import Avg, Q
 
-from fyt.db.views import TripsYearMixin
+from fyt.db.views import TripsYearMixin, DatabaseTemplateView
 from fyt.applications.models import GeneralApplication as Application 
-from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.incoming.models import Registration, IncomingStudent
 from fyt.incoming.models import Settings
+from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.utils.choices import YES, S, M, L, XL
 from fyt.utils.cache import cache_as
 from fyt.trips.models import Trip
 
-# TODO use a ListView here?
 
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
+    # TODO use a ListView here?
     
     file_prefix = None
     header = None
@@ -240,7 +239,7 @@ def trippee_tshirts(trips_year):
     ))
 
 
-class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+class TShirts(DatabaseTemplateView):
     """
     Counts of all tshirt sizes requested by leaders, croos, and trippees.
     """
@@ -428,3 +427,26 @@ class Foodboxes(GenericReportView):
             '1' if trip.supp_foodbox else '',
             trip.bagels
         ]
+
+
+class Statistics(DatabaseTemplateView):
+    """
+    Basic statistics regarding trippees
+    """
+    template_name = 'reports/statistics.html'
+   
+    def extra_context(self):
+        IS = IncomingStudent
+
+        counts = lambda qs: {
+            'firstyear_count': qs.filter(incoming_status=IS.FIRSTYEAR).count(),
+            'transfer_count': qs.filter(incoming_status=IS.TRANSFER).count(),
+            'exchange_count': qs.filter(incoming_status=IS.EXCHANGE).count(),
+            'unlabeled': qs.filter(incoming_status='').count(),
+            'total': qs.count()
+        }
+
+        return {
+            'with_trip': counts(IS.objects.with_trip(self.kwargs['trips_year'])),
+            'cancelled': counts(IS.objects.cancelled(self.kwargs['trips_year']))
+        }

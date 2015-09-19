@@ -1,0 +1,14 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h1> Statistics </h1>
+{% endblock %}
+
+{% block content %}
+
+<p> This is the total numbers of Incoming Students who went on a trip and who cancelled last-minute, sorted by their status (if one is set). </p>
+
+{% include "reports/_incoming_counts.html" with counts=with_trip title="Went on Trip" %}
+{% include "reports/_incoming_counts.html" with counts=cancelled title="Cancelled" %}
+
+{% endblock %}

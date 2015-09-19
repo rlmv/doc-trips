@@ -618,6 +618,21 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         actual = list(IncomingStudent.objects.with_trip(trips_year))
         self.assertEqual(actual, [assigned])
 
+    def test_cancelled(self):
+        trips_year = self.init_trips_year()
+        cancelled = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            cancelled=True
+        )
+        not_cancelled = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            cancelled=False,
+            trip_assignment=mommy.make(Trip)
+        )
+        self.assertQsEqual(IncomingStudent.objects.cancelled(trips_year), [cancelled])
+
 
 class RegistrationViewsTestCase(WebTestCase):
 

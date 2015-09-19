@@ -137,11 +137,14 @@ class IncomingStudent(DatabaseModel):
     ethnic_code = models.CharField(max_length=100)
     gender = models.CharField(max_length=100)
     birthday = models.CharField(max_length=20)
-    
+
+    EXCHANGE = 'EXCHANGE'
+    TRANSFER = 'TRANSFER'
+    FIRSTYEAR = 'FIRSTYEAR'
     INCOMING_STATUS_CHOICES = (
-        ('EXCHANGE', 'Exchange'),
-        ('TRANSFER', 'Transfer'),
-        ('FIRSTYEAR', 'First Year'),
+        (EXCHANGE, 'Exchange'),
+        (TRANSFER, 'Transfer'),
+        (FIRSTYEAR, 'First Year'),
     )
     incoming_status = models.CharField(
         max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True)
