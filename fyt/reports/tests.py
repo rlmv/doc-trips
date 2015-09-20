@@ -90,6 +90,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # incoming student to be charged:
         incoming1 = mommy.make(
             IncomingStudent,
+            name='1',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # force trip to exist
             bus_assignment_round_trip__cost_round_trip=100,
@@ -100,6 +101,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # another, without a registration
         incoming2 = mommy.make(
             IncomingStudent,
+            name='2',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # ditto
             financial_aid=0
@@ -107,6 +109,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # another with no trip but with doc membership
         incoming3 = mommy.make(
             IncomingStudent,
+            name='3',
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
@@ -115,6 +118,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # another with no trip, no membership, but green fund donation
         incoming4 = mommy.make(
             IncomingStudent,
+            name='4',
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
@@ -124,6 +128,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # last-minute cancellation
         incoming5 = mommy.make(
             IncomingStudent,
+            name='5',
             trips_year=trips_year,
             trip_assignment=None,
             cancelled=True,
@@ -195,6 +200,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_trips_year()
         t1 = mommy.make(
             IncomingStudent,
+            name='1',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,
             trip_assignment__section__leaders_arrive=date(2015, 1, 1),
@@ -204,6 +210,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         )
         t2 = mommy.make(
             IncomingStudent,
+            name='2',
             trips_year=trips_year,
             trip_assignment=None
         )
