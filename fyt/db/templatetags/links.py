@@ -130,3 +130,12 @@ def download_button(url, name=None):
         '<a href="%s" class="btn btn-success"> '
         '<i class="fa fa-download"></i> %s </a>' % (url, name)
     )
+
+
+@register.filter
+def upload_button(url, name=None):
+    name = name or "Upload"
+    return mark_safe(
+        '<a href="%s" class="btn btn-primary"> '
+        '<i class="fa fa-upload"></i> %s </a>' % (url, name)
+    )

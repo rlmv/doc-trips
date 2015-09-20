@@ -168,6 +168,20 @@ class ExternalBusCSV(GenericReportView):
         return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
 
 
+class TrippeesCSV(GenericReportView):
+    """
+    All trippees going on trips
+    """
+    file_prefix = 'Trippees'
+
+    def get_queryset(self):
+        return IncomingStudent.objects.with_trip(self.kwargs['trips_year'])
+
+    header = ['name', 'netid']
+    def get_row(self, trippee):
+        return [trippee.name, trippee.netid.upper()]
+
+
 class Charges(GenericReportView):
     """
     CSV file of charges to be applied to each trippee.

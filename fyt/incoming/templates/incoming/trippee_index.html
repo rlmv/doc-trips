@@ -5,15 +5,25 @@
 {% block header %}
 <h2> 
   <span class="badge"> {{ trippees.count }} </span> Incoming Students 
-  <small>
-    <a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"> <i class="fa fa-upload"></i> Upload Incoming </a> 
-    <a class="btn btn-success" href="{% url 'db:reports:charges' trips_year=trips_year %}"> <i class="fa fa-download"></i> Charges </a>
-    <a class="btn btn-success" href="{% url 'db:reports:housing' trips_year=trips_year %}"> <i class="fa fa-download"></i> Housing </a>
-
-  </small>
 </h2>
 {% endblock %}
 
 {% block content %}
+
+<div>
+  {% url 'db:upload_incoming' trips_year=trips_year as url_ %}
+  {{ url_|upload_button:"Upload Incoming" }}
+  
+  {% url 'db:reports:charges' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Charges" }}
+
+  {% url 'db:reports:housing' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Housing" }}
+
+  {% url 'db:reports:trippees' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Trippees" }}
+</div>
+
 {% render_table table %}
+
 {% endblock content %}

@@ -33,6 +33,18 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         with self.assertRaises(StopIteration):
             next(iter)
 
+    def assertViewReturns(self, urlpattern, target):
+        """
+        Test a view by visiting it with director priveleges and
+        comparing returned csv to ``target``.
+
+        ``urlpattern`` is a reversable pattern,
+        ``target`` is a list of ``dicts``
+        """
+        url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        self.assertEqual(rows, target)
+        
     def test_volunteer_csv(self):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year=trips_year)
@@ -83,6 +95,24 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'netid': croo.applicant.netid.upper()
         }]
         self.assertEqual(rows, target)
+
+    def test_trippees_csv(self):
+        trips_year = self.init_trips_year()
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=mommy.make(Trip)
+        )
+        not_trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None
+        )
+        target = [{
+            'name': trippee.name,
+            'netid': trippee.netid.upper()
+        }]
+        self.assertViewReturns('db:reports:trippees', target)
 
     def test_charges_report(self):
         trips_year = self.init_trips_year()
