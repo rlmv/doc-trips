@@ -114,6 +114,28 @@ class CrooApplicationsCSV(GenericReportView):
                       application.croo_supplement.grades.all()]
 
 
+class TripLeadersCSV(GenericReportView):
+    file_prefix = 'Leaders'
+
+    def get_queryset(self):
+        return Application.objects.leaders(
+            self.kwargs['trips_year']
+        ).select_related('applicant')
+
+    header = ['name', 'netid']
+    def get_row(self, leader):
+        return [leader.name, leader.applicant.netid.upper()]
+
+
+class CrooMembersCSV(TripLeadersCSV):
+    file_prefix = 'Croo-Members'
+    
+    def get_queryset(self):
+        return Application.objects.croo_members(
+            self.kwargs['trips_year']
+        ).select_related('applicant')
+
+
 class FinancialAidCSV(GenericReportView):
 
     file_prefix = 'Financial-aid'

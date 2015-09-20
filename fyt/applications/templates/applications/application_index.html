@@ -1,6 +1,7 @@
 {% extends "db/base.html" %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
+{% load links %}
 
 {% block header %}
 <h2> <span class="badge"> {{ applications.count }} </span> Volunteers </h2>
@@ -12,18 +13,23 @@
 
 {% block content %}
 <div>
-  <a class="btn btn-success" href="{% url 'db:reports:all_apps' trips_year=trips_year %}"> 
-    <i class="fa fa-download"></i> All Applications
-  </a>
-  <a class="btn btn-success" href="{% url 'db:reports:trip_leader_apps' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Trip Leader Applications 
-  </a>
-  <a class="btn btn-success" href="{% url 'db:reports:croo_apps' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Croo Applications 
-  </a>
-  <a class="btn btn-success" href="{% url 'db:reports:volunteer_dietary' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Dietary Restrictions
-  </a>
+  {% url 'db:reports:all_apps' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"All Applications" }}
+
+  {% url 'db:reports:trip_leader_apps' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Trip Leader Applications" }}
+
+  {% url 'db:reports:croo_apps' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Croo Applications" }}
+
+  {% url 'db:reports:volunteer_dietary' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Dietary Restrictions" }}
+
+  {% url 'db:reports:leaders' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Trip Leaders" }}
+
+  {% url 'db:reports:croo_membesr' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Croo Members" }}
 </div>
 
 {% render_table table %}

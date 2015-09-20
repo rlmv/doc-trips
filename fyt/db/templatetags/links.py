@@ -121,3 +121,12 @@ def delete_button(url):
         '<a href="%s" class="btn btn-danger"> '
         '<i class="fa fa-trash"></i> Delete </a>' % url
     )
+
+
+@register.filter
+def download_button(url, name=None):
+    name = name or "Download"
+    return mark_safe(
+        '<a href="%s" class="btn btn-success"> '
+        '<i class="fa fa-download"></i> %s </a>' % (url, name)
+    )

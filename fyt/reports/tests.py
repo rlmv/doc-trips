@@ -50,7 +50,40 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         self.assertEqual(row['name'], application.applicant.name)
         self.assertEqual(row['netid'], application.applicant.netid)
         self.assertEqual(len(rows), 1)
-    
+
+    def test_trip_leader_csv(self):
+        trips_year = self.init_trips_year()
+        leader = self.make_application(
+            trips_year=trips_year,
+            status=GeneralApplication.LEADER
+        )
+        not_leader = self.make_application(trips_year=trips_year)
+
+        url = reverse('db:reports:leaders', kwargs={'trips_year': trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        target = [{
+            'name': leader.name,
+            'netid': leader.applicant.netid.upper()
+        }]
+        
+        self.assertEqual(rows, target)
+
+    def test_croo_members_csv(self):
+        trips_year = self.init_trips_year()
+        croo = self.make_application(
+            trips_year=trips_year,
+            status=GeneralApplication.CROO
+        )
+        not_croo = self.make_application(trips_year=trips_year)
+
+        url = reverse('db:reports:croo_members', kwargs={'trips_year': trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        target = [{
+            'name': croo.name,
+            'netid': croo.applicant.netid.upper()
+        }]
+        self.assertEqual(rows, target)
+
     def test_charges_report(self):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year, doc_membership_cost=91, trips_cost=250)
@@ -199,6 +232,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'fysep': '',
             'international': '',
         }]
+        self.assertEqual(rows, target)
 
 
     def test_dietary_restrictions(self):
@@ -407,4 +441,5 @@ class TShirtCountTestCase(TripsTestCase):
         self.assertEqual(target, trippee_tshirts(trips_year))
         
 
+        
         

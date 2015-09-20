@@ -60,12 +60,12 @@ class ApplicationTestMixin():
             t.applications_close += timedelta(-1)
             t.save()
 
-    def make_application(self, status=GeneralApplication.PENDING, trips_year=None):
+    def make_application(self, trips_year=None, **kwargs):
 
         if trips_year is None:
                 trips_year = self.current_trips_year
 
-        return make_application(status=status, trips_year=trips_year)
+        return make_application(trips_year=trips_year, **kwargs)
 
 
 class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
@@ -456,6 +456,30 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         
         qs = GeneralApplication.objects.leader_or_croo_applications(trips_year)
         self.assertEqual(set(qs), set([app1, app2]))
+
+
+    def test_leaders(self):
+            trips_year = self.init_trips_year()
+            leader = make_application(
+                    trips_year=trips_year,
+                    status=GeneralApplication.LEADER,
+                    assigned_trip=mommy.make(Trip)
+            )
+            not_leader = make_application(
+                    trips_year=trips_year,
+                    assigned_trip=None
+            )
+            self.assertQsEqual(GeneralApplication.objects.leaders(trips_year), [leader])
+
+    def test_croo_members(self):
+            trips_year = self.init_trips_year()
+            croo = make_application(
+                    trips_year=trips_year,
+                    status=GeneralApplication.CROO
+            )
+            not_croo = self.make_application(trips_year=trips_year)
+            self.assertQsEqual(GeneralApplication.objects.croo_members(trips_year), [croo])
+
 
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
