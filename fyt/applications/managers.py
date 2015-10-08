@@ -1,3 +1,4 @@
+import random
 
 from django.db import models
 from django.db.models import Q
@@ -42,7 +43,7 @@ class ApplicationManager(models.Manager):
     def _get_random_application(self, user, trips_year, num):
         """ 
         Return a random PENDING application that user has not graded, 
-        which has only been graded by num people. 
+        which has only been graded by num people.
 
         Note that the status lives on the parent GeneralApplication object.
         """
@@ -51,16 +52,19 @@ class ApplicationManager(models.Manager):
         from fyt.applications.models import GeneralApplication
         PENDING = GeneralApplication.PENDING
 
-        return (self.completed_applications(trips_year=trips_year).
+        apps = (self.completed_applications(trips_year=trips_year).
                 filter(application__status=PENDING)
-                .annotate(models.Count('grades'))
-                .filter(grades__count__lte=num)
                 .exclude(grades__grader=user)
                 .exclude(skips__grader=user)
-                # random database-level ordering. 
-                # TODO: this may be expensive?
-                .order_by('?').first())
+                .annotate(grade_count=models.Count('grades'))
+                .filter(grade_count=num))
 
+        # choose random element manually 
+        # .order_by('?') is buggy in 1.8
+        cnt = apps.count()
+        if cnt > 0:
+            return apps[random.randrange(0, cnt)]
+        return None
 
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(document='')   

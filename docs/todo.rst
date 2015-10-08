@@ -3,7 +3,6 @@ Things TODO
 
 Immediate
 ---------
-* Upgrade to Django 1.8
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Update dietary/medical info fields for leaders and incoming students
 

@@ -527,7 +527,7 @@ class ViewsTestCase(WebTestCase):
         # get matrix
         resp = self.app.get(url, user=self.mock_director())
         # click add -> CreateView
-        resp = resp.click(description='add')
+        resp = resp.click(description='<i class="fa fa-plus">')
         # submit create form
         resp.form.submit()
         Trip.objects.get(section=section, template=template)

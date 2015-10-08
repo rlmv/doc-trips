@@ -28,7 +28,7 @@ class MigrateForwardTestCase(TripsTestCase):
                 field1 = obj1._meta.get_field(name)
                 field2 = obj2._meta.get_field(name)
             
-                if isinstance(field1, models.ForeignKey):  # recurse
+                if isinstance(field1, models.ForeignKey) and not name.endswith('_id'):  # recurse
                     self.assertDataEqual(getattr(obj1, name),
                                          getattr(obj2, name))
 
@@ -40,7 +40,7 @@ class MigrateForwardTestCase(TripsTestCase):
                 self.assertEqual(field1, field2)
             except models.fields.FieldDoesNotExist:  # reverse/related field
                 pass
-        
+
     def test_make_next_year(self):
         trips_year = self.init_trips_year()
         next_year = trips_year.make_next_year()

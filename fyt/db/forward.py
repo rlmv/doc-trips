@@ -65,21 +65,15 @@ class Forward():
         new_obj = copy.copy(obj)
 
         # recursively copy foreign keys
-        for name in obj._meta.get_all_field_names():
-            try:
-                field = obj._meta.get_field(name)
-            except models.fields.FieldDoesNotExist:  # reverse/related field
-                continue
-
-            if isinstance(field, models.ForeignKey) and (
-                    field.related_field.model != TripsYear):
-                if getattr(obj, name) is not None:
-                    new_rel = self.copy_object_forward(getattr(obj, name))
+        for field in obj._meta.get_fields():
+            if isinstance(field, models.ForeignKey) and field.related_model != TripsYear:
+                if getattr(obj, field.name) is not None:
+                    new_rel = self.copy_object_forward(getattr(obj, field.name))
                 else:
                     new_rel = None
-                setattr(new_obj, name, new_rel)
+                setattr(new_obj, field.name, new_rel)
 
-            if isinstance(field, models.ManyToManyField):
+            if field.many_to_many:
                 raise Exception(
                     'ManyToManyFields are not currently handled '
                     'by copy_object_forward')

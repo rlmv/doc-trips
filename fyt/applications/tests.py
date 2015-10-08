@@ -303,22 +303,16 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         next = LeaderApplication.objects.next_to_grade(self.user)
         self.assertIsNone(next, 'should not be able to grade apps from previous years')
 
-    
     def test_correct_number_of_grades(self):
         application = self.make_application()
         for i in range(LeaderApplication.NUMBER_OF_GRADES):
-                # works because we are not actually grading with self.user
-                next = LeaderApplication.objects.next_to_grade(self.user)
-                self.assertEquals(next, application.leader_supplement)
                 grade = mommy.make(
-                        LeaderApplicationGrade, 
+                        LeaderApplicationGrade,
                         trips_year=self.trips_year,
                         application=application.leader_supplement
                 )
-            
         next = LeaderApplication.objects.next_to_grade(self.user)
         self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
-
 
     def test_skipped_applications_are_not_returned(self):
 
