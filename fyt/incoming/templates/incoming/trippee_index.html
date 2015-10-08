@@ -1,42 +1,29 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load render_table from django_tables2 %}
 
 {% block header %}
 <h2> 
   <span class="badge"> {{ trippees.count }} </span> Incoming Students 
-  <small>
-    <a class="btn btn-primary" href="{% url 'db:upload_incoming' trips_year=trips_year %}"> <i class="fa fa-upload"></i> Upload Incoming </a> 
-    <a class="btn btn-success" href="{% url 'db:reports:charges' trips_year=trips_year %}"> <i class="fa fa-download"></i> Charges </a>
-    <a class="btn btn-success" href="{% url 'db:reports:housing' trips_year=trips_year %}"> <i class="fa fa-download"></i> Housing </a>
-
-  </small>
 </h2>
 {% endblock %}
 
 {% block content %}
 
-<table class="table table-condensed">
-  <tr>
-    <th> Student </th>
-    <th> Registration </th>
-    <th> Trip Assignment </th>
-    <th> Bus Assignment </th>
-    <th> Bus TO Hanover </th>
-    <th> Bus FROM Hanover </th>
-    <th> Bus Request </th>
-  </tr>
-  {% for trippee in trippees %}
-  <tr> 
-    <td> {{ trippee|detail_link }} </td>
-    <td> {{ trippee.get_registration|detail_link|default:"" }} </td>
-    <td> {{ trippee.trip_assignment|detail_link|default:"" }} </td>
-    <td> {{ trippee.bus_assignment_round_trip|detail_link|default:"" }} </td>
-    <td> {{ trippee.bus_assignment_to_hanover|detail_link|default:"" }} </td>
-    <td> {{ trippee.bus_assignment_from_hanover|detail_link|default:"" }} </td>
-    <td> {{ trippee.get_registration.bus_stop|detail_link|default:"" }} </td>
-  </tr>
-  {% endfor %}
-  <tr>
-</table>
+<div>
+  {% url 'db:upload_incoming' trips_year=trips_year as url_ %}
+  {{ url_|upload_button:"Upload Incoming" }}
+  
+  {% url 'db:reports:charges' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Charges" }}
+
+  {% url 'db:reports:housing' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Housing" }}
+
+  {% url 'db:reports:trippees' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Trippees" }}
+</div>
+
+{% render_table table %}
 
 {% endblock content %}

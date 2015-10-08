@@ -11,14 +11,10 @@
 {% block links %}
 <p>
   {% if update_url %}
-  <a href="{{ update_url }}" class="btn btn-primary"> 
-    <i class="fa fa-wrench"></i> Edit 
-  </a>
+  {{ update_url|edit_button }}
   {% endif %}
   {% if delete_url %}
-  <a href="{{ delete_url }}" class="btn btn-danger"> 
-    <i class="fa fa-trash"></i> Delete 
-  </a>
+  {{ delete_url|delete_button }}
   {% endif %}
 <p>
 {% endblock links %}

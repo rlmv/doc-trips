@@ -33,6 +33,18 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         with self.assertRaises(StopIteration):
             next(iter)
 
+    def assertViewReturns(self, urlpattern, target):
+        """
+        Test a view by visiting it with director priveleges and
+        comparing returned csv to ``target``.
+
+        ``urlpattern`` is a reversable pattern,
+        ``target`` is a list of ``dicts``
+        """
+        url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        self.assertEqual(rows, target)
+        
     def test_volunteer_csv(self):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year=trips_year)
@@ -50,23 +62,76 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         self.assertEqual(row['name'], application.applicant.name)
         self.assertEqual(row['netid'], application.applicant.netid)
         self.assertEqual(len(rows), 1)
-    
+
+    def test_trip_leader_csv(self):
+        trips_year = self.init_trips_year()
+        leader = self.make_application(
+            trips_year=trips_year,
+            status=GeneralApplication.LEADER
+        )
+        not_leader = self.make_application(trips_year=trips_year)
+
+        url = reverse('db:reports:leaders', kwargs={'trips_year': trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        target = [{
+            'name': leader.name,
+            'netid': leader.applicant.netid.upper()
+        }]
+        
+        self.assertEqual(rows, target)
+
+    def test_croo_members_csv(self):
+        trips_year = self.init_trips_year()
+        croo = self.make_application(
+            trips_year=trips_year,
+            status=GeneralApplication.CROO
+        )
+        not_croo = self.make_application(trips_year=trips_year)
+
+        url = reverse('db:reports:croo_members', kwargs={'trips_year': trips_year})
+        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        target = [{
+            'name': croo.name,
+            'netid': croo.applicant.netid.upper()
+        }]
+        self.assertEqual(rows, target)
+
+    def test_trippees_csv(self):
+        trips_year = self.init_trips_year()
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=mommy.make(Trip)
+        )
+        not_trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None
+        )
+        target = [{
+            'name': trippee.name,
+            'netid': trippee.netid.upper()
+        }]
+        self.assertViewReturns('db:reports:trippees', target)
+
     def test_charges_report(self):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year, doc_membership_cost=91, trips_cost=250)
         # incoming student to be charged:
         incoming1 = mommy.make(
             IncomingStudent,
+            name='1',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # force trip to exist
-            bus_assignment_round_trip__cost_round_trip=37,
-            financial_aid=15,
+            bus_assignment_round_trip__cost_round_trip=100,
+            financial_aid=10,
             registration__doc_membership=YES,
             registration__green_fund_donation=20
         )
         # another, without a registration
         incoming2 = mommy.make(
             IncomingStudent,
+            name='2',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,  # ditto
             financial_aid=0
@@ -74,6 +139,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # another with no trip but with doc membership
         incoming3 = mommy.make(
             IncomingStudent,
+            name='3',
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
@@ -82,6 +148,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # another with no trip, no membership, but green fund donation
         incoming4 = mommy.make(
             IncomingStudent,
+            name='4',
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
@@ -91,6 +158,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         # last-minute cancellation
         incoming5 = mommy.make(
             IncomingStudent,
+            name='5',
             trips_year=trips_year,
             trip_assignment=None,
             cancelled=True,
@@ -109,47 +177,52 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': incoming1.name,
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
-            'aid award (percentage)': '15',
-            'trip': '250',
-            'bus': '37',
-            'doc membership': '91',
-            'green fund donation': '20',
+            'aid award (percentage)': '10',
+            'trip': '225.00',
+            'bus': '90.00',
+            'doc membership': '81.90',
+            'green fund': '20.00',
+            'cancellation': ''
         }, {
             'name': incoming2.name,
             'netid': incoming2.netid,
             'total charge': str(incoming2.compute_cost()),
             'aid award (percentage)': '',
-            'trip': '250',
+            'trip': '250.00',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '',
+            'green fund': '',
+            'cancellation': ''
         }, {
             'name': incoming3.name,
             'netid': incoming3.netid,
-            'total charge': '91.0',
+            'total charge': '91.00',
             'aid award (percentage)': '',
             'trip': '',
             'bus': '',
-            'doc membership': '91',
-            'green fund donation': '',
+            'doc membership': '91.00',
+            'green fund': '',
+            'cancellation': ''
         }, {
             'name': incoming4.name,
             'netid': incoming4.netid,
-            'total charge': '12.0',
+            'total charge': '12.00',
             'aid award (percentage)': '',
             'trip': '',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '12',
+            'green fund': '12.00',
+            'cancellation': ''
         }, {
             'name': incoming5.name,
             'netid': incoming5.netid,
-            'total charge': '250.0',
+            'total charge': '250.00',
             'aid award (percentage)': '',
-            'trip': '250',
+            'trip': '',
             'bus': '',
             'doc membership': '',
-            'green fund donation': '',
+            'green fund': '',
+            'cancellation': '250.00'
         }]
         self.assertEqual(rows, target)
 
@@ -157,6 +230,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_trips_year()
         t1 = mommy.make(
             IncomingStudent,
+            name='1',
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,
             trip_assignment__section__leaders_arrive=date(2015, 1, 1),
@@ -166,6 +240,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         )
         t2 = mommy.make(
             IncomingStudent,
+            name='2',
             trips_year=trips_year,
             trip_assignment=None
         )
@@ -194,6 +269,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'fysep': '',
             'international': '',
         }]
+        self.assertEqual(rows, target)
 
 
     def test_dietary_restrictions(self):
@@ -402,4 +478,5 @@ class TShirtCountTestCase(TripsTestCase):
         self.assertEqual(target, trippee_tshirts(trips_year))
         
 
+        
         

@@ -142,4 +142,9 @@ class GeneralApplicationManager(models.Manager):
         return (self.filter(trips_year=trips_year)
                 .exclude(Q(leader_supplement__document="") &
                          Q(croo_supplement__document="")))
-            
+    
+    def leaders(self, trips_year):
+        return self.filter(trips_year=trips_year, status=self.model.LEADER)
+
+    def croo_members(self, trips_year):
+        return self.filter(trips_year=trips_year, status=self.model.CROO)

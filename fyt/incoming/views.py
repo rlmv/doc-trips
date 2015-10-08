@@ -12,10 +12,10 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
-from django_tables2 import RequestConfig
+from django_tables2.views import SingleTableMixin
 
 from .models import Registration, IncomingStudent, Settings
-from .tables import RegistrationTable
+from .tables import RegistrationTable, IncomingStudentTable
 from .forms import (RegistrationForm, UploadIncomingStudentsForm,
                     AssignmentForm, TrippeeInfoForm)
 from fyt.db.models import TripsYear
@@ -194,11 +194,13 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 # ----- database internal views --------
 
 
-class RegistrationIndex(DatabaseListView):
+class RegistrationIndex(SingleTableMixin, DatabaseListView):
     """ 
     All trippee registrations.
     """
     model = Registration
+    table_class = RegistrationTable
+    table_pagination = False
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
     
@@ -215,8 +217,6 @@ class RegistrationIndex(DatabaseListView):
         kwargs['unmatched'] = (
             Registration.objects.unmatched(self.get_trips_year())
         )
-        kwargs['table'] = RegistrationTable(self.object_list)
-        RequestConfig(self.request, paginate=False).configure(kwargs['table'])
         return super(RegistrationIndex, self).get_context_data(**kwargs)
 
 
@@ -310,11 +310,13 @@ class RegistrationDelete(DatabaseDeleteView):
     success_url_pattern = 'db:registration_index'
 
 
-class IncomingStudentIndex(DatabaseListView):
+class IncomingStudentIndex(SingleTableMixin, DatabaseListView):
     """ 
     All incoming students
     """
     model = IncomingStudent
+    table_class = IncomingStudentTable
+    table_pagination = False
     template_name = 'incoming/trippee_index.html'
     context_object_name = 'trippees'
 
@@ -336,8 +338,9 @@ class IncomingStudentDetail(DatabaseDetailView):
 
     admin_fields = (
         'registration', 'financial_aid',
+        'cancelled', 'cancelled_fee',
         ('total cost', 'compute_cost'),
-        'med_info', 'show_med_info',
+        'show_med_info', 'med_info',
         'decline_reason', 'notes'
     )
     college_fields = (
@@ -349,6 +352,9 @@ class IncomingStudentDetail(DatabaseDetailView):
     def get_context_data(self, **kwargs):
         kwargs['edit_assignment_url'] = reverse(
             'db:incomingstudent_update_assignment', kwargs=self.kwargs
+        )
+        kwargs['edit_admin_url'] = reverse(
+            'db:incomingstudent_update', kwargs=self.kwargs
         )
         return super(IncomingStudentDetail, self).get_context_data(**kwargs)
 

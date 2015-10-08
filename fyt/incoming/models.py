@@ -1,3 +1,6 @@
+import functools
+from decimal import Decimal
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
@@ -28,6 +31,23 @@ def sort_by_lastname(students):
     return sorted(students, key=lambda x: x.lastname)
 
 
+def monetize(func):
+    """
+    Decorator which converts the return value of ``func`` to 
+    a :class:`~decimal.Decimal` with two decimal places.
+
+    >>> identity = monetize(lambda x: x)
+    >>> identity(1.2)
+    Decimal('1.20')
+    """
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        return Decimal(
+            func(*args, **kwargs)
+        ).quantize(Decimal('.01'))
+    return wrapper
+
+
 class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
@@ -40,7 +60,8 @@ class IncomingStudent(DatabaseModel):
     objects = IncomingStudentManager()
 
     class Meta:
-        unique_together = ('netid', 'trips_year')
+        unique_together = ['netid', 'trips_year']
+        ordering = ['name']
 
     registration = models.OneToOneField(
         'Registration', editable=False, related_name='trippee', null=True
@@ -48,12 +69,6 @@ class IncomingStudent(DatabaseModel):
     trip_assignment = models.ForeignKey(
         Trip, on_delete=models.PROTECT,
         related_name='trippees', null=True, blank=True
-    )
-    cancelled = models.BooleanField(
-        'cancelled last-minute?', default=False, help_text=(
-            'this Trippee will still be charged even though '
-            'they are no longer going on a trip'
-        )
     )
     bus_assignment_round_trip = models.ForeignKey(
         Stop, on_delete=models.PROTECT, null=True, blank=True,
@@ -70,26 +85,38 @@ class IncomingStudent(DatabaseModel):
         related_name='riders_from_hanover',
         verbose_name="bus assignment FROM Hanover (one-way)"
     )
-
     financial_aid = models.PositiveSmallIntegerField(
         'percentage financial assistance',
         default=0, validators=[
             MinValueValidator(0), MaxValueValidator(100)
         ]
     )
-
+    cancelled = models.BooleanField(
+        'cancelled last-minute?', default=False, help_text=(
+            'This Trippee will still be charged even though '
+            'they are no longer going on a trip'
+        )
+    )
+    cancelled_fee = models.PositiveSmallIntegerField(
+        'cancellation fee', null=True, blank=True, help_text=(
+            "Customize the cancellation fee. Otherwise a "
+            "'cancelled' student is by default charged the full cost "
+            "of trips (adjusted by financial aid, if applicable). "
+        )
+    )
     med_info = models.TextField(
+        'additional med info',
         blank=True, help_text=(
             "Use this field for additional medical info not provided in "
             "the registration, or simplified information if some details "
-            "do not need to be provided to leaders and croos."
+            "do not need to be provided to leaders and croos. This is always "
+            "exported to leader packets."
         )
     )
     show_med_info = models.BooleanField(
         "Show registration med info?", default=False, help_text=(
             "Medical information in this trippee's registration "
-            "will be displayed in leader and croo packets. (This "
-            "information is hidden by default.)"
+            "will be displayed in leader and croo packets."
         )
     )
 
@@ -110,11 +137,14 @@ class IncomingStudent(DatabaseModel):
     ethnic_code = models.CharField(max_length=100)
     gender = models.CharField(max_length=100)
     birthday = models.CharField(max_length=20)
-    
+
+    EXCHANGE = 'EXCHANGE'
+    TRANSFER = 'TRANSFER'
+    FIRSTYEAR = 'FIRSTYEAR'
     INCOMING_STATUS_CHOICES = (
-        ('EXCHANGE', 'Exchange'),
-        ('TRANSFER', 'Transfer'),
-        ('FIRSTYEAR', 'First Year'),
+        (EXCHANGE, 'Exchange'),
+        (TRANSFER, 'Transfer'),
+        (FIRSTYEAR, 'First Year'),
     )
     incoming_status = models.CharField(
         max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True)
@@ -169,43 +199,88 @@ class IncomingStudent(DatabaseModel):
         return (self.bus_assignment_round_trip or
                 self.bus_assignment_from_hanover)
 
+    @monetize
     def bus_cost(self):
         """
         Compute the cost of buses for this student.
-
-        There is either a round-trip bus or one-way buses,
-        never both.
         """
         if self.bus_assignment_round_trip:
-            return self.bus_assignment_round_trip.cost_round_trip
+            return self._adjust(self.bus_assignment_round_trip.cost_round_trip)
 
         one_way_cost = lambda x: x.cost_one_way if x else 0
-        return (
+        return self._adjust(
             one_way_cost(self.bus_assignment_to_hanover) +
             one_way_cost(self.bus_assignment_from_hanover)
         )
 
-    def compute_cost(self):
+    @monetize
+    def trip_cost(self, costs):
         """
-        Compute the total charge for this student.
-        
-        Cost is the sum of the base cost, bus cost and
-        doc membership, adjusted by financial aid, plus 
-        any green fund donation.
+        Cost of trip assignment, if any, adjusted by financial aid.
         """
-        costs = Settings.objects.get(trips_year=self.trips_year)
-        base_cost = self.bus_cost()
+        if self.trip_assignment:
+            return self._adjust(costs.trips_cost)
+        return 0
 
-        # last-minute cancellations are still charged
-        if self.trip_assignment or self.cancelled:
-            base_cost += costs.trips_cost
+    @monetize
+    def cancellation_cost(self, costs):
+        """
+        Cost if a trippee cancels. Use a custom fee if provided,
+        otherwise charge the regular cost of trips (adjusted by
+        financial aid).
+        """
+        if not self.cancelled:
+            return 0
 
+        if self.cancelled_fee is None:
+            return self._adjust(costs.trips_cost)
+        else:
+            return self.cancelled_fee
+
+    @monetize
+    def doc_membership_cost(self, costs):
+        """
+        Financial aid adjusted DOC membership cost, if elected.
+        """
         reg = self.get_registration()
         if reg and reg.doc_membership == YES:
-            base_cost += costs.doc_membership_cost
-        green_fund = reg.green_fund_donation if reg else 0
+            return self._adjust(costs.doc_membership_cost)
+        return 0
 
-        return (base_cost) * (100 - self.financial_aid) / 100 + green_fund
+    @monetize
+    def green_fund_donation(self):
+        """
+        Trippee's donation to the green fund
+        """
+        reg = self.get_registration()
+        return reg.green_fund_donation if reg else 0
+
+    def _adjust(self, value):
+        """
+        Adjust a cost by this trippee's financial aid.
+        """
+        return value * (100 - self.financial_aid) / 100
+
+    def compute_cost(self, costs=None):
+        """
+        Compute the total charge for this student.
+
+        Cost is the sum of the base cost, bus cost and
+        doc membership, adjusted by financial aid, plus 
+        any green fund donation and cancellation fees
+
+        ``costs`` is a ``Settings`` instance
+        """
+        if costs is None:
+            costs = Settings.objects.get(trips_year=self.trips_year)
+
+        return sum([
+            self.trip_cost(costs),
+            self.cancellation_cost(costs),
+            self.bus_cost(),
+            self.doc_membership_cost(costs),
+            self.green_fund_donation()
+        ])
 
     def clean(self):
         one_way = (self.bus_assignment_to_hanover or
@@ -213,8 +288,6 @@ class IncomingStudent(DatabaseModel):
         if one_way and self.bus_assignment_round_trip:
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
-
-        
 
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
@@ -236,6 +309,9 @@ class Registration(DatabaseModel):
     Registration information for an incoming student.
     """
     objects = RegistrationManager()
+
+    class Meta:
+        ordering = ['name']
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     

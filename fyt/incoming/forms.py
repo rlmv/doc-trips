@@ -1,6 +1,6 @@
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
 from django import forms
 
 from .models import Registration, IncomingStudent
@@ -147,7 +147,9 @@ class TrippeeInfoForm(forms.ModelForm):
     class Meta:
         model = IncomingStudent
         fields = (
-            'financial_aid', 'notes',
+            'notes',
+            'financial_aid',
+            'cancelled', 'cancelled_fee',
             'med_info', 'show_med_info',
             'decline_reason',
             'name', 'netid', 'class_year',
@@ -155,10 +157,46 @@ class TrippeeInfoForm(forms.ModelForm):
             'incoming_status',
             'email', 'blitz', 'phone', 'address'
         )
-        widgets = {
-            'notes': forms.Textarea(attrs={'rows': 3}),
-            'med_info': forms.Textarea(attrs={'rows': 3}),
-        }
+        
+    helper = FormHelper()
+    helper.layout = Layout(
+        Field('notes', rows=3),
+        'financial_aid',
+        'decline_reason',
+        Fieldset(
+            'Cancellations',
+            Row(
+                Div('cancelled', css_class='col-sm-5'),
+                Div('cancelled_fee', css_class='col-sm-7'),
+            ),
+        ),
+        Fieldset(
+            'Medical Info',
+            HTML(
+                "<p> To protect trippee privacy, medical information provided "
+                "by trippees in their registration is, by default, NOT "
+                "exported to leader packets. Checking the box below will "
+                "export this information to leader packets.</p>"
+            ),
+            'show_med_info',
+            Field('med_info', rows=3),
+        ),
+        Fieldset(
+            'Contact and Demographic Info',
+            'name',
+            'netid',
+            'class_year',
+            'ethnic_code',
+            'gender',
+            'birthday',
+            'incoming_status',
+            'email',
+            'blitz',
+            'phone',
+            Field('address', rows=4),
+        ),
+        Submit('submit', 'Update')
+    )
 
 
 class UploadIncomingStudentsForm(forms.Form):

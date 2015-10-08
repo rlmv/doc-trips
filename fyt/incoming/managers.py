@@ -148,8 +148,16 @@ class IncomingStudentManager(models.Manager):
         return self.filter(
             trips_year=trips_year, trip_assignment__isnull=False
         )
-     
-   
+
+    def cancelled(self, trips_year):
+        """
+        All trippees who cancelled their trip
+        """
+        return self.filter(
+            trips_year=trips_year, cancelled=True
+        )
+
+
 class RegistrationManager(models.Manager):
 
     def want_financial_aid(self, trips_year):

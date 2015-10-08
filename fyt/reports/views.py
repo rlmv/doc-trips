@@ -1,25 +1,24 @@
 import csv
-from collections import defaultdict
 
 from braces.views import AllVerbsMixin
-from vanilla import View, TemplateView
+from vanilla import View
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponse
 from django.db.models import Avg, Q
 
-from fyt.db.views import TripsYearMixin
+from fyt.db.views import TripsYearMixin, DatabaseTemplateView
 from fyt.applications.models import GeneralApplication as Application 
-from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.incoming.models import Registration, IncomingStudent
 from fyt.incoming.models import Settings
+from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.utils.choices import YES, S, M, L, XL
 from fyt.utils.cache import cache_as
 from fyt.trips.models import Trip
 
-# TODO use a ListView here?
 
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
+    # TODO use a ListView here?
     
     file_prefix = None
     header = None
@@ -115,6 +114,28 @@ class CrooApplicationsCSV(GenericReportView):
                       application.croo_supplement.grades.all()]
 
 
+class TripLeadersCSV(GenericReportView):
+    file_prefix = 'Leaders'
+
+    def get_queryset(self):
+        return Application.objects.leaders(
+            self.kwargs['trips_year']
+        ).select_related('applicant')
+
+    header = ['name', 'netid']
+    def get_row(self, leader):
+        return [leader.name, leader.applicant.netid.upper()]
+
+
+class CrooMembersCSV(TripLeadersCSV):
+    file_prefix = 'Croo-Members'
+    
+    def get_queryset(self):
+        return Application.objects.croo_members(
+            self.kwargs['trips_year']
+        ).select_related('applicant')
+
+
 class FinancialAidCSV(GenericReportView):
 
     file_prefix = 'Financial-aid'
@@ -147,9 +168,25 @@ class ExternalBusCSV(GenericReportView):
         return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
 
 
+class TrippeesCSV(GenericReportView):
+    """
+    All trippees going on trips
+    """
+    file_prefix = 'Trippees'
+
+    def get_queryset(self):
+        return IncomingStudent.objects.with_trip(self.kwargs['trips_year'])
+
+    header = ['name', 'netid']
+    def get_row(self, trippee):
+        return [trippee.name, trippee.netid.upper()]
+
+
 class Charges(GenericReportView):
     """
     CSV file of charges to be applied to each trippee.
+
+    All values are adjusted by financial aid, if applicable
     """
     file_prefix = 'Charges'
     
@@ -165,34 +202,36 @@ class Charges(GenericReportView):
         )
 
     header = [
-        'name', 'netid', 'total charge', 'aid award (percentage)',
-        'trip', 'bus', 'doc membership', 'green fund donation'
+        'name',
+        'netid',
+        'total charge',
+        'aid award (percentage)',
+        'trip',
+        'bus',
+        'doc membership',
+        'green fund',
+        'cancellation'
     ]
     def get_row(self, incoming):
         reg = incoming.get_registration()
         return [
             incoming.name,
             incoming.netid,
-            incoming.compute_cost(),
+            incoming.compute_cost(self.costs),
             incoming.financial_aid or '',
-            self.trips_cost() if incoming.trip_assignment or incoming.cancelled else '',
+            incoming.trip_cost(self.costs) or '',
             incoming.bus_cost() or '',
-            self.membership_cost() if reg and reg.doc_membership == YES else '',
-            reg.green_fund_donation if reg and reg.green_fund_donation else ''
+            incoming.doc_membership_cost(self.costs) or '',
+            incoming.green_fund_donation() or '',
+            incoming.cancellation_cost(self.costs) or '',
         ]
 
-    @cache_as('_membership_cost')
-    def membership_cost(self):
+    @property
+    @cache_as('_costs')
+    def costs(self):
         return Settings.objects.get(
             trips_year=self.kwargs['trips_year']
-        ).doc_membership_cost
-
-    @cache_as('_trip_cost')
-    def trips_cost(self):
-        return Settings.objects.get(
-            trips_year=self.kwargs['trips_year']
-        ).trips_cost
-
+        )
 
 class DocMembers(GenericReportView):
     """
@@ -236,7 +275,7 @@ def trippee_tshirts(trips_year):
     ))
 
 
-class TShirts(DatabaseReadPermissionRequired, TripsYearMixin, TemplateView):
+class TShirts(DatabaseTemplateView):
     """
     Counts of all tshirt sizes requested by leaders, croos, and trippees.
     """
@@ -424,3 +463,26 @@ class Foodboxes(GenericReportView):
             '1' if trip.supp_foodbox else '',
             trip.bagels
         ]
+
+
+class Statistics(DatabaseTemplateView):
+    """
+    Basic statistics regarding trippees
+    """
+    template_name = 'reports/statistics.html'
+   
+    def extra_context(self):
+        IS = IncomingStudent
+
+        counts = lambda qs: {
+            'firstyear_count': qs.filter(incoming_status=IS.FIRSTYEAR).count(),
+            'transfer_count': qs.filter(incoming_status=IS.TRANSFER).count(),
+            'exchange_count': qs.filter(incoming_status=IS.EXCHANGE).count(),
+            'unlabeled': qs.filter(incoming_status='').count(),
+            'total': qs.count()
+        }
+
+        return {
+            'with_trip': counts(IS.objects.with_trip(self.kwargs['trips_year'])),
+            'cancelled': counts(IS.objects.cancelled(self.kwargs['trips_year']))
+        }
