@@ -49,21 +49,20 @@ def detail(db_object, fields=None):
             c = template.Context({'file': value})
             value = t.render(c)
 
-        if isinstance(field, models.ForeignKey):
-            if isinstance(value, get_user_model()):
+        if field.many_to_one:
+            if field.related_model == get_user_model():
                 # no detail views for users.
                 value = str(value)
 
             elif value is not None:
                 value = detail_link(value)
 
-        if isinstance(field, models.related.RelatedObject):
+        if field.is_relation:
             # related objects don't have a verbose_name
-            field.verbose_name = field.get_accessor_name()
+            if not hasattr(field, 'verbose_name'):
+                field.verbose_name = field.get_accessor_name()
         
-        if (isinstance(field, models.ManyToManyField) or 
-            isinstance(field, models.related.RelatedObject)):
-
+        if field.many_to_many or field.one_to_many:
             t = template.Template(
                 """{% for o in queryset %} <a href="{{ o.get_absolute_url }}"> {{ o }}</a>{% if not forloop.last %},{% endif %}{% endfor %}""")
             c = template.Context({'queryset': value.get_queryset()})

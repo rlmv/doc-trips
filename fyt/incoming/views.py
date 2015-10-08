@@ -324,7 +324,6 @@ class IncomingStudentIndex(SingleTableMixin, DatabaseListView):
         qs = super(IncomingStudentIndex, self).get_queryset()
         return qs.select_related(
             'registration__user',
-            'registration__bus_stop',
             'trip_assignment__section',
             'trip_assignment__template',
             'bus_assignment_round_trip'
