@@ -3,6 +3,8 @@ from model_mommy import mommy
 
 from ..forward import forward, Forward
 from ..models import TripsYear
+from fyt.applications.models import GeneralApplication as Application
+from fyt.incoming.models import IncomingStudent, Registration
 from fyt.test import TripsTestCase
 from fyt.transport.models import Route, Vehicle, Stop
 
@@ -105,3 +107,48 @@ class MigrateForwardTestCase(TripsTestCase):
         f = Forward(trips_year, next_year)
         new_stop = f.copy_object_forward(stop)
         self.assertIsNone(new_stop.route)
+
+    def test_trippee_med_info_is_deleted(self):
+        trips_year = self.init_trips_year()
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            med_info='sparkles',
+        )
+        registration = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            medical_conditions='magic',
+            food_allergies='mangoes',
+            dietary_restrictions='gluten free',
+            needs='dinosaurs',
+            epipen=True
+        )
+        forward()  # to next year
+        trippee.refresh_from_db()
+        registration.refresh_from_db()
+        self.assertEqual(trippee.med_info, '')
+        self.assertEqual(registration.medical_conditions, '')
+        self.assertEqual(registration.food_allergies, '')
+        self.assertEqual(registration.dietary_restrictions, '')
+        self.assertEqual(registration.needs, '')
+        self.assertIsNone(registration.epipen)
+
+    def test_application_med_info_is_deleted(self):
+        trips_year = self.init_trips_year()
+        app = mommy.make(
+            Application,
+            trips_year=trips_year,
+            medical_conditions='magic',
+            food_allergies='mangoes',
+            dietary_restrictions='gluten free',
+            needs='dinosaurs',
+            epipen=True
+        )
+        forward()  # to next year
+        app.refresh_from_db()
+        self.assertEqual(app.medical_conditions, '')
+        self.assertEqual(app.food_allergies, '')
+        self.assertEqual(app.dietary_restrictions, '')
+        self.assertEqual(app.needs, '')
+        self.assertIsNone(app.epipen)

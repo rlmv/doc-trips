@@ -283,7 +283,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
-            epipen='YES',
+            epipen=True,
         )
         inc = mommy.make(
             IncomingStudent,
@@ -318,7 +318,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             medical_conditions='none',
-            epipen='YES',
+            epipen=True
             needs='many',
         )
         inc = mommy.make(

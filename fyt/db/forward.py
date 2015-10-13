@@ -1,11 +1,12 @@
 import copy
 import logging
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.transaction import atomic
 
 from .models import TripsYear
-from fyt.applications.models import ApplicationInformation, PortalContent
-from fyt.incoming.models import Settings
+from fyt.applications.models import ApplicationInformation, PortalContent, GeneralApplication as Application
+from fyt.incoming.models import Settings, IncomingStudent, Registration
 from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
 from fyt.trips.models import TripTemplate, TripType, Campsite
@@ -30,7 +31,6 @@ MODELS_FORWARD = [
     Campsite
 ]
 
-
 class Forward():
 
     def __init__(self, curr_year, next_year):
@@ -46,6 +46,9 @@ class Forward():
         for Model in MODELS_FORWARD:
             for obj in Model.objects.filter(trips_year=self.curr_year):
                 self.copy_object_forward(obj)
+
+        self.delete_trippee_medical_info()
+        self.delete_application_medical_info()
 
     def copy_object_forward(self, obj):
         """
@@ -84,6 +87,25 @@ class Forward():
 
         self.old_to_new[obj] = new_obj
         return new_obj
+
+    def delete_trippee_medical_info(self):
+        """
+        Delete all medical info saved on
+        ``IncomingStudents`` and ``Registrations``.
+        """
+        for inc in IncomingStudent.objects.filter(trips_year=self.curr_year):
+            inc.med_info = ''
+            inc.save()
+
+        for reg in Registration.objects.filter(trips_year=self.curr_year):
+            reg.delete_medical_info()
+
+    def delete_application_medical_info(self):
+        """
+        Delete all medical info saved on leader and croo applications
+        """
+        for app in Application.objects.filter(trips_year=self.curr_year):
+            app.delete_medical_info()
 
 
 @atomic

@@ -43,3 +43,14 @@ class MedicalMixin(models.Model):
         "recent surgery, migraines).",
         blank=True, help_text=LEAVE_BLANK
     )
+
+    def delete_medical_info(self):
+        """
+        Delete all medical information on the object.
+        """
+        self.food_allergies = ''
+        self.dietary_restrictions = ''
+        self.medical_conditions = ''
+        self.epipen = None
+        self.needs = ''
+        self.save()

@@ -4,15 +4,6 @@ Things TODO
 Immediate
 ---------
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
-* Update dietary/medical info fields for leaders
-
-  #. Food allergens and reactions
-  #. Other dietary restrictions?
-  #. Other medical conditions, including other non-food allergies
-  #. Do you carry an epipen?
-  #. Do you have any other needs?
-
-* Delete all medical info when migrating to next ``trips_year``
 * Add hinman box to IncomingStudent + a way to upload a spreadsheet of #s
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Link to ExternalBus packets from external bus page
