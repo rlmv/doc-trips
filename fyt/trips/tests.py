@@ -533,7 +533,28 @@ class ViewsTestCase(WebTestCase):
         resp.form.submit()
         Trip.objects.get(section=section, template=template)
 
-    def test_trippee_packet_hides_med_info_by_default(self):
+    def test_packet_shows_leader_med_info(self):
+        trips_year = self.init_trips_year()
+        trip = mommy.make(Trip, trips_year=trips_year)
+        trippee = mommy.make(
+            GeneralApplication,
+            trips_year=trips_year,
+            assigned_trip=trip,
+            medical_conditions='magic',
+            food_allergies='mangoes',
+            dietary_restrictions='gluten free',
+            needs='dinosaurs',
+            epipen=True
+        )
+        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        resp = self.app.get(url, user=self.mock_director())
+        self.assertContains(resp, 'magic')
+        self.assertContains(resp, 'mangoes')
+        self.assertContains(resp, 'gluten free')
+        self.assertContains(resp, 'dinosaurs')
+        self.assertContains(resp, 'Carries an EpiPen')
+
+    def test_packet_hides_trippee_med_info_by_default(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         trippee = mommy.make(
@@ -553,7 +574,7 @@ class ViewsTestCase(WebTestCase):
         self.assertNotContains(resp, 'dinosaurs')
         self.assertContains(resp, 'sparkles')
 
-    def test_trip_packet_can_show_med_info(self):
+    def test_packet_can_show_trippee_med_info(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         trippee = mommy.make(
@@ -579,3 +600,4 @@ class ViewsTestCase(WebTestCase):
         self.assertContains(resp, 'dinosaurs')
         self.assertContains(resp, 'sparkles')
         self.assertContains(resp, 'Carries an EpiPen')
+

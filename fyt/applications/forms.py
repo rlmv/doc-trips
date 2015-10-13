@@ -43,7 +43,11 @@ class ApplicationForm(forms.ModelForm):
             'summer_address', 'tshirt_size',
             'from_where', 'what_do_you_like_to_study',
             'personal_activities', 'feedback',
-            'dietary_restrictions', 'allergen_information',
+            'food_allergies',
+            'dietary_restrictions',
+            'medical_conditions',
+            'epipen',
+            'needs',
             'medical_certifications', 'medical_experience',
             'peer_training', 'trippee_confidentiality',
             'in_goodstanding_with_college',
@@ -52,8 +56,6 @@ class ApplicationForm(forms.ModelForm):
         )
         
         widgets = {
-            'dietary_restrictions': forms.Textarea(attrs={'rows': 2}),
-            'allergen_information': forms.Textarea(attrs={'rows': 2}),
             'personal_activities': forms.Textarea(attrs={'rows': 4}),
             'feedback': forms.Textarea(attrs={'rows': 4}),
             'medical_certifications': forms.Textarea(attrs={'rows': 4}),
@@ -264,13 +266,15 @@ class ApplicationLayout(Layout):
                 'role_preference',
             ),
             Fieldset(
-                'Dietary restrictions', 
+                'Medical Information',
                 HTML(
-                    "<p>(We use this information in packing food for Trips "
-                    "and it will not affect your candidacy)</p>"
+                    "<p>(This information will not affect your candidacy)</p>"
                  ),
-                'dietary_restrictions',
-                'allergen_information',
+                Field('food_allergies', rows=3),
+                Field('dietary_restrictions', rows=3),
+                Field('medical_conditions', rows=3),
+                'epipen',
+                Field('needs', rows=3),
             ),
             Fieldset(
                 'Notices',

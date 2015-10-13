@@ -268,7 +268,11 @@ class ApplicationDetail(DatabaseReadPermissionRequired,
         'medical_experience', 'peer_training',
         'spring_training_ok', 'summer_training_ok',
         'hanover_in_fall', 'role_preference',
-        'dietary_restrictions', 'allergen_information',
+        'food_allergies',
+        'dietary_restrictions',
+        'medical_conditions',
+        'epipen',
+        'needs',
         'trippee_confidentiality',
         'in_goodstanding_with_college', 'trainings'
     ]

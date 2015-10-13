@@ -3,16 +3,27 @@
   <hr class="hr-sm">
   {% for leader in trip.leaders.all %}
   <div class="no-page-break-inside">
+
     <h4> {{ leader }} ({{ leader.class_year }}) </h4>
 
-    {% if leader.dietary_restrictions %}
-    <strong> Dietary Restrictions: </strong> {{ leader.dietary_restrictions }}
+	<strong> Medical Conditions: </strong> {{ leader.medical_conditions }}
+	
+	{% if leader.needs %}
+    <br> <strong> Other Needs and Conditions: </strong> {{ leader.needs }}
+	{% endif %}
+
+    {% if leader.food_allergies %}
+    <br> <strong> Food Allergies: </strong> {{ leader.food_allergies }}
+    {% endif %}
+
+	{% if leader.dietary_restrictions %}
+    <br> <strong> Dietary Restrictions: </strong> {{ leader.dietary_restrictions }}
+    {% endif %}
+
+    {% if leader.epipen %} 
+    <br> <strong> Carries an EpiPen </strong> 
     {% endif %}
     
-    {% if leader.allergen_information %}
-    <br> <strong> Allergen Information: </strong> {{ leader.allergen_information }}
-    {% endif %}
-    {# TODO: leader medical info #}
     <hr class="hr-sm">
   </div>
   {% endfor %}
@@ -23,6 +34,7 @@
   <hr class="hr-sm">
   {% for trippee in trip.trippees.all %}
   <div class="no-page-break-inside">
+
     <h4>{{ trippee.name }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }} &mdash; born {{ trippee.birthday }})</h4>
 
     {% with reg=trippee.get_registration %}

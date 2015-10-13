@@ -11,6 +11,7 @@ from fyt.db.models import DatabaseModel
 from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
 from fyt.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
+from fyt.utils.models import MedicalMixin
 
 """
 Models for Leaders and Croo applications
@@ -98,7 +99,7 @@ def validate_condition_true(value):
         raise ValidationError('You must agree to this condition')
 
 
-class GeneralApplication(DatabaseModel):
+class GeneralApplication(MedicalMixin, DatabaseModel):
     """
     Contains shared information for Croo and Leader applications.
 
@@ -227,17 +228,7 @@ class GeneralApplication(DatabaseModel):
         "please choose 'N/A'",
         choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20
     )
-    
-    # ------ dietary --------
-    dietary_restrictions = models.TextField(
-        "Do you have any dietary restrictions or allergies "
-        "that we should know about?", blank=True
-    )
-    allergen_information = models.TextField(
-        "What happens if you come into contact with this allergen "
-        "(e.g. I get hives, I go into anaphylactic shock)?", blank=True
-    )
-
+  
     # ------ certs -------
     medical_certifications = models.TextField(
         "Current trainings in First Aid and CPR are required for all DOC "
