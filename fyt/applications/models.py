@@ -459,7 +459,7 @@ class CrooSupplement(DatabaseModel):
             "(eg. on Moosilauke Lodge crew spring 2014, experience "
             "working in industrial kitchens, experience preparing and "
             "organizing food for large groups)"
-        )
+        ), blank=True
     )
    
     # -------- driving -------
