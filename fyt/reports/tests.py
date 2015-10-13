@@ -302,7 +302,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'trip': str(trip),
             'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
-            'epipen': 'YES',
+            'epipen': 'Yes',
         }]
         self.assertEqual(rows, target)
 
@@ -340,7 +340,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'needs': 'many',
             'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
-            'epipen': 'YES',
+            'epipen': 'Yes',
         }]
         self.assertEqual(rows, target)
 

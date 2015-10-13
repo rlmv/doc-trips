@@ -15,6 +15,7 @@ from fyt.transport.models import Stop
 from fyt.trips.models import Trip, Section, TripType
 from fyt.users.models import NetIdField
 from fyt.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
+from fyt.utils.models import MedicalMixin
 
 
 def YesNoField(*args, **kwargs):
@@ -304,8 +305,8 @@ def validate_waiver(value):
         raise ValidationError("You must agree to the waiver")
 
 
-class Registration(DatabaseModel):
-    """ 
+class Registration(MedicalMixin, DatabaseModel):
+    """
     Registration information for an incoming student.
     """
     objects = RegistrationManager()
@@ -404,40 +405,6 @@ class Registration(DatabaseModel):
     schedule_conflicts = models.TextField(blank=True)
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
-
-    # ---- medical needs and accomodations -----
-    LEAVE_BLANK = "Leave blank if not applicable"
-    food_allergies = models.TextField(
-        "Please list any food allergies you have "
-        "(e.g. peanuts, shellfish). Describe what happens when you come "
-        "into contact with this allergen (e.g. 'I get hives', 'I go into "
-        "anaphylactic shock').",
-        blank=True, help_text=LEAVE_BLANK
-    )
-    dietary_restrictions = models.TextField(
-        "Do you have any other dietary restrictions we should be aware of "
-        "(vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
-        "dietary needs as long as we know in advance.",
-        blank=True, help_text=LEAVE_BLANK
-    )
-    medical_conditions = models.TextField(
-        "Do you have any other medical conditions, past injuries, disabilities "
-        "or other allergies that we should be aware of? Please describe any "
-        "injury, condition, disability, or illness which we should take "
-        "into consideration in assigning you to a trip",
-        blank=True, help_text=LEAVE_BLANK
-    )
-    epipen = YesNoField(
-        "Do you carry an EpiPen? If yes, please bring it with you on Trips.",
-        blank=True
-    )
-    needs = models.TextField(
-        "While many students manage their own health needs, we would prefer "
-        "that you let us know of any other needs or conditions so we can "
-        "ensure your safety and comfort during the trip (e.g. Diabetes, "
-        "recent surgery, migraines).",
-        blank=True, help_text=LEAVE_BLANK
-    )
 
     #  ----- physical condition and experience ------
     regular_exercise = YesNoField(

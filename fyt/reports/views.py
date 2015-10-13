@@ -350,7 +350,7 @@ class DietaryRestrictions(GenericReportView):
             trip,
             reg.food_allergies,
             reg.dietary_restrictions,
-            reg.epipen
+            reg.get_epipen_display()
         ]
 
 
@@ -381,7 +381,7 @@ class MedicalInfo(GenericReportView):
             reg.medical_conditions,
             reg.food_allergies,
             reg.dietary_restrictions,
-            reg.epipen,
+            reg.get_epipen_display(),
             reg.needs,
         ]
 
