@@ -405,25 +405,27 @@ class Registration(DatabaseModel):
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
-    # ---- accomodations -----
-    
+    # ---- medical needs and accomodations -----
+    LEAVE_BLANK = "Leave blank if not applicable"
+    food_allergies = models.TextField(
+        "Please list any food allergies you have "
+        "(e.g. peanuts, shellfish). Describe what happens when you come "
+        "into contact with this allergen (e.g. 'I get hives', 'I go into "
+        "anaphylactic shock').",
+        blank=True, help_text=LEAVE_BLANK
+    )
+    dietary_restrictions = models.TextField(
+        "Do you have any other dietary restrictions we should be aware of "
+        "(vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
+        "dietary needs as long as we know in advance.",
+        blank=True, help_text=LEAVE_BLANK
+    )
     medical_conditions = models.TextField(
-        "Do you have any medical conditions, past injuries, disabilities "
-        "or allergies that we should be aware of? Please describe any "
+        "Do you have any other medical conditions, past injuries, disabilities "
+        "or other allergies that we should be aware of? Please describe any "
         "injury, condition, disability, or illness which we should take "
         "into consideration in assigning you to a trip",
-        blank=True
-    )
-    allergies = models.TextField(
-        "Please describe any allergies you have (e.g. bee stings, specific "
-        "medications, foods, etc.) which might require special medical "
-        "attention.",
-        blank=True
-    )
-    allergen_information = models.TextField(
-        "What happens if you come into contact with this allergen (e.g. "
-        "I get hives, I go into anaphylactic shock)?",
-        blank=True
+        blank=True, help_text=LEAVE_BLANK
     )
     epipen = YesNoField(
         "Do you carry an EpiPen? If yes, please bring it with you on Trips.",
@@ -434,30 +436,7 @@ class Registration(DatabaseModel):
         "that you let us know of any other needs or conditions so we can "
         "ensure your safety and comfort during the trip (e.g. Diabetes, "
         "recent surgery, migraines).",
-        blank=True
-    )
-    
-    dietary_restrictions = models.TextField(
-        "Do you have any dietary restrictions we should be aware of "
-        "(vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
-        "dietary needs as long as we know in advance. Leave blank if not "
-        "applicable",
-        blank=True
-    )
-    SEVERITY_CHOICES = (
-        (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)
-    )
-    allergy_severity = models.PositiveIntegerField(
-        "If you have a food allergy, please rate the severity of the "
-        "allergy on a scale from 1 to 5 (1 = itchy skin, puffy eyes and "
-        "5 = anaphylaxis).",
-        choices=SEVERITY_CHOICES, null=True, blank=True
-    )
-    allergy_reaction = models.TextField(
-        "If you have a food allergy, please describe what happens when "
-        "you come into contact with the allergen (e.g. I get hives, I go "
-        "into anaphylactic shock).",
-        blank=True
+        blank=True, help_text=LEAVE_BLANK
     )
 
     #  ----- physical condition and experience ------

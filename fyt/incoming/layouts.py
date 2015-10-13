@@ -99,17 +99,11 @@ class RegistrationFormLayout(Layout):
                 HTML("<p> This will absolutely NOT affect your ability to go on a Trip. While many students manage their own health needs, we would prefer that you let us know of any needs or conditions including (but not limited to) allergies, dietary restrictions, and chronic illnesses. We are able to accommodate any accessibility need (e.g. we can provide electricity if you require a medical device, etc.). We encourage you to provide as much detail as possible on your registration form. All information will be kept confidential. Please contact us if you would like to discuss any accommodations. You may also contact the Student Accessibility Services Office by phone at (603) 646.9900. </p>"
                      "<p> If you do have any medical problem(s) which may become aggravated in the outdoors, it is your responsibility to consult with your doctor (before your trip begins) for instructions or medication. We're happy to provide additional details about your trip's itinerary if needed. </p>"
                      "<p> We encourage you to elaborate on any conditions on the registration form, however the online form is <strong>not</strong> a secure form so we cannot guarantee the confidentiality of medical information. If you would prefer to explain any conditions to us over the phone, please feel free to call us at (603) 646-3996. </p>"),
+                Field('food_allergies', rows=3),
+                Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
-                Field('allergies', rows=3),
-                Field('allergen_information', rows=3),
                 'epipen',
                 Field('needs', rows=3),
-            ),
-            Fieldset(
-                'Dietary Restrictions',
-                Field('dietary_restrictions', rows=3),
-                'allergy_severity', 
-                Field('allergy_reaction', rows=3),
             ),
             Fieldset(
                 'General Physical Condition',

@@ -281,12 +281,9 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         reg = mommy.make(
             Registration,
             trips_year=trips_year,
-            medical_conditions='none',
-            allergies='peaches',
-            allergen_information='I go into shock',
-            allergy_severity=1,
+            food_allergies='peaches',
             dietary_restrictions='gluten free',
-            allergy_reaction='hives',
+            epipen='YES',
         )
         inc = mommy.make(
             IncomingStudent,
@@ -303,12 +300,9 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'netid': reg.user.netid,
             'section': trip.section.name,
             'trip': str(trip),
-            'allergies': 'peaches',
-            'allergen information': 'I go into shock',
-            'food allergy reaction': 'hives',
-            'food allergy severity (1-5)': '1',
+            'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
-            'medical conditions': 'none',
+            'epipen': 'YES',
         }]
         self.assertEqual(rows, target)
 
@@ -321,12 +315,9 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         reg = mommy.make(
             Registration,
             trips_year=trips_year,
-            medical_conditions='none',
-            allergies='peaches',
-            allergen_information='I go into shock',
-            allergy_severity=1,
+            food_allergies='peaches',
             dietary_restrictions='gluten free',
-            allergy_reaction='hives',
+            medical_conditions='none',
             epipen='YES',
             needs='many',
         )
@@ -343,14 +334,13 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         target = [{
             'name': reg.name,
             'netid': reg.user.netid,
+            'section': trip.section.name,
             'trip': str(trip),
             'medical conditions': 'none',
-            'allergies': 'peaches',
-            'allergen information': 'I go into shock',
-            'food allergy reaction': 'hives',
-            'food allergy severity (1-5)': '1',
-            'epipen': 'YES',
             'needs': 'many',
+            'food allergies': 'peaches',
+            'dietary restrictions': 'gluten free',
+            'epipen': 'YES',
         }]
         self.assertEqual(rows, target)
 

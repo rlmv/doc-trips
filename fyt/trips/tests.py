@@ -17,6 +17,7 @@ from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import IncomingStudent, Registration
+from fyt.utils.choices import YES
 
 class TripTestCase(WebTestCase):
     
@@ -564,11 +565,17 @@ class ViewsTestCase(WebTestCase):
             registration=mommy.make(
                 Registration, trips_year=trips_year,
                 medical_conditions='magic',
+                food_allergies='mangoes',
+                dietary_restrictions='gluten free',
                 needs='dinosaurs',
+                epipen=YES
             )
         )
         url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
         resp = self.app.get(url, user=self.mock_director())
         self.assertContains(resp, 'magic')
+        self.assertContains(resp, 'mangoes')
+        self.assertContains(resp, 'gluten free')
         self.assertContains(resp, 'dinosaurs')
         self.assertContains(resp, 'sparkles')
+        self.assertContains(resp, 'Carries an EpiPen')

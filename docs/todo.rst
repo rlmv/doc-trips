@@ -4,11 +4,11 @@ Things TODO
 Immediate
 ---------
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
-* Update dietary/medical info fields for leaders and incoming students
+* Update dietary/medical info fields for leaders
 
   #. Food allergens and reactions
   #. Other dietary restrictions?
-  #. Other medical conditions, including other non-food allergies (or, did Peety want a separate non-food allergies section?)
+  #. Other medical conditions, including other non-food allergies
   #. Do you carry an epipen?
   #. Do you have any other needs?
 

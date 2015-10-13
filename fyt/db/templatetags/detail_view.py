@@ -49,7 +49,7 @@ def detail(db_object, fields=None):
             c = template.Context({'file': value})
             value = t.render(c)
 
-        if field.many_to_one:
+        if field.many_to_one or field.one_to_one:
             if field.related_model == get_user_model():
                 # no detail views for users.
                 value = str(value)
