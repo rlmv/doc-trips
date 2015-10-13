@@ -11,11 +11,11 @@ from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
 from fyt.trips.models import TripTemplate, TripType, Campsite
 
-logger = logging.getLogger(__name__)
-
 """
 Migrate the database to the next ``trips_year``
 """
+
+logger = logging.getLogger(__name__)
 
 #: all models which need to be migrated
 MODELS_FORWARD = [
@@ -32,7 +32,8 @@ MODELS_FORWARD = [
 ]
 
 class Forward():
-
+    """
+    """
     def __init__(self, curr_year, next_year):
         self.curr_year = curr_year
         self.next_year = next_year
@@ -102,7 +103,7 @@ class Forward():
 
     def delete_application_medical_info(self):
         """
-        Delete all medical info saved on leader and croo applications
+        Delete all medical info saved on ``GeneralApplications``
         """
         for app in Application.objects.filter(trips_year=self.curr_year):
             app.delete_medical_info()
