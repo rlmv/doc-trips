@@ -9,7 +9,8 @@ from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
 from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
-from fyt.applications.models import (
+from .forms import CrooApplicationGradeForm
+from .models import (
         LeaderSupplement as LeaderApplication,
         CrooSupplement, 
         GeneralApplication, LeaderApplicationGrade, 
@@ -645,6 +646,15 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
                                    kwargs={'qualification_pk': qualification.pk}),
                            user=grader).follow()
         self.assertTemplateUsed(res, 'applications/no_applications.html')
+
+    def test_croo_qualifications_are_filtered_for_current_trips_year(self):
+        trips_year = self.init_trips_year()
+        qualification = mommy.make(
+                QualificationTag, 
+                trips_year=self.init_old_trips_year()
+        )
+        form = CrooApplicationGradeForm()
+        self.assertNotIn(qualification, form.fields['qualifications'].queryset)
 
 
 class GradersDatabaseListViewTestCase(TripsTestCase):

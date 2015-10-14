@@ -5,7 +5,10 @@ from django.db import models
 from django.db.transaction import atomic
 
 from .models import TripsYear
-from fyt.applications.models import ApplicationInformation, PortalContent, GeneralApplication as Application
+from fyt.applications.models import (
+    ApplicationInformation, PortalContent,
+    GeneralApplication as Application,
+    QualificationTag)
 from fyt.incoming.models import Settings, IncomingStudent, Registration
 from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
@@ -21,6 +24,7 @@ logger = logging.getLogger(__name__)
 MODELS_FORWARD = [
     ApplicationInformation,
     PortalContent,
+    QualificationTag,
     Settings,
     RaidInfo,
     Stop,

@@ -6,7 +6,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from fyt.applications.models import (
     GeneralApplication, CrooSupplement, LeaderSupplement,
-    CrooApplicationGrade, LeaderApplicationGrade)
+    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag)
 from fyt.db.models import TripsYear
 from fyt.trips.models import Section, TripType, Trip
 from fyt.trips.fields import LeaderSectionChoiceField, TripChoiceField
@@ -396,6 +396,8 @@ class CrooApplicationGradeForm(forms.ModelForm):
         # CheckboxSelectMultiple in __init__ because
         # https://github.com/maraujop/django-crispy-forms/issues/303
         self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()
+        self.fields['qualifications'].queryset = QualificationTag.objects.filter(
+            trips_year=TripsYear.objects.current())
 
 
 class LeaderApplicationGradeForm(forms.ModelForm):

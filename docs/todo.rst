@@ -7,7 +7,6 @@ Immediate
 * Add hinman box to IncomingStudent + a way to upload a spreadsheet of #s
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Link to ExternalBus packets from external bus page
-* Filter Qualifications by TripsYear in ``CrooGradeForm``
 * Move driver certs from croo .docx to ``CrooSupplement``? (check with Peety)
 * PDF uploads of maps and documents for trip templates
 * Add a ``water_source`` (text) and ``bear_bag`` (boolean) field to ``Campsite``. Show them in leader packets.
@@ -64,6 +63,7 @@ Long term
 * Add ``croo_head`` field to Croos
 * Cache directions requests (this may be unecessary)
 * Use javascript to make prefer/available fields exclusive in a row/implement a better preference field.
+* Pass ``trips_year`` to forms instead of using ``TripsYear.objects.current()``. This especially shows up in ``fyt.applications.forms``.
 
 
 .. todolist::
