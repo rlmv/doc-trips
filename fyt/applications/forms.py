@@ -76,6 +76,11 @@ class CrooSupplementForm(forms.ModelForm):
         model = CrooSupplement
         fields = (
             'document',
+            'licensed',
+            'college_certified',
+            'sprinter_certified',
+            'microbus_certified',
+            'can_get_certified',
             'safety_lead_willing',
             'kitchen_lead_willing',
             'kitchen_lead_qualifications',
@@ -350,6 +355,14 @@ class CrooSupplementLayout(Layout):
                 'Application',
                 HTML("""<p> Download the <a href="{% if information.croo_supplement_questions %}{{ information.croo_supplement_questions.url }}{% endif %}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
                 'document',
+            ),
+            Fieldset(
+                'Driving',
+                'licensed',
+                'college_certified',
+                'sprinter_certified',
+                'microbus_certified',
+                'can_get_certified',
             ),
             Fieldset(
                 'Croo Positions',

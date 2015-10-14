@@ -288,6 +288,11 @@ class ApplicationDetail(DatabaseReadPermissionRequired,
         ('first aid cert', 'get_first_aid_cert')
     ]
     crooapplication_fields = [
+        'licensed',
+        'college_certified',
+        'sprinter_certified',
+        'microbus_certified',
+        'can_get_certified',
         'safety_lead_willing', 'kitchen_lead_willing',
         'kitchen_lead_qualifications', 'document'
     ]

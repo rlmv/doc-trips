@@ -7,7 +7,6 @@ Immediate
 * Add hinman box to IncomingStudent + a way to upload a spreadsheet of #s
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Link to ExternalBus packets from external bus page
-* Move driver certs from croo .docx to ``CrooSupplement``? (check with Peety)
 * PDF uploads of maps and documents for trip templates
 * Add a ``water_source`` (text) and ``bear_bag`` (boolean) field to ``Campsite``. Show them in leader packets.
 * Add a ``type`` field ("tarp", "shelter", "cabin") to ``Campsite``

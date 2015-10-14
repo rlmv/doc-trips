@@ -12,6 +12,7 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
 from fyt.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
 from fyt.utils.models import MedicalMixin
+from fyt.utils.model_fields import NullYesNoField
 
 """
 Models for Leaders and Croo applications
@@ -445,6 +446,25 @@ class CrooSupplement(DatabaseModel):
         GeneralApplication, editable=False, related_name='croo_supplement'
     )
     document = models.FileField('Croo Application Answers', blank=True)
+
+    # --- driving ------
+    licensed = NullYesNoField(
+        "Do you have a valid driver's license?"
+    )
+    college_certified = NullYesNoField(
+        "Are you a college-certified driver?"
+    )
+    sprinter_certified = NullYesNoField(
+        "Are you sprinter van certified?"
+    )
+    microbus_certified = NullYesNoField(
+        "Are you microbus certified?"
+    )
+    can_get_certified = NullYesNoField(
+        "If you are not certified, are you able to go through the "
+        "College’s sprinter van & mini-bus driver certification process "
+        "this spring or summer term?"
+    )
 
     # --- croo positions ------
     safety_lead_willing = models.BooleanField(
