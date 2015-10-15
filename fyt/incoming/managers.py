@@ -33,7 +33,7 @@ class IncomingStudentManager(models.Manager):
         type_avail = Q(registration__available_triptypes=trip.template.triptype)
 
         qs = self
-        if not trip.template.non_swimmers_allowed:  # swimmers only
+        if trip.template.swimtest_required:
             from fyt.incoming.models import Registration
             qs = qs.exclude(registration__swimming_ability=Registration.NON_SWIMMER)
         

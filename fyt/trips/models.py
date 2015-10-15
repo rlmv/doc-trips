@@ -287,17 +287,16 @@ class TripTemplate(DatabaseModel):
     name = models.PositiveSmallIntegerField(
         db_index=True, validators=[validate_triptemplate_name]
     )
-    description_summary = models.CharField("Summary", max_length=255) 
+    description_summary = models.CharField("Summary", max_length=255)
 
     triptype = models.ForeignKey(
         'TripType', verbose_name='trip type', on_delete=models.PROTECT
     )
     max_trippees = models.PositiveSmallIntegerField()
-    non_swimmers_allowed = models.BooleanField(
-        "non-swimmers allowed", default=True,
-        help_text=(
-            "otherwise, trippees on the assignment page will be those who are "
-            "at least 'BEGINNER' swimmers"
+    swimtest_required = models.BooleanField(
+        default=False, help_text=(
+            "if selected, available trippees will "
+            "be at least 'BEGINNER' swimmers"
         )
     )
     dropoff_stop = models.ForeignKey(

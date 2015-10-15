@@ -8,12 +8,17 @@
     <h3 class="list-group-item-heading"> Trip Assignment <small> {{ trip }}: {{ trip.template.description_summary }} </small></h3>
     <p> <strong>{{ trip.template.triptype.name }}</strong> {{ trip.template.triptype.trippee_description }} </p>
 
+	{% if trip.template.swimtest_required %}
+	<p> You will be required to pass a swim test upon arrival in Hanover. </p>
+	{% endif %}
+
     <p><strong> Please read the following information carefully, and don't hesitate to <a href="{{ contact_url }}"> contact us </a> if you have any questions.</strong></p>
   </li>
 
   <li class="list-group-item">
     <strong> Section {{ section.name }} &mdash; {{ section.trippee_date_str }} </strong> <br>
     Plan to arrive in Hanover between <strong>2-4pm on {{ section.trippees_arrive|date:fmt }}</strong>. Your trip will return to Hanover between <strong>12-3pm on {{ section.return_to_campus|date:fmt }}</strong>&mdash;please don't make plans to leave Hanover before 3. <i>If you are on Section J you will return to Hanover between 9-11am&mdash;in time to take your placement exams</i>.
+	
   </li>
 
   <li class="list-group-item">

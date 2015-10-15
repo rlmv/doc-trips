@@ -581,7 +581,7 @@ class Registration(MedicalMixin, DatabaseModel):
               .select_related('template__triptype', 'section')
               .order_by('template__triptype', 'section'))
         if self.is_non_swimmer:
-            return qs.filter(template__non_swimmers_allowed=True)
+            return qs.exclude(template__swimtest_required=True)
         return qs
     
     def get_firstchoice_trips(self):

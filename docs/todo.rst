@@ -7,7 +7,6 @@ Immediate
 * Add hinman box to IncomingStudent + a way to upload a spreadsheet of #s
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * PDF uploads of maps and documents for trip templates
-* Change ``non_swimmers`` to ``swimtest_required`` on ``TripTemplate``. If required, show "You will take  the swimtest on the first day of your trip" on the trippee's assignment page.
 * Show leader itinerary on leader assignment page.
 * Refactor and optimize ``Campsite`` matrix
 * Refactor internal transport matrix and numbers

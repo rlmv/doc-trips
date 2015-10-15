@@ -345,8 +345,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_base_trip_choice_queryset_filters_for_nonswimmers(self):
         trips_year = self.init_current_trips_year()
-        trip1 = mommy.make(Trip, trips_year=trips_year, template__non_swimmers_allowed=False)
-        trip2 = mommy.make(Trip, trips_year=trips_year, template__non_swimmers_allowed=True)
+        trip1 = mommy.make(Trip, trips_year=trips_year, template__swimtest_required=True)
+        trip2 = mommy.make(Trip, trips_year=trips_year, template__swimtest_required=False)
         reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.NON_SWIMMER,
                          preferred_sections=[trip1.section, trip2.section])
         self.assertEqual(list(reg._base_trips_qs()), [trip2])
@@ -532,8 +532,8 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
     def test_non_swimmer_availability_for_trip(self):
         trips_year = self.init_current_trips_year()
         trip = mommy.make(
-            Trip, trips_year=trips_year, 
-            template__non_swimmers_allowed=False
+            Trip, trips_year=trips_year,
+            template__swimtest_required=True
         )
         available = mommy.make(
             IncomingStudent, trips_year=trips_year, 
