@@ -401,17 +401,23 @@ class VolunteerDietaryRestrictions(GenericReportView):
         )
 
     header = [
-        'name', 'netid', 'role',
+        'name',
+        'netid',
+        'role',
+        'trip',
+        'food allergies',
         'dietary restrictions',
-        'allergen information'
+        'epipen'
     ]
     def get_row(self, app):
         return [
             app.applicant.name,
             app.applicant.netid,
             app.status,
+            app.assigned_trip or '',
+            app.food_allergies,
             app.dietary_restrictions,
-            app.allergen_information
+            app.get_epipen_display()
         ]
 
 

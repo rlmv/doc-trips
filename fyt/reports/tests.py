@@ -318,7 +318,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             medical_conditions='none',
-            epipen=True
+            epipen=True,
             needs='many',
         )
         inc = mommy.make(
@@ -372,11 +372,18 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
 
         leader = mommy.make(
             GeneralApplication, trips_year=trips_year,
-            status=GeneralApplication.LEADER
+            status=GeneralApplication.LEADER,
+            assigned_trip=mommy.make(Trip, trips_year=trips_year),
+            food_allergies='peaches',
+            dietary_restrictions='gluten free',
+            epipen=True,
         )
         croo = mommy.make(
             GeneralApplication, trips_year=trips_year,
-            status=GeneralApplication.CROO
+            status=GeneralApplication.CROO,
+            food_allergies='peaches',
+            dietary_restrictions='gluten free',
+            epipen=False
         )
         neither = mommy.make(
             GeneralApplication, trips_year=trips_year,
@@ -389,16 +396,21 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': croo.applicant.name,
             'netid': croo.applicant.netid,
             'role': GeneralApplication.CROO,
+            'trip': '',
+            'food allergies': croo.food_allergies,
             'dietary restrictions': croo.dietary_restrictions,
-            'allergen information': croo.allergen_information,
+            'epipen': 'No'
         }, {
             'name': leader.applicant.name,
             'netid': leader.applicant.netid,
             'role': GeneralApplication.LEADER,
+            'trip': str(leader.assigned_trip),
+            'food allergies': leader.food_allergies,
             'dietary restrictions': leader.dietary_restrictions,
-            'allergen information': leader.allergen_information,
+            'epipen': 'Yes'
         }]
         self.assertEqual(rows, target)
+
 
     def test_foodboxes(self):
         trips_year = self.init_trips_year()
