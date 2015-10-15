@@ -11,11 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='registration',
-            name='epipen',
-            field=models.BooleanField(verbose_name='Do you carry an EpiPen? If yes, please bring it with you on Trips.', choices=[(True, 'Yes'), (False, 'No')], default=False),
-        ),
+        migrations.RemoveField(model_name='registration', name='epipen'),
         migrations.AlterField(
             model_name='registration',
             name='food_allergies',

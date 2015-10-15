@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.AddField(
             model_name='registration',
             name='epipen',
             field=models.NullBooleanField(choices=[(True, 'Yes'), (False, 'No')], verbose_name='Do you carry an EpiPen? If yes, please bring it with you on Trips.', default=None),
