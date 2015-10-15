@@ -11,6 +11,10 @@
 
 {% include "transport/_scheduled_alert.html" with scheduled=bus %}
 
+<div class="alert alert-success">
+  Go to the <a href="{% url 'db:checklists:all' trips_year=trips_year %}"> Packets </a> page for printable day-by-day External Bus packets.
+</div>
+
 {% if bus %}
 <h3> Directions To Hanover </h3>
 {% directions_to_hanover bus %}
