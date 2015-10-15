@@ -11,3 +11,8 @@ def leader_packet(trip):
 @register.inclusion_tag('trips/_medical.html')
 def medical_packet(trip):
     return {'trip': trip}
+
+
+@register.inclusion_tag('trips/_campsite.html')
+def campsite(campsite):
+    return {'campsite': campsite}

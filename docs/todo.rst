@@ -8,7 +8,6 @@ Immediate
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Link to ExternalBus packets from external bus page
 * PDF uploads of maps and documents for trip templates
-* Add a ``water_source`` (text) and ``bear_bag`` (boolean) field to ``Campsite``. Show them in leader packets.
 * Add a ``type`` field ("tarp", "shelter", "cabin") to ``Campsite``
 * Change ``non_swimmers`` to ``swimtest_required`` on ``TripTemplate``. If required, show "You will take  the swimtest on the first day of your trip" on the trippee's assignment page.
 * Show leader itinerary on leader assignment page.

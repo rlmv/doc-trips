@@ -1,0 +1,10 @@
+{% if campsite.bear_bag %}
+<p> <strong> You must hang a bear bag! </strong> </p>
+{% endif %}
+
+{% if campsite.water_source %}
+<p> <strong> Water:</strong> {{ campsite.water_source }} </p>
+{% endif %}
+
+<p> {{ campsite.secret }} </p>
+<p> {{ campsite.bugout }} </p>

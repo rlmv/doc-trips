@@ -198,7 +198,15 @@ class CampsiteCreate(DatabaseCreateView):
 
 class CampsiteDetail(DatabaseDetailView):
     model = Campsite
-    fields = ['name', 'capacity', 'directions', 'bugout', 'secret']
+    fields = [
+        'name',
+        'capacity',
+        'directions',
+        'water_source',
+        'bear_bag',
+        'bugout',
+        'secret'
+    ]
 
 
 class CampsiteUpdate(DatabaseUpdateView):
