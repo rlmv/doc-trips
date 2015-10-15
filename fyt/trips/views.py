@@ -203,6 +203,7 @@ class CampsiteDetail(DatabaseDetailView):
         'capacity',
         'directions',
         'water_source',
+        'shelter',
         'bear_bag',
         'bugout',
         'secret'

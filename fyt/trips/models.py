@@ -365,13 +365,35 @@ class Campsite(DatabaseModel):
     """
     A location where trips camp
     """
-    name = models.CharField(max_length=255)
-    capacity = models.PositiveSmallIntegerField(null=True)
-    directions = models.TextField()
-    water_source = models.TextField("closest water source")
-    bear_bag = models.BooleanField("bear-bag required?", default=False)
-    bugout = models.TextField(help_text="directions for quick help")
-    secret = models.TextField(help_text="door codes and other secret info")
+    name = models.CharField(
+        max_length=255
+    )
+    capacity = models.PositiveSmallIntegerField(
+        null=True
+    )
+    directions = models.TextField(
+        blank=True
+    )
+    water_source = models.TextField(
+        "closest water source", blank=True
+    )
+    bear_bag = models.BooleanField(
+        "bear-bag required?", default=False
+    )
+    SHELTER_CHOICES = (
+        ('TARP', 'tarp'),
+        ('SHELTER', 'shelter'),
+        ('CABIN', 'cabin')
+    )
+    shelter = models.CharField(
+        "shelter type", max_length=10, choices=SHELTER_CHOICES
+    )
+    bugout = models.TextField(
+        blank=True, help_text="directions for quick help"
+    )
+    secret = models.TextField(
+        blank=True, help_text="door codes and other secret info"
+    )
 
     class Meta:
         ordering = ['name']

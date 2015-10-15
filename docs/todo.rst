@@ -8,7 +8,6 @@ Immediate
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Link to ExternalBus packets from external bus page
 * PDF uploads of maps and documents for trip templates
-* Add a ``type`` field ("tarp", "shelter", "cabin") to ``Campsite``
 * Change ``non_swimmers`` to ``swimtest_required`` on ``TripTemplate``. If required, show "You will take  the swimtest on the first day of your trip" on the trippee's assignment page.
 * Show leader itinerary on leader assignment page.
 * Refactor and optimize ``Campsite`` matrix
@@ -30,6 +29,9 @@ Immediate
 * Explicitly pass ``trips_year`` to ``LeaderSupplementForm``, or make a custom ``ModelForm`` which requires a ``trips_year`` argument.
 * Redo url generation to not depend on ``get_model_name`` or whatever it is.
 
+Questions
+---------
+* Should ``campsite.shelter`` be shown to trippees? Were we going to add more itenerary info to the trippee's trip assignment?
 
 Cosmetic
 --------
@@ -44,7 +46,6 @@ Cosmetic
 * Use tables2 for transport matrix?
 * Add a note about not being able to delete ``PROTECTED`` objects.
 * Show each user's permissions.
-
 
 Long term
 ---------
