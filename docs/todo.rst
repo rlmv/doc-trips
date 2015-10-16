@@ -20,7 +20,6 @@ Immediate
 * Put bagel info constants onto a model.
 * Automatically select_related in the ``ApplicationManager``
 * Urlencode dynamic querystrings
-* Rename ``GeneralApplication.assigned_trip`` to ``trip_assignment``. Share assignment form with ``IncomingStudent``?
 * Add ``/CPR`` to leader med certs? (and migrate existing)
 * Generalize high-level admin permssions: ``db:write``
 * Use Coalesce (Django 1.8) to fix ordering of Volunteer table.
@@ -36,6 +35,7 @@ Cosmetic
 * Rename/shorten bus assignment fields
 * Rename application models
 * Rename ``incoming.Settings`` to something nicer
+* Rename ``GeneralApplication.assigned_trip`` to ``trip_assignment``. Share assignment form with ``IncomingStudent``?
 * Remove ``DartmoutUser.did``?
 * Warn when a trip is over booked on the leader/trippee assignment 
 * Show warning if transport for a ``ScheduledTrip`` is not scheduled
