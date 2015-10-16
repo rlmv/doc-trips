@@ -146,17 +146,27 @@ class TrippeeInfoForm(forms.ModelForm):
     """
     class Meta:
         model = IncomingStudent
-        fields = (
+        fields = [
             'notes',
             'financial_aid',
-            'cancelled', 'cancelled_fee',
-            'med_info', 'show_med_info',
+            'cancelled',
+            'cancelled_fee',
+            'med_info',
+            'show_med_info',
             'decline_reason',
-            'name', 'netid', 'class_year',
-            'ethnic_code', 'gender', 'birthday',
+            'name',
+            'netid',
+            'class_year',
+            'ethnic_code',
+            'gender',
+            'birthday',
             'incoming_status',
-            'email', 'blitz', 'phone', 'address'
-        )
+            'email',
+            'blitz',
+            'phone',
+            'address',
+            'hinman_box',
+        ]
         
     helper = FormHelper()
     helper.layout = Layout(
@@ -194,6 +204,7 @@ class TrippeeInfoForm(forms.ModelForm):
             'blitz',
             'phone',
             Field('address', rows=4),
+            'hinman_box',
         ),
         Submit('submit', 'Update')
     )

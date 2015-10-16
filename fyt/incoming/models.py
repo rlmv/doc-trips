@@ -154,6 +154,7 @@ class IncomingStudent(DatabaseModel):
     blitz = models.EmailField(max_length=254)
     phone = models.CharField(max_length=30)
     address = models.TextField()
+    hinman_box = models.CharField(max_length=10, blank=True)
     
     def get_registration(self):
         """
