@@ -193,14 +193,13 @@ class TripTypeDelete(DatabaseDeleteView):
     success_url_pattern = 'db:triptype_index'
 
 
-class CampsiteList(DatabaseListView):
+class CampsiteMatrix(DatabaseTemplateView):
     model = Campsite
-    context_object_name = 'campsites'
     template_name = 'trips/campsite_index.html'
 
     def extra_context(self):
         return {
-            'camping_dates': Section.dates.camping_dates(self.kwargs['trips_year'])
+            'matrix': Campsite.objects.matrix(self.kwargs['trips_year'])
         }
 
 

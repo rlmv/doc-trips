@@ -12,34 +12,30 @@
 {% block content %}
 
 <div>
-  <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date. If the total number of people staying in a campsite on any given night is greater than the capacity of the campsite, this will be shown in the table. </p>
+  <p> The date matrix shows which Scheduled Trips are staying at each campsite on that date.
+  </p>
 </div>
 
 <table class="table table-condensed table-bordered table-hover">
+  {% for campsite, dates in matrix.items %}
+
+  {% if forloop.first %}
   <tr>
     <th>Campsite</th>
     <th>Capacity</th>
-    {% for date in camping_dates %}
+    {% for date in dates %}
     <th> {{ date|date:"n/j" }} </th>
     {% endfor %}
   </tr>
-  {% for campsite in campsites %}
+  {% endif %}
+
   <tr>
     <td> {{ campsite|detail_link}} </td>
     <td> {{ campsite.capacity|default:"&mdash;" }} </td>
     
-    {% for trips, total_occupants in campsite.get_occupancy_list %}
-    
+	{% for date, trips in dates.items %}
     <td>
-      {% if total_occupants > campsite.capacity %}
-      <span data-toggle="tooltip" data-placement="top" title="Occupants exceed capacity: {{ total_occupants }}/{{ campsite.capacity }}" class="bg-warning">
-	<span class="glyphicon glyphicon-warning-sign warning" aria-hidden="true">
-      </span>
-      {% else %}
-	<span data-toggle="tooltip" data-placement="top" title="Occupancy: {{ total_occupants }}/{{ campsite.capacity|default:'&mdash;' }}"> 
-       {% endif %}
-      {% for trip in trips %} {{ trip | detail_link:trip }} {% endfor %} 
-	</span>
+	  {{ trips|detail_link|default:"" }}
     </td>
     {% endfor %}
 
@@ -47,15 +43,4 @@
   {% endfor %}
 </table>
 
-{% endblock %}
-
-{# enable tootips: #}
-
-{% block scripts %}
-{{ block.super }}
-<script type="text/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
 {% endblock %}

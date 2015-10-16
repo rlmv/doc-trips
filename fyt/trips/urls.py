@@ -44,7 +44,7 @@ triptype_urlpatterns = [
 ]
 
 campsite_urlpatterns = [
-    url(DB_REGEX['LIST'], CampsiteList.as_view(),
+    url(DB_REGEX['LIST'], CampsiteMatrix.as_view(),
         name='campsite_index'),
     url(DB_REGEX['CREATE'], CampsiteCreate.as_view(),
         name='campsite_create'),

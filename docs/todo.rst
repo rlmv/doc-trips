@@ -8,7 +8,6 @@ Immediate
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * PDF uploads of maps and documents for trip templates
 * Show leader itinerary on leader assignment page.
-* Refactor and optimize ``Campsite`` matrix
 * Refactor internal transport matrix and numbers
 * Migrate ``YesNo`` field to use ``BooleanField`` backend.
 * Validate that ``TripTemplates`` cannot use external stops (perhaps with Internal and ExternalStop proxy models?)
@@ -37,6 +36,8 @@ Cosmetic
 * Rename ``incoming.Settings`` to something nicer
 * Rename ``GeneralApplication.assigned_trip`` to ``trip_assignment``. Share assignment form with ``IncomingStudent``?
 * Remove ``DartmoutUser.did``?
+* Generalize Create/New button
+* Shaw overbooked campsites in matrix
 * Warn when a trip is over booked on the leader/trippee assignment 
 * Show warning if transport for a ``ScheduledTrip`` is not scheduled
 * Utility singleton model mixin

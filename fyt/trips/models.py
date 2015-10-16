@@ -1,18 +1,19 @@
 import math
-import collections
 from datetime import timedelta
 
-from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
 
+from .managers import (
+    SectionDatesManager, SectionManager,
+    TripManager, CampsiteManager
+)
 from fyt.db.models import DatabaseModel
 from fyt.transport.models import Stop, Route
-from fyt.trips.managers import (SectionDatesManager, SectionManager,
-                                TripManager)
 from fyt.utils.cache import cache_as
+
 """
 TODO: use these in place of magic numbers?
 INTVL_LEADERS = timedelta(days=0)
@@ -397,53 +398,7 @@ class Campsite(DatabaseModel):
     class Meta:
         ordering = ['name']
 
-    def get_occupancy(self):
-        """ 
-        Get all Trips staying at this campsite
-        
-        Returns a dictionary of date:list(trips) pairs. 
-        """
-        
-        trips_year = self.trips_year
-        camping_dates = Section.dates.camping_dates(trips_year)
+    objects = CampsiteManager()
 
-        # all trips which stay at campsite
-        resident_trips = (
-            Trip.objects
-            .filter(trips_year=trips_year)
-            .filter(Q(template__campsite1=self) |
-                    Q(template__campsite2=self))
-            .select_related('section', 'template')
-        )
-
-        # mapping of dates -> trips at this campsite
-        trips_by_date = {date: [] for date in camping_dates}
-
-        for trip in resident_trips:
-            if trip.template.campsite1 == self:
-                trips_by_date[trip.section.at_campsite1].append(trip)
-            if trip.template.campsite2 == self:
-                trips_by_date[trip.section.at_campsite2].append(trip)
-
-        return trips_by_date
-
-    def get_occupancy_list(self):
-        """ List of Trips at campsite
-
-        The occupancy has a one-to-one correspondance with 
-        Section.dates.camping_dates
-        """
-        
-        occupancy = self.get_occupancy()
-        keys = sorted(occupancy.keys())
-
-        def total_occupants(trips):
-            total = 0
-            for trip in trips: 
-                total += trip.template.max_trippees
-            return total
-
-        return map(lambda k: (occupancy[k], total_occupants(occupancy[k])), keys)
-    
     def __str__(self):
         return self.name

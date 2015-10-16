@@ -153,3 +153,30 @@ class TripManager(models.Manager):
         )
 
 
+class CampsiteManager(models.Manager):
+
+    def matrix(self, trips_year):
+        """
+        Return of a matrix of trips residency by date.
+
+        matrix[campsite][date] is a list of all trips staying
+        at campsite on date.
+        """
+        from .models import Section, Trip
+        campsites = self.filter(trips_year=trips_year)
+        dates = Section.dates.camping_dates(trips_year)
+
+        matrix = OrderedMatrix(campsites, dates, default=list)
+
+        trips = Trip.objects.filter(
+            trips_year=trips_year
+        ).select_related(
+            'template__campsite1',
+            'template__campsite2',
+        )
+        
+        for trip in trips:
+            matrix[trip.template.campsite1][trip.section.at_campsite1].append(trip)
+            matrix[trip.template.campsite2][trip.section.at_campsite2].append(trip)
+
+        return matrix

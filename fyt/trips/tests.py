@@ -1,14 +1,13 @@
 import unittest
 import math
 from datetime import date, timedelta, time
-from django.db import transaction
-from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
-from fyt.trips.models import (
-    Trip, Section, TripTemplate, validate_triptemplate_name,
+from .models import (
+    Trip, Section, TripTemplate, Campsite,
+    validate_triptemplate_name,
     NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
 )
 from fyt.transport.models import Route
@@ -18,6 +17,7 @@ from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.utils.choices import YES
+
 
 class TripTestCase(WebTestCase):
     
@@ -514,6 +514,45 @@ class TripManagerTestCase(TripsTestCase):
         trip = Trip.objects.with_counts(trips_year)[0]
         with self.assertNumQueries(0):
             self.assertEqual(trip.size(), 1)
+
+
+class CampsiteManagerTestCase(TripsTestCase):
+    
+    def test_campsite_matrix(self):
+        trips_year = self.init_trips_year()
+        sxn = mommy.make(Section, trips_year=trips_year)
+        campsite_a = mommy.make(Campsite, trips_year=trips_year)
+        campsite_b = mommy.make(Campsite, trips_year=trips_year)
+        campsite_c = mommy.make(Campsite, trips_year=trips_year)
+        trip1 = mommy.make(
+            Trip,
+            trips_year=trips_year,
+            section=sxn,
+            template__campsite1=campsite_a,
+            template__campsite2=campsite_b,
+        )
+        trip2 = mommy.make(
+            Trip,
+            trips_year=trips_year,
+            section=sxn,
+            template__campsite1=campsite_a,
+            template__campsite2=campsite_c,
+        )
+        target = {
+            campsite_a: {
+                sxn.at_campsite1: [trip1, trip2],
+                sxn.at_campsite2: [],
+            },
+            campsite_b: {
+                sxn.at_campsite1: [],
+                sxn.at_campsite2: [trip1],
+            },
+            campsite_c: {
+                sxn.at_campsite1: [],
+                sxn.at_campsite2: [trip2],
+            }
+        }
+        self.assertEqual(target, Campsite.objects.matrix(trips_year))
 
 
 class ViewsTestCase(WebTestCase):
