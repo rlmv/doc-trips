@@ -21,7 +21,7 @@
 
 <h2> Application Status </h2>
 {% if timetable.application_status_available %}
-<p>{{ status_description }}</p>
+<p>{{ status_description|safe }}</p>
 {% else %}
 <p> The status of your application is not available at this time. </p>
 {% endif %}
