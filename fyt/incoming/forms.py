@@ -210,14 +210,17 @@ class TrippeeInfoForm(forms.ModelForm):
     )
 
 
-class UploadIncomingStudentsForm(forms.Form):
+class CSVFileForm(forms.Form):
     """
-    Form to upload data about incoming students
+    Form to upload a CSV file.
     """
     csv_file = forms.FileField(label='CSV file')
 
     def __init__(self, *args, **kwargs):
-        super(UploadIncomingStudentsForm, self).__init__(*args, **kwargs)
+        super(CSVFileForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
+
+
+

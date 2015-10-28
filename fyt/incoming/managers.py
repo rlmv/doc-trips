@@ -98,6 +98,27 @@ class IncomingStudentManager(models.Manager):
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
+        
+    def update_hinman_boxes(self, file, trips_year):
+        """
+        Import hinman boxes from a csv file.
+        
+        Given CSV file with a ``netid`` and ``hinman box`` column,
+        update each IncomingStudent specified by netid with the
+        given hinman box number.
+        """
+        NETID = 'netid'
+        HINMAN_BOX = 'hinman box'
+
+        reader = csv.DictReader(file)
+        updated = []
+        for row in reader:
+            inc = self.get(netid=row[NETID])
+            inc.hinman_box = row[HINMAN_BOX]
+            inc.save()
+            updated.append(inc)
+
+        return updated
 
     def _passengers_base_qs(self, trips_year, route, section):
         """

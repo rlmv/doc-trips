@@ -4,7 +4,6 @@ Things TODO
 Immediate
 ---------
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
-* Upload spreadsheet of hinman box #s
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * PDF uploads of maps and documents for trip templates
 * Show leader itinerary on leader assignment page.

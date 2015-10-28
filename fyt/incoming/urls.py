@@ -1,8 +1,9 @@
 
 from django.conf.urls import url
 
+from .views import *
 from fyt.db.urlhelpers import DB_REGEX
-from fyt.incoming.views import *
+
 
 urlpatterns = [
     url(r'^$', IncomingStudentPortal.as_view(), name='portal'),
@@ -28,6 +29,8 @@ trippee_urlpatterns = [
         name='incomingstudent_update_assignment'),
     url(r'^upload/$', UploadIncomingStudentData.as_view(),
         name='upload_incoming'),
+    url(r'^upload/hb$', UploadHinmanBoxes.as_view(),
+        name='upload_hinman_boxes'),
 ]
 
 registration_urlpatterns = [

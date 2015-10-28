@@ -1,0 +1,22 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2>Upload Hinman Boxes </h2>
+{% endblock %}
+
+{% block content %}
+<p> You must upload data in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
+
+<form enctype="multipart/form-data" method="post" action="">
+{% crispy form %}
+</form>
+<br>
+<p> The database expects to find the following columns in the CSV file:
+  <ul>
+    <li> netid </li>
+    <li> hinman box </li>
+  </ul>
+</p>
+    
+{% endblock content %}

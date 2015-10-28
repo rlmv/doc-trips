@@ -14,10 +14,10 @@ from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, 
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 from django_tables2.views import SingleTableMixin
 
+from .forms import (RegistrationForm, CSVFileForm,
+                    AssignmentForm, TrippeeInfoForm)
 from .models import Registration, IncomingStudent, Settings
 from .tables import RegistrationTable, IncomingStudentTable
-from .forms import (RegistrationForm, UploadIncomingStudentsForm,
-                    AssignmentForm, TrippeeInfoForm)
 from fyt.db.models import TripsYear
 from fyt.db.views import (
     TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
@@ -411,7 +411,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     .. todo:: parse or input the status of the incoming student
     .. todo:: simplify and document the column names
     """
-    form_class = UploadIncomingStudentsForm
+    form_class = CSVFileForm
     template_name = 'incoming/upload_incoming_students.html'
 
     def form_valid(self, form):
@@ -441,7 +441,28 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
 
     def get_success_url(self):
         return self.request.path
-       
+
+
+class UploadHinmanBoxes(DatabaseEditPermissionRequired,
+                        TripsYearMixin, FormView):
+    """
+    Upload a CSV file of netids and hinman box numbers.
+    Update the cooresponding IncomingStudent's HB #s.
+    """
+    form_class = CSVFileForm
+    template_name = 'incoming/upload_hinman_boxes.html'
+
+    def form_valid(self, form):
+        file = io.TextIOWrapper(
+            form.files['csv_file'].file, encoding='utf-8', errors='replace'
+        )
+        updated = IncomingStudent.objects.update_hinman_boxes(
+            file, self.kwargs['trips_year']
+        )
+        msg = "Updated Hinman Boxes for: %s" % ",".join(map(str, updated))
+        messages.info(self.request, msg)
+        return HttpResponseRedirect(self.request.path)
+
 
 class MatchRegistrations(DatabaseEditPermissionRequired,
                          TripsYearMixin, FormView):

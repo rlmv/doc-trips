@@ -13,6 +13,9 @@
 <div>
   {% url 'db:upload_incoming' trips_year=trips_year as url_ %}
   {{ url_|upload_button:"Upload Incoming" }}
+
+  {% url 'db:upload_hinman_boxes' trips_year=trips_year as url_ %}
+  {{ url_|upload_button:"Upload Hinman Boxes" }}
   
   {% url 'db:reports:charges' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Charges" }}

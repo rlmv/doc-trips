@@ -18,8 +18,17 @@ from fyt.transport.models import Stop, Route
 from fyt.utils.choices import YES, NO
 from fyt.users.models import DartmouthUser
 
+
+def resolve_path(fname):
+    """
+    Resolve a filename in this directory.
+    """
+    return os.path.join(os.path.dirname(__file__), fname)
+
+
 class IncomingStudentModelTestCase(TripsYearTestCase):
 
+    FILE = resolve_path('incoming_students.csv')
     
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
         user = self.mock_incoming_student()
@@ -47,7 +56,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
     def test_get_hometown_parsing(self):
         trips_year = self.init_trips_year()
-        with open(FILE) as f:
+        with open(self.FILE) as f:
             IncomingStudent.objects.create_from_csv_file(f, trips_year.pk)
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
@@ -465,18 +474,14 @@ class RegistrationModelTestCase(TripsYearTestCase):
             ).full_clean()
 
 
-def resolve_path(fname):
-    return os.path.join(os.path.dirname(__file__), fname)
-
-FILE = resolve_path('incoming_students.csv')
-FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
-
-
 class ImportIncomingStudentsTestCase(TripsYearTestCase):
+
+    FILE = resolve_path('incoming_students.csv')
+    FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
     
     def test_create_from_csv(self):
         trips_year = self.init_current_trips_year().pk
-        with open(FILE) as f:
+        with open(self.FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
         self.assertEqual(set(['id_1', 'id_2']), set(created))
         self.assertEqual(existing, [])
@@ -486,9 +491,9 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
 
     def test_ignore_existing_students(self):
         trips_year = self.init_current_trips_year().pk
-        with open(FILE) as f:
+        with open(self.FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
-        with open(FILE) as f:
+        with open(self.FILE) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
         self.assertEqual(set(['id_1', 'id_2']), set(existing))
         self.assertEqual(created, [])
@@ -496,13 +501,33 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
     def test_ignore_rows_without_id(self):
         trips_year = self.init_current_trips_year().pk
 
-        with open(FILE_WITH_BLANKS) as f:
+        with open(self.FILE_WITH_BLANKS) as f:
             (created, existing) = IncomingStudent.objects.create_from_csv_file(f, trips_year)
 
         self.assertEqual(set(['id_1']), set(created))
         self.assertEqual(existing, [])
         # are student objects created?
         IncomingStudent.objects.get(netid='id_1')
+
+
+class ImportIncomingStudentHinmanBoxes(TripsYearTestCase):
+
+    FILE = resolve_path('hinman_boxes.csv')
+    
+    def test_import_from_csv(self):
+        trips_year = self.init_trips_year()
+        incoming = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            netid='d34898x',
+            hinman_box=''
+        )
+        with open(self.FILE) as f:
+            imported = IncomingStudent.objects.update_hinman_boxes(f, trips_year)
+            
+        incoming.refresh_from_db()
+        self.assertEqual(incoming.hinman_box, '2884')
+        self.assertEqual(imported, [incoming])
 
 
 class IncomingStudentsManagerTestCase(TripsYearTestCase):
