@@ -43,6 +43,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
 class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
 
     model = PortalContent
+    fields = '__all__'
     template_name = 'applications/setup_portal.html'
     success_url = reverse_lazy('applications:setup_portal')
     
