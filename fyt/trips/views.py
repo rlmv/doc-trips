@@ -9,7 +9,7 @@ from crispy_forms.layout import Submit
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from .models import (
-    Trip, TripTemplate, TripType, Campsite, Section,
+    Trip, TripTemplate, Document, TripType, Campsite, Section,
     NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
 )
 from .forms import (
@@ -62,6 +62,19 @@ class _TripMixin():
     def get_context_data(self, **kwargs):
         kwargs['trip'] = self.get_trip()
         return super(_TripMixin, self).get_context_data(**kwargs)
+
+
+class _TripTemplateMixin():
+    """
+    Mixin to pull a TripTemplate object from a triptemplate_pk url kwarg
+    """
+    @cache_as('_triptemplate')
+    def get_triptemplate(self):
+        return TripTemplate.objects.get(pk=self.kwargs['triptemplate_pk'])
+
+    def get_context_data(self, **kwargs):
+        kwargs['triptemplate'] = self.get_triptemplate()
+        return super(_TripTemplateMixin, self).get_context_data(**kwargs)
 
 
 class TripList(DatabaseTemplateView):
@@ -139,10 +152,12 @@ class TripTemplateCreate(DatabaseCreateView):
 
 class TripTemplateDetail(DatabaseDetailView):
     model = TripTemplate
+    template_name = 'trips/triptemplate_detail.html'
     fields = [
         'name',
         'description_summary',
         'triptype',
+        'documents',
         'max_trippees',
         'swimtest_required',
         'dropoff_stop',
@@ -155,7 +170,7 @@ class TripTemplateDetail(DatabaseDetailView):
         'desc_day2',
         'desc_day3',
         'desc_conc',
-        'revisions'
+        'revisions',
     ]
 
 
@@ -166,7 +181,27 @@ class TripTemplateUpdate(DatabaseUpdateView):
 class TripTemplateDelete(DatabaseDeleteView):
     model = TripTemplate
     success_url_pattern = 'db:triptemplate_index'
-    
+
+
+class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
+    """
+    Upload a supplementary file and attach it to a TripTemplate.
+    """
+    model = Document
+    fields = ['name', 'file']
+
+    def get_headline(self):
+        return mark_safe(
+            "Upload PDF <small>%s</small>" % self.get_triptemplate()
+        )
+
+    def form_valid(self, form):
+        form.instance.template = self.get_triptemplate()
+        return super(UploadTripTemplateDocument, self).form_valid(form)
+
+    def get_success_url(self):
+        return self.get_triptemplate().detail_url()
+
 
 class TripTypeList(DatabaseListView):
     model = TripType

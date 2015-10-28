@@ -108,6 +108,15 @@ def _has_method(arg, method):
 
 
 @register.filter
+def create_button(url, name=None):
+    name = name or "Create"
+    return mark_safe(
+        '<a href="%s" class="btn btn-info"> '
+        '<i class="fa fa-plus"></i> %s </a>' % (url, name)
+    )
+
+
+@register.filter
 def edit_button(url):
     return mark_safe(
         '<a href="%s" class="btn btn-primary"> '

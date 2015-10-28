@@ -1,0 +1,6 @@
+{% extends "db/detail.html" %}
+{% load links %}
+
+{% block more_links %}
+{{ object.file_upload_url|create_button:"Add PDF" }}
+{% endblock %}

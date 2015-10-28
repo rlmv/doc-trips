@@ -13,10 +13,15 @@
   {% if update_url %}
   {{ update_url|edit_button }}
   {% endif %}
+
   {% if delete_url %}
   {{ delete_url|delete_button }}
   {% endif %}
-<p>
+
+  {% block more_links %}
+  {# put additional links here #}
+  {% endblock %}
+</p>
 {% endblock links %}
 
 {% block description %}

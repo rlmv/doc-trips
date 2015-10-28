@@ -1,11 +1,15 @@
+import os
 import unittest
 import math
 from datetime import date, timedelta, time
+
+import webtest
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_mommy import mommy
 
-from .models import (
+from ..models import (
     Trip, Section, TripTemplate, Campsite,
     validate_triptemplate_name,
     NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
@@ -640,3 +644,18 @@ class ViewsTestCase(WebTestCase):
         self.assertContains(resp, 'sparkles')
         self.assertContains(resp, 'Carries an EpiPen')
 
+
+class TripTemplateDocumentUploadTestCase(WebTestCase):
+    
+    def test_uploaded_document_is_attached_to_TripTemplate(self):
+        trips_year = self.init_trips_year()
+        tt = mommy.make(TripTemplate, trips_year=trips_year)
+        resp = self.app.get(tt.file_upload_url(), user=self.mock_director())
+        resp.form['name'] = 'Map'
+        resp.form['file'] = webtest.Upload('map.txt', b'test data')
+        resp.form.submit()
+
+        tt.refresh_from_db()
+        files = tt.document_set.all()
+        self.assertEqual(len(files), 1)
+        self.assertEqual(files[0].name, 'Map')

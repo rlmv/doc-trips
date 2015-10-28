@@ -274,7 +274,6 @@ class Section(DatabaseModel):
                 self.return_to_campus.strftime(fmt))
 
 
-
 def validate_triptemplate_name(value):
     """ 
     Validator for TripTemplate.name 
@@ -333,8 +332,36 @@ class TripTemplate(DatabaseModel):
         """
         return self.max_trippees + 2
 
+    def file_upload_url(self):
+        """
+        Url used to attach files to this trip template
+        """
+        return reverse('db:triptemplate_upload_file', kwargs={
+            'trips_year': self.trips_year, 'triptemplate_pk': self.pk
+        })
+
+    def detail_url(self):
+        return reverse('db:triptemplate_detail', kwargs=self.obj_kwargs())
+
     def __str__(self):
         return "{}: {}".format(self.name, self.description_summary)
+
+
+class Document(DatabaseModel):
+    """
+    A file upload (e.g. a map) that accompanies a TripTemplate.
+
+    Should this be restricted to PDFs? Allow images?
+    """
+    template = models.ForeignKey('TripTemplate', related_name='documents')
+    name = models.CharField(max_length=255)
+    file = models.FileField()
+
+    def detail_url(self):
+        return self.file.url
+
+    def __str__(self):
+        return self.name
 
 
 class TripType(DatabaseModel):

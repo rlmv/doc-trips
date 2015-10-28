@@ -34,6 +34,8 @@ def detail(db_object, fields=None):
         if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
+        if field_name == 'document_set':
+            import pdb; pdb.set_trace()
         try:
             field = db_object._meta.get_field_by_name(field_name)[0]
             value = getattr(db_object, field_name)

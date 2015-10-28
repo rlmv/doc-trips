@@ -28,6 +28,9 @@ template_urlpatterns = [
         name='triptemplate_update'),
     url(DB_REGEX['DELETE'], TripTemplateDelete.as_view(),
         name='triptemplate_delete'),
+    url(r'^(?P<triptemplate_pk>[0-9]+)/upload/file$',
+        UploadTripTemplateDocument.as_view(),
+        name='triptemplate_upload_file'),
 ]
 
 triptype_urlpatterns = [
