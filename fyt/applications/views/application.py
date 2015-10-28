@@ -173,6 +173,7 @@ class SetupApplication(CreateApplicationPermissionRequired,
     model = ApplicationInformation
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
+    fields = '__all__'
 
     def get_object(self):
         """ 
