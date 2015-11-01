@@ -3,9 +3,10 @@ from collections import defaultdict, OrderedDict
 
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, inlineformset_factory
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
+from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from .models import (
@@ -21,7 +22,7 @@ from fyt.incoming.models import IncomingStudent, Registration
 from fyt.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
-    TripsYearMixin
+    DatabaseFormView, TripsYearMixin
 )
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
@@ -157,7 +158,7 @@ class TripTemplateDetail(DatabaseDetailView):
         'name',
         'description_summary',
         'triptype',
-        'documents',
+        ('files', 'documents'),
         'max_trippees',
         'swimtest_required',
         'dropoff_stop',
@@ -192,7 +193,7 @@ class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
 
     def get_headline(self):
         return mark_safe(
-            "Upload PDF <small>%s</small>" % self.get_triptemplate()
+            "Upload File <small>%s</small>" % self.get_triptemplate()
         )
 
     def form_valid(self, form):
@@ -201,6 +202,19 @@ class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
 
     def get_success_url(self):
         return self.get_triptemplate().detail_url()
+
+
+class TripTemplateDocumentList(DatabaseDetailView):
+    model = TripTemplate
+    template_name = 'trips/document_list.html'
+
+
+class TripTemplateDocumentDelete(_TripTemplateMixin, DatabaseDeleteView):
+    model = Document
+
+    def get_success_url(self):
+        return reverse('db:triptemplate_document_list',
+                       kwargs=self.get_triptemplate().obj_kwargs())
 
 
 class TripTypeList(DatabaseListView):

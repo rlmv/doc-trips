@@ -31,6 +31,13 @@ template_urlpatterns = [
     url(r'^(?P<triptemplate_pk>[0-9]+)/upload/file$',
         UploadTripTemplateDocument.as_view(),
         name='triptemplate_upload_file'),
+    url(r'^(?P<triptemplate_pk>[0-9]+)/documents/delete/(?P<pk>[0-9]+)/$',
+        TripTemplateDocumentDelete.as_view(),
+        name='triptemplate_document_delete'),
+    url(r'^(?P<pk>[0-9]+)/documents/list',
+        TripTemplateDocumentList.as_view(),
+        name='triptemplate_document_list'),
+    
 ]
 
 triptype_urlpatterns = [

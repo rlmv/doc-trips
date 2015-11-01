@@ -272,6 +272,11 @@ class DatabaseTemplateView(DatabaseReadPermissionRequired, ExtraContextMixin,
     pass
 
 
+class DatabaseFormView(DatabaseEditPermissionRequired, ExtraContextMixin,
+                       TripsYearMixin, FormView):
+    pass
+
+
 class DatabaseLandingPage(DatabaseTemplateView):
     """ 
     Landing page of a particular trips_year in the database

@@ -1,0 +1,25 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> Uploaded Files <small> {{ object }} </small> </h2>
+{% endblock %}
+
+{% block content %}
+<p>
+  Upload maps and other supplementary trip information. These documents are included in leader packets.
+</p>
+<p>
+  {{ object.file_upload_url|create_button:"Add File" }}
+</p>
+
+<table class="table">
+  {% for doc in object.documents.all %}
+  <tr>
+	<td> <strong> {{ doc }} </strong> </td>
+	<td> {{ doc.delete_url|delete_button }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

@@ -117,10 +117,11 @@ def create_button(url, name=None):
 
 
 @register.filter
-def edit_button(url):
+def edit_button(url, name=None):
+    name = name or "Edit"
     return mark_safe(
         '<a href="%s" class="btn btn-primary"> '
-        '<i class="fa fa-wrench"></i> Edit </a>' % url
+        '<i class="fa fa-wrench"></i> %s </a>' % (url, name)
     )
 
 

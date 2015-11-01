@@ -339,6 +339,12 @@ class TripTemplate(DatabaseModel):
         return reverse('db:triptemplate_upload_file', kwargs={
             'trips_year': self.trips_year, 'triptemplate_pk': self.pk
         })
+        
+    def file_list_url(self):
+        """
+        Url for list of all attached files
+        """
+        return reverse('db:triptemplate_document_list', kwargs=self.obj_kwargs())
 
     def detail_url(self):
         return reverse('db:triptemplate_detail', kwargs=self.obj_kwargs())
@@ -359,6 +365,11 @@ class Document(DatabaseModel):
 
     def detail_url(self):
         return self.file.url
+
+    def delete_url(self):
+        kwargs = self.obj_kwargs()
+        kwargs.update({'triptemplate_pk': self.template.pk})
+        return reverse('db:triptemplate_document_delete', kwargs=kwargs)
 
     def __str__(self):
         return self.name
