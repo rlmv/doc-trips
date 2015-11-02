@@ -1,0 +1,6 @@
+
+{% for doc in triptemplate.documents.all %}
+<div class="page-break-after">
+  <object data="{{ doc.file.url }}" width="100%" height="100%"> </object>
+</div>
+{% endfor %}
