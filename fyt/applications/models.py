@@ -12,7 +12,7 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
 from fyt.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
 from fyt.utils.models import MedicalMixin
-from fyt.utils.model_fields import NullYesNoField
+from fyt.utils.model_fields import NullYesNoField, YesNoField
 
 """
 Models for Leaders and Croo applications
@@ -211,9 +211,8 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         "to Dartmouth?",
         blank=True
     )
-    hanover_in_fall = models.CharField(
-        'Are you planning to be in Hanover this fall?',
-        choices=YES_NO_CHOICES, max_length=5
+    hanover_in_fall = YesNoField(
+        'Are you planning to be in Hanover this fall?'
     )
     LEADER_CROO_PREFERENCE = (
         ('PREFER_LEADER', 'Prefer Trip Leader'),
@@ -290,7 +289,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
 
     def clean(self):
         """
-        Only allow Croo/Trip assignments if status == LEADER,CROO 
+        Only allow Croo/Trip assignments if status == LEADER,CROO
         """
         if self.assigned_trip and self.status != self.LEADER:
             msg = ("Volunteer %s with status %s cannot also lead a trip. "
@@ -407,7 +406,7 @@ class LeaderSupplement(DatabaseModel):
     def get_available_trips(self):
         """
         Return all Trips which this leader is available to lead.
-        
+
         Contains all permutations of available and preferred sections and
         trips types, excluding the results of ``get_preferred_trips``.
         """
@@ -422,7 +421,7 @@ class LeaderSupplement(DatabaseModel):
         )
 
     def average_grade(self):
-        """ 
+        """
         Average grade for the leader application.
         """
         r = self.grades.all().aggregate(models.Avg('grade'))
@@ -536,7 +535,7 @@ class LeaderApplicationGrade(AbstractGrade):
 
 
 class CrooApplicationGrade(AbstractGrade):
-    """ 
+    """
     Grade for CrooApplications
     """
     application = models.ForeignKey(
@@ -547,7 +546,7 @@ class CrooApplicationGrade(AbstractGrade):
 
 class QualificationTag(DatabaseModel):
     """
-    Used to mark Croo apps with hard skills relevant to different Croos 
+    Used to mark Croo apps with hard skills relevant to different Croos
 
     TODO: do we need views for adding/editing more tags?
     Or just a management command?
@@ -563,7 +562,7 @@ class QualificationTag(DatabaseModel):
 
 class AbstractSkippedGrade(DatabaseModel):
     """
-    Abstract model to mark an application as skipped by a grader 
+    Abstract model to mark an application as skipped by a grader
 
     If a grader skips an application they will not be shown the
     application again.
