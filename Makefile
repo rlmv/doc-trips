@@ -15,7 +15,7 @@ install:
 	pyvenv $(VENV)
 	$(PIP) install --upgrade -r requirements.txt
 
-deploy: 
+deploy:
 	git push production master
 	heroku run migrate
 
@@ -28,15 +28,15 @@ migrate:
 superuser:
 	$(MANAGE) setsuperuser d34898x
 
-test: 
-	$(MANAGE) test --keepdb
+test:
+	$(MANAGE) test --nomigrations
 
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations
 	$(COVERAGE) report -m
-	$(COVERAGE) html 
+	$(COVERAGE) html
 
-clean: 
+clean:
 	rm -rf *.pyc
 	rm -rf *~
 
@@ -51,4 +51,3 @@ db_from_remote:
 
 db_fresh:
 	$(MANAGE) init_db 2015
-

@@ -44,6 +44,8 @@ ALLOWED_HOSTS = ['*']
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
+    'test_without_migrations',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
