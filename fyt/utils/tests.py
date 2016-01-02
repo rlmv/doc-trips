@@ -87,4 +87,6 @@ class UrlencodeTagTestCase(TestCase):
         ).render(Context({
             'value1': 1
         }))
-        self.assertEqual(out.strip(), 'param1=1&param2=test+this')
+        self.assertIn(out.strip(), [
+            'param1=1&param2=test+this', 'param2=test+this&param1=1'
+        ])
