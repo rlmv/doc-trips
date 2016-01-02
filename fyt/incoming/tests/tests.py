@@ -15,7 +15,6 @@ from fyt.trips.models import Trip, TripType, Section
 from fyt.incoming.models import Settings
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Stop, Route
-from fyt.utils.choices import YES, NO
 from fyt.users.models import DartmouthUser
 
 
@@ -135,7 +134,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
-            registration__doc_membership=YES
+            registration__doc_membership=True
         )
         self.assertEqual(inc.compute_cost(), 131.25)
 
@@ -146,7 +145,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
-            registration__doc_membership=YES,
+            registration__doc_membership=True,
             registration__green_fund_donation=290
         )
         self.assertEqual(inc.compute_cost(), 421.25)
@@ -158,7 +157,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0, bus_assignment_round_trip=None,
-            registration__doc_membership=YES
+            registration__doc_membership=True
         )
         self.assertEqual(inc.compute_cost(), 50)
 
@@ -229,7 +228,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         inc = mommy.make(
             IncomingStudent, trips_year=trips_year,
             trip_assignment=None,
-            registration__doc_membership=YES,
+            registration__doc_membership=True,
             financial_aid=60
         )
         self.assertEqual(inc.doc_membership_cost(costs), 40)
@@ -324,7 +323,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
     def test_must_agree_to_waiver(self):
         with self.assertRaisesMessage(
                 ValidationError, "You must agree to the waiver"):
-            mommy.make(Registration, waiver=NO).full_clean()
+            mommy.make(Registration, waiver=False).full_clean()
 
     def test_get_trip_assignment_returns_assignment(self):
         trips_year = self.init_current_trips_year()
@@ -463,14 +462,14 @@ class RegistrationModelTestCase(TripsYearTestCase):
                 Registration,
                 bus_stop_round_trip=mommy.make(Stop),
                 bus_stop_to_hanover=mommy.make(Stop),
-                waiver=YES
+                waiver=True
             ).full_clean()
         with self.assertRaisesRegex(ValidationError, "round-trip AND a one-way"):
             mommy.make(
                 Registration,
                 bus_stop_round_trip=mommy.make(Stop),
                 bus_stop_from_hanover=mommy.make(Stop),
-                waiver=YES
+                waiver=True
             ).full_clean()
 
 
@@ -683,13 +682,13 @@ class RegistrationViewsTestCase(WebTestCase):
             'phone': '134',
             'email': 'asf@gmail.com',
             'tshirt_size': 'L',
-            'regular_exercise': 'NO',
+            'regular_exercise': False,
             'swimming_ability': 'BEGINNER',
-            'camping_experience': 'NO',
-            'hiking_experience': 'YES',
-            'financial_assistance': 'YES',
-            'waiver': 'YES',
-            'doc_membership': 'NO',
+            'camping_experience': False,
+            'hiking_experience': True,
+            'financial_assistance': True,
+            'waiver': True,
+            'doc_membership': False,
             'green_fund_donation': 0,
         }
         url = reverse('incoming:register')
@@ -709,13 +708,13 @@ class RegistrationViewsTestCase(WebTestCase):
             'phone': '134',
             'email': 'asf@gmail.com',
             'tshirt_size': 'L',
-            'regular_exercise': 'NO',
+            'regular_exercise': False,
             'swimming_ability': 'BEGINNER',
-            'camping_experience': 'NO',
-            'hiking_experience': 'YES',
-            'financial_assistance': 'YES',
-            'waiver': 'YES',
-            'doc_membership': 'NO',
+            'camping_experience': False,
+            'hiking_experience': True,
+            'financial_assistance': True,
+            'waiver': True,
+            'doc_membership': False,
             'green_fund_donation': 0,
         }
         resp = self.app.post(url, data, user=self.mock_director()).follow()
@@ -771,11 +770,11 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         trips_year = self.init_current_trips_year()
         requesting = mommy.make(
             Registration, trips_year=trips_year,
-            financial_assistance='YES'
+            financial_assistance=True
         )
         not_requesting = mommy.make(
             Registration, trips_year=trips_year,
-            financial_assistance='NO'
+            financial_assistance=False
         )
         self.assertEqual(
             [requesting], list(Registration.objects.want_financial_aid(trips_year))
@@ -804,4 +803,3 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, trips_year=trips_year, registration=matched)
         unmatched = mommy.make(Registration, trips_year=trips_year)
         self.assertEqual([unmatched], list(Registration.objects.unmatched(trips_year)))
-

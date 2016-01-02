@@ -14,15 +14,9 @@ from fyt.db.models import DatabaseModel
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip, Section, TripType
 from fyt.users.models import NetIdField
-from fyt.utils.choices import TSHIRT_SIZE_CHOICES, YES_NO_CHOICES, YES
+from fyt.utils.choices import TSHIRT_SIZE_CHOICES
 from fyt.utils.models import MedicalMixin
-
-
-def YesNoField(*args, **kwargs):
-    # Use a boolean field instead?
-    kwargs['choices'] = YES_NO_CHOICES
-    kwargs['max_length'] = 3
-    return models.CharField(*args, **kwargs)
+from fyt.utils.model_fields import YesNoField, NullYesNoField
 
 
 def sort_by_lastname(students):
@@ -34,7 +28,7 @@ def sort_by_lastname(students):
 
 def monetize(func):
     """
-    Decorator which converts the return value of ``func`` to 
+    Decorator which converts the return value of ``func`` to
     a :class:`~decimal.Decimal` with two decimal places.
 
     >>> identity = monetize(lambda x: x)
@@ -53,8 +47,8 @@ class IncomingStudent(DatabaseModel):
     """
     Model to aggregate trippee information.
 
-    All logistical information is stored on this model 
-    since it is possible for a student to go on a trip without 
+    All logistical information is stored on this model
+    since it is possible for a student to go on a trip without
     submitting a registration, but a student won't go on a trip
     unless we have received information from the college about her.
     """
@@ -158,7 +152,7 @@ class IncomingStudent(DatabaseModel):
 
     def get_registration(self):
         """
-        Return this student's registration, or None if DNE 
+        Return this student's registration, or None if DNE
         """
         try:
             return self.registration
@@ -245,7 +239,7 @@ class IncomingStudent(DatabaseModel):
         Financial aid adjusted DOC membership cost, if elected.
         """
         reg = self.get_registration()
-        if reg and reg.doc_membership == YES:
+        if reg and reg.doc_membership:
             return self._adjust(costs.doc_membership_cost)
         return 0
 
@@ -268,7 +262,7 @@ class IncomingStudent(DatabaseModel):
         Compute the total charge for this student.
 
         Cost is the sum of the base cost, bus cost and
-        doc membership, adjusted by financial aid, plus 
+        doc membership, adjusted by financial aid, plus
         any green fund donation and cancellation fees
 
         ``costs`` is a ``Settings`` instance
@@ -301,8 +295,9 @@ class IncomingStudent(DatabaseModel):
         return self.name
 
 
+# TODO: test for 'True'
 def validate_waiver(value):
-    if value != YES:
+    if not value:
         raise ValidationError("You must agree to the waiver")
 
 
@@ -329,23 +324,22 @@ class Registration(MedicalMixin, DatabaseModel):
     )
 
     # --- sections and triptypes -----
-    is_exchange = YesNoField('Are you an Exchange Student?', blank=True)
-    is_transfer = YesNoField('Are you a Transfer Student?', blank=True)
-    is_international = YesNoField(
+    is_exchange = YesNoField('Are you an Exchange Student?')
+
+    is_transfer = NullYesNoField('Are you a Transfer Student?')
+
+    is_international = NullYesNoField(
         "Are you an International Student who plans on attending "
-        "the International Student Orientation?",
-        blank=True
-    )
-    is_native = YesNoField(
+        "the International Student Orientation?")
+
+    is_native = NullYesNoField(
         "Are you a Native American Student who plans on attending "
-        "the Native American student orientation?",
-        blank=True
-    )
-    is_fysep = YesNoField(
+        "the Native American student orientation?")
+
+    is_fysep = NullYesNoField(
         "Are you participating in the First Year Student Enrichment "
-        "Program (FYSEP)?",
-        blank=True
-    )
+        "Program (FYSEP)?")
+
     ATHLETE_CHOICES = (
         ('NO', 'No'),
         ('ALPINE_SKIING', 'Alpine Skiing'),
@@ -408,10 +402,12 @@ class Registration(MedicalMixin, DatabaseModel):
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
     #  ----- physical condition and experience ------
+
     regular_exercise = YesNoField(
         "Do you do enjoy cardiovascular exercise (running, biking, "
         "swimming, sports, etc.) on a regular basis?"
     )
+
     physical_activities = models.TextField(
         "Please describe the types of physical activities you enjoy, "
         "including frequency (daily? weekly?) and extent (number of "
@@ -443,10 +439,12 @@ class Registration(MedicalMixin, DatabaseModel):
     camping_experience = YesNoField(
         "Have you ever spent a night camping under a tarp?"
     )
+
     hiking_experience = YesNoField(
         "Have you ever hiked or climbed with a pack of at "
         "least 20-30 pounds (10-15 kilograms)?"
     )
+
     hiking_experience_description = models.TextField(
         "Please describe your hiking experience. Where have you hiked? "
         "Was it mountainous or flat? Have you done day hikes? Have you "
@@ -457,10 +455,9 @@ class Registration(MedicalMixin, DatabaseModel):
         "let us know.",
         blank=True
     )
-    has_boating_experience = YesNoField(
+    has_boating_experience = NullYesNoField(
         "Have you ever been on an overnight or extended canoe "
-        "or kayak trip?",
-        blank=True
+        "or kayak trip?"
     )
     boating_experience = models.TextField(
         "Please describe your canoe or kayak trip experience. Have you "
@@ -515,7 +512,6 @@ class Registration(MedicalMixin, DatabaseModel):
         Stop, on_delete=models.PROTECT, blank=True, null=True,
         related_name='requests_from_hanover',
     )
-
     financial_assistance = YesNoField(
         "Are you requesting financial assistance from DOC Trips? If "
         "'yes' we will contact you in July with more information about "
@@ -554,7 +550,7 @@ class Registration(MedicalMixin, DatabaseModel):
     def get_trip_assignment(self):
         """
         Return the trip assignment for this registration's trippee.
-     
+
         If the registration does not have an associated
         IncomingStudent, or IncomingStudent is not assigned
         to a trip, return None.
@@ -569,9 +565,9 @@ class Registration(MedicalMixin, DatabaseModel):
         return self.swimming_ability == self.NON_SWIMMER
 
     def _base_trips_qs(self):
-        """ 
+        """
         Queryset to use for computing trip options for this registration.
-        
+
         If the registration is NON_SWIMMER, exclude all swimming trips.
         """
         qs = (Trip.objects
@@ -586,9 +582,9 @@ class Registration(MedicalMixin, DatabaseModel):
         return qs
 
     def get_firstchoice_trips(self):
-        """ 
-        Return first choice Trips 
-        
+        """
+        Return first choice Trips
+
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
@@ -596,9 +592,9 @@ class Registration(MedicalMixin, DatabaseModel):
         )
 
     def get_preferred_trips(self):
-        """ 
-        Return preferred Trips 
-        
+        """
+        Return preferred Trips
+
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
@@ -608,9 +604,9 @@ class Registration(MedicalMixin, DatabaseModel):
         )
 
     def get_available_trips(self):
-        """ 
-        Return available Trips 
-        
+        """
+        Return available Trips
+
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
@@ -622,8 +618,8 @@ class Registration(MedicalMixin, DatabaseModel):
         )
 
     def get_incoming_student(self):
-        """ 
-        Return this registration's IncomingStudent, or None if DNE 
+        """
+        Return this registration's IncomingStudent, or None if DNE
         """
         try:
             return self.trippee
@@ -636,7 +632,7 @@ class Registration(MedicalMixin, DatabaseModel):
     def match(self):
         """
         Try to match this registration with incoming student data.
-       
+
         Returns the matched IncomingStudent, or None.
         """
         try:
@@ -667,7 +663,7 @@ class Settings(DatabaseModel):
 def connect_registration_to_trippee(instance=None, **kwargs):
     """
     When an incoming student submits a registration, try and
-    find the student's college-provided information and attach 
+    find the student's college-provided information and attach
     to the registration.
 
     If the info cannot be found, the registration is left to sit.
@@ -678,8 +674,8 @@ def connect_registration_to_trippee(instance=None, **kwargs):
 
 @receiver(post_save, sender=IncomingStudent)
 def create_trippee_for_college_info(instance=None, **kwargs):
-    """ 
-    If the incoming student has somehow already submitted a 
+    """
+    If the incoming student has somehow already submitted a
     registration, attach the registration to the new object.
     """
     if kwargs.get('created', False):

@@ -20,7 +20,6 @@ from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import IncomingStudent, Registration
-from fyt.utils.choices import YES
 
 
 class TripTestCase(WebTestCase):
@@ -31,8 +30,8 @@ class TripTestCase(WebTestCase):
         self.init_trips_year()
 
     def test_unique_validation_in_create_view(self):
-        """ 
-        See the comment in DatabaseMixin.form_valid 
+        """
+        See the comment in DatabaseMixin.form_valid
         """
         trip = mommy.make(
             Trip, trips_year=self.trips_year,
@@ -632,7 +631,7 @@ class ViewsTestCase(WebTestCase):
                 food_allergies='mangoes',
                 dietary_restrictions='gluten free',
                 needs='dinosaurs',
-                epipen=YES
+                epipen=True
             )
         )
         url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})

@@ -11,7 +11,7 @@ from fyt.applications.models import GeneralApplication as Application
 from fyt.incoming.models import Registration, IncomingStudent
 from fyt.incoming.models import Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired
-from fyt.utils.choices import YES, S, M, L, XL
+from fyt.utils.choices import S, M, L, XL
 from fyt.utils.cache import cache_as
 from fyt.trips.models import Trip
 
@@ -194,7 +194,7 @@ class Charges(GenericReportView):
         return IncomingStudent.objects.filter(
             (Q(trip_assignment__isnull=False) |
              Q(cancelled=True) |
-             Q(registration__doc_membership=YES) |
+             Q(registration__doc_membership=True) |
              Q(registration__green_fund_donation__gt=0)),
             trips_year=self.get_trips_year(),
         ).prefetch_related(
@@ -241,7 +241,7 @@ class DocMembers(GenericReportView):
 
     def get_queryset(self):
         return Registration.objects.filter(
-            trips_year=self.kwargs['trips_year'], doc_membership=YES
+            trips_year=self.kwargs['trips_year'], doc_membership=True
         ).select_related('user')
 
     header = ['name', 'netid', 'email']
@@ -315,9 +315,9 @@ class Housing(GenericReportView):
             trip.section.name if is_assigned else "",
             trip.section.trippees_arrive.strftime(fmt) if is_assigned else "",
             trip.section.return_to_campus.strftime(fmt) if is_assigned else "",
-            'yes' if reg and reg.is_native == YES else '',
-            'yes' if reg and reg.is_fysep == YES else '',
-            'yes' if reg and reg.is_international == YES else '',
+            'yes' if reg and reg.is_native else '',
+            'yes' if reg and reg.is_fysep else '',
+            'yes' if reg and reg.is_international else '',
         ]
 
 
