@@ -65,7 +65,7 @@ class ExternalBusManager(models.Manager):
             matrix[transport.route][transport.section] = transport
         return matrix
 
-    
+
 class ExternalPassengerManager(models.Manager):
 
     def matrix_to_hanover(self, trips_year):
@@ -116,7 +116,7 @@ class ExternalPassengerManager(models.Manager):
 
 
 class StopOrderManager(models.Manager):
-    
+
     def get_queryset(self):
         qs = super(StopOrderManager, self).get_queryset()
         return qs.select_related(

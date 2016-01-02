@@ -18,10 +18,10 @@ def detail(db_object, fields=None):
     name of a field or a method of the object. Fields can be 
     passed as (label, accessor) tuples, eg ('Section', 'get_section_name').
     """
-    
+
     if not fields:
         fields = db_object._meta.get_all_field_names()
-    
+
     display_fields = []
     for field_name in fields:
 
@@ -30,7 +30,7 @@ def detail(db_object, fields=None):
             (label, field_name) = field_name
         else:
             label = None
-            
+
         if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
@@ -63,7 +63,7 @@ def detail(db_object, fields=None):
             # related objects don't have a verbose_name
             if not hasattr(field, 'verbose_name'):
                 field.verbose_name = field.get_accessor_name()
-        
+
         if field.many_to_many or field.one_to_many:
             t = template.Template(
                 """{% for o in queryset %} <a href="{{ o.get_absolute_url }}"> {{ o }}</a>{% if not forloop.last %},{% endif %}{% endfor %}""")
@@ -79,8 +79,8 @@ def detail(db_object, fields=None):
         if label is None:
             label = field.verbose_name
         display_fields.append((label, value))
-        
+
     t = template.loader.get_template('db/_detail_view_tag.html')
     c = template.Context({'fields': display_fields})
     return t.render(c)
-    
+

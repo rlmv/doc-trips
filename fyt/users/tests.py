@@ -12,43 +12,43 @@ from fyt.test.testcases import WebTestCase
 
 def lookup_email(*args, **kwargs):
     return 'email'
-    
+
 
 class UserManagerTestCase(TestCase):
 
     @patch('fyt.users.models.lookup_email', new=lookup_email)
     def test_create_user_without_did(self):
-        
+
         netid = 'd123456z'
         name = 'Igor'
-        
+
         user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name)
         self.assertTrue(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
         self.assertEqual(user.did, '')
-       
+
     @patch('fyt.users.models.lookup_email', new=lookup_email)
     def test_create_user_then_add_did(self):
-        
+
         netid = 'd123456z'
         name = 'Igor'
         user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name)
-        
+
         DID = 'destiny'
         user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name, did=DID)
         self.assertFalse(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
         self.assertEqual(user.did, DID)
-        
+
     def test_email_lookup_error_sets_blank_email(self):
         user = DartmouthUser.objects.create_user('junk_netid', 'name')
         self.assertEqual(user.email, '')
 
 
 class NetIdFieldTestCase(TestCase):
-    
+
     def test_lowercase_conversion(self):
         netid = 'D34898Z'
         user = mommy.make(DartmouthUser, netid=netid)
@@ -61,7 +61,7 @@ class NetIdFieldTestCase(TestCase):
 
 
 class UserEmailMiddlewareTestCase(WebTestCase):
-    
+
     def test_user_with_no_email_must_manually_add_email(self):
         user = DartmouthUser.objects.create(
             netid='d34898z', name='test', email='')

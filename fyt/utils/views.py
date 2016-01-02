@@ -10,7 +10,7 @@ class CrispyFormMixin():
 
     TODO: needs tests.
     """
-    
+
     def get_form_helper(self, form):
         """ Return a configured crispy FormHelper. """
 
@@ -36,7 +36,7 @@ class CrispyFormMixin():
         Catches a tricky bug wherein some required fields specified on the form
         are accidentally left out of an explicit layout, causing POSTS to fail.
         """
-        
+
         if hasattr(form.helper, 'layout'):
             # all fields in the layout
             layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
@@ -47,7 +47,7 @@ class CrispyFormMixin():
                 msg = ('whoa there, make sure you include ALL fields specified by '
                        '%s in the Crispy Form layout. %r are missing')
                 raise ImproperlyConfigured(msg % (self.__class__.__name__, form_fields-layout_fields))
-        
+
 
 class MultipleFormMixin():
     """ 
@@ -56,7 +56,7 @@ class MultipleFormMixin():
     As written, intended for use with a ModelView. Assumes that forms 
     need to be saved. Override form_valid if not the case.
     """
-    
+
     def get(self, request, *args, **kwargs):
 
         forms = self.get_forms(instances=self.get_instances())
@@ -64,12 +64,12 @@ class MultipleFormMixin():
 
         return self.render_to_response(context)
 
-    def post(self, request, *args, **kwargs): 
-        
-        forms = self.get_forms(instances=self.get_instances(), 
-                               data=request.POST, 
+    def post(self, request, *args, **kwargs):
+
+        forms = self.get_forms(instances=self.get_instances(),
+                               data=request.POST,
                                files=request.FILES)
-        
+
         valid = map(lambda f: f.is_valid(), forms.values())
         if all(valid):
             return self.form_valid(forms)
@@ -77,15 +77,15 @@ class MultipleFormMixin():
         return self.form_invalid(forms)
 
     def get_forms(self, instances=None,  **kwargs):
-        
+
         if instances is None:
             instances = {}
-            
+
         forms = {}
         for (name, form_class) in self.get_form_classes().items():
-            forms[name] = form_class(instance=instances.get(name), 
+            forms[name] = form_class(instance=instances.get(name),
                                      prefix=name, **kwargs)
-            
+
         return forms
 
     def get_form_classes(self):
@@ -99,17 +99,17 @@ class MultipleFormMixin():
         with model forms """
         for form in forms.values():
             form.save()
-        
+
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, forms):
-        
+
         context = self.get_context_data(**forms)
         return self.render_to_response(context)
 
 
 class PopulateMixin():
-    
+
     def get(self, request, *args, **kwargs):
         """
         Populate the create form with data passed 

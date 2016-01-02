@@ -52,7 +52,7 @@ class StopModelTestCase(TripsYearTestCase):
     def test_location_with_address(self):
         stop = mommy.make(Stop, lat_lng='', address='address')
         self.assertEqual(stop.location, 'address')
-    
+
     def test_no_lat_lng_or_address_raises_validation_error(self):
         stop = mommy.prepare(Stop, lat_lng='', address='')
         with self.assertRaises(ValidationError):
@@ -72,7 +72,7 @@ class StopModelTestCase(TripsYearTestCase):
     def test_external_requires_one_way_cost(self):
         with self.assertRaisesRegex(ValidationError, 'requires one-way cost'):
             mommy.make(
-                Stop, address='stub', 
+                Stop, address='stub',
                 cost_one_way=None, cost_round_trip=3,
                 route__category=Route.EXTERNAL
             ).full_clean()
@@ -80,7 +80,7 @@ class StopModelTestCase(TripsYearTestCase):
     def test_internal_cannot_set_round_trip_cost(self):
         with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
             mommy.make(
-                Stop, address='stub', 
+                Stop, address='stub',
                 cost_one_way=None, cost_round_trip=3,
                 route__category=Route.INTERNAL
             ).full_clean()
@@ -88,7 +88,7 @@ class StopModelTestCase(TripsYearTestCase):
     def test_internal_cannot_set_one_way_cost(self):
         with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
             mommy.make(
-                Stop, address='stub', 
+                Stop, address='stub',
                 cost_one_way=15, cost_round_trip=None,
                 route__category=Route.INTERNAL
             ).full_clean()
@@ -111,7 +111,7 @@ class StopManagerTestCase(TripsYearTestCase):
 
 
 class RouteManagerTestCase(TripsYearTestCase):
-    
+
     def test_external(self):
         trips_year = self.init_trips_year()
         external_route = mommy.make(
@@ -130,7 +130,7 @@ class RouteManagerTestCase(TripsYearTestCase):
 
 
 class ScheduledTransportManagerTestCase(TripsYearTestCase):
-    
+
     def test_internal(self):
         ty = self.init_trips_year()
         external = mommy.make(
@@ -138,8 +138,8 @@ class ScheduledTransportManagerTestCase(TripsYearTestCase):
         internal = mommy.make(
             ScheduledTransport, trips_year=ty, route__category=Route.INTERNAL)
         self.assertQsEqual(ScheduledTransport.objects.internal(ty), [internal])
-     
-   
+
+
 class TestViews(WebTestCase):
 
     def test_index_views(self):
@@ -154,7 +154,7 @@ class TestViews(WebTestCase):
             url = reverse(name, kwargs={'trips_year': trips_year})
             self.app.get(url, user=director)
 
-        
+
 class ScheduledTransportMatrixTestCase(TripsYearTestCase):
 
     def test_internal_matrix(self):
@@ -163,7 +163,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
             Route, trips_year=trips_year, category=Route.INTERNAL
         )
         section = mommy.make(
-            Section, trips_year=trips_year, 
+            Section, trips_year=trips_year,
             leaders_arrive=date(2015, 1, 1)
         )
         transport = mommy.make(
@@ -172,10 +172,10 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
         )
         target = {
             route: {
-                date(2015,1,2): transport, 
-                date(2015,1,3): None, 
-                date(2015,1,4): None, 
-                date(2015,1,5): None, 
+                date(2015,1,2): transport,
+                date(2015,1,3): None,
+                date(2015,1,4): None,
+                date(2015,1,5): None,
                 date(2015,1,6): None,
             }
         }
@@ -196,18 +196,18 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
             route=route2, date=date(2015, 1, 4))
         target = {
             route1: {
-                date(2015,1,2): transport1, 
+                date(2015,1,2): transport1,
                 date(2015,1,3): None,
-                date(2015,1,4): None, 
+                date(2015,1,4): None,
                 date(2015,1,5): None,
                 date(2015,1,6): None,
                 date(2015,1,7): None
             }, route2: {
                 date(2015,1,2): None,
                 date(2015,1,3): None,
-                date(2015,1,4): transport2, 
-                date(2015,1,5): None, 
-                date(2015,1,6): None, 
+                date(2015,1,4): transport2,
+                date(2015,1,5): None,
+                date(2015,1,6): None,
                 date(2015,1,7): None
             }
         }
@@ -218,17 +218,17 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year)
         trip = mommy.make(
-            Trip, trips_year=trips_year, 
-            dropoff_route=route, 
+            Trip, trips_year=trips_year,
+            dropoff_route=route,
             pickup_route=route,
             return_route=route
         )
         dropoff_bus = mommy.make(
-            ScheduledTransport, trips_year=trips_year, 
+            ScheduledTransport, trips_year=trips_year,
             date=trip.dropoff_date, route=route
         )
         pickup_bus = mommy.make(
-            ScheduledTransport, trips_year=trips_year, 
+            ScheduledTransport, trips_year=trips_year,
             date=trip.pickup_date, route=route
         )
         return_bus = mommy.make(
@@ -248,23 +248,23 @@ class RidersMatrixTestCase(TripsYearTestCase):
         ty = self.init_trips_year()
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(
-            Section, trips_year=ty, 
+            Section, trips_year=ty,
             leaders_arrive=date(2015, 1, 1)
         )
         trip = mommy.make(
-            Trip, trips_year=ty, 
-            section=section, 
-            template__dropoff_stop__route=route, 
-            template__pickup_stop__route=route, 
+            Trip, trips_year=ty,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
             template__return_route=route
         )
         n = trip.template.max_num_people
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
-                date(2015,1,5): Riders(0,n,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
+                date(2015,1,5): Riders(0,n,0),
                 date(2015,1,6): Riders(0,0,n),
             }
         }
@@ -276,26 +276,26 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         # trips share dropoff locations and dates
         trip1 = mommy.make(
-            Trip, trips_year=ty, 
-            section=section, 
-            template__dropoff_stop__route=route, 
-            template__pickup_stop__route=route, 
+            Trip, trips_year=ty,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
             template__return_route=route
         )
         trip2 = mommy.make(
-            Trip, trips_year=ty, 
-            section=section, 
-            template__dropoff_stop__route=route, 
-            template__pickup_stop__route=route, 
+            Trip, trips_year=ty,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
             template__return_route=route
         )
         n = trip1.template.max_num_people + trip2.template.max_num_people
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
-                date(2015,1,5): Riders(0,n,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
+                date(2015,1,5): Riders(0,n,0),
                 date(2015,1,6): Riders(0,0,n),
             }
         }
@@ -308,36 +308,36 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 2))
         trip1 = mommy.make(
-            Trip, trips_year=ty, 
-            section=section1, 
-            template__dropoff_stop__route=route1, 
-            template__pickup_stop__route=route1, 
+            Trip, trips_year=ty,
+            section=section1,
+            template__dropoff_stop__route=route1,
+            template__pickup_stop__route=route1,
             template__return_route=route1
         )
         trip2 = mommy.make(
-            Trip, trips_year=ty, 
-            section=section2, 
-            template__dropoff_stop__route=route2, 
-            template__pickup_stop__route=route1, 
+            Trip, trips_year=ty,
+            section=section2,
+            template__dropoff_stop__route=route2,
+            template__pickup_stop__route=route1,
             template__return_route=route2
         )
-        n = trip1.template.max_num_people 
+        n = trip1.template.max_num_people
         m = trip2.template.max_num_people
         target = {
             route1: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
                 date(2015,1,5): Riders(0,n,0),
                 date(2015,1,6): Riders(0,m,n),
                 date(2015,1,7): Riders(0,0,0),
-            }, 
+            },
             route2: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(0,0,0), 
-                date(2015,1,4): Riders(m,0,0), 
-                date(2015,1,5): Riders(0,0,0), 
-                date(2015,1,6): Riders(0,0,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(0,0,0),
+                date(2015,1,4): Riders(m,0,0),
+                date(2015,1,5): Riders(0,0,0),
+                date(2015,1,6): Riders(0,0,0),
                 date(2015,1,7): Riders(0,0,m),
             }
         }
@@ -349,19 +349,19 @@ class RidersMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
         # route is set *directly* on scheduled trip
         trip = mommy.make(
-            Trip, trips_year=ty, 
+            Trip, trips_year=ty,
             section=section,
-            dropoff_route=route, 
-            pickup_route=route, 
+            dropoff_route=route,
+            pickup_route=route,
             return_route=route
         )
         n = trip.template.max_num_people
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
-                date(2015,1,5): Riders(0,n,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
+                date(2015,1,5): Riders(0,n,0),
                 date(2015,1,6): Riders(0,0,n)
             }
         }
@@ -375,18 +375,18 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         route = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=trips_year, leaders_arrive=date(2015,1,1))
         trip = mommy.make(
-            Trip, trips_year=trips_year, 
+            Trip, trips_year=trips_year,
             section=section,
             template__dropoff_stop__route=route,
-            template__pickup_stop__route=route, 
+            template__pickup_stop__route=route,
             template__return_route=route
         )
         n = trip.size()
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
                 date(2015,1,5): Riders(0,n,0),
                 date(2015,1,6): Riders(0,0,n),
             }
@@ -400,34 +400,34 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         section1 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,1))
         section2 = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015,1,2))
         trip1 = mommy.make(
-            Trip, trips_year=ty, 
+            Trip, trips_year=ty,
             section=section1,
-            template__dropoff_stop__route=route1, 
-            template__pickup_stop__route=route1, 
+            template__dropoff_stop__route=route1,
+            template__pickup_stop__route=route1,
             template__return_route=route1)
         trip2 = mommy.make(
-            Trip, trips_year=ty, 
+            Trip, trips_year=ty,
             section=section2,
-            template__dropoff_stop__route=route2, 
-            template__pickup_stop__route=route1, 
+            template__dropoff_stop__route=route2,
+            template__pickup_stop__route=route1,
             template__return_route=route2)
-        n = trip1.size() 
+        n = trip1.size()
         m = trip2.size()
         target = {
             route1: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(n,0,0), 
-                date(2015,1,4): Riders(0,0,0), 
-                date(2015,1,5): Riders(0,n,0), 
-                date(2015,1,6): Riders(0,m,n), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
+                date(2015,1,5): Riders(0,n,0),
+                date(2015,1,6): Riders(0,m,n),
                 date(2015,1,7): Riders(0,0,0)
             },
             route2: {
-                date(2015,1,2): Riders(0,0,0), 
-                date(2015,1,3): Riders(0,0,0), 
-                date(2015,1,4): Riders(m,0,0), 
-                date(2015,1,5): Riders(0,0,0), 
-                date(2015,1,6): Riders(0,0,0), 
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(0,0,0),
+                date(2015,1,4): Riders(m,0,0),
+                date(2015,1,5): Riders(0,0,0),
+                date(2015,1,6): Riders(0,0,0),
                 date(2015,1,7): Riders(0,0,m)}
         }
         self.assertEqual(target, get_actual_rider_matrix(ty))
@@ -440,23 +440,23 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         route = mommy.make(Route, trips_year=ty, category=Route.INTERNAL)
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
         trip = mommy.make(
-            Trip, trips_year=ty, 
-            section=section, 
-            template__dropoff_stop__route=route, 
-            template__pickup_stop__route=route, 
+            Trip, trips_year=ty,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
             template__return_route=route
         )
         target = {
             route: {
-                date(2015,1,2): None, 
-                date(2015,1,3): NOT_SCHEDULED, 
-                date(2015,1,4): None, 
-                date(2015,1,5): NOT_SCHEDULED, 
+                date(2015,1,2): None,
+                date(2015,1,3): NOT_SCHEDULED,
+                date(2015,1,4): None,
+                date(2015,1,5): NOT_SCHEDULED,
                 date(2015,1,6): NOT_SCHEDULED
             }
         }
         matrix = get_internal_issues_matrix(
-            get_internal_route_matrix(ty), 
+            get_internal_route_matrix(ty),
             get_internal_rider_matrix(ty)
         )
         self.assertEqual(target, matrix)
@@ -467,11 +467,11 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         section = mommy.make(Section, trips_year=ty, leaders_arrive=date(2015, 1, 1))
 
         trip = mommy.make(
-            Trip, trips_year=ty, 
-            section=section, 
-            template__dropoff_stop__route=route, 
-            template__pickup_stop__route=route, 
-            template__return_route=route, 
+            Trip, trips_year=ty,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
+            template__return_route=route,
             template__max_trippees=route.vehicle.capacity + 1000 # exceeds capacity
         )
         mommy.make(
@@ -484,20 +484,20 @@ class IssuesMatrixTestCase(TripsYearTestCase):
         )
         target = {
             route: {
-                date(2015,1,2): None, 
-                date(2015,1,3): EXCEEDS_CAPACITY, 
-                date(2015,1,4): None, 
-                date(2015,1,5): EXCEEDS_CAPACITY, 
+                date(2015,1,2): None,
+                date(2015,1,3): EXCEEDS_CAPACITY,
+                date(2015,1,4): None,
+                date(2015,1,5): EXCEEDS_CAPACITY,
                 date(2015,1,6): NOT_SCHEDULED
             }
         }
         matrix = get_internal_issues_matrix(
-            get_internal_route_matrix(ty), 
+            get_internal_route_matrix(ty),
             get_internal_rider_matrix(ty)
         )
         self.assertEqual(target, matrix)
-        
-    
+
+
 class RidersClassTestCase(unittest.TestCase):
 
     def test__add__(self):
@@ -523,7 +523,7 @@ class RidersClassTestCase(unittest.TestCase):
 
 
 class TransportChecklistTest(TripsYearTestCase):
-    
+
     def test_get_date(self):
         view = TransportChecklist()
         d = date(2015, 1, 1)
@@ -535,18 +535,18 @@ class ExternalBusManager(TripsYearTestCase):
 
     def test_schedule_matrix(self):
         trips_year = self.init_trips_year()
-        
+
         sxn1 = mommy.make(Section, trips_year=trips_year, is_local=True)
         sxn2 = mommy.make(Section, trips_year=trips_year, is_local=True)
         not_local_sxn = mommy.make(Section, trips_year=trips_year, is_local=False)
-        
+
         route1 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         route2 = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         internal = mommy.make(Route, trips_year=trips_year, category=Route.INTERNAL)
 
-        transp1 = mommy.make(ExternalBus, trips_year=trips_year, 
+        transp1 = mommy.make(ExternalBus, trips_year=trips_year,
                                 route=route1, section=sxn2)
-        transp2 = mommy.make(ExternalBus, trips_year=trips_year, 
+        transp2 = mommy.make(ExternalBus, trips_year=trips_year,
                                 route=route2, section=sxn1)
 
         matrix = ExternalBus.objects.schedule_matrix(trips_year)
@@ -567,7 +567,7 @@ class ExternalBusManager(TripsYearTestCase):
         )
         target = {rt: {sxn: 1}}
         actual = ExternalBus.passengers.matrix_to_hanover(trips_year)
-        
+
         self.assertEqual(target, actual)
 
     def test_passengers_matrix_to_hanover_with_multiples(self):
@@ -655,7 +655,7 @@ class TransportViewsTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         route = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
         section = mommy.make(Section, trips_year=trips_year, is_local=True)
-        
+
         # Visit matrix page
         url = reverse('db:externalbus_matrix',
                       kwargs={'trips_year': trips_year})
@@ -861,15 +861,15 @@ class InternalTransportModelTestCase(TripsYearTestCase):
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
         mommy.make(
-            StopOrder, trips_year=trips_year, 
-            bus=bus, trip=trip1, order=60, 
+            StopOrder, trips_year=trips_year,
+            bus=bus, trip=trip1, order=60,
             stop_type=StopOrder.DROPOFF)
         mommy.make(
-            StopOrder, trips_year=trips_year, 
-            bus=bus, trip=trip2, order=35, 
+            StopOrder, trips_year=trips_year,
+            bus=bus, trip=trip2, order=35,
             stop_type=StopOrder.DROPOFF)
         self.assertEqual(bus.get_stops(), [Hanover(),
-                                           trip2.template.dropoff_stop, 
+                                           trip2.template.dropoff_stop,
                                            trip1.template.dropoff_stop])
 
     def test_get_stops_with_missing_ordering(self):
@@ -877,7 +877,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         bus = mommy.make(ScheduledTransport, trips_year=trips_year)
         trip1 = mommy.make(
             Trip, trips_year=trips_year, dropoff_route=bus.route,
-            section__leaders_arrive=bus.date - timedelta(days=2), 
+            section__leaders_arrive=bus.date - timedelta(days=2),
             template__dropoff_stop__distance=1
         )
         trip2 = mommy.make(
@@ -907,7 +907,7 @@ class StopOrderingTestCase(WebTestCase):
         self.assertEqual(o.stop, stop)
         o = mommy.make(StopOrder, trip__template__pickup_stop=stop, stop_type=StopOrder.PICKUP)
         self.assertEqual(o.stop, stop)
-    
+
     def test_stoporder_order_is_automatically_populated(self):
         trips_year = self.init_trips_year()
         order = StopOrder(
@@ -926,11 +926,11 @@ class StopOrderingTestCase(WebTestCase):
             Trip, trips_year=trips_year, dropoff_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
-        url = reverse('db:scheduledtransport_order', 
+        url = reverse('db:scheduledtransport_order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
         self.app.get(url, user=self.mock_director())
         so = StopOrder.objects.get(
-            bus=bus, trip=trip, stop_type=StopOrder.DROPOFF, 
+            bus=bus, trip=trip, stop_type=StopOrder.DROPOFF,
             order=trip.template.dropoff_stop.distance
         )
 
@@ -947,24 +947,24 @@ class StopOrderingTestCase(WebTestCase):
 
     def test_cannot_update_stop_field_in_form(self):
         trips_year = self.init_trips_year()
-        trip = mommy.make(Trip, trips_year=trips_year, 
+        trip = mommy.make(Trip, trips_year=trips_year,
                           dropoff_route=mommy.make(Route, trips_year=trips_year))
         bus = mommy.make(ScheduledTransport, trips_year=trips_year,
                          route=trip.get_dropoff_route(), date=trip.dropoff_date)
-        order = mommy.make(StopOrder, trips_year=trips_year, 
+        order = mommy.make(StopOrder, trips_year=trips_year,
                            trip=trip, stop_type=StopOrder.DROPOFF, bus=bus)
         other_trip = mommy.make(Trip, trips_year=trips_year)
 
-        url = reverse('db:scheduledtransport_order', 
+        url = reverse('db:scheduledtransport_order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
         form = self.app.get(url, user=self.mock_director()).form
         form['form-0-trip'] = other_trip.pk
         form.submit()
-        
+
         order = StopOrder.objects.get(pk=order.pk)
         self.assertEqual(order.stop, trip.template.dropoff_stop)
-        
-        
+
+
 class ExternalBusModelTestCase(TripsYearTestCase):
 
     def test_EXTERNAL_validation(self):
@@ -1085,7 +1085,7 @@ class MapsTestCases(TripsYearTestCase):
     def test_directions_handles_more_than_eight_waypoints(self):
         """ Google maps restricts us to 8 waypoints per request """
         trips_year = self.init_trips_year()
-        stops = [mommy.make(Stop, trips_year=trips_year, lat_lng=coord) 
+        stops = [mommy.make(Stop, trips_year=trips_year, lat_lng=coord)
                  for coord in (
                          '43.705639,-72.297404',
                          '43.680288,-72.527876',
@@ -1110,7 +1110,7 @@ class MapsTestCases(TripsYearTestCase):
 
 
 class ConstantStopTestCase(TripsYearTestCase):
-    
+
     def test_cannot_save_ConstantStop(self):
         stop = ConstantStop()
         stop.save()

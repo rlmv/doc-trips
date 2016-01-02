@@ -5,7 +5,7 @@ from fyt.applications.models import GeneralApplication, CrooSupplement, LeaderSu
 
 admin.site.register(GeneralApplication)
 admin.site.register(CrooSupplement)
-admin.site.register(LeaderSupplement) 
+admin.site.register(LeaderSupplement)
 admin.site.register(CrooApplicationGrade)
 admin.site.register(LeaderApplicationGrade)
 admin.site.register(QualificationTag)

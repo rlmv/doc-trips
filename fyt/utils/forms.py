@@ -13,4 +13,4 @@ def crispify(form, submit_text=None, css_class=None):
     form.helper = FormHelper(form)
     form.helper.add_input(Submit('submit', submit_text, css_class=css_class))
     return form
-    
+

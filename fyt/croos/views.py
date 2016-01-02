@@ -18,7 +18,7 @@ class CrooDetailView(DatabaseDetailView):
     model = Croo
     fields = ['name', 'description', 'croo_members']
 
-    
+
 class CrooUpdateView(DatabaseUpdateView):
     model = Croo
 

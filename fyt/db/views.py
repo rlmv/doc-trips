@@ -53,7 +53,7 @@ class TripsYearMixin():
             raise Http404(msg % trips_year)
 
         return super(TripsYearMixin, self).dispatch(request, *args, **kwargs)
-       
+
     def get_trips_year(self):
         """
         Pull trips_year out of url kwargs.
@@ -84,7 +84,7 @@ class TripsYearMixin():
             )
             logger.warn(msg % self.__class__.__name__)
             return self.form_class
-            
+
         if hasattr(self, 'model') and self.model is not None:
             return tripsyear_modelform_factory(
                 self.model, self.get_trips_year(), fields=self.fields
@@ -206,7 +206,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
 
         helper.layout.append(FormActions(*buttons))
         return helper
-    
+
 
 class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
                          SetHeadlineMixin,TripsYearMixin, DeleteView):
@@ -295,7 +295,7 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-       
+
         trips_year = TripsYear.objects.current()
         return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
 

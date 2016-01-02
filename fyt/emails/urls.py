@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^leaders/by-section/$', LeadersBySection.as_view(), name='leaders_by_section'),
     url(r'^incoming/$', IncomingStudents.as_view(), name='incoming'),
     url(r'^trippees/$', Trippees.as_view(), name='trippees'),
-    
+
 ]

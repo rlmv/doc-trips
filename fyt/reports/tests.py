@@ -25,7 +25,7 @@ def save_and_open_csv(resp):
     f.write(resp.content)
     f = open(f.name)  # open in non-binary mode
     return csv.DictReader(f)
-    
+
 
 class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
 
@@ -44,7 +44,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
         rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
         self.assertEqual(rows, target)
-        
+
     def test_volunteer_csv(self):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year=trips_year)
@@ -77,7 +77,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'name': leader.name,
             'netid': leader.applicant.netid.upper()
         }]
-        
+
         self.assertEqual(rows, target)
 
     def test_croo_members_csv(self):
@@ -246,7 +246,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         )
         url = reverse('db:reports:housing', kwargs={'trips_year': trips_year})
         resp = self.app.get(url, user=self.mock_director())
-        
+
         rows = list(save_and_open_csv(resp))
         target = [{
             'name': t1.name,
@@ -439,7 +439,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
 
 
 class TShirtCountTestCase(TripsTestCase):
-    
+
     def test_tshirt_count_leaders(self):
         trips_year = self.init_trips_year()
         mommy.make(
@@ -453,7 +453,7 @@ class TShirtCountTestCase(TripsTestCase):
             S: 1, M: 0, L: 0, XL: 0
         }
         self.assertEqual(target, leader_tshirts(trips_year))
-        
+
     def test_tshirt_count_croos(self):
         trips_year = self.init_trips_year()
         mommy.make(
@@ -478,7 +478,7 @@ class TShirtCountTestCase(TripsTestCase):
             S: 0, M: 0, L: 1, XL: 0
         }
         self.assertEqual(target, trippee_tshirts(trips_year))
-        
 
-        
-        
+
+
+

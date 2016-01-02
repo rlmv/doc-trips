@@ -37,12 +37,12 @@ template_urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/documents/list',
         TripTemplateDocumentList.as_view(),
         name='triptemplate_document_list'),
-    
+
 ]
 
 triptype_urlpatterns = [
     url(DB_REGEX['LIST'], TripTypeList.as_view(),
-        name='triptype_index'),   
+        name='triptype_index'),
     url(DB_REGEX['CREATE'], TripTypeCreate.as_view(),
         name='triptype_create'),
     url(DB_REGEX['DETAIL'], TripTypeDetail.as_view(),

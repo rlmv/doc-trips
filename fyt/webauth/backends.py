@@ -47,7 +47,7 @@ def verify(ticket, service):
             return None
     except Exception as e:
         # TODO: pass this? return None?
-        raise 
+        raise
 
 
 class WebAuthBackend(ModelBackend):

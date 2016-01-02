@@ -80,7 +80,7 @@ def login(request, next_page=None):
     ticket = request.GET.get('ticket')
 
     if ticket:
-        
+
         # catch exception thrown by dartdm.lookup.email_lookup
         try:
             user = auth.authenticate(ticket=ticket, service=service)

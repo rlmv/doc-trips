@@ -18,4 +18,4 @@ class GzipManifestPipelineStorage(PipelineMixin, GzipManifestStaticFilesStorage)
     Use both Gzip and Pipeline for staticfiles
     """
     pass
-    
+

@@ -11,7 +11,7 @@ def display_docx_filefield_as_html(filefield):
 
     if not filefield:
         return ''
-        
+
     t = template.Template("""
     <div class="alert alert-info" role="alert">
     Can't see the application, or the formatting is wonky? 

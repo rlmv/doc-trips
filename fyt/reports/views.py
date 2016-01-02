@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.db.models import Avg, Q
 
 from fyt.db.views import TripsYearMixin, DatabaseTemplateView
-from fyt.applications.models import GeneralApplication as Application 
+from fyt.applications.models import GeneralApplication as Application
 from fyt.incoming.models import Registration, IncomingStudent
 from fyt.incoming.models import Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired
@@ -19,15 +19,15 @@ from fyt.trips.models import Trip
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
     # TODO use a ListView here?
-    
+
     file_prefix = None
     header = None
-    
+
     def get_filename(self):
         return "{}-{}.csv".format(
             self.file_prefix, self.kwargs['trips_year']
         )
-        
+
     def get_header(self):
         if self.header is not None:
             return self.header
@@ -70,7 +70,7 @@ class TripLeaderApplicationsCSV(GenericReportView):
 
     file_prefix = 'TL-applicants'
     header = ['name', 'class year', 'netid', 'avg score']
-    
+
     def get_queryset(self):
         return (Application.objects
                 .leader_applications(self.kwargs['trips_year'])
@@ -94,7 +94,7 @@ class CrooApplicationsCSV(GenericReportView):
 
     file_prefix = 'Croo-applicants'
     header = ['name', 'class year', 'netid', 'avg score']
-    
+
     def get_queryset(self):
         return (Application.objects
                 .croo_applications(self.kwargs['trips_year'])
@@ -129,7 +129,7 @@ class TripLeadersCSV(GenericReportView):
 
 class CrooMembersCSV(TripLeadersCSV):
     file_prefix = 'Croo-Members'
-    
+
     def get_queryset(self):
         return Application.objects.croo_members(
             self.kwargs['trips_year']
@@ -140,7 +140,7 @@ class FinancialAidCSV(GenericReportView):
 
     file_prefix = 'Financial-aid'
     header = ['name', 'preferred name', 'netid', 'blitz', 'email']
-    
+
     def get_queryset(self):
         return Registration.objects.want_financial_aid(
             self.get_trips_year()
@@ -152,17 +152,17 @@ class FinancialAidCSV(GenericReportView):
 
 
 class ExternalBusCSV(GenericReportView):
-    
+
     file_prefix = 'External-Bus-Requests'
     header = ['name', 'preferred_name', 'netid', 'requested stop', 'on route']
-    
+
     def get_queryset(self):
         return Registration.objects.want_bus(
             self.get_trips_year()
         ).select_related(
             'user', 'bus_stop', 'bus_stop__route'
         )
-        
+
     def get_row(self, reg):
         user = reg.user
         return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
@@ -189,7 +189,7 @@ class Charges(GenericReportView):
     All values are adjusted by financial aid, if applicable
     """
     file_prefix = 'Charges'
-    
+
     def get_queryset(self):
         return IncomingStudent.objects.filter(
             (Q(trip_assignment__isnull=False) |
@@ -291,7 +291,7 @@ class TShirts(DatabaseTemplateView):
 
 
 class Housing(GenericReportView):
-    
+
     file_prefix = 'Housing'
 
     def get_queryset(self):
@@ -322,7 +322,7 @@ class Housing(GenericReportView):
 
 
 class DietaryRestrictions(GenericReportView):
-    
+
     file_prefix = 'Dietary-Restrictions'
 
     def get_queryset(self):
@@ -355,7 +355,7 @@ class DietaryRestrictions(GenericReportView):
 
 
 class MedicalInfo(GenericReportView):
-    
+
     file_prefix = 'Medical-Info'
 
     def get_queryset(self):
@@ -386,7 +386,7 @@ class MedicalInfo(GenericReportView):
         ]
 
 class VolunteerDietaryRestrictions(GenericReportView):
-    
+
     file_prefix = 'Volunteer-Dietary-Restrictions'
 
     def get_queryset(self):
@@ -436,9 +436,9 @@ class Feelings(GenericReportView):
 
 
 class Foodboxes(GenericReportView):
-    
+
     file_prefix = 'Foodboxes'
-    
+
     def get_queryset(self):
         return Trip.objects.filter(
             trips_year=self.kwargs['trips_year']
@@ -470,7 +470,7 @@ class Statistics(DatabaseTemplateView):
     Basic statistics regarding trippees
     """
     template_name = 'reports/statistics.html'
-   
+
     def extra_context(self):
         IS = IncomingStudent
 

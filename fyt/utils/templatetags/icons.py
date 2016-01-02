@@ -18,7 +18,7 @@ def ok_if_true(condition):
 @register.filter
 def checkmark_if_true(condition):
     """ If condition is true, show a checked box; otherwise, show empty box """
-      
+
     if condition:
         html = '<i class="fa fa-check-square-o"></i>'
     else:

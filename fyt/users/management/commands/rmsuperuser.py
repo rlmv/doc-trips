@@ -5,17 +5,17 @@ from django.contrib.auth import get_user_model
 UserModel = get_user_model()
 
 class Command(BaseCommand):
-    
+
     help = 'Revoke the superuser status of the given users'
-    
+
     def add_arguments(self, parser):
-        
+
         parser.add_argument('netid')
 
     def handle(self, *args, **options):
-        
+
         for netid in args:
-            
+
             try:
                 user = UserModel.objects.get(netid=netid)
             except UserModel.DoesNotExist:
@@ -27,4 +27,4 @@ class Command(BaseCommand):
                 user.save()
                 msg = "Superuser status revoked for User '%s'"
                 self.stdout.write(msg % user)
-                
+

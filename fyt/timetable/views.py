@@ -13,7 +13,7 @@ OPTIONS = {'format': 'MM/DD/YYYY HH:mm'}
 # settings.DATETIME_INPUT_FORMATS
 
 class TimetableForm(ModelForm):
-    
+
     class Meta:
         model = Timetable
         fields = '__all__'
@@ -30,7 +30,7 @@ class TimetableForm(ModelForm):
 
 
 class EditTimetable(TimetablePermissionRequired, UpdateView):
-    
+
     model = Timetable
     form_class = TimetableForm
     template_name = 'timetable/timetable.html'

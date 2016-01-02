@@ -10,10 +10,10 @@ class Croo(DatabaseModel):
 
     Migrates each year.
     """
-    
+
     class Meta:
         ordering = ['name']
-    
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     # TODO: croo head?
@@ -26,4 +26,4 @@ class Croo(DatabaseModel):
 
     def __str__(self):
         return self.name
-    
+

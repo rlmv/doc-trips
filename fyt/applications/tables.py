@@ -29,7 +29,7 @@ class TrainingColumn(tables.Column):
 
 
 class ApplicationTable(tables.Table):
-    
+
     applicant = tables.Column(
         verbose_name='Applications'
     )

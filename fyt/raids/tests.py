@@ -19,7 +19,7 @@ class RaidModelsTestCase(TripsTestCase):
 
 
 class RaidViewsTestCase(WebTestCase):
-    
+
     def test_only_directors_can_delete_raids(self):
         trips_year = trips_year_recipe.make()
         raid = raid_recipe.make(trips_year=trips_year)
@@ -29,7 +29,7 @@ class RaidViewsTestCase(WebTestCase):
         resp.form.submit()
         with self.assertRaises(Raid.DoesNotExist):
             Raid.objects.get()
-        
+
 
     def test_only_directors_can_see_delete_link(self):
         trips_year = trips_year_recipe.make()
@@ -37,6 +37,6 @@ class RaidViewsTestCase(WebTestCase):
 
         resp = self.app.get(raid.detail_url(), user=self.mock_user())
         self.assertNotContains(resp, 'delete')
-        
+
         resp = self.app.get(raid.detail_url(), user=self.mock_director())
         self.assertContains(resp, 'delete')

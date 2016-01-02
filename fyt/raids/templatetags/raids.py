@@ -13,7 +13,7 @@ def new_raid_url(trips_year, **kwargs):
     url querystring and encoded.
     """
     url = reverse('db:raids:create', kwargs={'trips_year': trips_year})
-   
+
     if kwargs:
         url += '?' + '&'.join(['%s=%s' % (k, v) for (k, v) in kwargs.items()])
     return url

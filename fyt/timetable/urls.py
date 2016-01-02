@@ -6,4 +6,4 @@ from .views import EditTimetable
 urlpatterns = [
     url(r'^$', EditTimetable.as_view(), name='timetable'),
 ]
-      
+

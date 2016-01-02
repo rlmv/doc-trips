@@ -13,7 +13,7 @@ class ApplicationManager(models.Manager):
     Requires model to have a NUMBER_OF_GRADES property which 
     specifies how many times the application should be graded. 
     """
-    
+
     def next_to_grade(self, user):
         """ 
         Find the next application to grade for user.
@@ -59,7 +59,7 @@ class ApplicationManager(models.Manager):
                 .annotate(grade_count=models.Count('grades'))
                 .filter(grade_count=num))
 
-        # choose random element manually 
+        # choose random element manually
         # .order_by('?') is buggy in 1.8
         cnt = apps.count()
         if cnt > 0:
@@ -67,13 +67,13 @@ class ApplicationManager(models.Manager):
         return None
 
     def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(document='')   
+        return self.filter(trips_year=trips_year).exclude(document='')
 
 
 class LeaderApplicationManager(ApplicationManager):
 
     pass
-        
+
 
 class CrooApplicationManager(ApplicationManager):
 
@@ -128,13 +128,13 @@ class GeneralApplicationManager(models.Manager):
 
         return (
             self.leader_applications(trip.trips_year)
-            .filter(Q(leader_supplement__preferred_sections=trip.section) | 
+            .filter(Q(leader_supplement__preferred_sections=trip.section) |
                     Q(leader_supplement__available_sections=trip.section))
-            .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) | 
+            .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) |
                     Q(leader_supplement__available_triptypes=trip.template.triptype))
             .distinct()
         )
-        
+
     def leader_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(leader_supplement__document="")
 
@@ -146,7 +146,7 @@ class GeneralApplicationManager(models.Manager):
         return (self.filter(trips_year=trips_year)
                 .exclude(Q(leader_supplement__document="") &
                          Q(croo_supplement__document="")))
-    
+
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
 

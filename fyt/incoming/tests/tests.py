@@ -29,7 +29,7 @@ def resolve_path(fname):
 class IncomingStudentModelTestCase(TripsYearTestCase):
 
     FILE = resolve_path('incoming_students.csv')
-    
+
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
         user = self.mock_incoming_student()
         trips_year = self.init_current_trips_year()
@@ -52,7 +52,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
         # refresh registration
         reg = Registration.objects.get(pk=reg.pk)
-        self.assertEqual(incoming.registration, reg) 
+        self.assertEqual(incoming.registration, reg)
 
     def test_get_hometown_parsing(self):
         trips_year = self.init_trips_year()
@@ -60,7 +60,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
             IncomingStudent.objects.create_from_csv_file(f, trips_year.pk)
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
-        
+
     def test_get_hometown_parsing_with_bad_formatting(self):
         trips_year = self.init_trips_year()
         incoming = mommy.make(
@@ -72,7 +72,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         incoming = mommy.make(IncomingStudent, trips_year=trips_year, gender='MALE')
         self.assertEqual(incoming.get_gender(), 'male')
-        
+
     def test_get_gender_with_registration(self):
         """ Pull from registration, if available """
         trips_year = self.init_trips_year()
@@ -85,12 +85,12 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         trips_year=self.init_trips_year()
         with self.assertRaises(ValidationError):
             mommy.make(
-                IncomingStudent, trips_year=trips_year, 
+                IncomingStudent, trips_year=trips_year,
                 financial_aid=-1
             ).full_clean()
         with self.assertRaises(ValidationError):
             mommy.prepare(
-                IncomingStudent, trips_year=trips_year, 
+                IncomingStudent, trips_year=trips_year,
                 financial_aid=101
             ).full_clean()
         mommy.prepare(
@@ -112,7 +112,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=35, bus_assignment_round_trip=None
         )
@@ -122,7 +122,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=25, bus_assignment_round_trip__cost_round_trip=25
         )
@@ -143,7 +143,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year, trips_cost=100, doc_membership_cost=50)
         inc = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
             registration__doc_membership=YES,
@@ -317,7 +317,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         inc2 = mommy.make(IncomingStudent, name='Lara P. Balick')
         inc3 = mommy.make(IncomingStudent, name='William A. P. Wolfe-McGuire')
         self.assertEqual([inc2, inc3, inc1], sort_by_lastname([inc1, inc2, inc3]))
-        
+
 
 class RegistrationModelTestCase(TripsYearTestCase):
 
@@ -400,7 +400,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
     def test_get_preferred_trips_excludes_firstchoice_trips(self):
         trips_year = self.init_trips_year()
         firstchoice_trip = mommy.make(Trip, trips_year=trips_year)
-        reg = mommy.make(Registration, trips_year=trips_year, 
+        reg = mommy.make(Registration, trips_year=trips_year,
                          firstchoice_triptype=firstchoice_trip.template.triptype,
                          preferred_triptypes=[firstchoice_trip.template.triptype],
                          preferred_sections=[firstchoice_trip.section],
@@ -427,7 +427,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
         trips_year = self.init_trips_year()
         firstchoice_trip = mommy.make(Trip, trips_year=trips_year)
         preffed_trip = mommy.make(Trip, trips_year=trips_year)
-        reg = mommy.make(Registration, trips_year=trips_year, 
+        reg = mommy.make(Registration, trips_year=trips_year,
                          firstchoice_triptype=firstchoice_trip.template.triptype,
                          preferred_triptypes=[firstchoice_trip.template.triptype, preffed_trip.template.triptype],
                          available_triptypes=[preffed_trip.template.triptype],
@@ -440,7 +440,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
         trips_year = self.init_current_trips_year()
         reg = mommy.make(Registration, trips_year=trips_year)
         self.assertIsNone(reg.get_incoming_student())
-        incoming = mommy.make(IncomingStudent, trips_year=trips_year, 
+        incoming = mommy.make(IncomingStudent, trips_year=trips_year,
                               registration=reg)
         reg = Registration.objects.get(pk=reg.pk)
         self.assertEqual(reg.get_incoming_student(), incoming)
@@ -478,7 +478,7 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
 
     FILE = resolve_path('incoming_students.csv')
     FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
-    
+
     def test_create_from_csv(self):
         trips_year = self.init_current_trips_year().pk
         with open(self.FILE) as f:
@@ -513,7 +513,7 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
 class ImportIncomingStudentHinmanBoxes(TripsYearTestCase):
 
     FILE = resolve_path('hinman_boxes.csv')
-    
+
     def test_import_from_csv(self):
         trips_year = self.init_trips_year()
         incoming = mommy.make(
@@ -524,7 +524,7 @@ class ImportIncomingStudentHinmanBoxes(TripsYearTestCase):
         )
         with open(self.FILE) as f:
             imported = IncomingStudent.objects.update_hinman_boxes(f, trips_year)
-            
+
         incoming.refresh_from_db()
         self.assertEqual(incoming.hinman_box, '2884')
         self.assertEqual(imported, [incoming])
@@ -543,7 +543,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         trips_year = self.init_current_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         available = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             registration__preferred_sections=[trip.section],
             registration__available_triptypes=[trip.template.triptype]
         )
@@ -561,7 +561,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
             template__swimtest_required=True
         )
         available = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             registration__preferred_sections=[trip.section],
             registration__available_triptypes=[trip.template.triptype],
             registration__swimming_ability=Registration.BEGINNER
@@ -589,7 +589,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
             trip_assignment__section=sxn
         )
         not_psngr = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             bus_assignment_from_hanover__route=rte,
             trips_assignment__section=sxn
         )
@@ -614,7 +614,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
             trip_assignment__section=sxn
         )
         not_psngr = mommy.make(
-            IncomingStudent, trips_year=trips_year, 
+            IncomingStudent, trips_year=trips_year,
             bus_assignment_to_hanover__route=rte,
             trips_assignment__section=sxn
         )
@@ -740,7 +740,7 @@ class RegistrationFormTestCase(TripsYearTestCase):
         reg = mommy.make(Registration, trips_year=trips_year)
         form = RegistrationForm()
         self.assertEqual(list(form.fields['firstchoice_triptype'].queryset.all()), [tt])
-    
+
     def test_registration_form_uses_trips_year_from_instance(self):
         trips_year = self.init_trips_year()
         prev_trips_year = self.init_previous_trips_year()
@@ -752,21 +752,21 @@ class RegistrationFormTestCase(TripsYearTestCase):
 
 
 class IncomingStudentViewsTestCase(WebTestCase):
-    
+
     def test_delete_view(self):
         trips_year = self.init_current_trips_year()
         incoming = mommy.make(IncomingStudent, trips_year=trips_year)
         url = incoming.delete_url()
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit().follow()
-        self.assertEqual(res.request.path, 
+        self.assertEqual(res.request.path,
                          reverse('db:incomingstudent_index', kwargs={'trips_year': trips_year}))
         with self.assertRaises(IncomingStudent.DoesNotExist):
             IncomingStudent.objects.get(pk=incoming.pk)
 
 
 class RegistrationManagerTestCase(TripsYearTestCase):
-    
+
     def test_requesting_financial_aid(self):
         trips_year = self.init_current_trips_year()
         requesting = mommy.make(
@@ -804,4 +804,4 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, trips_year=trips_year, registration=matched)
         unmatched = mommy.make(Registration, trips_year=trips_year)
         self.assertEqual([unmatched], list(Registration.objects.unmatched(trips_year)))
-        
+

@@ -10,7 +10,7 @@ def dartdm_lookup_view(request):
     hence no AJAX. This view allows us to do DND lookups by acting as 
     an endpoint for typeahead.
     """
-    
+
     try:
         query = request.GET['term']
     except KeyError:
@@ -18,5 +18,5 @@ def dartdm_lookup_view(request):
     else:
         results = dartdm_lookup(query)
     # setting safe=False allows us to return the JSON array
-    return JsonResponse(results, safe=False) 
+    return JsonResponse(results, safe=False)
 

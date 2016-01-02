@@ -47,22 +47,22 @@ class SectionManager(models.Manager):
 
     def not_local(self, trips_year):
         return self.filter(trips_year=trips_year, is_local=False)
-        
+
     def international(self, trips_year):
         return self.filter(trips_year=trips_year, is_international=True)
 
     def transfer(self, trips_year):
         return self.filter(trips_year=trips_year, is_transfer=True)
-        
+
     def native(self, trips_year):
         return self.filter(trips_year=trips_year, is_native=True)
-        
+
     def fysep(self, trips_year):
         return self.filter(trips_year=trips_year, is_fysep=True)
 
     def exchange(self, trips_year):
         return self.filter(trips_year=trips_year, is_exchange=True)
-        
+
 
 class TripManager(models.Manager):
 
@@ -114,7 +114,7 @@ class TripManager(models.Manager):
             .annotate(num_trippees=models.Count('trippees', distinct=True))
             .annotate(num_leaders=models.Count('leaders', distinct=True))
         )
-    
+
     def dropoffs(self, route, date, trips_year):
         """
         All trips which are dropped off on route on date
@@ -140,7 +140,7 @@ class TripManager(models.Manager):
             .filter(Q(pickup_route=route) |
                     Q(pickup_route=None, template__pickup_stop__route=route))
         )
-       
+
     def returns(self, route, date, trips_year):
         """
         All trips which return to campus via route on date.
@@ -174,7 +174,7 @@ class CampsiteManager(models.Manager):
             'template__campsite1',
             'template__campsite2',
         )
-        
+
         for trip in trips:
             matrix[trip.template.campsite1][trip.section.at_campsite1].append(trip)
             matrix[trip.template.campsite2][trip.section.at_campsite2].append(trip)

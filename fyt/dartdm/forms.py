@@ -20,9 +20,9 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
         js = ('dartdm/lookup.js',)
 
     def __init__(self, attrs=None):
-                                   
+
         widgets = [forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
-                   forms.HiddenInput(attrs={'class': 'netIdField'}), 
+                   forms.HiddenInput(attrs={'class': 'netIdField'}),
                    forms.HiddenInput(attrs={'class': 'nameWithAffilField'})]
 
         super(DartmouthDirectoryLookupWidget, self).__init__(widgets, attrs)
@@ -30,7 +30,7 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
     def decompress(self, value):
 
         """ Decompresses an initial value in to the widget fields ^^ """
-        
+
         # TODO:
         if value:
             return [value]
@@ -51,8 +51,8 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
 
         fields = (forms.CharField(), forms.CharField(), forms.CharField())
         widget = DartmouthDirectoryLookupWidget()
-        super(DartmouthDirectoryLookupField, self).__init__(fields=fields, 
-                                                            widget=widget, 
+        super(DartmouthDirectoryLookupField, self).__init__(fields=fields,
+                                                            widget=widget,
                                                             *args, **kwargs)
 
     def compress(self, data_list):
@@ -66,26 +66,26 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
         """
 
         logger.info('compress: %r' % data_list)
-        
-        if len(data_list) == 0: 
+
+        if len(data_list) == 0:
             # empty field
             return None
 
         if len(data_list) == 1 or not data_list[2].startswith(data_list[0]):
-            # User did not wait for the typeahead autocomplete, 
+            # User did not wait for the typeahead autocomplete,
             # or changed the autocompleted name after the lookup.
             # Try and lookup the given name.
-            # TODO: this isn't the best UI situation, since it is likely 
+            # TODO: this isn't the best UI situation, since it is likely
             # that a changed name won't have a unique lookup match
             results = dartdm_lookup(data_list[0])
             if len(results) == 0:
                 raise ValidationError('User not found')
             elif len(results) == 1:
                 data_list = results[0]
-            else: 
+            else:
                 raise ValidationError("Ambiguous name %r" % data_list[0])
-                
-        object = {'name_with_year': data_list[0], 
+
+        object = {'name_with_year': data_list[0],
                   'netid': data_list[1],
                   'name_with_affil': data_list[2]}
 

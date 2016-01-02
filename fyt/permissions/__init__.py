@@ -38,7 +38,7 @@ def initialize_groups_and_permissions():
 
 
 def can_set_access():
-    return get_permission('can_set_access', 
+    return get_permission('can_set_access',
                           'Can assign users permissions and groups')
 
 def can_view_database():
@@ -62,7 +62,7 @@ def can_create_applications():
                           'Can create leader and croo applications')
 
 def can_grade_leader_applications():
-    return get_permission('can_grade_leader_applications', 
+    return get_permission('can_grade_leader_applications',
                           'Can grade leader applications')
 
 def can_grade_croo_applications():
@@ -71,7 +71,7 @@ def can_grade_croo_applications():
 
 def can_edit_applications_and_assign_trip_leaders():
     """ Permission specific to TLTs so they can tweak leader applications """
-    return get_permission('can_edit_applications_and_assign_leaders', 
+    return get_permission('can_edit_applications_and_assign_leaders',
                           'Can change apps in DB and assign leaders')
 
 def can_report_incidents():
@@ -81,16 +81,16 @@ def can_report_incidents():
 # TODO: should we implement a proxy Group class and move these
 # to the model manager? e.g. ProxyGroup.directors() or ProxyGroup.objects.directors()
 
-def directors():    
+def directors():
     directors, created = Group.objects.get_or_create(name='directors')
     directors.permissions = [
-        can_set_access(), 
+        can_set_access(),
         can_view_database(),
         can_edit_database(),
-        can_edit_timetable(), 
+        can_edit_timetable(),
         can_grade_croo_applications(),
-        can_grade_leader_applications(), 
-        can_create_applications(), 
+        can_grade_leader_applications(),
+        can_create_applications(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
     ]

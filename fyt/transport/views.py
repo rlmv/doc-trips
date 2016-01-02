@@ -77,7 +77,7 @@ def preload_transported_trips(buses, trips_year):
         dropoffs[trip.get_dropoff_route()][trip.dropoff_date].append(trip)
         pickups[trip.get_pickup_route()][trip.pickup_date].append(trip)
         returns[trip.get_return_route()][trip.return_date].append(trip)
-        
+
     for bus in buses:
         preload(bus, bus.DROPOFF_CACHE_NAME, dropoffs[bus.route][bus.date])
         preload(bus, bus.PICKUP_CACHE_NAME, pickups[bus.route][bus.date])
@@ -133,7 +133,7 @@ def get_internal_rider_matrix(trips_year):
     
     matrix[route][date] gives you the Riders for that route on that date.
     """
-  
+
     return _rider_matrix(trips_year, lambda trip: trip.template.max_num_people)
 
 
@@ -168,15 +168,15 @@ def _rider_matrix(trips_year, size_key):
     for trip in trips:
 
         n = size_key(trip)
-        # dropoff 
+        # dropoff
         if trip.get_dropoff_route():
             matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0)
         # pickup
         if trip.get_pickup_route():
             matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0)
-        # return 
+        # return
         matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n)
-        
+
     return matrix
 
 
@@ -193,7 +193,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
             capacity = route.vehicle.capacity
             if riders and not transport:
                 matrix[route][date] = NOT_SCHEDULED
-            elif riders and (riders.dropping_off > capacity or 
+            elif riders and (riders.dropping_off > capacity or
                              riders.picking_up > capacity or
                              riders.returning > capacity):
                 matrix[route][date] = EXCEEDS_CAPACITY
@@ -226,7 +226,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
 class ScheduledTransportCreateView(PopulateMixin, DatabaseCreateView):
     model = ScheduledTransport
     fields = ['route', 'date']
-    
+
     def get_success_url(self):
         return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
 
@@ -256,7 +256,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
 
 class ExternalBusDelete(DatabaseDeleteView):
     model = ExternalBus
-   
+
     def get_success_url(self):
         return reverse('db:externalbus_matrix',
                        kwargs={'trips_year': self.kwargs['trips_year']})
@@ -420,7 +420,7 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
 
 
 class ExternalBusChecklist(_RouteMixin, DatabaseTemplateView):
-  
+
     template_name = 'transport/externalbus_checklist.html'
 
     def get_section(self):

@@ -20,7 +20,7 @@ class NullPassThroughDecorator(unittest.TestCase):
 
 
 class LinkTagTestCase(TripsTestCase):
-    
+
     def test_detail_link(self):
         trips_year = self.init_trips_year()
         # for example
@@ -54,7 +54,7 @@ class LinkTagTestCase(TripsTestCase):
         }))
         target = '<a href="%s">%s</a>' % (reverse_detail_url(obj), str(obj))
         self.assertEqual(out, target)
-        
+
     def test_detail_link_with_iterable(self):
         trips_year = self.init_trips_year()
         obj1 = mommy.make(Section, trips_year=trips_year)

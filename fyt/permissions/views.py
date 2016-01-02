@@ -52,7 +52,7 @@ class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixi
 class ApplicationEditPermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
     permissions = {
         'any': (
-            'permissions.can_edit_db', 
+            'permissions.can_edit_db',
             'permissions.can_edit_applications_and_assign_leaders'
         )
     }
@@ -86,7 +86,7 @@ class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
 
 
 class GenericGroupForm(forms.Form):
-    
+
     members = forms.ModelMultipleChoiceField(
         queryset=None,
         widget=forms.CheckboxSelectMultiple,
@@ -104,11 +104,11 @@ class GenericGroupForm(forms.Form):
         self.fields['members'].label = 'Current ' + group.name
         self.fields['new_member'].label = 'New ' + group.name
 
-        perms_text = ('The %s group has the following permissions: ' % group.name.capitalize() + 
-                      '<ul>' + 
-                      ''.join(['<li>{}</li>'.format(p.name) for p in group.permissions.all()]) + 
+        perms_text = ('The %s group has the following permissions: ' % group.name.capitalize() +
+                      '<ul>' +
+                      ''.join(['<li>{}</li>'.format(p.name) for p in group.permissions.all()]) +
                       '</ul>')
-        
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -117,18 +117,18 @@ class GenericGroupForm(forms.Form):
                 Row(
                     Column(
                         'members',
-                        'new_member', 
+                        'new_member',
                         css_class='col-sm-6',
                     ),
                     Column(
-                        HTML('<p>' + perms_text + '</p>'), 
+                        HTML('<p>' + perms_text + '</p>'),
                         css_class='col-sm-6'),
                 ),
                 Submit('submit', 'Update'),
                 style="padding-bottom: 2em;",
             )
         )
-        
+
     def update_group_with_form_data(self):
         """ 
         Update the group with submitted form information.
@@ -155,9 +155,9 @@ class GenericGroupForm(forms.Form):
 
         logger.info('Updating group %s to be %r' % (self.group, members_list))
 
-    
+
 class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-    
+
     redirect_unauthenticated_users = True
     permission_required = 'permissions.can_set_access'
     raise_exception = True
@@ -173,18 +173,18 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             safety_leads(),
             graders()]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
-            
+
     def get(self, request, *args, **kwargs):
-        
+
         forms = self.get_forms()
         return self.render_to_response(self.get_context_data(forms=forms))
 
     def post(self, request, *args, **kwargs):
-        
+
         forms = self.get_forms(data=request.POST)
         if all(form.is_valid() for form in forms):
             return self.form_valid(forms)
-            
+
         return self.form_invalid(forms)
 
     def form_valid(self, forms):
@@ -193,13 +193,13 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         for form in forms:
             form.update_group_with_form_data()
         return HttpResponseRedirect(self.get_success_url())
-    
+
     def form_invalid(self, forms):
-        
+
         messages.error(self.request, 'Uh oh. Looks like there is an error in the form.')
         return self.render_to_response(self.get_context_data(forms=forms))
 
 
 
 
-       
+

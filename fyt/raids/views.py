@@ -63,7 +63,7 @@ class TripsToRaid(_RaidMixin, ListView):
 class RaidTrip(_RaidMixin, PopulateMixin, SetHeadlineMixin, CreateView):
     model = Raid
     fields = ['trip', 'date', 'plan']
-    
+
     def get_headline(self):
         return mark_safe("New Raid <small> %s </small>" % self.request.user)
 

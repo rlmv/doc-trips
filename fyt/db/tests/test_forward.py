@@ -24,12 +24,12 @@ class MigrateForwardTestCase(TripsTestCase):
         field_names.remove('trips_year')
         field_names.remove('trips_year_id')
         field_names.remove('id')
-       
+
         for name in field_names:
             try:
                 field1 = obj1._meta.get_field(name)
                 field2 = obj2._meta.get_field(name)
-            
+
                 if isinstance(field1, models.ForeignKey) and not name.endswith('_id'):  # recurse
                     self.assertDataEqual(getattr(obj1, name),
                                          getattr(obj2, name))
@@ -38,7 +38,7 @@ class MigrateForwardTestCase(TripsTestCase):
                     raise Exception(
                         'ManyToManyFields are not currently handled '
                         'by assertDataEqual')
-                
+
                 self.assertEqual(field1, field2)
             except models.fields.FieldDoesNotExist:  # reverse/related field
                 pass
@@ -53,7 +53,7 @@ class MigrateForwardTestCase(TripsTestCase):
     def test_make_next_year_fails_if_not_current(self):
         trips_year = mommy.make(TripsYear, is_current=False)
         self.assertRaises(AssertionError, trips_year.make_next_year)
-  
+
     def test_forward_makes_new_trips_year(self):
         trips_year = self.init_trips_year()
         forward()
@@ -70,7 +70,7 @@ class MigrateForwardTestCase(TripsTestCase):
         new_vehicle = Forward(
             trips_year, next_year
         ).copy_object_forward(vehicle)
-       
+
         self.assertEqual(new_vehicle.trips_year, next_year)
         self.assertDataEqual(vehicle, new_vehicle)
 
@@ -79,11 +79,11 @@ class MigrateForwardTestCase(TripsTestCase):
         next_year = trips_year.make_next_year()
         vehicle = mommy.make(Vehicle, trips_year=trips_year)
         f = Forward(trips_year, next_year)
-        
+
         new_vehicle = f.copy_object_forward(vehicle)
         # copy_object_forward should cache and return same vehicle
         cached_vehicle = f.copy_object_forward(vehicle)
-      
+
         self.assertEqual(new_vehicle, cached_vehicle)
         self.assertEqual(1, Vehicle.objects.filter(trips_year=next_year).count())
 
@@ -92,7 +92,7 @@ class MigrateForwardTestCase(TripsTestCase):
         next_year = trips_year.make_next_year()
         # testing Route, for example
         route = mommy.make(Route, trips_year=trips_year)
-        
+
         f = Forward(trips_year, next_year)
         new_route = f.copy_object_forward(route)
 

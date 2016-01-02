@@ -101,7 +101,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
             triptypes=TripType.objects.filter(trips_year=trips_year),
             **kwargs
         )
-    
+
 
 class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
                      ContinueIfAlreadyApplied, ApplicationFormsMixin,
@@ -132,14 +132,14 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,  
+class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
                           ApplicationFormsMixin, UpdateView):
     """ 
     View for applicants to edit their application.
     """
     success_url = reverse_lazy('applications:continue')
     context_object_name = 'application'
-    
+
     def get_object(self):
         """ 
         TODO: perhaps redirect to NewApplication instead of 404?
@@ -238,7 +238,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired,
         )
 
     def get_context_data(self, **kwargs):
-        
+
         # TODO: use/make a generic FilterView mixin?
         context = super(ApplicationIndex, self).get_context_data(**kwargs)
         applications_filter = ApplicationFilterSet(
@@ -318,7 +318,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired,
 class ApplicationUpdate(ApplicationEditPermissionRequired,
                         BlockDirectorate, ApplicationFormsMixin,
                         TripsYearMixin, UpdateView):
-    
+
     template_name = 'applications/application_update.html'
     context_object_name = 'application'
 
@@ -373,7 +373,7 @@ class ApplicationCertsUpdate(ApplicationEditPermissionRequired,
 
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, TripsYearMixin, 
+                             BlockDirectorate, TripsYearMixin,
                              UpdateView):
     """
     Update status, trip/croo assignment etc.
@@ -382,7 +382,7 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     template_name = 'db/update.html'
     fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
     form_class = ApplicationAdminForm
-    
+
     def get_context_data(self, **kwargs):
         kwargs['preferred_trips'] = self.object.get_preferred_trips()
         kwargs['available_trips'] = self.object.get_available_trips()

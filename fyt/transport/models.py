@@ -49,7 +49,7 @@ class Stop(DatabaseModel):
             "Latitude & longitude coordinates, eg. 43.7030,-72.2895"
         )
     )
-   
+
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
@@ -221,7 +221,7 @@ class ScheduledTransport(DatabaseModel):
             Trip.objects
             .returns(self.route, self.date, self.trips_year_id)
         )
-        
+
     @cache_as('_get_stops')
     def get_stops(self):
         """
@@ -242,17 +242,17 @@ class ScheduledTransport(DatabaseModel):
         PICKUP_ATTR = 'trips_picked_up'
 
         # HACK HACK. These dicts let us attach trips which have preloaded
-        # attributes (such as size) to stops. This is basically so that 
+        # attributes (such as size) to stops. This is basically so that
         # the capacity matrix is efficient. Hopefully there is a better
         # way to do this...
         _dropping_off_map = {trip: trip for trip in self.dropping_off()}
         _picking_up_map = {trip: trip for trip in self.picking_up()}
-        
+
         def set_trip_attr(stop, order):
             for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
                 if not hasattr(stop, attr):
                     setattr(stop, attr, [])
-              
+
             if order.stop_type == StopOrder.DROPOFF:
                 getattr(stop, DROPOFF_ATTR).append(_dropping_off_map[order.trip])
 
@@ -260,7 +260,7 @@ class ScheduledTransport(DatabaseModel):
                 getattr(stop, PICKUP_ATTR).append(_picking_up_map[order.trip])
 
             return stop
-                
+
         stops = []
         for order in self.update_stop_ordering():
             if len(stops) == 0 or stops[-1] != order.stop:  # new stop
@@ -422,7 +422,7 @@ class StopOrder(DatabaseModel):
     class Meta:
         unique_together = ['trips_year', 'bus', 'trip']
         ordering = ['order']
-        
+
     @property
     def stop(self):
         if self.stop_type == self.DROPOFF:
@@ -447,13 +447,13 @@ class ExternalBus(DatabaseModel):
     """
     objects = ExternalBusManager()
     passengers = ExternalPassengerManager()
-   
+
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     section = models.ForeignKey('trips.Section', on_delete=models.PROTECT)
 
     class Meta:
         unique_together = ('trips_year', 'route', 'section')
-    
+
     def clean(self):
         if self.route.category == Route.INTERNAL:
             raise ValidationError("route must be external")
@@ -497,7 +497,7 @@ class ExternalBus(DatabaseModel):
         at each stop are stored in DROPOFF_ATTR and PICKUP_ATTR.
         """
         from fyt.transport.constants import Hanover
-        
+
         d = defaultdict(list)
         for p in self.passengers_to_hanover():
             d[p.get_bus_to_hanover()].append(p)
@@ -516,7 +516,7 @@ class ExternalBus(DatabaseModel):
         All stops the bus makes as it drop trippees off after trips.
         """
         from fyt.transport.constants import Hanover
-        
+
         d = defaultdict(list)
         for p in self.passengers_from_hanover():
             d[p.get_bus_from_hanover()].append(p)

@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'Initialize the database with a current trips_year'
 
     def handle(self, *args, **options):
-        
+
         try:
             trips_year = TripsYear.objects.current()
             msg = ('a current TripsYear (%d) already exists in the database')
@@ -20,9 +20,9 @@ class Command(BaseCommand):
             if len(args) == 1:
                 TripsYear.objects.create(year=args[0], is_current=True)
 
-            
 
-            
-            
-            
-        
+
+
+
+
+

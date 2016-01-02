@@ -121,14 +121,14 @@ class TripDetail(DatabaseDetailView):
         'dropoff_stop', 'desc_day1', 'campsite1',
         'desc_day2', 'campsite2',
         'desc_day3', 'pickup_stop',
-        'desc_conc', 
+        'desc_conc',
         'revisions']
-    
+
 
 class TripCreate(PopulateMixin, DatabaseCreateView):
     model = Trip
     fields = ['section', 'template']
-        
+
 
 class TripDelete(DatabaseDeleteView):
     model = Trip
@@ -137,9 +137,9 @@ class TripDelete(DatabaseDeleteView):
 
 class TripTemplateList(DatabaseListView):
     model = TripTemplate
-    context_object_name = 'templates' 
+    context_object_name = 'templates'
     template_name = 'trips/template_index.html'
-    
+
     def get_queryset(self):
         qs = super(TripTemplateList, self).get_queryset()
         return qs.select_related(
@@ -293,7 +293,7 @@ class SectionCreate(DatabaseCreateView):
 
 class SectionDetail(DatabaseDetailView):
     model = Section
-    fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange', 
+    fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange',
               'is_transfer', 'is_international', 'is_native', 'is_fysep']
 
 
@@ -306,7 +306,7 @@ class SectionUpdate(DatabaseUpdateView):
 class SectionDelete(DatabaseDeleteView):
     model = Section
     success_url_pattern = 'db:section_index'
-                               
+
 
 class LeaderTrippeeIndexView(DatabaseListView):
     """
@@ -317,7 +317,7 @@ class LeaderTrippeeIndexView(DatabaseListView):
     model = Trip
     template_name = 'trips/assignments.html'
     context_object_name = 'trips'
-    
+
     def get_queryset(self):
         return (
             super(LeaderTrippeeIndexView, self).get_queryset()
@@ -437,7 +437,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         buses = ExternalBus.objects.filter(trips_year=trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
-        
+
         for trippee in self.object_list:
             reg = trippee.registration
             url = reverse('db:assign_trippee_to_trip', kwargs={
@@ -480,7 +480,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     def get_form(self, **kwargs):
         return self.get_form_class()(self.get_trips_year(), **kwargs)
-    
+
     def get_form_valid_message(self):
         """ Flash success message """
         return '{} assigned to {}'.format(
@@ -534,9 +534,9 @@ class AssignLeader(_TripMixin, DatabaseListView):
             )
         )
 
-        # For some reason, annotating grades using Avg adds an 
+        # For some reason, annotating grades using Avg adds an
         # expensive GROUP BY clause to the query, killing the site.
-        # See https://code.djangoproject.com/ticket/17144. 
+        # See https://code.djangoproject.com/ticket/17144.
         # Does this need to be reopened?
         # TODO: check with 1.8
         # This is a hackish workaround to explicitly compute the
@@ -621,7 +621,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
             Trip.objects.get(pk=self.request.GET['assigned_trip'])
         )
         return crispify(form, label)
-   
+
     def get_form_valid_message(self):
         return '{} assigned to lead {}'.format(
             self.object.applicant, self.object.assigned_trip
@@ -708,7 +708,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
     def get_queryset(self):
         return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
-    
+
     def get_form(self, **kwargs):
         FoodRulesFormset = modelformset_factory(
             TripType, fields=['name', 'half_kickin', 'gets_supplemental'],
@@ -723,7 +723,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     def form_valid(self, formset):
         formset.save()
         return super(FoodboxRules, self).form_valid(formset)
-       
+
     def get_success_url(self):
         return self.request.path
 
@@ -794,7 +794,7 @@ class LeaderChecklist(_SectionMixin, DatabaseListView):
     def get_queryset(self):
         qs = super(LeaderChecklist, self).get_queryset()
         return qs.filter(assigned_trip__section=self.get_section())
-   
+
 
 class Checklists(DatabaseTemplateView):
     """
@@ -821,7 +821,7 @@ class Checklists(DatabaseTemplateView):
             d[sxn.trippees_arrive].append((
                 'Section %s Trippee Checkin' % sxn.name,
                 reverse('db:checklists:trippees', kwargs=kwargs)))
-            
+
             d[sxn.trippees_arrive].append((
                 'Section %s Leader Packets' % sxn.name,
                 reverse('db:packets:section', kwargs=kwargs)))
@@ -852,5 +852,5 @@ class Checklists(DatabaseTemplateView):
                         'trips_year': trips_year, 'date': date, 'route_pk': route.pk
                     })
                 ))
-       
+
         return {'date_dict': d}

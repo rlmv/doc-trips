@@ -7,7 +7,7 @@ from django import forms
 
 
 class StopOrderForm(forms.ModelForm):
-    
+
     class Meta:
         model = StopOrder
         fields = ['order']

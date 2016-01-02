@@ -39,29 +39,29 @@ Boom! Everything should be set.
 """
 
 def setup_connection():
-    
+
     engine = create_engine('mysql+mysqlconnector://django@localhost/doc')
     return engine.connect()
 
 def trips_year():
-    
+
     trips_year, created = TripsYear.objects.get_or_create(year=2015, is_current=True)
     return trips_year
 
 def walk_to_lodge_transport_stop():
-    
+
     stop, created = Stop.objects.get_or_create(trips_year=trips_year(),
                                                name='Walk To Lodge',
-                                               address='walk to lodge', 
+                                               address='walk to lodge',
                                                category='INTERNAL')
     return stop
-    
+
 def migrate_campsites():
 
     connection = setup_connection()
     sql = 'SELECT * FROM ft2014_tripcampsite;'
     for row in connection.execute(sql):
-        
+
         capacity = row['capacity']
 
         directions = row['directions_to']
@@ -75,31 +75,31 @@ def migrate_campsites():
         secret = row['secret']
         if secret is None:
             secret = ''
-            
-        campsite = Campsite(id=row['id'], 
+
+        campsite = Campsite(id=row['id'],
                             name=row['name'],
                             capacity=capacity,
                             directions=directions,
                             bugout=bugout,
-                            secret=secret, 
+                            secret=secret,
                             trips_year=trips_year())
         campsite.save()
         print('Added campsite ' + str(campsite))
-        
+
 
 def migrate_vehicles():
-    
+
     connection = setup_connection()
     sql = 'SELECT * FROM ft2014_transportationtype;'
 
     for row in connection.execute(sql):
-        
+
         vehicle = Vehicle(
-            id=row['id'], 
+            id=row['id'],
             name=row['name'],
-            capacity=row['passengers'], 
+            capacity=row['passengers'],
             trips_year=trips_year())
-        
+
         vehicle.save()
         print('Added vehicle ' + str(vehicle))
 
@@ -112,12 +112,12 @@ def migrate_routes():
     for row in connection.execute(sql):
 
         category = row['category'].upper()
-        
+
         route = Route(
             id=row['id'],
             name=row['name'],
             vehicle_id=row['transportationtype_id'],
-            category=category, 
+            category=category,
             trips_year=trips_year())
 
         route.save()
@@ -130,7 +130,7 @@ def migrate_stops():
     sql = 'SELECT * FROM ft2014_transportationstop;'
 
     for row in connection.execute(sql):
-  
+
         if row['category'] is not None:
             category = row['category'].upper()
         else:
@@ -139,15 +139,15 @@ def migrate_stops():
         directions = row['directions']
         if directions is None:
             directions = ''
-        
+
         pickup_time = row['timepickup']
         if pickup_time is not None:
             pickup_time = str(pickup_time)
-            
+
         dropoff_time = row['timedropoff']
         if dropoff_time is not None:
             dropoff_time = str(dropoff_time)
- 
+
         stop = Stop(
             id=row['id'],
             name=row['name'],
@@ -163,13 +163,13 @@ def migrate_stops():
 
         stop.save()
         print('Added stop ' + str(stop))
-            
+
 
 def migrate_triptypes():
 
     connection = setup_connection()
     sql = 'SELECT * FROM ft2014_triptype;'
-    
+
     for row in connection.execute(sql):
 
         triptype = TripType(
@@ -194,23 +194,23 @@ def migrate_triptemplates():
         pickup_id = row['pickup_transportationstop_id']
         if pickup_id is None:
             pickup_id = walk_to_lodge_transport_stop().id
-        
+
         introduction = row['desc_introduction']
         if introduction is None:
             introduction = ''
-        
+
         day1 = row['desc_day1']
         if day1 is None:
             day1 = ''
-        
+
         day2 = row['desc_day2']
         if day2 is None:
             day2 = ''
-        
+
         day3 = row['desc_day3']
         if day3 is None:
             day3 = ''
-        
+
         conclusion = row['desc_conclusion']
         if conclusion is None:
             conclusion = ''
@@ -251,7 +251,7 @@ def migrate_triptemplates():
 
         triptemplate.save()
         print('Added triptemplate ' + str(triptemplate))
-    
+
 
 def migrate():
 

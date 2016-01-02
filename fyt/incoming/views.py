@@ -47,7 +47,7 @@ class IfRegistrationAvailable():
     Redirect if trippee registration is not currently available 
     """
     def dispatch(self, request, *args, **kwargs):
-        
+
         if not Timetable.objects.timetable().registration_available():
             return HttpResponseRedirect(
                 reverse('incoming:registration_not_available')
@@ -123,7 +123,7 @@ class Register(BaseRegistrationView, CreateView):
 
         self.object = form.save()
         self.object.match()
-        
+
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -148,7 +148,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
     Shows trip assignment, if available, and link to registration.
     """
     template_name = 'incoming/portal.html'
-    
+
     def get_registration(self):
         """
         Return current user's registration, or None if DNE.
@@ -203,7 +203,7 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
     table_pagination = False
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
-    
+
     def get_queryset(self):
         qs = super(RegistrationIndex, self).get_queryset()
         return qs.select_related(
@@ -270,7 +270,7 @@ class RegistrationDetail(DatabaseDetailView):
 
     fields = [
         'name', 'gender', 'previous_school', 'phone', 'email',
-        'guardian_email', 'is_exchange', 'is_transfer', 
+        'guardian_email', 'is_exchange', 'is_transfer',
         'is_international', 'is_native', 'is_fysep', 'is_athlete',
         'preferred_sections', 'available_sections', 'unavailable_sections',
         'firstchoice_triptype', 'preferred_triptypes',
@@ -427,7 +427,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
                 msg = 'Created incoming students with NetIds %s'
                 logger.info(msg % ctd)
                 messages.info(self.request, msg % ctd)
-       
+
             if skipped:
                 msg = 'Ignored existing incoming students with NetIds %s'
                 logger.info(msg % skipped)

@@ -45,10 +45,10 @@ class TripsYearMixinTestCase(WebTestCase):
         """ Use  as model, instead of hacking together an example"""
 
         self.mock_director()
-       
+
         data = model_to_dict(mommy.prepare(Section))
-        response = self.app.post(reverse_create_url(Section, self.current_trips_year), 
-                                 data, 
+        response = self.app.post(reverse_create_url(Section, self.current_trips_year),
+                                 data,
                                  user=self.director.netid)
 
         # should not display form error in page
@@ -58,20 +58,20 @@ class TripsYearMixinTestCase(WebTestCase):
         s = Section.objects.get(name=data['name'])
         self.assertEquals(s.trips_year, self.current_trips_year)
 
-        
+
     def test_trips_year_queryset_filtering(self):
         """ 
         Check that *only* objects for the requested trips_year are in 
         a database list view. 
         """
-        
+
         self.mock_director()
 
         ex1 = mommy.make(Campsite, trips_year=self.trips_year)
         ex2 = mommy.make(Campsite, trips_year=self.old_trips_year)
 
         response = self.app.get(reverse_index_url(ex1), user=self.director.netid)
-        
+
         from fyt.trips.views import CampsiteList
         objects = response.context[CampsiteList.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
@@ -82,28 +82,28 @@ class TripsYearMixinTestCase(WebTestCase):
         self.mock_director()
         c1 = mommy.make(Campsite, trips_year=self.trips_year)
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
-        
+
         # good request - trips year in url matches trips year of c1
         response = self.app.get(reverse_update_url(c1), user=self.director.netid)
         object = response.context['object']
         self.assertEquals(object, c1)
-        
+
         # bad request
-        response = self.app.get(reverse('db:campsite_update', 
-                                        kwargs={'trips_year': c1.trips_year.year, 
+        response = self.app.get(reverse('db:campsite_update',
+                                        kwargs={'trips_year': c1.trips_year.year,
                                                 'pk': c2.pk}),
                                 expect_errors=True)
         self.assertEquals(response.status_code, 404, 'should not find c2 because trips_year does not match c2.trips_year')
 
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
-        
+
         self.mock_director()
 
         c1 = mommy.make(Campsite, trips_year=self.trips_year)
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
         triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
-        
-        response = self.app.get(reverse_update_url(triptemplate), 
+
+        response = self.app.get(reverse_update_url(triptemplate),
                                 user=self.director.netid)
         choices = response.context['form'].fields['campsite1'].queryset
 
@@ -116,7 +116,7 @@ class TripsYearMixinTestCase(WebTestCase):
         view = TripsYearMixin()
         view.kwargs = {'trips_year': self.trips_year}
         self.assertEqual(view.get_trips_year(), self.trips_year)
-        
+
 
 
 

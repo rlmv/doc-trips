@@ -243,19 +243,19 @@ class RedirectToNextGradableCrooApplicationForQualification(
 
         qual_pk = self.kwargs['qualification_pk']
         qualification = QualificationTag.objects.get(pk=qual_pk)
-    
+
         # let user know which qualification they are scoring
-        msg = 'You are currently scoring potential %s applications' 
+        msg = 'You are currently scoring potential %s applications'
         messages.info(self.request, msg % qualification)
-        
+
         application = CrooSupplement.objects.next_to_grade_for_qualification(
             self.request.user, qualification
         )
-    
+
         if not application:
             return reverse('applications:grade:no_croo_left')
 
-        # pass along the qualifications's pk so that we can keep 
+        # pass along the qualifications's pk so that we can keep
         # grading for this qualification
         kwargs = {'pk': application.pk, 'qualification_pk': qual_pk}
         return reverse('applications:grade:croo', kwargs=kwargs)
@@ -273,11 +273,11 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
     verbose_application_name = 'Croo Application'
 
     def get_context_data(self, **kwargs):
-        
+
         application = self.get_application()
         graders = list(map(lambda g: g.grader, application.grades.all()))
         kwargs['already_graded_by'] = graders
-        # display extra fields regarding qualifications 
+        # display extra fields regarding qualifications
 
         yes_no = lambda field: 'yes' if field else 'no'
         kwargs['extra_fields'] = [
@@ -328,12 +328,12 @@ class GradeCrooApplicationForQualification(GradeCrooApplication):
 class NoCrooApplicationsLeftToGrade(CrooGraderPermissionRequired,
                                     IfGradingAvailable, TemplateView):
     template_name = 'applications/no_applications.html'
-    
 
-class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired, 
+
+class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
                                               IfGradingAvailable, RedirectView):
-    permanent = False 
-    
+    permanent = False
+
     def get_redirect_url(self, *args, **kwargs):
         """ 
         Return the url of the next LeaderApplication that needs grading
@@ -348,7 +348,7 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
         return reverse('applications:grade:leader', kwargs=kwargs)
 
 
-class GradeLeaderApplication(LeaderGraderPermissionRequired, 
+class GradeLeaderApplication(LeaderGraderPermissionRequired,
                              GenericGradingView):
     grade_model = LeaderApplicationGrade
     application_model = LeaderSupplement
@@ -379,4 +379,4 @@ class DeleteCrooGrade(DatabaseDeleteView):
     def get_success_url(self):
         return reverse_detail_url(self.object.application.application)
 
-    
+

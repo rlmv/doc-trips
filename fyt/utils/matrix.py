@@ -19,7 +19,7 @@ class OrderedMatrix(OrderedDict):
                     self[r][c] = default()
                 else:
                     self[r][c] = default
-                    
+
     def truncate(self):
         """
         Remove all empty rows from matrix

@@ -77,7 +77,7 @@ class Applicants(BaseEmailList):
             ('rejected applicants', emails(
                 qs.filter(status=GeneralApplication.REJECTED))),
         ]
- 
+
         return email_list
 
 
@@ -134,12 +134,12 @@ class IncomingStudents(BaseEmailList):
             ('unregistered blitz', blitz(unregistered)),
             ('registrations', personal_emails(registered)),
         ]
-        
+
         return email_list
 
 
 class Trippees(BaseEmailList):
-    
+
     headline = "Trippees"
 
     def get_email_lists(self):

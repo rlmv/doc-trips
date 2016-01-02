@@ -56,7 +56,7 @@ class LeaderAssignmentForm(forms.ModelForm):
 
 
 class TrippeeAssignmentForm(forms.ModelForm):
-    
+
     class Meta:
         model = IncomingStudent
         fields = ['trip_assignment']

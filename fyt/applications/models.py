@@ -66,7 +66,7 @@ class PortalContent(DatabaseModel):
     LEADER_WAITLIST_description = models.TextField(blank=True)
     REJECTED_description = models.TextField(blank=True)
     CANCELED_description = models.TextField(blank=True)
-   
+
     day0_description = models.TextField(
         'day 0 description', blank=True, help_text=(
             "description for leaders' first day, Gilman Island, etc."
@@ -229,7 +229,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         "please choose 'N/A'",
         choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20
     )
-  
+
     # ------ certs -------
     medical_certifications = models.TextField(
         "Current trainings in First Aid and CPR are required for all DOC "
@@ -392,7 +392,7 @@ class LeaderSupplement(DatabaseModel):
         "enthusiast, photography class, NOLS, etc.).",
         blank=True
     )
-        
+
     def get_preferred_trips(self):
         """
         All trips which this applicant prefers to lead
@@ -481,7 +481,7 @@ class CrooSupplement(DatabaseModel):
             "organizing food for large groups)"
         ), blank=True
     )
-   
+
     # -------- driving -------
     # TODO: mv from document
 
@@ -514,7 +514,7 @@ class AbstractGrade(DatabaseModel):
         (5, "5 -- Great application -- I think this person would be a fantastic volunteer"),
         (6, "6 -- Incredible application -- I think this person should be one of the first to be selected to be a volunteer. I would be very frustrated/angry if this person is not selected"),
     )
-    
+
     # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.
     grader = models.ForeignKey(
         settings.AUTH_USER_MODEL, editable=False, related_name='%(class)ss'
@@ -556,7 +556,7 @@ class QualificationTag(DatabaseModel):
         "I think this applicant is qualified for the following roles:",
         max_length=30
     )
-   
+
     def __str__(self):
         return self.name
 

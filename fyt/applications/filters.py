@@ -51,7 +51,7 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
             return qs
         return action(qs)
 
-        
+
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
 
 class ApplicationFilterSet(django_filters.FilterSet):
@@ -59,7 +59,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
     class Meta:
         model = GeneralApplication
         fields = ['status', CROO_QUALIFICATIONS]
-            
+
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
     complete = ArbitraryChoiceFilter() # not associated with a specific field
@@ -77,16 +77,16 @@ class ApplicationFilterSet(django_filters.FilterSet):
         )
 
     def __init__(self, *args, **kwargs):
-        
+
         trips_year = kwargs.pop('trips_year')
-        
+
         super(ApplicationFilterSet, self).__init__(*args, **kwargs)
 
         # add a blank choice
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
         self.filters['status'].field.label = 'Status'
 
-        # add the suggested croos filter. we have to restrict the queryset, 
+        # add the suggested croos filter. we have to restrict the queryset,
         # and use the widget
         self.filters[CROO_QUALIFICATIONS] = django_filters.ModelMultipleChoiceFilter(
             name=CROO_QUALIFICATIONS,
@@ -95,13 +95,13 @@ class ApplicationFilterSet(django_filters.FilterSet):
             # TODO: this causes a HUGE number of queries. WHY?
             # widget=forms.CheckboxSelectMultiple()
         )
-        
+
         self.form.helper = FilterSetFormHelper(self.form)
 
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Div, HTML
-    
+
 class FilterSetFormHelper(FormHelper):
 
     def __init__(self, *args, **kwargs):
@@ -110,7 +110,7 @@ class FilterSetFormHelper(FormHelper):
         self.form_method = 'GET'
         self.layout = Layout(
             Row(Div('complete', css_class='col-lg-12')),
-            Row(Div('status', css_class='col-lg-12')),   
+            Row(Div('status', css_class='col-lg-12')),
             Row(Div('name', css_class='col-lg-12')),
             Row(Div('netid', css_class='col-lg-12')),
             Row(Div(CROO_QUALIFICATIONS, css_class='col-lg-12')),

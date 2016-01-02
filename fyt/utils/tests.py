@@ -34,7 +34,7 @@ class OrderedMatrixTestCase(unittest.TestCase):
         m = OrderedMatrix(rows, cols, default=0)
         n = m.map(lambda x: x + 1)
         self.assertEqual(m[0][0], 0)
-        
+
 
 class FmtUtilsTest(TripsYearTestCase):
 

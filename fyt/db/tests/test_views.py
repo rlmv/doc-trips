@@ -1,5 +1,5 @@
 from model_mommy import mommy
- 
+
 from ..urlhelpers import reverse_detail_url, reverse_update_url, reverse_delete_url
 from fyt.test import WebTestCase
 from fyt.trips.models import Section

@@ -11,11 +11,11 @@ from fyt.permissions.views import DatabaseEditPermissionRequired
 
 
 class VolunteerPortalView(LoginRequiredMixin, TemplateView):
-    
+
     template_name = 'applications/portal.html'
 
     def get_context_data(self, **kwargs):
-        
+
         context = super(VolunteerPortalView, self).get_context_data(**kwargs)
         context['timetable'] = Timetable.objects.timetable()
         context['trips_year'] = trips_year = TripsYear.objects.current()
@@ -46,7 +46,7 @@ class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
     fields = '__all__'
     template_name = 'applications/setup_portal.html'
     success_url = reverse_lazy('applications:setup_portal')
-    
+
     def get_object(self):
         trips_year = TripsYear.objects.current()
         # changing state in a GET is not semantically correct, but hey...
@@ -57,4 +57,4 @@ class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
         form = super(EditVolunteerPortalContent, self).get_form(*args, **kwargs)
         return crispify(form)
 
-    
+

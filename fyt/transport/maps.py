@@ -2,7 +2,7 @@ import json
 
 import googlemaps
 from googlemaps.exceptions import TransportError, ApiError
-from django.conf import settings 
+from django.conf import settings
 
 """
 Interface with the Google maps API
@@ -36,9 +36,9 @@ def get_directions(stops):
     """
     if len(stops) < 2:
         raise MapError('Only one stop provided')
-    
+
     orig, waypoints, dest = _split_stops(stops)
-    
+
     if len(waypoints) > MAX_WAYPOINTS:
         d1 = get_directions(stops[:MAX_WAYPOINTS])
         d2 = get_directions(stops[MAX_WAYPOINTS - 1:])
@@ -48,7 +48,7 @@ def get_directions(stops):
             raise MapError('mismatched end and start stops on recursion')
 
         return {'legs': d1['legs'] + d2['legs']}
-     
+
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_KEY, timeout=TIMEOUT)
 
     try:
@@ -59,7 +59,7 @@ def get_directions(stops):
             raise MapError('Expecting one route')
         if resp[0]['waypoint_order'] != list(range(len(waypoints))):
             raise MapError('Waypoints out of order')
-            
+
         return _integrate_stops(resp[0], stops)
 
     except (TransportError, ApiError) as exc:
@@ -81,5 +81,5 @@ def _integrate_stops(directions, stops):
     for i, leg in enumerate(directions['legs']):
         leg['start_stop'] = stops[i]
         leg['end_stop'] = stops[i + 1]
-        
+
     return directions

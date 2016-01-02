@@ -17,7 +17,7 @@ urlpatterns = [
 # ---- database urlpatterns ------
 
 trippee_urlpatterns = [
-    url(DB_REGEX['LIST'], IncomingStudentIndex.as_view(), 
+    url(DB_REGEX['LIST'], IncomingStudentIndex.as_view(),
         name='incomingstudent_index'),
     url(DB_REGEX['DETAIL'], IncomingStudentDetail.as_view(),
         name='incomingstudent_detail'),

@@ -167,7 +167,7 @@ class TrippeeInfoForm(forms.ModelForm):
             'address',
             'hinman_box',
         ]
-        
+
     helper = FormHelper()
     helper.layout = Layout(
         Field('notes', rows=3),

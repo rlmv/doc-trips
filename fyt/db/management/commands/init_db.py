@@ -31,7 +31,7 @@ class Command(BaseCommand):
             return
 
         year = args[0]
-       
+
         try:
             TripsYear.objects.current()
             self.stderr.write(

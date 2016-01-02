@@ -68,7 +68,7 @@ class Forward():
             return self.old_to_new[obj]
         except KeyError:
             pass
-            
+
         logger.info('Copying %s' % obj)
         new_obj = copy.copy(obj)
 

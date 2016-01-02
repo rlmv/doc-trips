@@ -25,7 +25,7 @@ class DatabaseModelTestCase(TripsYearTestCase):
         self.assertRaises(ValueError, mommy.make, Campsite, trips_year=None)
 
 class DatabaseMixinTestCase(WebTestCase):
-    
+
     """ DatabaseMixin integration tests """
 
     csrf_checks = False
@@ -38,7 +38,7 @@ class DatabaseMixinTestCase(WebTestCase):
 
         campsite = mommy.make(Campsite, trips_year=self.trips_year)
         url = reverse_update_url(campsite)
-        
+
         self.mock_user()
         self.app.get(url, user=self.user.netid, expect_errors=True)
 
@@ -46,12 +46,12 @@ class DatabaseMixinTestCase(WebTestCase):
         response = self.app.get(url, user=self.director.netid)
         self.assertEquals(response.status_code, 200)
 
-    
+
 class FormFieldCallbackTestCase(TripsYearTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
-    
+
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
         tripsyear_modelform_factory(Campsite, self.current_trips_year, fields='__all__')
 

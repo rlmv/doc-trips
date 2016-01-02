@@ -33,7 +33,7 @@ class DartmouthUserManager(BaseUserManager):
         except self.model.DoesNotExist:
             user = self.create_user(netid, name=name, did=did)
             created = True
-                
+
         return (user, created)
 
     def create_user(self, netid, name, email=None, did=None):
@@ -52,7 +52,7 @@ class DartmouthUserManager(BaseUserManager):
             did = ''
 
         return self.create(netid=netid, did=did, email=email, name=name)
-       
+
     def create_superuser(self, **kwargs):
         raise Exception("create_superuser not implemented. "
                         "Use 'manage.py setsuperuser' instead.")
@@ -113,9 +113,9 @@ class DartmouthUser(PermissionsMixin):
         ordering = ['name']
 
     # used by Django Admin
-    @property 
+    @property
     def is_active(self):
-        return True 
+        return True
     @property
     def is_staff(self):
         return self.is_superuser
@@ -137,9 +137,9 @@ class DartmouthUser(PermissionsMixin):
 
     def is_anonymous(self):
         return False
-    
+
     def __str__(self):
         #return '{} ({})'.format(self.name, self.netid)
         return str(self.name)
-        
+
 

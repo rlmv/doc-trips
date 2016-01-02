@@ -41,7 +41,7 @@ def edit_link(db_object, text=None):
         text = 'edit'
     return _make_link(reverse_update_url(db_object), text)
 
-        
+
 @register.filter
 @pass_null
 def delete_link(db_object, text=None):
@@ -58,7 +58,7 @@ def create_url(model, trips_year_str):
     trips_year = TripsYear.objects.get(pk=trips_year_str)
 
     return reverse_create_url(model, trips_year)
-   
+
 
 @register.filter
 @pass_null

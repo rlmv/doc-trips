@@ -130,7 +130,7 @@ class IncomingStudent(DatabaseModel):
     )
 
     # --- information provided by the college ----
-    
+
     name = models.CharField(max_length=512)
     netid = NetIdField()
     class_year = models.CharField(max_length=10)
@@ -155,7 +155,7 @@ class IncomingStudent(DatabaseModel):
     phone = models.CharField(max_length=30)
     address = models.TextField()
     hinman_box = models.CharField(max_length=10, blank=True)
-    
+
     def get_registration(self):
         """
         Return this student's registration, or None if DNE 
@@ -293,10 +293,10 @@ class IncomingStudent(DatabaseModel):
 
     def delete_url(self):
         return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
-        
+
     def detail_url(self):
         return reverse('db:incomingstudent_detail', kwargs=self.obj_kwargs())
-        
+
     def __str__(self):
         return self.name
 
@@ -316,7 +316,7 @@ class Registration(MedicalMixin, DatabaseModel):
         ordering = ['name']
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    
+
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
     previous_school = models.CharField(
@@ -439,7 +439,7 @@ class Registration(MedicalMixin, DatabaseModel):
         "Please rate yourself as a swimmer",
         max_length=20, choices=SWIMMING_ABILITY_CHOICES
     )
-    
+
     camping_experience = YesNoField(
         "Have you ever spent a night camping under a tarp?"
     )
@@ -550,7 +550,7 @@ class Registration(MedicalMixin, DatabaseModel):
             raise ValidationError(
                 "You cannot select both a round-trip AND a one-way bus"
             )
-  
+
     def get_trip_assignment(self):
         """
         Return the trip assignment for this registration's trippee.
@@ -584,7 +584,7 @@ class Registration(MedicalMixin, DatabaseModel):
         if self.is_non_swimmer:
             return qs.exclude(template__swimtest_required=True)
         return qs
-    
+
     def get_firstchoice_trips(self):
         """ 
         Return first choice Trips 
@@ -674,7 +674,7 @@ def connect_registration_to_trippee(instance=None, **kwargs):
     """
     if kwargs.get('created', False):
         instance.match()
-        
+
 
 @receiver(post_save, sender=IncomingStudent)
 def create_trippee_for_college_info(instance=None, **kwargs):

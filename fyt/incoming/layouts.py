@@ -30,7 +30,7 @@ class RegistrationFormLayout(Layout):
         trips_cost = str(kwargs['trips_cost'])
         contact_url = kwargs['contact_url']
         doc_membership_cost = str(kwargs['doc_membership_cost'])
-        
+
         super(RegistrationFormLayout, self).__init__(
             Fieldset(
                 'General Information',
@@ -73,7 +73,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Trip Type',
                 HTML("<p> Every trip spends two and a half of the five days exploring a specific location around New Hampshire while doing any number of outdoor activities - everything from hiking to yoga to kayaking to organic farming. No matter which trip you are assigned to, we promise you'll find the experience to be an exciting and comfortable one. </p>"
-                     "<p> We offer a variety of different types of trips on each section. The trip type is determined by the activity featured on the trip. {% include 'incoming/_triptype_modal.html' %} </p>" 
+                     "<p> We offer a variety of different types of trips on each section. The trip type is determined by the activity featured on the trip. {% include 'incoming/_triptype_modal.html' %} </p>"
                      "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choose increases if you: </p>"
                      "<ul> <li>submit all your registration materials by the deadline, </li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections " + local_sections_range + ", Other regions: Sections " + not_local_sections_range + "), and </li> <li> are available for many sections. </li> </ul>"
                      "<p><strong> Registering early does not increase your chances of getting your desired trip. However, you must register by the deadline. </strong></p>"
@@ -129,7 +129,7 @@ class RegistrationFormLayout(Layout):
                 'Canoeing & Kayaking Experience',
                 HTML("<p> Complete this section only if you indicated above that you preferred or were available for a <strong>Canoeing</strong> trip or a <strong>Kayaking</strong> trip. Please note that NO experience is needed for these types of trips; we just want to get a sense of your comfort level with these activites. </p>"),
                 'has_boating_experience',
-                Field('boating_experience', rows=3), 
+                Field('boating_experience', rows=3),
                 Field('other_boating_experience', rows=3),
             ),
             Fieldset(
@@ -156,7 +156,7 @@ class RegistrationFormLayout(Layout):
                 'Anything else?',
                 Field('anything_else', rows=3),
             ),
-            
+
             Fieldset(
                 'Bus Option',
                 HTML("<p> Students in " + local_sections + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast come on Sections " + local_sections_range + ". </p>"
@@ -180,11 +180,11 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Waiver of Liability',
                 HTML('<p> Please read, review, and indicate your acknowledgment of the following information. If you have any questions or concerns, please feel free to <a href="' + contact_url + '"> contact us.</a> </p>'
-                     "<p><strong> This acknowledgment and assumption of risk, hold harmless agreement, release and waiver of liability is a legally binding document. By acknowledging your understanding and agreement, you are waiving certain rights &mdash; including the right to bring a lawsuit if you are injured while participating in this activity.</strong> </p>" 
+                     "<p><strong> This acknowledgment and assumption of risk, hold harmless agreement, release and waiver of liability is a legally binding document. By acknowledging your understanding and agreement, you are waiving certain rights &mdash; including the right to bring a lawsuit if you are injured while participating in this activity.</strong> </p>"
                      "<p> This document is executed in consideration of being able to participate in the D.O.C. Trips Program, sponsored by the Dartmouth Outing Club. I hereby acknowledge that I am aware that there are risks and dangers inherent in the D.O.C. Trips Program, and I hereby agree that I will listen carefully to and follow all instructions and directions and ask questions if I do not understand. I also acknowledge that, despite careful precautions, there are certain inherent dangers and risks of injury in this activity, and I accept those risks and dangers. I further agree, on behalf of myself, and my heirs and assigns, to release and hold harmless Dartmouth College, its officers, agents, employees, successors, and assigns, from and against any and all claims and causes of action arising out of my participation in this activity, except insofar as such claim or cause of action arises from the negligence or intentional acts of Dartmouth College, its officers, agents, or employees. </p>"
                      "<p> If the student is a minor, I further agree to indemnify and hold harmless Dartmouth College from any and all claims which are brought by, or on behalf of Minor, and which are in any way connected with such use or participation by Minor. </p>"),
                 'waiver',
-            ),               
+            ),
             Fieldset(
                 'OPTIONAL: Dartmouth Outing Club Membership',
                 HTML("<p> The DOC is one of Dartmouth's largest student organizations - and the home of First-Year Trips - and offers many opportunities to get outside and enjoy the beautiful areas surrounding campus. Student members are eligible for membership & positions in the various clubs (e.g. Cabin & Trail, Mountaineering Club, Ski Patrol, etc.), qualify for reduced prices for season passes & cabin rentals, and receive a copy of the 'Dartmouth Outing Guide' book. A student career membership is $" + doc_membership_cost + ". Please indicate if you would like to purchase a student career (the duration of your time as a Dartmouth undergraduate) membership. You will receive information later this summer about your membership. <i>Note: this charge, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill. </i></p>"),

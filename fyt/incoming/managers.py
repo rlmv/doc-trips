@@ -36,7 +36,7 @@ class IncomingStudentManager(models.Manager):
         if trip.template.swimtest_required:
             from fyt.incoming.models import Registration
             qs = qs.exclude(registration__swimming_ability=Registration.NON_SWIMMER)
-        
+
         return (
             qs.filter(trips_year=trip.trips_year)
             .filter(sxn_pref | sxn_avail)
@@ -59,9 +59,9 @@ class IncomingStudentManager(models.Manager):
         """
 
         trips_year = TripsYear.objects.get(pk=trips_year)
- 
+
         reader = csv.DictReader(file)
-            
+
         def parse_to_object(row):
             """ Parse a CSV row and return an incoming student object """
             if not row['Id']:
@@ -98,7 +98,7 @@ class IncomingStudentManager(models.Manager):
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
-        
+
     def update_hinman_boxes(self, file, trips_year):
         """
         Import hinman boxes from a csv file.
@@ -188,7 +188,7 @@ class RegistrationManager(models.Manager):
         return self.filter(
             trips_year=trips_year, financial_assistance=YES
         )
-     
+
     def want_bus(self, trips_year):
         """
         All registrations for trips_year requesting an external bus

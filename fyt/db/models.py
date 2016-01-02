@@ -24,7 +24,7 @@ class TripsYear(models.Model):
         Only works if this the current trips year.
         """
         assert self.is_current
-       
+
         self.is_current = False
         self.save()
 

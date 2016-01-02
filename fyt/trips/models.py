@@ -44,7 +44,7 @@ class Trip(DatabaseModel):
         "This information will be added to leader packets."
     ))
 
-    # Theses fields override the default transport routes. If any of these 
+    # Theses fields override the default transport routes. If any of these
     # routes are set, they are used instead of trip.template.*_route.
     # Is there a way to easily tell when a route is way off for a stop?
     ROUTE_HELP_TEXT = 'leave blank to use default route from template'
@@ -57,7 +57,7 @@ class Trip(DatabaseModel):
     return_route =  models.ForeignKey(
         Route, blank=True, null=True, on_delete=models.PROTECT,
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
-    
+
     dropoff_time = models.TimeField(blank=True, null=True)
     pickup_time = models.TimeField(blank=True, null=True)
 
@@ -108,7 +108,7 @@ class Trip(DatabaseModel):
             return self.num_trippees + self.num_leaders
         return self.leaders.count() + self.trippees.count()
 
-    @property 
+    @property
     def dropoff_date(self):
         return self.section.at_campsite1
 
@@ -126,7 +126,7 @@ class Trip(DatabaseModel):
         A trip gets an additional half foodbox if it is larger 
         than the kickin limit specified by the triptype.
         """
-        return self.size() >= self.template.triptype.half_kickin 
+        return self.size() >= self.template.triptype.half_kickin
 
     @property
     def supp_foodbox(self):
@@ -148,16 +148,16 @@ class Trip(DatabaseModel):
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)
-    
+
     def verbose_str(self):
         return '{}{}: {}'.format(
             self.section.name, self.template.name,
             self.template.description_summary
         )
-   
+
     def detail_url(self):
         return reverse('db:trip_detail', kwargs=self.obj_kwargs())
-    
+
     def update_url(self):
         return reverse('db:trip_update', kwargs=self.obj_kwargs())
 
@@ -177,14 +177,14 @@ class Section(DatabaseModel):
         max_length=1, help_text="A, B, C, etc.", verbose_name='Section'
     )
     leaders_arrive = models.DateField()
-    
+
     is_local = models.BooleanField(default=False)
     is_exchange = models.BooleanField(default=False)
     is_transfer = models.BooleanField(default=False)
     is_international = models.BooleanField(default=False)
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
-    
+
     objects = SectionManager()
     dates = SectionDatesManager()
 
@@ -253,7 +253,7 @@ class Section(DatabaseModel):
 
     def __str__(self):
         return 'Section ' + self.name
-        
+
     def leader_date_str(self):
         """ 
         Return a string of dates that this section covers.
@@ -262,7 +262,7 @@ class Section(DatabaseModel):
         Looks like 'Aug 10th to Aug 15th'
         """
         fmt = '%b %d'
-        return (self.leaders_arrive.strftime(fmt) + ' to ' + 
+        return (self.leaders_arrive.strftime(fmt) + ' to ' +
                 self.return_to_campus.strftime(fmt))
 
     def trippee_date_str(self):
@@ -270,7 +270,7 @@ class Section(DatabaseModel):
         Date string for *trippees*
         """
         fmt = '%b %d'
-        return (self.trippees_arrive.strftime(fmt) + ' to ' + 
+        return (self.trippees_arrive.strftime(fmt) + ' to ' +
                 self.return_to_campus.strftime(fmt))
 
 
@@ -309,10 +309,10 @@ class TripTemplate(DatabaseModel):
 
     # TODO: better related names
     campsite1 = models.ForeignKey(
-        'Campsite', related_name='trip_night_1', on_delete=models.PROTECT, 
+        'Campsite', related_name='trip_night_1', on_delete=models.PROTECT,
         verbose_name='campsite 1')
     campsite2 = models.ForeignKey(
-        'Campsite', related_name='trip_night_2', on_delete=models.PROTECT, 
+        'Campsite', related_name='trip_night_2', on_delete=models.PROTECT,
         verbose_name='campsite 2')
 
     desc_intro = models.TextField('Introduction', blank=True)
@@ -339,7 +339,7 @@ class TripTemplate(DatabaseModel):
         return reverse('db:triptemplate_upload_file', kwargs={
             'trips_year': self.trips_year, 'triptemplate_pk': self.pk
         })
-        
+
     def file_list_url(self):
         """
         Url for list of all attached files
@@ -376,7 +376,7 @@ class Document(DatabaseModel):
 
 
 class TripType(DatabaseModel):
-    
+
     name = models.CharField(max_length=255, db_index=True)
     leader_description = models.TextField()
     trippee_description = models.TextField()

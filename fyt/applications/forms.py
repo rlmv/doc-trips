@@ -31,10 +31,10 @@ class TripAssignmentForm(forms.ModelForm):
         )
         self.fields['assigned_trip'].label = 'Trip Assignment'
         crispify(self, submit_text='Update Assignment')
-       
+
 
 class ApplicationForm(forms.ModelForm):
-    
+
     class Meta:
         model = GeneralApplication
         fields = (
@@ -54,7 +54,7 @@ class ApplicationForm(forms.ModelForm):
             'trainings', 'spring_training_ok', 'summer_training_ok',
             'hanover_in_fall', 'role_preference',
         )
-        
+
         widgets = {
             'personal_activities': forms.Textarea(attrs={'rows': 4}),
             'feedback': forms.Textarea(attrs={'rows': 4}),
@@ -68,7 +68,7 @@ class ApplicationForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout()
-        
+
 
 class CrooSupplementForm(forms.ModelForm):
 
@@ -101,12 +101,12 @@ class LeaderSupplementForm(forms.ModelForm):
     # override ModelForm field defaults
     preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
     available_sections = LeaderSectionChoiceField(queryset=None, required=False)
-    
+
     class Meta:
         model = LeaderSupplement
 
         fields = (
-            'preferred_sections', 'available_sections', 
+            'preferred_sections', 'available_sections',
             'preferred_triptypes', 'available_triptypes',
             'trip_preference_comments', 'cannot_participate_in',
             'relevant_experience', 'document'
@@ -116,16 +116,16 @@ class LeaderSupplementForm(forms.ModelForm):
         super(LeaderSupplementForm, self).__init__(*args, **kwargs)
 
         # Restrict querysets to current trips year
-        # TODO: since this form is used by the database update view, 
+        # TODO: since this form is used by the database update view,
         # pass the trips year in explicitly to support previous years,
         # OR don't allow editing of old trips_years.
         trips_year = TripsYear.objects.current()
         if kwargs.get('instance', None):
             assert kwargs['instance'].trips_year == trips_year
 
-        # Widget specifications are in __init__ because of 
+        # Widget specifications are in __init__ because of
         # https://github.com/maraujop/django-crispy-forms/issues/303
-        # This weird SQL behavior is also triggered when field.queryset 
+        # This weird SQL behavior is also triggered when field.queryset
         # is specified after field.widget = CheckboxSelectMultiple.
         self.fields['preferred_sections'].queryset = (
             Section.objects.filter(trips_year=trips_year)
@@ -168,11 +168,11 @@ class ApplicationStatusForm(forms.ModelForm):
 
 
 class ApplicationAdminForm(forms.ModelForm):
-    
+
     class Meta:
         model = GeneralApplication
         fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
-        
+
     def __init__(self, *args, **kwargs):
         super(ApplicationAdminForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)

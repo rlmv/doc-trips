@@ -43,7 +43,7 @@ class Raid(DatabaseModel):
                 self.trip.verbose_str(),
                 self.date.strftime('%m/%d')
             )
-       
+
 
 class Comment(DatabaseModel):
     """

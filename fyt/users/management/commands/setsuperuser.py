@@ -5,17 +5,17 @@ from django.contrib.auth import get_user_model
 UserModel = get_user_model()
 
 class Command(BaseCommand):
-    
+
     help = 'Give the specified user superuser status'
-    
+
     def add_arguments(self, parser):
-        
+
         parser.add_argument('netid')
 
     def handle(self, *args, **options):
-        
+
         for netid in args:
-            
+
             try:
                 user = UserModel.objects.get(netid=netid)
             except UserModel.DoesNotExist:
@@ -27,9 +27,9 @@ class Command(BaseCommand):
                 user.save()
                 msg = "User '%s' promoted to superuser"
                 self.stdout.write(msg % user)
-                
 
 
 
-            
-        
+
+
+

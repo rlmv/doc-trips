@@ -33,7 +33,7 @@ class TripsYearTestCaseUtils():
         self.old_trips_year.save()
 
         return self.old_trips_year
-        
+
     init_previous_trips_year = init_old_trips_year
 
     def mock_user(self):
@@ -45,14 +45,14 @@ class TripsYearTestCaseUtils():
         self.user = get_user_model().objects.create_user(netid, netid, email)
 
         return self.user
-        
+
     def mock_incoming_student(self):
         netid = 'incoming'
         name = 'incoming'
         email = netid + '@dartmouth.edu'
         did = 'incoming DID'
         self.user = get_user_model().objects.create_user(netid, name, email, did)
-        
+
         return self.user
 
     def mock_director(self):
@@ -130,12 +130,12 @@ class WebTestCase(WebTest, TripsYearTestCaseUtils):
     For some reason whitenoise's GzipManifestStaticFilesStorage doesn't
     work with WebTest. We patch it here back to the django default storage.
     """
-    
+
     def _patch_settings(self):
         super(WebTestCase, self)._patch_settings()
         self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
         settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-        
+
     def _unpatch_settings(self):
         super(WebTestCase, self)._unpatch_settings()
         settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
