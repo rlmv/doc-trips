@@ -14,7 +14,7 @@ from fyt.db.models import DatabaseModel
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip, Section, TripType
 from fyt.users.models import NetIdField
-from fyt.utils.choices import TSHIRT_SIZE_CHOICES, YES
+from fyt.utils.choices import TSHIRT_SIZE_CHOICES
 from fyt.utils.models import MedicalMixin
 from fyt.utils.model_fields import YesNoField, NullYesNoField
 
@@ -239,7 +239,7 @@ class IncomingStudent(DatabaseModel):
         Financial aid adjusted DOC membership cost, if elected.
         """
         reg = self.get_registration()
-        if reg and reg.doc_membership == YES:
+        if reg and reg.doc_membership:
             return self._adjust(costs.doc_membership_cost)
         return 0
 
@@ -297,7 +297,7 @@ class IncomingStudent(DatabaseModel):
 
 # TODO: test for 'True'
 def validate_waiver(value):
-    if value != YES:
+    if not value:
         raise ValidationError("You must agree to the waiver")
 
 

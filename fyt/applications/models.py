@@ -10,7 +10,7 @@ from .managers import (CrooApplicationManager, LeaderApplicationManager,
 from fyt.db.models import DatabaseModel
 from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
-from fyt.utils.choices import YES_NO_CHOICES, TSHIRT_SIZE_CHOICES
+from fyt.utils.choices import TSHIRT_SIZE_CHOICES
 from fyt.utils.models import MedicalMixin
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 

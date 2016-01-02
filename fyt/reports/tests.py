@@ -12,12 +12,12 @@ from fyt.applications.tests import ApplicationTestMixin
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import Registration, IncomingStudent, Settings
 from fyt.trips.models import Trip
-from fyt.utils.choices import YES, NO, S, M, L, XL
+from fyt.utils.choices import S, M, L, XL
 from fyt.reports.views import leader_tshirts, croo_tshirts, trippee_tshirts
 
 
 def save_and_open_csv(resp):
-    """ 
+    """
     Save the file content return by response and
     open a CSV reader object over the saved file.
     """
@@ -125,7 +125,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trip_assignment__trips_year=trips_year,  # force trip to exist
             bus_assignment_round_trip__cost_round_trip=100,
             financial_aid=10,
-            registration__doc_membership=YES,
+            registration__doc_membership=True,
             registration__green_fund_donation=20
         )
         # another, without a registration
@@ -143,7 +143,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
-            registration__doc_membership=YES
+            registration__doc_membership=True
         )
         # another with no trip, no membership, but green fund donation
         incoming4 = mommy.make(
@@ -152,7 +152,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             trip_assignment=None,
             financial_aid=0,
-            registration__doc_membership=NO,
+            registration__doc_membership=False,
             registration__green_fund_donation=12
         )
         # last-minute cancellation
@@ -163,7 +163,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trip_assignment=None,
             cancelled=True,
             financial_aid=0,
-            registration__doc_membership=NO,
+            registration__doc_membership=False,
         )
 
         # not charged because no trip assignment AND no DOC membership
@@ -234,9 +234,9 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             trip_assignment__trips_year=trips_year,
             trip_assignment__section__leaders_arrive=date(2015, 1, 1),
-            registration__is_fysep=YES,
-            registration__is_native=YES,
-            registration__is_international=NO
+            registration__is_fysep=True,
+            registration__is_native=True,
+            registration__is_international=False
         )
         t2 = mommy.make(
             IncomingStudent,
@@ -349,12 +349,12 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         reg = mommy.make(
             Registration,
             trips_year=trips_year,
-            doc_membership=YES
+            doc_membership=True
         )
         other_reg = mommy.make(
             Registration,
             trips_year=trips_year,
-            doc_membership=NO
+            doc_membership=False
         )
         url = reverse('db:reports:doc_members', kwargs={'trips_year': trips_year})
         resp = self.app.get(url, user=self.mock_director())
@@ -478,7 +478,3 @@ class TShirtCountTestCase(TripsTestCase):
             S: 0, M: 0, L: 1, XL: 0
         }
         self.assertEqual(target, trippee_tshirts(trips_year))
-
-
-
-

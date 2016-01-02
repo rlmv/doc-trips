@@ -1,7 +1,9 @@
 
-""" 
-Common choices used by trippees and leaders 
 """
+Common choices used by trippees and leaders
+"""
+
+# TODO: move to `model_fields`?
 
 S = 'S'
 M = 'M'
@@ -12,11 +14,4 @@ TSHIRT_SIZE_CHOICES = (
     (M, 'Medium'),
     (L, 'Large'),
     (XL, 'Extra large'),
-)
-
-YES = 'YES'
-NO = 'NO'
-YES_NO_CHOICES = (
-    (YES, 'yes'),
-    (NO, 'no'),
 )

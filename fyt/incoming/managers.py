@@ -5,7 +5,6 @@ from django.db import models
 from django.db.models import Q
 
 from fyt.db.models import TripsYear
-from fyt.utils.choices import YES
 
 
 def get_netids(incoming_students):
@@ -20,7 +19,7 @@ class IncomingStudentManager(models.Manager):
 
     def available_for_trip(self, trip):
         """
-        Return all incoming students who indicate on their 
+        Return all incoming students who indicate on their
         registration that they are available for, prefer, or have
         chosen trip as their first choice.
 
@@ -47,11 +46,11 @@ class IncomingStudentManager(models.Manager):
 
     def create_from_csv_file(self, file, trips_year):
         """
-        Import incoming students from a CSV file. 
+        Import incoming students from a CSV file.
 
-        If a student already exists in the database for this year, 
-        ignore. We compare entries via netid. 
-        
+        If a student already exists in the database for this year,
+        ignore. We compare entries via netid.
+
         Param trips_year is a string
         Returns a tuple (created_students, existing_students).
 
@@ -102,7 +101,7 @@ class IncomingStudentManager(models.Manager):
     def update_hinman_boxes(self, file, trips_year):
         """
         Import hinman boxes from a csv file.
-        
+
         Given CSV file with a ``netid`` and ``hinman box`` column,
         update each IncomingStudent specified by netid with the
         given hinman box number.
@@ -186,7 +185,7 @@ class RegistrationManager(models.Manager):
         All registrations for trips_year requesting financial aid.
         """
         return self.filter(
-            trips_year=trips_year, financial_assistance=YES
+            trips_year=trips_year, financial_assistance=True
         )
 
     def want_bus(self, trips_year):
