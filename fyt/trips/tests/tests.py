@@ -538,16 +538,16 @@ class CampsiteManagerTestCase(TripsTestCase):
             Trip,
             trips_year=trips_year,
             section=sxn,
-            template__campsite1=campsite_a,
+            template__campsite1=campsite_b,
             template__campsite2=campsite_c,
         )
         target = {
             campsite_a: {
-                sxn.at_campsite1: [trip1, trip2],
+                sxn.at_campsite1: [trip1],
                 sxn.at_campsite2: [],
             },
             campsite_b: {
-                sxn.at_campsite1: [],
+                sxn.at_campsite1: [trip2],
                 sxn.at_campsite2: [trip1],
             },
             campsite_c: {
@@ -555,7 +555,8 @@ class CampsiteManagerTestCase(TripsTestCase):
                 sxn.at_campsite2: [trip2],
             }
         }
-        self.assertEqual(target, Campsite.objects.matrix(trips_year))
+        actual = Campsite.objects.matrix(trips_year)
+        self.assertEqual(target, actual)
 
 
 class ViewsTestCase(WebTestCase):
