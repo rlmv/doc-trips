@@ -8,7 +8,6 @@ Immediate
 * PDF uploads of maps and documents for trip templates
 * Show leader itinerary on leader assignment page.
 * Refactor internal transport matrix and numbers
-* Migrate ``YesNo`` field to use ``BooleanField`` backend.
 * Validate that ``TripTemplates`` cannot use external stops (perhaps with Internal and ExternalStop proxy models?)
 * Restrict ``Trip`` route overrides to ``EXTERNAL`` routes.
 * Expose raid blog instructions edit field
@@ -30,6 +29,7 @@ Questions
 
 Cosmetic
 --------
+* Use ``super()`` form without arguments, pretty much everywhere.
 * Rename/shorten bus assignment fields
 * Rename application models
 * Rename ``incoming.Settings`` to something nicer
@@ -37,7 +37,7 @@ Cosmetic
 * Remove ``DartmoutUser.did``?
 * Generalize Create/New button
 * Shaw overbooked campsites in matrix
-* Warn when a trip is over booked on the leader/trippee assignment 
+* Warn when a trip is over booked on the leader/trippee assignment
 * Show warning if transport for a ``ScheduledTrip`` is not scheduled
 * Utility singleton model mixin
 * Use ``timedelta`` constants for all date intervals.
@@ -64,4 +64,3 @@ Long term
 
 
 .. todolist::
-
