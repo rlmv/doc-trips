@@ -7,6 +7,11 @@
 # issues.
 #
 # Beware: this destroys the current local database.
+#
+# This script occasionally fails: Heroku's dumpdata output is
+# cut off and loading will raise a DeserializationError. I'm not
+# sure if the script is timing out or something else; running it
+# again, or running each piece manually, seems to resolve it.
 
 temp=temp
 mkdir temp
@@ -19,7 +24,7 @@ fixtures="$core $users $trips $people"
 
 function dump {
     echo "Dumping $1 to $2"
-    heroku run manage dumpdata --indent 4 $1 > $2 
+    heroku run manage dumpdata --indent 4 $1 > $2
 }
 
 dump 'users' $users
@@ -30,4 +35,4 @@ dump 'applications incoming safety raids' $people
 # make db backup?
 manage=./manage.py
 $manage sqlflush | $manage dbshell
-$manage syncdata $fixtures
+$manage loaddata $fixtures
