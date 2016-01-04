@@ -324,7 +324,7 @@ class Registration(MedicalMixin, DatabaseModel):
     )
 
     # --- sections and triptypes -----
-    is_exchange = YesNoField('Are you an Exchange Student?')
+    is_exchange = NullYesNoField('Are you an Exchange Student?')
 
     is_transfer = NullYesNoField('Are you a Transfer Student?')
 
