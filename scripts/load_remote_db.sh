@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# A script to copy the essential data from the remote Heroku 
-# database to a local dev database. We don't dump things 
+# A script to copy the essential data from the remote Heroku
+# database to a local dev database. We don't dump things
 # like ContentTypes because they seem to cause problems when loaded.
 # We dump to multiple fixtures to fix foreign key dependency
-# issues. 
+# issues.
 #
 # Beware: this destroys the current local database.
 
@@ -19,7 +19,7 @@ fixtures="$core $users $trips $people"
 
 function dump {
     echo "Dumping $1 to $2"
-    heroku run manage dumpdata --indent 4 $1 | sed 1d > $2  # cut junk first line
+    heroku run manage dumpdata --indent 4 $1 > $2 
 }
 
 dump 'users' $users
@@ -31,4 +31,3 @@ dump 'applications incoming safety raids' $people
 manage=./manage.py
 $manage sqlflush | $manage dbshell
 $manage syncdata $fixtures
-
