@@ -656,6 +656,6 @@ class TripTemplateDocumentUploadTestCase(WebTestCase):
         resp.form.submit()
 
         tt.refresh_from_db()
-        files = tt.document_set.all()
+        files = tt.documents.all()
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].name, 'Map')
