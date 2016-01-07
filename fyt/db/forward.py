@@ -15,26 +15,7 @@ from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
 from fyt.trips.models import TripTemplate, TripType, Campsite
 
-"""
-Migrate the database to the next ``trips_year``
-"""
-
 logger = logging.getLogger(__name__)
-
-#: all models which need to be migrated
-MODELS_FORWARD = [
-    ApplicationInformation,
-    PortalContent,
-    QualificationTag,
-    Settings,
-    RaidInfo,
-    Stop,
-    Route,
-    Vehicle,
-    TripTemplate,
-    TripType,
-    Campsite
-]
 
 # Sqlite databases have a max number of variables in any given query.
 # This keeps ``bulk_update`` from causing errors on development
@@ -48,7 +29,24 @@ else:
 
 class Forward():
     """
+    Manages the state of the database migration to the next ``trips_year``.
     """
+
+    #: all models which need to be migrated
+    MODELS_FORWARD = [
+        ApplicationInformation,
+        PortalContent,
+        QualificationTag,
+        Settings,
+        RaidInfo,
+        Stop,
+        Route,
+        Vehicle,
+        TripTemplate,
+        TripType,
+        Campsite
+    ]
+
     def __init__(self, curr_year, next_year):
         self.curr_year = curr_year
         self.next_year = next_year
@@ -57,9 +55,9 @@ class Forward():
 
     def do(self):
         """
-        Migrate all models
+        Werrrk. Migrate all models listed in ``MODELS_FORWARD``
         """
-        for Model in MODELS_FORWARD:
+        for Model in self.MODELS_FORWARD:
             for obj in Model.objects.filter(trips_year=self.curr_year):
                 self.copy_object_forward(obj)
 
@@ -68,7 +66,7 @@ class Forward():
 
     def copy_object_forward(self, obj):
         """
-        Recursively make a copy of ``obj`` for the next ``trips_year``
+        Recursively copy ``obj`` to the next ``trips_year``
 
         Caches all new objects in ``self.old_to_new`` so that if we
         encounter a previously created object we return the cached copy.
