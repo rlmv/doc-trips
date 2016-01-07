@@ -1,7 +1,6 @@
 import copy
 import logging
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+
 from django.db.transaction import atomic
 
 from .models import TripsYear
