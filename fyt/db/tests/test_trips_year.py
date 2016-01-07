@@ -2,18 +2,16 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.test.testcases import WebTestCase
-from fyt.db.views import TripsYearMixin
-from fyt.trips.models import Campsite, TripTemplate, Section
-
 from fyt.db.urlhelpers import (reverse_create_url, reverse_update_url,
                                reverse_index_url)
+from fyt.db.views import TripsYearMixin
+from fyt.test.testcases import WebTestCase
+from fyt.trips.models import Campsite, TripType, TripTemplate, Section
 
 
 class TripsYearMixinTestCase(WebTestCase):
-    """
-    Integration tests for TripsYearMixin
-    """
+    """ Integration tests for TripsYearMixin. """
+
     csrf_checks = False
 
     def setUp(self):
@@ -32,7 +30,7 @@ class TripsYearMixinTestCase(WebTestCase):
         self.assertEquals(response.status_code, 404)
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
-        """ Use Section as model, instead of hacking together an example"""
+        """Use Section as model, instead of hacking together an example"""
         data = model_to_dict(mommy.prepare(Section))
         url = reverse_create_url(Section, self.current_trips_year)
         response = self.app.post(url, data, user=self.mock_director())
@@ -49,14 +47,14 @@ class TripsYearMixinTestCase(WebTestCase):
         Check that *only* objects for the requested trips_year are in
         a database list view.
         """
-        ex1 = mommy.make(Campsite, trips_year=self.trips_year)
-        ex2 = mommy.make(Campsite, trips_year=self.old_trips_year)
+        ex1 = mommy.make(TripType, trips_year=self.trips_year)
+        ex2 = mommy.make(TripType, trips_year=self.old_trips_year)
 
         response = self.app.get(reverse_index_url(ex1),
                                 user=self.mock_director())
 
-        from fyt.trips.views import CampsiteList
-        objects = response.context[CampsiteList.context_object_name]
+        from fyt.trips.views import TripTypeList
+        objects = response.context[TripTypeList.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object for `trips_year`')
 
