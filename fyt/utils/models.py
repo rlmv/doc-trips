@@ -44,13 +44,14 @@ class MedicalMixin(models.Model):
         blank=True, help_text=LEAVE_BLANK
     )
 
-    def delete_medical_info(self):
+    def clear_medical_info(self):
         """
-        Delete all medical information on the object.
+        Clear all medical information on the object.
+
+        Does not persist the changes -- you must call ``save``.
         """
         self.food_allergies = ''
         self.dietary_restrictions = ''
         self.medical_conditions = ''
         self.epipen = None
         self.needs = ''
-        self.save()
