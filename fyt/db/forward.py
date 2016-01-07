@@ -1,6 +1,8 @@
 import copy
 import logging
 
+from bulk_update.helper import bulk_update
+from django.conf import settings
 from django.db.transaction import atomic
 
 from .models import TripsYear
@@ -33,6 +35,16 @@ MODELS_FORWARD = [
     TripType,
     Campsite
 ]
+
+# Sqlite databases have a max number of variables in any given query.
+# This keeps ``bulk_update`` from causing errors on development
+# sqlite databases, but also keeps the site from timing out in
+# production.
+if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+    SQLITE_BATCH_LIMIT = 1
+else:
+    SQLITE_BATCH_LIMIT = None
+
 
 class Forward():
     """
@@ -94,19 +106,26 @@ class Forward():
         Delete all medical info saved on
         ``IncomingStudents`` and ``Registrations``.
         """
-        for inc in IncomingStudent.objects.filter(trips_year=self.curr_year):
+        incoming = IncomingStudent.objects.filter(trips_year=self.curr_year)
+        for inc in incoming:
             inc.med_info = ''
-            inc.save()
 
-        for reg in Registration.objects.filter(trips_year=self.curr_year):
-            reg.delete_medical_info()
+        registrations = Registration.objects.filter(trips_year=self.curr_year)
+        for reg in registrations:
+            reg.clear_medical_info()
+
+        bulk_update(incoming, batch_size=SQLITE_BATCH_LIMIT)
+        bulk_update(registrations, batch_size=SQLITE_BATCH_LIMIT)
 
     def delete_application_medical_info(self):
         """
         Delete all medical info saved on ``GeneralApplications``
         """
-        for app in Application.objects.filter(trips_year=self.curr_year):
-            app.delete_medical_info()
+        applications = Application.objects.filter(trips_year=self.curr_year)
+        for app in applications:
+            app.clear_medical_info()
+
+        bulk_update(applications, batch_size=SQLITE_BATCH_LIMIT)
 
 
 @atomic

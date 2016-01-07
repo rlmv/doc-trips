@@ -10,6 +10,7 @@ django-vanilla-views==1.0.3
 django-crispy-forms==1.5.1
 django-tables2==0.16.0
 django-pipeline==1.4.7
+django-bulk-update==1.1.8
 
 -e git://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker-origin
 -e git://github.com/brack3t/django-braces.git@f8dcfca48c1b6f4a182bab6892068732e7b32072#egg=django_braces-origin
