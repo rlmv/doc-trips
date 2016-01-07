@@ -3,7 +3,7 @@
 
 <nav class="navbar navbar-default" role="navigation">
   <div class="container">
-    
+
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
         <span class="sr-only">Toggle navigation</span>
@@ -52,10 +52,14 @@
 	    <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-fw fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
 	    {% endif %}
 
+        {% if perms.permissions.can_edit_db %}
+        <li><a href="{% url 'db:migrate' %}"><i class="fa fa-bomb"></i> Migrate </a></li>
+        {% endif %}
+
           </ul>
         </li>
 	{% endif %}
-	
+
       </ul>
 
       <!--- user info --->
@@ -69,7 +73,7 @@
 	    <li><a href="{% url 'users:logout' %}"> Logout <span class="fa fa-fw fa-sign-out"></span></a></li>
 	  </ul>
 	</li>
-	{% else %} 
+	{% else %}
 	<li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-fw fa-sign-in"></span> Login</a></li>
 	{% endif %}
       </ul>

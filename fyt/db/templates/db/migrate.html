@@ -1,0 +1,51 @@
+{% extends "db/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Migrate to {{ next_year }}</h2>
+{% endblock %}
+
+{% block content %}
+
+<p> Use this page to set the database up for Trips {{ next_year }}. Migrating the database does two things:
+
+    <ul>
+        <li> Copies all data from {{ trips_year }} which will be reused for Trips {{ next_year }}. This includes TripTemplates, TripTypes, Campsites, Stops, Routes, Vehicles, application and raid information, and a few other things. </li>
+        <li> Deletes all medical information for Trippees, Croos, and Leaders for {{ trips_year }} (for confidentiality reasons.) </li>
+    </ul>
+
+For example, a new <i> 40: The John Rand Trip </i> template will be created for {{ next_year }}, and will contain all the same information as the trip from {{ trips_year }}. The old trip from {{ trips_year }} will also still exist in the database, but any changes made to the trip in {{ next_year }} won't affect the trip from {{ trips_year }}.
+
+</p>
+
+<div class="alert alert-danger">
+    <p>
+        <i class="fa fa-warning"></i>
+        <strong> This is not reversible! </strong> If you migrate the database prematurely you will erase a bunch of very important data. Only migrate the database when Trips {{ trips_year }} is good and done.
+    </p>
+</div>
+
+<p>
+<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+  <i class="fa fa-bomb"></i> Migrate to {{ next_year }}
+</button>
+</p>
+
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel"> Are you sure? </h4>
+      </div>
+      <div class="modal-body">
+          Are you sure you want to migrate the database from {{ trips_year }} to {{ next_year }}? <strong> This action is not reversible! </strong>
+      </div>
+      <div class="modal-footer">
+        {% crispy form %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

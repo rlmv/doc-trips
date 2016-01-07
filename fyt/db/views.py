@@ -68,11 +68,11 @@ class TripsYearMixin():
         return qs.filter(trips_year=self.get_trips_year())
 
     def get_form_class(self):
-        """ 
+        """
         Restricts the choices in foreignkey form fields to objects with the
         same trips year.
 
-        This would be straightforward if ``F()`` objects were supported 
+        This would be straightforward if ``F()`` objects were supported
         in ``limit_choices_to``, but they're not.
         """
         if self.form_class is not None:
@@ -96,17 +96,17 @@ class TripsYearMixin():
         raise ImproperlyConfigured(msg % self.__class__.__name__)
 
     def form_valid(self, form):
-        """ 
+        """
         Called for valid forms - specifically Create and Update
- 
+
         This deals with a corner case of form validation. Uniqueness
         constraints don't get caught til the object is saved and
         raises an IntegrityError.
 
         We catch this error and pass it to form_invalid.
 
-        TODO: parse and prettify the error message. Can we look at 
-        object._meta.unique_together? Can we make sure it is a 
+        TODO: parse and prettify the error message. Can we look at
+        object._meta.unique_together? Can we make sure it is a
         uniqueness error?
         """
         try:
@@ -117,7 +117,7 @@ class TripsYearMixin():
             return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
-        """ 
+        """
         Add the trips_year for this request to the context.
         """
         context = super(TripsYearMixin, self).get_context_data(**kwargs)
@@ -143,7 +143,7 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
         return "Add a new %s" % self.model._meta.verbose_name.title()
 
     def post(self, request, *args, **kwargs):
-        """ 
+        """
         Add trips_year to created object.
 
         This is the vanilla CreateView, verbatim, with the addition
@@ -219,7 +219,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
         )
 
     def get_success_url(self):
-        """ 
+        """
         Helper method for getting the success url based on the
         succes_url_pattern property.
 
@@ -278,7 +278,7 @@ class DatabaseFormView(DatabaseEditPermissionRequired, ExtraContextMixin,
 
 
 class DatabaseLandingPage(DatabaseTemplateView):
-    """ 
+    """
     Landing page of a particular trips_year in the database
 
     TODO: should this display the Trips index?
@@ -287,7 +287,7 @@ class DatabaseLandingPage(DatabaseTemplateView):
 
 
 class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
-    """ 
+    """
     Redirect to the trips database for the current year.
 
     This view is the target of database urls.
@@ -300,14 +300,12 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
         return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
 
 
-class MigrateForward(DatabaseEditPermissionRequired, SetHeadlineMixin,
-                     ExtraContextMixin, TripsYearMixin, FormView):
+class MigrateForward(DatabaseFormView):
     """
     Migrate the database to the next ``trips_year`
     """
-    template_name = 'db/form.html'
+    template_name = 'db/migrate.html'
     success_url = reverse_lazy('db:db_redirect')
-    headline = "Migrate"
 
     def get_trips_year(self):
         return TripsYear.objects.current().year
@@ -315,9 +313,16 @@ class MigrateForward(DatabaseEditPermissionRequired, SetHeadlineMixin,
     def get_form(self, **kwargs):
         form = forms.Form(**kwargs)
         form.helper = FormHelper()
-        form.helper.add_input(Submit('submit', 'Migrate'))
+        form.helper.add_input(Submit(
+            'submit', 'Migrate', css_class='btn-danger'))
+
         return form
+
+    def extra_context(self):
+        return {
+            'next_year': self.get_trips_year() + 1
+        }
 
     def form_valid(self, form):
         forward.forward()
-        return super(MigrateForward, self).form_valid(form)
+        return super().form_valid(form)
