@@ -13,7 +13,7 @@ from fyt.applications.models import (
 from fyt.incoming.models import Settings, IncomingStudent, Registration
 from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
-from fyt.trips.models import TripTemplate, TripType, Campsite
+from fyt.trips.models import TripTemplate, TripType, Campsite, Document
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class Forward():
         Route,
         Vehicle,
         TripTemplate,
+        Document,
         TripType,
         Campsite
     ]
