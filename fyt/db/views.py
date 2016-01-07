@@ -325,4 +325,7 @@ class MigrateForward(DatabaseFormView):
 
     def form_valid(self, form):
         forward.forward()
+        messages.success(self.request,
+            "Succesfully migrated the database to Trips {}".format(
+                self.get_trips_year()))  # new current trips_year
         return super().form_valid(form)
