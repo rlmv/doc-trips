@@ -1,3 +1,4 @@
+import webtest
 from django.db import models
 from model_mommy import mommy
 
@@ -5,8 +6,9 @@ from ..forward import forward, Forward
 from ..models import TripsYear
 from fyt.applications.models import GeneralApplication as Application
 from fyt.incoming.models import IncomingStudent, Registration
-from fyt.test import TripsTestCase
+from fyt.test import TripsTestCase, WebTestCase
 from fyt.transport.models import Route, Vehicle, Stop
+from fyt.trips.models import TripTemplate
 
 
 class MigrateForwardTestCase(TripsTestCase):
@@ -169,3 +171,20 @@ class MigrateForwardTestCase(TripsTestCase):
         forward()
         self.assertEqual(len(QualificationTag.objects.all()), 2)
         self.assertEqual(len(CrooApplicationGrade.objects.all()), 1)
+
+
+class MigrateForwardWebTestCase(WebTestCase):
+
+    def test_triptemplate_documents_are_migrated(self):
+        trips_year = self.init_trips_year()
+        tt = mommy.make(TripTemplate, trips_year=trips_year)
+        resp = self.app.get(tt.file_upload_url(), user=self.mock_director())
+        resp.form['name'] = 'Map'
+        resp.form['file'] = webtest.Upload('map.txt', b'test data')
+        resp.form.submit()
+
+        forward()
+        tt = TripTemplate.objects.get(trips_year=trips_year.year + 1)
+        files = tt.documents.all()
+        self.assertEqual(len(files), 1)
+        self.assertEqual(files[0].name, 'Map')
