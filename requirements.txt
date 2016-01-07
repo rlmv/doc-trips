@@ -8,7 +8,7 @@ django-extensions==1.6.1
 django-filter==0.11.0
 django-vanilla-views==1.0.3
 django-crispy-forms==1.5.1
-django-tables2==0.16.0
+django-tables2==1.0.7
 django-pipeline==1.4.7
 django-bulk-update==1.1.8
 
