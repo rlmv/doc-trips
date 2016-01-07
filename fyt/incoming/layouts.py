@@ -3,8 +3,8 @@ from crispy_forms.layout import Submit, Layout, HTML, Div, Row, Fieldset, Field
 
 from fyt.utils.fmt import section_range
 
-""" 
-crispy_form layouts 
+"""
+crispy_form layouts
 """
 
 def join_with_and(iter):

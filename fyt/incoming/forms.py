@@ -221,6 +221,3 @@ class CSVFileForm(forms.Form):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
-
-
-

@@ -33,7 +33,7 @@ from fyt.utils.forms import crispify
 """
 Views for incoming students.
 
-The first set of views are public facing and allow incoming 
+The first set of views are public facing and allow incoming
 students to register for trips. The second set handle manipulation of
 registrations and trippees in the database.
 
@@ -43,8 +43,8 @@ logger = logging.getLogger(__name__)
 
 
 class IfRegistrationAvailable():
-    """ 
-    Redirect if trippee registration is not currently available 
+    """
+    Redirect if trippee registration is not currently available
     """
     def dispatch(self, request, *args, **kwargs):
 
@@ -65,7 +65,7 @@ class RegistrationNotAvailable(TemplateView):
 class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
                            FormMessagesMixin):
     """
-    CBV base for registration form with all contextual information 
+    CBV base for registration form with all contextual information
     """
     model = Registration
     template_name = 'incoming/register.html'
@@ -90,15 +90,15 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
 class Register(BaseRegistrationView, CreateView):
     """
     Register for trips
-    
+
     Redirect to the edit view if this incoming student
     has already registered.
     """
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """
-        Redirect to edit existing application 
-        
+        Redirect to edit existing application
+
         This is redundantly decorated with login_required to prevent user
         from being anonymous. Otherwise this gets called first in the MRO
         order *then* passed to the LoginRequiredMixin, which doesn't work.
@@ -112,10 +112,10 @@ class Register(BaseRegistrationView, CreateView):
         return super(Register, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form, **kwargs):
-        """ 
-        Add the registering user to the registration 
+        """
+        Add the registering user to the registration
 
-        The registration will be automagically matched with a 
+        The registration will be automagically matched with a
         corresponding IncomingStudent model if it exists.
         """
         form.instance.trips_year = TripsYear.objects.current()
@@ -128,12 +128,12 @@ class Register(BaseRegistrationView, CreateView):
 
 
 class EditRegistration(BaseRegistrationView, UpdateView):
-    """ 
+    """
     Edit a trips registration.
     """
     def get_object(self):
-        """ 
-        Get registration for user 
+        """
+        Get registration for user
         """
         return get_object_or_404(
             self.model, user=self.request.user,
@@ -195,7 +195,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
 
 
 class RegistrationIndex(SingleTableMixin, DatabaseListView):
-    """ 
+    """
     All trippee registrations.
     """
     model = Registration
@@ -227,7 +227,7 @@ class NonStudentRegistration(DatabaseCreateView):
     This was needed because a TA was going on trips but
     would not be assigned a netid until mid-September.
     We needed some way to put her in the system. She won't
-    be able to log in and see her assignment, but she can be 
+    be able to log in and see her assignment, but she can be
     assigned to a trip.
 
     This view creates a registration linked to the sentinel
@@ -314,7 +314,7 @@ class RegistrationDelete(DatabaseDeleteView):
 
 
 class IncomingStudentIndex(SingleTableMixin, DatabaseListView):
-    """ 
+    """
     All incoming students
     """
     model = IncomingStudent
@@ -362,7 +362,7 @@ class IncomingStudentDetail(DatabaseDetailView):
 
 
 class IncomingStudentDelete(DatabaseDeleteView):
-    """ 
+    """
     Delete an incoming student.
     """
     model = IncomingStudent
