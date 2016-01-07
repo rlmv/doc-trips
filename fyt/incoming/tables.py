@@ -26,7 +26,8 @@ class RegistrationTable(tables.Table):
         verbose_name='Registration'
     )
     trip_assignment = tables.Column(
-        accessor='trippee', order_by='-trippee__trip_assignment'
+        accessor='trippee', order_by='-trippee__trip_assignment',
+        verbose_name='Trip Assignment'
     )
     trippee = DetailLinkColumn(
         verbose_name='Incoming Student Data'
