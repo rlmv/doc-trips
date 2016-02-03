@@ -20,12 +20,12 @@
 
   {% for stop in stops %}
   <tr>
-    <td> {{ stop | detail_link }} </td>
+    <td> {{ stop|detail_link }} </td>
     <td> {{ stop.address }} </td>
     <td> {{ stop.lat_lng }} </td>
-    <td> {{ stop.category | default:"" }} </td>
-    <td> {% if stop.route %} {{ stop.route | detail_link }} {% endif %} </td>
-    <td> {{ stop | edit_link }} </td>
+    <td> {{ stop.category|default:"" }} </td>
+    <td> {{ stop.route|detail_link|default:""}} </td>
+    <td> {{ stop|edit_link }} </td>
   </tr>
   {% endfor %}
 
