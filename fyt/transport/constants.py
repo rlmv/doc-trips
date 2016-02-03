@@ -26,9 +26,9 @@ def Hanover():
         address='6 N Main St, Hanover, NH 03755'
     )
 
+
 def Lodge():
     return ConstantStop(
         name='The Moosilauke Ravine Lodge',
         address='43.977253,-71.8154831'
     )
-

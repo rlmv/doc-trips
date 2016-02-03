@@ -9,7 +9,7 @@
 {% block content %}
 
 <table class="table">
-  <tr> 
+  <tr>
     <th> Name </th>
     <th> Address </th>
     <th> Lat/Lng </th>
@@ -19,7 +19,7 @@
   </tr>
 
   {% for stop in stops %}
-  <tr> 
+  <tr>
     <td> {{ stop | detail_link }} </td>
     <td> {{ stop.address }} </td>
     <td> {{ stop.lat_lng }} </td>

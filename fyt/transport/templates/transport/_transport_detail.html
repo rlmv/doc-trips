@@ -2,17 +2,17 @@
 {% load links %}
 
 <span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %} RIDERS EXCEED CAPACITY: {% elif issue == NOT_SCHEDULED %} TRANSPORT NOT SCHEDULED: {% endif %}Dropping off {{ riders.dropping_off }}/{{ capacity }}, picking up {{ riders.picking_up }}/{{ capacity }}, returning {{ riders.returning }}/{{ capacity }}">
-  
+
   <a href="{% url 'db:scheduledtransport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-bars"></i></a> <br>
 
-  {% if transport %} 
+  {% if transport %}
   {{ transport|delete_link:'<i class="fa fa-close text-danger"></i>' }}
   {% if issue == EXCEEDS_CAPACITY %}
   <i class="fa fa-exclamation text-bright-danger"></i>
   {% endif %}
 
-  {% else %} 
-  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation text-bright-danger"></i>{% endif %}</a> 
+  {% else %}
+  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'db:scheduledtransport_create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation text-bright-danger"></i>{% endif %}</a>
   {% endif %}
 
 </span>

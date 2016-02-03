@@ -13,7 +13,7 @@
 
   {# table headings #}
   {% if forloop.first %}
-  <tr> 
+  <tr>
     <th> Route </th>
     <th> Capacity </th>
     {% for section in sections %}
@@ -27,8 +27,8 @@
     <td class="text-muted text-center"> {{ route.vehicle.capacity }} </td>
     {% for section, transport in sections.items %}
     <td>
-      <a href="{% url 'db:external_checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">       
-	<kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd> 
+      <a href="{% url 'db:external_checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">
+	<kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd>
       </a>
       {% if transport %}
       {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}

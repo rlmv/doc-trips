@@ -1,4 +1,3 @@
-
 {% extends "db/base.html" %}
 {% load links %}
 
@@ -23,7 +22,7 @@
   <td> {{ route | edit_link }} </td>
   <td> {{ route | delete_link }} </td>
 </tr>
-{% endfor %}    
+{% endfor %}
 </table>
 
 <a href="{% create_url view.model trips_year %}" class="btn btn-primary" role="button">

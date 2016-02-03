@@ -26,11 +26,11 @@
       {{ step.html_instructions|safe }} &mdash; {{ step.distance.text }}
     </li>
     {% endfor %}
-    
+
     <li class="list-group-item {% if leg.end_stop.over_capacity %} list-group-item-danger {% endif %}">
-      <h3 class="list-group-item-heading"> 
-	{{ leg.end_stop.location_str }} 
-      </h3> 
+      <h3 class="list-group-item-heading">
+	{{ leg.end_stop.location_str }}
+      </h3>
       <p> {{ leg.end_stop.directions }} </p>
 
       {% include end_stop_template with end_stop=leg.end_stop %}

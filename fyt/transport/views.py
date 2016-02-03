@@ -55,7 +55,7 @@ def get_internal_route_matrix(trips_year):
 def preload_transported_trips(buses, trips_year):
     """
     Given a qs of internal buses, preload all trips are
-    picked up, dropped off, and returned to hanover by 
+    picked up, dropped off, and returned to hanover by
     each bus.
     """
     trips = Trip.objects.with_counts(
@@ -90,7 +90,7 @@ class Riders:
     """
     Utility class to represent the number of riders on a route.
 
-    Riders objects can be added to each other. An empty Riders object 
+    Riders objects can be added to each other. An empty Riders object
     evaluates to False for convenience.
 
     TODO: "Riders" doesn't really mean much, semantically.
@@ -128,9 +128,9 @@ class Riders:
 
 def get_internal_rider_matrix(trips_year):
     """
-    Matrix of hypothetical numbers, 
+    Matrix of hypothetical numbers,
     computed with max_trippees + 2 leaders.
-    
+
     matrix[route][date] gives you the Riders for that route on that date.
     """
 
@@ -138,7 +138,7 @@ def get_internal_rider_matrix(trips_year):
 
 
 def get_actual_rider_matrix(trips_year):
-    """ 
+    """
     Matrix of actual, assigned transport numbers.
     """
     return _rider_matrix(trips_year, lambda trip: trip.size())
@@ -391,7 +391,7 @@ class _RouteMixin():
 
 
 class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
-    """ 
+    """
     Shows all trips which are supposed to be dropped off,
     picked up, or returned to campus on the date and route
     in the kwargs.

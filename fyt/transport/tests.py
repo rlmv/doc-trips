@@ -24,7 +24,7 @@ from fyt.incoming.models import IncomingStudent
 from fyt.db.mommy_recipes import trips_year
 
 """
-TODO: rewrite matrix tests to only test _rider_matrix 
+TODO: rewrite matrix tests to only test _rider_matrix
 """
 
 stoporder_recipe = Recipe(
@@ -1115,4 +1115,3 @@ class ConstantStopTestCase(TripsYearTestCase):
         stop = ConstantStop()
         stop.save()
         self.assertRaises(ConstantStop.DoesNotExist, ConstantStop.objects.get)
-

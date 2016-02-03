@@ -6,12 +6,13 @@ from fyt.transport.maps import _split_stops, MapError
 
 register = Library()
 
+
 @register.simple_tag
 def embed_map(stops):
     """
     Embed a google map in the page, showing directions
     along the passed stops. The stop[0] is the origin,
-    stop[-1] the destination. Intermediate stops are 
+    stop[-1] the destination. Intermediate stops are
     waypoints on the route.
     """
     orig, waypoints, dest = _split_stops(stops)

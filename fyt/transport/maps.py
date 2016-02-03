@@ -1,5 +1,3 @@
-import json
-
 import googlemaps
 from googlemaps.exceptions import TransportError, ApiError
 from django.conf import settings
@@ -11,12 +9,13 @@ Interface with the Google maps API
 TIMEOUT = 10  # -> settings
 MAX_WAYPOINTS = 8  # imposed by Google Maps
 
+
 class MapError(Exception):
     pass
 
 
 def _split_stops(stops):
-    """ 
+    """
     Given an ordered route of stops, return a tuple
     (origin, waypoints, destion) of address or geo
     coordinates.
@@ -71,7 +70,7 @@ def _integrate_stops(directions, stops):
     Given a google maps route, add a start_stop
     and end_stop object to each leg.
 
-    The passed stops must be the stops used to generate 
+    The passed stops must be the stops used to generate
     the directions. This only works if waypoints are not
     optimized.
     """

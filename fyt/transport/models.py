@@ -231,7 +231,7 @@ class ScheduledTransport(DatabaseModel):
         distance from Hanover.
 
         Each stop has a trips_dropped_off and trips_picked_up
-        property added to it (TODO: change these names; they 
+        property added to it (TODO: change these names; they
         conflict with the triptemplate related_names.)
         The properties contain the list of trips which are dropped
         off and picked up at this stop by this bus.
@@ -293,11 +293,11 @@ class ScheduledTransport(DatabaseModel):
     def update_stop_ordering(self):
         """
         Update the ordering of all stops this bus makes.
-        Create any missing StopOrder objects, and delete 
+        Create any missing StopOrder objects, and delete
         extra objects.
 
         (Yes, using this in GET requests is poor http semantics,
-        but there are more corner cases of when routes change than 
+        but there are more corner cases of when routes change than
         I want to deal with using signals.)
 
         Returns a list of StopOrders for each stop that this bus is
@@ -492,7 +492,7 @@ class ExternalBus(DatabaseModel):
     def get_stops_to_hanover(self):
         """
         All stops the bus makes on it's way to Hanover.
-       
+
         The passengers who are picked up and dropped off
         at each stop are stored in DROPOFF_ATTR and PICKUP_ATTR.
         """
@@ -538,7 +538,7 @@ class ExternalBus(DatabaseModel):
 
     def _directions(self, stops):
         """
-        Compute capacity and passenger count, then return 
+        Compute capacity and passenger count, then return
         Google Maps directions.
         """
         load = 0

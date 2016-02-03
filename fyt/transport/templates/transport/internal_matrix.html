@@ -29,10 +29,10 @@
   </tr>
   {% endif %}
 
-  <tr> 
+  <tr>
     <td> {{ route|detail_link }} </td>
     {% for date, transport in dates.items %}
-    <td class="text-center"> 
+    <td class="text-center">
       {% if transport.over_capacity %}
       <a href="{% url 'db:scheduledtransport_checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
       {% endif %}
@@ -46,7 +46,7 @@
   <h2> Schedule </h2>
 </div>
 
-<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p> 
+<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p>
 <p> Mouseover a block in the matrix to see the number of riders <em>if all trips are maxed out</em>. The matrix will warn you if transportation is not scheduled for a trip. The matrix will also warn you if the trips riding on a bus exceed the capacity of a bus (based on the max trippees of the trip, not the actual number of people). </p>
 
 <table class="table table-condensed table-bordered">
@@ -62,11 +62,11 @@
   </tr>
   {% endif %}
 
-  <tr> 
+  <tr>
     <td> {{ route|detail_link }} </td>
     {% for date, transport in dates.items %}
     {% with riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date %}
-    <td> 
+    <td>
       {% include "transport/_transport_detail.html" %}
     </td>
     {% endwith %}
@@ -90,4 +90,3 @@ $(function () {
 })
 </script>
 {% endblock %}
-

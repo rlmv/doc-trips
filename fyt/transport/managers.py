@@ -34,7 +34,7 @@ class ScheduledTransportManager(models.Manager):
 
 
 def external_route_matrix(trips_year, default=None):
-    """ 
+    """
     Return an OrderedMatrix of [routes][sections]
     for local sections and external routes.
     """
@@ -47,7 +47,7 @@ def external_route_matrix(trips_year, default=None):
 
 
 class ExternalBusManager(models.Manager):
-    """ 
+    """
     Manager for the ExternalBus model.
     """
     def schedule_matrix(self, trips_year):
@@ -69,8 +69,8 @@ class ExternalBusManager(models.Manager):
 class ExternalPassengerManager(models.Manager):
 
     def matrix_to_hanover(self, trips_year):
-        """ 
-        Each entry in the matrix contains the number of 
+        """
+        Each entry in the matrix contains the number of
         trippees riding [route] on [section] TO Hanover.
         """
         return self._matrix(
@@ -81,8 +81,8 @@ class ExternalPassengerManager(models.Manager):
         )
 
     def matrix_from_hanover(self, trips_year):
-        """ 
-        Each entry in the matrix contains the number of 
+        """
+        Each entry in the matrix contains the number of
         trippees riding [route] on [section] FROM Hanover.
         """
         return self._matrix(
