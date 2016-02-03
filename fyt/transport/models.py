@@ -96,6 +96,8 @@ class Stop(DatabaseModel):
         """
         Either INTERNAL or EXTERNAL
         """
+        if self.route is None:
+            return None
         return self.route.category
 
     @property

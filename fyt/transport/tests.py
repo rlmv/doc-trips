@@ -45,6 +45,10 @@ class TransportModelTestCase(TripsYearTestCase):
 
 class StopModelTestCase(TripsYearTestCase):
 
+    def test_category_handles_null_routes(self):
+        stop = mommy.make(Stop, route=None)
+        self.assertEqual(stop.category, None)
+
     def test_location_prioritizes_lat_lng_if_available(self):
         stop = mommy.make(Stop, lat_lng='43.7030,-72.2895', address='address')
         self.assertEqual(stop.location, '43.7030,-72.2895')
