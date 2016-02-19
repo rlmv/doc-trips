@@ -53,6 +53,7 @@ class ApplicationForm(forms.ModelForm):
             'in_goodstanding_with_college',
             'trainings', 'spring_training_ok', 'summer_training_ok',
             'hanover_in_fall', 'role_preference',
+            'leadership_style'
         )
 
         widgets = {
@@ -269,6 +270,7 @@ class ApplicationLayout(Layout):
                 'Additional Information',
                 'hanover_in_fall',
                 'role_preference',
+                'leadership_style',
             ),
             Fieldset(
                 'Medical Information',
