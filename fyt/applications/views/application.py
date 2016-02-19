@@ -44,9 +44,9 @@ class IfApplicationAvailable():
 class ContinueIfAlreadyApplied():
     """
     If user has already applied, redirect to edit existing application.
-    
+
     This lives in a mixin instead of in the NewApplication view because if
-    has to follow LoginRequired in the MRO. An AnonymousUser causes the 
+    has to follow LoginRequired in the MRO. An AnonymousUser causes the
     query to throw an error.
     """
     def dispatch(self, request, *args, **kwargs):
@@ -86,7 +86,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
         }
 
     def get_context_data(self, **kwargs):
-        """ 
+        """
         Lots o' goodies for the template
         """
         trips_year = TripsYear.objects.current()
@@ -112,7 +112,7 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
     success_url = reverse_lazy('applications:continue')
 
     def form_valid(self, forms):
-        """ 
+        """
         Connect the application instances
         """
         trips_year = TripsYear.objects.current()
@@ -134,14 +134,14 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
 
 class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
                           ApplicationFormsMixin, UpdateView):
-    """ 
+    """
     View for applicants to edit their application.
     """
     success_url = reverse_lazy('applications:continue')
     context_object_name = 'application'
 
     def get_object(self):
-        """ 
+        """
         TODO: perhaps redirect to NewApplication instead of 404?
         """
         return get_object_or_404(
@@ -176,7 +176,7 @@ class SetupApplication(CreateApplicationPermissionRequired,
     fields = '__all__'
 
     def get_object(self):
-        """ 
+        """
         There is only one configuration object for each trips year.
         """
         trips_year = TripsYear.objects.current()
@@ -188,7 +188,7 @@ class SetupApplication(CreateApplicationPermissionRequired,
 
     def get_context_data(self, **kwargs):
         """
-        Add current tripsyear to template context 
+        Add current tripsyear to template context
         """
         context = super(SetupApplication, self).get_context_data(**kwargs)
         context['trips_year'] = TripsYear.objects.current()
@@ -333,7 +333,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
 
 
     def get_context_data(self, **kwargs):
-        """ 
+        """
         Override ApplicationFormsMixin get_context_data
         """
         trips_year = self.kwargs['trips_year']
