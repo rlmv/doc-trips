@@ -16,8 +16,8 @@ def dartdm_lookup(query_string):
 
     TODO: catch requests library errors
     """
-    payload = {'term': query_string}
-    r = requests.get(DARTDM_URL, params=payload)
+    params = {'term': query_string}
+    r = requests.get(DARTDM_URL, params=params)
     return r.json()
 
 
