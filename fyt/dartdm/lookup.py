@@ -6,6 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+DARTDM_URL = 'http://dartdm.dartmouth.edu/NetIdLookup/Lookup'
+DNDPROFILES_URL = 'http://dndprofiles.dartmouth.edu/profile'
+
+
 def dartdm_lookup(query_string):
     """
     Search in the DartDm for a user.
@@ -13,8 +17,7 @@ def dartdm_lookup(query_string):
     TODO: catch requests library errors
     """
     payload = {'term': query_string}
-    r = requests.get('http://dartdm.dartmouth.edu/NetIdLookup/Lookup',
-                     params=payload)
+    r = requests.get(DARTDM_URL, params=payload)
     return r.json()
 
 
@@ -27,7 +30,7 @@ def lookup_email(netid):
     Lookup the email address of a user, given their NetId.
     """
     params = {'lookup': netid, 'fields': ['email', 'netid']}
-    r = requests.get('http://dndprofiles.dartmouth.edu/profile', params=params)
+    r = requests.get(DNDPROFILES_URL, params=params)
 
     # netid not found
     if not r.json():
