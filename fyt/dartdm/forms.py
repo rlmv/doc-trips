@@ -7,64 +7,61 @@ from fyt.dartdm.lookup import dartdm_lookup
 
 logger = logging.getLogger(__name__)
 
+
 class DartmouthDirectoryLookupWidget(forms.MultiWidget):
     """
-    Widget to perform an AJAX Dartmouth name directory lookup. 
-    
+    Widget to perform an AJAX Dartmouth name directory lookup.
+
     Contains one visible input field and two hidden input fields.
 
     TODO: save nameWithYear in the other hidden field instead of the affil?
-    That will make it easier to  tell whether the autocompleted field was changed.
+    That will make it easier to  tell whether the autocompleted field was
+    changed.
     """
+
     class Media:
         js = ('dartdm/lookup.js',)
 
     def __init__(self, attrs=None):
-
-        widgets = [forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
-                   forms.HiddenInput(attrs={'class': 'netIdField'}),
-                   forms.HiddenInput(attrs={'class': 'nameWithAffilField'})]
-
-        super(DartmouthDirectoryLookupWidget, self).__init__(widgets, attrs)
+        widgets = [
+            forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
+            forms.HiddenInput(attrs={'class': 'netIdField'}),
+            forms.HiddenInput(attrs={'class': 'nameWithAffilField'})]
+        super().__init__(widgets, attrs)
 
     def decompress(self, value):
-
-        """ Decompresses an initial value in to the widget fields ^^ """
-
+        """
+        Decompresses an initial value in to the widget fields.
+        """
         # TODO:
         if value:
             return [value]
         return [None]
 
+
 class DartmouthDirectoryLookupField(forms.MultiValueField):
-    """ 
+    """
     Form field to perform a lookup in the Dartmouth Directory Manager.
 
-    A cleaned field of this type will be a dictionary of 
-    { ____ }. 
+    A cleaned field of this type will be a dictionary of { ____ }.
 
-    Note: the MultiValueField takes care of validating required 
-    fields.
+    Note: the MultiValueField takes care of validating required fields.
     """
 
     def __init__(self, *args, **kwargs):
-
         fields = (forms.CharField(), forms.CharField(), forms.CharField())
         widget = DartmouthDirectoryLookupWidget()
-        super(DartmouthDirectoryLookupField, self).__init__(fields=fields,
-                                                            widget=widget,
-                                                            *args, **kwargs)
+        super().__init__(fields=fields, widget=widget, *args, **kwargs)
 
     def compress(self, data_list):
         """
-        Compress data from the hidden input fields. 
+        Compress data from the hidden input fields.
 
-        The input value is usually the result of the client-side 
-        DartDM lookup, however a user can hit 'submit' with a self-
-        entered name, or change the autocompleted name. If this is the 
-        case we do another DartDm lookup to verify the name.
+        The input value is usually the result of the client-side DartDM lookup,
+        however a user can hit 'submit' with a self-entered name, or change the
+        autocompleted name. If this is the case we do another DartDm lookup to
+        verify the name.
         """
-
         logger.info('compress: %r' % data_list)
 
         if len(data_list) == 0:
@@ -85,10 +82,7 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
             else:
                 raise ValidationError("Ambiguous name %r" % data_list[0])
 
-        object = {'name_with_year': data_list[0],
-                  'netid': data_list[1],
-                  'name_with_affil': data_list[2]}
-
-        return object
-
-
+        return {
+            'name_with_year': data_list[0],
+            'netid': data_list[1],
+            'name_with_affil': data_list[2]}
