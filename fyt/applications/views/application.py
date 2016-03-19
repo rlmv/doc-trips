@@ -332,7 +332,6 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
             'croo_form': self.object.croo_supplement,
         }
 
-
     def get_context_data(self, **kwargs):
         """
         Override ApplicationFormsMixin get_context_data
