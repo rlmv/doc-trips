@@ -28,7 +28,6 @@ Questions
 
 Cosmetic
 --------
-* Use ``super()`` form without arguments, pretty much everywhere.
 * Rename/shorten bus assignment fields
 * Rename application models
 * Rename ``incoming.Settings`` to something nicer
