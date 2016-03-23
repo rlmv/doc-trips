@@ -253,8 +253,8 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
         }
 
 
-class ApplicationDetail(DatabaseReadPermissionRequired,
-                        BlockDirectorate, TripsYearMixin, DetailView):
+class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
+                        ExtraContextMixin, TripsYearMixin, DetailView):
     model = GeneralApplication
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
@@ -298,21 +298,19 @@ class ApplicationDetail(DatabaseReadPermissionRequired,
         'kitchen_lead_qualifications', 'document'
     ]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def extra_context(self):
         trips_year = self.kwargs['trips_year']
-        context['trips_year'] = trips_year
-        context['generalapplication_fields'] = self.generalapplication_fields
-        context['leaderapplication_fields'] = self.leaderapplication_fields
-        context['trainings_fields'] = self.trainings_fields
-        context['crooapplication_fields'] = self.crooapplication_fields
-        context['trip_assignment_url'] = reverse(
-            'db:update_trip_assignment', kwargs=self.kwargs
-        )
-        context['croo_assignment_url'] = reverse(
-            'db:update_croo_assignment', kwargs=self.kwargs
-        )
-        return context
+        return {
+            'trips_year': trips_year,
+            'generalapplication_fields': self.generalapplication_fields,
+            'leaderapplication_fields': self.leaderapplication_fields,
+            'trainings_fields': self.trainings_fields,
+            'crooapplication_fields': self.crooapplication_fields,
+            'trip_assignment_url': reverse(
+                'db:update_trip_assignment', kwargs=self.kwargs),
+            'croo_assignment_url': reverse(
+                'db:update_croo_assignment', kwargs=self.kwargs)
+        }
 
 
 class ApplicationUpdate(ApplicationEditPermissionRequired,
@@ -372,8 +370,8 @@ class ApplicationCertsUpdate(ApplicationEditPermissionRequired,
 
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, TripsYearMixin,
-                             UpdateView):
+                             BlockDirectorate, ExtraContextMixin,
+                             TripsYearMixin, UpdateView):
     """
     Update status, trip/croo assignment etc.
     """
@@ -382,9 +380,10 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
     form_class = ApplicationAdminForm
 
-    def get_context_data(self, **kwargs):
-        kwargs['preferred_trips'] = self.object.get_preferred_trips()
-        kwargs['available_trips'] = self.object.get_available_trips()
-        kwargs['croos'] = Croo.objects.filter(
-            trips_year=self.kwargs['trips_year']).all()
-        return super().get_context_data(**kwargs)
+    def extra_context(self):
+        return {
+            'preferred_trips': self.object.get_preferred_trips(),
+            'available_trips': self.object.get_available_trips(),
+            'croos': Croo.objects.filter(
+                trips_year=self.kwargs['trips_year']).all(),
+        }
