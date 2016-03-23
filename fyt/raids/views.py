@@ -32,7 +32,7 @@ class RaidList(_RaidMixin, ListView):
     context_object_name = 'raids'
 
     def get_queryset(self):
-        qs = super(RaidList, self).get_queryset()
+        qs = super().get_queryset()
         return qs.annotate(
             num_comments=Count('comment')
         ).select_related(
@@ -49,7 +49,7 @@ class TripsToRaid(_RaidMixin, ListView):
     template_name = 'raids/trips.html'
 
     def get_queryset(self):
-        qs = super(TripsToRaid, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'template__campsite1',
             'template__campsite2',
@@ -68,12 +68,12 @@ class RaidTrip(_RaidMixin, PopulateMixin, SetHeadlineMixin, CreateView):
         return mark_safe("New Raid <small> %s </small>" % self.request.user)
 
     def get_form(self, **kwargs):
-        return crispify(super(RaidTrip, self).get_form(**kwargs))
+        return crispify(super().get_form(**kwargs))
 
     def form_valid(self, form):
         form.instance.trips_year_id = self.kwargs['trips_year']
         form.instance.user = self.request.user
-        return super(RaidTrip, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.detail_url()
@@ -87,7 +87,7 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs[self.get_context_object_name()] = self.get_object()
-        return super(RaidDetail, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.trips_year_id = self.kwargs['trips_year']

@@ -31,7 +31,7 @@ class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         form.instance.trips_year_id = self.kwargs['trips_year']
-        return super(NewIncident, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class IncidentDetail(_IncidentMixin, FormView, DetailView):
@@ -62,7 +62,7 @@ class IncidentDetail(_IncidentMixin, FormView, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs[self.get_context_object_name()] = self.get_object()
-        return super(IncidentDetail, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.trips_year_id = self.kwargs['trips_year']
@@ -86,7 +86,7 @@ class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
         })
 
     def post(self, request, *args, **kwargs):
-        resp = super(DeleteIncident, self).post(request, *args, **kwargs)
+        resp = super().post(request, *args, **kwargs)
         messages.success(request, "Deleted Incident %s" % self.object)
         return resp
 
@@ -97,4 +97,4 @@ class UpdateIncident(_IncidentMixin, UpdateView):
     fields = ['status']
 
     def get_form(self, **kwargs):
-        return crispify(super(UpdateIncident, self).get_form(**kwargs))
+        return crispify(super().get_form(**kwargs))

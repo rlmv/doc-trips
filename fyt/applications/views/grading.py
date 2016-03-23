@@ -71,17 +71,17 @@ class GraderLandingPage(TemplateView):
         kwargs['qualifications'] = QualificationTag.objects.filter(
             trips_year=TripsYear.objects.current()
         )
-        return super(GraderLandingPage, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class IfGradingAvailable():
-    """ 
+    """
     Only allow grading once applications are closed
     """
     def dispatch(self, request, *args, **kwargs):
         if not Timetable.objects.timetable().grading_available():
             return render(request, 'applications/grading_not_available.html')
-        return super(IfGradingAvailable, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
@@ -103,15 +103,15 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         )
 
     def get(self, request, *args, **kwargs):
-        """ 
-        Message the grader their average grade 
+        """
+        Message the grader their average grade
         """
         self.check_and_show_average_grade(request.user)
-        return super(GenericGradingView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        """ 
-        Check whether the grader is skipping this application 
+        """
+        Check whether the grader is skipping this application
         """
         if SKIP in request.POST:
             logger.info(
@@ -122,10 +122,10 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
                 ))
             self.skip_application()
             return HttpResponseRedirect(self.get_success_url())
-        return super(GenericGradingView, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_application(self):
-        """ 
+        """
         Return the Croo or Leader application to grade
         """
         return get_object_or_404(self.application_model, pk=self.kwargs['pk'])
@@ -147,7 +147,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
 
     def get_context_data(self, **kwargs):
 
-        context = super(GenericGradingView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         application = self.get_application()
         context['application'] = application
         context['title'] = 'Score %s #%s: NetId %s' % (
@@ -197,7 +197,7 @@ class GenericGradingView(IfGradingAvailable, FormMessagesMixin, FormView):
         """
         Add a Skip button to the form
         """
-        form = super(GenericGradingView, self).get_form(**kwargs)
+        form = super().get_form(**kwargs)
         form.helper = FormHelper(form)
         form.helper.layout.append(
             FormActions(
@@ -234,7 +234,7 @@ class RedirectToNextGradableCrooApplicationForQualification(
     View for returning qualification-specific apps to grade.
 
     Only redirects to apps which other graders have tagged with a specific
-    qualification. This view is intended for Croo heads to use to do 
+    qualification. This view is intended for Croo heads to use to do
     once-over grading for all potential people on their croos.
     """
     permanent = False
@@ -262,7 +262,7 @@ class RedirectToNextGradableCrooApplicationForQualification(
 
 
 class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
-    """ 
+    """
     Grade a croo application
     """
     grade_model = CrooApplicationGrade
@@ -292,19 +292,19 @@ class GradeCrooApplication(CrooGraderPermissionRequired, GenericGradingView):
             ('Kitchen Witch/Kitchen Wizard qualifications',
              application.kitchen_lead_qualifications)
         ]
-        return super(GradeCrooApplication, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class GradeCrooApplicationForQualification(GradeCrooApplication):
     """
     Grade a croo application.
 
-    Used if we are grading applications for a specific Croo. 
+    Used if we are grading applications for a specific Croo.
     This view passes along the target croo to the redirect dispatch
     view.
     """
     def skip_application(self):
-        """ 
+        """
         Skip this application.
 
         Creates a skipped grade object so that this grader won't see
@@ -335,7 +335,7 @@ class RedirectToNextGradableLeaderApplication(LeaderGraderPermissionRequired,
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        """ 
+        """
         Return the url of the next LeaderApplication that needs grading
         """
         application = LeaderSupplement.objects.next_to_grade(
@@ -378,5 +378,3 @@ class DeleteCrooGrade(DatabaseDeleteView):
 
     def get_success_url(self):
         return reverse_detail_url(self.object.application.application)
-
-

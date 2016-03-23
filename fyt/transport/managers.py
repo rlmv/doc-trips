@@ -25,7 +25,7 @@ class RouteManager(models.Manager):
 class ScheduledTransportManager(models.Manager):
 
     def get_queryset(self):
-        qs = super(ScheduledTransportManager, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related('route')
 
     def internal(self, trips_year):
@@ -118,7 +118,7 @@ class ExternalPassengerManager(models.Manager):
 class StopOrderManager(models.Manager):
 
     def get_queryset(self):
-        qs = super(StopOrderManager, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'trip__template',
             'trip__section',

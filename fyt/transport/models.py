@@ -439,7 +439,7 @@ class StopOrder(DatabaseModel):
         """
         if self.order is None and self.stop:
             self.order = self.stop.distance
-        return super(StopOrder, self).save(**kwargs)
+        return super().save(**kwargs)
 
 
 class ExternalBus(DatabaseModel):

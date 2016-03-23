@@ -31,7 +31,7 @@ class RegistrationFormLayout(Layout):
         contact_url = kwargs['contact_url']
         doc_membership_cost = str(kwargs['doc_membership_cost'])
 
-        super(RegistrationFormLayout, self).__init__(
+        super().__init__(
             Fieldset(
                 'General Information',
                 'name',

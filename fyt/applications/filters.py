@@ -101,7 +101,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
 class FilterSetFormHelper(FormHelper):
 
     def __init__(self, *args, **kwargs):
-        super(FilterSetFormHelper, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.form_method = 'GET'
         column_size = 'col-lg-12'

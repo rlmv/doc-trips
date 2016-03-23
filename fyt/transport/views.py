@@ -206,7 +206,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
     template_name = 'transport/internal_matrix.html'
 
     def get_context_data(self, **kwargs):
-        context = super(ScheduledTransportMatrix, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
         context['matrix'] = matrix = get_internal_route_matrix(trips_year)
         context['riders'] = riders = get_internal_rider_matrix(trips_year)
@@ -282,7 +282,7 @@ class StopListView(DatabaseListView):
     template_name = 'transport/stop_index.html'
 
     def get_queryset(self):
-        qs = super(StopListView, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'route'
         ).order_by(
@@ -374,7 +374,7 @@ class _DateMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['date'] = self.get_date()
-        return super(_DateMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class _RouteMixin():
@@ -387,7 +387,7 @@ class _RouteMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['route'] = self.get_route()
-        return super(_RouteMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
@@ -399,7 +399,7 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
     template_name = 'transport/transport_checklist.html'
 
     def get_context_data(self, **kwargs):
-        context = super(TransportChecklist, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         args = (self.get_route(), self.get_date(), self.get_trips_year())
         context['dropoffs'] = Trip.objects.dropoffs(*args)
@@ -472,7 +472,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
             'bus': self.get_bus(),
             'checklist_url': self.get_bus().detail_url()
         })
-        return super(OrderStops, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class InternalBusPacket(DatabaseListView):
@@ -489,7 +489,7 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
     All internal bus directions for a certain date.
     """
     def get_queryset(self):
-        qs = super(InternalBusPacketForDate, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(date=self.get_date())
 
 
@@ -503,7 +503,7 @@ class ExternalBusPacket(DatabaseListView):
     FROM_HANOVER = 'from Hanover'
 
     def get_queryset(self):
-        qs = super(ExternalBusPacket, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'section',
             'route',
@@ -555,5 +555,5 @@ class ExternalBusPacketForDateAndRoute(_RouteMixin, ExternalBusPacketForDate):
     External bus directions for a date and route
     """
     def get_queryset(self):
-        qs = super(ExternalBusPacketForDateAndRoute, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(route=self.get_route())

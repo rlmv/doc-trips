@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class BasePermissionMixin(LoginRequiredMixin):
     """
     Utility mixin for setting up other permissions.
-    
+
     >>> class SomePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     >>>     permission_required = 'some_permission'
 
@@ -95,7 +95,7 @@ class GenericGroupForm(forms.Form):
     new_member = DartmouthDirectoryLookupField(required=False)
 
     def __init__(self, group, *args, **kwargs):
-        super(GenericGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.group = group
         self.fields['members'].queryset = group.user_set.all()
@@ -130,7 +130,7 @@ class GenericGroupForm(forms.Form):
         )
 
     def update_group_with_form_data(self):
-        """ 
+        """
         Update the group with submitted form information.
 
         Should only be called once the form is cleaned.
@@ -198,8 +198,3 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
         messages.error(self.request, 'Uh oh. Looks like there is an error in the form.')
         return self.render_to_response(self.get_context_data(forms=forms))
-
-
-
-
-

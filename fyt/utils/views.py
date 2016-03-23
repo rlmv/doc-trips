@@ -17,11 +17,11 @@ class CrispyFormMixin():
         return FormHelper(form)
 
     def get_form(self, **kwargs):
-        """ 
+        """
         Attach a crispy form helper to the form, if it does not already have one.
         """
 
-        form = super(CrispyFormMixin, self).get_form(**kwargs)
+        form = super().get_form(**kwargs)
 
         if not hasattr(form, 'helper'):
             form.helper = self.get_form_helper(form)
@@ -50,10 +50,10 @@ class CrispyFormMixin():
 
 
 class MultipleFormMixin():
-    """ 
-    CBV mixin for multiple forms in a view. 
-   
-    As written, intended for use with a ModelView. Assumes that forms 
+    """
+    CBV mixin for multiple forms in a view.
+
+    As written, intended for use with a ModelView. Assumes that forms
     need to be saved. Override form_valid if not the case.
     """
 
@@ -95,7 +95,7 @@ class MultipleFormMixin():
         return {}
 
     def form_valid(self, forms):
-        """ TODO: to make this really general, don't assume we're dealing 
+        """ TODO: to make this really general, don't assume we're dealing
         with model forms """
         for form in forms.values():
             form.save()
@@ -112,7 +112,7 @@ class PopulateMixin():
 
     def get(self, request, *args, **kwargs):
         """
-        Populate the create form with data passed 
+        Populate the create form with data passed
         in the url querystring.
         """
         data = request.GET or None
@@ -134,15 +134,15 @@ class SetExplanationMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['explanation'] = self.get_explanation()
-        return super(SetExplanationMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class ExtraContextMixin():
     """
     A cleaner way to add to the template context.
-   
+
     Instead of overridding get_context_data, implement
-    a 'extra_context' method which returns a dictionary to 
+    a 'extra_context' method which returns a dictionary to
     update the context with.
     """
     def extra_context(self):
@@ -150,4 +150,4 @@ class ExtraContextMixin():
 
     def get_context_data(self, **kwargs):
         kwargs.update(self.extra_context())
-        return super(ExtraContextMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)

@@ -23,7 +23,7 @@ class TripAssignmentForm(forms.ModelForm):
     assigned_trip = TripChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
-        super(TripAssignmentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['assigned_trip'].queryset = (
             Trip.objects
             .filter(trips_year=kwargs['instance'].trips_year)
@@ -65,7 +65,7 @@ class ApplicationForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(ApplicationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout()
@@ -91,7 +91,7 @@ class CrooSupplementForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(CrooSupplementForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = CrooSupplementLayout()
@@ -114,7 +114,7 @@ class LeaderSupplementForm(forms.ModelForm):
         )
 
     def __init__(self, *args, **kwargs):
-        super(LeaderSupplementForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Restrict querysets to current trips year
         # TODO: since this form is used by the database update view,
@@ -164,7 +164,7 @@ class ApplicationStatusForm(forms.ModelForm):
         fields = ('status',)
 
     def __init__(self, *args, **kwargs):
-        super(ApplicationStatusForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         crispify(self, submit_text='Update')
 
 
@@ -175,7 +175,7 @@ class ApplicationAdminForm(forms.ModelForm):
         fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
 
     def __init__(self, *args, **kwargs):
-        super(ApplicationAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             'status',
@@ -207,7 +207,7 @@ class CertificationForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(CertificationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.all().wrap(Div, css_class='col-sm-3')
         self.helper.all().wrap(Row)
@@ -222,7 +222,7 @@ NOT_USED_IN_SCORING = (
 class ApplicationLayout(Layout):
 
     def __init__(self):
-        super(ApplicationLayout, self).__init__(
+        super().__init__(
             Alert(
                 content=NOT_USED_IN_SCORING,
                 dismiss=False, css_class='alert-info'
@@ -301,7 +301,7 @@ class ApplicationLayout(Layout):
 class LeaderSupplementLayout(Layout):
 
     def __init__(self):
-        super(LeaderSupplementLayout, self).__init__(
+        super().__init__(
             Fieldset(
                 'Application',
                 HTML(
@@ -352,7 +352,7 @@ class LeaderSupplementLayout(Layout):
 class CrooSupplementLayout(Layout):
 
     def __init__(self):
-        super(CrooSupplementLayout, self).__init__(
+        super().__init__(
             Fieldset(
                 'Application',
                 HTML("""<p> Download the <a href="{% if information.croo_supplement_questions %}{{ information.croo_supplement_questions.url }}{% endif %}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
@@ -407,7 +407,7 @@ class CrooApplicationGradeForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super(CrooApplicationGradeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # CheckboxSelectMultiple in __init__ because
         # https://github.com/maraujop/django-crispy-forms/issues/303
         self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()

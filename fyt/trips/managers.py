@@ -9,7 +9,7 @@ from fyt.utils.matrix import OrderedMatrix
 class SectionDatesManager(models.Manager):
 
     def camping_dates(self, trips_year):
-        """ 
+        """
         Get all dates when trips are out camping for this trips_year.
 
         Return a sorted list of dates.
@@ -21,7 +21,7 @@ class SectionDatesManager(models.Manager):
         return sorted(list(nights_camping))
 
     def trip_dates(self, trips_year):
-        """ 
+        """
         Get all dates when trips are happening this trips_year.
 
         Excludes day 0 when leaders arrive for training.
@@ -71,7 +71,7 @@ class TripManager(models.Manager):
         Go ahead and pull in section and template since we
         use them with basically every queryset.
         """
-        qs = super(TripManager, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related('section', 'template')
 
     def matrix(self, trips_year):

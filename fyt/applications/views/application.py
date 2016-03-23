@@ -36,9 +36,7 @@ class IfApplicationAvailable():
     """
     def dispatch(self, request, *args, **kwargs):
         if Timetable.objects.timetable().applications_available():
-            return super(IfApplicationAvailable, self).dispatch(
-                request, *args, **kwargs
-            )
+            return super().dispatch(request, *args, **kwargs)
         return render(request, 'applications/not_available.html')
 
 
@@ -59,7 +57,7 @@ class ContinueIfAlreadyApplied():
         if exists:
             return HttpResponseRedirect(reverse('applications:continue'))
 
-        return super(ContinueIfAlreadyApplied, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
@@ -95,7 +93,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
         information, _ = ApplicationInformation.objects.get_or_create(
             trips_year=trips_year
         )
-        return super(ApplicationFormsMixin, self).get_context_data(
+        return super().get_context_data(
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
             information=information,
@@ -185,13 +183,13 @@ class SetupApplication(CreateApplicationPermissionRequired,
         return obj
 
     def get_form(self, **kwargs):
-        return crispify(super(SetupApplication, self).get_form(**kwargs))
+        return crispify(super().get_form(**kwargs))
 
     def get_context_data(self, **kwargs):
         """
         Add current tripsyear to template context
         """
-        context = super(SetupApplication, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trips_year'] = TripsYear.objects.current()
         return context
 
@@ -236,7 +234,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
         # actual grades when ApplicationTable orders by the grades.
         # Note that this issue won't appear on a dev sqlite database.
         return (
-            super(ApplicationIndex, self).get_queryset()
+            super().get_queryset()
             .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
             .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
             .annotate(normalized_croo_grade=Coalesce('avg_croo_grade', V(0.0)))
@@ -303,7 +301,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired,
     ]
 
     def get_context_data(self, **kwargs):
-        context = super(ApplicationDetail, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         trips_year = self.kwargs['trips_year']
         context['trips_year'] = trips_year
         context['generalapplication_fields'] = self.generalapplication_fields
@@ -391,4 +389,4 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
         kwargs['available_trips'] = self.object.get_available_trips()
         kwargs['croos'] = Croo.objects.filter(
             trips_year=self.kwargs['trips_year']).all()
-        return super(ApplicationAdminUpdate, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)

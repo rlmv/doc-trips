@@ -16,7 +16,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        context = super(VolunteerPortalView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['timetable'] = Timetable.objects.timetable()
         context['trips_year'] = trips_year = TripsYear.objects.current()
         context['content'] = content = PortalContent.objects.get(trips_year=trips_year)
@@ -54,7 +54,5 @@ class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
         return obj
 
     def get_form(self, *args, **kwargs):
-        form = super(EditVolunteerPortalContent, self).get_form(*args, **kwargs)
+        form = super().get_form(*args, **kwargs)
         return crispify(form)
-
-

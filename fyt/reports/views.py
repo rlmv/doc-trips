@@ -287,7 +287,7 @@ class TShirts(DatabaseTemplateView):
             'croos': croo_tshirts(self.kwargs['trips_year']),
             'trippees': trippee_tshirts(self.kwargs['trips_year'])
         })
-        return super(TShirts, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class Housing(GenericReportView):

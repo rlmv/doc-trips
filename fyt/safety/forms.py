@@ -31,7 +31,7 @@ class IncidentForm(forms.ModelForm):
         }
 
     def __init__(self, trips_year, *args, **kwargs):
-        super(IncidentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['trip'].queryset = Trip.objects.filter(trips_year=trips_year)
 
         self.helper = FormHelper()

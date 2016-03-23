@@ -52,7 +52,7 @@ class TripsYearMixin():
             msg = 'Trips %s does not exist in the database'
             raise Http404(msg % trips_year)
 
-        return super(TripsYearMixin, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_trips_year(self):
         """
@@ -64,7 +64,7 @@ class TripsYearMixin():
         """
         Filter objects for the trips_year of the request.
         """
-        qs = super(TripsYearMixin, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(trips_year=self.get_trips_year())
 
     def get_form_class(self):
@@ -111,7 +111,7 @@ class TripsYearMixin():
         """
         try:
             with transaction.atomic():
-                return super(TripsYearMixin, self).form_valid(form)
+                return super().form_valid(form)
         except IntegrityError as e:
             form.errors[NON_FIELD_ERRORS] = form.error_class([e.__cause__])
             return self.form_invalid(form)
@@ -120,7 +120,7 @@ class TripsYearMixin():
         """
         Add the trips_year for this request to the context.
         """
-        context = super(TripsYearMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trips_year'] = self.get_trips_year()
         return context
 
@@ -230,7 +230,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
         if self.success_url_pattern:
             kwargs = {'trips_year': self.get_trips_year()}
             return reverse(self.success_url_pattern, kwargs=kwargs)
-        return super(DatabaseDeleteView, self).get_success_url()
+        return super().get_success_url()
 
     def post(self, request, *args, **kwargs):
         """
@@ -238,7 +238,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
         cannot be deleted.
         """
         try:
-            resp = super(DatabaseDeleteView, self).post(request, *args, **kwargs)
+            resp = super().post(request, *args, **kwargs)
             messages.success(
                 request, "Succesfully deleted {}".format(self.object)
             )
@@ -264,7 +264,7 @@ class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
     def get_context_data(self, **kwargs):
         kwargs['update_url'] = reverse_update_url(self.object)
         kwargs['delete_url'] = reverse_delete_url(self.object)
-        return super(DatabaseDetailView, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class DatabaseTemplateView(DatabaseReadPermissionRequired, ExtraContextMixin,

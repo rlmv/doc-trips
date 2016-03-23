@@ -41,5 +41,5 @@ class AssignToCroo(ApplicationEditPermissionRequired,
     fields = ['assigned_croo']
 
     def get_form(self, **kwargs):
-        form = super(AssignToCroo, self).get_form(**kwargs)
+        form = super().get_form(**kwargs)
         return crispify(form)

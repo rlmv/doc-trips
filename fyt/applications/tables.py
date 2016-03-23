@@ -22,7 +22,7 @@ class TrainingColumn(tables.Column):
     def __init__(self, verbose_name, tooltip, *args, **kwargs):
         self.tooltip = tooltip
         verbose_name = tooltip_wrap(verbose_name, self.tooltip)
-        super(TrainingColumn, self).__init__(verbose_name, *args, **kwargs)
+        super().__init__(verbose_name, *args, **kwargs)
 
     def render(self, value):
         return tooltip_wrap(value.strftime("%m/%d").lstrip('0'), self.tooltip)

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
-""" 
+"""
 Implements permissions not attached to a model.
 
 Shamelessly adapted from http://stackoverflow.com/a/13952198/3818777
@@ -22,7 +22,7 @@ class SitePermissionManager(models.Manager):
     """ Manager class for SitePermission model. """
 
     def get_queryset(self):
-        qs = super(SitePermissionManager, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(content_type=get_content_type())
 
 
@@ -35,5 +35,4 @@ class SitePermission(Permission):
 
     def save(self, *args, **kwargs):
         self.content_type = get_content_type()
-        super(SitePermission, self).save(*args, **kwargs)
-
+        super().save(*args, **kwargs)

@@ -12,10 +12,10 @@ from fyt.permissions import directors, graders, directorate, trip_leader_trainer
 class TripsYearTestCaseUtils():
 
     def init_current_trips_year(self):
-        """ 
+        """
         Initialize a current trips_year object in the test database.
 
-        This should be called in the setUp() method of most TestCases, 
+        This should be called in the setUp() method of most TestCases,
         otherwise the database is going to barf when there is no current
         trips_year.
         """
@@ -37,7 +37,7 @@ class TripsYearTestCaseUtils():
     init_previous_trips_year = init_old_trips_year
 
     def mock_user(self):
-        """ 
+        """
         Create a mock user.
         """
         netid = 'user'
@@ -56,7 +56,7 @@ class TripsYearTestCaseUtils():
         return self.user
 
     def mock_director(self):
-        """ 
+        """
         Create a user with director permissions, and log the user in.
         """
         netid = 'director'
@@ -80,7 +80,7 @@ class TripsYearTestCaseUtils():
         return self.directorate
 
     def mock_tlt(self):
-        """ 
+        """
         Create a user with trip leader trainer permissions, and log the user in.
         """
         netid = 'tlt'
@@ -124,7 +124,7 @@ TripsTestCase = TripsYearTestCase
 
 class WebTestCase(WebTest, TripsYearTestCaseUtils):
     """
-    Can make requests without have to mock CAS 
+    Can make requests without have to mock CAS
     authentication. See django_webtest for more details.
 
     For some reason whitenoise's GzipManifestStaticFilesStorage doesn't
@@ -132,10 +132,10 @@ class WebTestCase(WebTest, TripsYearTestCaseUtils):
     """
 
     def _patch_settings(self):
-        super(WebTestCase, self)._patch_settings()
+        super()._patch_settings()
         self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
         settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
     def _unpatch_settings(self):
-        super(WebTestCase, self)._unpatch_settings()
+        super()._unpatch_settings()
         settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE

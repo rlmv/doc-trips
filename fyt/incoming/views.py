@@ -52,7 +52,7 @@ class IfRegistrationAvailable():
             return HttpResponseRedirect(
                 reverse('incoming:registration_not_available')
             )
-        return super(IfRegistrationAvailable, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class RegistrationNotAvailable(TemplateView):
@@ -78,7 +78,7 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     )
 
     def get_context_data(self, **kwargs):
-        context = super(BaseRegistrationView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trips_year'] = trips_year = TripsYear.objects.current()
         context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
         context['registration_deadline'] = (
@@ -109,7 +109,7 @@ class Register(BaseRegistrationView, CreateView):
         if reg:
             return HttpResponseRedirect(reverse('incoming:edit_registration'))
 
-        return super(Register, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form, **kwargs):
         """
@@ -188,7 +188,7 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
         kwargs['assignment_available'] = timetable.trippee_assignment_available
         kwargs['trips_year'] = trips_year = TripsYear.objects.current()
         kwargs['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
-        return super(IncomingStudentPortal, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 # ----- database internal views --------
@@ -205,7 +205,7 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
     context_object_name = 'registrations'
 
     def get_queryset(self):
-        qs = super(RegistrationIndex, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'user',
             'trippee',
@@ -217,7 +217,7 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
         kwargs['unmatched'] = (
             Registration.objects.unmatched(self.get_trips_year())
         )
-        return super(RegistrationIndex, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class NonStudentRegistration(DatabaseCreateView):
@@ -324,7 +324,7 @@ class IncomingStudentIndex(SingleTableMixin, DatabaseListView):
     context_object_name = 'trippees'
 
     def get_queryset(self):
-        qs = super(IncomingStudentIndex, self).get_queryset()
+        qs = super().get_queryset()
         return qs.select_related(
             'registration__user',
             'trip_assignment__section',
@@ -358,7 +358,7 @@ class IncomingStudentDetail(DatabaseDetailView):
         kwargs['edit_admin_url'] = reverse(
             'db:incomingstudent_update', kwargs=self.kwargs
         )
-        return super(IncomingStudentDetail, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class IncomingStudentDelete(DatabaseDeleteView):
@@ -387,7 +387,7 @@ class UpdateTripAssignment(DatabaseUpdateView):
             kwargs['preferred_trips'] = reg.get_preferred_trips()
             kwargs['available_trips'] = reg.get_available_trips()
         kwargs['registration'] = reg
-        return super(UpdateTripAssignment, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class IncomingStudentUpdate(DatabaseUpdateView):
@@ -437,7 +437,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
             msg = "A column is missing (or mis-named) in the uploaded file: %s"
             messages.error(self.request, msg % exc)
 
-        return super(UploadIncomingStudentData, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.request.path

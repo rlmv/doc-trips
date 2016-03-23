@@ -61,7 +61,7 @@ class Timetable(models.Model):
 
     def save(self, *args, **kwargs):
         self.id = TIMETABLE_ID
-        super(Timetable, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         pass

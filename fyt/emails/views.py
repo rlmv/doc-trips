@@ -13,27 +13,27 @@ from fyt.incoming.models import IncomingStudent, Registration
 
 class BaseEmailList(DatabaseReadPermissionRequired, TripsYearMixin,
                     SetHeadlineMixin, TemplateView):
-    """ 
+    """
     Base class for email list view
     """
     template_name = 'emails/emails.html'
 
     def get_email_lists(self):
-        """ 
+        """
         Should return an iterable of duples in the form
         (email_list_name, list_of_emails)
         """
         raise ImproperlyConfigured()
 
     def get_context_data(self, **kwargs):
-        context = super(BaseEmailList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['email_lists'] = OrderedDict(self.get_email_lists())
         return context
 
 
 def emails(qs):
     """
-    Return a list of applicant emails from GenApp qs 
+    Return a list of applicant emails from GenApp qs
     """
     values = qs.values('applicant__email')
     return [x['applicant__email'] for x in values]

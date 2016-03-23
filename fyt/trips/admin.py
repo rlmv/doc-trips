@@ -87,7 +87,7 @@ class CampsiteAdmin(admin.ModelAdmin):
         try:
             date = datetime.strptime(attr, '%Y-%m-%d').date()
         except ValueError:
-            return super(CampsiteAdmin, self).__getattr__(self, attr)
+            return super().__getattr__(self, attr)
         else:
 
             def date_capacity_getter(campsite):

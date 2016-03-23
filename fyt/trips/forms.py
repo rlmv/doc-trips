@@ -26,7 +26,7 @@ class SectionForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(SectionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('submit', 'Submit'))
 
@@ -41,7 +41,7 @@ class LeaderAssignmentForm(forms.ModelForm):
         }
 
     def __init__(self, trips_year, *args, **kwargs):
-        super(LeaderAssignmentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['assigned_trip'].queryset = (
             Trip.objects.filter(trips_year=trips_year)
         )
@@ -52,7 +52,7 @@ class LeaderAssignmentForm(forms.ModelForm):
         """
         if self.cleaned_data.get('assigned_trip'):
             self.instance.status = GeneralApplication.LEADER
-        return super(LeaderAssignmentForm, self).clean()
+        return super().clean()
 
 
 class TrippeeAssignmentForm(forms.ModelForm):
@@ -65,7 +65,7 @@ class TrippeeAssignmentForm(forms.ModelForm):
         }
 
     def __init__(self, trips_year, *args, **kwargs):
-        super(TrippeeAssignmentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['trip_assignment'].queryset = (
             Trip.objects.filter(trips_year=trips_year)
         )

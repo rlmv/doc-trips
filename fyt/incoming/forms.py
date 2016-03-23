@@ -37,7 +37,7 @@ class RegistrationForm(forms.ModelForm):
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
-        super(RegistrationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         instance = kwargs.get('instance')
         if instance:
@@ -114,7 +114,7 @@ class AssignmentForm(forms.ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(AssignmentForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         trips_year = kwargs['instance'].trips_year
         self.fields['trip_assignment'] = TripChoiceField(
             required=False,
@@ -217,7 +217,7 @@ class CSVFileForm(forms.Form):
     csv_file = forms.FileField(label='CSV file')
 
     def __init__(self, *args, **kwargs):
-        super(CSVFileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
