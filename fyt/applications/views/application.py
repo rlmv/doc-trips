@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect
 from django.db.models import Avg, Value as V
 from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
+from django_tables2 import RequestConfig
 
 from fyt.db.views import CrispyFormMixin
 from fyt.db.views import TripsYearMixin
@@ -253,7 +254,6 @@ class ApplicationIndex(DatabaseReadPermissionRequired,
         )
         context[self.context_object_name] = applications_filter.qs
         table = ApplicationTable(applications_filter.qs)
-        from django_tables2   import RequestConfig
         RequestConfig(self.request, paginate=False).configure(table)
         context['table'] = table
         context['applications_filter'] = applications_filter
