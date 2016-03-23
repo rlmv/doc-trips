@@ -8,7 +8,6 @@ from django.http import HttpResponseRedirect
 from django.db.models import Avg, Value as V
 from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
-from django_tables2 import RequestConfig
 
 from fyt.db.views import CrispyFormMixin
 from fyt.db.views import TripsYearMixin
@@ -27,7 +26,7 @@ from fyt.permissions.views import (
     CreateApplicationPermissionRequired,
     DatabaseReadPermissionRequired,
     ApplicationEditPermissionRequired)
-from fyt.utils.views import MultipleFormMixin
+from fyt.utils.views import MultipleFormMixin, ExtraContextMixin
 from fyt.utils.forms import crispify
 
 
@@ -225,8 +224,8 @@ class BlockDirectorate(GroupRequiredMixin):
         )
 
 
-class ApplicationIndex(DatabaseReadPermissionRequired,
-                                  BlockDirectorate, TripsYearMixin, ListView):
+class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
+                       TripsYearMixin, ExtraContextMixin, ListView):
     model = GeneralApplication
     context_object_name = 'applications'
     template_name = 'applications/application_index.html'
@@ -244,20 +243,18 @@ class ApplicationIndex(DatabaseReadPermissionRequired,
             .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))                         .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
-    def get_context_data(self, **kwargs):
-
+    def extra_context(self):
         # TODO: use/make a generic FilterView mixin?
-        context = super(ApplicationIndex, self).get_context_data(**kwargs)
-        applications_filter = ApplicationFilterSet(
+        filter = ApplicationFilterSet(
             self.request.GET, queryset=self.object_list,
             trips_year=self.kwargs['trips_year']
         )
-        context[self.context_object_name] = applications_filter.qs
-        table = ApplicationTable(applications_filter.qs)
-        RequestConfig(self.request, paginate=False).configure(table)
-        context['table'] = table
-        context['applications_filter'] = applications_filter
-        return context
+        table = ApplicationTable(filter.qs, self.request)
+        return {
+            self.context_object_name: filter.qs,
+            'table': table,
+            'applications_filter': filter
+        }
 
 
 class ApplicationDetail(DatabaseReadPermissionRequired,

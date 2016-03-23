@@ -28,7 +28,7 @@ class TrainingColumn(tables.Column):
         return tooltip_wrap(value.strftime("%m/%d").lstrip('0'), self.tooltip)
 
 
-class ApplicationTable(tables.Table):
+class _ApplicationTable(tables.Table):
 
     applicant = tables.Column(
         verbose_name='Applications'
@@ -99,3 +99,10 @@ class ApplicationTable(tables.Table):
         if len(value) > 6:
             return tooltip_wrap(value[:6], value)
         return value
+
+
+def ApplicationTable(qs, request):
+    """Configure and return an ``_ApplicationTable`` for this request."""
+    table = _ApplicationTable(qs)
+    tables.RequestConfig(request, paginate=False).configure(table)
+    return table
