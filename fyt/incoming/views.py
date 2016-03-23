@@ -269,31 +269,55 @@ class RegistrationDetail(DatabaseDetailView):
     template_name = 'incoming/registration_detail.html'
 
     fields = [
-        'name', 'gender', 'previous_school', 'phone', 'email',
-        'guardian_email', 'is_exchange', 'is_transfer',
-        'is_international', 'is_native', 'is_fysep', 'is_athlete',
-        'preferred_sections', 'available_sections', 'unavailable_sections',
-        'firstchoice_triptype', 'preferred_triptypes',
-        'available_triptypes', 'unavailable_triptypes',
-        'schedule_conflicts', 'tshirt_size',
+        'name',
+        'gender',
+        'previous_school',
+        'phone',
+        'email',
+        'guardian_email',
+        'is_exchange',
+        'is_transfer',
+        'is_international',
+        'is_native',
+        'is_fysep',
+        'is_athlete',
+        'preferred_sections',
+        'available_sections',
+        'unavailable_sections',
+        'firstchoice_triptype',
+        'preferred_triptypes',
+        'available_triptypes',
+        'unavailable_triptypes',
+        'schedule_conflicts',
+        'tshirt_size',
         'food_allergies',
         'dietary_restrictions',
         'medical_conditions',
         'epipen',
         'needs',
-        'regular_exercise', 'physical_activities', 'other_activities',
-        'swimming_ability', 'camping_experience',
+        'regular_exercise',
+        'physical_activities',
+        'other_activities',
+        'swimming_ability',
+        'camping_experience',
         'hiking_experience',
         ('please describe your hiking experience', 'hiking_experience_description'),
-        'has_boating_experience', 'boating_experience',
-        'other_boating_experience', 'fishing_experience',
-        'horseback_riding_experience', 'mountain_biking_experience',
-        'sailing_experience', 'anything_else',
+        'has_boating_experience',
+        'boating_experience',
+        'other_boating_experience',
+        'fishing_experience',
+        'horseback_riding_experience',
+        'mountain_biking_experience',
+        'sailing_experience',
+        'anything_else',
         'bus_stop_round_trip',
         'bus_stop_to_hanover',
         'bus_stop_from_hanover',
-        'financial_assistance', 'waiver', 'doc_membership',
-        'green_fund_donation', 'final_request'
+        'financial_assistance',
+        'waiver',
+        'doc_membership',
+        'green_fund_donation',
+        'final_request'
     ]
 
 
@@ -339,16 +363,29 @@ class IncomingStudentDetail(DatabaseDetailView):
     context_object_name = 'trippee'
 
     admin_fields = (
-        'registration', 'financial_aid',
-        'cancelled', 'cancelled_fee',
+        'registration',
+        'financial_aid',
+        'cancelled',
+        'cancelled_fee',
         ('total cost', 'compute_cost'),
-        'show_med_info', 'med_info',
-        'decline_reason', 'notes'
+        'show_med_info',
+        'med_info',
+        'decline_reason',
+        'notes'
     )
     college_fields = (
-        'name', 'netid', 'class_year', 'gender', 'birthday',
-        'ethnic_code', 'incoming_status', 'email', 'blitz',
-        'phone', 'address', 'hinman_box'
+        'name',
+        'netid',
+        'class_year',
+        'gender',
+        'birthday',
+        'ethnic_code',
+        'incoming_status',
+        'email',
+        'blitz',
+        'phone',
+        'address',
+        'hinman_box'
     )
 
     def get_context_data(self, **kwargs):
