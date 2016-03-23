@@ -1,24 +1,25 @@
 
 from collections import namedtuple
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Row, Div
 import django_filters
 from django.db.models import Q
-from django import forms
 
 from fyt.applications.models import GeneralApplication, QualificationTag
 
 ArbitraryChoice = namedtuple('ArbitraryChoice', ['value', 'display', 'action'])
 
+
 class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
     """
     TODO: move to utils, in general form
     """
-
     def __init__(self, *args, **kwargs):
         choices = list(map(lambda c: ArbitraryChoice(*c), self.choices))
         filter_choices = map(lambda c: (c.value, c.display), choices)
         self.actions = dict(map(lambda c: (c.value, c.action), choices))
-        super(ArbitraryChoiceFilter, self).__init__(self, *args, choices=filter_choices, **kwargs)
+        super().__init__(self, *args, choices=filter_choices, **kwargs)
 
     # (query_value, display value, method)
     choices = [
@@ -77,10 +78,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
         )
 
     def __init__(self, *args, **kwargs):
-
         trips_year = kwargs.pop('trips_year')
-
-        super(ApplicationFilterSet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # add a blank choice
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
@@ -99,20 +98,20 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.form.helper = FilterSetFormHelper(self.form)
 
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Div, HTML
-
 class FilterSetFormHelper(FormHelper):
 
     def __init__(self, *args, **kwargs):
         super(FilterSetFormHelper, self).__init__(*args, **kwargs)
 
         self.form_method = 'GET'
+        column_size = 'col-lg-12'
         self.layout = Layout(
-            Row(Div('complete', css_class='col-lg-12')),
-            Row(Div('status', css_class='col-lg-12')),
-            Row(Div('name', css_class='col-lg-12')),
-            Row(Div('netid', css_class='col-lg-12')),
-            Row(Div(CROO_QUALIFICATIONS, css_class='col-lg-12')),
-            Row(Div(Submit('submit', 'Filter', css_class='btn-block'), css_class='col-lg-12')),
+            Row(Div('complete', css_class=column_size)),
+            Row(Div('status', css_class=column_size)),
+            Row(Div('name', css_class=column_size)),
+            Row(Div('netid', css_class=column_size)),
+            Row(Div(CROO_QUALIFICATIONS, css_class=column_size)),
+            Row(Div(
+                Submit('submit', 'Filter', css_class='btn-block'),
+                css_class=column_size)),
         )
