@@ -235,7 +235,8 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
             .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
             .annotate(normalized_croo_grade=Coalesce('avg_croo_grade', V(0.0)))
-            .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))                         .select_related('applicant', 'croo_supplement', 'leader_supplement')
+            .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))
+            .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
     def extra_context(self):
