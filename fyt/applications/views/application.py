@@ -260,14 +260,24 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
     template_name = 'applications/application_detail.html'
 
     generalapplication_fields = [
-        'class_year', 'gender', 'race_ethnicity',
-        'hinman_box', 'phone', 'summer_address',
-        'tshirt_size', 'from_where',
-        'what_do_you_like_to_study', 'personal_activities',
-        'feedback', 'medical_certifications',
-        'medical_experience', 'peer_training',
-        'spring_training_ok', 'summer_training_ok',
-        'hanover_in_fall', 'role_preference',
+        'class_year',
+        'gender',
+        'race_ethnicity',
+        'hinman_box',
+        'phone',
+        'summer_address',
+        'tshirt_size',
+        'from_where',
+        'what_do_you_like_to_study',
+        'personal_activities',
+        'feedback',
+        'medical_certifications',
+        'medical_experience',
+        'peer_training',
+        'spring_training_ok',
+        'summer_training_ok',
+        'hanover_in_fall',
+        'role_preference',
         'leadership_style',
         'food_allergies',
         'dietary_restrictions',
@@ -275,17 +285,24 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'epipen',
         'needs',
         'trippee_confidentiality',
-        'in_goodstanding_with_college', 'trainings'
+        'in_goodstanding_with_college',
+        'trainings'
     ]
     leaderapplication_fields = [
-        'preferred_sections', 'available_sections',
-        'preferred_triptypes', 'available_triptypes',
-        'relevant_experience', 'trip_preference_comments',
-        'cannot_participate_in', 'document'
+        'preferred_sections',
+        'available_sections',
+        'preferred_triptypes',
+        'available_triptypes',
+        'relevant_experience',
+        'trip_preference_comments',
+        'cannot_participate_in',
+        'document'
     ]
     trainings_fields = [
-        'community_building', 'risk_management',
-        'wilderness_skills', 'croo_training',
+        'community_building',
+        'risk_management',
+        'wilderness_skills',
+        'croo_training',
         ('first aid cert', 'get_first_aid_cert')
     ]
     crooapplication_fields = [
@@ -294,8 +311,10 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'sprinter_certified',
         'microbus_certified',
         'can_get_certified',
-        'safety_lead_willing', 'kitchen_lead_willing',
-        'kitchen_lead_qualifications', 'document'
+        'safety_lead_willing',
+        'kitchen_lead_willing',
+        'kitchen_lead_qualifications',
+        'document'
     ]
 
     def extra_context(self):
