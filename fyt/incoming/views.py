@@ -28,6 +28,7 @@ from fyt.timetable.models import Timetable
 from fyt.trips.models import TripType
 from fyt.users.models import DartmouthUser
 from fyt.utils.forms import crispify
+from fyt.utils.views import ExtraContextMixin
 
 """
 Views for incoming students.
@@ -140,7 +141,8 @@ class EditRegistration(BaseRegistrationView, UpdateView):
         )
 
 
-class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
+class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
+                            TemplateView):
     """
     Information for incoming students.
 
@@ -175,20 +177,25 @@ class IncomingStudentPortal(LoginRequiredMixin, TemplateView):
             logger.error(exc, extra={'request': self.request, 'stack': True})
             raise exc
 
-    def get_context_data(self, **kwargs):
+    def extra_context(self):
         timetable = Timetable.objects.timetable()
-        kwargs['registration'] = reg = self.get_registration()
-        kwargs['incoming_student'] = inc = self.get_incoming_student()
-        kwargs['trip'] = inc.trip_assignment if inc else None
-        kwargs['registration_available'] = timetable.registration_available()
-        kwargs['registration_closes'] = timetable.trippee_registrations_close
-        kwargs['after_deadline'] = (
-            timetable.trippee_registrations_close > timezone.now())
-        kwargs['assignment_available'] = timetable.trippee_assignment_available
-        kwargs['trips_year'] = trips_year = TripsYear.objects.current()
-        kwargs['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
-        return super().get_context_data(**kwargs)
+        reg = self.get_registration()
+        inc = self.get_incoming_student()
+        trips_year = TripsYear.objects.current()
 
+        return {
+            'registration': reg,
+            'incoming_student': inc,
+            'trip': inc.trip_assignment if inc else None,
+            'registration_available': timetable.registration_available(),
+            'registration_closes': timetable.trippee_registrations_close,
+            'after_deadline': (
+                timetable.trippee_registrations_close > timezone.now()),
+            'assignment_available': timetable.trippee_assignment_available,
+            'trips_year': trips_year,
+            'contact_url': (
+                Settings.objects.get(trips_year=trips_year).contact_url),
+        }
 
 # ----- database internal views --------
 
@@ -212,11 +219,10 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
             'trippee__trip_assignment__template',
         )
 
-    def get_context_data(self, **kwargs):
-        kwargs['unmatched'] = (
-            Registration.objects.unmatched(self.get_trips_year())
-        )
-        return super().get_context_data(**kwargs)
+    def extra_context(self):
+        return {
+            'unmatched': Registration.objects.unmatched(self.get_trips_year())
+        }
 
 
 class NonStudentRegistration(DatabaseCreateView):
@@ -387,14 +393,13 @@ class IncomingStudentDetail(DatabaseDetailView):
         'hinman_box'
     )
 
-    def get_context_data(self, **kwargs):
-        kwargs['edit_assignment_url'] = reverse(
-            'db:incomingstudent_update_assignment', kwargs=self.kwargs
-        )
-        kwargs['edit_admin_url'] = reverse(
-            'db:incomingstudent_update', kwargs=self.kwargs
-        )
-        return super().get_context_data(**kwargs)
+    def extra_context(self):
+        return {
+            'edit_assignment_url': reverse(
+                'db:incomingstudent_update_assignment', kwargs=self.kwargs),
+            'edit_admin_url': reverse(
+                'db:incomingstudent_update', kwargs=self.kwargs)
+        }
 
 
 class IncomingStudentDelete(DatabaseDeleteView):
@@ -416,14 +421,17 @@ class UpdateTripAssignment(DatabaseUpdateView):
     template_name = 'incoming/update_trip.html'
     form_class = AssignmentForm
 
-    def get_context_data(self, **kwargs):
+    def extra_context(self):
         reg = self.object.get_registration()
+        context = {
+            'registration': reg
+        }
         if reg:
-            kwargs['firstchoice_trips'] = reg.get_firstchoice_trips()
-            kwargs['preferred_trips'] = reg.get_preferred_trips()
-            kwargs['available_trips'] = reg.get_available_trips()
-        kwargs['registration'] = reg
-        return super().get_context_data(**kwargs)
+            context['firstchoice_trips'] = reg.get_firstchoice_trips()
+            context['preferred_trips'] = reg.get_preferred_trips()
+            context['available_trips'] = reg.get_available_trips()
+
+        return context
 
 
 class IncomingStudentUpdate(DatabaseUpdateView):
