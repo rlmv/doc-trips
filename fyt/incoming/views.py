@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from vanilla import CreateView, UpdateView, DetailView, TemplateView, ListView, FormView
+from vanilla import CreateView, UpdateView, TemplateView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
 from django_tables2.views import SingleTableMixin
 
@@ -23,8 +23,7 @@ from fyt.db.views import (
     TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
     DatabaseCreateView, DatabaseDetailView
 )
-from fyt.permissions.views import (DatabaseReadPermissionRequired,
-                                   DatabaseEditPermissionRequired)
+from fyt.permissions.views import DatabaseEditPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.trips.models import TripType
 from fyt.users.models import DartmouthUser
