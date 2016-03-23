@@ -40,10 +40,10 @@ class ApplicationTable(tables.Table):
         verbose_name='Status'
     )
     avg_leader_grade = tables.Column(
-        verbose_name='Leader score', order_by=('-avg_leader_grade')
+        verbose_name='Leader score', order_by=('-normalized_leader_grade')
     )
     avg_croo_grade = tables.Column(
-        verbose_name='Croo score', order_by=('-avg_croo_grade')
+        verbose_name='Croo score', order_by=('-normalized_croo_grade')
     )
     leader_application = tables.Column(
         verbose_name='Leader app',
@@ -99,4 +99,3 @@ class ApplicationTable(tables.Table):
         if len(value) > 6:
             return tooltip_wrap(value[:6], value)
         return value
-

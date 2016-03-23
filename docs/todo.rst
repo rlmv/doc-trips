@@ -19,7 +19,6 @@ Immediate
 * Urlencode dynamic querystrings
 * Add ``/CPR`` to leader med certs? (and migrate existing)
 * Generalize high-level admin permssions: ``db:write``
-* Use Coalesce (Django 1.8) to fix ordering of Volunteer table.
 * Explicitly pass ``trips_year`` to ``LeaderSupplementForm``, or make a custom ``ModelForm`` which requires a ``trips_year`` argument.
 * Redo url generation to not depend on ``get_model_name`` or whatever it is.
 

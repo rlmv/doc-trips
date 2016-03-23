@@ -5,7 +5,8 @@ from braces.views import (
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect
-from django.db.models import Avg
+from django.db.models import Avg, Value as V
+from django.db.models.functions import Coalesce
 from django.core.exceptions import PermissionDenied
 
 from fyt.db.views import CrispyFormMixin
@@ -230,11 +231,16 @@ class ApplicationIndex(DatabaseReadPermissionRequired,
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
+        # Grades are coalesced so that ordering works properly on PostreSQL.
+        # Otherwise null values - of ungraded applications - come before the
+        # actual grades when ApplicationTable orders by the grades.
+        # Note that this issue won't appear on a dev sqlite database.
         return (
             super(ApplicationIndex, self).get_queryset()
             .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
             .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
-            .select_related('applicant', 'croo_supplement', 'leader_supplement')
+            .annotate(normalized_croo_grade=Coalesce('avg_leader_grade', V(0.0)))
+            .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))                         .select_related('applicant', 'croo_supplement', 'leader_supplement')
         )
 
     def get_context_data(self, **kwargs):
