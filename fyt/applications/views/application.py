@@ -159,7 +159,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
 
 
 class SetupApplication(CreateApplicationPermissionRequired,
-                       CrispyFormMixin, UpdateView):
+                       ExtraContextMixin, CrispyFormMixin, UpdateView):
     """
     Let directors create/edit this year's application
 
@@ -185,13 +185,10 @@ class SetupApplication(CreateApplicationPermissionRequired,
     def get_form(self, **kwargs):
         return crispify(super().get_form(**kwargs))
 
-    def get_context_data(self, **kwargs):
-        """
-        Add current tripsyear to template context
-        """
-        context = super().get_context_data(**kwargs)
-        context['trips_year'] = TripsYear.objects.current()
-        return context
+    def extra_context(self):
+        return {
+            'trips_year': TripsYear.objects.current()
+        }
 
 
 class BlockDirectorate(GroupRequiredMixin):
