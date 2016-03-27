@@ -3,10 +3,9 @@ from collections import defaultdict, OrderedDict
 
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from django.forms.models import modelformset_factory, inlineformset_factory
+from django.forms.models import modelformset_factory
 from vanilla import FormView, UpdateView
 from crispy_forms.layout import Submit
-from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 
 from .models import (
@@ -22,7 +21,7 @@ from fyt.incoming.models import IncomingStudent, Registration
 from fyt.db.views import (
     DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
-    DatabaseFormView, TripsYearMixin
+    TripsYearMixin
 )
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
@@ -311,7 +310,7 @@ class SectionDelete(DatabaseDeleteView):
 class LeaderTrippeeIndexView(DatabaseListView):
     """
     Show all Trips with leaders and trippees.
-    
+
     Links to pages to assign leaders and trippees.
     """
     model = Trip
@@ -350,7 +349,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         """
         All trippees who prefer, are available, or chose this
         trip as their first choice.
-        
+
         Only pull in required fields because a whole application
         queryset is big enough to slow down performance.
         """
@@ -391,7 +390,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         Initially I tried using ``prefetch_related`` to load all
         ``preferred_triptypes``, ``available_triptypes``, etc.
         However, this requires the database to load each trip, in the
-        worst case, on *every* tripppee, up to ``O(n)`` times for the 
+        worst case, on *every* tripppee, up to ``O(n)`` times for the
         entire, queryset. Multiply this by the total number of trips,
         and there goes performance.
 
@@ -401,7 +400,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         The solution: use the ``through`` objects created by ``M2M`` fields.
         We iterate through these objects for the sections and triptypes in
         question and save each trippee's preference in a dict.
-        This technique is ``O(1)`` for queries and ``O(n)`` for in-memory 
+        This technique is ``O(1)`` for queries and ``O(n)`` for in-memory
         processing, which is quite acceptable. See http://goo.gl/QbK99D
         """
         context = super(AssignTrippee, self).get_context_data(**kwargs)
@@ -471,7 +470,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     def get(self, request, *args, **kwargs):
         """
-        Pull the 'assign_to' trip from GET qs 
+        Pull the 'assign_to' trip from GET qs
         """
         data = {'trip_assignment': request.GET['assign_to']}
         form = self.get_form(data=data)
@@ -498,7 +497,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
 
 class AssignLeader(_TripMixin, DatabaseListView):
-    """ 
+    """
     Assign a leader to a trip.
 
     The trip's pk is passed in the url kwargs.
@@ -730,7 +729,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
 class LeaderPacket(DatabaseDetailView):
     """
-    All information that leader's need: schedule, directions, 
+    All information that leader's need: schedule, directions,
     medical info, etc.
     """
     model = Trip
@@ -764,7 +763,7 @@ class PacketsForSection(_SectionMixin, DatabaseListView):
 class MedicalInfoForSection(PacketsForSection):
     """
     Packets for croos, by section.
-    
+
     Contains leader and trippee med information.
     """
     template_name = 'trips/medical_packet.html'
