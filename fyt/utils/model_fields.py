@@ -1,11 +1,6 @@
 
 from django.db import models
 
-"""
-Testing migrations:
-https://gist.github.com/blueyed/4fb0a807104551f103e6
-"""
-
 YES_NO_CHOICES = (
     (True, 'Yes'),
     (False, 'No')
