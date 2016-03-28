@@ -88,5 +88,5 @@ class UrlencodeTagTestCase(TestCase):
             'value1': 1
         }))
         self.assertIn(out.strip(), [
-            'param1=1&param2=test+this', 'param2=test+this&param1=1'
+            'param1=1&amp;param2=test+this', 'param2=test+this&amp;param1=1'
         ])
