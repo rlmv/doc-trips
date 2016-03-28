@@ -20,9 +20,9 @@ class DartmouthUserManager(BaseUserManager):
         names from different sources (CAS, DartDm lookup) can be slightly
         different.
 
-        Because we added the did field, some users do not have it set. 
+        Because we added the did field, some users do not have it set.
         Also, users added via the permissions/access page don't have a
-        did set. Check and fix it if possible. 
+        did set. Check and fix it if possible.
         """
         try:
             user = self.get(netid=netid)
@@ -81,14 +81,14 @@ class NetIdField(models.CharField):
 
     def to_python(self, value):
         """
-        Handle uppercase ids 
+        Handle uppercase ids
         """
         value = super(NetIdField, self).to_python(value)
         if value is not None:
             return value.lower()
 
     def pre_save(self, model_instance, add):
-        """ 
+        """
         Update lowercase ids on the instance before saving
         """
         value = getattr(model_instance, self.attname).lower()
@@ -116,6 +116,7 @@ class DartmouthUser(PermissionsMixin):
     @property
     def is_active(self):
         return True
+
     @property
     def is_staff(self):
         return self.is_superuser
@@ -141,5 +142,3 @@ class DartmouthUser(PermissionsMixin):
     def __str__(self):
         #return '{} ({})'.format(self.name, self.netid)
         return str(self.name)
-
-
