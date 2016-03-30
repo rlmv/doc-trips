@@ -82,25 +82,24 @@ def login(request, next_page=None):
     service = _service_url(request, next_page)
     ticket = request.GET.get('ticket')
 
-    if ticket:
-
-        # Catch exception thrown by dartdm.lookup.email_lookup
-        try:
-            user = auth.authenticate(ticket=ticket, service=service)
-        except EmailLookupException as e:
-            return render(
-                request, 'webauth/email_lookup_error.html', {'exception': e})
-
-        if user is not None:
-            # Has ticket, logs in fine
-            auth.login(request, user)
-            return HttpResponseRedirect(next_page)
-        else:
-            error = ('<h1>Forbidden</h1>'
-                     '<p>Login failed. Please try logging in again.</p>')
-            return HttpResponseForbidden(error)
-    else:
+    if not ticket:
         return HttpResponseRedirect(_cas_login_url(service))
+
+    # Catch exception thrown by dartdm.lookup.email_lookup
+    try:
+        user = auth.authenticate(ticket=ticket, service=service)
+    except EmailLookupException as e:
+        return render(
+            request, 'webauth/email_lookup_error.html', {'exception': e})
+
+    if user is not None:
+        # Has ticket, logs in fine
+        auth.login(request, user)
+        return HttpResponseRedirect(next_page)
+    else:
+        error = ('<h1>Forbidden</h1>'
+                 '<p>Login failed. Please try logging in again.</p>')
+        return HttpResponseForbidden(error)
 
 
 def logout(request, next_page=None):
