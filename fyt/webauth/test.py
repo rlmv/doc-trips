@@ -1,6 +1,8 @@
-from django.contrib.auth import get_user_model
+import unittest
 
 from fyt.test.testcases import TripsYearTestCase
+from fyt.webauth.views import protocol, host_url
+
 
 class GroupPermissionsTest(TripsYearTestCase):
 
@@ -13,3 +15,23 @@ class GroupPermissionsTest(TripsYearTestCase):
         self.assertNotEqual(set(), user.get_all_permissions())
 
 
+class CasUtilsTestCase(unittest.TestCase):
+
+    def test_protocol(self):
+        attrs = {'is_secure.return_value': True}
+        request = unittest.mock.Mock(**attrs)
+        self.assertEqual(protocol(request), 'https://')
+
+        attrs = {'is_secure.return_value': False}
+        request = unittest.mock.Mock(**attrs)
+        self.assertEqual(protocol(request), 'http://')
+
+    def test_host_url(self):
+        attrs = {'is_secure.return_value': True,
+                 'get_host.return_value': 'localhost:8000'}
+        request = unittest.mock.Mock(**attrs)
+        self.assertEqual(host_url(request), 'https://localhost:8000')
+
+        path = '/login'
+        self.assertEqual(host_url(request, path),
+                         'https://localhost:8000/login')

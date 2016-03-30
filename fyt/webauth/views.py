@@ -13,12 +13,23 @@ from fyt.dartdm.lookup import EmailLookupException
 __all__ = ['login', 'logout']
 
 
+def protocol(request):
+    return ('http://', 'https://')[request.is_secure()]
+
+
+def host_url(request, path=None):
+    """Extract the prefix (HTTP scheme and host) of the request URL.
+
+     ``path`` is an optional path on the host server to apppend to the url."""
+    if path is None:
+        path = ''
+    return protocol(request) + request.get_host() + path
+
+
 def _service_url(request, redirect_to=None, gateway=False):
     """Generates application service URL for CAS"""
 
-    protocol = ('http://', 'https://')[request.is_secure()]
-    host = request.get_host()
-    service = protocol + host + request.path
+    service = host_url(request, request.path)
     if redirect_to:
         if '?' in service:
             service += '&'
@@ -32,6 +43,7 @@ def _redirect_url(request):
     """Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
     set.
     """
+
     next = request.GET.get(REDIRECT_FIELD_NAME)
     if not next:
         if settings.CAS_IGNORE_REFERER:
@@ -39,10 +51,8 @@ def _redirect_url(request):
         else:
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
 
-        host = request.get_host()
-        prefix = (('http://', 'https://')[request.is_secure()] + host)
-        if next.startswith(prefix):
-            next = next[len(prefix):]
+        if next.startswith(host_url(request)):
+            next = next[len(host_url(request)):]
     return next
 
 
@@ -59,9 +69,7 @@ def _logout_url(request, next_page=None):
 
     url = urljoin(settings.CAS_SERVER_URL, 'logout')
     if next_page:
-        protocol = ('http://', 'https://')[request.is_secure()]
-        host = request.get_host()
-        url += '?' + urlencode({'url': protocol + host + next_page})
+        url += '?' + urlencode({'url': host_url(request, next_page)})
     return url
 
 
