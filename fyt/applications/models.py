@@ -495,9 +495,6 @@ class CrooSupplement(DatabaseModel):
         ), blank=True
     )
 
-    # -------- driving -------
-    # TODO: mv from document
-
     def average_grade(self):
         """ Average grade for the croo application """
         r = self.grades.all().aggregate(models.Avg('grade'))
