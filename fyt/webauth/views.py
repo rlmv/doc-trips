@@ -20,13 +20,13 @@ def protocol(request):
 def host_url(request, path=None):
     """Extract the prefix (HTTP scheme and host) of the request URL.
 
-     ``path`` is an optional path on the host server to apppend to the url."""
+    ``path`` is an optional path on the host server to apppend to the url."""
     if path is None:
         path = ''
     return protocol(request) + request.get_host() + path
 
 
-def _service_url(request, redirect_to=None, gateway=False):
+def _service_url(request, redirect_to=None):
     """Generates application service URL for CAS"""
 
     service = host_url(request, request.path)
@@ -40,9 +40,7 @@ def _service_url(request, redirect_to=None, gateway=False):
 
 
 def _redirect_url(request):
-    """Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
-    set.
-    """
+    """Redirects to referring page, or CAS_REDIRECT_URL if no referrer"""
 
     next = request.GET.get(REDIRECT_FIELD_NAME)
     if not next:
@@ -56,15 +54,14 @@ def _redirect_url(request):
     return next
 
 
-def cas_login_url(service):
-    """ Return CAS login url. """
+def _cas_login_url(service):
+    """Return CAS login url. """
 
-    params = {'service': service}
-    qs = urlencode(params)
+    qs = urlencode({'service': service})
     return urljoin(settings.CAS_SERVER_URL, 'login') + '?' + qs
 
 
-def _logout_url(request, next_page=None):
+def _cas_logout_url(request, next_page=None):
     """Generates CAS logout URL"""
 
     url = urljoin(settings.CAS_SERVER_URL, 'logout')
@@ -87,24 +84,23 @@ def login(request, next_page=None):
 
     if ticket:
 
-        # catch exception thrown by dartdm.lookup.email_lookup
+        # Catch exception thrown by dartdm.lookup.email_lookup
         try:
             user = auth.authenticate(ticket=ticket, service=service)
         except EmailLookupException as e:
             return render(
-                request, 'webauth/email_lookup_error.html', {'exception': e}
-            )
+                request, 'webauth/email_lookup_error.html', {'exception': e})
 
         if user is not None:
-            #Has ticket, logs in fine
+            # Has ticket, logs in fine
             auth.login(request, user)
             return HttpResponseRedirect(next_page)
         else:
-             error = ('<h1>Forbidden</h1><p>Login failed. '
-                      'Please try logging in again.</p>')
-             return HttpResponseForbidden(error)
+            error = ('<h1>Forbidden</h1>'
+                     '<p>Login failed. Please try logging in again.</p>')
+            return HttpResponseForbidden(error)
     else:
-        return HttpResponseRedirect(cas_login_url(service))
+        return HttpResponseRedirect(_cas_login_url(service))
 
 
 def logout(request, next_page=None):
@@ -115,7 +111,8 @@ def logout(request, next_page=None):
 
     if not next_page:
         next_page = _redirect_url(request)
+
     if settings.CAS_LOGOUT_COMPLETELY:
-        return HttpResponseRedirect(_logout_url(request, next_page))
+        return HttpResponseRedirect(_cas_logout_url(request, next_page))
     else:
         return HttpResponseRedirect(next_page)
