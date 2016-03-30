@@ -25,24 +25,23 @@ class WebAuthMiddleware(object):
         login URL, as well as calls to django.contrib.auth.views.login and
         logout.
         """
-
         if view_func == auth.views.login:
             return cas_login(request, *view_args, **view_kwargs)
         elif view_func == auth.views.logout:
             return cas_logout(request, *view_args, **view_kwargs)
 
         if not view_func.__module__.startswith('django.contrib.admin.'):
-            # not admin? then we don't care. Pass along the request.
+            # Not admin? then we don't care. Pass along the request.
             return None
 
         if not request.user.is_authenticated():
-            params = urlencode({auth.REDIRECT_FIELD_NAME: request.get_full_path()})
-            return HttpResponseRedirect(settings.LOGIN_URL + '?' + params)
+            login_url = settings.LOGIN_URL + '?' + urlencode({
+                auth.REDIRECT_FIELD_NAME: request.get_full_path()})
+            return HttpResponseRedirect(login_url)
 
         if request.user.is_staff:
             return None
 
-        error = ('<h1>Forbidden</h1><p>You do not have staff '
-                         'privileges.</p>')
+        error = ('<h1>Forbidden</h1>'
+                 '<p>You do not have staff privileges.</p>')
         return HttpResponseForbidden(error)
-

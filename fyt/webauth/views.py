@@ -1,7 +1,7 @@
 
 from urllib.parse import urljoin, urlencode
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib import auth
@@ -18,7 +18,6 @@ def _service_url(request, redirect_to=None, gateway=False):
 
     protocol = ('http://', 'https://')[request.is_secure()]
     host = request.get_host()
-    prefix = (('http://', 'https://')[request.is_secure()] + host)
     service = protocol + host + request.path
     if redirect_to:
         if '?' in service:
@@ -33,7 +32,6 @@ def _redirect_url(request):
     """Redirects to referring page, or CAS_REDIRECT_URL if no referrer is
     set.
     """
-
     next = request.GET.get(REDIRECT_FIELD_NAME)
     if not next:
         if settings.CAS_IGNORE_REFERER:
@@ -113,4 +111,3 @@ def logout(request, next_page=None):
         return HttpResponseRedirect(_logout_url(request, next_page))
     else:
         return HttpResponseRedirect(next_page)
-
