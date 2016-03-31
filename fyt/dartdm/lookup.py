@@ -1,13 +1,17 @@
 
-
 import requests
 import logging
 
 logger = logging.getLogger(__name__)
 
-
+# URL constants
 DARTDM_URL = 'http://dartdm.dartmouth.edu/NetIdLookup/Lookup'
 DNDPROFILES_URL = 'http://dndprofiles.dartmouth.edu/profile'
+
+# Key constants
+NETID = 'netid'
+NAME_WITH_YEAR = 'name_with_year'
+NAME_WITH_AFFIL = 'name_with_affil'
 
 
 def dartdm_lookup(query_string):
@@ -18,7 +22,11 @@ def dartdm_lookup(query_string):
     """
     params = {'term': query_string}
     r = requests.get(DARTDM_URL, params=params)
-    return r.json()
+    return [{
+        NETID: data['id'],
+        NAME_WITH_YEAR: data['value'],
+        NAME_WITH_AFFIL: data['label'],
+    } for data in r.json()]
 
 
 class EmailLookupException(Exception):

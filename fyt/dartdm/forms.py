@@ -3,7 +3,7 @@ import logging
 from django import forms
 from django.core.exceptions import ValidationError
 
-from fyt.dartdm.lookup import dartdm_lookup
+from fyt.dartdm import lookup
 
 logger = logging.getLogger(__name__)
 
@@ -61,29 +61,29 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
         however a user can hit 'submit' with a self-entered name, or change the
         autocompleted name. If this is the case we do another DartDm lookup to
         verify the name.
+
+        `data_list` is of the form `[NAME_WITH_YEAR, NETID, NAME_WITH_AFFIL]`
         """
         logger.info('compress: %r' % data_list)
 
         if len(data_list) == 0:
-            # empty field
+            # Empty field
             return None
 
         if len(data_list) == 1 or not data_list[2].startswith(data_list[0]):
             # User did not wait for the typeahead autocomplete,
             # or changed the autocompleted name after the lookup.
             # Try and lookup the given name.
-            # TODO: this isn't the best UI situation, since it is likely
-            # that a changed name won't have a unique lookup match
-            results = dartdm_lookup(data_list[0])
+            results = lookup.dartdm_lookup(data_list[0])
             if len(results) == 0:
                 raise ValidationError('User not found')
             elif len(results) == 1:
-                data = results[0]
-                data_list = [data['value'], data['id'], data['label']]
+                return results[0]  # Lookup results are already formatted
             else:
                 raise ValidationError("Ambiguous name %r" % data_list[0])
 
         return {
-            'name_with_year': data_list[0],
-            'netid': data_list[1],
-            'name_with_affil': data_list[2]}
+            lookup.NAME_WITH_YEAR: data_list[0],
+            lookup.NETID: data_list[1],
+            lookup.NAME_WITH_AFFIL: data_list[2]
+        }
