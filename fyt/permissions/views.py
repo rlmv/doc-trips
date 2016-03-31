@@ -172,15 +172,14 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
             directorate(),
             safety_leads(),
             graders()]
-        return [GenericGroupForm(group, *args, prefix=str(group), **kwargs) for group in groups]
+        return [GenericGroupForm(group, *args, prefix=str(group), **kwargs)
+                for group in groups]
 
     def get(self, request, *args, **kwargs):
-
         forms = self.get_forms()
         return self.render_to_response(self.get_context_data(forms=forms))
 
     def post(self, request, *args, **kwargs):
-
         forms = self.get_forms(data=request.POST)
         if all(form.is_valid() for form in forms):
             return self.form_valid(forms)
@@ -189,12 +188,11 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     def form_valid(self, forms):
         """ Save updated groups """
-
         for form in forms:
             form.update_group_with_form_data()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, forms):
-
-        messages.error(self.request, 'Uh oh. Looks like there is an error in the form.')
+        msg = 'Uh oh. Looks like there is an error in the form'
+        messages.error(self.request, msg)
         return self.render_to_response(self.get_context_data(forms=forms))
