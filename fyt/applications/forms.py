@@ -20,6 +20,7 @@ class TripAssignmentForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = ['assigned_trip']
+        
     assigned_trip = TripChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
@@ -38,21 +39,32 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = (
-            'class_year', 'hinman_box', 'phone',
-            'gender', 'race_ethnicity',
-            'summer_address', 'tshirt_size',
-            'from_where', 'what_do_you_like_to_study',
-            'personal_activities', 'feedback',
+            'class_year',
+            'hinman_box',
+            'phone',
+            'gender',
+            'race_ethnicity',
+            'summer_address',
+            'tshirt_size',
+            'from_where',
+            'what_do_you_like_to_study',
+            'personal_activities',
+            'feedback',
             'food_allergies',
             'dietary_restrictions',
             'medical_conditions',
             'epipen',
             'needs',
-            'medical_certifications', 'medical_experience',
-            'peer_training', 'trippee_confidentiality',
+            'medical_certifications',
+            'medical_experience',
+            'peer_training',
+            'trippee_confidentiality',
             'in_goodstanding_with_college',
-            'trainings', 'spring_training_ok', 'summer_training_ok',
-            'hanover_in_fall', 'role_preference',
+            'trainings',
+            'spring_training_ok',
+            'summer_training_ok',
+            'hanover_in_fall',
+            'role_preference',
             'leadership_style'
         )
 
@@ -107,10 +119,14 @@ class LeaderSupplementForm(forms.ModelForm):
         model = LeaderSupplement
 
         fields = (
-            'preferred_sections', 'available_sections',
-            'preferred_triptypes', 'available_triptypes',
-            'trip_preference_comments', 'cannot_participate_in',
-            'relevant_experience', 'document'
+            'preferred_sections',
+            'available_sections',
+            'preferred_triptypes',
+            'available_triptypes',
+            'trip_preference_comments',
+            'cannot_participate_in',
+            'relevant_experience',
+            'document'
         )
 
     def __init__(self, *args, **kwargs):
@@ -195,8 +211,10 @@ class CertificationForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = (
-            'community_building', 'risk_management',
-            'wilderness_skills', 'croo_training',
+            'community_building',
+            'risk_management',
+            'wilderness_skills',
+            'croo_training',
             'fa_cert', 'fa_other'
         )
         widgets = {
