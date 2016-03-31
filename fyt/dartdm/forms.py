@@ -78,7 +78,8 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
             if len(results) == 0:
                 raise ValidationError('User not found')
             elif len(results) == 1:
-                data_list = results[0]
+                data = results[0]
+                data_list = [data['value'], data['id'], data['label']]
             else:
                 raise ValidationError("Ambiguous name %r" % data_list[0])
 
