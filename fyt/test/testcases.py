@@ -1,7 +1,7 @@
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase, LiveServerTestCase
+from django.test import TestCase
 from model_mommy import mommy
 from django_webtest import WebTest
 

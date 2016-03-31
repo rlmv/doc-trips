@@ -5,16 +5,15 @@ from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import get_user_model
-from vanilla import TemplateView, UpdateView, FormView
+from vanilla import FormView
 from braces.views import (PermissionRequiredMixin, LoginRequiredMixin,
                           MultiplePermissionsRequiredMixin)
-from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Row, Column
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Row, Column
 
-from fyt.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
-from fyt.permissions.models import SitePermission
+from fyt.permissions import (directors, graders, directorate,
+                             trip_leader_trainers, safety_leads)
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.dartdm import lookup
 
