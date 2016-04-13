@@ -8,20 +8,20 @@ from fyt.db.models import TripsYear
 
 class ApplicationManager(models.Manager):
     """
-    Shared manager for Leader and Croo grades 
+    Shared manager for Leader and Croo grades
 
-    Requires model to have a NUMBER_OF_GRADES property which 
-    specifies how many times the application should be graded. 
+    Requires model to have a NUMBER_OF_GRADES property which
+    specifies how many times the application should be graded.
     """
 
     def next_to_grade(self, user):
-        """ 
+        """
         Find the next application to grade for user.
 
         This is an application which meets the following conditions:
         (0) is for the current trips_year
         (1) has not yet been graded if there are apps in the database
-        which have not been graded, otherwise an application with only 
+        which have not been graded, otherwise an application with only
         one grade.
         (2) has not already been graded by this user
         (3) the application is not qualified, deprecated, etc. See
@@ -41,8 +41,8 @@ class ApplicationManager(models.Manager):
 
 
     def _get_random_application(self, user, trips_year, num):
-        """ 
-        Return a random PENDING application that user has not graded, 
+        """
+        Return a random PENDING application that user has not graded,
         which has only been graded by num people.
 
         Note that the status lives on the parent GeneralApplication object.
@@ -78,20 +78,20 @@ class LeaderApplicationManager(ApplicationManager):
 class CrooApplicationManager(ApplicationManager):
 
       def next_to_grade_for_qualification(self, user, qualification):
-        """ 
+        """
         Find the next croo application which has qualification
         for user to grade.
 
         We're just serving apps for the specified qualification
         and don't care about limits to the total number of grades.
-        If the grader skipped an app in regular grading we still 
+        If the grader skipped an app in regular grading we still
         include if.
         However, if the grader skipped an app while grading for
         this qualification we exclude it from the the query.
-        
+
         TODO: pass in the trips year? - tie grading to a trips_year url?
         TODO: tests for the manager in addition to the view tests
-  
+
         Return None if no applications need to be graded.
         """
 
@@ -115,10 +115,10 @@ class CrooApplicationManager(ApplicationManager):
 class GeneralApplicationManager(models.Manager):
 
     def prospective_leaders_for_trip(self, trip):
-        """ 
+        """
         Get prospective leaders who can lead Trip trip.
-        
-        Returns all GeneralApplications which 
+
+        Returns all GeneralApplications which
         (1) are for the same trips_year as trip
         (2) are complete
         (3) prefer or are available for trip's TripType and Section
