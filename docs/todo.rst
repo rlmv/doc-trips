@@ -16,7 +16,6 @@ Immediate
 * Global page of all spreadsheets.
 * Use global constants for transport attributes (eg. over_capacity) which are added to the ``Stops`` in GMaps directions for Internal and External stops.
 * Put bagel info constants onto a model.
-* Automatically select_related in the ``ApplicationManager``
 * Urlencode dynamic querystrings
 * Add ``/CPR`` to leader med certs? (and migrate existing)
 * Generalize high-level admin permssions: ``db:write``
