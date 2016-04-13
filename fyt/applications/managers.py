@@ -112,7 +112,12 @@ class CrooApplicationManager(ApplicationManager):
 
 
 
-class GeneralApplicationManager(models.Manager):
+class GeneralApplicationManager(models.Manager):\
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.select_related('applicant', 'croo_supplement',
+                                 'leader_supplement')
 
     def prospective_leaders_for_trip(self, trip):
         """

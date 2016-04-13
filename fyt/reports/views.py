@@ -59,7 +59,7 @@ class VolunteerCSV(GenericReportView):
     def get_queryset(self):
         return Application.objects.leader_or_croo_applications(
             self.kwargs['trips_year']
-        ).select_related('applicant')
+        )
 
     def get_row(self, application):
         user = application.applicant
@@ -75,7 +75,6 @@ class TripLeaderApplicationsCSV(GenericReportView):
         return (Application.objects
                 .leader_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('leader_supplement__grades__grade'))
-                .select_related('leader_supplement')
                 .prefetch_related('leader_supplement__grades'))
 
     def get_row(self, application):
@@ -99,7 +98,6 @@ class CrooApplicationsCSV(GenericReportView):
         return (Application.objects
                 .croo_applications(self.kwargs['trips_year'])
                 .annotate(avg_score=Avg('croo_supplement__grades__grade'))
-                .select_related('croo_supplement')
                 .prefetch_related('croo_supplement__grades'))
 
     def get_row(self, application):
@@ -120,7 +118,7 @@ class TripLeadersCSV(GenericReportView):
     def get_queryset(self):
         return Application.objects.leaders(
             self.kwargs['trips_year']
-        ).select_related('applicant')
+        )
 
     header = ['name', 'netid']
     def get_row(self, leader):
@@ -133,8 +131,7 @@ class CrooMembersCSV(TripLeadersCSV):
     def get_queryset(self):
         return Application.objects.croo_members(
             self.kwargs['trips_year']
-        ).select_related('applicant')
-
+        )
 
 class FinancialAidCSV(GenericReportView):
 
@@ -396,8 +393,6 @@ class VolunteerDietaryRestrictions(GenericReportView):
             Q(status=Application.LEADER) | Q(status=Application.CROO)
         ).order_by(
             'status'
-        ).select_related(
-            'applicant'
         )
 
     header = [
