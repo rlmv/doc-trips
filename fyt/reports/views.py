@@ -141,7 +141,7 @@ class FinancialAidCSV(GenericReportView):
     def get_queryset(self):
         return Registration.objects.want_financial_aid(
             self.get_trips_year()
-        ).select_related('user')
+        )
 
     def get_row(self, reg):
         user = reg.user
@@ -157,7 +157,7 @@ class ExternalBusCSV(GenericReportView):
         return Registration.objects.want_bus(
             self.get_trips_year()
         ).select_related(
-            'user', 'bus_stop', 'bus_stop__route'
+            'bus_stop', 'bus_stop__route'
         )
 
     def get_row(self, reg):
@@ -239,7 +239,7 @@ class DocMembers(GenericReportView):
     def get_queryset(self):
         return Registration.objects.filter(
             trips_year=self.kwargs['trips_year'], doc_membership=True
-        ).select_related('user')
+        )
 
     header = ['name', 'netid', 'email']
     def get_row(self, reg):
@@ -325,8 +325,6 @@ class DietaryRestrictions(GenericReportView):
     def get_queryset(self):
         return Registration.objects.filter(
             trips_year=self.kwargs['trips_year']
-        ).select_related(
-            'user'
         ).prefetch_related(
             'trippee__trip_assignment',
             'trippee__trip_assignment__section'

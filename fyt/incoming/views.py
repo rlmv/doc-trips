@@ -213,7 +213,6 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.select_related(
-            'user',
             'trippee',
             'trippee__trip_assignment__section',
             'trippee__trip_assignment__template',

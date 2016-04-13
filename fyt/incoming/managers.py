@@ -180,6 +180,10 @@ class IncomingStudentManager(models.Manager):
 
 class RegistrationManager(models.Manager):
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.select_related('user')
+
     def want_financial_aid(self, trips_year):
         """
         All registrations for trips_year requesting financial aid.
