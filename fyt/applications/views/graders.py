@@ -4,7 +4,7 @@ from django.db.models import Q, Avg
 from vanilla import ListView
 
 from fyt.db.views import TripsYearMixin
-from fyt.permissions.views import DatabaseReadPermissionRequired
+from fyt.permissions.views import GraderTablePermissionRequired
 
 DartmouthUser = get_user_model()
 
@@ -37,7 +37,7 @@ def get_graders(trips_year):
     return users
 
 
-class GraderList(DatabaseReadPermissionRequired, TripsYearMixin, ListView):
+class GraderList(GraderTablePermissionRequired, TripsYearMixin, ListView):
     """
     List view of all graders for this trips year
 

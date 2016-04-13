@@ -68,6 +68,17 @@ class CrooGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin)
     permission_required = 'permissions.can_grade_croo_applications'
 
 
+class GraderTablePermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
+    """Users with permission to see the graders table in the database."""
+    permissions = {
+        'any': (
+            'permissions.can_view_db',
+            'permissions.can_grade_leader_applications',
+            'permissions.can_grade_croo_applications',
+        )
+    }
+
+
 class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to edit the calendar """
     permission_required = 'permissions.can_edit_timetable'
