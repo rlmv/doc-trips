@@ -12,9 +12,9 @@ DartmouthUser = get_user_model()
 def get_graders(trips_year):
     """
     Return all Users who have graded applications this year.
-    
+
     Returns both croo and leader graders. Attachs an 'avg_leader_grade'
-    and 'avg_croo_grade' to each grader. Unfortunately that computation 
+    and 'avg_croo_grade' to each grader. Unfortunately that computation
     can't be done with an .annotate call on the users queryset since the
     grades have to be restricted to this trips_year; a user could have
     graded the year before and we don't want to confuse their averages.
@@ -38,9 +38,9 @@ def get_graders(trips_year):
 
 
 class GraderList(DatabaseReadPermissionRequired, TripsYearMixin, ListView):
-    """ 
+    """
     List view of all graders for this trips year
-    
+
     Shows name, average score, # of applications scored for both
     Trip Leader and Croo applications.
     """
