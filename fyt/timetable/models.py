@@ -1,4 +1,5 @@
 
+from datetime import timedelta
 
 from django.utils import timezone
 from django.db import models
@@ -13,6 +14,8 @@ the object.
 """
 
 TIMETABLE_ID = 1
+# Number of minutes applications stay open after the posted deadline
+GRACE_PERIOD = timedelta(minutes=15)
 
 
 class TimetableManager(models.Manager):
@@ -69,10 +72,14 @@ class Timetable(models.Model):
     def applications_available(self):
         """
         Are Croo and Leader applications available?
+
+        Users can still submit an application 15 minutes after the posted
+        deadline. This keeps people from losing data when they try and submit
+        at the very last minute.
         """
         now = timezone.now()
         return (self.applications_open < now and
-                now < self.applications_close)
+                now < self.applications_close + GRACE_PERIOD)
 
     def grading_available(self):
         """

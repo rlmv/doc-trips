@@ -3,7 +3,6 @@ Things TODO
 
 Immediate
 ---------
-* Disassociate posted application deadline from actual submission deadline (15 minutes)
 * Add email list of incomplete applications (both Leader and Croo?)
 * Add application filter by available sections and triptypes - email Josh confirming.
 * -----------------------
@@ -29,6 +28,7 @@ Immediate
 Questions
 ---------
 * Should ``campsite.shelter`` be shown to trippees? Were we going to add more itenerary info to the trippee's trip assignment?
+* Should trippee registrations also have a 15-minute grace period?
 
 Cosmetic
 --------
