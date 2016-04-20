@@ -88,8 +88,11 @@ class TripList(DatabaseTemplateView):
 class TripUpdate(DatabaseUpdateView):
     model = Trip
     fields = [
-        'dropoff_time', 'pickup_time',
-        'dropoff_route', 'pickup_route', 'return_route',
+        'dropoff_time',
+        'pickup_time',
+        'dropoff_route',
+        'pickup_route',
+        'return_route',
         'notes'
     ]
 
@@ -104,8 +107,10 @@ class TripDetail(DatabaseDetailView):
     template_name = 'trips/trip_detail.html'
 
     fields = [
-        'section', 'template',
-        'leaders', 'trippees',
+        'section',
+        'template',
+        'leaders',
+        'trippees',
         'notes',
         ('dropoff route', 'get_dropoff_route'),
         'dropoff_time',
@@ -115,12 +120,17 @@ class TripDetail(DatabaseDetailView):
     ]
 
     triptemplate_fields = [
-        'triptype', 'max_trippees',
+        'triptype',
+        'max_trippees',
         'swimtest_required',
         'desc_intro',
-        'dropoff_stop', 'desc_day1', 'campsite1',
-        'desc_day2', 'campsite2',
-        'desc_day3', 'pickup_stop',
+        'dropoff_stop',
+        'desc_day1',
+        'campsite1',
+        'desc_day2',
+        'campsite2',
+        'desc_day3',
+        'pickup_stop',
         'desc_conc',
         'revisions']
 
@@ -143,7 +153,11 @@ class TripTemplateList(DatabaseListView):
     def get_queryset(self):
         qs = super(TripTemplateList, self).get_queryset()
         return qs.select_related(
-            'triptype', 'campsite1', 'campsite2', 'dropoff_stop', 'pickup_stop'
+            'triptype',
+            'campsite1',
+            'campsite2',
+            'dropoff_stop',
+            'pickup_stop'
         )
 
 
@@ -229,8 +243,12 @@ class TripTypeCreate(DatabaseCreateView):
 
 class TripTypeDetail(DatabaseDetailView):
     model = TripType
-    fields = ['name', 'trippee_description', 'leader_description',
-              'packing_list']
+    fields = [
+        'name',
+        'trippee_description',
+        'leader_description',
+        'packing_list'
+    ]
 
 
 class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
@@ -293,8 +311,16 @@ class SectionCreate(DatabaseCreateView):
 
 class SectionDetail(DatabaseDetailView):
     model = Section
-    fields = ['name', 'leaders_arrive', 'is_local', 'is_exchange',
-              'is_transfer', 'is_international', 'is_native', 'is_fysep']
+    fields = [
+        'name',
+        'leaders_arrive',
+        'is_local',
+        'is_exchange',
+        'is_transfer',
+        'is_international',
+        'is_native',
+        'is_fysep'
+    ]
 
 
 class SectionUpdate(DatabaseUpdateView):
@@ -525,7 +551,8 @@ class AssignLeader(_TripMixin, DatabaseListView):
             ).prefetch_related(
                 'leader_supplement__grades'
             ).only(
-                'trips_year', 'gender',
+                'trips_year',
+                'gender',
                 'applicant__name',
                 'assigned_trip__trips_year_id',
                 'assigned_trip__template__name',
