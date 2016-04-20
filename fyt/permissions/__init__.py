@@ -23,7 +23,7 @@ the edit_db permission.
 
 def get_permission(codename, name):
     """ Return a the requested SitePermission. """
-    permission, created = SitePermission.objects.get_or_create(
+    permission, _ = SitePermission.objects.get_or_create(
         codename=codename, name=name)
     return permission
 
@@ -82,7 +82,7 @@ def can_report_incidents():
 # to the model manager? e.g. ProxyGroup.directors() or ProxyGroup.objects.directors()
 
 def directors():
-    directors, created = Group.objects.get_or_create(name='directors')
+    directors, _ = Group.objects.get_or_create(name='directors')
     directors.permissions = [
         can_set_access(),
         can_view_database(),
@@ -99,7 +99,7 @@ def directors():
 
 
 def directorate():
-    directorate, created = Group.objects.get_or_create(name='directorate')
+    directorate, _ = Group.objects.get_or_create(name='directorate')
     directorate.permissions = [
         can_view_database(),
         can_grade_leader_applications(),
@@ -111,7 +111,7 @@ def directorate():
 
 def trip_leader_trainers():
     # trip leader trainers
-    tlts, created = Group.objects.get_or_create(name='trip leader trainers')
+    tlts, _ = Group.objects.get_or_create(name='trip leader trainers')
     tlts.permissions = [
         can_view_database(),
         can_grade_leader_applications(),
@@ -131,7 +131,7 @@ def safety_leads():
 
 
 def graders():
-    graders, created = Group.objects.get_or_create(name='graders')
+    graders, _ = Group.objects.get_or_create(name='graders')
     graders.permissions = [
         can_grade_leader_applications(),
     ]
