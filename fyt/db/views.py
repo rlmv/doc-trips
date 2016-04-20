@@ -167,16 +167,16 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
         return reverse_detail_url(self.object)
 
 
-class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
-                         SetHeadlineMixin, FormInvalidMessageMixin, TripsYearMixin,
-                         CrispyFormMixin, UpdateView):
+class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
+                     FormInvalidMessageMixin, TripsYearMixin, CrispyFormMixin,
+                     UpdateView):
     """
     Base view for updating an object in the database.
 
     If 'delete_button' is True, a link to the delete view for
     this object will be added to the form's button holder.
     """
-    template_name ='db/update.html'
+    template_name = 'db/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
     delete_button = True  # add a "Delete" button?
     fields = '__all__'
@@ -206,6 +206,10 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, ExtraContextMixin,
 
         helper.layout.append(FormActions(*buttons))
         return helper
+
+
+class DatabaseUpdateView(DatabaseEditPermissionRequired, BaseUpdateView):
+    """ Update view with restricted permissions. """
 
 
 class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,

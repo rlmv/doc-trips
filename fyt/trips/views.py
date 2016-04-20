@@ -19,12 +19,13 @@ from .forms import (
 from fyt.applications.models import LeaderSupplement, GeneralApplication
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.db.views import (
-    DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+    DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
     TripsYearMixin
 )
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
+    TripInfoEditPermissionRequired,
     DatabaseEditPermissionRequired
 )
 from fyt.utils.views import PopulateMixin
@@ -174,7 +175,7 @@ class TripTemplateDetail(DatabaseDetailView):
     ]
 
 
-class TripTemplateUpdate(DatabaseUpdateView):
+class TripTemplateUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
     model = TripTemplate
 
 
@@ -232,7 +233,7 @@ class TripTypeDetail(DatabaseDetailView):
               'packing_list']
 
 
-class TripTypeUpdate(DatabaseUpdateView):
+class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
     model = TripType
 
 
