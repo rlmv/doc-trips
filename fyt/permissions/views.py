@@ -13,7 +13,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Row, Column
 
 from fyt.permissions import (directors, graders, directorate,
-                             trip_leader_trainers, safety_leads)
+                             trip_leader_trainers, safety_leads, olcs)
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.dartdm import lookup
 
@@ -189,6 +189,7 @@ class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
         groups = [
             directors(),
             trip_leader_trainers(),
+            olcs(),
             directorate(),
             safety_leads(),
             graders()]

@@ -75,7 +75,7 @@ def can_edit_applications_and_assign_trip_leaders():
                           'Can change apps in DB and assign leaders')
 
 def can_edit_trip_info():
-    """ Permissions to allow OLC users to edit trip itineraries """
+    """ Permissions to allow olcs users to edit trip itineraries """
     return get_permission('can_edit_trip_info', 'Can edit trip itineraries')
 
 def can_report_incidents():
@@ -123,6 +123,18 @@ def trip_leader_trainers():
     ]
     tlts.save()
     return tlts
+
+
+def olcs():
+    olcs, _ = Group.objects.get_or_create(name='outdoor logistics coordinators')
+    olcs.permissions = [
+        can_view_database(),
+        can_grade_leader_applications(),
+        can_grade_croo_applications(),
+        can_edit_trip_info(),
+    ]
+    olcs.save()
+    return olcs
 
 
 def safety_leads():
