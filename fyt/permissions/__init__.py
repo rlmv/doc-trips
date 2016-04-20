@@ -6,14 +6,14 @@ from fyt.permissions.models import SitePermission
 """
 Be careful changing the names of these permissions -- there can
 be Unique constraint issues. You may need to add a data migration
-to delete the offending historic permissions if this happens. 
+to delete the offending historic permissions if this happens.
 Fortunately this doesn't seem to be an issue since permissions
-for any given user are tied to groups, not the specific 
+for any given user are tied to groups, not the specific
 SitePermission.
 
-TODO: should we consolidate the create_application, edit_timetable, 
-and possibly even the set_access permissions into edit_db? This would 
-be simpler, but less flexible. However, only directors currently have 
+TODO: should we consolidate the create_application, edit_timetable,
+and possibly even the set_access permissions into edit_db? This would
+be simpler, but less flexible. However, only directors currently have
 the edit_db permission.
 
 """
@@ -46,8 +46,8 @@ def can_view_database():
                           'Can view the trips database')
 
 def can_edit_database():
-    """ 
-    Implies can_view_db permissions. It's assumed that if you can edit, 
+    """
+    Implies can_view_db permissions. It's assumed that if you can edit,
     you can also view an object.
     """
     return get_permission('can_edit_db',
@@ -137,4 +137,3 @@ def graders():
     ]
     graders.save()
     return graders
-
