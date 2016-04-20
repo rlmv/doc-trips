@@ -74,6 +74,10 @@ def can_edit_applications_and_assign_trip_leaders():
     return get_permission('can_edit_applications_and_assign_leaders',
                           'Can change apps in DB and assign leaders')
 
+def can_edit_trip_info():
+    """ Permissions to allow OLC users to edit trip itineraries """
+    return get_permission('can_edit_trip_info', 'Can edit trip itineraries')
+
 def can_report_incidents():
     return get_permission('can_report_incidents',
                           'Can report incidents in the safety log')

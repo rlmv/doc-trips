@@ -58,6 +58,15 @@ class ApplicationEditPermissionRequired(BasePermissionMixin, MultiplePermissions
     }
 
 
+class TripInfoEditPermissionRequired(BasePermissionMixin,
+                                     MultiplePermissionsRequiredMixin):
+    permissions = {
+        'any': (
+            'permissions.can_edit_db',
+            'permissions.can_edit_trip_info'
+        )
+    }
+
 class LeaderGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Only allow access to users with permission to grade leaderapplications. """
     permission_required = 'permissions.can_grade_leader_applications'
