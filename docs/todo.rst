@@ -3,6 +3,12 @@ Things TODO
 
 Immediate
 ---------
+* Add explanation to the "No more apps to grade" page
+* Disassociate posted application deadline from actual submission deadline (15 minutes)
+* Add OLC group/permission so they can edit trip itineraries & info.
+* Add email list of incomplete applications (both Leader and Croo?)
+* Add application filter by available sections and triptypes - email Josh confirming.
+* -----------------------
 * Dropdown for previous years.
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
