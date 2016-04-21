@@ -152,6 +152,12 @@ class GeneralApplicationManager(models.Manager):\
                 .exclude(Q(leader_supplement__document="") &
                          Q(croo_supplement__document="")))
 
+    def incomplete_leader_applications(self, trips_year):
+        return self.filter(trips_year=trips_year, leader_supplement__document="")
+
+    def incomplete_croo_applications(self, trips_year):
+        return self.filter(trips_year=trips_year, croo_supplement__document="")
+
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
 

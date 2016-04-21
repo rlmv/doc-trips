@@ -402,8 +402,14 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         app2 = self.make_application(trips_year=trips_year)
         app2.leader_supplement.document = '' #  incomplete
         app2.leader_supplement.save()
+
+        # Complete
         qs = GeneralApplication.objects.leader_applications(trips_year)
-        self.assertEqual(list(qs), [app1])
+        self.assertQsEqual(qs, [app1])
+
+        # Incomplete
+        qs = GeneralApplication.objects.incomplete_leader_applications(trips_year)
+        self.assertQsEqual(qs, [app2])
 
     def test_get_croo_applications(self):
         trips_year = self.init_current_trips_year()
@@ -411,8 +417,14 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         app2 = self.make_application(trips_year=trips_year)
         app2.croo_supplement.document = '' #  incomplete
         app2.croo_supplement.save()
+
+        # Complete
         qs = GeneralApplication.objects.croo_applications(trips_year)
-        self.assertEqual(list(qs), [app1])
+        self.assertQsEqual(qs, [app1])
+
+        # Incomplete
+        qs = GeneralApplication.objects.incomplete_croo_applications(trips_year)
+        self.assertQsEqual(qs, [app2])
 
     def test_get_leader_or_croo_applications(self):
         trips_year = self.init_current_trips_year()
