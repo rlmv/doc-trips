@@ -64,10 +64,14 @@ class Applicants(BaseEmailList):
 
         email_list = [
             ('all applicants', emails(qs)),
-            ('complete leader application', emails(
+            ('complete leader applications', emails(
                 GeneralApplication.objects.leader_applications(trips_year))),
-            ('complete croo application', emails(
+            ('complete croo applications', emails(
                 GeneralApplication.objects.croo_applications(trips_year))),
+            ('incomplete leader applications', emails(
+                GeneralApplication.objects.incomplete_leader_applications(trips_year))),
+            ('incomplete croo applications', emails(
+                GeneralApplication.objects.incomplete_croo_applications(trips_year))),
             ('leaders', emails(qs.filter(
                 status=GeneralApplication.LEADER))),
             ('leader waitlist', emails(

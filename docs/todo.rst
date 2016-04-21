@@ -3,7 +3,6 @@ Things TODO
 
 Immediate
 ---------
-* Add email list of incomplete applications (both Leader and Croo?)
 * Add application filter by available sections and triptypes - email Josh confirming.
 * -----------------------
 * Dropdown for previous years.
