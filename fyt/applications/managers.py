@@ -140,6 +140,24 @@ class GeneralApplicationManager(models.Manager):\
             .distinct()
         )
 
+    def prospective_leaders_for_triptype(self, triptype):
+        """
+        Returns all prospective leaders who can lead a trip of this triptype.
+        """
+        return self.leader_applications(triptype.trips_year).filter(
+            Q(leader_supplement__preferred_triptypes=triptype) |
+            Q(leader_supplement__available_triptypes=triptype)
+        )
+
+    def prospective_leaders_for_section(self, section):
+        """
+        Returns all prospective leaders who can lead a trip on this section
+        """
+        return self.leader_applications(section.trips_year).filter(
+            Q(leader_supplement__preferred_sections=section) |
+            Q(leader_supplement__available_sections=section)
+        )
+
     def leader_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(leader_supplement__document="")
 
