@@ -49,7 +49,7 @@ class _SectionMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['section'] = self.get_section()
-        return super(_SectionMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class _TripMixin():
@@ -62,7 +62,7 @@ class _TripMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['trip'] = self.get_trip()
-        return super(_TripMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class _TripTemplateMixin():
@@ -75,7 +75,7 @@ class _TripTemplateMixin():
 
     def get_context_data(self, **kwargs):
         kwargs['triptemplate'] = self.get_triptemplate()
-        return super(_TripTemplateMixin, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class TripList(DatabaseTemplateView):
