@@ -42,10 +42,8 @@ class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
             Q(leader_supplement__available_triptypes=value))
 
 
-class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
-    """
-    TODO: move to utils, in general form
-    """
+class ApplicationTypeFilter(django_filters.ChoiceFilter):
+    """Filter for different types of applications."""
     def __init__(self, *args, **kwargs):
         choices = list(map(lambda c: ArbitraryChoice(*c), self.choices))
         filter_choices = map(lambda c: (c.value, c.display), choices)
@@ -97,7 +95,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
-    complete = ArbitraryChoiceFilter() # not associated with a specific field
+    complete = ApplicationTypeFilter()  # not associated with a specific field
 
     def lookup_user_by_name(self, queryset, value):
         return queryset.filter(
