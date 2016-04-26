@@ -59,6 +59,11 @@ class ContinueIfAlreadyApplied():
 
         return super().dispatch(request, *args, **kwargs)
 
+# Form constants
+GENERAL_FORM = 'form'
+LEADER_FORM = 'leader_form'
+CROO_FORM = 'croo_form'
+
 
 class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     """
@@ -94,9 +99,9 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
 
     def get_form_classes(self):
         return {
-            'form': ApplicationForm,
-            'leader_form': LeaderSupplementForm,
-            'croo_form': CrooSupplementForm,
+            GENERAL_FORM: ApplicationForm,
+            LEADER_FORM: LeaderSupplementForm,
+            CROO_FORM: CrooSupplementForm,
         }
 
     def get_instances(self):
@@ -104,9 +109,9 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         Return model instances to populate the forms.
         """
         return {
-            'form': None,
-            'leader_form': None,
-            'croo_form': None
+            GENERAL_FORM: None,
+            LEADER_FORM: None,
+            CROO_FORM: None
         }
 
     def get_forms(self, instances,  **kwargs):
@@ -165,18 +170,18 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         Connect the application instances
         """
         trips_year = self.get_trips_year()
-        forms['form'].instance.applicant = self.request.user
-        forms['form'].instance.trips_year = trips_year
+        forms[GENERAL_FORM].instance.applicant = self.request.user
+        forms[GENERAL_FORM].instance.trips_year = trips_year
         # form.status??
-        application = forms['form'].save()
+        application = forms[GENERAL_FORM].save()
 
-        forms['leader_form'].instance.application = application
-        forms['leader_form'].instance.trips_year = trips_year
-        forms['leader_form'].save()
+        forms[LEADER_FORM].instance.application = application
+        forms[LEADER_FORM].instance.trips_year = trips_year
+        forms[LEADER_FORM].save()
 
-        forms['croo_form'].instance.application = application
-        forms['croo_form'].instance.trips_year = trips_year
-        forms['croo_form'].save()
+        forms[CROO_FORM].instance.application = application
+        forms[CROO_FORM].instance.trips_year = trips_year
+        forms[CROO_FORM].save()
 
         return HttpResponseRedirect(self.get_success_url())
 
@@ -205,9 +210,9 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
     def get_instances(self):
         self.object = self.get_object()
         return {
-            'form': self.object,
-            'leader_form': self.object.leader_supplement,
-            'croo_form': self.object.croo_supplement,
+            GENERAL_FORM: self.object,
+            LEADER_FORM: self.object.leader_supplement,
+            CROO_FORM: self.object.croo_supplement,
         }
 
 
@@ -394,8 +399,8 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
 
         self.object = self.get_object()
         return {
-            'form': self.object,
-            'leader_form': self.object.leader_supplement,
+            GENERAL_FORM: self.object,
+            LEADER_FORM: self.object.leader_supplement,
             'croo_form': self.object.croo_supplement,
         }
 
