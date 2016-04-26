@@ -172,7 +172,6 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         trips_year = self.get_trips_year()
         forms[GENERAL_FORM].instance.applicant = self.request.user
         forms[GENERAL_FORM].instance.trips_year = trips_year
-        # form.status??
         application = forms[GENERAL_FORM].save()
 
         forms[LEADER_FORM].instance.application = application
