@@ -26,7 +26,7 @@ from fyt.permissions.views import (
     CreateApplicationPermissionRequired,
     DatabaseReadPermissionRequired,
     ApplicationEditPermissionRequired)
-from fyt.utils.views import MultipleFormMixin, ExtraContextMixin
+from fyt.utils.views import ExtraContextMixin
 from fyt.utils.forms import crispify
 
 
