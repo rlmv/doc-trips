@@ -140,17 +140,17 @@ class FilterSetFormHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        def filter_row(filter):
+            return Row(Div(filter, css_class='col-lg-12'))
+
         self.form_method = 'GET'
-        column_size = 'col-lg-12'
         self.layout = Layout(
-            Row(Div('complete', css_class=column_size)),
-            Row(Div('status', css_class=column_size)),
-            Row(Div('name', css_class=column_size)),
-            Row(Div('netid', css_class=column_size)),
-            Row(Div(AVAILABLE_SECTIONS, css_class=column_size)),
-            Row(Div(AVAILABLE_TRIPTYPES, css_class=column_size)),
-            Row(Div(CROO_QUALIFICATIONS, css_class=column_size)),
-            Row(Div(
-                Submit('submit', 'Filter', css_class='btn-block'),
-                css_class=column_size)),
+            filter_row('complete'),
+            filter_row('status'),
+            filter_row('name'),
+            filter_row('netid'),
+            filter_row(AVAILABLE_SECTIONS),
+            filter_row(AVAILABLE_TRIPTYPES),
+            filter_row(CROO_QUALIFICATIONS),
+            filter_row(Submit('submit', 'Filter', css_class='btn-block'))
         )
