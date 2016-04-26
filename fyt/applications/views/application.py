@@ -62,8 +62,8 @@ class ContinueIfAlreadyApplied():
 
 class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     """
-    View mixin which handles forms for Application,
-    LeaderSupplement, and CrooSupplement in the same view.
+    View mixin which handles forms for GenearlApplication, LeaderSupplement,
+    and CrooSupplement in the same view.
     """
     model = GeneralApplication
     template_name = 'applications/application.html'
@@ -74,6 +74,9 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     )
 
     def get_trips_year(self):
+        """
+        Override this if the url does not specify a trips year.
+        """
         return self.kwargs['trips_year']
 
     def get(self, request, *args, **kwargs):
@@ -83,11 +86,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
 
     def post(self, request, *args, **kwargs):
         forms = self.get_forms(instances=self.get_instances(),
-                               data=request.POST,
-                               files=request.FILES)
-
-        valid = map(lambda f: f.is_valid(), forms.values())
-        if all(valid):
+                               data=request.POST, files=request.FILES)
+        if all(f.is_valid() for f in forms.values()):
             return self.form_valid(forms)
 
         return self.form_invalid(forms)
@@ -99,25 +99,30 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             'croo_form': CrooSupplementForm,
         }
 
-    def get_forms(self, instances=None,  **kwargs):
+    def get_instances(self):
+        """
+        Return model instances to populate the forms.
+        """
+        return {
+            'form': None,
+            'leader_form': None,
+            'croo_form': None
+        }
 
-        if instances is None:
-            instances = {}
-
-        forms = {}
+    def get_forms(self, instances,  **kwargs):
+        """
+        Return a dict mapping form names to form objects.
+        """
         trips_year = self.get_trips_year()
 
-        for (name, form_class) in self.get_form_classes().items():
-            forms[name] = form_class(instance=instances.get(name),
-                                     trips_year=trips_year,
-                                     prefix=name, **kwargs)
-
-        return forms
-
-    def get_instances(self):
-        return {}
+        return {name: form_class(instance=instances.get(name), prefix=name,
+                                 trips_year=trips_year, **kwargs)
+                for name, form_class in self.get_form_classes().items()}
 
     def form_valid(self, forms):
+        """
+        Save the forms.
+        """
         for form in forms.values():
             form.save()
         return HttpResponseRedirect(self.get_success_url())
