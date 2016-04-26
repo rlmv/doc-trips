@@ -9,6 +9,7 @@ from django.db.models import Q
 from fyt.applications.models import GeneralApplication, QualificationTag
 from fyt.trips.models import Section, TripType
 
+STATUS = 'status'
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
@@ -103,7 +104,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status']
+        fields = [STATUS]
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
@@ -126,8 +127,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
         super().__init__(*args, **kwargs)
 
         # add a blank choice
-        self.filters['status'].field.choices.insert(0, ('', 'Any'))
-        self.filters['status'].field.label = 'Status'
+        self.filters[STATUS].field.choices.insert(0, ('', 'Any'))
+        self.filters[STATUS].field.label = 'Status'
 
         self.filters[CROO_QUALIFICATIONS] = CrooQualificationFilter(trips_year)
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
@@ -151,7 +152,7 @@ class FilterSetFormHelper(FormHelper):
         self.form_method = 'GET'
         self.layout = Layout(
             filter_row('complete'),
-            filter_row('status'),
+            filter_row(STATUS),
             filter_row('name'),
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
