@@ -60,8 +60,7 @@ class ContinueIfAlreadyApplied():
         return super().dispatch(request, *args, **kwargs)
 
 
-class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
-                            CrispyFormMixin):
+class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     """
     View mixin which handles forms for Application,
     LeaderSupplement, and CrooSupplement in the same view.
@@ -77,10 +76,23 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
     def get_trips_year(self):
         return self.kwargs['trips_year']
 
+    def get(self, request, *args, **kwargs):
+        forms = self.get_forms(instances=self.get_instances())
+        context = self.get_context_data(**forms)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        forms = self.get_forms(instances=self.get_instances(),
+                               data=request.POST,
+                               files=request.FILES)
+
+        valid = map(lambda f: f.is_valid(), forms.values())
+        if all(valid):
+            return self.form_valid(forms)
+
+        return self.form_invalid(forms)
+
     def get_form_classes(self):
-        """
-        See utils.views.MultipleFormMixin
-        """
         return {
             'form': ApplicationForm,
             'leader_form': LeaderSupplementForm,
@@ -101,6 +113,18 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
                                      prefix=name, **kwargs)
 
         return forms
+
+    def get_instances(self):
+        return {}
+
+    def form_valid(self, forms):
+        for form in forms.values():
+            form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def form_invalid(self, forms):
+        context = self.get_context_data(**forms)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         """
