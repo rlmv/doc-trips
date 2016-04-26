@@ -74,6 +74,9 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
         "Uh oh. Looks like there's a problem somewhere in your application"
     )
 
+    def get_trips_year(self):
+        return self.kwargs['trips_year']
+
     def get_form_classes(self):
         """
         See utils.views.MultipleFormMixin
@@ -84,11 +87,26 @@ class ApplicationFormsMixin(FormMessagesMixin, MultipleFormMixin,
             'croo_form': CrooSupplementForm,
         }
 
+    def get_forms(self, instances=None,  **kwargs):
+
+        if instances is None:
+            instances = {}
+
+        forms = {}
+        trips_year = self.get_trips_year()
+
+        for (name, form_class) in self.get_form_classes().items():
+            forms[name] = form_class(instance=instances.get(name),
+                                     trips_year=trips_year,
+                                     prefix=name, **kwargs)
+
+        return forms
+
     def get_context_data(self, **kwargs):
         """
         Lots o' goodies for the template
         """
-        trips_year = TripsYear.objects.current()
+        trips_year = self.get_trips_year()
         # just in case AppInfo hasn't been setup yet
         information, _ = ApplicationInformation.objects.get_or_create(
             trips_year=trips_year
@@ -110,11 +128,14 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
     """
     success_url = reverse_lazy('applications:continue')
 
+    def get_trips_year(self):
+        return TripsYear.objects.current()
+
     def form_valid(self, forms):
         """
         Connect the application instances
         """
-        trips_year = TripsYear.objects.current()
+        trips_year = self.get_trips_year()
         forms['form'].instance.applicant = self.request.user
         forms['form'].instance.trips_year = trips_year
         # form.status??
@@ -139,6 +160,9 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
     success_url = reverse_lazy('applications:continue')
     context_object_name = 'application'
 
+    def get_trips_year(self):
+        return TripsYear.objects.current()
+
     def get_object(self):
         """
         TODO: perhaps redirect to NewApplication instead of 404?
@@ -146,7 +170,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         return get_object_or_404(
             self.model,
             applicant=self.request.user,
-            trips_year=TripsYear.objects.current()
+            trips_year=self.get_trips_year()
         )
 
     def get_instances(self):

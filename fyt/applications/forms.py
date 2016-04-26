@@ -20,7 +20,7 @@ class TripAssignmentForm(forms.ModelForm):
     class Meta:
         model = GeneralApplication
         fields = ['assigned_trip']
-        
+
     assigned_trip = TripChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
@@ -76,7 +76,7 @@ class ApplicationForm(forms.ModelForm):
             'peer_training': forms.Textarea(attrs={'rows': 4}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -102,7 +102,7 @@ class CrooSupplementForm(forms.ModelForm):
             'kitchen_lead_qualifications': forms.Textarea(attrs={'rows': 2}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -129,16 +129,8 @@ class LeaderSupplementForm(forms.ModelForm):
             'document'
         )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Restrict querysets to current trips year
-        # TODO: since this form is used by the database update view,
-        # pass the trips year in explicitly to support previous years,
-        # OR don't allow editing of old trips_years.
-        trips_year = TripsYear.objects.current()
-        if kwargs.get('instance', None):
-            assert kwargs['instance'].trips_year == trips_year
 
         # Widget specifications are in __init__ because of
         # https://github.com/maraujop/django-crispy-forms/issues/303
