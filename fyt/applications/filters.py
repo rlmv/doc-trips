@@ -11,6 +11,9 @@ from fyt.trips.models import Section, TripType
 
 ArbitraryChoice = namedtuple('ArbitraryChoice', ['value', 'display', 'action'])
 
+CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
+AVAILABLE_SECTIONS = 'available_sections'
+AVAILABLE_TRIPTYPES = 'available_triptypes'
 
 class AvailableSectionFilter(django_filters.ModelChoiceFilter):
     """Filter leaders based on the trips sections they are available for."""
@@ -82,9 +85,15 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         return action(qs)
 
 
-CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
-AVAILABLE_SECTIONS = 'available_sections'
-AVAILABLE_TRIPTYPES = 'available_triptypes'
+class CrooQualificationFilter(django_filters.ModelMultipleChoiceFilter):
+    """Filter croo leaders based on recommended qualifications."""
+    def __init__(self, trips_year):
+        qs = QualificationTag.objects.filter(trips_year=trips_year)
+        super().__init__(name=CROO_QUALIFICATIONS,
+                         label='Croo Qualifications',
+                         queryset=qs)
+        # TODO: this causes a HUGE number of queries. WHY?
+        # widget=forms.CheckboxSelectMultiple()
 
 
 class ApplicationFilterSet(django_filters.FilterSet):
@@ -117,16 +126,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters['status'].field.choices.insert(0, ('', 'Any'))
         self.filters['status'].field.label = 'Status'
 
-        # add the suggested croos filter. we have to restrict the queryset,
-        # and use the widget
-        self.filters[CROO_QUALIFICATIONS] = django_filters.ModelMultipleChoiceFilter(
-            name=CROO_QUALIFICATIONS,
-            label='Croo Qualifications',
-            queryset=QualificationTag.objects.filter(trips_year=trips_year),
-            # TODO: this causes a HUGE number of queries. WHY?
-            # widget=forms.CheckboxSelectMultiple()
-        )
-
+        self.filters[CROO_QUALIFICATIONS] = CrooQualificationFilter(trips_year)
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
 
