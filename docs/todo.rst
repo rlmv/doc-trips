@@ -3,8 +3,6 @@ Things TODO
 
 Immediate
 ---------
-* Add application filter by available sections and triptypes - email Josh confirming.
-* -----------------------
 * Dropdown for previous years.
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
