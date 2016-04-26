@@ -222,7 +222,6 @@ class BlockDirectorate(GroupRequiredMixin):
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                        TripsYearMixin, ExtraContextMixin, ListView):
     model = GeneralApplication
-    context_object_name = 'applications'
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
@@ -246,8 +245,8 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
         )
         table = ApplicationTable(filter.qs, self.request)
         return {
-            self.context_object_name: filter.qs,
             'table': table,
+            'application_count': filter.qs.count(),
             'applications_filter': filter
         }
 
