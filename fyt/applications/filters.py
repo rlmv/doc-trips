@@ -49,19 +49,18 @@ _Choice = namedtuple('_Choice', ['value', 'display', 'action'])
 
 class ApplicationTypeFilter(django_filters.ChoiceFilter):
     """Filter for different types of applications."""
-    def __init__(self, *args, **kwargs):
-        choices = list(map(lambda c: _Choice(*c), self.choices))
-        filter_choices = map(lambda c: (c.value, c.display), choices)
-        self.actions = dict(map(lambda c: (c.value, c.action), choices))
-        super().__init__(self, *args, choices=filter_choices, **kwargs)
+    def __init__(self):
+        self.actions = {c.value: c.action for c in self.choices}
+        filter_choices = [(c.value, c.display) for c in self.choices]
+        super().__init__(self, choices=filter_choices)
 
-    # (query_value, display value, method)
+    # (query value, display name, action/method)
     choices = [
-        ('any', 'All Applications', None),
-        ('croo', 'Croo Applications', 'croo_applications'),
-        ('leader', 'Leader Applications', 'leader_applications'),
-        ('either', 'Leader OR Croo Applications', 'either_applications'),
-        ('both', 'Leader AND Croo Applications', 'both_applications'),
+        _Choice('any', 'All Applications', None),
+        _Choice('croo', 'Croo Applications', 'croo_applications'),
+        _Choice('leader', 'Leader Applications', 'leader_applications'),
+        _Choice('either', 'Leader OR Croo Applications', 'either_applications'),
+        _Choice('both', 'Leader AND Croo Applications', 'both_applications'),
     ]
 
     def croo_applications(self, qs):
