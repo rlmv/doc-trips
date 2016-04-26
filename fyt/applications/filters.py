@@ -7,8 +7,24 @@ import django_filters
 from django.db.models import Q
 
 from fyt.applications.models import GeneralApplication, QualificationTag
+from fyt.trips.models import Section
 
 ArbitraryChoice = namedtuple('ArbitraryChoice', ['value', 'display', 'action'])
+
+
+class AvailableSectionsFilter(django_filters.ModelChoiceFilter):
+    """Filter leaders based on the trips sections they are available for."""
+    def __init__(self, trips_year):
+        qs = Section.objects.filter(trips_year=trips_year)
+        super().__init__(queryset=qs)
+
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        return qs.filter(
+            Q(leader_supplement__preferred_sections=value) |
+            Q(leader_supplement__available_sections=value))
 
 
 class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
@@ -54,6 +70,8 @@ class ArbitraryChoiceFilter(django_filters.ChoiceFilter):
 
 
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
+AVAILABLE_SECTIONS = 'available_sections'
+
 
 class ApplicationFilterSet(django_filters.FilterSet):
 
@@ -95,6 +113,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
             # widget=forms.CheckboxSelectMultiple()
         )
 
+        self.filters[AVAILABLE_SECTIONS] = AvailableSectionsFilter(trips_year)
+
         self.form.helper = FilterSetFormHelper(self.form)
 
 
@@ -110,6 +130,7 @@ class FilterSetFormHelper(FormHelper):
             Row(Div('status', css_class=column_size)),
             Row(Div('name', css_class=column_size)),
             Row(Div('netid', css_class=column_size)),
+            Row(Div(AVAILABLE_SECTIONS, css_class=column_size)),
             Row(Div(CROO_QUALIFICATIONS, css_class=column_size)),
             Row(Div(
                 Submit('submit', 'Filter', css_class='btn-block'),
