@@ -100,7 +100,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = GeneralApplication
-        fields = ['status', CROO_QUALIFICATIONS]
+        fields = ['status']
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
