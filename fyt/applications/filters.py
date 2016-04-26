@@ -80,9 +80,11 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
     def filter(self, qs, value):
         if not value or not self.actions[value]:
             return qs
+
         action = getattr(self, self.actions[value])
         if not action:
             return qs
+
         return action(qs)
 
 
@@ -107,17 +109,17 @@ class ApplicationFilterSet(django_filters.FilterSet):
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
     complete = ApplicationTypeFilter()  # not associated with a specific field
 
-    def lookup_user_by_name(self, queryset, value):
-        return queryset.filter(
-            applicant__name__icontains=value
-        )
+    def lookup_user_by_name(self, qs, value):
+        if not value:
+            return qs
 
-    def lookup_user_by_netid(self, queryset, value):
-        if value == '':
-            return queryset
-        return queryset.filter(
-            applicant__netid__iexact=value
-        )
+        return qs.filter(applicant__name__icontains=value)
+
+    def lookup_user_by_netid(self, qs, value):
+        if not value:
+            return qs
+
+        return qs.filter(applicant__netid__iexact=value)
 
     def __init__(self, *args, **kwargs):
         trips_year = kwargs.pop('trips_year')
