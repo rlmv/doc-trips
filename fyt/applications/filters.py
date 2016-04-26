@@ -9,11 +9,10 @@ from django.db.models import Q
 from fyt.applications.models import GeneralApplication, QualificationTag
 from fyt.trips.models import Section, TripType
 
-ArbitraryChoice = namedtuple('ArbitraryChoice', ['value', 'display', 'action'])
-
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
+
 
 class AvailableSectionFilter(django_filters.ModelChoiceFilter):
     """Filter leaders based on the trips sections they are available for."""
@@ -45,10 +44,12 @@ class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
             Q(leader_supplement__available_triptypes=value))
 
 
+_Choice = namedtuple('_Choice', ['value', 'display', 'action'])
+
 class ApplicationTypeFilter(django_filters.ChoiceFilter):
     """Filter for different types of applications."""
     def __init__(self, *args, **kwargs):
-        choices = list(map(lambda c: ArbitraryChoice(*c), self.choices))
+        choices = list(map(lambda c: _Choice(*c), self.choices))
         filter_choices = map(lambda c: (c.value, c.display), choices)
         self.actions = dict(map(lambda c: (c.value, c.action), choices))
         super().__init__(self, *args, choices=filter_choices, **kwargs)
