@@ -1,6 +1,5 @@
 
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 
 
