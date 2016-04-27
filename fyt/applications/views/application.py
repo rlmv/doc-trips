@@ -191,7 +191,6 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
     View for applicants to edit their application.
     """
     success_url = reverse_lazy('applications:continue')
-    context_object_name = 'application'
 
     def get_trips_year(self):
         return TripsYear.objects.current()
