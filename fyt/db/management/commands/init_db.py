@@ -21,16 +21,13 @@ def load_initial_data(filename):
 
 class Command(BaseCommand):
 
-    help = ("Load all data needed for a fresh database")
-    args = 'trips_year'
+    help = "Load all data needed for a fresh database"
+
+    def add_arguments(self, parser):
+        parser.add_argument('trips_year')
 
     def handle(self, *args, **options):
-
-        if len(args) != 1:
-            self.stderr.write("trips_year is a required argument")
-            return
-
-        year = args[0]
+        year = options['trips_year']
 
         try:
             TripsYear.objects.current()
