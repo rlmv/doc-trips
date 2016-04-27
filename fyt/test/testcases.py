@@ -50,8 +50,7 @@ class TripsYearTestCaseUtils():
         netid = 'incoming'
         name = 'incoming'
         email = netid + '@dartmouth.edu'
-        did = 'incoming DID'
-        self.user = get_user_model().objects.create_user(netid, name, email, did)
+        self.user = get_user_model().objects.create_user(netid, name, email)
 
         return self.user
 

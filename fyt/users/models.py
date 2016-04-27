@@ -12,31 +12,24 @@ class DartmouthUserManager(BaseUserManager):
     """
     Object manager for DartmouthUser
     """
-    def get_or_create_by_netid(self, netid, name, did=None):
+    def get_or_create_by_netid(self, netid, name):
         """
         Return the user with netid.
 
         Create the user if necessary. Does not search via name, since
         names from different sources (CAS, DartDm lookup) can be slightly
         different.
-
-        Because we added the did field, some users do not have it set.
-        Also, users added via the permissions/access page don't have a
-        did set. Check and fix it if possible.
         """
         try:
             user = self.get(netid=netid)
-            if user.did == '' and did is not None:
-                user.did = did
-                user.save()
             created = False
         except self.model.DoesNotExist:
-            user = self.create_user(netid, name=name, did=did)
+            user = self.create_user(netid, name=name)
             created = True
 
         return (user, created)
 
-    def create_user(self, netid, name, email=None, did=None):
+    def create_user(self, netid, name, email=None):
         """
         Create a user. Try and lookup user's email in the
         Dartmouth Directory manager. If not found email is
@@ -48,10 +41,7 @@ class DartmouthUserManager(BaseUserManager):
             except EmailLookupException:
                 email = ''
 
-        if did is None:
-            did = ''
-
-        return self.create(netid=netid, did=did, email=email, name=name)
+        return self.create(netid=netid, email=email, name=name)
 
     def create_superuser(self, **kwargs):
         raise Exception("create_superuser not implemented. "
@@ -101,8 +91,6 @@ class DartmouthUser(PermissionsMixin):
     objects = DartmouthUserManager()
 
     netid = NetIdField(unique=True)
-    # DID (Dartmouth ID) is not guaranteed to be set
-    did = models.CharField(max_length=20)
     email = models.EmailField('email address')
     email2 = models.EmailField('auxiliary email address', null=True, blank=True)
     name = models.CharField(max_length=255, db_index=True)

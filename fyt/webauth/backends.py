@@ -9,9 +9,9 @@ from fyt.users.models import DartmouthUser
 
 
 def parse_cas_success(tree):
-    """ 
+    """
     Callback function for parsing Dartmouth's CAS response.
-    
+
     Returns the verified user.
     """
     def findtext(text):
@@ -20,9 +20,8 @@ def parse_cas_success(tree):
 
     name = findtext('name')
     netid = findtext('netid')
-    did = findtext('did')
     # CAS response does not contain email
-    user, created = DartmouthUser.objects.get_or_create_by_netid(netid, name, did=did)
+    user, created = DartmouthUser.objects.get_or_create_by_netid(netid, name)
 
     return user
 
@@ -51,7 +50,7 @@ def verify(ticket, service):
 
 
 class WebAuthBackend(ModelBackend):
-    """ 
+    """
     CAS authentication backend for Dartmouth Webauth
     """
     def authenticate(self, ticket, service):
@@ -61,8 +60,8 @@ class WebAuthBackend(ModelBackend):
         return verify(ticket, service)
 
     def get_user(self, user_id):
-        """ 
-        Retrieve the user's entry in the User model if it exists 
+        """
+        Retrieve the user's entry in the User model if it exists
         """
         try:
             return DartmouthUser.objects.get(pk=user_id)

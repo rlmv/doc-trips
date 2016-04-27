@@ -17,7 +17,7 @@ def lookup_email(*args, **kwargs):
 class UserManagerTestCase(TestCase):
 
     @patch('fyt.users.models.lookup_email', new=lookup_email)
-    def test_create_user_without_did(self):
+    def test_create_user(self):
 
         netid = 'd123456z'
         name = 'Igor'
@@ -26,21 +26,6 @@ class UserManagerTestCase(TestCase):
         self.assertTrue(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
-        self.assertEqual(user.did, '')
-
-    @patch('fyt.users.models.lookup_email', new=lookup_email)
-    def test_create_user_then_add_did(self):
-
-        netid = 'd123456z'
-        name = 'Igor'
-        user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name)
-
-        DID = 'destiny'
-        user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name, did=DID)
-        self.assertFalse(ct)
-        self.assertEqual(user.netid, netid)
-        self.assertEqual(user.name, name)
-        self.assertEqual(user.did, DID)
 
     def test_email_lookup_error_sets_blank_email(self):
         user = DartmouthUser.objects.create_user('junk_netid', 'name')
