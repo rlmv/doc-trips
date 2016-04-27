@@ -16,9 +16,8 @@ class DartmouthUserManager(BaseUserManager):
         """
         Return the user with netid.
 
-        Create the user if necessary. Does not search via name, since
-        names from different sources (CAS, DartDm lookup) can be slightly
-        different.
+        Create the user if necessary. Does not search via name, since names
+        from different sources (CAS, DartDm lookup) can be slightly different.
         """
         try:
             user = self.get(netid=netid)
@@ -31,9 +30,8 @@ class DartmouthUserManager(BaseUserManager):
 
     def create_user(self, netid, name, email=None):
         """
-        Create a user. Try and lookup user's email in the
-        Dartmouth Directory manager. If not found email is
-        left empty.
+        Create a user. Try and lookup user's email in the Dartmouth Directory
+        manager. If not found email is left empty.
         """
         if email is None:
             try:
@@ -99,7 +97,6 @@ class DartmouthUser(PermissionsMixin):
     class Meta:
         ordering = ['name']
 
-    # used by Django Admin
     @property
     def is_active(self):
         return True
@@ -127,5 +124,4 @@ class DartmouthUser(PermissionsMixin):
         return False
 
     def __str__(self):
-        #return '{} ({})'.format(self.name, self.netid)
         return str(self.name)
