@@ -372,9 +372,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
     ]
 
     def extra_context(self):
-        trips_year = self.kwargs['trips_year']
         return {
-            'trips_year': trips_year,
             'generalapplication_fields': self.generalapplication_fields,
             'leaderapplication_fields': self.leaderapplication_fields,
             'trainings_fields': self.trainings_fields,
