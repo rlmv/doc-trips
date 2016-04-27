@@ -397,7 +397,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
         return {
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
-            'croo_form': self.object.croo_supplement,
+            CROO_FORM: self.object.croo_supplement,
         }
 
     def get_context_data(self, **kwargs):
