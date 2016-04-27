@@ -65,13 +65,13 @@ class NetIdField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 20
-        super(NetIdField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def to_python(self, value):
         """
         Handle uppercase ids
         """
-        value = super(NetIdField, self).to_python(value)
+        value = super().to_python(value)
         if value is not None:
             return value.lower()
 
