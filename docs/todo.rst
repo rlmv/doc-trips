@@ -32,7 +32,6 @@ Cosmetic
 * Rename application models
 * Rename ``incoming.Settings`` to something nicer
 * Rename ``GeneralApplication.assigned_trip`` to ``trip_assignment``. Share assignment form with ``IncomingStudent``?
-* Remove ``DartmoutUser.did``?
 * Generalize Create/New button
 * Shaw overbooked campsites in matrix
 * Warn when a trip is over booked on the leader/trippee assignment
