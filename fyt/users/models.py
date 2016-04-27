@@ -92,7 +92,6 @@ class DartmouthUser(PermissionsMixin):
 
     netid = NetIdField(unique=True)
     email = models.EmailField('email address')
-    email2 = models.EmailField('auxiliary email address', null=True, blank=True)
     name = models.CharField(max_length=255, db_index=True)
 
     last_login = models.DateTimeField('last login', blank=True, null=True)
