@@ -50,5 +50,5 @@ docs:
 db_from_remote:
 	./scripts/load_remote_db.sh
 
-db_fresh:
+db_fresh: migrate
 	$(MANAGE) init_db 2015
