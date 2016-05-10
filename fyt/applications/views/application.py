@@ -291,6 +291,18 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
             .annotate(normalized_croo_grade=Coalesce('avg_croo_grade', V(0.0)))
             .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))
+            .only(
+                'applicant__netid',
+                'applicant__name',
+                'trips_year_id',
+                'status',
+                'community_building',
+                'risk_management',
+                'wilderness_skills',
+                'croo_training',
+                'fa_cert',
+                'fa_other',
+            )
         )
 
     def extra_context(self):
