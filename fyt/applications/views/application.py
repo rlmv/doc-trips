@@ -302,7 +302,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
         table = ApplicationTable(filter.qs, self.request)
         return {
             'table': table,
-            'application_count': filter.qs.count(),
+            'application_count': len(filter.qs),
             'applications_filter': filter
         }
 
