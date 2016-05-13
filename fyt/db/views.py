@@ -219,7 +219,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
 
     def get_headline(self):
         return "Are you sure you want to delete %s %s?" % (
-            self.object.get_model_name(), self.object
+            self.object.get_model_name_lower().title(), self.object
         )
 
     def get_success_url(self):

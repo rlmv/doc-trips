@@ -20,7 +20,7 @@ class TripsYear(models.Model):
     def make_next_year(self):
         """
         Instantiate the next ``trips_year``.
-       
+
         Only works if this the current trips year.
         """
         assert self.is_current
@@ -54,16 +54,9 @@ class DatabaseModel(models.Model):
         return reverse_detail_url(self)
 
     @classmethod
-    def get_model_name(cls):
-        """ Return the name of the model. """
-        if hasattr(cls, 'model_name'):
-            return cls.model_name
-        return cls.__name__
-
-    @classmethod
     def get_model_name_lower(cls):
         """ Lowercased name of the model. """
-        return cls.get_model_name().lower()
+        return cls.__name__.lower()
 
     @classmethod
     def get_app_name(cls):
