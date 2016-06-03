@@ -23,7 +23,6 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.applications.views.graders import get_graders
 from fyt.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
-from fyt.db.urlhelpers import reverse_detail_url
 
 
 def make_application(status=GeneralApplication.PENDING, trips_year=None,
@@ -733,7 +732,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         url = reverse('db:leaderapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit()
-        self.assertRedirects(res, reverse_detail_url(application))
+        self.assertRedirects(res, application.detail_url())
 
     def test_delete_croo_grade_redirects_to_app(self):
         trips_year = self.init_current_trips_year()
@@ -742,7 +741,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         url = reverse('db:crooapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit()
-        self.assertRedirects(res, reverse_detail_url(application))
+        self.assertRedirects(res, application.detail_url())
 
 
 class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):

@@ -2,8 +2,7 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.db.urlhelpers import (reverse_create_url, reverse_update_url,
-                               reverse_index_url)
+from fyt.db.urlhelpers import reverse_create_url, reverse_index_url
 from fyt.db.views import TripsYearMixin
 from fyt.test.testcases import WebTestCase
 from fyt.trips.models import Campsite, TripType, TripTemplate, Section
@@ -65,7 +64,7 @@ class TripsYearMixinTestCase(WebTestCase):
         self.mock_director()
 
         # good request - trips year in url matches trips year of c1
-        response = self.app.get(reverse_update_url(c1), user=self.director)
+        response = self.app.get(c1.update_url(), user=self.director)
         object = response.context['object']
         self.assertEquals(object, c1)
 
@@ -82,7 +81,7 @@ class TripsYearMixinTestCase(WebTestCase):
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
         triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
 
-        response = self.app.get(reverse_update_url(triptemplate),
+        response = self.app.get(triptemplate.update_url(),
                                 user=self.mock_director())
         choices = response.context['form'].fields['campsite1'].queryset
 

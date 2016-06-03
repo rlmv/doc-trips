@@ -19,7 +19,6 @@ from crispy_forms.bootstrap import FormActions
 from . import forward
 from .forms import tripsyear_modelform_factory
 from .models import TripsYear
-from .urlhelpers import reverse_update_url, reverse_delete_url
 from fyt.permissions.views import (
     DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
 from fyt.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
@@ -163,8 +162,7 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
 
     def get_success_url(self):
         """ TODO: for now... """
-        from fyt.db.urlhelpers import reverse_detail_url
-        return reverse_detail_url(self.object)
+        return self.object.detail_url()
 
 
 class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
@@ -187,13 +185,11 @@ class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
         )
 
     def get_success_url(self):
-        from fyt.db.urlhelpers import reverse_detail_url
-        return reverse_detail_url(self.object)
+        return self.object.detail_url()
 
     def get_form_helper(self, form):
         """ Add Submit and delete buttons to the form. """
 
-        from fyt.db.urlhelpers import reverse_delete_url
         helper = FormHelper(form)
 
         buttons = [Submit('submit', 'Update')]
@@ -201,7 +197,7 @@ class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
         if self.delete_button:
             buttons.append(
                 HTML('<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
-                    reverse_delete_url(self.object)
+                    self.object.delete_url()
                 )))
 
         helper.layout.append(FormActions(*buttons))
@@ -266,8 +262,8 @@ class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
     fields = None
 
     def get_context_data(self, **kwargs):
-        kwargs['update_url'] = reverse_update_url(self.object)
-        kwargs['delete_url'] = reverse_delete_url(self.object)
+        kwargs['update_url'] = self.object.update_url()
+        kwargs['delete_url'] = self.object.delete_url()
         return super().get_context_data(**kwargs)
 
 

@@ -15,7 +15,7 @@ from ..models import (
     NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
 )
 from fyt.transport.models import Route
-from fyt.db.urlhelpers import reverse_create_url, reverse_update_url
+from fyt.db.urlhelpers import reverse_create_url
 from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
@@ -136,7 +136,7 @@ class TripRouteOverridesTestCase(WebTestCase):
         trip = mommy.make(Trip, trips_year=trips_year,
                           section=section, template=template)
         route = mommy.make(Route, trips_year=trips_year)
-        res = self.app.get(reverse_update_url(trip), user=self.mock_director())
+        res = self.app.get(trip.update_url(), user=self.mock_director())
         form = res.form
         form['dropoff_route'] = route.pk
         form['pickup_route'] = route.pk

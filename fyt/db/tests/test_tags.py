@@ -7,7 +7,7 @@ from model_mommy import mommy
 from fyt.test.testcases import TripsTestCase
 from fyt.trips.models import Section
 from fyt.db.templatetags.links import pass_null
-from fyt.db.urlhelpers import reverse_detail_url
+
 
 class NullPassThroughDecorator(unittest.TestCase):
 
@@ -52,7 +52,7 @@ class LinkTagTestCase(TripsTestCase):
         ).render(Context({
             'obj_list': [obj]
         }))
-        target = '<a href="%s">%s</a>' % (reverse_detail_url(obj), str(obj))
+        target = '<a href="%s">%s</a>' % obj.detail_url(), str(obj))
         self.assertEqual(out, target)
 
     def test_detail_link_with_iterable(self):
@@ -66,7 +66,7 @@ class LinkTagTestCase(TripsTestCase):
             'obj_list': [obj1, obj2]
         }))
         target = '<a href="{}">{}</a>, <a href="{}">{}</a>'.format(
-            reverse_detail_url(obj1), str(obj1),
-            reverse_detail_url(obj2), str(obj2)
+            obj1.detail_url(), str(obj1),
+            obj2.detail_url(), str(obj2)
         )
         self.assertEqual(out, target)

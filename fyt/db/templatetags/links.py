@@ -2,10 +2,9 @@ from functools import wraps
 
 from django import template
 from django.utils.safestring import mark_safe
-from django.core.urlresolvers import reverse
 
 from fyt.db.models import TripsYear
-from fyt.db.urlhelpers import reverse_update_url, reverse_delete_url, reverse_create_url, reverse_detail_url
+from fyt.db.urlhelpers import reverse_create_url
 
 register = template.Library()
 
@@ -18,7 +17,7 @@ make_link = _make_link
 
 
 def pass_null(func):
-    """ 
+    """
     Decorator
 
     If the first argument is False, return the
@@ -39,7 +38,7 @@ def edit_link(db_object, text=None):
     """ Insert html link to edit db_object. """
     if text is None:
         text = 'edit'
-    return _make_link(reverse_update_url(db_object), text)
+    return _make_link(db_object.update_url(), text)
 
 
 @register.filter
@@ -48,7 +47,7 @@ def delete_link(db_object, text=None):
     """ Insert html link to delete db_object. """
     if text is None:
         text = 'delete'
-    return _make_link(reverse_delete_url(db_object), text)
+    return _make_link(db_object.delete_url(), text)
 
 
 @register.simple_tag
@@ -71,7 +70,7 @@ def detail_link(db_obj, text=None):
             return str(obj)
         return text
 
-    to_link = lambda obj: _make_link(reverse_detail_url(obj), to_str(obj))
+    to_link = lambda obj: _make_link(obj.detail_url(), to_str(obj))
     return mark_safe(', '.join(map(to_link, as_list(db_obj))))
 
 

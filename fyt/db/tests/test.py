@@ -11,7 +11,7 @@ from model_mommy import mommy
 
 from fyt.test.testcases import WebTestCase, TripsYearTestCase
 from fyt.db.models import DatabaseModel, TripsYear
-from fyt.db.urlhelpers import reverse_update_url, reverse_create_url, reverse_index_url
+from fyt.db.urlhelpers import reverse_create_url, reverse_index_url
 from fyt.trips.models import Campsite, TripTemplate
 from fyt.db.forms import tripsyear_modelform_factory
 
@@ -37,7 +37,7 @@ class DatabaseMixinTestCase(WebTestCase):
     def test_need_database_permissions_to_access_database_pages(self):
 
         campsite = mommy.make(Campsite, trips_year=self.trips_year)
-        url = reverse_update_url(campsite)
+        url = campsite.update_url()
 
         self.mock_user()
         self.app.get(url, user=self.user.netid, expect_errors=True)
@@ -54,6 +54,3 @@ class FormFieldCallbackTestCase(TripsYearTestCase):
 
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
         tripsyear_modelform_factory(Campsite, self.current_trips_year, fields='__all__')
-
-
-

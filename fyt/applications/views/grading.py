@@ -12,7 +12,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpResponseRedirect
 
-from fyt.db.urlhelpers import reverse_detail_url
 from fyt.db.models import TripsYear
 from fyt.db.views import DatabaseDeleteView
 from fyt.applications.models import (
@@ -370,11 +369,11 @@ class DeleteLeaderGrade(DatabaseDeleteView):
     model = LeaderApplicationGrade
 
     def get_success_url(self):
-        return reverse_detail_url(self.object.application.application)
+        return self.object.application.application.detail_url()
 
 
 class DeleteCrooGrade(DatabaseDeleteView):
     model = CrooApplicationGrade
 
     def get_success_url(self):
-        return reverse_detail_url(self.object.application.application)
+        return elf.object.application.application.detail_url()

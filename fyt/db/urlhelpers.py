@@ -31,21 +31,6 @@ def _reverse_db_url(db_object, urlpattern_suffix):
 
     return reverse(urlpattern, kwargs=kwargs)
 
-def reverse_detail_url(db_object):
-    try:
-        return db_object.detail_url()
-    except AttributeError:
-        return _reverse_db_url(db_object, 'detail')
-
-def reverse_delete_url(db_object):
-    """ Reverse the url to delete db_object. """
-    return _reverse_db_url(db_object, 'delete')
-
-
-def reverse_update_url(db_object):
-    """ Reverse the url to update db_object. """
-    return _reverse_db_url(db_object, 'update')
-
 
 def reverse_index_url(db_object):
     """ Reverse the url to an Index (ListView).

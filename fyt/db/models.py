@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from fyt.db.managers import TripsYearManager
@@ -50,8 +51,19 @@ class DatabaseModel(models.Model):
         abstract = True
 
     def get_absolute_url(self):
-        from fyt.db.urlhelpers import reverse_detail_url
-        return reverse_detail_url(self)
+        return self.detail_url()
+
+    def detail_url(self):
+        return reverse('db:{}_detail'.format(self.get_model_name_lower()),
+                       kwargs=self.obj_kwargs())
+
+    def update_url(self):
+        return reverse('db:{}_update'.format(self.get_model_name_lower()),
+                       kwargs=self.obj_kwargs())
+
+    def delete_url(self):
+        return reverse('db:{}_delete'.format(self.get_model_name_lower()),
+                       kwargs=self.obj_kwargs())
 
     @classmethod
     def get_model_name_lower(cls):
