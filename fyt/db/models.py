@@ -65,6 +65,10 @@ class DatabaseModel(models.Model):
         return reverse('db:{}_delete'.format(self.get_model_name_lower()),
                        kwargs=self.obj_kwargs())
 
+    def index_url(self):
+        return reverse('db:{}_index'.format(self.get_model_name_lower(),
+                       kwargs={'trips_year': self.trips_year_id}))
+
     @classmethod
     def get_model_name_lower(cls):
         """ Lowercased name of the model. """

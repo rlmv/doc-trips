@@ -2,7 +2,7 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.db.urlhelpers import reverse_create_url, reverse_index_url
+from fyt.db.urlhelpers import reverse_create_url
 from fyt.db.views import TripsYearMixin
 from fyt.test.testcases import WebTestCase
 from fyt.trips.models import Campsite, TripType, TripTemplate, Section
@@ -49,8 +49,7 @@ class TripsYearMixinTestCase(WebTestCase):
         ex1 = mommy.make(TripType, trips_year=self.trips_year)
         ex2 = mommy.make(TripType, trips_year=self.old_trips_year)
 
-        response = self.app.get(reverse_index_url(ex1),
-                                user=self.mock_director())
+        response = self.app.get(ex1.index_url(), user=self.mock_director())
 
         from fyt.trips.views import TripTypeList
         objects = response.context[TripTypeList.context_object_name]

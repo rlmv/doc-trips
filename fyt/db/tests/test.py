@@ -11,7 +11,7 @@ from model_mommy import mommy
 
 from fyt.test.testcases import WebTestCase, TripsYearTestCase
 from fyt.db.models import DatabaseModel, TripsYear
-from fyt.db.urlhelpers import reverse_create_url, reverse_index_url
+from fyt.db.urlhelpers import reverse_create_url
 from fyt.trips.models import Campsite, TripTemplate
 from fyt.db.forms import tripsyear_modelform_factory
 
