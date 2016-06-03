@@ -15,7 +15,6 @@ from ..models import (
     NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
 )
 from fyt.transport.models import Route
-from fyt.db.urlhelpers import reverse_create_url
 from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
@@ -41,7 +40,7 @@ class TripTestCase(WebTestCase):
 
         #Posting will raise an IntegrityError if validation is not handled
         response = self.app.post(
-            reverse_create_url(Trip, self.trips_year),
+            Trip.create_url(self.trips_year),
             {'template': trip.template.pk, 'section': trip.section.pk},
             user=self.mock_director()
         )

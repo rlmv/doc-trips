@@ -2,7 +2,6 @@ from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.db.urlhelpers import reverse_create_url
 from fyt.db.views import TripsYearMixin
 from fyt.test.testcases import WebTestCase
 from fyt.trips.models import Campsite, TripType, TripTemplate, Section
@@ -31,7 +30,7 @@ class TripsYearMixinTestCase(WebTestCase):
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
         """Use Section as model, instead of hacking together an example"""
         data = model_to_dict(mommy.prepare(Section))
-        url = reverse_create_url(Section, self.current_trips_year)
+        url = Section.create_url(self.current_trips_year)
         response = self.app.post(url, data, user=self.mock_director())
 
         # should not display form error in page

@@ -4,7 +4,6 @@ from django import template
 from django.utils.safestring import mark_safe
 
 from fyt.db.models import TripsYear
-from fyt.db.urlhelpers import reverse_create_url
 
 register = template.Library()
 
@@ -65,7 +64,7 @@ def create_url(model, trips_year_str):
 
     trips_year = TripsYear.objects.get(pk=trips_year_str)
 
-    return reverse_create_url(model, trips_year)
+    return model.create_url(trips_year)
 
 
 @register.filter

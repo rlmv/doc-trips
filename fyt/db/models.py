@@ -70,6 +70,11 @@ class DatabaseModel(models.Model):
                        kwargs={'trips_year': self.trips_year_id}))
 
     @classmethod
+    def create_url(cls, trips_year):
+        return reverse('db:{}_create'.format(cls.get_model_name_lower()),
+                       kwargs={'trips_year': trips_year.pk})
+
+    @classmethod
     def get_model_name_lower(cls):
         """ Lowercased name of the model. """
         return cls.__name__.lower()
