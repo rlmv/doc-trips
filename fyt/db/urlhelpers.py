@@ -21,16 +21,6 @@ Url names for db objects use the following pattern:
 'list', 'create', 'update', 'delete', 'detail'.
 """
 
-def _reverse_db_url(db_object, urlpattern_suffix):
-    """ Reverse a url for a database object instance. """
-
-    name = db_object.get_model_name_lower()
-    urlpattern = '{}:{}_{}'.format('db', name, urlpattern_suffix)
-    kwargs = {'trips_year': db_object.trips_year_id,
-              'pk': db_object.pk}
-
-    return reverse(urlpattern, kwargs=kwargs)
-
 
 def reverse_index_url(db_object):
     """ Reverse the url to an Index (ListView).
