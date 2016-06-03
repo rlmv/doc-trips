@@ -100,7 +100,7 @@ class Trip(DatabaseModel):
     @cache_as('_size')
     def size(self):
         """
-        Return the number trippees + leaders on this trip 
+        Return the number trippees + leaders on this trip
 
         TODO: use a constant, NUM_TRIPPEES
         """
@@ -122,8 +122,8 @@ class Trip(DatabaseModel):
 
     @property
     def half_foodbox(self):
-        """ 
-        A trip gets an additional half foodbox if it is larger 
+        """
+        A trip gets an additional half foodbox if it is larger
         than the kickin limit specified by the triptype.
         """
         return self.size() >= self.template.triptype.half_kickin
@@ -166,8 +166,8 @@ class Trip(DatabaseModel):
 
 
 class Section(DatabaseModel):
-    """ 
-    Model to represent a trips section. 
+    """
+    Model to represent a trips section.
     """
 
     class Meta:
@@ -190,51 +190,51 @@ class Section(DatabaseModel):
 
     @property
     def trippees_arrive(self):
-        """ 
+        """
         Date that trippees arrive in Hanover.
         """
         return self.leaders_arrive + timedelta(days=1)
 
     @property
     def at_campsite1(self):
-        """ 
-        Date that section is at first campsite 
+        """
+        Date that section is at first campsite
         """
         return self.leaders_arrive + timedelta(days=2)
 
     @property
     def at_campsite2(self):
-        """ 
-        Date the section is at the second campsite 
+        """
+        Date the section is at the second campsite
         """
         return self.leaders_arrive + timedelta(days=3)
 
     @property
     def nights_camping(self):
-        """ 
+        """
         List of dates when trippees are camping out on the trail.
         """
         return [self.at_campsite1, self.at_campsite2]
 
     @property
     def arrive_at_lodge(self):
-        """ 
-        Date section arrives at the lodge. 
+        """
+        Date section arrives at the lodge.
         """
         return self.leaders_arrive + timedelta(days=4)
 
     @property
     def return_to_campus(self):
         """
-        Date section returns to campus from the lodge 
+        Date section returns to campus from the lodge
         """
         return self.leaders_arrive + timedelta(days=5)
 
     @property
     def trip_dates(self):
-        """ 
+        """
         All dates when trippees are here for trips.
-        
+
         Excludes the day leaders arrive.
         """
         return [
@@ -255,9 +255,9 @@ class Section(DatabaseModel):
         return 'Section ' + self.name
 
     def leader_date_str(self):
-        """ 
+        """
         Return a string of dates that this section covers.
-        
+
         These are the leader dates.
         Looks like 'Aug 10th to Aug 15th'
         """
@@ -266,7 +266,7 @@ class Section(DatabaseModel):
                 self.return_to_campus.strftime(fmt))
 
     def trippee_date_str(self):
-        """ 
+        """
         Date string for *trippees*
         """
         fmt = '%b %d'
@@ -275,8 +275,8 @@ class Section(DatabaseModel):
 
 
 def validate_triptemplate_name(value):
-    """ 
-    Validator for TripTemplate.name 
+    """
+    Validator for TripTemplate.name
     """
     if value < 0 or value > 999:
         raise ValidationError('Value must be in range 0-999')
@@ -327,8 +327,8 @@ class TripTemplate(DatabaseModel):
 
     @property
     def max_num_people(self):
-        """ 
-        Maximum number of people on trip: max_trippees + 2 leaders 
+        """
+        Maximum number of people on trip: max_trippees + 2 leaders
         """
         return self.max_trippees + 2
 
