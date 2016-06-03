@@ -7,13 +7,6 @@ from fyt.db.models import TripsYear
 
 register = template.Library()
 
-def _make_link(url, text):
-    """ Format a link. """
-    html = '<a href="{}">{}</a>'.format(url, text)
-    return mark_safe(html)
-
-make_link = _make_link
-
 
 def pass_null(func):
     """
@@ -31,22 +24,26 @@ def pass_null(func):
     return wraps(func)(wrapper)
 
 
+def _make_link(url, text):
+    """ Format a link. """
+    html = '<a href="{}">{}</a>'.format(url, text)
+    return mark_safe(html)
+
+make_link = _make_link
+
+
 @register.filter
 @pass_null
 def edit_link(db_object, text=None):
     """ Insert html link to edit db_object. """
-    if text is None:
-        text = 'edit'
-    return _make_link(db_object.update_url(), text)
+    return _make_link(db_object.update_url(), text or 'edit')
 
 
 @register.filter
 @pass_null
 def delete_link(db_object, text=None):
     """ Insert html link to delete db_object. """
-    if text is None:
-        text = 'delete'
-    return _make_link(db_object.delete_url(), text)
+    return _make_link(db_object.delete_url(), text or 'delete')
 
 
 @register.simple_tag
@@ -64,12 +61,7 @@ def detail_link(db_obj, text=None):
     """
     Html link to detailed view for object.
     """
-    def to_str(obj):
-        if text is None:
-            return str(obj)
-        return text
-
-    to_link = lambda obj: _make_link(obj.detail_url(), to_str(obj))
+    to_link = lambda obj: _make_link(obj.detail_url(), text or str(obj))
     return mark_safe(', '.join(map(to_link, as_list(db_obj))))
 
 
