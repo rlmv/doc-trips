@@ -27,13 +27,13 @@
     <td class="text-muted text-center"> {{ route.vehicle.capacity }} </td>
     {% for section, transport in sections.items %}
     <td>
-      <a href="{% url 'db:external_checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">
+      <a href="{% url 'db:externalbus:checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">
 	<kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd>
       </a>
       {% if transport %}
       {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}
       {% else %}
-      <a href="{% url 'db:externalbus_create' trips_year=trips_year %}?section={{ section.pk}}&route={{ route.pk }}"> <i class="fa fa-plus"></i></a>
+      <a href="{% url 'db:externalbus:create' trips_year=trips_year %}?section={{ section.pk}}&route={{ route.pk }}"> <i class="fa fa-plus"></i></a>
       {% endif %}
       {% endfor %}
     </td>

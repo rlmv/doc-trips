@@ -142,7 +142,7 @@ class TripCreate(PopulateMixin, DatabaseCreateView):
 
 class TripDelete(DatabaseDeleteView):
     model = Trip
-    success_url_pattern = 'db:trip_index'
+    success_url_pattern = 'db:trip:index'
 
 
 class TripTemplateList(DatabaseListView):
@@ -195,7 +195,7 @@ class TripTemplateUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
 
 class TripTemplateDelete(DatabaseDeleteView):
     model = TripTemplate
-    success_url_pattern = 'db:triptemplate_index'
+    success_url_pattern = 'db:triptemplate:index'
 
 
 class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
@@ -227,7 +227,7 @@ class TripTemplateDocumentDelete(_TripTemplateMixin, DatabaseDeleteView):
     model = Document
 
     def get_success_url(self):
-        return reverse('db:triptemplate_document_list',
+        return reverse('db:triptemplate:document_list',
                        kwargs=self.get_triptemplate().obj_kwargs())
 
 
@@ -257,7 +257,7 @@ class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
 
 class TripTypeDelete(DatabaseDeleteView):
     model = TripType
-    success_url_pattern = 'db:triptype_index'
+    success_url_pattern = 'db:triptype:index'
 
 
 class CampsiteMatrix(DatabaseTemplateView):
@@ -294,7 +294,7 @@ class CampsiteUpdate(DatabaseUpdateView):
 
 class CampsiteDelete(DatabaseDeleteView):
     model = Campsite
-    success_url_pattern = 'db:campsite_index'
+    success_url_pattern = 'db:campsite:index'
 
 
 class SectionList(DatabaseListView):
@@ -331,7 +331,7 @@ class SectionUpdate(DatabaseUpdateView):
 
 class SectionDelete(DatabaseDeleteView):
     model = Section
-    success_url_pattern = 'db:section_index'
+    success_url_pattern = 'db:section:index'
 
 
 class LeaderTrippeeIndexView(DatabaseListView):
@@ -861,7 +861,7 @@ class Checklists(DatabaseTemplateView):
         for date in set(map(lambda x: x.date, buses)):
             d[date].append((
                 'Internal Bus Directions for %s' % date.strftime('%m/%d'),
-                reverse('db:internal_packet_for_date', kwargs={
+                reverse('db:scheduledtransport:packet_for_date', kwargs={
                     'trips_year': trips_year, 'date': date
                 })
             ))
@@ -875,7 +875,7 @@ class Checklists(DatabaseTemplateView):
             for route in routes:
                 d[date].append((
                     '%s Directions for %s' % (route, date.strftime('%m/%d')),
-                    reverse('db:external_packet_for_date_and_route', kwargs={
+                    reverse('db:externalbus:packet_for_date_and_route', kwargs={
                         'trips_year': trips_year, 'date': date, 'route_pk': route.pk
                     })
                 ))

@@ -390,9 +390,9 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
             'trainings_fields': self.trainings_fields,
             'crooapplication_fields': self.crooapplication_fields,
             'trip_assignment_url': reverse(
-                'db:update_trip_assignment', kwargs=self.kwargs),
+                'db:generalapplication:update_trip', kwargs=self.kwargs),
             'croo_assignment_url': reverse(
-                'db:update_croo_assignment', kwargs=self.kwargs)
+                'db:generalapplication:update_croo', kwargs=self.kwargs)
         }
 
 

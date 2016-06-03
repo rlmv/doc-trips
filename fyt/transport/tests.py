@@ -150,9 +150,9 @@ class TestViews(WebTestCase):
         trips_year = self.init_trips_year()
         director = self.mock_director()
         names = [
-            'db:stop_index',
-            'db:route_index',
-            'db:vehicle_index',
+            'db:stop:index',
+            'db:route:index',
+            'db:vehicle:index',
         ]
         for name in names:
             url = reverse(name, kwargs={'trips_year': trips_year})
@@ -661,7 +661,7 @@ class TransportViewsTestCase(WebTestCase):
         section = mommy.make(Section, trips_year=trips_year, is_local=True)
 
         # Visit matrix page
-        url = reverse('db:externalbus_matrix',
+        url = reverse('db:externalbus:matrix',
                       kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
         # click 'add' button for the single entry
@@ -678,7 +678,7 @@ class TransportViewsTestCase(WebTestCase):
         section = mommy.make(
             Section, trips_year=trips_year, leaders_arrive=date(2015, 1, 1))
         # visit matrix
-        url = reverse('db:scheduledtransport_index',
+        url = reverse('db:scheduledtransport:index',
                       kwargs={'trips_year': trips_year})
         resp = self.app.get(url, user=self.mock_director())
         # click add
@@ -930,7 +930,7 @@ class StopOrderingTestCase(WebTestCase):
             Trip, trips_year=trips_year, dropoff_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2)
         )
-        url = reverse('db:scheduledtransport_order',
+        url = reverse('db:scheduledtransport:order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
         self.app.get(url, user=self.mock_director())
         so = StopOrder.objects.get(
@@ -959,7 +959,7 @@ class StopOrderingTestCase(WebTestCase):
                            trip=trip, stop_type=StopOrder.DROPOFF, bus=bus)
         other_trip = mommy.make(Trip, trips_year=trips_year)
 
-        url = reverse('db:scheduledtransport_order',
+        url = reverse('db:scheduledtransport:order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
         form = self.app.get(url, user=self.mock_director()).form
         form['form-0-trip'] = other_trip.pk

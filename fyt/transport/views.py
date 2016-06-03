@@ -228,7 +228,7 @@ class ScheduledTransportCreateView(PopulateMixin, DatabaseCreateView):
     fields = ['route', 'date']
 
     def get_success_url(self):
-        return reverse('db:scheduledtransport_index', kwargs=self.kwargs)
+        return reverse('db:scheduledtransport:index', kwargs=self.kwargs)
 
 
 class ScheduledTransportUpdateView(DatabaseUpdateView):
@@ -242,7 +242,7 @@ class ScheduledTransportUpdateView(DatabaseUpdateView):
 
 class ScheduledTransportDeleteView(DatabaseDeleteView):
     model = ScheduledTransport
-    success_url_pattern = 'db:scheduledtransport_index'
+    success_url_pattern = 'db:scheduledtransport:index'
 
 
 class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
@@ -250,7 +250,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
     fields = ['route', 'section']
 
     def get_success_url(self):
-        return reverse('db:externalbus_matrix',
+        return reverse('db:externalbus:matrix',
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
@@ -258,7 +258,7 @@ class ExternalBusDelete(DatabaseDeleteView):
     model = ExternalBus
 
     def get_success_url(self):
-        return reverse('db:externalbus_matrix',
+        return reverse('db:externalbus:matrix',
                        kwargs={'trips_year': self.kwargs['trips_year']})
 
 
@@ -311,7 +311,7 @@ class StopUpdateView(DatabaseUpdateView):
 
 class StopDeleteView(DatabaseDeleteView):
     model = Stop
-    success_url_pattern = 'db:stop_index'
+    success_url_pattern = 'db:stop:index'
 
 
 class RouteListView(DatabaseListView):
@@ -335,7 +335,7 @@ class RouteUpdateView(DatabaseUpdateView):
 
 class RouteDeleteView(DatabaseDeleteView):
     model = Route
-    success_url_pattern = 'db:route_index'
+    success_url_pattern = 'db:route:index'
 
 
 class VehicleListView(DatabaseListView):
@@ -359,7 +359,7 @@ class VehicleUpdateView(DatabaseUpdateView):
 
 class VehicleDeleteView(DatabaseDeleteView):
     model = Vehicle
-    success_url_pattern = 'db:vehicle_index'
+    success_url_pattern = 'db:vehicle:index'
 
 
 class _DateMixin():

@@ -67,7 +67,7 @@ class TripsYearMixinTestCase(WebTestCase):
         self.assertEquals(object, c1)
 
         # bad request
-        url = reverse('db:campsite_update', kwargs={
+        url = reverse('db:campsite:update', kwargs={
             'trips_year': c1.trips_year.year, 'pk': c2.pk})
 
         response = self.app.get(url, expect_errors=True, user=self.director)

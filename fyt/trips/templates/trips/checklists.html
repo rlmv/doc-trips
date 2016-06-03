@@ -6,18 +6,18 @@
 <h2> Checklists and Packets <small> {{ trips_year }} </small></h2>
 {% endblock %}
 
-{% block content %} 
+{% block content %}
 
 <div class="alert alert-info">
   To save any of these packets in PDF format: Go to the page, print, and choose 'Save as PDF'.
 </div>
-  
+
 <ol class="breadcrumb">
-  <li><a href="{% url 'db:internal_packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
+  <li><a href="{% url 'db:scheduledtransport:packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
 </ol>
 
 <ol class="breadcrumb">
-  <li><a href="{% url 'db:external_packet' trips_year=trips_year %}"> All External Bus Directions <i class="fa fa-caret-right"></i></a></li>
+  <li><a href="{% url 'db:externalbus:packet' trips_year=trips_year %}"> All External Bus Directions <i class="fa fa-caret-right"></i></a></li>
 </ol>
 
 

@@ -3,20 +3,20 @@
 {% load render_table from django_tables2 %}
 
 {% block header %}
-<h2> 
-  <span class="badge"> {{ trippees.count }} </span> Incoming Students 
+<h2>
+  <span class="badge"> {{ trippees.count }} </span> Incoming Students
 </h2>
 {% endblock %}
 
 {% block content %}
 
 <div>
-  {% url 'db:upload_incoming' trips_year=trips_year as url_ %}
+  {% url 'db:incomingstudent:upload' trips_year=trips_year as url_ %}
   {{ url_|upload_button:"Upload Incoming" }}
 
-  {% url 'db:upload_hinman_boxes' trips_year=trips_year as url_ %}
+  {% url 'db:incomingstudent:upload_hb' trips_year=trips_year as url_ %}
   {{ url_|upload_button:"Upload Hinman Boxes" }}
-  
+
   {% url 'db:reports:charges' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Charges" }}
 

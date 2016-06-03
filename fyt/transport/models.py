@@ -380,7 +380,7 @@ class ScheduledTransport(DatabaseModel):
         return get_directions(stops)
 
     def update_url(self):
-        return reverse('db:scheduledtransport_update', kwargs=self.obj_kwargs())
+        return reverse('db:scheduledtransport:update', kwargs=self.obj_kwargs())
 
     def detail_url(self):
         kwargs = {
@@ -388,7 +388,7 @@ class ScheduledTransport(DatabaseModel):
             'route_pk': self.route_id,
             'date': self.date
         }
-        return reverse('db:scheduledtransport_checklist', kwargs=kwargs)
+        return reverse('db:scheduledtransport:checklist', kwargs=kwargs)
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))

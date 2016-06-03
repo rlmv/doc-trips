@@ -3,7 +3,7 @@
 {% load render_table from django_tables2 %}
 
 {% block header %}
-<h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations 
+<h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations
 </h2>
 {% endblock %}
 
@@ -20,7 +20,7 @@
   </a>
 
   <a class="list-group-item" href="{% url 'db:reports:doc_members' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> DOC Members 
+    <i class="fa fa-download"></i> DOC Members
   </a>
 
   <a class="list-group-item" href="{% url 'db:reports:dietary' trips_year=trips_year %}">
@@ -35,7 +35,7 @@
     <i class="fa fa-download"></i> Feelings
   </a>
 
-  <a class="list-group-item" href="{% url 'db:nonstudent_registration' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'db:registration:nonstudent' trips_year=trips_year %}">
     <i class="fa fa-plus"></i> Non-Student Registration
   </a>
 <ul>

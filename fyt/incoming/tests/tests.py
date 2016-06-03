@@ -700,7 +700,7 @@ class RegistrationViewsTestCase(WebTestCase):
     def test_non_student_registration(self):
         trips_year = self.init_trips_year()
         mommy.make(Settings, trips_year=trips_year)
-        url = reverse('db:nonstudent_registration', kwargs={'trips_year': trips_year})
+        url = reverse('db:registration:nonstudent', kwargs={'trips_year': trips_year})
         data = {
             'name': 'test',
             'gender': 'm',
@@ -759,7 +759,7 @@ class IncomingStudentViewsTestCase(WebTestCase):
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit().follow()
         self.assertEqual(res.request.path,
-                         reverse('db:incomingstudent_index', kwargs={'trips_year': trips_year}))
+                         reverse('db:incomingstudent:index', kwargs={'trips_year': trips_year}))
         with self.assertRaises(IncomingStudent.DoesNotExist):
             IncomingStudent.objects.get(pk=incoming.pk)
 

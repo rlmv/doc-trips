@@ -327,7 +327,7 @@ class TripTemplate(DatabaseModel):
         """
         Url used to attach files to this trip template
         """
-        return reverse('db:triptemplate_upload_file', kwargs={
+        return reverse('db:triptemplate:upload_file', kwargs={
             'trips_year': self.trips_year, 'triptemplate_pk': self.pk
         })
 
@@ -335,7 +335,7 @@ class TripTemplate(DatabaseModel):
         """
         Url for list of all attached files
         """
-        return reverse('db:triptemplate_document_list', kwargs=self.obj_kwargs())
+        return reverse('db:triptemplate:document_list', kwargs=self.obj_kwargs())
 
     def __str__(self):
         return "{}: {}".format(self.name, self.description_summary)
@@ -357,7 +357,7 @@ class Document(DatabaseModel):
     def delete_url(self):
         kwargs = self.obj_kwargs()
         kwargs.update({'triptemplate_pk': self.template.pk})
-        return reverse('db:triptemplate_document_delete', kwargs=kwargs)
+        return reverse('db:triptemplate:document_delete', kwargs=kwargs)
 
     def __str__(self):
         return self.name

@@ -376,4 +376,4 @@ class DeleteCrooGrade(DatabaseDeleteView):
     model = CrooApplicationGrade
 
     def get_success_url(self):
-        return elf.object.application.application.detail_url()
+        return self.object.application.application.detail_url()

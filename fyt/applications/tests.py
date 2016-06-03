@@ -710,7 +710,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
     def test_delete_leader_grade_is_restricted_to_directors(self):
         trips_year = self.init_current_trips_year()
         grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year)
-        url = reverse('db:leaderapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        url = reverse('db:leaderapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_tlt(), status=403)
         res = self.app.get(url, user=self.mock_directorate(), status=403)
         res = self.app.get(url, user=self.mock_grader(), status=403)
@@ -719,7 +719,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
     def test_delete_croo_grade_is_restricted_to_directors(self):
         trips_year = self.init_current_trips_year()
         grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
-        url = reverse('db:crooapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        url = reverse('db:crooapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_tlt(), status=403)
         res = self.app.get(url, user=self.mock_directorate(), status=403)
         res = self.app.get(url, user=self.mock_grader(), status=403)
@@ -729,7 +729,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year)
         grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year, application=application.leader_supplement)
-        url = reverse('db:leaderapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        url = reverse('db:leaderapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit()
         self.assertRedirects(res, application.detail_url())
@@ -738,7 +738,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year)
         grade = mommy.make(CrooApplicationGrade, trips_year=trips_year, application=application.croo_supplement)
-        url = reverse('db:crooapplicationgrade_delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
+        url = reverse('db:crooapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.form.submit()
         self.assertRedirects(res, application.detail_url())
@@ -751,7 +751,7 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
         application = self.make_application(
             trips_year=trips_year, status=GeneralApplication.LEADER
         )
-        url = reverse('db:update_trip_assignment',
+        url = reverse('db:generalapplication:update_trip',
                       kwargs={'trips_year': trips_year, 'pk': application.pk})
         res = self.app.get(url, user=self.mock_director())
 
@@ -765,7 +765,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, WebTestCase):
         )
         croo = mommy.make(Croo, trips_year=trips_year)
         url = reverse(
-            'db:update_croo_assignment',
+            'db:generalapplication:update_croo',
             kwargs={'trips_year': trips_year, 'pk': application.pk}
         )
         form = self.app.get(url, user=self.mock_director()).form
@@ -780,7 +780,7 @@ class DbVolunteerPagesAccessTestCase(WebTestCase):
     def test_directorate_can_normally_see_volunteer_pages(self):
         trips_year = self.init_current_trips_year()
         mommy.make(Timetable, hide_volunteer_page=False)
-        url = reverse('db:application_index', kwargs={'trips_year': trips_year})
+        url = reverse('db:generalapplication:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
         res = self.app.get(url, user=self.mock_grader(), status=403)
         res = self.app.get(url, user=self.mock_directorate())
@@ -789,7 +789,7 @@ class DbVolunteerPagesAccessTestCase(WebTestCase):
     def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
         trips_year = self.init_current_trips_year()
         mommy.make(Timetable, hide_volunteer_page=True)
-        url = reverse('db:application_index', kwargs={'trips_year': trips_year})
+        url = reverse('db:generalapplication:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
         res = self.app.get(url, user=self.mock_grader(), status=403)
         res = self.app.get(url, user=self.mock_directorate(), status=403)

@@ -54,24 +54,24 @@ class DatabaseModel(models.Model):
         return self.detail_url()
 
     def detail_url(self):
-        return reverse('db:{}_detail'.format(self.get_model_name_lower()),
+        return reverse('db:{}:detail'.format(self.get_model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def update_url(self):
-        return reverse('db:{}_update'.format(self.get_model_name_lower()),
+        return reverse('db:{}:update'.format(self.get_model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def delete_url(self):
-        return reverse('db:{}_delete'.format(self.get_model_name_lower()),
+        return reverse('db:{}:delete'.format(self.get_model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def index_url(self):
-        return reverse('db:{}_index'.format(self.get_model_name_lower(),
-                       kwargs={'trips_year': self.trips_year_id}))
+        return reverse('db:{}:index'.format(self.get_model_name_lower()),
+                       kwargs={'trips_year': self.trips_year_id})
 
     @classmethod
     def create_url(cls, trips_year):
-        return reverse('db:{}_create'.format(cls.get_model_name_lower()),
+        return reverse('db:{}:create'.format(cls.get_model_name_lower()),
                        kwargs={'trips_year': trips_year.pk})
 
     @classmethod

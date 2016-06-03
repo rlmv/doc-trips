@@ -25,4 +25,4 @@ class CrooUpdateView(DatabaseUpdateView):
 
 class CrooDeleteView(DatabaseDeleteView):
     model = Croo
-    success_url_pattern = 'db:croo_index'
+    success_url_pattern = 'db:croo:index'

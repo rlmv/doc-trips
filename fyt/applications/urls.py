@@ -65,31 +65,30 @@ urlpatterns = [
 # ----- protected database views ----------
 
 application_urlpatterns = [
-    url(DB_REGEX['LIST'], ApplicationIndex.as_view(),
-        name='application_index'),
-    url(DB_REGEX['DETAIL'], ApplicationDetail.as_view(),
-        name='generalapplication_detail'),
-    url(DB_REGEX['UPDATE'], ApplicationUpdate.as_view(),
-        name='generalapplication_update'),
-    url(r'^(?P<pk>[0-9]+)/update/status/$',
-        ApplicationStatusUpdate.as_view(),
-        name='update_application_status'),
-    url(r'^(?P<pk>[0-9]+)/update/trainings/$',
-        ApplicationCertsUpdate.as_view(),
-        name='update_application_trainings'),
-    url(r'^(?P<pk>[0-9]+)/update/trip$', AssignToTrip.as_view(),
-        name='update_trip_assignment'),
+    url(DB_REGEX['LIST'], ApplicationIndex.as_view(), name='index'),
+    url(DB_REGEX['DETAIL'], ApplicationDetail.as_view(), name='detail'),
+    url(DB_REGEX['UPDATE'], ApplicationUpdate.as_view(), name='update'),
+    url(r'^(?P<pk>[0-9]+)/update/status/$', ApplicationStatusUpdate.as_view(),
+        name='update_status'),
+    url(r'^(?P<pk>[0-9]+)/update/trainings/$', ApplicationCertsUpdate.as_view(),
+        name='update_trainings'),
+    url(r'^(?P<pk>[0-9]+)/update/admin/$', ApplicationAdminUpdate.as_view(),
+        name='update_admin'),
+    url(r'^(?P<pk>[0-9]+)/update/trip/$', AssignToTrip.as_view(),
+        name='update_trip'),
     url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
-        name='update_croo_assignment'),
-    url(r'^(?P<pk>[0-9]+)/update/admin/$',
-        ApplicationAdminUpdate.as_view(),
-        name='update_application_admin'),
+        name='update_croo'),
 ]
 
-grade_urlpatterns = [
-    url(r'^leader/(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
-        name='leaderapplicationgrade_delete'),
-    url(r'^croo/(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(),
-        name='crooapplicationgrade_delete'),
+leadergrade_urlpatterns = [
+    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
+        name='delete'),
+]
+
+croograde_urlpatterns = [
+    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(), name='delete'),
+]
+
+grader_urlpatterns = [
     url(r'^graders/$', GraderList.as_view(), name='graders_index'),
 ]

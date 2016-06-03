@@ -9,7 +9,7 @@
 {% block content %}
 
 <div>
-  <p> All trips which are scheduled to run this year. Each trip is identified by a <a href="{% url 'db:section_index' trips_year=trips_year %}">Section</a> and a <a href="{% url 'db:triptype_index' trips_year=trips_year %}">Trip Type</a>. Click <i class="fa fa-plus text-info"></i> to schedule a trip; click on a scheduled trip for more details. </p>
+  <p> All trips which are scheduled to run this year. Each trip is identified by a <a href="{% url 'db:section:index' trips_year=trips_year %}">Section</a> and a <a href="{% url 'db:triptype:index' trips_year=trips_year %}">Trip Type</a>. Click <i class="fa fa-plus text-info"></i> to schedule a trip; click on a scheduled trip for more details. </p>
 </div>
 
 <table class="table table-condensed">
@@ -25,7 +25,7 @@
     {% endfor %}
   </tr>
   {% endif %}
-  
+
   <tr>
     <td> {{ template | detail_link }} </td>
     <td> {{ template.triptype.name }} </td>
@@ -35,7 +35,7 @@
       {% if trip %}
       {{ trip | detail_link }}
       {% else %}
-      <a href="{% url 'db:trip_create' trips_year=trips_year %}?{% urlencode section=section.pk template=template.pk %}"><i class="fa fa-plus"></i></a>
+      <a href="{% url 'db:trip:create' trips_year=trips_year %}?{% urlencode section=section.pk template=template.pk %}"><i class="fa fa-plus"></i></a>
       {% endif %}
     </td>
     {% endfor %}

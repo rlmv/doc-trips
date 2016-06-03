@@ -52,7 +52,7 @@ class LinkTagTestCase(TripsTestCase):
         ).render(Context({
             'obj_list': [obj]
         }))
-        target = '<a href="%s">%s</a>' % obj.detail_url(), str(obj))
+        target = '<a href="%s">%s</a>' % (obj.detail_url(), str(obj))
         self.assertEqual(out, target)
 
     def test_detail_link_with_iterable(self):
