@@ -285,12 +285,6 @@ class IncomingStudent(DatabaseModel):
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
 
-    def delete_url(self):
-        return reverse('db:incomingstudent_delete', kwargs=self.obj_kwargs())
-
-    def detail_url(self):
-        return reverse('db:incomingstudent_detail', kwargs=self.obj_kwargs())
-
     def __str__(self):
         return self.name
 

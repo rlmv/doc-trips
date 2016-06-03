@@ -108,9 +108,6 @@ class Stop(DatabaseModel):
         """
         return self.lat_lng or self.address
 
-    def detail_url(self):
-        return reverse('db:stop_detail', kwargs=self.obj_kwargs())
-
     def __str__(self):
         return self.name
 

@@ -343,9 +343,6 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
-    def detail_url(self):
-        return reverse('db:generalapplication_detail', kwargs=self.obj_kwargs())
-
     def __str__(self):
         return self.name
 

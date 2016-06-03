@@ -155,15 +155,6 @@ class Trip(DatabaseModel):
             self.template.description_summary
         )
 
-    def detail_url(self):
-        return reverse('db:trip_detail', kwargs=self.obj_kwargs())
-
-    def update_url(self):
-        return reverse('db:trip_update', kwargs=self.obj_kwargs())
-
-    def delete_url(self):
-        return reverse('db:trip_delete', kwargs=self.obj_kwargs())
-
 
 class Section(DatabaseModel):
     """
@@ -345,9 +336,6 @@ class TripTemplate(DatabaseModel):
         Url for list of all attached files
         """
         return reverse('db:triptemplate_document_list', kwargs=self.obj_kwargs())
-
-    def detail_url(self):
-        return reverse('db:triptemplate_detail', kwargs=self.obj_kwargs())
 
     def __str__(self):
         return "{}: {}".format(self.name, self.description_summary)
