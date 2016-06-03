@@ -17,7 +17,7 @@ DB_REGEX = {
 
 """
 Url names for db objects use the following pattern:
-[lowercasemodelname]_[suffix], where suffix is one of 
+[lowercasemodelname]_[suffix], where suffix is one of
 'list', 'create', 'update', 'delete', 'detail'.
 """
 
@@ -48,10 +48,10 @@ def reverse_update_url(db_object):
 
 
 def reverse_index_url(db_object):
-    """ Reverse the url to an Index (ListView). 
+    """ Reverse the url to an Index (ListView).
 
-    This may be problematic because it extracts trips_year from 
-    an object instance. 
+    This may be problematic because it extracts trips_year from
+    an object instance.
     TODO: change this to accept trips_year as an argument?
     """
 
@@ -69,5 +69,3 @@ def reverse_create_url(db_cls, trips_year):
     kwargs = {'trips_year': trips_year.pk}
 
     return reverse(urlpattern, kwargs=kwargs)
-
-
