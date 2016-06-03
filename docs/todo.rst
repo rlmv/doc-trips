@@ -19,7 +19,6 @@ Immediate
 * Urlencode dynamic querystrings
 * Add ``/CPR`` to leader med certs? (and migrate existing)
 * Generalize high-level admin permssions: ``db:write``
-* Redo url generation to not depend on ``get_model_name`` or whatever it is.
 
 Questions
 ---------
