@@ -47,7 +47,6 @@ Long term
 * Preview link to leader and trippee assignment pages.
 * Tidy up the webauth app: remove unused config options
 * Move Leader and Croo grading to a separate ``grade`` app
-* Update all database urls that look like ``db:trip_update`` to ``db:trip:update``
 * Use ``model_mommy`` recipes for tests
 * Implement more robust .docx parsing for applications, or figure out a base format which always makes pretty HTML.
 * Always show the database menu to folks with view permissions.
