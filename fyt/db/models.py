@@ -77,7 +77,7 @@ class DatabaseModel(models.Model):
     @classmethod
     def get_model_name_lower(cls):
         """ Lowercased name of the model. """
-        return cls.__name__.lower()
+        return cls._meta.concrete_model._meta.model_name
 
     def obj_kwargs(self):
         return {'trips_year': self.trips_year_id, 'pk': self.pk}
