@@ -54,28 +54,28 @@ class DatabaseModel(models.Model):
         return self.detail_url()
 
     def detail_url(self):
-        return reverse('db:{}:detail'.format(self.get_model_name_lower()),
+        return reverse('db:{}:detail'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def update_url(self):
-        return reverse('db:{}:update'.format(self.get_model_name_lower()),
+        return reverse('db:{}:update'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def delete_url(self):
-        return reverse('db:{}:delete'.format(self.get_model_name_lower()),
+        return reverse('db:{}:delete'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def index_url(self):
-        return reverse('db:{}:index'.format(self.get_model_name_lower()),
+        return reverse('db:{}:index'.format(self.model_name_lower()),
                        kwargs={'trips_year': self.trips_year_id})
 
     @classmethod
     def create_url(cls, trips_year):
-        return reverse('db:{}:create'.format(cls.get_model_name_lower()),
+        return reverse('db:{}:create'.format(cls.model_name_lower()),
                        kwargs={'trips_year': trips_year.pk})
 
     @classmethod
-    def get_model_name_lower(cls):
+    def model_name_lower(cls):
         """ Lowercased name of the model. """
         return cls._meta.concrete_model._meta.model_name
 

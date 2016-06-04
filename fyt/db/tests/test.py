@@ -24,12 +24,12 @@ class DatabaseModelTestCase(TripsYearTestCase):
         self.assertRaises(ValueError, mommy.make, Campsite, trips_year=None)
 
     def test_model_name_lower(self):
-        self.assertEqual(TripTemplate.get_model_name_lower(), 'triptemplate')
+        self.assertEqual(TripTemplate.model_name_lower(), 'triptemplate')
 
         # Should also work for deferred models, which are dynamically created
         mommy.make(TripTemplate)
         triptemplate = TripTemplate.objects.defer('name').get()
-        self.assertEqual(triptemplate.get_model_name_lower(), 'triptemplate')
+        self.assertEqual(triptemplate.model_name_lower(), 'triptemplate')
 
 
 class DatabaseMixinTestCase(WebTestCase):
