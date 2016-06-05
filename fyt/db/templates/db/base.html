@@ -84,6 +84,22 @@
       <a href="{% url 'db:checklists:all' trips_year=trips_year %}"> <i class="fa fa-fw fa-list-ul"></i> Packets </a>
     </li>
 
+    <li>
+        <a href="#"> <i class="fa fa-fw fa-calendar"></i> Past Years <i class="fa arrow"></i> </a>
+        <ul class="nav nav-stacked">
+
+            {% for year in all_trips_years %}
+            <li>
+                 <a href="{% url 'db:landing_page' trips_year=year %}">{{ year }}
+                     {% if year.year|lower == trips_year %}
+                     <i class="fa fa-check"></i>
+                     {% endif %}
+                 </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+
   </div>
 </div>
 {% endblock %}
