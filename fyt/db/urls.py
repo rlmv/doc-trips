@@ -1,24 +1,23 @@
 from django.conf.urls import url, include
 
 from fyt.applications.urls import (
-    application_urlpatterns, leadergrade_urlpatterns, croograde_urlpatterns,
-    grader_urlpatterns
+    application_urlpatterns, croograde_urlpatterns, grader_urlpatterns,
+    leadergrade_urlpatterns
 )
 from fyt.croos.urls import croo_urlpatterns
 from fyt.db.views import (
     DatabaseLandingPage, RedirectToCurrentDatabase, MigrateForward)
 from fyt.incoming.urls import (
-    trippee_urlpatterns, registration_urlpatterns
+    registration_urlpatterns, trippee_urlpatterns
 )
 from fyt.transport.urls import (
-    scheduledtransport_urlpatterns, stop_urlpatterns,
-    vehicle_urlpatterns, route_urlpatterns,
-    externalbus_urlpatterns
+    externalbus_urlpatterns, route_urlpatterns, scheduledtransport_urlpatterns,
+    stop_urlpatterns, vehicle_urlpatterns,
 )
 from fyt.trips.urls import (
-    trip_urlpatterns, template_urlpatterns, triptype_urlpatterns,
-    campsite_urlpatterns, section_urlpatterns, leader_urlpatterns,
-    foodbox_urlpatterns, packet_urlpatterns, checklist_urlpatterns
+    campsite_urlpatterns, checklist_urlpatterns, foodbox_urlpatterns,
+    leader_urlpatterns, section_urlpatterns, packet_urlpatterns,
+    template_urlpatterns, trip_urlpatterns, triptype_urlpatterns,
 )
 
 """
