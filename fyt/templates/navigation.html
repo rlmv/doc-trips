@@ -27,7 +27,7 @@
                 {% endif %}
 
                 {% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
-                <li><a href="{% url 'db:db_redirect' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
+                <li><a href="{% url 'db:current' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
                 {% endif %}
 
                 {% if perms.permissions.can_set_access or perms.permissions.can_edit_timetable or perms.permissions.can_create_applications %}

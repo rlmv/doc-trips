@@ -63,7 +63,7 @@ database_urlpatterns = [
 ]
 
 urlpatterns = [
-    url(r'^$', RedirectToCurrentDatabase.as_view(), name='db_redirect'),
+    url(r'^$', RedirectToCurrentDatabase.as_view(), name='current'),
     url(r'^migrate/$', MigrateForward.as_view(), name='migrate'),
     # capture the 'trips_year' parameter
     url(r'^(?P<trips_year>[0-9]+)/', include(database_urlpatterns)),

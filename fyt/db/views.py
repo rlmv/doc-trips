@@ -307,7 +307,7 @@ class MigrateForward(DatabaseFormView):
     Migrate the database to the next ``trips_year`
     """
     template_name = 'db/migrate.html'
-    success_url = reverse_lazy('db:db_redirect')
+    success_url = reverse_lazy('db:current')
 
     def get_trips_year(self):
         return TripsYear.objects.current().year

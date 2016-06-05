@@ -109,7 +109,7 @@
 {% if trips_year != current_trips_year.year|lower %}
     <div class="alert alert-warning">
         This page is for Trips {{ trips_year }}.
-        <a href="{% url 'db:db_redirect' %}"> Return to {{ current_trips_year }} </a>
+        <a href="{% url 'db:current' %}"> Return to {{ current_trips_year }} </a>
     </div>
 {% endif %}
 {{ block.super }}
