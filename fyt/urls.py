@@ -24,13 +24,13 @@ handler403 = 'fyt.views.permission_denied'
 
 urlpatterns = [
     url(r'^$', HomePage.as_view(), name='home'),
-    url(r'^users/', include('fyt.users.urls', namespace='users')),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^dartdm/', include('fyt.dartdm.urls', namespace='dartdm')),
+    url(r'^db/', include('fyt.db.urls', namespace='db')),
+    url(r'^incoming/', include('fyt.incoming.urls', namespace='incoming')),
     url(r'^permissions/', include('fyt.permissions.urls', namespace='permissions')),
     url(r'^settings/', include(settings_urlpatterns, namespace='settings')),
     url(r'^timetable/', include('fyt.timetable.urls', namespace='timetable')),
-    url(r'^db/', include('fyt.db.urls', namespace='db')),
+    url(r'^users/', include('fyt.users.urls', namespace='users')),
     url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
-    url(r'^incoming/', include('fyt.incoming.urls', namespace='incoming')),
-    url(r'^admin/', include(admin.site.urls)),
 ]
