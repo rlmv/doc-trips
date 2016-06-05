@@ -8,7 +8,7 @@ from fyt.croos.urls import croo_urlpatterns
 from fyt.db.views import (
     DatabaseLandingPage, RedirectToCurrentDatabase, MigrateForward)
 from fyt.incoming.urls import (
-    trippee_urlpatterns, registration_urlpatterns, settings_urlpatterns
+    trippee_urlpatterns, registration_urlpatterns
 )
 from fyt.transport.urls import (
     scheduledtransport_urlpatterns, stop_urlpatterns,
@@ -51,7 +51,6 @@ database_urlpatterns = [
                                namespace='incomingstudent')),
     url(r'^registrations/', include(registration_urlpatterns,
                                     namespace='registration')),
-    url(r'^', include(settings_urlpatterns)),
     url(r'^transport/internal/', include(scheduledtransport_urlpatterns,
                                          namespace='scheduledtransport')),
     url(r'^transport/external/', include(externalbus_urlpatterns,

@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^db/', include('fyt.db.urls', namespace='db')),
     url(r'^incoming/', include('fyt.incoming.urls', namespace='incoming')),
     url(r'^permissions/', include('fyt.permissions.urls', namespace='permissions')),
+    # TODO: move this to a better namespace / general settings namespace
     url(r'^settings/', include(settings_urlpatterns, namespace='settings')),
     url(r'^timetable/', include('fyt.timetable.urls', namespace='timetable')),
     url(r'^users/', include('fyt.users.urls', namespace='users')),
