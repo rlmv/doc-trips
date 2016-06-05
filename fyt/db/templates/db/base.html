@@ -104,6 +104,17 @@
 </div>
 {% endblock %}
 
+{% block messages %}
+{# Warn if looking at a previous year #}
+{% if trips_year != current_trips_year.year|lower %}
+    <div class="alert alert-warning">
+        This page is for Trips {{ trips_year }}.
+        <a href="{% url 'db:db_redirect' %}"> Return to {{ current_trips_year }} </a>
+    </div>
+{% endif %}
+{{ block.super }}
+{% endblock %}
+
 {% block javascript %}
 {{ block.super }}
 <script>

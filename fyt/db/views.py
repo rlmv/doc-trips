@@ -121,6 +121,7 @@ class TripsYearMixin():
         """
         context = super().get_context_data(**kwargs)
         context['trips_year'] = self.get_trips_year()
+        context['current_trips_year'] = TripsYear.objects.current()
         context['all_trips_years'] = TripsYear.objects.all().order_by('-year')
         return context
 
