@@ -18,12 +18,17 @@ class UserManagerTestCase(TestCase):
 
     @patch('fyt.users.models.lookup_email', new=lookup_email)
     def test_create_user(self):
-
         netid = 'd123456z'
         name = 'Igor'
 
         user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, name)
         self.assertTrue(ct)
+        self.assertEqual(user.netid, netid)
+        self.assertEqual(user.name, name)
+
+        # Second retrieval: not created, name doesn't change
+        user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, 'Ogor')
+        self.assertFalse(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
 
