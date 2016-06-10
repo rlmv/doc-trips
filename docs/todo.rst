@@ -3,6 +3,9 @@ Things TODO
 
 Immediate
 ---------
+* Fix race conditions around applications and registrations: *I think* if a user
+has two windows open, such that they both get directed to create a new application,
+and somehow submits both, then there will be two applications or registrations.
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * PDF uploads of maps and documents for trip templates
