@@ -9,7 +9,7 @@ from fyt.db.models import TripsYear
 
 def get_netids(incoming_students):
     """ Return a set of incoming_students' netids """
-    return set(map(lambda x: x.netid, incoming_students))
+    return set(x.netid for x in incoming_students)
 
 
 class IncomingStudentManager(models.Manager):
@@ -84,16 +84,17 @@ class IncomingStudentManager(models.Manager):
                 )
             )
 
-        incoming = list(filter(None, map(parse_to_object, reader)))
+        incoming = list(filter(None, (parse_to_object(row) for row in reader)))
         incoming_netids = get_netids(incoming)
 
         existing = self.model.objects.filter(trips_year=trips_year)
         existing_netids = get_netids(existing)
 
         netids_to_create = incoming_netids - existing_netids
-        to_create = filter(lambda x: x.netid in netids_to_create, incoming)
-        for obj in to_create:
-            obj.save()
+
+        for inc in incoming:
+            if inc.netid in netids_to_create:
+                inc.save()
 
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
