@@ -1,6 +1,5 @@
 
-import logging
-
+from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
 from django.shortcuts import render
 from vanilla import TemplateView
 
@@ -10,9 +9,17 @@ class HomePage(TemplateView):
     template_name = 'index.html'
 
 
+class RaiseError(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
+    """Raise an error. Used to test that Sentry error logging is enabled."""
+
+    def dispatch(self, request, *args, **kwargs):
+        raise Exception(
+            "Test error. This is not a bug. Raised by {}".format(request.user))
+
+
 def permission_denied(request):
-    """ 
-    Custom 403 page. 
+    """
+    Custom 403 page.
 
     Show the db navigation if we are already in the db.
     """

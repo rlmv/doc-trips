@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
-from fyt.views import HomePage
+from fyt.views import HomePage, RaiseError
 from fyt.permissions import initialize_groups_and_permissions
 from fyt.users.models import DartmouthUser
 from fyt.incoming.urls import settings_urlpatterns
@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^permissions/', include('fyt.permissions.urls', namespace='permissions')),
     # TODO: move this to a better namespace / general settings namespace
     url(r'^settings/', include(settings_urlpatterns, namespace='settings')),
+    url(r'^test/error/', RaiseError.as_view(), name='raise_error'),
     url(r'^timetable/', include('fyt.timetable.urls', namespace='timetable')),
     url(r'^users/', include('fyt.users.urls', namespace='users')),
     url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
