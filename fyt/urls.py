@@ -11,16 +11,19 @@ from fyt.incoming.urls import settings_urlpatterns
 
 admin.autodiscover()
 
+
 # update the auth groups after each migration
 @receiver(post_migrate)
 def sync_auth(**kwargs):
     initialize_groups_and_permissions()
+
 
 @receiver(post_migrate)
 def make_sentinel_user(**kwargs):
     DartmouthUser.objects.sentinel()
 
 handler403 = 'fyt.views.permission_denied'
+
 
 urlpatterns = [
     url(r'^$', HomePage.as_view(), name='home'),
