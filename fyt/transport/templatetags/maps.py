@@ -1,7 +1,6 @@
 from django.template import Library, loader, Context
 from django.conf import settings
 
-from fyt.incoming.models import sort_by_lastname
 from fyt.transport.maps import _split_stops, MapError
 
 register = Library()
