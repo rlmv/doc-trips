@@ -11,6 +11,7 @@ from fyt.test.testcases import WebTestCase, TripsTestCase
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import Registration, IncomingStudent, Settings
+from fyt.transport.models import Stop
 from fyt.trips.models import Trip
 from fyt.utils.choices import S, M, L, XL
 from fyt.reports.views import leader_tshirts, croo_tshirts, trippee_tshirts
@@ -434,6 +435,48 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
             'half box': '1' if trip.half_foodbox else '',
             'supplement': '1' if trip.supp_foodbox else '',
             'bagels': str(trip.bagels),
+        }]
+        self.assertEqual(rows, target)
+
+
+    def test_external_bus(self):
+        trips_year = self.init_trips_year()
+        reg1 = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            name='a',
+            bus_stop_round_trip=mommy.make(Stop, trips_year=trips_year)
+        )
+        reg2 = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            name='b',
+            bus_stop_to_hanover=mommy.make(Stop, trips_year=trips_year),
+            bus_stop_from_hanover=mommy.make(Stop, trips_year=trips_year)
+        )
+        no_bus_request = mommy.make(
+            Registration,
+            trips_year=trips_year
+        )
+
+        url = reverse('db:reports:bus_stops', kwargs={'trips_year': trips_year})
+        resp = self.app.get(url, user=self.mock_director())
+
+        rows = list(save_and_open_csv(resp))
+        target = [{
+            'name': reg1.user.name,
+            'preferred name': reg1.name,
+            'netid': reg1.user.netid,
+            'requested bus round trip': reg1.bus_stop_round_trip.name,
+            'requested bus to hanover': '',
+            'requested bus from hanover': '',
+        },{
+            'name': reg2.user.name,
+            'preferred name': reg2.name,
+            'netid': reg2.user.netid,
+            'requested bus round trip': '',
+            'requested bus to hanover': reg2.bus_stop_to_hanover.name,
+            'requested bus from hanover': reg2.bus_stop_from_hanover.name,
         }]
         self.assertEqual(rows, target)
 

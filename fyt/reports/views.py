@@ -151,18 +151,34 @@ class FinancialAidCSV(GenericReportView):
 class ExternalBusCSV(GenericReportView):
 
     file_prefix = 'External-Bus-Requests'
-    header = ['name', 'preferred_name', 'netid', 'requested stop', 'on route']
+    header = [
+        'name',
+        'preferred name',
+        'netid',
+        'requested bus round trip',
+        'requested bus to hanover',
+        'requested bus from hanover'
+    ]
 
     def get_queryset(self):
         return Registration.objects.want_bus(
             self.get_trips_year()
         ).select_related(
-            'bus_stop', 'bus_stop__route'
+            'bus_stop_round_trip',
+            'bus_stop_to_hanover',
+            'bus_stop_from_hanover'
         )
 
     def get_row(self, reg):
         user = reg.user
-        return [user.name, reg.name, user.netid, reg.bus_stop, reg.bus_stop.route]
+        return [
+            user.name,
+            reg.name,
+            user.netid,
+            reg.bus_stop_round_trip or '',
+            reg.bus_stop_to_hanover or '',
+            reg.bus_stop_from_hanover or ''
+        ]
 
 
 class TrippeesCSV(GenericReportView):
