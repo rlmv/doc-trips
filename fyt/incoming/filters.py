@@ -16,20 +16,20 @@ FYSEP = 'is_fysep'
 BUS = 'bus'
 
 
-def BooleanFilter(field, name):
+class BooleanFilter(django_filters.MethodFilter):
+    """Only show registrations where ``field`` is True."""
 
-    def _filter(qs, value):
-        if not value:
-            return qs
+    def __init__(self, field, **kwargs):
 
-        kwargs = dict([(field, True)])
-        return qs.filter(**kwargs)
+        def _filter(qs, value):
+            if not value:
+                return qs
 
-    filter = django_filters.MethodFilter(action=_filter)
-    filter.field.widget = forms.CheckboxInput()
-    filter.field.label = name
+            kwargs = dict([(field, True)])
+            return qs.filter(**kwargs)
 
-    return filter
+        widget = forms.CheckboxInput()
+        super().__init__(action=_filter, widget=widget, **kwargs)
 
 
 class ExternalBusRequestFilter(django_filters.ModelChoiceFilter):
@@ -59,11 +59,12 @@ class RegistrationFilterSet(django_filters.FilterSet):
         trips_year = kwargs.pop('trips_year')
         super().__init__(*args, **kwargs)
 
-        self.filters[EXCHANGE] = BooleanFilter(EXCHANGE, 'Exchange')
-        self.filters[TRANSFER] = BooleanFilter(TRANSFER, 'Transfer')
-        self.filters[INTERNATIONAL] = BooleanFilter(INTERNATIONAL, 'International')
-        self.filters[NATIVE] = BooleanFilter(NATIVE, 'Native')
-        self.filters[FYSEP] = BooleanFilter(FYSEP, 'FYSEP')
+        self.filters[EXCHANGE] = BooleanFilter(EXCHANGE, label='Exchange')
+        self.filters[TRANSFER] = BooleanFilter(TRANSFER, label='Transfer')
+        self.filters[INTERNATIONAL] = BooleanFilter(INTERNATIONAL,
+                                                    label='International')
+        self.filters[NATIVE] = BooleanFilter(NATIVE, label='Native')
+        self.filters[FYSEP] = BooleanFilter(FYSEP, label='FYSEP')
 
         self.filters[BUS] = ExternalBusRequestFilter(
             trips_year, label='External Bus Request')
