@@ -12,8 +12,9 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from vanilla import CreateView, UpdateView, TemplateView, FormView
 from braces.views import LoginRequiredMixin, FormMessagesMixin
-from django_tables2.views import SingleTableMixin
+import django_tables2 as tables
 
+from .filters import RegistrationFilterSet
 from .forms import (RegistrationForm, CSVFileForm,
                     AssignmentForm, TrippeeInfoForm)
 from .models import Registration, IncomingStudent, Settings
@@ -200,13 +201,11 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
 # ----- database internal views --------
 
 
-class RegistrationIndex(SingleTableMixin, DatabaseListView):
+class RegistrationIndex(DatabaseListView):
     """
     All trippee registrations.
     """
     model = Registration
-    table_class = RegistrationTable
-    table_pagination = False
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
 
@@ -219,7 +218,16 @@ class RegistrationIndex(SingleTableMixin, DatabaseListView):
         )
 
     def extra_context(self):
+        filter = RegistrationFilterSet(
+            self.request.GET, queryset=self.get_queryset(),
+            trips_year=self.kwargs['trips_year']
+        )
+        table = RegistrationTable(filter.qs)
+        tables.RequestConfig(self.request, paginate=False).configure(table)
         return {
+            'table': table,
+            'filter': filter,
+            'registration_count': len(filter.qs),
             'unmatched': Registration.objects.unmatched(self.get_trips_year())
         }
 
@@ -341,7 +349,7 @@ class RegistrationDelete(DatabaseDeleteView):
     success_url_pattern = 'db:registration:index'
 
 
-class IncomingStudentIndex(SingleTableMixin, DatabaseListView):
+class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
     """
     All incoming students
     """

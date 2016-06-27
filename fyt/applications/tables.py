@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
-from fyt.db.templatetags.links import detail_link, make_link, edit_link
+from fyt.db.templatetags.links import detail_link, make_link
 from fyt.utils.templatetags.icons import ok_if_true
 
 

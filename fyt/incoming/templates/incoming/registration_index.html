@@ -1,13 +1,17 @@
 {% extends "db/base.html" %}
+{% load crispy_forms_tags %}
 {% load links %}
 {% load render_table from django_tables2 %}
 
 {% block header %}
-<h2> <span class="badge"> {{ registrations.count }} </span> Trippee Registrations
+<h2> <span class="badge"> {{ registration_count }} </span> Trippee Registrations
 </h2>
 {% endblock %}
 
 {% block right_column %}
+
+{% crispy filter.form %}
+
 <br><br><br><br><br>
 <ul class="list-group">
 
