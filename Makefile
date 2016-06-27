@@ -4,7 +4,8 @@ PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 COVERAGE=$(VENV)/bin/coverage
 MANAGE=$(PYTHON) manage.py
-DB=doc/db.sqlite3
+DB=fyt/db.sqlite3
+DB_BACKUP=fyt/db.sqlite3.bak
 
 .PHONY: install migrations migrate test coverage clean deploy docs db_fresh \
 	    db_from_remote flush
@@ -52,3 +53,9 @@ db_from_remote:
 
 db_fresh: migrate
 	$(MANAGE) init_db 2015
+
+backup:
+	cp $(DB) $(DB_BACKUP)
+
+restore:
+	cp $(DB_BACKUP) $(DB)
