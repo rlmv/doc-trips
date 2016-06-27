@@ -203,7 +203,11 @@ class IncomingStudent(DatabaseModel):
         if self.bus_assignment_round_trip:
             return self._adjust(self.bus_assignment_round_trip.cost_round_trip)
 
-        one_way_cost = lambda x: x.cost_one_way if x else 0
+        def one_way_cost(x):
+            if x:
+                return x.cost_one_way
+            return 0
+
         return self._adjust(
             one_way_cost(self.bus_assignment_to_hanover) +
             one_way_cost(self.bus_assignment_from_hanover)
