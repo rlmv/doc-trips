@@ -237,3 +237,7 @@ from model_mommy.generators import gen_string
 MOMMY_CUSTOM_FIELDS_GEN = {
     'fyt.users.models.NetIdField': gen_string,
 }
+
+# django-filters: Remove "Filter" and "Exclude" help text
+FILTERS_HELP_TEXT_EXCLUDE = False
+FILTERS_HELP_TEXT_FILTER = False

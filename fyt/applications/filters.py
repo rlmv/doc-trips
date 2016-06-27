@@ -133,10 +133,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
 
-        # Remove 'Filter' help text
-        for filter in self.filters.values():
-            filter.field.help_text = ""
-
         self.form.helper = FilterSetFormHelper(self.form)
 
 
