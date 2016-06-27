@@ -13,7 +13,7 @@ class DetailLinkColumn(tables.Column):
         return detail_link(value)
 
 
-class RegistrationTable(tables.Table):
+class _RegistrationTable(tables.Table):
     """
     Table for Registrations
     """
@@ -44,6 +44,13 @@ class RegistrationTable(tables.Table):
 
     def render_edit_link(self, record):
         return edit_link(record)
+
+
+def RegistrationTable(qs, request):
+    """Configure and return a _RegistrationTable for this request."""
+    table = _RegistrationTable(qs)
+    tables.RequestConfig(request, paginate=False).configure(table)
+    return table
 
 
 class IncomingStudentTable(tables.Table):

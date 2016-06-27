@@ -222,8 +222,7 @@ class RegistrationIndex(DatabaseListView):
             self.request.GET, queryset=self.get_queryset(),
             trips_year=self.kwargs['trips_year']
         )
-        table = RegistrationTable(filter.qs)
-        tables.RequestConfig(self.request, paginate=False).configure(table)
+        table = RegistrationTable(filter.qs, self.request)
         return {
             'table': table,
             'filter': filter,
