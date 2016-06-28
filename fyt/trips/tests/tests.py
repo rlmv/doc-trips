@@ -64,7 +64,7 @@ class TripTestCase(WebTestCase):
         mommy.make(Trip, section=section2,
                    template=template2, trips_year=trips_year)
         user = self.mock_director()
-        with self.assertNumQueries(18):
+        with self.assertNumQueries(20):
             self.app.get(reverse('db:trip:index', kwargs={'trips_year': self.trips_year}), user=user)
 
 
