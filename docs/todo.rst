@@ -3,6 +3,11 @@ Things TODO
 
 Immediate
 ---------
+* Filter for athletes
+* Spreadsheets for various registration sub-categories
+* Require a selection (prefer, available, not available) for every triptype and
+section.
+* Make it possible to hide triptypes for a year.
 * Fix race conditions around applications and registrations: *I think* if a user
 has two windows open, such that they both get directed to create a new application,
 and somehow submits both, then there will be two applications or registrations.
