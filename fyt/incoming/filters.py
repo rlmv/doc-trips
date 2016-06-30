@@ -32,22 +32,39 @@ class BooleanFilter(django_filters.MethodFilter):
         super().__init__(action=_filter, widget=widget, **kwargs)
 
 
-class ExternalBusRequestFilter(django_filters.ModelChoiceFilter):
+ANY = 'ANY'
+BLANK = '-------'
+
+
+class ExternalBusRequestFilter(django_filters.ChoiceFilter):
     """Filter registrations based on the bus they requested."""
 
     def __init__(self, trips_year, **kwargs):
         qs = Stop.objects.external(trips_year)
-        super().__init__(queryset=qs, **kwargs)
+
+        # Some hackery so that we can get add the ANY option. Does not work
+        # with the ModelChoiceFilter so we have to set up choices manually.
+        choices = [(s.pk, s.name) for s in qs]
+        choices.insert(0, ('', BLANK))
+        choices.insert(1, (ANY, 'All Buses'))
+
+        super().__init__(choices=choices, **kwargs)
 
     def filter(self, qs, value):
         if not value:
             return qs
 
+        # Return all registrations which request *some* bus
+        if value == ANY:
+            return qs.exclude(
+                Q(bus_stop_round_trip=None) &
+                Q(bus_stop_to_hanover=None) &
+                Q(bus_stop_from_hanover=None))
+
         return qs.filter(
             Q(bus_stop_round_trip=value) |
             Q(bus_stop_to_hanover=value) |
-            Q(bus_stop_from_hanover=value)
-        )
+            Q(bus_stop_from_hanover=value))
 
 
 class RegistrationFilterSet(django_filters.FilterSet):
