@@ -14,6 +14,10 @@ INTERNATIONAL = 'is_international'
 NATIVE = 'is_native'
 FYSEP = 'is_fysep'
 BUS = 'bus'
+ATHLETE = 'is_athlete'
+ANY = 'ANY'
+NO = 'NO'
+BLANK = '-------'
 
 
 class BooleanFilter(django_filters.MethodFilter):
@@ -30,10 +34,6 @@ class BooleanFilter(django_filters.MethodFilter):
 
         widget = forms.CheckboxInput()
         super().__init__(action=_filter, widget=widget, **kwargs)
-
-
-ANY = 'ANY'
-BLANK = '-------'
 
 
 class ExternalBusRequestFilter(django_filters.ChoiceFilter):
@@ -67,6 +67,28 @@ class ExternalBusRequestFilter(django_filters.ChoiceFilter):
             Q(bus_stop_from_hanover=value))
 
 
+class AthleteFilter(django_filters.ChoiceFilter):
+    """Filter based on varsity team."""
+
+    def __init__(self, *args, **kwargs):
+        choices = list(Registration.ATHLETE_CHOICES)
+        choices.insert(0, ('', BLANK))
+        choices.insert(2, (ANY, 'All Athletes'))
+        super().__init__(*args, choices=choices, **kwargs)
+
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        if value == NO:
+            return qs.filter(Q(is_athlete=NO) | Q(is_athlete=None))
+
+        if value == ANY:
+            return qs.exclude(Q(is_athlete=NO) | Q(is_athlete=None))
+
+        return qs.filter(is_athlete=value)
+
+
 class RegistrationFilterSet(django_filters.FilterSet):
 
     class Meta:
@@ -86,6 +108,8 @@ class RegistrationFilterSet(django_filters.FilterSet):
         self.filters[BUS] = ExternalBusRequestFilter(
             trips_year, label='External Bus Request')
 
+        self.filters[ATHLETE] = AthleteFilter(ATHLETE, label='Athletes')
+
         self.form.helper = FilterSetFormHelper(self.form)
 
 
@@ -104,6 +128,7 @@ class FilterSetFormHelper(FormHelper):
             filter_row(INTERNATIONAL),
             filter_row(NATIVE),
             filter_row(FYSEP),
+            filter_row(ATHLETE),
             filter_row(BUS),
             filter_row(Submit('submit', 'Filter', css_class='btn-block'))
         )
