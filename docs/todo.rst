@@ -3,7 +3,6 @@ Things TODO
 
 Immediate
 ---------
-* Filter for athletes
 * Spreadsheets for various registration sub-categories
 * Require a selection (prefer, available, not available) for every triptype and
 section.
