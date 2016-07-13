@@ -23,11 +23,15 @@ def permission_denied(request):
 
     Show the db navigation if we are already in the db.
     """
+    default_context = {'base_template': 'base.html'}
 
-    if request.resolver_match.namespace.startswith('db'):
+    if request.path == '/db/':
+        # Does not have a trips_year kwarg. Use the base template.
+        context = default_context
+    elif request.resolver_match.namespace.startswith('db'):
         context = {'base_template': 'db/base.html',
                    'trips_year': request.resolver_match.kwargs['trips_year']}
     else:
-        context = {'base_template': 'base.html'}
+        context = default_context
 
     return render(request, 'permission_denied.html', context, status=403)

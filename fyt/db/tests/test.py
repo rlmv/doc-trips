@@ -32,6 +32,13 @@ class DatabaseMixinTestCase(WebTestCase):
         self.app.get(url, user=self.mock_director(), status=200)
 
 
+class RedirectToCurrentDatabaseTestCase(WebTestCase):
+
+    def test_db_redirect_access_without_permissions(self):
+        trips_year = self.init_trips_year()
+        self.app.get('/db/', user=self.mock_user(), status=403)
+
+
 class FormFieldCallbackTestCase(TripsYearTestCase):
 
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
