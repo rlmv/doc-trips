@@ -257,12 +257,18 @@ class NonStudentRegistration(DatabaseCreateView):
         "and filled in with information from the registration. </p>")
 
     def form_valid(self, form):
+        user = DartmouthUser.objects.create_user_without_netid(
+            form.cleaned_data['name'], form.cleaned_data['email']
+        )
+
         form.instance.trips_year_id = self.kwargs['trips_year']
-        form.instance.user = DartmouthUser.objects.sentinel()
+        form.instance.user = user
         self.object = form.save()
+
         IncomingStudent.objects.create(
             trips_year_id=self.kwargs['trips_year'],
             name=self.object.name,
+            netid=user.netid,
             email=self.object.email,
             blitz=self.object.email,
             phone=self.object.phone,

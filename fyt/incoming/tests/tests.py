@@ -702,7 +702,7 @@ class RegistrationViewsTestCase(WebTestCase):
         mommy.make(Settings, trips_year=trips_year)
         url = reverse('db:registration:nonstudent', kwargs={'trips_year': trips_year})
         data = {
-            'name': 'test',
+            'name': 'name',
             'gender': 'm',
             'previous_school': 'nah',
             'phone': '134',
@@ -718,12 +718,18 @@ class RegistrationViewsTestCase(WebTestCase):
             'green_fund_donation': 0,
         }
         resp = self.app.post(url, data, user=self.mock_director()).follow()
+
         registration = Registration.objects.get()
+        user = registration.user
         trippee = registration.trippee
+
+        self.assertEqual(user.name, 'name')
+        self.assertEqual(user.netid, 'name')
+        self.assertEqual(user.email, 'asf@gmail.com')
+
         self.assertEqual(resp.request.path, trippee.detail_url())
-        self.assertEqual(registration.user, DartmouthUser.objects.sentinel())
-        self.assertEqual(trippee.name, 'test')
-        self.assertEqual(trippee.netid, '')
+        self.assertEqual(trippee.name, 'name')
+        self.assertEqual(trippee.netid, 'name')
         self.assertEqual(trippee.email, 'asf@gmail.com')
         self.assertEqual(trippee.blitz, 'asf@gmail.com')
         self.assertEqual(trippee.phone, '134')
