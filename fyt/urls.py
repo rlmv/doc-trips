@@ -6,7 +6,6 @@ from django.dispatch import receiver
 
 from fyt.views import HomePage, RaiseError
 from fyt.permissions import initialize_groups_and_permissions
-from fyt.users.models import DartmouthUser
 from fyt.incoming.urls import settings_urlpatterns
 
 admin.autodiscover()

@@ -1,11 +1,9 @@
 import os
-import unittest
 from datetime import timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
-from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from fyt.test.testcases import TripsYearTestCase, WebTestCase
@@ -15,7 +13,6 @@ from fyt.trips.models import Trip, TripType, Section
 from fyt.incoming.models import Settings
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Stop, Route
-from fyt.users.models import DartmouthUser
 
 
 def resolve_path(fname):
