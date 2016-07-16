@@ -18,10 +18,6 @@ def sync_auth(**kwargs):
     initialize_groups_and_permissions()
 
 
-@receiver(post_migrate)
-def make_sentinel_user(**kwargs):
-    DartmouthUser.objects.sentinel()
-
 handler403 = 'fyt.views.permission_denied'
 
 

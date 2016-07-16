@@ -3,10 +3,6 @@ from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 
 from fyt.dartdm.lookup import lookup_email, EmailLookupException
 
-SENTINEL_NETID = 'SENTINEL'
-SENTINEL_NAME = 'SENTINEL'
-SENTINEL_PK = 1
-
 MAX_NETID_LENGTH = 20
 
 
@@ -46,17 +42,6 @@ class DartmouthUserManager(BaseUserManager):
     def create_superuser(self, **kwargs):
         raise Exception("create_superuser not implemented. "
                         "Use 'manage.py setsuperuser' instead.")
-
-    def sentinel(self):
-        """
-        Sentinel user for edge cases.
-        """
-        user, _ = self.get_or_create(
-            name=SENTINEL_NAME,
-            netid=SENTINEL_NETID,
-            pk=SENTINEL_PK,
-        )
-        return user
 
     def create_user_without_netid(self, name, email):
         """

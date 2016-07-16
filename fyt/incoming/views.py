@@ -241,12 +241,8 @@ class NonStudentRegistration(DatabaseCreateView):
     be able to log in and see her assignment, but she can be
     assigned to a trip.
 
-    This view creates a registration linked to the sentinel
-    user, and an associated incoming student object.
-
-    .. todo::
-       I don't think this will handle more than one no-student
-       registration per year because ``sentinel.netid`` is not unique.
+    This view creates a user object without a netid and links the registration
+    to this user.
     """
     model = Registration
     form_class = RegistrationForm
