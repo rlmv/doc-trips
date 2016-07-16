@@ -7,6 +7,8 @@ SENTINEL_NETID = 'SENTINEL'
 SENTINEL_NAME = 'SENTINEL'
 SENTINEL_PK = 1
 
+MAX_NETID_LENGTH = 20
+
 
 class DartmouthUserManager(BaseUserManager):
     """
@@ -56,6 +58,20 @@ class DartmouthUserManager(BaseUserManager):
         )
         return user
 
+    def create_user_without_netid(self, name, email):
+        """
+        Create a user without a netid.
+
+        Used for non-student registrations. The name is used as a stand-in
+        netid, truncated if if is too long.
+        """
+        netid = name
+
+        if len(netid) > MAX_NETID_LENGTH:
+            netid = netid[:MAX_NETID_LENGTH]
+
+        return self.create(netid=netid, name=name, email=email)
+
 
 class NetIdField(models.CharField):
     """
@@ -64,7 +80,7 @@ class NetIdField(models.CharField):
     description = "A field to hold a Dartmouth WebAuth Netid"
 
     def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 20
+        kwargs['max_length'] = MAX_NETID_LENGTH
         super().__init__(*args, **kwargs)
 
     def to_python(self, value):

@@ -6,7 +6,7 @@ from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.users.models import DartmouthUser
+from fyt.users.models import DartmouthUser, MAX_NETID_LENGTH
 from fyt.test.testcases import WebTestCase
 
 
@@ -35,6 +35,22 @@ class UserManagerTestCase(TestCase):
     def test_email_lookup_error_sets_blank_email(self):
         user = DartmouthUser.objects.create_user('junk_netid', 'name')
         self.assertEqual(user.email, '')
+
+    def test_create_user_without_netid(self):
+        name = 'name'
+        email = 'email@email.org'
+
+        user = DartmouthUser.objects.create_user_without_netid(name, email)
+        self.assertEqual(user.name, name)
+        self.assertEqual(user.netid, name)
+        self.assertEqual(user.email, email)
+
+        name = 'a' * (MAX_NETID_LENGTH + 1)  # One character too long
+
+        user = DartmouthUser.objects.create_user_without_netid(name, email)
+        self.assertEqual(user.name, name)
+        self.assertEqual(user.netid, name[:20])
+        self.assertEqual(user.email, email)
 
 
 class NetIdFieldTestCase(TestCase):
