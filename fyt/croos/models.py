@@ -1,12 +1,12 @@
 
 from django.db import models
 
-from fyt.db.models import DatabaseModel, TripsYear
+from fyt.db.models import DatabaseModel
 
 
 class Croo(DatabaseModel):
     """
-    Represents a croo organization. 
+    Represents a croo organization.
 
     Migrates each year.
     """
@@ -26,4 +26,3 @@ class Croo(DatabaseModel):
 
     def __str__(self):
         return self.name
-

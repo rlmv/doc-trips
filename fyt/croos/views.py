@@ -1,7 +1,8 @@
-from fyt.db.views import (
-    TripsYearMixin, DatabaseListView, DatabaseUpdateView,
-    DatabaseDetailView, DatabaseDeleteView, DatabaseCreateView)
+
 from fyt.croos.models import Croo
+from fyt.db.views import (
+    DatabaseListView, DatabaseUpdateView, DatabaseDetailView,
+    DatabaseDeleteView, DatabaseCreateView)
 
 
 class CrooListView(DatabaseListView):
