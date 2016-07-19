@@ -3,6 +3,7 @@ Things TODO
 
 Immediate
 ---------
+* Fix leader filtering by TripType AND Section at the same time.
 * Spreadsheets for various registration sub-categories
 * Require a selection (prefer, available, not available) for every triptype and
 section.
