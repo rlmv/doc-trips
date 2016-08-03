@@ -73,15 +73,13 @@ class TripsYearMixin():
 
         This would be straightforward if ``F()`` objects were supported
         in ``limit_choices_to``, but they're not.
+
+        Specifying form_class on means that ForeignKey
+        querysets will contain objects for ALL trips_years.
+        You must explicitly restrict the querysets for these
+        fields, or bad things will happen
         """
         if self.form_class is not None:
-            msg = (
-                "Specifying form_class on %s means that ForeignKey "
-                "querysets will contain objects for ALL trips_years. "
-                "You must explicitly restrict the querysets for these "
-                "fields, or bad things will happen"
-            )
-            logger.warn(msg % self.__class__.__name__)
             return self.form_class
 
         if hasattr(self, 'model') and self.model is not None:
