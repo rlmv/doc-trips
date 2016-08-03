@@ -34,6 +34,8 @@ class RegistrationFormLayout(Layout):
         super().__init__(
             Fieldset(
                 'General Information',
+                Field('section_preference'),
+#                      template='incoming/_sectionchoice_layout.html'),
                 'name',
                 'gender',
                 # show existing contact info?

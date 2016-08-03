@@ -1,9 +1,10 @@
+import re
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
 from django import forms
 
-from .models import Registration, IncomingStudent
+from .models import Registration, IncomingStudent, PREFERENCE_CHOICES, SectionChoice
 from .layouts import RegistrationFormLayout, join_with_and
 from fyt.incoming.models import Settings
 from fyt.db.models import TripsYear
@@ -28,13 +29,59 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
         return "{} - ${}".format(obj.name, obj.cost_one_way)
 
 
+class SectionChoiceField(forms.MultiValueField):
+
+    def __init__(self, sections, **kwargs):
+        self.sections = sections
+        self.choices = PREFERENCE_CHOICES
+
+        fields = [forms.ChoiceField(choices=self.choices)
+                  for s in sections]
+        widget = SectionChoiceWidget(sections, self.choices)
+        super().__init__(fields, widget=widget, **kwargs)
+
+    def compress(self, data_list):
+        return {s: c for s, c in zip(self.sections, data_list)}
+
+
+class SectionChoiceWidget(forms.MultiWidget):
+
+    def __init__(self, sections, choices):
+        self.sections = sections
+        widgets = [forms.Select(choices=choices) for s in sections]
+        super().__init__(widgets)
+
+    # TODO
+    def decompress(self, value):
+        print('decompress', value)
+        if not value:
+            return value
+
+        return [c.preference for c in value]
+
+
+    def format_output(self, rendered_widgets):
+        id_regex = re.compile(r'id="([a-z0-9_]+)"')
+
+        s = ""
+        for section, widget in zip(self.sections, rendered_widgets):
+            id_ = id_regex.search(widget).group(1)
+            label = '<label for="{0}" class="control-label">{1}</label>'.format(
+                id_, section)
+
+            s += ('<div class="form-group">' + label + widget + '</div>')
+
+        return s
+
+
 class RegistrationForm(forms.ModelForm):
     """
     Form for Trippee registration
     """
+
     class Meta:
         model = Registration
-        fields = '__all__'
+        exclude = ['section_choice']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -44,6 +91,14 @@ class RegistrationForm(forms.ModelForm):
             trips_year = instance.trips_year
         else:
             trips_year = TripsYear.objects.current()
+
+        sections = Section.objects.filter(trips_year=trips_year)
+        if instance:
+            initial = instance.sectionchoice_set.all()
+        else:
+            initial = None
+        self.fields['section_preference'] = SectionChoiceField(
+            sections, initial=initial)
 
         external_stops = Stop.objects.external(trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
@@ -71,6 +126,8 @@ class RegistrationForm(forms.ModelForm):
         self.fields['available_sections'] = TrippeeSectionChoiceField(queryset=sections, required=False)
         self.fields['unavailable_sections'] = TrippeeSectionChoiceField(queryset=sections, required=False)
 
+#        self.fields['section_choice'].queryset = sections
+
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['firstchoice_triptype'].queryset = triptypes
         self.fields['preferred_triptypes'].queryset = triptypes
@@ -97,6 +154,34 @@ class RegistrationForm(forms.ModelForm):
             'contact_url': settings.contact_url,
         }
         self.helper.layout = RegistrationFormLayout(**kwargs)
+
+    def save(self):
+        registration = super().save()
+
+        old_choices = self.instance.sectionchoice_set.all()
+        old_choices = {sc.section: sc for sc in old_choices}
+
+        print(old_choices)
+
+        for section, preference in self.cleaned_data['section_preference'].items():
+            old_choice = old_choices.pop(section, None)
+
+            if old_choice is None:
+                choice = SectionChoice.objects.create(
+                    registration=registration,
+                    section=section,
+                    preference=preference,
+                )
+                print(choice)
+            elif old_choice.preference != preference:
+                print(old_choice)
+                old_choice.preference = preference
+                old_choice.save()
+
+        # TODO: handle this - delete extras
+        assert len(old_choices) == 0
+
+        return registration
 
 
 class AssignmentForm(forms.ModelForm):

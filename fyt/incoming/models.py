@@ -298,10 +298,41 @@ def validate_waiver(value):
         raise ValidationError("You must agree to the waiver")
 
 
+PREFERENCE_CHOICES = (
+    ('PREFER', 'prefer'),
+    ('AVAILABLE', 'available'),
+    ('NOT AVAILABLE', 'not available')
+)
+
+
+class SectionChoice(models.Model):
+    # TODO: make abstract so that leader applications can also use this code
+    registration = models.ForeignKey(
+        'Registration', on_delete=models.CASCADE
+    )
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=PREFERENCE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.section, self.preference)
+
+
+class SectionChoiceField(models.ManyToManyField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(Section, through=SectionChoice)
+
+
 class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
+    section_choice = SectionChoiceField()
+
     objects = RegistrationManager()
 
     class Meta:

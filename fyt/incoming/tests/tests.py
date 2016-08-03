@@ -806,3 +806,12 @@ class RegistrationManagerTestCase(TripsYearTestCase):
         mommy.make(IncomingStudent, trips_year=trips_year, registration=matched)
         unmatched = mommy.make(Registration, trips_year=trips_year)
         self.assertEqual([unmatched], list(Registration.objects.unmatched(trips_year)))
+
+
+from fyt.incoming.models import parse_section_choices
+
+class SectionChoiceFieldTestCase(TripsYearTestCase):
+
+    def test_parsing(self):
+        choice_string = '{"1":"PREFER"}'
+        self.assertEqual(parse_section_choices(choice_string), {1: 'PREFER'})
