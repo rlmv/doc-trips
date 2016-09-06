@@ -50,6 +50,7 @@ class SectionChoiceField(forms.MultiValueField):
         # TODO: is it possible to have a race condition here if the name of a
         # section is changed in-between when the form is rendered and the
         # response is received?
+        assert len(data_list) == len(self.sections)
         return {s: c for s, c in zip(self.sections, data_list)}
 
     def save_preferences(self, registration, cleaned_data):
