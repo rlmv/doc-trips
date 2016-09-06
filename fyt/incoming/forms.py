@@ -33,7 +33,7 @@ class SectionChoiceField(forms.MultiValueField):
 
     def __init__(self, sections, **kwargs):
         self.sections = sections
-        self.choices = PREFERENCE_CHOICES
+        self.choices = ((None, '------'),) + PREFERENCE_CHOICES
 
         fields = [forms.ChoiceField(choices=self.choices)
                   for s in sections]
@@ -172,13 +172,13 @@ class RegistrationForm(forms.ModelForm):
                     section=section,
                     preference=preference,
                 )
-                print(choice)
+                print('old', choice)
             elif old_choice.preference != preference:
-                print(old_choice)
+                print('changed', old_choice, 'to', preference)
                 old_choice.preference = preference
                 old_choice.save()
 
-        # TODO: handle this - delete extras
+        # If a section is deleted, the choice will also be deleted.
         assert len(old_choices) == 0
 
         return registration
