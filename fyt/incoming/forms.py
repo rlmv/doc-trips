@@ -31,17 +31,54 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
 
 class SectionChoiceField(forms.MultiValueField):
 
-    def __init__(self, sections, **kwargs):
+    def __init__(self, sections, instance, **kwargs):
         self.sections = sections
         self.choices = ((None, '------'),) + PREFERENCE_CHOICES
+
+        if instance:
+            initial = instance.sectionchoice_set.all()
+        else:
+            initial = None
 
         fields = [forms.ChoiceField(choices=self.choices)
                   for s in sections]
         widget = SectionChoiceWidget(sections, self.choices)
-        super().__init__(fields, widget=widget, **kwargs)
+
+        super().__init__(fields, widget=widget, initial=initial, **kwargs)
 
     def compress(self, data_list):
+        # TODO: is it possible to have a race condition here if the name of a
+        # section is changed in-between when the form is rendered and the
+        # response is received?
         return {s: c for s, c in zip(self.sections, data_list)}
+
+    def save_preferences(self, registration, cleaned_data):
+        """Save the preferences for this registration. This should be called
+        in the form's ``save`` method.
+
+        ``cleaned_data`` is in the format returned by ``compress``.
+        """
+        old_choices = registration.sectionchoice_set.all()
+        old_choices = {sc.section: sc for sc in old_choices}
+
+        for section, preference in cleaned_data.items():
+            old_choice = old_choices.pop(section, None)
+
+            if old_choice is None:
+                choice = SectionChoice.objects.create(
+                    registration=registration,
+                    section=section,
+                    preference=preference,
+                )
+                print('new', choice)
+            elif old_choice.preference != preference:
+                print('changed', old_choice, 'to', preference)
+                old_choice.preference = preference
+                old_choice.save()
+
+        # If a section is deleted, the choice will also be deleted.
+        # We only get here if there is a race condition.
+        assert len(old_choices) == 0
 
 
 class SectionChoiceWidget(forms.MultiWidget):
@@ -93,12 +130,8 @@ class RegistrationForm(forms.ModelForm):
             trips_year = TripsYear.objects.current()
 
         sections = Section.objects.filter(trips_year=trips_year)
-        if instance:
-            initial = instance.sectionchoice_set.all()
-        else:
-            initial = None
         self.fields['section_preference'] = SectionChoiceField(
-            sections, initial=initial)
+            sections, instance=instance)
 
         external_stops = Stop.objects.external(trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
@@ -158,28 +191,8 @@ class RegistrationForm(forms.ModelForm):
     def save(self):
         registration = super().save()
 
-        old_choices = self.instance.sectionchoice_set.all()
-        old_choices = {sc.section: sc for sc in old_choices}
-
-        print(old_choices)
-
-        for section, preference in self.cleaned_data['section_preference'].items():
-            old_choice = old_choices.pop(section, None)
-
-            if old_choice is None:
-                choice = SectionChoice.objects.create(
-                    registration=registration,
-                    section=section,
-                    preference=preference,
-                )
-                print('old', choice)
-            elif old_choice.preference != preference:
-                print('changed', old_choice, 'to', preference)
-                old_choice.preference = preference
-                old_choice.save()
-
-        # If a section is deleted, the choice will also be deleted.
-        assert len(old_choices) == 0
+        self.fields['section_preference'].save_preferences(
+            registration, self.cleaned_data['section_preference'])
 
         return registration
 
