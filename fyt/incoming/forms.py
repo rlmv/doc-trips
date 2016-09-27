@@ -31,6 +31,8 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
 
 class SectionChoiceField(forms.MultiValueField):
 
+    _type_name = 'section'
+
     def __init__(self, sections, instance, **kwargs):
         self.sections = sections
         self.choices = ((None, '------'),) + PREFERENCE_CHOICES
@@ -44,7 +46,18 @@ class SectionChoiceField(forms.MultiValueField):
                   for s in sections]
         widget = SectionChoiceWidget(sections, self.choices)
 
-        super().__init__(fields, widget=widget, initial=initial, **kwargs)
+        error_messages = {
+            'required': 'You must specify a choice for every {}'.format(
+                self._type_name)
+        }
+
+        kwargs.update({
+            'initial': initial,
+            'widget': widget,
+            'error_messages': error_messages,
+        })
+
+        super().__init__(fields, **kwargs)
 
     def _choices(self, instance):
         """Common accesor for existing choices on a model."""
