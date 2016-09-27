@@ -36,7 +36,7 @@ class SectionChoiceField(forms.MultiValueField):
         self.choices = ((None, '------'),) + PREFERENCE_CHOICES
 
         if instance:
-            initial = instance.sectionchoice_set.all()
+            initial = self._choices(instance)
         else:
             initial = None
 
@@ -45,6 +45,10 @@ class SectionChoiceField(forms.MultiValueField):
         widget = SectionChoiceWidget(sections, self.choices)
 
         super().__init__(fields, widget=widget, initial=initial, **kwargs)
+
+    def _choices(self, instance):
+        """Common accesor for existing choices on a model."""
+        return instance.sectionchoice_set.all()
 
     def compress(self, data_list):
         # TODO: is it possible to have a race condition here if the name of a
@@ -59,7 +63,7 @@ class SectionChoiceField(forms.MultiValueField):
 
         ``cleaned_data`` is in the format returned by ``compress``.
         """
-        old_choices = registration.sectionchoice_set.all()
+        old_choices = self._choices(registration)
         old_choices = {sc.section: sc for sc in old_choices}
 
         for section, preference in cleaned_data.items():
