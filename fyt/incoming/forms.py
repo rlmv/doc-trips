@@ -32,6 +32,7 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
 class SectionChoiceField(forms.MultiValueField):
 
     _type_name = 'section'
+    _model = SectionChoice
 
     def __init__(self, sections, instance, **kwargs):
         self.sections = sections
@@ -83,7 +84,7 @@ class SectionChoiceField(forms.MultiValueField):
             old_choice = old_choices.pop(section, None)
 
             if old_choice is None:
-                choice = SectionChoice.objects.create(
+                choice = self._model.objects.create(
                     registration=registration,
                     section=section,
                     preference=preference,
