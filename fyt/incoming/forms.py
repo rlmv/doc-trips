@@ -31,7 +31,15 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
 
 
 class _BaseChoiceField(forms.MultiValueField):
+    """
+    Base form field used for Section and TripType preferences for both
+    Registrations and LeaderApplications.
 
+    Use the concrete `SectionChoiceField` and `TripTypeChoiceField`.
+
+    Forms using this field must call `save_preferences` in the form's `save`
+    method.
+    """
     _type_name = None
     _model = None
 
@@ -51,8 +59,7 @@ class _BaseChoiceField(forms.MultiValueField):
         else:
             initial = None
 
-        fields = [forms.ChoiceField(choices=self.choices)
-                  for s in qs]
+        fields = [forms.ChoiceField(choices=self.choices) for s in qs]
         widget = _BaseChoiceWidget(qs, self.choices)
 
         error_messages = {
@@ -68,10 +75,11 @@ class _BaseChoiceField(forms.MultiValueField):
 
         super().__init__(fields, **kwargs)
 
+    # TODO: is it possible to have a race condition here if the name of a
+    # section is changed in-between when the form is rendered and the
+    # response is received?
     def compress(self, data_list):
-        # TODO: is it possible to have a race condition here if the name of a
-        # section is changed in-between when the form is rendered and the
-        # response is received?
+        """Convert data from the widget to usable format."""
         assert len(data_list) == len(self.qs)
         return dict(zip(self.qs, data_list))
 
