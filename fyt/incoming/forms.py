@@ -107,7 +107,7 @@ class SectionChoiceField(_BaseChoiceField):
 
     def _choices(self, instance):
         """Common accesor for existing choices on a model."""
-        return instance.sectionchoice_set.all()
+        return instance.sectionchoice_set.all().order_by('section')
 
 
 class TripTypeChoiceField(_BaseChoiceField):
@@ -116,7 +116,7 @@ class TripTypeChoiceField(_BaseChoiceField):
 
     def _choices(self, instance):
         """Common accesor for existing choices on a model."""
-        return instance.triptypechoice_set.all()
+        return instance.triptypechoice_set.all().order_by('triptype')
 
 
 class _BaseChoiceWidget(forms.MultiWidget):
