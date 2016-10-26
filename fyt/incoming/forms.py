@@ -36,7 +36,11 @@ class _BaseChoiceField(forms.MultiValueField):
     _model = None
 
     def _choices(self, instance):
-        raise Exception('not implemented')
+        """Common accesor for existing choices on a model, either
+        `sectionchoice_set` or `triptypechoice_set`.
+        """
+        attr = self._type_name + 'choice_set'
+        return getattr(instance, attr).all().order_by(self._type_name)
 
     def __init__(self, qs, instance, **kwargs):
         self.qs = qs
@@ -105,18 +109,10 @@ class SectionChoiceField(_BaseChoiceField):
     _type_name = 'section'
     _model = SectionChoice
 
-    def _choices(self, instance):
-        """Common accesor for existing choices on a model."""
-        return instance.sectionchoice_set.all().order_by('section')
-
 
 class TripTypeChoiceField(_BaseChoiceField):
     _type_name = 'triptype'
     _model = TripTypeChoice
-
-    def _choices(self, instance):
-        """Common accesor for existing choices on a model."""
-        return instance.triptypechoice_set.all().order_by('triptype')
 
 
 class _BaseChoiceWidget(forms.MultiWidget):
