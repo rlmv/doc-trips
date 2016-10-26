@@ -4,8 +4,9 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
 from django import forms
 
-from .models import (Registration, IncomingStudent, PREFERENCE_CHOICES,
-                     SectionChoice, TripTypeChoice)
+from .models import (Registration, IncomingStudent, SectionChoice,
+                     TripTypeChoice, SECTION_PREFERENCE_CHOICES,
+                     TRIPTYPE_PREFERENCE_CHOICES)
 from .layouts import RegistrationFormLayout, join_with_and
 from fyt.incoming.models import Settings
 from fyt.db.models import TripsYear
@@ -43,6 +44,7 @@ class _BaseChoiceField(forms.MultiValueField):
     _type_name = None
     _model = None
     _widget = None
+    _choices = None
 
     def _preferences(self, instance):
         """Common accesor for existing choices on a model, either
@@ -53,7 +55,7 @@ class _BaseChoiceField(forms.MultiValueField):
 
     def __init__(self, qs, instance, **kwargs):
         self.qs = qs
-        self.choices = ((None, '------'),) + PREFERENCE_CHOICES
+        self.choices = ((None, '------'),) + self._choices
 
         if instance:
             initial = self._preferences(instance)
@@ -157,12 +159,14 @@ class SectionChoiceField(_BaseChoiceField):
     _type_name = 'section'
     _model = SectionChoice
     _widget = SectionChoiceWidget
+    _choices = SECTION_PREFERENCE_CHOICES
 
 
 class TripTypeChoiceField(_BaseChoiceField):
     _type_name = 'triptype'
     _model = TripTypeChoice
     _widget = _BaseChoiceWidget
+    _choices = TRIPTYPE_PREFERENCE_CHOICES
 
 
 class RegistrationForm(forms.ModelForm):

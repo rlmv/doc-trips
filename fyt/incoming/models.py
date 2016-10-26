@@ -298,11 +298,15 @@ def validate_waiver(value):
         raise ValidationError("You must agree to the waiver")
 
 
-PREFERENCE_CHOICES = (
+SECTION_PREFERENCE_CHOICES = (
     ('PREFER', 'prefer'),
     ('AVAILABLE', 'available'),
     ('NOT AVAILABLE', 'not available')
 )
+
+TRIPTYPE_PREFERENCE_CHOICES = (
+    ('FIRST CHOICE', 'first choice'),
+) + SECTION_PREFERENCE_CHOICES
 
 
 class SectionChoice(models.Model):
@@ -314,7 +318,7 @@ class SectionChoice(models.Model):
         Section, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=PREFERENCE_CHOICES
+        max_length=20, choices=SECTION_PREFERENCE_CHOICES
     )
 
     def __str__(self):
@@ -336,7 +340,7 @@ class TripTypeChoice(models.Model):
         TripType, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=PREFERENCE_CHOICES
+        max_length=20, choices=TRIPTYPE_PREFERENCE_CHOICES
     )
 
     def __str__(self):
