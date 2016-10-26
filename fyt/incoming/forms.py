@@ -38,8 +38,8 @@ class _BaseChoiceField(forms.MultiValueField):
     def _choices(self, instance):
         raise Exception('not implemented')
 
-    def __init__(self, sections, instance, **kwargs):
-        self.sections = sections
+    def __init__(self, qs, instance, **kwargs):
+        self.qs = qs
         self.choices = ((None, '------'),) + PREFERENCE_CHOICES
 
         if instance:
@@ -48,8 +48,8 @@ class _BaseChoiceField(forms.MultiValueField):
             initial = None
 
         fields = [forms.ChoiceField(choices=self.choices)
-                  for s in sections]
-        widget = SectionChoiceWidget(sections, self.choices)
+                  for s in qs]
+        widget = SectionChoiceWidget(qs, self.choices)
 
         error_messages = {
             'required': 'You must specify a choice for every {}'.format(
@@ -68,8 +68,8 @@ class _BaseChoiceField(forms.MultiValueField):
         # TODO: is it possible to have a race condition here if the name of a
         # section is changed in-between when the form is rendered and the
         # response is received?
-        assert len(data_list) == len(self.sections)
-        return {s: c for s, c in zip(self.sections, data_list)}
+        assert len(data_list) == len(self.qs)
+        return dict(zip(self.qs, data_list))
 
     def save_preferences(self, registration, cleaned_data):
         """Save the preferences for this registration. This should be called
@@ -78,14 +78,14 @@ class _BaseChoiceField(forms.MultiValueField):
         ``cleaned_data`` is in the format returned by ``compress``.
         """
         old_choices = self._choices(registration)
-        old_choices = {sc.section: sc for sc in old_choices}
+        old_choices = {getattr(c, self._type_name): c for c in old_choices}
 
-        for section, preference in cleaned_data.items():
-            old_choice = old_choices.pop(section, None)
+        for target, preference in cleaned_data.items():
+            old_choice = old_choices.pop(target, None)
 
             if old_choice is None:
                 kwargs = {
-                    self._type_name: section,
+                    self._type_name: target,
                     'registration': registration,
                     'preference': preference
                 }
