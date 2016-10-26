@@ -4,7 +4,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
 from django import forms
 
-from .models import Registration, IncomingStudent, PREFERENCE_CHOICES, SectionChoice
+from .models import (Registration, IncomingStudent, PREFERENCE_CHOICES,
+                     SectionChoice, TripTypeChoice)
 from .layouts import RegistrationFormLayout, join_with_and
 from fyt.incoming.models import Settings
 from fyt.db.models import TripsYear
@@ -29,10 +30,13 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
         return "{} - ${}".format(obj.name, obj.cost_one_way)
 
 
-class SectionChoiceField(forms.MultiValueField):
+class _BaseChoiceField(forms.MultiValueField):
 
-    _type_name = 'section'
-    _model = SectionChoice
+    _type_name = None
+    _model = None
+
+    def _choices(self, instance):
+        raise Exception('not implemented')
 
     def __init__(self, sections, instance, **kwargs):
         self.sections = sections
@@ -60,10 +64,6 @@ class SectionChoiceField(forms.MultiValueField):
 
         super().__init__(fields, **kwargs)
 
-    def _choices(self, instance):
-        """Common accesor for existing choices on a model."""
-        return instance.sectionchoice_set.all()
-
     def compress(self, data_list):
         # TODO: is it possible to have a race condition here if the name of a
         # section is changed in-between when the form is rendered and the
@@ -84,11 +84,12 @@ class SectionChoiceField(forms.MultiValueField):
             old_choice = old_choices.pop(section, None)
 
             if old_choice is None:
-                choice = self._model.objects.create(
-                    registration=registration,
-                    section=section,
-                    preference=preference,
-                )
+                kwargs = {
+                    self._type_name: section,
+                    'registration': registration,
+                    'preference': preference
+                }
+                choice = self._model.objects.create(**kwargs)
                 print('new', choice)
             elif old_choice.preference != preference:
                 print('changed', old_choice, 'to', preference)
@@ -98,6 +99,24 @@ class SectionChoiceField(forms.MultiValueField):
         # If a section is deleted, the choice will also be deleted.
         # We only get here if there is a race condition.
         assert len(old_choices) == 0
+
+
+class SectionChoiceField(_BaseChoiceField):
+    _type_name = 'section'
+    _model = SectionChoice
+
+    def _choices(self, instance):
+        """Common accesor for existing choices on a model."""
+        return instance.sectionchoice_set.all()
+
+
+class TripTypeChoiceField(_BaseChoiceField):
+    _type_name = 'triptype'
+    _model = TripTypeChoice
+
+    def _choices(self, instance):
+        """Common accesor for existing choices on a model."""
+        return instance.triptypechoice_set.all()
 
 
 class SectionChoiceWidget(forms.MultiWidget):
@@ -137,7 +156,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = Registration
-        exclude = ['section_choice']
+        exclude = ['section_choice', 'triptype_choice']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -151,6 +170,10 @@ class RegistrationForm(forms.ModelForm):
         sections = Section.objects.filter(trips_year=trips_year)
         self.fields['section_preference'] = SectionChoiceField(
             sections, instance=instance)
+
+        triptypes = TripType.objects.filter(trips_year=trips_year)
+        self.fields['triptype_preference'] = TripTypeChoiceField(
+            triptypes, instance=instance)
 
         external_stops = Stop.objects.external(trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
@@ -212,6 +235,9 @@ class RegistrationForm(forms.ModelForm):
 
         self.fields['section_preference'].save_preferences(
             registration, self.cleaned_data['section_preference'])
+
+        self.fields['triptype_preference'].save_preferences(
+            registration, self.cleaned_data['triptype_preference'])
 
         return registration
 

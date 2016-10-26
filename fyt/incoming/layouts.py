@@ -35,6 +35,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'General Information',
                 Field('section_preference'),
+                Field('triptype_preference'),
 #                      template='incoming/_sectionchoice_layout.html'),
                 'name',
                 'gender',

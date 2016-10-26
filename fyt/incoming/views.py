@@ -283,6 +283,8 @@ class RegistrationDetail(DatabaseDetailView):
     template_name = 'incoming/registration_detail.html'
 
     fields = [
+        'section_choice',
+        'triptype_choice',
         'name',
         'gender',
         'previous_school',

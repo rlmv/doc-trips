@@ -327,11 +327,34 @@ class SectionChoiceField(models.ManyToManyField):
         super().__init__(Section, through=SectionChoice)
 
 
+class TripTypeChoice(models.Model):
+    # TODO: make abstract so that leader applications can also use this code
+    registration = models.ForeignKey(
+        'Registration', on_delete=models.CASCADE
+    )
+    triptype = models.ForeignKey(
+        TripType, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=PREFERENCE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.triptype, self.preference)
+
+
+class TripTypeChoiceField(models.ManyToManyField):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(TripType, through=TripTypeChoice)
+
+
 class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
     section_choice = SectionChoiceField()
+    triptype_choice = TripTypeChoiceField()
 
     objects = RegistrationManager()
 
