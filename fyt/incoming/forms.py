@@ -44,7 +44,7 @@ class _BaseChoiceField(forms.MultiValueField):
     _model = None
     _widget = None
 
-    def _choices(self, instance):
+    def _preferences(self, instance):
         """Common accesor for existing choices on a model, either
         `sectionchoice_set` or `triptypechoice_set`.
         """
@@ -56,7 +56,7 @@ class _BaseChoiceField(forms.MultiValueField):
         self.choices = ((None, '------'),) + PREFERENCE_CHOICES
 
         if instance:
-            initial = self._choices(instance)
+            initial = self._preferences(instance)
         else:
             initial = None
 
@@ -90,7 +90,7 @@ class _BaseChoiceField(forms.MultiValueField):
 
         ``cleaned_data`` is in the format returned by ``compress``.
         """
-        old_choices = self._choices(registration)
+        old_choices = self._preferences(registration)
         old_choices = {getattr(c, self._type_name): c for c in old_choices}
 
         for target, preference in cleaned_data.items():
