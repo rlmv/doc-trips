@@ -42,6 +42,7 @@ class _BaseChoiceField(forms.MultiValueField):
     """
     _type_name = None
     _model = None
+    _widget = None
 
     def _choices(self, instance):
         """Common accesor for existing choices on a model, either
@@ -60,7 +61,7 @@ class _BaseChoiceField(forms.MultiValueField):
             initial = None
 
         fields = [forms.ChoiceField(choices=self.choices) for s in qs]
-        widget = _BaseChoiceWidget(qs, self.choices)
+        widget = self._widget(qs, self.choices)
 
         error_messages = {
             'required': 'You must specify a choice for every {}'.format(
@@ -113,16 +114,6 @@ class _BaseChoiceField(forms.MultiValueField):
         assert len(old_choices) == 0
 
 
-class SectionChoiceField(_BaseChoiceField):
-    _type_name = 'section'
-    _model = SectionChoice
-
-
-class TripTypeChoiceField(_BaseChoiceField):
-    _type_name = 'triptype'
-    _model = TripTypeChoice
-
-
 class _BaseChoiceWidget(forms.MultiWidget):
 
     def __init__(self, qs, choices):
@@ -142,14 +133,36 @@ class _BaseChoiceWidget(forms.MultiWidget):
         id_regex = re.compile(r'id="([a-z0-9_]+)"')
 
         s = ""
-        for x, widget in zip(self.qs, rendered_widgets):
+        for obj, widget in zip(self.qs, rendered_widgets):
             id_ = id_regex.search(widget).group(1)
             label = '<label for="{0}" class="control-label">{1}</label>'.format(
-                id_, x)
+                id_, self.label_value(obj))
 
             s += ('<div class="form-group">' + label + widget + '</div>')
 
         return s
+
+    def label_value(self, obj):
+        """Field label to display for the object."""
+        return str(obj)
+
+
+class SectionChoiceWidget(_BaseChoiceWidget):
+    # TODO: override for Leader Section preferences
+    def label_value(self, section):
+        return '%s &mdash; %s' % (section.name, section.trippee_date_str())
+
+
+class SectionChoiceField(_BaseChoiceField):
+    _type_name = 'section'
+    _model = SectionChoice
+    _widget = SectionChoiceWidget
+
+
+class TripTypeChoiceField(_BaseChoiceField):
+    _type_name = 'triptype'
+    _model = TripTypeChoice
+    _widget = _BaseChoiceWidget
 
 
 class RegistrationForm(forms.ModelForm):
