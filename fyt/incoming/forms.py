@@ -49,7 +49,7 @@ class _BaseChoiceField(forms.MultiValueField):
 
         fields = [forms.ChoiceField(choices=self.choices)
                   for s in qs]
-        widget = SectionChoiceWidget(qs, self.choices)
+        widget = _BaseChoiceWidget(qs, self.choices)
 
         error_messages = {
             'required': 'You must specify a choice for every {}'.format(
@@ -119,11 +119,11 @@ class TripTypeChoiceField(_BaseChoiceField):
         return instance.triptypechoice_set.all()
 
 
-class SectionChoiceWidget(forms.MultiWidget):
+class _BaseChoiceWidget(forms.MultiWidget):
 
-    def __init__(self, sections, choices):
-        self.sections = sections
-        widgets = [forms.Select(choices=choices) for s in sections]
+    def __init__(self, qs, choices):
+        self.qs = qs
+        widgets = [forms.Select(choices=choices) for x in qs]
         super().__init__(widgets)
 
     # TODO
@@ -132,17 +132,16 @@ class SectionChoiceWidget(forms.MultiWidget):
         if not value:
             return value
 
-        return [c.preference for c in value]
-
+        return [x.preference for x in value]
 
     def format_output(self, rendered_widgets):
         id_regex = re.compile(r'id="([a-z0-9_]+)"')
 
         s = ""
-        for section, widget in zip(self.sections, rendered_widgets):
+        for x, widget in zip(self.qs, rendered_widgets):
             id_ = id_regex.search(widget).group(1)
             label = '<label for="{0}" class="control-label">{1}</label>'.format(
-                id_, section)
+                id_, x)
 
             s += ('<div class="form-group">' + label + widget + '</div>')
 
