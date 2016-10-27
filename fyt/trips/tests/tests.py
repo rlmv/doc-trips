@@ -18,7 +18,8 @@ from fyt.transport.models import Route
 from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
-from fyt.incoming.models import IncomingStudent, Registration
+from fyt.incoming.models import (IncomingStudent, Registration, SectionChoice,
+                                 TripTypeChoice, PREFER)
 
 
 class TripTestCase(WebTestCase):
@@ -373,16 +374,35 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(section_preference, 'available')
 
 
+# TODO: import these from incoming tests
+
+
+def _section_preference(registration, section, preference):
+    SectionChoice.objects.create(
+        registration=registration,
+        section=section,
+        preference=preference)
+
+
+def _triptype_preference(registration, triptype, preference):
+    TripTypeChoice.objects.create(
+        registration=registration,
+        triptype=triptype,
+        preference=preference)
+
+
 class AssignTrippeeTestCase(WebTestCase):
 
     def test_trip_assignment(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
+        registration = mommy.make(Registration, trips_year=trips_year)
+        _section_preference(registration, trip.section, PREFER)
+        _triptype_preference(registration, trip.template.triptype, PREFER)
         trippee = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            registration__preferred_sections=[trip.section],
-            registration__preferred_triptypes=[trip.template.triptype]
-        )
+            registration=registration)
+
         url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to")

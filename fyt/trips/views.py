@@ -17,7 +17,7 @@ from .forms import (
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from fyt.applications.models import LeaderSupplement, GeneralApplication
-from fyt.incoming.models import IncomingStudent, Registration
+from fyt.incoming.models import IncomingStudent, SectionChoice, TripTypeChoice
 from fyt.db.views import (
     DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
@@ -409,6 +409,8 @@ class AssignTrippee(_TripMixin, DatabaseListView):
             )
         )
 
+    # TODO: refactor this with the new M2M setup
+    # TODO: use incoming.models constants
     def get_context_data(self, **kwargs):
         """
         In order to compute each trippee's triptype or section
@@ -437,27 +439,12 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         trips_year = self.kwargs['trips_year']
 
         triptype_pref = {}
-        for pair in (Registration.available_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.registration_id] = AVAILABLE
-
-        for pair in (Registration.preferred_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.registration_id] = PREFER
-
-        for registration in Registration.objects.filter(trips_year=trips_year):
-            if registration.firstchoice_triptype_id == triptype.id:
-                triptype_pref[registration.id] = FIRST_CHOICE
+        for pref in TripTypeChoice.objects.filter(triptype=triptype, preference__in=['AVAILABLE', 'PREFER', 'FIRST CHOICE']):
+            triptype_pref[pref.registration_id] = pref.preference
 
         section_pref = {}
-
-        for pair in (Registration.available_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.registration_id] = AVAILABLE
-
-        for pair in (Registration.preferred_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.registration_id] = PREFER
+        for pref in SectionChoice.objects.filter(section=section, preference__in=['AVAILABLE', 'PREFER']):
+            section_pref[pref.registration_id] = pref.preference
 
         # all external buses for this section
         buses = ExternalBus.objects.filter(trips_year=trips_year, section=section)
