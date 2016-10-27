@@ -125,7 +125,6 @@ class _BaseChoiceWidget(forms.MultiWidget):
 
     # TODO
     def decompress(self, value):
-        print('decompress', value)
         if not value:
             return value
 
