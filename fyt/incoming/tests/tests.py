@@ -538,23 +538,31 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         registration = mommy.make(Registration, trips_year=trips_year)
         registered = mommy.make(IncomingStudent, trips_year=trips_year, registration=registration)
         unregistered = mommy.make(IncomingStudent, trips_year=trips_year)
-        self.assertEqual([unregistered], list(IncomingStudent.objects.unregistered(trips_year)))
+        self.assertQsEqual(IncomingStudent.objects.unregistered(trips_year), [unregistered])
 
     def test_availability_for_trip(self):
         trips_year = self.init_current_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
 
+        # Available for both the section and triptype
         available = mommy.make(IncomingStudent, trips_year=trips_year,
                                registration=mommy.make(Registration, trips_year=trips_year))
         _section_preference(available.registration, trip.section, PREFER)
         _triptype_preference(available.registration, trip.template.triptype, AVAILABLE)
 
-        unavailable = mommy.make(IncomingStudent, trips_year=trips_year,
-                                 registration=mommy.make(Registration, trips_year=trips_year))
-        _section_preference(unavailable.registration, trip.section, PREFER)
-        # but no triptype preference
+        # Available for the section but not the triptype
+        unavailable1 = mommy.make(IncomingStudent, trips_year=trips_year,
+                                  registration=mommy.make(Registration, trips_year=trips_year))
+        _section_preference(unavailable1.registration, trip.section, PREFER)
 
-        self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
+        # Available for the triptype, but not the section
+        unavailable2 = mommy.make(IncomingStudent, trips_year=trips_year,
+                                 registration=mommy.make(Registration, trips_year=trips_year))
+        _section_preference(unavailable2.registration, trip.section, NOT_AVAILABLE)
+        _section_preference(unavailable2.registration, mommy.make(Section, trips_year=trips_year), PREFER)
+        _triptype_preference(unavailable2.registration, trip.template.triptype, AVAILABLE)
+
+        self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
 
     def test_non_swimmer_availability_for_trip(self):
         trips_year = self.init_current_trips_year()
@@ -564,17 +572,19 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         )
         available = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            registration__preferred_sections=[trip.section],
-            registration__available_triptypes=[trip.template.triptype],
             registration__swimming_ability=Registration.BEGINNER
         )
+        _section_preference(available.registration, trip.section, PREFER)
+        _triptype_preference(available.registration, trip.template.triptype, AVAILABLE)
+
         unavailable = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            registration__preferred_sections=[trip.section],
-            registration__available_triptypes=[trip.template.triptype],
             registration__swimming_ability=Registration.NON_SWIMMER
         )
-        self.assertEqual(list(IncomingStudent.objects.available_for_trip(trip)), [available])
+        _section_preference(unavailable.registration, trip.section, PREFER)
+        _triptype_preference(unavailable.registration, trip.template.triptype, AVAILABLE)
+
+        self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
 
     def test_passengers_to_hanover(self):
         trips_year = self.init_trips_year()

@@ -25,24 +25,30 @@ class IncomingStudentManager(models.Manager):
 
         Unregistered students are not included.
         """
-        sxn_pref = Q(registration__preferred_sections=trip.section)
-        sxn_avail = Q(registration__available_sections=trip.section)
-        type_top = Q(registration__firstchoice_triptype=trip.template.triptype)
-        type_pref = Q(registration__preferred_triptypes=trip.template.triptype)
-        type_avail = Q(registration__available_triptypes=trip.template.triptype)
+        from fyt.incoming.models import Registration, FIRST_CHOICE, PREFER, AVAILABLE
 
         qs = self
         if trip.template.swimtest_required:
-            from fyt.incoming.models import Registration
             qs = qs.exclude(registration__swimming_ability=Registration.NON_SWIMMER)
+
+        section = trip.section
+        triptype = trip.template.triptype
 
         return (
             qs.filter(trips_year=trip.trips_year)
-            .filter(sxn_pref | sxn_avail)
-            .filter(type_top | type_pref | type_avail)
-            .distinct()
+              .filter(
+                Q(registration__sectionchoice__section=section,
+                  registration__sectionchoice__preference=PREFER) |
+                Q(registration__sectionchoice__section=section,
+                  registration__sectionchoice__preference=AVAILABLE))
+              .filter(
+                Q(registration__triptypechoice__triptype=triptype,
+                  registration__triptypechoice__preference=FIRST_CHOICE) |
+                Q(registration__triptypechoice__triptype=triptype,
+                  registration__triptypechoice__preference=PREFER) |
+                Q(registration__triptypechoice__triptype=triptype,
+                  registration__triptypechoice__preference=AVAILABLE))
         )
-
 
     def create_from_csv_file(self, file, trips_year):
         """
