@@ -298,14 +298,20 @@ def validate_waiver(value):
         raise ValidationError("You must agree to the waiver")
 
 
+FIRST_CHOICE = 'FIRST CHOICE'
+PREFER = 'PREFER'
+AVAILABLE = 'AVAILABLE'
+NOT_AVAILABLE = 'NOT AVAILABLE'
+
+
 SECTION_PREFERENCE_CHOICES = (
-    ('PREFER', 'prefer'),
-    ('AVAILABLE', 'available'),
-    ('NOT AVAILABLE', 'not available')
+    (PREFER, 'prefer'),
+    (AVAILABLE, 'available'),
+    (NOT_AVAILABLE, 'not available')
 )
 
 TRIPTYPE_PREFERENCE_CHOICES = (
-    ('FIRST CHOICE', 'first choice'),
+    (FIRST_CHOICE, 'first choice'),
 ) + SECTION_PREFERENCE_CHOICES
 
 
@@ -359,6 +365,39 @@ class Registration(MedicalMixin, DatabaseModel):
     """
     section_choice = SectionChoiceField()
     triptype_choice = TripTypeChoiceField()
+
+    def sections_by_preference(self, preference):
+        qs = (self.sectionchoice_set
+                .filter(preference=preference)
+                .order_by('section'))
+        return [x.section for x in qs]
+
+    def new_preferred_sections(self):
+        return self.sections_by_preference(PREFER)
+
+    def new_available_sections(self):
+        return self.sections_by_preference(AVAILABLE)
+
+    def new_unavailable_sections(self):
+        return self.sections_by_preference(NOT_AVAILABLE)
+
+    def triptypes_by_preference(self, preference):
+        qs = (self.triptypechoice_set
+                .filter(preference=preference)
+                .order_by('triptype'))
+        return [x.triptype for x in qs]
+
+    def new_firstchoice_triptypes(self):
+        return self.triptypes_by_preference(FIRST_CHOICE)
+
+    def new_preferred_triptypes(self):
+        return self.triptypes_by_preference(PREFER)
+
+    def new_available_triptypes(self):
+        return self.triptypes_by_preference(AVAILABLE)
+
+    def new_unavailable_triptypes(self):
+        return self.triptypes_by_preference(NOT_AVAILABLE)
 
     objects = RegistrationManager()
 

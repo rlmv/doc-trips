@@ -94,7 +94,7 @@ class _BaseChoiceField(forms.MultiValueField):
         """
         old_choices = self._preferences(registration)
         old_choices = {getattr(c, self._type_name): c for c in old_choices}
-
+        
         for target, preference in cleaned_data.items():
             old_choice = old_choices.pop(target, None)
 
