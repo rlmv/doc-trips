@@ -34,9 +34,6 @@ class RegistrationFormLayout(Layout):
         super().__init__(
             Fieldset(
                 'General Information',
-                Field('section_preference'),
-                Field('triptype_preference'),
-#                      template='incoming/_sectionchoice_layout.html'),
                 'name',
                 'gender',
                 # show existing contact info?
@@ -65,11 +62,7 @@ class RegistrationFormLayout(Layout):
                      "<p> " + international_sections + " are the sections for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of International Student Orientation. </p> "
                      "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned it is incredibly difficult for us to change it! </strong></p>"
                  ),
-                Row(
-                    Div('preferred_sections', css_class='col-sm-3'),
-                    Div('available_sections', css_class='col-sm-3'),
-                    Div('unavailable_sections', css_class='col-sm-3'),
-                ),
+                Field('section_preference'),
                 HTML("<p> If you have a particular, immovable scheduling conflict and need to come on a specific section, please elaborate below. Let us know which section(s) you can attend and which ones you cannot. </p>"),
                 Field('schedule_conflicts', rows=3),
             ),
@@ -81,12 +74,7 @@ class RegistrationFormLayout(Layout):
                      "<ul> <li>submit all your registration materials by the deadline, </li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections " + local_sections_range + ", Other regions: Sections " + not_local_sections_range + "), and </li> <li> are available for many sections. </li> </ul>"
                      "<p><strong> Registering early does not increase your chances of getting your desired trip. However, you must register by the deadline. </strong></p>"
                  ),
-                Row(
-                    Div('firstchoice_triptype', css_class='col-sm-3'),
-                    Div('preferred_triptypes', css_class='col-sm-3'),
-                    Div('available_triptypes', css_class='col-sm-3'),
-                    Div('unavailable_triptypes', css_class='col-sm-3'),
-                ),
+                Field('triptype_preference'),
             ),
             Fieldset(
                 'T-Shirts',
