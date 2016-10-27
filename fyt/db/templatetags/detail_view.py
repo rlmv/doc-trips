@@ -41,6 +41,11 @@ def detail(db_object, fields=None):
             value = getattr(db_object, field_name)
         except FieldDoesNotExist:
             value = getattr(db_object, field_name)()
+
+            # Link to object, if possible
+            # (Added for Registration section & triptype M2M fields)
+            value = detail_link(value)
+
             if label is None:
                 label = field_name
             display_fields.append((label, value))
