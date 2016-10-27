@@ -78,6 +78,13 @@ class _BaseChoiceField(forms.MultiValueField):
 
         super().__init__(fields, **kwargs)
 
+    def clean(self, value):
+        # Handle the (nonexistant) case where the queryset is empty
+        # (This is mostly just to simplify some testing.)
+        if isinstance(value, (list, tuple)) and len(value) == 0:
+            return self.compress(value)
+        return super().clean(value)
+
     # TODO: is it possible to have a race condition here if the name of a
     # section is changed in-between when the form is rendered and the
     # response is received?
@@ -126,7 +133,7 @@ class _BaseChoiceWidget(forms.MultiWidget):
     # TODO
     def decompress(self, value):
         if not value:
-            return value
+            return [None] * len(self.qs)
 
         return [x.preference for x in value]
 
@@ -195,6 +202,8 @@ class RegistrationForm(forms.ModelForm):
             trips_year = instance.trips_year
         else:
             trips_year = TripsYear.objects.current()
+
+        self.trips_year = trips_year
 
         sections = Section.objects.filter(trips_year=trips_year)
         self.fields['section_preference'] = SectionChoiceField(

@@ -671,8 +671,8 @@ class Registration(MedicalMixin, DatabaseModel):
         qs = (Trip.objects
               .filter(trips_year=self.trips_year)
               .filter(
-                  models.Q(section__in=self.preferred_sections.all()) |
-                  models.Q(section__in=self.available_sections.all()))
+                  models.Q(section__in=self.new_preferred_sections()) |
+                  models.Q(section__in=self.new_available_sections()))
               .select_related('template__triptype', 'section')
               .order_by('template__triptype', 'section'))
         if self.is_non_swimmer:
@@ -686,7 +686,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype=self.firstchoice_triptype
+            template__triptype__in=self.new_firstchoice_triptypes()
         )
 
     def get_preferred_trips(self):
@@ -696,9 +696,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype__in=self.preferred_triptypes.all()
-        ).exclude(
-            id__in=self.get_firstchoice_trips()
+            template__triptype__in=self.new_preferred_triptypes()
         )
 
     def get_available_trips(self):
@@ -708,11 +706,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype__in=self.available_triptypes.all()
-        ).exclude(
-            id__in=self.get_firstchoice_trips()
-        ).exclude(
-            id__in=self.get_preferred_trips()
+            template__triptype__in=self.new_available_triptypes()
         )
 
     def get_incoming_student(self):
