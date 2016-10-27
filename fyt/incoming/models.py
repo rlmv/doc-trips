@@ -315,8 +315,12 @@ TRIPTYPE_PREFERENCE_CHOICES = (
 ) + SECTION_PREFERENCE_CHOICES
 
 
+# TODO: make abstract so that leader applications can also use this code
 class SectionChoice(models.Model):
-    # TODO: make abstract so that leader applications can also use this code
+
+    class Meta:
+        unique_together = ('registration', 'section')
+
     registration = models.ForeignKey(
         'Registration', on_delete=models.CASCADE
     )
@@ -337,8 +341,12 @@ class SectionChoiceField(models.ManyToManyField):
         super().__init__(Section, through=SectionChoice)
 
 
+# TODO: make abstract so that leader applications can also use this code
 class TripTypeChoice(models.Model):
-    # TODO: make abstract so that leader applications can also use this code
+
+    class Meta:
+        unique_together = ('registration', 'triptype')
+
     registration = models.ForeignKey(
         'Registration', on_delete=models.CASCADE
     )
