@@ -466,31 +466,35 @@ class Registration(MedicalMixin, DatabaseModel):
         )
     )
 
-    preferred_sections = models.ManyToManyField(
+    # ----- Deprecated section and triptype preferences -----
+
+    _old_preferred_sections = models.ManyToManyField(
         Section, blank=True, related_name='prefering_trippees'
     )
-    available_sections = models.ManyToManyField(
+    _old_available_sections = models.ManyToManyField(
         Section, blank=True, related_name='available_trippees'
     )
-    unavailable_sections = models.ManyToManyField(
+    _old_unavailable_sections = models.ManyToManyField(
         Section, blank=True, related_name='unavailable_trippees'
     )
-    firstchoice_triptype = models.ForeignKey(
+    _old_firstchoice_triptype = models.ForeignKey(
         TripType, blank=True, null=True, related_name='firstchoice_triptype',
         verbose_name="first choice trip types",
     )
-    preferred_triptypes = models.ManyToManyField(
+    _old_preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferring_trippees',
         verbose_name="preferred types of trips"
     )
-    available_triptypes = models.ManyToManyField(
+    _old_available_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='available_trippees',
         verbose_name="available types of trips"
     )
-    unavailable_triptypes = models.ManyToManyField(
+    _old_unavailable_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='unavailable_trippees',
         verbose_name="unavailable trip types"
     )
+    # ------------------------------------------------------
+
     schedule_conflicts = models.TextField(blank=True)
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
