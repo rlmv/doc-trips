@@ -36,7 +36,7 @@
     <td> {{ trippee|detail_link }} </td>
     <td> {{ trippee.get_gender }} </td>
     <td> {{ trippee.get_hometown }} </td>
-    <td> 
+    <td>
       {% if trippee.trip_assignment %}
       {{ trippee.trip_assignment|detail_link }}
       {% else %}
@@ -45,13 +45,13 @@
       </a>
       {% endif %}
     </td>
-    <td> {{ trippee.triptype_pref }} </td>
-    <td> {{ trippee.section_pref }} </td>
+    <td> {{ trippee.triptype_pref|lower }} </td>
+    <td> {{ trippee.section_pref|lower }} </td>
     <td> {{ trippee.bus_available|ok_if_true }} </td>
-    <td> 
-      {{ trippee.registration.bus_stop_round_trip|detail_link|default:"" }} 
-      {{ trippee.registration.bus_stop_to_hanover|detail_link|default:"" }} 
-      {{ trippee.registration.bus_stop_from_hanover|detail_link|default:"" }} 
+    <td>
+      {{ trippee.registration.bus_stop_round_trip|detail_link|default:"" }}
+      {{ trippee.registration.bus_stop_to_hanover|detail_link|default:"" }}
+      {{ trippee.registration.bus_stop_from_hanover|detail_link|default:"" }}
     </td>
 
   {% endfor %}
@@ -59,5 +59,3 @@
 </table>
 
 {% endblock content %}
-
-

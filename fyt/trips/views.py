@@ -17,7 +17,8 @@ from .forms import (
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from fyt.applications.models import LeaderSupplement, GeneralApplication
-from fyt.incoming.models import IncomingStudent, SectionChoice, TripTypeChoice
+from fyt.incoming.models import (IncomingStudent, SectionChoice, TripTypeChoice,
+                                 FIRST_CHOICE, PREFER, AVAILABLE)
 from fyt.db.views import (
     DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
@@ -32,11 +33,6 @@ from fyt.utils.views import PopulateMixin
 from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
 from fyt.transport.models import ExternalBus, ScheduledTransport
-
-
-FIRST_CHOICE = 'first choice'
-PREFER = 'prefer'
-AVAILABLE = 'available'
 
 
 class _SectionMixin():
@@ -410,7 +406,6 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         )
 
     # TODO: refactor this with the new M2M setup
-    # TODO: use incoming.models constants
     def get_context_data(self, **kwargs):
         """
         In order to compute each trippee's triptype or section
@@ -439,11 +434,11 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         trips_year = self.kwargs['trips_year']
 
         triptype_pref = {}
-        for pref in TripTypeChoice.objects.filter(triptype=triptype, preference__in=['AVAILABLE', 'PREFER', 'FIRST CHOICE']):
+        for pref in TripTypeChoice.objects.filter(triptype=triptype, preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]):
             triptype_pref[pref.registration_id] = pref.preference
 
         section_pref = {}
-        for pref in SectionChoice.objects.filter(section=section, preference__in=['AVAILABLE', 'PREFER']):
+        for pref in SectionChoice.objects.filter(section=section, preference__in=[AVAILABLE, PREFER]):
             section_pref[pref.registration_id] = pref.preference
 
         # all external buses for this section
