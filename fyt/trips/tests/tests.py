@@ -20,7 +20,8 @@ from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
 from fyt.incoming.models import (
     IncomingStudent, Registration, RegistrationSectionChoice,
-    RegistrationTripTypeChoice, PREFER)
+    RegistrationTripTypeChoice)
+from fyt.utils.choices import PREFER, AVAILABLE
 
 
 class TripTestCase(WebTestCase):
@@ -371,8 +372,8 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(len(leader_list), 1)
         (leader, _, triptype_preference, section_preference) = leader_list[0]
         self.assertEqual(leader, volunteer)
-        self.assertEqual(triptype_preference, 'prefer')
-        self.assertEqual(section_preference, 'available')
+        self.assertEqual(triptype_preference, PREFER)
+        self.assertEqual(section_preference, AVAILABLE)
 
 
 # TODO: import these from incoming tests
