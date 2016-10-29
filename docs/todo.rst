@@ -7,6 +7,9 @@ External
 
 Immediate
 ---------
+* Show errors in leader application form.
+* Make section/triptypes optional in leader form if the leader supplement has
+  not yet been uploaded.
 * Fix leader filtering by TripType AND Section at the same time.
 * Spreadsheets for various registration sub-categories
 * Require a selection (prefer, available, not available) for every triptype and

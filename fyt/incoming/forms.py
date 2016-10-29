@@ -108,7 +108,7 @@ class _BaseChoiceField(forms.MultiValueField):
             if old_choice is None:
                 kwargs = {
                     self._type_name: target,
-                    'registration': registration,
+                    self._target_name: registration,
                     'preference': preference
                 }
                 choice = self._model.objects.create(**kwargs)
@@ -138,7 +138,7 @@ class _BaseChoiceWidget(forms.MultiWidget):
         return [x.preference for x in value]
 
     def format_output(self, rendered_widgets):
-        id_regex = re.compile(r'id="([a-z0-9_]+)"')
+        id_regex = re.compile(r'id="([a-z0-9_-]+)"')
 
         s = ""
         for obj, widget in zip(self.qs, rendered_widgets):
@@ -163,6 +163,7 @@ class RegistrationSectionChoiceWidget(_BaseChoiceWidget):
 
 class SectionChoiceField(_BaseChoiceField):
     _type_name = 'section'
+    _target = 'registration'
     _model = RegistrationSectionChoice
     _widget = RegistrationSectionChoiceWidget
     _choices = REGISTRATION_SECTION_CHOICES
@@ -170,6 +171,7 @@ class SectionChoiceField(_BaseChoiceField):
 
 class TripTypeChoiceField(_BaseChoiceField):
     _type_name = 'triptype'
+    _targe_name = 'registration'
     _model = RegistrationTripTypeChoice
     _widget = _BaseChoiceWidget
     _choices = REGISTRATION_TRIPTYPE_CHOICES

@@ -6,11 +6,15 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from fyt.applications.models import (
     GeneralApplication, CrooSupplement, LeaderSupplement,
-    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag)
+    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag,
+    LeaderSectionChoice, LeaderTripTypeChoice, LEADER_SECTION_CHOICES,
+    LEADER_TRIPTYPE_CHOICES)
 from fyt.db.models import TripsYear
 from fyt.trips.models import Section, TripType, Trip
 from fyt.trips.fields import LeaderSectionChoiceField, TripChoiceField
 from fyt.utils.forms import crispify
+
+from fyt.incoming.forms import _BaseChoiceWidget, _BaseChoiceField
 
 
 class TripAssignmentForm(forms.ModelForm):
@@ -109,6 +113,28 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper.layout = CrooSupplementLayout()
 
 
+class LeaderSectionChoiceWidget(_BaseChoiceWidget):
+    # TODO: override for Leader Section preferences
+    def label_value(self, section):
+        return '%s &mdash; %s' % (section.name, section.leader_date_str())
+
+
+class SectionChoiceField(_BaseChoiceField):
+    _type_name = 'section'
+    _target_name = 'application'
+    _model = LeaderSectionChoice
+    _widget = LeaderSectionChoiceWidget
+    _choices = LEADER_SECTION_CHOICES
+
+
+class TripTypeChoiceField(_BaseChoiceField):
+    _type_name = 'triptype'
+    _target_name = 'application'
+    _model = LeaderTripTypeChoice
+    _widget = _BaseChoiceWidget
+    _choices = LEADER_TRIPTYPE_CHOICES
+
+
 class LeaderSupplementForm(forms.ModelForm):
 
     # override ModelForm field defaults
@@ -131,6 +157,16 @@ class LeaderSupplementForm(forms.ModelForm):
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        instance = kwargs.get('instance')
+
+        sections = Section.objects.filter(trips_year=trips_year)
+        self.fields['section_preference'] = SectionChoiceField(
+            sections, instance=instance)
+
+        triptypes = TripType.objects.filter(trips_year=trips_year)
+        self.fields['triptype_preference'] = TripTypeChoiceField(
+            triptypes, instance=instance)
 
         # Widget specifications are in __init__ because of
         # https://github.com/maraujop/django-crispy-forms/issues/303
@@ -163,6 +199,17 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout()
+
+    def save(self):
+        application = super().save()
+
+        self.fields['section_preference'].save_preferences(
+            application, self.cleaned_data['section_preference'])
+
+        self.fields['triptype_preference'].save_preferences(
+            application, self.cleaned_data['triptype_preference'])
+
+        return application
 
 
 class ApplicationStatusForm(forms.ModelForm):
@@ -312,6 +359,8 @@ class LeaderSupplementLayout(Layout):
 
     def __init__(self):
         super().__init__(
+            'section_preference',
+            'triptype_preference',
             Fieldset(
                 'Application',
                 HTML(
