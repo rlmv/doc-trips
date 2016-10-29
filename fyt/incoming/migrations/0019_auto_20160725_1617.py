@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='section_choice',
-            field=fyt.incoming.models.SectionChoiceField(blank=True, max_length=2048),
+            field=models.ManyToManyField(to='trips.Section',
+                                         through='incoming.SectionChoice')
         ),
     ]

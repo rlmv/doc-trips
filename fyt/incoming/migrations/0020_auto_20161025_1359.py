@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='triptype_choice',
-            field=fyt.incoming.models.TripTypeChoiceField(to='trips.TripType', through='incoming.TripTypeChoice'),
+            field=models.ManyToManyField(to='trips.TripType',
+                                         through='incoming.TripTypeChoice'),
         ),
     ]

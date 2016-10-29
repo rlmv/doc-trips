@@ -335,12 +335,6 @@ class SectionChoice(models.Model):
         return "{}: {}".format(self.section, self.preference)
 
 
-class SectionChoiceField(models.ManyToManyField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(Section, through=SectionChoice)
-
-
 # TODO: make abstract so that leader applications can also use this code
 class TripTypeChoice(models.Model):
 
@@ -361,18 +355,12 @@ class TripTypeChoice(models.Model):
         return "{}: {}".format(self.triptype, self.preference)
 
 
-class TripTypeChoiceField(models.ManyToManyField):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(TripType, through=TripTypeChoice)
-
-
 class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
-    section_choice = SectionChoiceField()
-    triptype_choice = TripTypeChoiceField()
+    section_choice = models.ManyToManyField(Section, through=SectionChoice)
+    triptype_choice = models.ManyToManyField(TripType, through=TripTypeChoice)
 
     def sections_by_preference(self, preference):
         qs = (self.sectionchoice_set
