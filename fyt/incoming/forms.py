@@ -66,7 +66,7 @@ class _BaseChoiceField(forms.MultiValueField):
         widget = self._widget(qs, self.choices)
 
         error_messages = {
-            'required': 'You must specify a choice for every {}'.format(
+            'required': 'You must select a preference for every {}'.format(
                 self._type_name)
         }
 
