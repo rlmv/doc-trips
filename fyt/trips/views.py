@@ -17,8 +17,10 @@ from .forms import (
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
 from fyt.applications.models import LeaderSupplement, GeneralApplication
-from fyt.incoming.models import (IncomingStudent, SectionChoice, TripTypeChoice,
-                                 FIRST_CHOICE, PREFER, AVAILABLE)
+from fyt.incoming.models import (
+    IncomingStudent, RegistrationSectionChoice, RegistrationTripTypeChoice,
+    FIRST_CHOICE, PREFER, AVAILABLE
+)
 from fyt.db.views import (
     DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
@@ -435,14 +437,14 @@ class AssignTrippee(_TripMixin, DatabaseListView):
 
         triptype_pref = {
             pref.registration_id: pref.preference
-            for pref in TripTypeChoice.objects.filter(
+            for pref in RegistrationTripTypeChoice.objects.filter(
                 triptype=triptype,
                 preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]
             )
         }
         section_pref = {
             pref.registration_id: pref.preference
-            for pref in SectionChoice.objects.filter(
+            for pref in RegistrationSectionChoice.objects.filter(
                 section=section,
                 preference__in=[AVAILABLE, PREFER]
             )

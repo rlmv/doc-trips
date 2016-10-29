@@ -4,8 +4,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
 from django import forms
 
-from .models import (Registration, IncomingStudent, SectionChoice,
-                     TripTypeChoice, REGISTRATION_SECTION_CHOICES,
+from .models import (Registration, IncomingStudent, RegistrationSectionChoice,
+                     RegistrationTripTypeChoice, REGISTRATION_SECTION_CHOICES,
                      REGISTRATION_TRIPTYPE_CHOICES)
 from .layouts import RegistrationFormLayout, join_with_and
 from fyt.incoming.models import Settings
@@ -50,7 +50,7 @@ class _BaseChoiceField(forms.MultiValueField):
         """Common accesor for existing choices on a model, either
         `sectionchoice_set` or `triptypechoice_set`.
         """
-        attr = self._type_name + 'choice_set'
+        attr = self._model.__name__.lower() + '_set'
         return getattr(instance, attr).all().order_by(self._type_name)
 
     def __init__(self, qs, instance, **kwargs):
@@ -155,7 +155,7 @@ class _BaseChoiceWidget(forms.MultiWidget):
         return str(obj)
 
 
-class SectionChoiceWidget(_BaseChoiceWidget):
+class RegistrationSectionChoiceWidget(_BaseChoiceWidget):
     # TODO: override for Leader Section preferences
     def label_value(self, section):
         return '%s &mdash; %s' % (section.name, section.trippee_date_str())
@@ -163,14 +163,14 @@ class SectionChoiceWidget(_BaseChoiceWidget):
 
 class SectionChoiceField(_BaseChoiceField):
     _type_name = 'section'
-    _model = SectionChoice
-    _widget = SectionChoiceWidget
+    _model = RegistrationSectionChoice
+    _widget = RegistrationSectionChoiceWidget
     _choices = REGISTRATION_SECTION_CHOICES
 
 
 class TripTypeChoiceField(_BaseChoiceField):
     _type_name = 'triptype'
-    _model = TripTypeChoice
+    _model = RegistrationTripTypeChoice
     _widget = _BaseChoiceWidget
     _choices = REGISTRATION_TRIPTYPE_CHOICES
 

@@ -18,8 +18,9 @@ from fyt.transport.models import Route
 from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
-from fyt.incoming.models import (IncomingStudent, Registration, SectionChoice,
-                                 TripTypeChoice, PREFER)
+from fyt.incoming.models import (
+    IncomingStudent, Registration, RegistrationSectionChoice,
+    RegistrationTripTypeChoice, PREFER)
 
 
 class TripTestCase(WebTestCase):
@@ -378,14 +379,14 @@ class AssignLeaderTestCase(WebTestCase):
 
 
 def _section_preference(registration, section, preference):
-    SectionChoice.objects.create(
+    RegistrationSectionChoice.objects.create(
         registration=registration,
         section=section,
         preference=preference)
 
 
 def _triptype_preference(registration, triptype, preference):
-    TripTypeChoice.objects.create(
+    RegistrationTripTypeChoice.objects.create(
         registration=registration,
         triptype=triptype,
         preference=preference)

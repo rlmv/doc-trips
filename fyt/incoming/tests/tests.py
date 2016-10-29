@@ -7,10 +7,9 @@ from django.db import IntegrityError
 from model_mommy import mommy
 
 from fyt.test.testcases import TripsYearTestCase, WebTestCase
-from fyt.incoming.models import (Registration, IncomingStudent,
-                                 sort_by_lastname, SectionChoice,
-                                 TripTypeChoice, FIRST_CHOICE, PREFER,
-                                 AVAILABLE, NOT_AVAILABLE)
+from fyt.incoming.models import (
+    Registration, IncomingStudent, sort_by_lastname, RegistrationSectionChoice,
+    RegistrationTripTypeChoice, FIRST_CHOICE, PREFER, AVAILABLE, NOT_AVAILABLE)
 from fyt.incoming.forms import RegistrationForm
 from fyt.trips.models import Trip, TripType, Section
 from fyt.incoming.models import Settings
@@ -319,14 +318,14 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
 
 
 def _section_preference(registration, section, preference):
-    SectionChoice.objects.create(
+    RegistrationSectionChoice.objects.create(
         registration=registration,
         section=section,
         preference=preference)
 
 
 def _triptype_preference(registration, triptype, preference):
-    TripTypeChoice.objects.create(
+    RegistrationTripTypeChoice.objects.create(
         registration=registration,
         triptype=triptype,
         preference=preference)

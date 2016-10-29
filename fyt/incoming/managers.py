@@ -37,17 +37,17 @@ class IncomingStudentManager(models.Manager):
         return (
             qs.filter(trips_year=trip.trips_year)
               .filter(
-                Q(registration__sectionchoice__section=section,
-                  registration__sectionchoice__preference=PREFER) |
-                Q(registration__sectionchoice__section=section,
-                  registration__sectionchoice__preference=AVAILABLE))
+                Q(registration__registrationsectionchoice__section=section,
+                  registration__registrationsectionchoice__preference=PREFER) |
+                Q(registration__registrationsectionchoice__section=section,
+                  registration__registrationsectionchoice__preference=AVAILABLE))
               .filter(
-                Q(registration__triptypechoice__triptype=triptype,
-                  registration__triptypechoice__preference=FIRST_CHOICE) |
-                Q(registration__triptypechoice__triptype=triptype,
-                  registration__triptypechoice__preference=PREFER) |
-                Q(registration__triptypechoice__triptype=triptype,
-                  registration__triptypechoice__preference=AVAILABLE))
+                Q(registration__registrationtriptypechoice__triptype=triptype,
+                  registration__registrationtriptypechoice__preference=FIRST_CHOICE) |
+                Q(registration__registrationtriptypechoice__triptype=triptype,
+                  registration__registrationtriptypechoice__preference=PREFER) |
+                Q(registration__registrationtriptypechoice__triptype=triptype,
+                  registration__registrationtriptypechoice__preference=AVAILABLE))
         )
 
     def create_from_csv_file(self, file, trips_year):

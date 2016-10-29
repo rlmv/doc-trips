@@ -310,7 +310,7 @@ REGISTRATION_TRIPTYPE_CHOICES = (
 
 
 # TODO: make abstract so that leader applications can also use this code
-class SectionChoice(models.Model):
+class RegistrationSectionChoice(models.Model):
 
     class Meta:
         unique_together = ('registration', 'section')
@@ -330,7 +330,7 @@ class SectionChoice(models.Model):
 
 
 # TODO: make abstract so that leader applications can also use this code
-class TripTypeChoice(models.Model):
+class RegistrationTripTypeChoice(models.Model):
 
     class Meta:
         unique_together = ('registration', 'triptype')
@@ -353,11 +353,15 @@ class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
-    section_choice = models.ManyToManyField(Section, through=SectionChoice)
-    triptype_choice = models.ManyToManyField(TripType, through=TripTypeChoice)
+    section_choice = models.ManyToManyField(
+        Section, through=RegistrationSectionChoice,
+    )
+    triptype_choice = models.ManyToManyField(
+        TripType, through=RegistrationTripTypeChoice
+    )
 
     def sections_by_preference(self, preference):
-        qs = (self.sectionchoice_set
+        qs = (self.registrationsectionchoice_set
                 .filter(preference=preference)
                 .order_by('section'))
         return [x.section for x in qs]
@@ -372,7 +376,7 @@ class Registration(MedicalMixin, DatabaseModel):
         return self.sections_by_preference(NOT_AVAILABLE)
 
     def triptypes_by_preference(self, preference):
-        qs = (self.triptypechoice_set
+        qs = (self.registrationtriptypechoice_set
                 .filter(preference=preference)
                 .order_by('triptype'))
         return [x.triptype for x in qs]
