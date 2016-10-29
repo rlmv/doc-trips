@@ -433,16 +433,24 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         triptype = trip.template.triptype
         trips_year = self.kwargs['trips_year']
 
-        triptype_pref = {}
-        for pref in TripTypeChoice.objects.filter(triptype=triptype, preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]):
-            triptype_pref[pref.registration_id] = pref.preference
-
-        section_pref = {}
-        for pref in SectionChoice.objects.filter(section=section, preference__in=[AVAILABLE, PREFER]):
-            section_pref[pref.registration_id] = pref.preference
+        triptype_pref = {
+            pref.registration_id: pref.preference
+            for pref in TripTypeChoice.objects.filter(
+                triptype=triptype,
+                preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]
+            )
+        }
+        section_pref = {
+            pref.registration_id: pref.preference
+            for pref in SectionChoice.objects.filter(
+                section=section,
+                preference__in=[AVAILABLE, PREFER]
+            )
+        }
 
         # all external buses for this section
-        buses = ExternalBus.objects.filter(trips_year=trips_year, section=section)
+        buses = ExternalBus.objects.filter(
+            trips_year=trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
 
