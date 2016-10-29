@@ -44,7 +44,10 @@ def detail(db_object, fields=None):
 
             # Link to object, if possible
             # (Added for Registration section & triptype M2M fields)
-            value = detail_link(value)
+            try:
+                value = detail_link(value)
+            except AttributeError:
+                pass
 
             if label is None:
                 label = field_name
