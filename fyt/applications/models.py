@@ -347,6 +347,58 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         return self.name
 
 
+PREFER = 'PREFER'
+AVAILABLE = 'AVAILABLE'
+NOT_AVAILABLE = 'NOT AVAILABLE'
+
+
+SECTION_PREFERENCE_CHOICES = (
+    (PREFER, 'prefer'),
+    (AVAILABLE, 'available'),
+    (NOT_AVAILABLE, 'not available')
+)
+
+TRIPTYPE_PREFERENCE_CHOICES = SECTION_PREFERENCE_CHOICES
+
+
+class LeaderSectionChoice(models.Model):
+
+    class Meta:
+        unique_together = ('application', 'section')
+
+    application = models.ForeignKey(
+        'LeaderSupplement', on_delete=models.CASCADE
+    )
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=SECTION_PREFERENCE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.section, self.preference)
+
+
+class LeaderTripTypeChoice(models.Model):
+
+    class Meta:
+        unique_together = ('application', 'triptype')
+
+    application = models.ForeignKey(
+        'LeaderSupplement', on_delete=models.CASCADE
+    )
+    triptype = models.ForeignKey(
+        TripType, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=TRIPTYPE_PREFERENCE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.triptype, self.preference)
+
+
 class LeaderSupplement(DatabaseModel):
     """
     Leader application answers
@@ -354,6 +406,13 @@ class LeaderSupplement(DatabaseModel):
     NUMBER_OF_GRADES = 4
 
     objects = LeaderApplicationManager()
+
+    section_choice = models.ManyToManyField(
+        Section, through=LeaderSectionChoice
+    )
+    triptype_choice = models.ManyToManyField(
+        TripType, through=LeaderTripTypeChoice
+    )
 
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='leader_supplement'
