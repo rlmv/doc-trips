@@ -5,8 +5,8 @@ from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Di
 from django import forms
 
 from .models import (Registration, IncomingStudent, SectionChoice,
-                     TripTypeChoice, SECTION_PREFERENCE_CHOICES,
-                     TRIPTYPE_PREFERENCE_CHOICES)
+                     TripTypeChoice, REGISTRATION_SECTION_CHOICES,
+                     REGISTRATION_TRIPTYPE_CHOICES)
 from .layouts import RegistrationFormLayout, join_with_and
 from fyt.incoming.models import Settings
 from fyt.db.models import TripsYear
@@ -165,14 +165,14 @@ class SectionChoiceField(_BaseChoiceField):
     _type_name = 'section'
     _model = SectionChoice
     _widget = SectionChoiceWidget
-    _choices = SECTION_PREFERENCE_CHOICES
+    _choices = REGISTRATION_SECTION_CHOICES
 
 
 class TripTypeChoiceField(_BaseChoiceField):
     _type_name = 'triptype'
     _model = TripTypeChoice
     _widget = _BaseChoiceWidget
-    _choices = TRIPTYPE_PREFERENCE_CHOICES
+    _choices = REGISTRATION_TRIPTYPE_CHOICES
 
 
 class RegistrationForm(forms.ModelForm):

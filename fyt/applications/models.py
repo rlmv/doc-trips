@@ -10,7 +10,8 @@ from .managers import (CrooApplicationManager, LeaderApplicationManager,
 from fyt.db.models import DatabaseModel
 from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
-from fyt.utils.choices import TSHIRT_SIZE_CHOICES
+from fyt.utils.choices import (TSHIRT_SIZE_CHOICES, PREFER, AVAILABLE,
+                               NOT_AVAILABLE)
 from fyt.utils.models import MedicalMixin
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 
@@ -347,18 +348,13 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         return self.name
 
 
-PREFER = 'PREFER'
-AVAILABLE = 'AVAILABLE'
-NOT_AVAILABLE = 'NOT AVAILABLE'
-
-
-SECTION_PREFERENCE_CHOICES = (
+LEADER_SECTION_CHOICES = (
     (PREFER, 'prefer'),
     (AVAILABLE, 'available'),
     (NOT_AVAILABLE, 'not available')
 )
 
-TRIPTYPE_PREFERENCE_CHOICES = SECTION_PREFERENCE_CHOICES
+LEADER_TRIPTYPE_CHOICES = LEADER_SECTION_CHOICES
 
 
 class LeaderSectionChoice(models.Model):
@@ -373,7 +369,7 @@ class LeaderSectionChoice(models.Model):
         Section, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=SECTION_PREFERENCE_CHOICES
+        max_length=20, choices=LEADER_SECTION_CHOICES
     )
 
     def __str__(self):
@@ -392,7 +388,7 @@ class LeaderTripTypeChoice(models.Model):
         TripType, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=TRIPTYPE_PREFERENCE_CHOICES
+        max_length=20, choices=LEADER_TRIPTYPE_CHOICES
     )
 
     def __str__(self):
