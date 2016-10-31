@@ -6,7 +6,7 @@ from model_mommy import mommy
 from django_webtest import WebTest
 
 from fyt.db.models import TripsYear
-from fyt.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
+from fyt.permissions.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
 
 
 class TripsYearTestCaseUtils():
