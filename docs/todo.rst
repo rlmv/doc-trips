@@ -1,6 +1,10 @@
 Things TODO
 ===========
 
+External
+--------
+* Fix django-braces to allow `is_authenticated` be a property.
+
 Immediate
 ---------
 * Fix leader filtering by TripType AND Section at the same time.
