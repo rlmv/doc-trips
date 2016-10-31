@@ -151,45 +151,47 @@ STATICFILES_FINDERS = (
 )
 
 # Pipeline - static files
-PIPELINE_CSS = {
-    'base': {
-        'source_filenames': (
-            'css/style.css',
-            'css/typeaheadjs.css',
-            'css/bootstrap.min.css',
-            'css/bootstrap-theme.min.css',
-            'css/font-awesome.min.css',
-            'css/bootstrap-switch.css',
-            'css/summernote.css',
-            'css/metisMenu.css',
-        ),
-        'output_filename': 'base.css'
-    }
-}
-PIPELINE_JS = {
-    'base': {
-        'source_filenames': (
-            'js/jquery.js',
-            'js/bootstrap.min.js',
-            'js/typeahead.bundle.js',
-            'dartdm/lookup.js',  # must come after typeahead
-            'js/stupidtable.js',
-            'js/metisMenu.min.js',
-            'js/bootstrap-switch.js',
-        ),
-        'output_filename': 'base.js'
+PIPELINE = {
+    # concatenate assets only -- GzipManifest deals with compression
+    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'PIPELINE_JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'STYLESHEETS' : {
+        'base': {
+            'source_filenames': (
+                'css/style.css',
+                'css/typeaheadjs.css',
+                'css/bootstrap.min.css',
+                'css/bootstrap-theme.min.css',
+                'css/font-awesome.min.css',
+                'css/bootstrap-switch.css',
+                'css/summernote.css',
+                'css/metisMenu.css',
+            ),
+            'output_filename': 'base.css'
+        }
     },
-    'summernote': {
-        'source_filenames': (
-            'js/summernote.js',
-            'js/init_summernote.js',
-        ),
-        'output_filename': 'my_summernote.js'
+    'JAVASCRIPT': {
+        'base': {
+            'source_filenames': (
+                'js/jquery.js',
+                'js/bootstrap.min.js',
+                'js/typeahead.bundle.js',
+                'dartdm/lookup.js',  # must come after typeahead
+                'js/stupidtable.js',
+                'js/metisMenu.min.js',
+                'js/bootstrap-switch.js',
+            ),
+            'output_filename': 'base.js'
+        },
+        'summernote': {
+            'source_filenames': (
+                'js/summernote.js',
+                'js/init_summernote.js',
+            ),
+            'output_filename': 'my_summernote.js'
+        }
     }
 }
-# concatenate assets only -- GzipManifest deals with compression
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'templates'),
