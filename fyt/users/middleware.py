@@ -25,6 +25,6 @@ class UserEmailRequiredMiddleware(object):
             # allow people to logout without updating email
             return None
 
-        if request.user.is_authenticated and not request.user.email:
+        if request.user.is_authenticated() and not request.user.email:
             params = urlencode({auth.REDIRECT_FIELD_NAME: request.get_full_path()})
             return HttpResponseRedirect(update_url + '?' + params)
