@@ -98,14 +98,6 @@ class DartmouthUser(PermissionsMixin):
     class Meta:
         ordering = ['name']
 
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.is_superuser
-
     USERNAME_FIELD = 'netid'
     REQUIRED_FIELDS = ['email', 'name']
 
@@ -125,6 +117,14 @@ class DartmouthUser(PermissionsMixin):
     @property
     def is_anonymous(self):
         return False
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_staff(self):
+        return self.is_superuser
 
     def __str__(self):
         return str(self.name)
