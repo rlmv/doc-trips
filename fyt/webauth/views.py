@@ -76,7 +76,7 @@ def login(request, next_page=None):
     if not next_page:
         next_page = _redirect_url(request)
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return HttpResponseRedirect(next_page)
 
     service = _service_url(request, next_page)
