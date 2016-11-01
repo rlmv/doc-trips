@@ -87,7 +87,7 @@ def can_report_incidents():
 
 def directors():
     directors, _ = Group.objects.get_or_create(name='directors')
-    directors.permissions = [
+    directors.permissions.set([
         can_set_access(),
         can_view_database(),
         can_edit_database(),
@@ -97,59 +97,53 @@ def directors():
         can_create_applications(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
-    ]
-    directors.save()
+    ])
     return directors
 
 
 def directorate():
     directorate, _ = Group.objects.get_or_create(name='directorate')
-    directorate.permissions = [
+    directorate.permissions.set([
         can_view_database(),
         can_grade_leader_applications(),
         can_grade_croo_applications(),
-    ]
-    directorate.save()
+    ])
     return directorate
 
 
 def trip_leader_trainers():
     # trip leader trainers
     tlts, _ = Group.objects.get_or_create(name='trip leader trainers')
-    tlts.permissions = [
+    tlts.permissions.set([
         can_view_database(),
         can_grade_leader_applications(),
         can_edit_applications_and_assign_trip_leaders(),
-    ]
-    tlts.save()
+    ])
     return tlts
 
 
 def olcs():
     olcs, _ = Group.objects.get_or_create(name='outdoor logistics coordinators')
-    olcs.permissions = [
+    olcs.permissions.set([
         can_view_database(),
         can_grade_leader_applications(),
         can_grade_croo_applications(),
         can_edit_trip_info(),
-    ]
-    olcs.save()
+    ])
     return olcs
 
 
 def safety_leads():
     leads, _ = Group.objects.get_or_create(name='safety leads')
-    leads.permissions = [
+    leads.permissions.set([
         can_report_incidents()
-    ]
-    leads.save()
+    ])
     return leads
 
 
 def graders():
     graders, _ = Group.objects.get_or_create(name='graders')
-    graders.permissions = [
+    graders.permissions.set([
         can_grade_leader_applications(),
-    ]
-    graders.save()
+    ])
     return graders
