@@ -34,7 +34,7 @@ class WebAuthMiddleware(object):
             # Not admin? then we don't care. Pass along the request.
             return None
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             login_url = settings.LOGIN_URL + '?' + urlencode({
                 auth.REDIRECT_FIELD_NAME: request.get_full_path()})
             return HttpResponseRedirect(login_url)
