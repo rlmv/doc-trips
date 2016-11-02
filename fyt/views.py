@@ -1,5 +1,6 @@
 
-from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
+from braces.views import SuperuserRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from vanilla import TemplateView
 

@@ -1,6 +1,7 @@
-from braces.views import LoginRequiredMixin, SetHeadlineMixin
+from braces.views import SetHeadlineMixin
 from vanilla import ListView, DetailView, CreateView, FormView, TemplateView
 from django.http import HttpResponseRedirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse

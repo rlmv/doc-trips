@@ -2,6 +2,7 @@ import io
 import logging
 
 from django import forms
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import get_object_or_404
@@ -11,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from vanilla import CreateView, UpdateView, TemplateView, FormView
-from braces.views import LoginRequiredMixin, FormMessagesMixin
+from braces.views import FormMessagesMixin
 import django_tables2 as tables
 
 from .filters import RegistrationFilterSet
