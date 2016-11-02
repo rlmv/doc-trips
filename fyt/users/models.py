@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
+from django.utils.deprecation import CallableFalse, CallableTrue
 
 from fyt.dartdm.lookup import lookup_email, EmailLookupException
 
@@ -110,13 +111,17 @@ class DartmouthUser(PermissionsMixin):
     def get_username(self):
         return self.netid
 
+    # Return the `CallableBool` objects to support various versions of
+    # `is_authenticated` and `is_anonymous` in dependencies.
+    # TODO: fallback to straight properties
+
     @property
     def is_authenticated(self):
-        return True
+        return CallableTrue
 
     @property
     def is_anonymous(self):
-        return False
+        return CallableFalse
 
     @property
     def is_active(self):
