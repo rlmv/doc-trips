@@ -4,7 +4,7 @@ boto==2.36.0
 coverage==3.7.1
 googlemaps==2.2
 django==1.10
-django-bulk-update==1.1.8
+django-bulk-update==1.1.10
 django-crispy-forms==1.6.0
 django-extensions==1.6.1
 django-debug-toolbar==1.5
