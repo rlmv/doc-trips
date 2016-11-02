@@ -32,7 +32,6 @@ FILE_STORAGE_PREFIX = 'uploads'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
-TEMPLATE_DEBUG = DEBUG
 
 # monitoring
 RAVEN_CONFIG = {
