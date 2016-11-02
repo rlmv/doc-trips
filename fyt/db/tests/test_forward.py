@@ -11,6 +11,10 @@ from fyt.transport.models import Route, Vehicle, Stop
 from fyt.trips.models import TripTemplate
 
 
+def all_field_names(obj):
+    return [f.name for f in obj._meta.get_fields()]
+
+
 class MigrateForwardTestCase(TripsTestCase):
 
     def assertDataEqual(self, obj1, obj2):
@@ -21,10 +25,8 @@ class MigrateForwardTestCase(TripsTestCase):
         TODO: should this check that objects are for different
         trips_years?
         """
-        field_names = set(obj1._meta.get_all_field_names() +
-                          obj2._meta.get_all_field_names())
+        field_names = set(all_field_names(obj1) + all_field_names(obj2))
         field_names.remove('trips_year')
-        field_names.remove('trips_year_id')
         field_names.remove('id')
 
         for name in field_names:

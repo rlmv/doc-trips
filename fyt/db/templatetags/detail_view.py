@@ -11,11 +11,11 @@ register = template.Library()
 
 @register.simple_tag
 def detail(db_object, fields=None):
-    """ 
+    """
     Output a generic detail view of a database object.
-    
+
     Fields is an iterable of strings. Each string is either the
-    name of a field or a method of the object. Fields can be 
+    name of a field or a method of the object. Fields can be
     passed as (label, accessor) tuples, eg ('Section', 'get_section_name').
     """
 
@@ -37,7 +37,7 @@ def detail(db_object, fields=None):
         if field_name == 'document_set':
             import pdb; pdb.set_trace()
         try:
-            field = db_object._meta.get_field_by_name(field_name)[0]
+            field = db_object._meta.get_field(field_name)
             value = getattr(db_object, field_name)
         except FieldDoesNotExist:
             value = getattr(db_object, field_name)()
@@ -83,4 +83,3 @@ def detail(db_object, fields=None):
     t = template.loader.get_template('db/_detail_view_tag.html')
     c = template.Context({'fields': display_fields})
     return t.render(c)
-
