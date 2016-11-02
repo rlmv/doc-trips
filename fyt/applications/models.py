@@ -470,6 +470,30 @@ class LeaderSupplement(DatabaseModel):
             application=self, triptype=triptype, preference=preference
         )
 
+    def sections_by_preference(self, preference):
+        qs = (self.leadersectionchoice_set
+                .filter(preference=preference)
+                .order_by('section'))
+        return [x.section for x in qs]
+
+    def new_preferred_sections(self):
+        return self.sections_by_preference(PREFER)
+
+    def new_available_sections(self):
+        return self.sections_by_preference(AVAILABLE)
+
+    def triptypes_by_preference(self, preference):
+        qs = (self.leadertriptypechoice_set
+                .filter(preference=preference)
+                .order_by('triptype'))
+        return [x.triptype for x in qs]
+
+    def new_preferred_triptypes(self):
+        return self.triptypes_by_preference(PREFER)
+
+    def new_available_triptypes(self):
+        return self.triptypes_by_preference(AVAILABLE)
+
     def get_preferred_trips(self):
         """
         All trips which this applicant prefers to lead
@@ -477,8 +501,8 @@ class LeaderSupplement(DatabaseModel):
         return (
             Trip.objects
             .filter(trips_year=self.trips_year)
-            .filter(Q(section__in=self.preferred_sections.all()) &
-                    Q(template__triptype__in=self.preferred_triptypes.all()))
+            .filter(Q(section__in=self.new_preferred_sections()) &
+                    Q(template__triptype__in=self.new_preferred_triptypes()))
         )
 
     def get_available_trips(self):
@@ -491,10 +515,10 @@ class LeaderSupplement(DatabaseModel):
         return (
             Trip.objects
             .filter(trips_year=self.trips_year)
-            .filter(Q(section__in=self.preferred_sections.all()) |
-                    Q(section__in=self.available_sections.all()),
-                    Q(template__triptype__in=self.preferred_triptypes.all()) |
-                    Q(template__triptype__in=self.available_triptypes.all()))
+            .filter(Q(section__in=self.new_preferred_sections()) |
+                    Q(section__in=self.new_available_sections()),
+                    Q(template__triptype__in=self.new_preferred_triptypes()) |
+                    Q(template__triptype__in=self.new_available_triptypes()))
             .exclude(id__in=self.get_preferred_trips().all())
         )
 

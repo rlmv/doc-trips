@@ -118,9 +118,8 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         application = self.make_application(trips_year=trips_year)
         ls = application.leader_supplement
         preferred_trip = mommy.make(Trip, trips_year=trips_year)
-        ls.preferred_sections = [preferred_trip.section]
-        ls.preferred_triptypes = [preferred_trip.template.triptype]
-        ls.save()
+        ls.set_section_preference(preferred_trip.section, PREFER)
+        ls.set_triptype_preference(preferred_trip.template.triptype, PREFER)
         not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
 
@@ -132,11 +131,10 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         preferred_section = mommy.make(Section, trips_year=trips_year)
         available_triptype = mommy.make(TripType, trips_year=trips_year)
         available_section = mommy.make(Section, trips_year=trips_year)
-        ls.preferred_sections = [preferred_section]
-        ls.preferred_triptypes = [preferred_triptype]
-        ls.available_sections = [available_section]
-        ls.available_triptypes = [available_triptype]
-        ls.save()
+        ls.set_section_preference(preferred_section, PREFER)
+        ls.set_triptype_preference(preferred_triptype, PREFER)
+        ls.set_section_preference(available_section, AVAILABLE)
+        ls.set_triptype_preference(available_triptype, AVAILABLE)
 
         make = lambda s,t: mommy.make(Trip, trips_year=trips_year, section=s, template__triptype=t)
         preferred_trip = make(preferred_section, preferred_triptype)
