@@ -5,15 +5,16 @@ from django import forms
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin, PermissionRequiredMixin)
+
 from vanilla import FormView
-from braces.views import (PermissionRequiredMixin, LoginRequiredMixin,
-                          MultiplePermissionsRequiredMixin)
 from django.http import HttpResponseRedirect
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Row, Column
 
-from fyt.permissions import (directors, graders, directorate,
-                             trip_leader_trainers, safety_leads, olcs)
+from fyt.permissions.permissions import (
+    directors, graders, directorate, trip_leader_trainers, safety_leads, olcs)
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.dartdm import lookup
 
@@ -33,9 +34,19 @@ class BasePermissionMixin(LoginRequiredMixin):
 
     Since this includes the LoginRequired it should go first in the MRO.
     """
-
-    redirect_unauthenticated_users = True
     raise_exception = True
+
+
+class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):
+    """Allow access if the user has *any* of the given permissions.
+
+    This differs from `PermissionRequiredMixin` which requires *all* given
+    permissions.
+    """
+
+    def has_permission(self):
+        perms = self.get_permission_required()
+        return any(self.request.user.has_perm(p) for p in perms)
 
 
 # TODO: can we set permission_required with an imported permission() call ?
@@ -49,23 +60,21 @@ class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixi
     permission_required = 'permissions.can_view_db'
 
 
-class ApplicationEditPermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
-    permissions = {
-        'any': (
-            'permissions.can_edit_db',
-            'permissions.can_edit_applications_and_assign_leaders'
-        )
-    }
+class ApplicationEditPermissionRequired(BasePermissionMixin,
+                                        MultiplePermissionsRequiredMixin):
+    permission_required = (
+        'permissions.can_edit_db',
+        'permissions.can_edit_applications_and_assign_leaders'
+    )
 
 
 class TripInfoEditPermissionRequired(BasePermissionMixin,
                                      MultiplePermissionsRequiredMixin):
-    permissions = {
-        'any': (
-            'permissions.can_edit_db',
-            'permissions.can_edit_trip_info'
-        )
-    }
+    permission_required = (
+        'permissions.can_edit_db',
+        'permissions.can_edit_trip_info'
+    )
+
 
 class LeaderGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Only allow access to users with permission to grade leaderapplications. """
@@ -77,15 +86,14 @@ class CrooGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin)
     permission_required = 'permissions.can_grade_croo_applications'
 
 
-class GraderTablePermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
+class GraderTablePermissionRequired(BasePermissionMixin,
+                                    MultiplePermissionsRequiredMixin):
     """Users with permission to see the graders table in the database."""
-    permissions = {
-        'any': (
-            'permissions.can_view_db',
-            'permissions.can_grade_leader_applications',
-            'permissions.can_grade_croo_applications',
-        )
-    }
+    permission_required = (
+        'permissions.can_view_db',
+        'permissions.can_grade_leader_applications',
+        'permissions.can_grade_croo_applications'
+    )
 
 
 class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):

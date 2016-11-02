@@ -116,16 +116,6 @@ DATABASES = {
 #if not DATABASES['default']['NAME'] == 'db.sqlite3':
 #DATABASES['default']['ENGINE'] = 'django_postgrespool'
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.media',
-    'django.core.context_processors.request',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-)
-
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = not DEBUG
@@ -151,56 +141,78 @@ STATICFILES_FINDERS = (
 )
 
 # Pipeline - static files
-PIPELINE_CSS = {
-    'base': {
-        'source_filenames': (
-            'css/style.css',
-            'css/typeaheadjs.css',
-            'css/bootstrap.min.css',
-            'css/bootstrap-theme.min.css',
-            'css/font-awesome.min.css',
-            'css/bootstrap-switch.css',
-            'css/summernote.css',
-            'css/metisMenu.css',
-        ),
-        'output_filename': 'base.css'
-    }
-}
-PIPELINE_JS = {
-    'base': {
-        'source_filenames': (
-            'js/jquery.js',
-            'js/bootstrap.min.js',
-            'js/typeahead.bundle.js',
-            'dartdm/lookup.js',  # must come after typeahead
-            'js/stupidtable.js',
-            'js/metisMenu.min.js',
-            'js/bootstrap-switch.js',
-        ),
-        'output_filename': 'base.js'
+PIPELINE = {
+    # concatenate assets only -- GzipManifest deals with compression
+    'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'PIPELINE_JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
+    'STYLESHEETS' : {
+        'base': {
+            'source_filenames': (
+                'css/style.css',
+                'css/typeaheadjs.css',
+                'css/bootstrap.min.css',
+                'css/bootstrap-theme.min.css',
+                'css/font-awesome.min.css',
+                'css/bootstrap-switch.css',
+                'css/summernote.css',
+                'css/metisMenu.css',
+            ),
+            'output_filename': 'base.css'
+        }
     },
-    'summernote': {
-        'source_filenames': (
-            'js/summernote.js',
-            'js/init_summernote.js',
-        ),
-        'output_filename': 'my_summernote.js'
+    'JAVASCRIPT': {
+        'base': {
+            'source_filenames': (
+                'js/jquery.js',
+                'js/bootstrap.min.js',
+                'js/typeahead.bundle.js',
+                'dartdm/lookup.js',  # must come after typeahead
+                'js/stupidtable.js',
+                'js/metisMenu.min.js',
+                'js/bootstrap-switch.js',
+            ),
+            'output_filename': 'base.js'
+        },
+        'summernote': {
+            'source_filenames': (
+                'js/summernote.js',
+                'js/init_summernote.js',
+            ),
+            'output_filename': 'my_summernote.js'
+        }
     }
 }
-# concatenate assets only -- GzipManifest deals with compression
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates'),
-)
+
+_TEMPLATE_LOADERS = [
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader'
+]
 if not DEBUG:
-    TEMPLATE_LOADERS = (
-        ('django.template.loaders.cached.Loader', (
-            'django.template.loaders.filesystem.Loader',
-            'django.template.loaders.app_directories.Loader',
-        )),
-    )
+    _TEMPLATE_LOADERS = [
+        ['django.template.loaders.cached.Loader', _TEMPLATE_LOADERS],
+    ]
+
+_TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.template.context_processors.debug',
+    'django.template.context_processors.media',
+    'django.template.context_processors.request',
+    'django.template.context_processors.static',
+    'django.template.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+)
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'OPTIONS': {
+            'loaders': _TEMPLATE_LOADERS,
+            'context_processors': _TEMPLATE_CONTEXT_PROCESSORS,
+        }
+    }
+]
 
 LOGGING = {
     'version': 1,

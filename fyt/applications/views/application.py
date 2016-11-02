@@ -1,7 +1,8 @@
 from vanilla import (
     DetailView, CreateView, UpdateView, ListView)
 from braces.views import (
-    LoginRequiredMixin, GroupRequiredMixin, FormMessagesMixin)
+    GroupRequiredMixin, FormMessagesMixin)
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect

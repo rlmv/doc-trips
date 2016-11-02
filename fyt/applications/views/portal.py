@@ -1,6 +1,6 @@
 
 from vanilla import TemplateView, UpdateView
-from braces.views import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 
 from fyt.utils.forms import crispify

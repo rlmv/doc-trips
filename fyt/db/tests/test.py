@@ -1,4 +1,5 @@
 from model_mommy import mommy
+from django.db import IntegrityError
 
 from fyt.test.testcases import WebTestCase, TripsYearTestCase
 from fyt.trips.models import Campsite, TripTemplate
@@ -8,7 +9,7 @@ from fyt.db.forms import tripsyear_modelform_factory
 class DatabaseModelTestCase(TripsYearTestCase):
 
     def test_trips_year_field_is_required(self):
-        self.assertRaises(ValueError, mommy.make, Campsite, trips_year=None)
+        self.assertRaises(IntegrityError, mommy.make, Campsite, trips_year=None)
 
     def test_model_name_lower(self):
         self.assertEqual(TripTemplate.model_name_lower(), 'triptemplate')
