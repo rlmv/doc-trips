@@ -11,7 +11,7 @@ django-debug-toolbar==1.5
 django-filter==0.13.0
 django-pipeline==1.6.9
 django-postgrespool==0.3.0
-django-storages-redux==1.2.3
+django-storages==1.5.1
 django-tables2==1.0.7
 django-test-without-migrations==0.4
 django-toolbelt==0.0.1
