@@ -7,4 +7,4 @@ register = template.Library()
 
 @register.simple_tag
 def urlencode(**kwargs):
-    return _urlencode(kwargs).replace('&', '&amp;')
+    return _urlencode(kwargs)
