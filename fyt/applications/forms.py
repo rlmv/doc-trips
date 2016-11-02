@@ -138,17 +138,17 @@ class TripTypeChoiceField(_BaseChoiceField):
 class LeaderSupplementForm(forms.ModelForm):
 
     # override ModelForm field defaults
-    preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
-    available_sections = LeaderSectionChoiceField(queryset=None, required=False)
+    _old_preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
+    _old_available_sections = LeaderSectionChoiceField(queryset=None, required=False)
 
     class Meta:
         model = LeaderSupplement
 
         fields = (
-            'preferred_sections',
-            'available_sections',
-            'preferred_triptypes',
-            'available_triptypes',
+            '_old_preferred_sections',
+            '_old_available_sections',
+            '_old_preferred_triptypes',
+            '_old_available_triptypes',
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
@@ -172,28 +172,28 @@ class LeaderSupplementForm(forms.ModelForm):
         # https://github.com/maraujop/django-crispy-forms/issues/303
         # This weird SQL behavior is also triggered when field.queryset
         # is specified after field.widget = CheckboxSelectMultiple.
-        self.fields['preferred_sections'].queryset = (
+        self.fields['_old_preferred_sections'].queryset = (
             Section.objects.filter(trips_year=trips_year)
         )
-        self.fields['preferred_sections'].widget = (
+        self.fields['_old_preferred_sections'].widget = (
             forms.CheckboxSelectMultiple()
         )
-        self.fields['available_sections'].queryset = (
+        self.fields['_old_available_sections'].queryset = (
             Section.objects.filter(trips_year=trips_year)
         )
-        self.fields['available_sections'].widget = (
+        self.fields['_old_available_sections'].widget = (
             forms.CheckboxSelectMultiple()
         )
-        self.fields['preferred_triptypes'].queryset = (
+        self.fields['_old_preferred_triptypes'].queryset = (
             TripType.objects.filter(trips_year=trips_year)
         )
-        self.fields['preferred_triptypes'].widget = (
+        self.fields['_old_preferred_triptypes'].widget = (
             forms.CheckboxSelectMultiple()
         )
-        self.fields['available_triptypes'].queryset = (
+        self.fields['_old_available_triptypes'].queryset = (
             TripType.objects.filter(trips_year=trips_year)
         )
-        self.fields['available_triptypes'].widget = (
+        self.fields['_old_available_triptypes'].widget = (
             forms.CheckboxSelectMultiple()
         )
         self.helper = FormHelper(self)
@@ -391,15 +391,15 @@ class LeaderSupplementLayout(Layout):
                     "activity.</p>"
                 ),
                 Row(
-                    Div('preferred_sections', css_class='col-sm-3'),
-                    Div('available_sections', css_class='col-sm-3'),
+                    Div('_old_preferred_sections', css_class='col-sm-3'),
+                    Div('_old_available_sections', css_class='col-sm-3'),
                 ),
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
                 Row(
-                    Div('preferred_triptypes', css_class='col-sm-3'),
-                    Div('available_triptypes', css_class='col-sm-3'),
+                    Div('_old_preferred_triptypes', css_class='col-sm-3'),
+                    Div('_old_available_triptypes', css_class='col-sm-3'),
                 ),
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),

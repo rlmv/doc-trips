@@ -418,17 +418,17 @@ class LeaderSupplement(DatabaseModel):
     )
 
     #  ------  trip and section availability ------
-    preferred_sections = models.ManyToManyField(
+    _old_preferred_sections = models.ManyToManyField(
         Section, blank=True, related_name='preferred_leaders'
     )
-    available_sections = models.ManyToManyField(
+    _old_available_sections = models.ManyToManyField(
         Section, blank=True, related_name='available_leaders'
     )
-    preferred_triptypes = models.ManyToManyField(
+    _old_preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferred_leaders',
         verbose_name='Preferred types of trips'
     )
-    available_triptypes = models.ManyToManyField(
+    _old_available_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='available_triptypes',
         verbose_name='Available types of trips'
     )
