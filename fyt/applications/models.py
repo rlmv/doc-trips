@@ -458,6 +458,18 @@ class LeaderSupplement(DatabaseModel):
         blank=True
     )
 
+    def set_section_preference(self, section, preference):
+        """Set the applicant's preference for a section."""
+        LeaderSectionChoice.objects.create(
+            application=self, section=section, preference=preference
+        )
+
+    def set_triptype_preference(self, triptype, preference):
+        """Set the applicant's preference for a triptype."""
+        LeaderTripTypeChoice.objects.create(
+            application=self, triptype=triptype, preference=preference
+        )
+
     def get_preferred_trips(self):
         """
         All trips which this applicant prefers to lead

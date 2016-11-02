@@ -23,6 +23,7 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.applications.views.graders import get_graders
 from fyt.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
+from fyt.utils.choices import PREFER, AVAILABLE
 
 
 def make_application(status=GeneralApplication.PENDING, trips_year=None,
@@ -192,6 +193,28 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
                        in_goodstanding_with_college=True,
                        trainings=False
             ).full_clean()
+
+    def test_set_section_preference(self):
+        trips_year=self.init_trips_year()
+        ls = self.make_application(trips_year=trips_year).leader_supplement
+        section = mommy.make(Section, trips_year=trips_year)
+        ls.set_section_preference(section, PREFER)
+
+        self.assertEqual(len(ls.leadersectionchoice_set.all()), 1)
+        pref = ls.leadersectionchoice_set.first()
+        self.assertEqual(pref.section, section)
+        self.assertEqual(pref.preference, PREFER)
+
+    def test_set_triptype_preference(self):
+        trips_year=self.init_trips_year()
+        ls = self.make_application(trips_year=trips_year).leader_supplement
+        triptype = mommy.make(TripType, trips_year=trips_year)
+        ls.set_triptype_preference(triptype, AVAILABLE)
+
+        self.assertEqual(len(ls.leadertriptypechoice_set.all()), 1)
+        pref = ls.leadertriptypechoice_set.first()
+        self.assertEqual(pref.triptype, triptype)
+        self.assertEqual(pref.preference, AVAILABLE)
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
