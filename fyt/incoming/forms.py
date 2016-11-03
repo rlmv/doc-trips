@@ -229,12 +229,22 @@ class RegistrationForm(forms.ModelForm):
             queryset=external_stops, required=False
         )
 
-        # show which sections are available for these choices
-        self.fields['is_exchange'].help_text = join_with_and(Section.objects.exchange(trips_year))
-        self.fields['is_international'].help_text = join_with_and(Section.objects.international(trips_year))
-        self.fields['is_transfer'].help_text = join_with_and(Section.objects.transfer(trips_year))
-        self.fields['is_native'].help_text = join_with_and(Section.objects.native(trips_year))
-        self.fields['is_fysep'].help_text = join_with_and(Section.objects.fysep(trips_year))
+        # Show which sections are available for these choices
+        self.fields['is_exchange'].help_text = join_with_and(
+            Section.objects.exchange(trips_year)
+        )
+        self.fields['is_international'].help_text = join_with_and(
+            Section.objects.international(trips_year)
+        )
+        self.fields['is_transfer'].help_text = join_with_and(
+            Section.objects.transfer(trips_year)
+        )
+        self.fields['is_native'].help_text = join_with_and(
+            Section.objects.native(trips_year)
+        )
+        self.fields['is_fysep'].help_text = join_with_and(
+            Section.objects.fysep(trips_year)
+        )
 
         self.helper = FormHelper(self)
 
