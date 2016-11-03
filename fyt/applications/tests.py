@@ -23,6 +23,7 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.applications.views.graders import get_graders
 from fyt.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
+from fyt.utils.choices import PREFER, AVAILABLE
 
 
 def make_application(status=GeneralApplication.PENDING, trips_year=None,
@@ -117,9 +118,8 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         application = self.make_application(trips_year=trips_year)
         ls = application.leader_supplement
         preferred_trip = mommy.make(Trip, trips_year=trips_year)
-        ls.preferred_sections = [preferred_trip.section]
-        ls.preferred_triptypes = [preferred_trip.template.triptype]
-        ls.save()
+        ls.set_section_preference(preferred_trip.section, PREFER)
+        ls.set_triptype_preference(preferred_trip.template.triptype, PREFER)
         not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
 
@@ -131,11 +131,10 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         preferred_section = mommy.make(Section, trips_year=trips_year)
         available_triptype = mommy.make(TripType, trips_year=trips_year)
         available_section = mommy.make(Section, trips_year=trips_year)
-        ls.preferred_sections = [preferred_section]
-        ls.preferred_triptypes = [preferred_triptype]
-        ls.available_sections = [available_section]
-        ls.available_triptypes = [available_triptype]
-        ls.save()
+        ls.set_section_preference(preferred_section, PREFER)
+        ls.set_triptype_preference(preferred_triptype, PREFER)
+        ls.set_section_preference(available_section, AVAILABLE)
+        ls.set_triptype_preference(available_triptype, AVAILABLE)
 
         make = lambda s,t: mommy.make(Trip, trips_year=trips_year, section=s, template__triptype=t)
         preferred_trip = make(preferred_section, preferred_triptype)
@@ -193,6 +192,28 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
                        trainings=False
             ).full_clean()
 
+    def test_set_section_preference(self):
+        trips_year=self.init_trips_year()
+        ls = self.make_application(trips_year=trips_year).leader_supplement
+        section = mommy.make(Section, trips_year=trips_year)
+        ls.set_section_preference(section, PREFER)
+
+        self.assertEqual(len(ls.leadersectionchoice_set.all()), 1)
+        pref = ls.leadersectionchoice_set.first()
+        self.assertEqual(pref.section, section)
+        self.assertEqual(pref.preference, PREFER)
+
+    def test_set_triptype_preference(self):
+        trips_year=self.init_trips_year()
+        ls = self.make_application(trips_year=trips_year).leader_supplement
+        triptype = mommy.make(TripType, trips_year=trips_year)
+        ls.set_triptype_preference(triptype, AVAILABLE)
+
+        self.assertEqual(len(ls.leadertriptypechoice_set.all()), 1)
+        pref = ls.leadertriptypechoice_set.first()
+        self.assertEqual(pref.triptype, triptype)
+        self.assertEqual(pref.preference, AVAILABLE)
+
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 
@@ -224,20 +245,6 @@ class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
         res = self.app.get(reverse('applications:apply'), user=self.user)
         # print(res)
         #  print(res.form)
-
-    def test_available_sections_in_leader_form_are_for_current_trips_year(self):
-        prev_section = mommy.make(Section, trips_year=self.previous_trips_year)
-        curr_section = mommy.make(Section, trips_year=self.current_trips_year)
-
-        self.open_application()
-        self.mock_user()
-
-        response = self.app.get(reverse('applications:apply'), user=self.user)
-        form = response.context['leader_form']
-        self.assertEquals(list(form.fields['available_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
-        self.assertEquals(list(form.fields['preferred_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
 
 
 class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
@@ -322,9 +329,8 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         trip = mommy.make(Trip, trips_year=self.current_trips_year)
 
         app = self.make_application(status=GeneralApplication.LEADER)
-        app.leader_supplement.preferred_sections.add(trip.section)
-        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
-        app.save()
+        app.leader_supplement.set_section_preference(trip.section, PREFER)
+        app.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app])
@@ -333,9 +339,8 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         trip = mommy.make(Trip, trips_year=self.current_trips_year)
 
         app = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
-        app.leader_supplement.available_sections.add(trip.section)
-        app.leader_supplement.available_triptypes.add(trip.template.triptype)
-        app.save()
+        app.leader_supplement.set_section_preference(trip.section, AVAILABLE)
+        app.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [app])
@@ -343,13 +348,12 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
     def test_only_complete_applications(self):
         trip = mommy.make(Trip, trips_year=self.current_trips_year)
         prospective = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
-        prospective.leader_supplement.available_sections.add(trip.section)
-        prospective.leader_supplement.available_triptypes.add(trip.template.triptype)
-        prospective.save()
+        prospective.leader_supplement.set_section_preference(trip.section, AVAILABLE)
+        prospective.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
+
         not_prosp = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
-        not_prosp.leader_supplement.available_sections.add(trip.section)
-        not_prosp.leader_supplement.available_triptypes.add(trip.template.triptype)
-        not_prosp.save()
+        not_prosp.leader_supplement.set_section_preference(trip.section, AVAILABLE)
+        not_prosp.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
         not_prosp.leader_supplement.document = ''
         not_prosp.leader_supplement.save()
 
@@ -361,8 +365,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
         # otherwise available
         app = self.make_application(status=GeneralApplication.LEADER)
-        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
-        app.save()
+        app.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
@@ -371,26 +374,10 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         trip = mommy.make(Trip, trips_year=self.current_trips_year)
 
         app = self.make_application(status=GeneralApplication.LEADER)
-        app.leader_supplement.preferred_sections.add(trip.section)
-        app.save()
+        app.leader_supplement.set_section_preference(trip.section, PREFER)
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [])
-
-    def test_prospective_leaders_are_distinct(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
-
-        # set up a situation where JOINS will return the same app multiple times
-        app = self.make_application(status=GeneralApplication.LEADER)
-        app.leader_supplement.preferred_sections.add(trip.section)
-        app.leader_supplement.available_sections.add(trip.section)
-        app.leader_supplement.preferred_triptypes.add(trip.template.triptype)
-        app.leader_supplement.available_triptypes.add(trip.template.triptype)
-        app.save()
-
-        prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(len(prospects), 1)
-        self.assertEquals(list(prospects), [app])
 
 
 class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):

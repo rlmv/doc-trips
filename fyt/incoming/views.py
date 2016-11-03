@@ -283,6 +283,7 @@ class RegistrationDetail(DatabaseDetailView):
     template_name = 'incoming/registration_detail.html'
 
     fields = [
+
         'name',
         'gender',
         'previous_school',
@@ -295,13 +296,11 @@ class RegistrationDetail(DatabaseDetailView):
         'is_native',
         'is_fysep',
         'is_athlete',
-        'preferred_sections',
-        'available_sections',
-        'unavailable_sections',
-        'firstchoice_triptype',
-        'preferred_triptypes',
-        'available_triptypes',
-        'unavailable_triptypes',
+        ('preferred sections', 'new_preferred_sections'),
+        ('available sections', 'new_available_sections'),
+        ('first choice trip types','new_firstchoice_triptypes'),
+        ('preferred trip types', 'new_preferred_triptypes'),
+        ('available trip types', 'new_available_triptypes'),
         'schedule_conflicts',
         'tshirt_size',
         'food_allergies',

@@ -34,7 +34,7 @@
     <td> {{ leader|detail_link:leader }} </td>
     <td> {{ leader.avg_grade|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
-    <td> 
+    <td>
       {% if leader.assigned_trip %}
       {{ leader.assigned_trip|detail_link }}
       {% else %}
@@ -42,8 +42,8 @@
       {% endif %}
     </td>
     <td> <a href="{% url 'db:generalapplication:update_status' trips_year=trip.trips_year_id pk=leader.pk %}"> {{ leader.status }} </a></td>
-    <td> {{ triptype_pref }} </td>
-    <td> {{ section_pref }} </td>
+    <td> {{ triptype_pref|lower }} </td>
+    <td> {{ section_pref|lower }} </td>
   </tr>
   {% endfor %}
 </table>

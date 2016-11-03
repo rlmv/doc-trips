@@ -13,7 +13,8 @@ from fyt.db.models import DatabaseModel
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip, Section, TripType
 from fyt.users.models import NetIdField
-from fyt.utils.choices import TSHIRT_SIZE_CHOICES
+from fyt.utils.choices import (TSHIRT_SIZE_CHOICES, FIRST_CHOICE, PREFER,
+                               AVAILABLE, NOT_AVAILABLE)
 from fyt.utils.models import MedicalMixin
 from fyt.utils.model_fields import YesNoField, NullYesNoField
 
@@ -297,11 +298,103 @@ def validate_waiver(value):
     if not value:
         raise ValidationError("You must agree to the waiver")
 
+REGISTRATION_SECTION_CHOICES = (
+    (PREFER, 'prefer'),
+    (AVAILABLE, 'available'),
+    (NOT_AVAILABLE, 'not available')
+)
+
+REGISTRATION_TRIPTYPE_CHOICES = (
+    (FIRST_CHOICE, 'first choice'),
+) + REGISTRATION_SECTION_CHOICES
+
+
+# TODO: make abstract so that leader applications can also use this code
+class RegistrationSectionChoice(models.Model):
+
+    class Meta:
+        unique_together = ('registration', 'section')
+
+    registration = models.ForeignKey(
+        'Registration', on_delete=models.CASCADE
+    )
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=REGISTRATION_SECTION_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.section, self.preference)
+
+
+# TODO: make abstract so that leader applications can also use this code
+class RegistrationTripTypeChoice(models.Model):
+
+    class Meta:
+        unique_together = ('registration', 'triptype')
+
+    registration = models.ForeignKey(
+        'Registration', on_delete=models.CASCADE
+    )
+    triptype = models.ForeignKey(
+        TripType, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=REGISTRATION_TRIPTYPE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.triptype, self.preference)
+
 
 class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
+    section_choice = models.ManyToManyField(
+        Section, through=RegistrationSectionChoice,
+    )
+    triptype_choice = models.ManyToManyField(
+        TripType, through=RegistrationTripTypeChoice
+    )
+
+    def sections_by_preference(self, preference):
+        qs = (self.registrationsectionchoice_set
+                .filter(preference=preference)
+                .order_by('section')
+                .select_related('section'))
+        return [x.section for x in qs]
+
+    def new_preferred_sections(self):
+        return self.sections_by_preference(PREFER)
+
+    def new_available_sections(self):
+        return self.sections_by_preference(AVAILABLE)
+
+    def new_unavailable_sections(self):
+        return self.sections_by_preference(NOT_AVAILABLE)
+
+    def triptypes_by_preference(self, preference):
+        qs = (self.registrationtriptypechoice_set
+                .filter(preference=preference)
+                .order_by('triptype')
+                .select_related('triptype'))
+        return [x.triptype for x in qs]
+
+    def new_firstchoice_triptypes(self):
+        return self.triptypes_by_preference(FIRST_CHOICE)
+
+    def new_preferred_triptypes(self):
+        return self.triptypes_by_preference(PREFER)
+
+    def new_available_triptypes(self):
+        return self.triptypes_by_preference(AVAILABLE)
+
+    def new_unavailable_triptypes(self):
+        return self.triptypes_by_preference(NOT_AVAILABLE)
+
     objects = RegistrationManager()
 
     class Meta:
@@ -369,31 +462,35 @@ class Registration(MedicalMixin, DatabaseModel):
         )
     )
 
-    preferred_sections = models.ManyToManyField(
+    # ----- Deprecated section and triptype preferences -----
+
+    _old_preferred_sections = models.ManyToManyField(
         Section, blank=True, related_name='prefering_trippees'
     )
-    available_sections = models.ManyToManyField(
+    _old_available_sections = models.ManyToManyField(
         Section, blank=True, related_name='available_trippees'
     )
-    unavailable_sections = models.ManyToManyField(
+    _old_unavailable_sections = models.ManyToManyField(
         Section, blank=True, related_name='unavailable_trippees'
     )
-    firstchoice_triptype = models.ForeignKey(
+    _old_firstchoice_triptype = models.ForeignKey(
         TripType, blank=True, null=True, related_name='firstchoice_triptype',
         verbose_name="first choice trip types",
     )
-    preferred_triptypes = models.ManyToManyField(
+    _old_preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferring_trippees',
         verbose_name="preferred types of trips"
     )
-    available_triptypes = models.ManyToManyField(
+    _old_available_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='available_trippees',
         verbose_name="available types of trips"
     )
-    unavailable_triptypes = models.ManyToManyField(
+    _old_unavailable_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='unavailable_trippees',
         verbose_name="unavailable trip types"
     )
+    # ------------------------------------------------------
+
     schedule_conflicts = models.TextField(blank=True)
 
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
@@ -570,8 +667,8 @@ class Registration(MedicalMixin, DatabaseModel):
         qs = (Trip.objects
               .filter(trips_year=self.trips_year)
               .filter(
-                  models.Q(section__in=self.preferred_sections.all()) |
-                  models.Q(section__in=self.available_sections.all()))
+                  models.Q(section__in=self.new_preferred_sections()) |
+                  models.Q(section__in=self.new_available_sections()))
               .select_related('template__triptype', 'section')
               .order_by('template__triptype', 'section'))
         if self.is_non_swimmer:
@@ -585,7 +682,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype=self.firstchoice_triptype
+            template__triptype__in=self.new_firstchoice_triptypes()
         )
 
     def get_preferred_trips(self):
@@ -595,9 +692,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype__in=self.preferred_triptypes.all()
-        ).exclude(
-            id__in=self.get_firstchoice_trips()
+            template__triptype__in=self.new_preferred_triptypes()
         )
 
     def get_available_trips(self):
@@ -607,11 +702,7 @@ class Registration(MedicalMixin, DatabaseModel):
         For both preferred and available Sections
         """
         return self._base_trips_qs().filter(
-            template__triptype__in=self.available_triptypes.all()
-        ).exclude(
-            id__in=self.get_firstchoice_trips()
-        ).exclude(
-            id__in=self.get_preferred_trips()
+            template__triptype__in=self.new_available_triptypes()
         )
 
     def get_incoming_student(self):

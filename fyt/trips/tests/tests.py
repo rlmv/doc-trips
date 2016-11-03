@@ -18,7 +18,10 @@ from fyt.transport.models import Route
 from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
 from fyt.applications.tests import make_application
 from fyt.applications.models import GeneralApplication
-from fyt.incoming.models import IncomingStudent, Registration
+from fyt.incoming.models import (
+    IncomingStudent, Registration, RegistrationSectionChoice,
+    RegistrationTripTypeChoice)
+from fyt.utils.choices import PREFER, AVAILABLE
 
 
 class TripTestCase(WebTestCase):
@@ -347,8 +350,8 @@ class AssignLeaderTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         volunteer = make_application(trips_year=trips_year)
-        volunteer.leader_supplement.available_sections.add(trip.section)
-        volunteer.leader_supplement.available_triptypes.add(trip.template.triptype)
+        volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
+        volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to")
@@ -361,16 +364,33 @@ class AssignLeaderTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         volunteer = make_application(trips_year=trips_year)
-        volunteer.leader_supplement.available_sections.add(trip.section)
-        volunteer.leader_supplement.preferred_triptypes.add(trip.template.triptype)
+        volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
+        volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         leader_list = list(res.context['leader_applications'])
         self.assertEqual(len(leader_list), 1)
         (leader, _, triptype_preference, section_preference) = leader_list[0]
         self.assertEqual(leader, volunteer)
-        self.assertEqual(triptype_preference, 'prefer')
-        self.assertEqual(section_preference, 'available')
+        self.assertEqual(triptype_preference, PREFER)
+        self.assertEqual(section_preference, AVAILABLE)
+
+
+# TODO: import these from incoming tests
+
+
+def _section_preference(registration, section, preference):
+    RegistrationSectionChoice.objects.create(
+        registration=registration,
+        section=section,
+        preference=preference)
+
+
+def _triptype_preference(registration, triptype, preference):
+    RegistrationTripTypeChoice.objects.create(
+        registration=registration,
+        triptype=triptype,
+        preference=preference)
 
 
 class AssignTrippeeTestCase(WebTestCase):
@@ -378,11 +398,13 @@ class AssignTrippeeTestCase(WebTestCase):
     def test_trip_assignment(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
+        registration = mommy.make(Registration, trips_year=trips_year)
+        _section_preference(registration, trip.section, PREFER)
+        _triptype_preference(registration, trip.template.triptype, PREFER)
         trippee = mommy.make(
             IncomingStudent, trips_year=trips_year,
-            registration__preferred_sections=[trip.section],
-            registration__preferred_triptypes=[trip.template.triptype]
-        )
+            registration=registration)
+
         url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to")

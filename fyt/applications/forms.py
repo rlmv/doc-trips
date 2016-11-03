@@ -6,11 +6,15 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from fyt.applications.models import (
     GeneralApplication, CrooSupplement, LeaderSupplement,
-    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag)
+    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag,
+    LeaderSectionChoice, LeaderTripTypeChoice, LEADER_SECTION_CHOICES,
+    LEADER_TRIPTYPE_CHOICES)
 from fyt.db.models import TripsYear
 from fyt.trips.models import Section, TripType, Trip
 from fyt.trips.fields import LeaderSectionChoiceField, TripChoiceField
 from fyt.utils.forms import crispify
+
+from fyt.incoming.forms import _BaseChoiceWidget, _BaseChoiceField
 
 
 class TripAssignmentForm(forms.ModelForm):
@@ -109,20 +113,34 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper.layout = CrooSupplementLayout()
 
 
-class LeaderSupplementForm(forms.ModelForm):
+class LeaderSectionChoiceWidget(_BaseChoiceWidget):
+    # TODO: override for Leader Section preferences
+    def label_value(self, section):
+        return '%s &mdash; %s' % (section.name, section.leader_date_str())
 
-    # override ModelForm field defaults
-    preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
-    available_sections = LeaderSectionChoiceField(queryset=None, required=False)
+
+class SectionChoiceField(_BaseChoiceField):
+    _type_name = 'section'
+    _target_name = 'application'
+    _model = LeaderSectionChoice
+    _widget = LeaderSectionChoiceWidget
+    _choices = LEADER_SECTION_CHOICES
+
+
+class TripTypeChoiceField(_BaseChoiceField):
+    _type_name = 'triptype'
+    _target_name = 'application'
+    _model = LeaderTripTypeChoice
+    _widget = _BaseChoiceWidget
+    _choices = LEADER_TRIPTYPE_CHOICES
+
+
+class LeaderSupplementForm(forms.ModelForm):
 
     class Meta:
         model = LeaderSupplement
 
         fields = (
-            'preferred_sections',
-            'available_sections',
-            'preferred_triptypes',
-            'available_triptypes',
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
@@ -132,37 +150,30 @@ class LeaderSupplementForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Widget specifications are in __init__ because of
-        # https://github.com/maraujop/django-crispy-forms/issues/303
-        # This weird SQL behavior is also triggered when field.queryset
-        # is specified after field.widget = CheckboxSelectMultiple.
-        self.fields['preferred_sections'].queryset = (
-            Section.objects.filter(trips_year=trips_year)
-        )
-        self.fields['preferred_sections'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['available_sections'].queryset = (
-            Section.objects.filter(trips_year=trips_year)
-        )
-        self.fields['available_sections'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['preferred_triptypes'].queryset = (
-            TripType.objects.filter(trips_year=trips_year)
-        )
-        self.fields['preferred_triptypes'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['available_triptypes'].queryset = (
-            TripType.objects.filter(trips_year=trips_year)
-        )
-        self.fields['available_triptypes'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
+        instance = kwargs.get('instance')
+
+        sections = Section.objects.filter(trips_year=trips_year)
+        self.fields['section_preference'] = SectionChoiceField(
+            sections, instance=instance, label='Section Preference')
+
+        triptypes = TripType.objects.filter(trips_year=trips_year)
+        self.fields['triptype_preference'] = TripTypeChoiceField(
+            triptypes, instance=instance, label='Trip Type Preference')
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout()
+
+    def save(self):
+        application = super().save()
+
+        self.fields['section_preference'].save_preferences(
+            application, self.cleaned_data['section_preference'])
+
+        self.fields['triptype_preference'].save_preferences(
+            application, self.cleaned_data['triptype_preference'])
+
+        return application
 
 
 class ApplicationStatusForm(forms.ModelForm):
@@ -337,21 +348,15 @@ class LeaderSupplementLayout(Layout):
                     "type of trip. <strong>Preferred</strong> means you will "
                     "be most satisfied with this option; you can prefer more "
                     "than one option. <strong>Available</strong> means you "
-                    "could do it. If you leave a choice blank it means you "
+                    "could do it. <strong>Not Available</strong> means you "
                     "absolutely cannot participate on those dates or in that "
                     "activity.</p>"
                 ),
-                Row(
-                    Div('preferred_sections', css_class='col-sm-3'),
-                    Div('available_sections', css_class='col-sm-3'),
-                ),
+                'section_preference',
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
-                Row(
-                    Div('preferred_triptypes', css_class='col-sm-3'),
-                    Div('available_triptypes', css_class='col-sm-3'),
-                ),
+                'triptype_preference',
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),
                 Field('cannot_participate_in', rows=2),

@@ -10,7 +10,8 @@ from .managers import (CrooApplicationManager, LeaderApplicationManager,
 from fyt.db.models import DatabaseModel
 from fyt.croos.models import Croo
 from fyt.trips.models import Trip, Section, TripType
-from fyt.utils.choices import TSHIRT_SIZE_CHOICES
+from fyt.utils.choices import (TSHIRT_SIZE_CHOICES, PREFER, AVAILABLE,
+                               NOT_AVAILABLE)
 from fyt.utils.models import MedicalMixin
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 
@@ -347,6 +348,53 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         return self.name
 
 
+LEADER_SECTION_CHOICES = (
+    (PREFER, 'prefer'),
+    (AVAILABLE, 'available'),
+    (NOT_AVAILABLE, 'not available')
+)
+
+LEADER_TRIPTYPE_CHOICES = LEADER_SECTION_CHOICES
+
+
+class LeaderSectionChoice(models.Model):
+
+    class Meta:
+        unique_together = ('application', 'section')
+
+    application = models.ForeignKey(
+        'LeaderSupplement', on_delete=models.CASCADE
+    )
+    section = models.ForeignKey(
+        Section, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=LEADER_SECTION_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.section, self.preference)
+
+
+class LeaderTripTypeChoice(models.Model):
+
+    class Meta:
+        unique_together = ('application', 'triptype')
+
+    application = models.ForeignKey(
+        'LeaderSupplement', on_delete=models.CASCADE
+    )
+    triptype = models.ForeignKey(
+        TripType, on_delete=models.CASCADE
+    )
+    preference = models.CharField(
+        max_length=20, choices=LEADER_TRIPTYPE_CHOICES
+    )
+
+    def __str__(self):
+        return "{}: {}".format(self.triptype, self.preference)
+
+
 class LeaderSupplement(DatabaseModel):
     """
     Leader application answers
@@ -354,6 +402,13 @@ class LeaderSupplement(DatabaseModel):
     NUMBER_OF_GRADES = 4
 
     objects = LeaderApplicationManager()
+
+    section_choice = models.ManyToManyField(
+        Section, through=LeaderSectionChoice
+    )
+    triptype_choice = models.ManyToManyField(
+        TripType, through=LeaderTripTypeChoice
+    )
 
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='leader_supplement'
@@ -363,17 +418,17 @@ class LeaderSupplement(DatabaseModel):
     )
 
     #  ------  trip and section availability ------
-    preferred_sections = models.ManyToManyField(
+    _old_preferred_sections = models.ManyToManyField(
         Section, blank=True, related_name='preferred_leaders'
     )
-    available_sections = models.ManyToManyField(
+    _old_available_sections = models.ManyToManyField(
         Section, blank=True, related_name='available_leaders'
     )
-    preferred_triptypes = models.ManyToManyField(
+    _old_preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferred_leaders',
         verbose_name='Preferred types of trips'
     )
-    available_triptypes = models.ManyToManyField(
+    _old_available_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='available_triptypes',
         verbose_name='Available types of trips'
     )
@@ -403,6 +458,44 @@ class LeaderSupplement(DatabaseModel):
         blank=True
     )
 
+    def set_section_preference(self, section, preference):
+        """Set the applicant's preference for a section."""
+        LeaderSectionChoice.objects.create(
+            application=self, section=section, preference=preference
+        )
+
+    def set_triptype_preference(self, triptype, preference):
+        """Set the applicant's preference for a triptype."""
+        LeaderTripTypeChoice.objects.create(
+            application=self, triptype=triptype, preference=preference
+        )
+
+    def sections_by_preference(self, preference):
+        qs = (self.leadersectionchoice_set
+                .filter(preference=preference)
+                .order_by('section')
+                .select_related('section'))
+        return [x.section for x in qs]
+
+    def new_preferred_sections(self):
+        return self.sections_by_preference(PREFER)
+
+    def new_available_sections(self):
+        return self.sections_by_preference(AVAILABLE)
+
+    def triptypes_by_preference(self, preference):
+        qs = (self.leadertriptypechoice_set
+                .filter(preference=preference)
+                .order_by('triptype')
+                .select_related('triptype'))
+        return [x.triptype for x in qs]
+
+    def new_preferred_triptypes(self):
+        return self.triptypes_by_preference(PREFER)
+
+    def new_available_triptypes(self):
+        return self.triptypes_by_preference(AVAILABLE)
+
     def get_preferred_trips(self):
         """
         All trips which this applicant prefers to lead
@@ -410,8 +503,8 @@ class LeaderSupplement(DatabaseModel):
         return (
             Trip.objects
             .filter(trips_year=self.trips_year)
-            .filter(Q(section__in=self.preferred_sections.all()) &
-                    Q(template__triptype__in=self.preferred_triptypes.all()))
+            .filter(Q(section__in=self.new_preferred_sections()) &
+                    Q(template__triptype__in=self.new_preferred_triptypes()))
         )
 
     def get_available_trips(self):
@@ -424,10 +517,10 @@ class LeaderSupplement(DatabaseModel):
         return (
             Trip.objects
             .filter(trips_year=self.trips_year)
-            .filter(Q(section__in=self.preferred_sections.all()) |
-                    Q(section__in=self.available_sections.all()),
-                    Q(template__triptype__in=self.preferred_triptypes.all()) |
-                    Q(template__triptype__in=self.available_triptypes.all()))
+            .filter(Q(section__in=self.new_preferred_sections()) |
+                    Q(section__in=self.new_available_sections()),
+                    Q(template__triptype__in=self.new_preferred_triptypes()) |
+                    Q(template__triptype__in=self.new_available_triptypes()))
             .exclude(id__in=self.get_preferred_trips().all())
         )
 

@@ -16,8 +16,14 @@ from .forms import (
     SectionForm, LeaderAssignmentForm,
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
-from fyt.applications.models import LeaderSupplement, GeneralApplication
-from fyt.incoming.models import IncomingStudent, Registration
+from fyt.applications.models import (
+    LeaderSupplement, GeneralApplication, LeaderSectionChoice,
+    LeaderTripTypeChoice
+)
+from fyt.incoming.models import (
+    IncomingStudent, RegistrationSectionChoice, RegistrationTripTypeChoice,
+    FIRST_CHOICE, PREFER, AVAILABLE
+)
 from fyt.db.views import (
     DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
     DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
@@ -32,11 +38,6 @@ from fyt.utils.views import PopulateMixin
 from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
 from fyt.transport.models import ExternalBus, ScheduledTransport
-
-
-FIRST_CHOICE = 'first choice'
-PREFER = 'prefer'
-AVAILABLE = 'available'
 
 
 class _SectionMixin():
@@ -409,6 +410,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
             )
         )
 
+    # TODO: refactor this with the new M2M setup
     def get_context_data(self, **kwargs):
         """
         In order to compute each trippee's triptype or section
@@ -436,31 +438,24 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         triptype = trip.template.triptype
         trips_year = self.kwargs['trips_year']
 
-        triptype_pref = {}
-        for pair in (Registration.available_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.registration_id] = AVAILABLE
-
-        for pair in (Registration.preferred_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.registration_id] = PREFER
-
-        for registration in Registration.objects.filter(trips_year=trips_year):
-            if registration.firstchoice_triptype_id == triptype.id:
-                triptype_pref[registration.id] = FIRST_CHOICE
-
-        section_pref = {}
-
-        for pair in (Registration.available_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.registration_id] = AVAILABLE
-
-        for pair in (Registration.preferred_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.registration_id] = PREFER
+        triptype_pref = {
+            pref.registration_id: pref.preference
+            for pref in RegistrationTripTypeChoice.objects.filter(
+                triptype=triptype,
+                preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]
+            )
+        }
+        section_pref = {
+            pref.registration_id: pref.preference
+            for pref in RegistrationSectionChoice.objects.filter(
+                section=section,
+                preference__in=[AVAILABLE, PREFER]
+            )
+        }
 
         # all external buses for this section
-        buses = ExternalBus.objects.filter(trips_year=trips_year, section=section)
+        buses = ExternalBus.objects.filter(
+            trips_year=trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
 
@@ -601,26 +596,22 @@ class AssignLeader(_TripMixin, DatabaseListView):
         """
         context = super(AssignLeader, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
-        triptype = trip.template.triptype
-        section = trip.section
 
-        triptype_pref = {}
-        for pair in (LeaderSupplement.available_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.leadersupplement_id] = AVAILABLE
+        triptype_pref = {
+            pref.application_id: pref.preference
+            for pref in LeaderTripTypeChoice.objects.filter(
+                triptype=trip.template.triptype,
+                preference__in=[PREFER, AVAILABLE]
+            )
+        }
 
-        for pair in (LeaderSupplement.preferred_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.leadersupplement_id] = PREFER
-
-        section_pref = {}
-        for pair in (LeaderSupplement.available_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.leadersupplement_id] = AVAILABLE
-
-        for pair in (LeaderSupplement.preferred_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.leadersupplement_id] = PREFER
+        section_pref = {
+            pref.application_id: pref.preference
+            for pref in LeaderSectionChoice.objects.filter(
+                section=trip.section,
+                preference__in=[PREFER, AVAILABLE]
+            )
+        }
 
         def process_leader(leader):
             return (
