@@ -137,18 +137,10 @@ class TripTypeChoiceField(_BaseChoiceField):
 
 class LeaderSupplementForm(forms.ModelForm):
 
-    # override ModelForm field defaults
-    _old_preferred_sections = LeaderSectionChoiceField(queryset=None, required=False)
-    _old_available_sections = LeaderSectionChoiceField(queryset=None, required=False)
-
     class Meta:
         model = LeaderSupplement
 
         fields = (
-            '_old_preferred_sections',
-            '_old_available_sections',
-            '_old_preferred_triptypes',
-            '_old_available_triptypes',
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
@@ -162,40 +154,12 @@ class LeaderSupplementForm(forms.ModelForm):
 
         sections = Section.objects.filter(trips_year=trips_year)
         self.fields['section_preference'] = SectionChoiceField(
-            sections, instance=instance)
+            sections, instance=instance, label='Section Preference')
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['triptype_preference'] = TripTypeChoiceField(
-            triptypes, instance=instance)
+            triptypes, instance=instance, label='Trip Type Preference')
 
-        # Widget specifications are in __init__ because of
-        # https://github.com/maraujop/django-crispy-forms/issues/303
-        # This weird SQL behavior is also triggered when field.queryset
-        # is specified after field.widget = CheckboxSelectMultiple.
-        self.fields['_old_preferred_sections'].queryset = (
-            Section.objects.filter(trips_year=trips_year)
-        )
-        self.fields['_old_preferred_sections'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['_old_available_sections'].queryset = (
-            Section.objects.filter(trips_year=trips_year)
-        )
-        self.fields['_old_available_sections'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['_old_preferred_triptypes'].queryset = (
-            TripType.objects.filter(trips_year=trips_year)
-        )
-        self.fields['_old_preferred_triptypes'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
-        self.fields['_old_available_triptypes'].queryset = (
-            TripType.objects.filter(trips_year=trips_year)
-        )
-        self.fields['_old_available_triptypes'].widget = (
-            forms.CheckboxSelectMultiple()
-        )
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout()
@@ -359,8 +323,6 @@ class LeaderSupplementLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            'section_preference',
-            'triptype_preference',
             Fieldset(
                 'Application',
                 HTML(
@@ -386,21 +348,15 @@ class LeaderSupplementLayout(Layout):
                     "type of trip. <strong>Preferred</strong> means you will "
                     "be most satisfied with this option; you can prefer more "
                     "than one option. <strong>Available</strong> means you "
-                    "could do it. If you leave a choice blank it means you "
+                    "could do it. <strong>Not Available</strong> means you "
                     "absolutely cannot participate on those dates or in that "
                     "activity.</p>"
                 ),
-                Row(
-                    Div('_old_preferred_sections', css_class='col-sm-3'),
-                    Div('_old_available_sections', css_class='col-sm-3'),
-                ),
+                'section_preference',
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
-                Row(
-                    Div('_old_preferred_triptypes', css_class='col-sm-3'),
-                    Div('_old_available_triptypes', css_class='col-sm-3'),
-                ),
+                'triptype_preference',
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),
                 Field('cannot_participate_in', rows=2),
