@@ -356,10 +356,10 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'trainings'
     ]
     leaderapplication_fields = [
-        'preferred_sections',
-        'available_sections',
-        'preferred_triptypes',
-        'available_triptypes',
+        ('preferred sections', 'new_preferred_sections'),
+        ('available sections', 'new_available_sections'),
+        ('preferred trip types', 'new_preferred_triptypes'),
+        ('available trip types', 'new_available_triptypes'),
         'relevant_experience',
         'trip_preference_comments',
         'cannot_participate_in',
