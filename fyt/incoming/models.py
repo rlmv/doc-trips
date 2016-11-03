@@ -363,7 +363,8 @@ class Registration(MedicalMixin, DatabaseModel):
     def sections_by_preference(self, preference):
         qs = (self.registrationsectionchoice_set
                 .filter(preference=preference)
-                .order_by('section'))
+                .order_by('section')
+                .select_related('section'))
         return [x.section for x in qs]
 
     def new_preferred_sections(self):
@@ -378,7 +379,8 @@ class Registration(MedicalMixin, DatabaseModel):
     def triptypes_by_preference(self, preference):
         qs = (self.registrationtriptypechoice_set
                 .filter(preference=preference)
-                .order_by('triptype'))
+                .order_by('triptype')
+                .select_related('triptype'))
         return [x.triptype for x in qs]
 
     def new_firstchoice_triptypes(self):
