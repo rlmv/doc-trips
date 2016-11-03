@@ -209,11 +209,11 @@ class RegistrationForm(forms.ModelForm):
 
         sections = Section.objects.filter(trips_year=trips_year)
         self.fields['section_preference'] = SectionChoiceField(
-            sections, instance=instance)
+            sections, instance=instance, label='')
 
         triptypes = TripType.objects.filter(trips_year=trips_year)
         self.fields['triptype_preference'] = TripTypeChoiceField(
-            triptypes, instance=instance)
+            triptypes, instance=instance, label='')
 
         external_stops = Stop.objects.external(trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
