@@ -12,8 +12,6 @@ Immediate
   not yet been uploaded.
 * Fix leader filtering by TripType AND Section at the same time.
 * Spreadsheets for various registration sub-categories
-* Require a selection (prefer, available, not available) for every triptype and
-section.
 * Make it possible to hide triptypes for a year.
 * Fix race conditions around applications and registrations: *I think* if a user
 has two windows open, such that they both get directed to create a new application,
@@ -68,7 +66,6 @@ Long term
 * Skip ``application`` tests if S3 times out.
 * Add ``croo_head`` field to Croos
 * Cache directions requests (this may be unecessary)
-* Use javascript to make prefer/available fields exclusive in a row/implement a better preference field.
 * Pass ``trips_year`` to forms instead of using ``TripsYear.objects.current()``. This especially shows up in ``fyt.applications.forms``.
 
 
