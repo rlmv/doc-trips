@@ -45,7 +45,7 @@ class TripTestCase(WebTestCase):
             user=self.mock_director()
         )
         # should have unique constraint error
-        self.assertIn('unique constraint failed', str(response.content).lower())
+        self.assertIn('unique constraint', str(response.content).lower())
         # should not create the trip
         scheduled_trips = Trip.objects.all()
         self.assertEquals(len(scheduled_trips), 1)
