@@ -246,20 +246,6 @@ class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
         # print(res)
         #  print(res.form)
 
-    def test_available_sections_in_leader_form_are_for_current_trips_year(self):
-        prev_section = mommy.make(Section, trips_year=self.previous_trips_year)
-        curr_section = mommy.make(Section, trips_year=self.current_trips_year)
-
-        self.open_application()
-        self.mock_user()
-
-        response = self.app.get(reverse('applications:apply'), user=self.user)
-        form = response.context['leader_form']
-        self.assertEquals(list(form.fields['available_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
-        self.assertEquals(list(form.fields['preferred_sections'].queryset),
-                          list(Section.objects.filter(trips_year=self.current_trips_year)))
-
 
 class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
     """
