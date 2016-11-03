@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 from fyt.db.models import TripsYear
+from fyt.utils.choices import PREFER, AVAILABLE
 
 
 class ApplicationManager(models.Manager):
@@ -131,13 +132,17 @@ class GeneralApplicationManager(models.Manager):\
         We don't exclude leaders already assigned to a trip.
         """
 
+        triptype = trip.template.triptype
+        opts = [PREFER, AVAILABLE]
+
         return (
             self.leader_applications(trip.trips_year)
-            .filter(Q(leader_supplement__preferred_sections=trip.section) |
-                    Q(leader_supplement__available_sections=trip.section))
-            .filter(Q(leader_supplement__preferred_triptypes=trip.template.triptype) |
-                    Q(leader_supplement__available_triptypes=trip.template.triptype))
-            .distinct()
+            .filter(
+                leader_supplement__leadersectionchoice__section=trip.section,
+                leader_supplement__leadersectionchoice__preference__in=opts)
+            .filter(
+                leader_supplement__leadertriptypechoice__triptype=triptype,
+                leader_supplement__leadertriptypechoice__preference__in=opts)
         )
 
     def prospective_leaders_for_triptype(self, triptype):

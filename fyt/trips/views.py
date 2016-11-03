@@ -16,7 +16,10 @@ from .forms import (
     SectionForm, LeaderAssignmentForm,
     TrippeeAssignmentForm, FoodboxFormsetHelper
 )
-from fyt.applications.models import LeaderSupplement, GeneralApplication
+from fyt.applications.models import (
+    LeaderSupplement, GeneralApplication, LeaderSectionChoice,
+    LeaderTripTypeChoice
+)
 from fyt.incoming.models import (
     IncomingStudent, RegistrationSectionChoice, RegistrationTripTypeChoice,
     FIRST_CHOICE, PREFER, AVAILABLE
@@ -593,26 +596,22 @@ class AssignLeader(_TripMixin, DatabaseListView):
         """
         context = super(AssignLeader, self).get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
-        triptype = trip.template.triptype
-        section = trip.section
 
-        triptype_pref = {}
-        for pair in (LeaderSupplement.available_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.leadersupplement_id] = AVAILABLE
+        triptype_pref = {
+            pref.application_id: pref.preference
+            for pref in LeaderTripTypeChoice.objects.filter(
+                triptype=trip.template.triptype,
+                preference__in=[PREFER, AVAILABLE]
+            )
+        }
 
-        for pair in (LeaderSupplement.preferred_triptypes
-                     .through.objects.filter(triptype=triptype)):
-            triptype_pref[pair.leadersupplement_id] = PREFER
-
-        section_pref = {}
-        for pair in (LeaderSupplement.available_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.leadersupplement_id] = AVAILABLE
-
-        for pair in (LeaderSupplement.preferred_sections
-                     .through.objects.filter(section=section)):
-            section_pref[pair.leadersupplement_id] = PREFER
+        section_pref = {
+            pref.application_id: pref.preference
+            for pref in LeaderSectionChoice.objects.filter(
+                section=trip.section,
+                preference__in=[PREFER, AVAILABLE]
+            )
+        }
 
         def process_leader(leader):
             return (
