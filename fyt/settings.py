@@ -144,7 +144,7 @@ PIPELINE = {
     # concatenate assets only -- GzipManifest deals with compression
     'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'PIPELINE_JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
-    'STYLESHEETS' : {
+    'STYLESHEETS': {
         'base': {
             'source_filenames': (
                 'css/style.css',
