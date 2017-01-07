@@ -166,6 +166,7 @@ class IncomingStudent(DatabaseModel):
         """
         return self.name.split()[-1]
 
+    # TODO: store fields separately?
     def get_hometown(self):
         """
         Parse the town, state, and nation from ``self.address``.
