@@ -201,18 +201,18 @@ class IncomingStudent(DatabaseModel):
         """
         Compute the cost of buses for this student.
         """
-        if self.bus_assignment_round_trip:
-            return self._adjust(self.bus_assignment_round_trip.cost_round_trip)
-
         def one_way_cost(x):
-            if x:
-                return x.cost_one_way
-            return 0
+            if not x:
+                return 0
+            return x.cost_one_way
 
-        return self._adjust(
-            one_way_cost(self.bus_assignment_to_hanover) +
-            one_way_cost(self.bus_assignment_from_hanover)
-        )
+        if self.bus_assignment_round_trip:
+            cost = self.bus_assignment_round_trip.cost_round_trip
+        else:
+            cost = (one_way_cost(self.bus_assignment_to_hanover) +
+                    one_way_cost(self.bus_assignment_from_hanover))
+
+        return self._adjust(cost)
 
     @monetize
     def trip_cost(self, costs):
