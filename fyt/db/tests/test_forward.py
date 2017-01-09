@@ -5,6 +5,7 @@ from model_mommy import mommy
 from ..forward import forward, Forward
 from ..models import TripsYear
 from fyt.applications.models import GeneralApplication as Application
+from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.test import TripsTestCase, WebTestCase
 from fyt.transport.models import Route, Vehicle, Stop
@@ -173,6 +174,14 @@ class MigrateForwardTestCase(TripsTestCase):
         forward()
         self.assertEqual(len(QualificationTag.objects.all()), 2)
         self.assertEqual(len(CrooApplicationGrade.objects.all()), 1)
+
+    def test_croo_is_migrated(self):
+        trips_year = self.init_trips_year()
+        croo = mommy.make(Croo, trips_year=trips_year)
+        forward()
+
+        next_croo = Croo.objects.get(trips_year=(trips_year.year + 1))
+        self.assertDataEqual(next_croo, croo)
 
 
 class MigrateForwardWebTestCase(WebTestCase):

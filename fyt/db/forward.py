@@ -10,6 +10,7 @@ from fyt.applications.models import (
     ApplicationInformation, PortalContent,
     GeneralApplication as Application,
     QualificationTag)
+from fyt.croos.models import Croo
 from fyt.incoming.models import Settings, IncomingStudent, Registration
 from fyt.raids.models import RaidInfo
 from fyt.transport.models import Vehicle, Route, Stop
@@ -45,7 +46,8 @@ class Forward():
         TripTemplate,
         Document,
         TripType,
-        Campsite
+        Campsite,
+        Croo,
     ]
 
     def __init__(self, curr_year, next_year):
