@@ -24,7 +24,7 @@ from fyt.applications.forms import (
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.tables import ApplicationTable
 from fyt.permissions.views import (
-    CreateApplicationPermissionRequired,
+    SettingsPermissionRequired,
     DatabaseReadPermissionRequired,
     ApplicationEditPermissionRequired)
 from fyt.utils.views import ExtraContextMixin
@@ -215,8 +215,8 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         }
 
 
-class SetupApplication(CreateApplicationPermissionRequired,
-                       ExtraContextMixin, CrispyFormMixin, UpdateView):
+class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
+                       CrispyFormMixin, UpdateView):
     """
     Let directors create/edit this year's application
 

@@ -6,7 +6,7 @@ from vanilla import UpdateView
 from bootstrap3_datetime.widgets import DateTimePicker
 
 from .models import Timetable
-from fyt.permissions.views import TimetablePermissionRequired
+from fyt.permissions.views import SettingsPermissionRequired
 
 OPTIONS = {'format': 'MM/DD/YYYY HH:mm'}
 # 'MM/DD/YYYY hh:mm a'} won't work without changing
@@ -29,7 +29,7 @@ class TimetableForm(ModelForm):
     helper.add_input(Submit('submit', 'Update'))
 
 
-class EditTimetable(TimetablePermissionRequired, UpdateView):
+class EditTimetable(SettingsPermissionRequired, UpdateView):
 
     model = Timetable
     form_class = TimetableForm

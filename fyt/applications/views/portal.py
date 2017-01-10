@@ -7,7 +7,7 @@ from fyt.utils.forms import crispify
 from fyt.timetable.models import Timetable
 from fyt.db.models import TripsYear
 from fyt.applications.models import GeneralApplication, PortalContent
-from fyt.permissions.views import DatabaseEditPermissionRequired
+from fyt.permissions.views import SettingsPermissionRequired
 
 
 class VolunteerPortalView(LoginRequiredMixin, TemplateView):
@@ -40,7 +40,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class EditVolunteerPortalContent(DatabaseEditPermissionRequired, UpdateView):
+class EditVolunteerPortalContent(SettingsPermissionRequired, UpdateView):
 
     model = PortalContent
     fields = '__all__'

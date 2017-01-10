@@ -60,6 +60,11 @@ class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixi
     permission_required = 'permissions.can_view_db'
 
 
+class SettingsPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    """ Access for users allowed to edit database settings."""
+    permission_required = 'permissions.can_edit_settings'
+
+
 class ApplicationEditPermissionRequired(BasePermissionMixin,
                                         MultiplePermissionsRequiredMixin):
     permission_required = (
@@ -94,16 +99,6 @@ class GraderTablePermissionRequired(BasePermissionMixin,
         'permissions.can_grade_leader_applications',
         'permissions.can_grade_croo_applications'
     )
-
-
-class TimetablePermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
-    """ Access for users allowed to edit the calendar """
-    permission_required = 'permissions.can_edit_timetable'
-
-
-class CreateApplicationPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
-    """ Access for users allowed to create/edit croo and leader applications """
-    permission_required = 'permissions.can_create_applications'
 
 
 class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
@@ -187,7 +182,7 @@ class GenericGroupForm(forms.Form):
 class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_set_access'
+    permission_required = 'permissions.can_edit_settings'
     raise_exception = True
 
     template_name = 'permissions/set_permissions.html'
