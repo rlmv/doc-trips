@@ -29,7 +29,6 @@ class ApplicationManager(models.Manager):
 
         Return None if no applications need to be graded.
         """
-
         trips_year = TripsYear.objects.current()
 
         for i in range(self.model.NUMBER_OF_GRADES):
@@ -39,7 +38,6 @@ class ApplicationManager(models.Manager):
 
         return None
 
-
     def _get_random_application(self, user, trips_year, num):
         """
         Return a random PENDING application that user has not graded,
@@ -47,7 +45,6 @@ class ApplicationManager(models.Manager):
 
         Note that the status lives on the parent GeneralApplication object.
         """
-
         # grab the value of GeneralApplication.PENDING
         from fyt.applications.models import GeneralApplication
         PENDING = GeneralApplication.PENDING
@@ -65,13 +62,12 @@ class ApplicationManager(models.Manager):
 
 
 class LeaderApplicationManager(ApplicationManager):
-
     pass
 
 
 class CrooApplicationManager(ApplicationManager):
 
-      def next_to_grade_for_qualification(self, user, qualification):
+    def next_to_grade_for_qualification(self, user, qualification):
         """
         Find the next croo application which has qualification
         for user to grade.
@@ -88,7 +84,6 @@ class CrooApplicationManager(ApplicationManager):
 
         Return None if no applications need to be graded.
         """
-
         trips_year = TripsYear.objects.current()
 
         # grab the value of GeneralApplication.PENDING
@@ -105,8 +100,7 @@ class CrooApplicationManager(ApplicationManager):
                 .order_by('?').first())
 
 
-
-class GeneralApplicationManager(models.Manager):\
+class GeneralApplicationManager(models.Manager):
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -124,7 +118,6 @@ class GeneralApplicationManager(models.Manager):\
 
         We don't exclude leaders already assigned to a trip.
         """
-
         triptype = trip.template.triptype
         opts = [PREFER, AVAILABLE]
 
@@ -135,26 +128,31 @@ class GeneralApplicationManager(models.Manager):\
                 leader_supplement__leadersectionchoice__preference__in=opts)
             .filter(
                 leader_supplement__leadertriptypechoice__triptype=triptype,
-                leader_supplement__leadertriptypechoice__preference__in=opts)
-        )
+                leader_supplement__leadertriptypechoice__preference__in=opts))
 
     def leader_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(leader_supplement__document="")
+        return (self.filter(trips_year=trips_year)
+                    .exclude(leader_supplement__document=""))
 
     def croo_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(croo_supplement__document="")
+        return (self.filter(trips_year=trips_year)
+                    .exclude(croo_supplement__document=""))
 
     def leader_or_croo_applications(self, trips_year):
         """ Return all GenApps with either complete croo OR tl parts """
         return (self.filter(trips_year=trips_year)
-                .exclude(Q(leader_supplement__document="") &
-                         Q(croo_supplement__document="")))
+                    .exclude(Q(leader_supplement__document="") &
+                             Q(croo_supplement__document="")))
 
     def incomplete_leader_applications(self, trips_year):
-        return self.filter(trips_year=trips_year, leader_supplement__document="")
+        return self.filter(
+            trips_year=trips_year,
+            leader_supplement__document="")
 
     def incomplete_croo_applications(self, trips_year):
-        return self.filter(trips_year=trips_year, croo_supplement__document="")
+        return self.filter(
+            trips_year=trips_year,
+            croo_supplement__document="")
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
