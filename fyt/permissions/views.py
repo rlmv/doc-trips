@@ -187,7 +187,7 @@ class GenericGroupForm(forms.Form):
 class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
 
     redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_set_access'
+    permission_required = 'permissions.can_edit_settings'
     raise_exception = True
 
     template_name = 'permissions/set_permissions.html'

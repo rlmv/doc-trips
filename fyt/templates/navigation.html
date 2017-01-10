@@ -30,13 +30,13 @@
                 <li><a href="{% url 'db:current' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
                 {% endif %}
 
-                {% if perms.permissions.can_set_access or perms.permissions.can_edit_timetable or perms.permissions.can_create_applications %}
+                {% if perms.permissions.can_edit_settings or perms.permissions.can_edit_timetable or perms.permissions.can_create_applications %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-fw fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
 
                     <ul class="dropdown-menu" role="menu">
 
-                        {% if perms.permissions.can_set_access %}
+                        {% if perms.permissions.can_edit_settings %}
                         <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-fw fa-user-plus"></span> User Permissions </a></li>
                         {% endif %}
 

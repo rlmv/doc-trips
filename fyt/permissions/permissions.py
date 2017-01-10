@@ -37,10 +37,6 @@ def initialize_groups_and_permissions():
     safety_leads()
 
 
-def can_set_access():
-    return get_permission('can_set_access',
-                          'Can assign users permissions and groups')
-
 def can_view_database():
     return get_permission('can_view_db',
                           'Can view the trips database')
@@ -52,6 +48,10 @@ def can_edit_database():
     """
     return get_permission('can_edit_db',
                           'Can edit objects in the trips database')
+
+def can_edit_settings():
+    return get_permission('can_edit_settings',
+                          'Can change database settings')
 
 def can_edit_timetable():
     return get_permission('can_edit_timetable',
@@ -88,9 +88,9 @@ def can_report_incidents():
 def directors():
     directors, _ = Group.objects.get_or_create(name='directors')
     directors.permissions.set([
-        can_set_access(),
         can_view_database(),
         can_edit_database(),
+        can_edit_settings(),
         can_edit_timetable(),
         can_grade_croo_applications(),
         can_grade_leader_applications(),
