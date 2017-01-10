@@ -10,7 +10,6 @@ Immediate
 * Show errors in leader application form.
 * Make section/triptypes optional in leader form if the leader supplement has
   not yet been uploaded.
-* Fix leader filtering by TripType AND Section at the same time.
 * Spreadsheets for various registration sub-categories
 * Make it possible to hide triptypes for a year.
 * Fix race conditions around applications and registrations: *I think* if a user
