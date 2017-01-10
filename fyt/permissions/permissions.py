@@ -53,10 +53,6 @@ def can_edit_settings():
     return get_permission('can_edit_settings',
                           'Can change database settings')
 
-def can_edit_timetable():
-    return get_permission('can_edit_timetable',
-                          'Can change critical dates in the timetable')
-
 def can_create_applications():
     return get_permission('can_create_applications',
                           'Can create leader and croo applications')
@@ -91,7 +87,6 @@ def directors():
         can_view_database(),
         can_edit_database(),
         can_edit_settings(),
-        can_edit_timetable(),
         can_grade_croo_applications(),
         can_grade_leader_applications(),
         can_create_applications(),
