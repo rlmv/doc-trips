@@ -8,6 +8,7 @@ from django.db.models import Q
 
 from fyt.applications.models import GeneralApplication, QualificationTag
 from fyt.trips.models import Section, TripType
+from fyt.utils.choices import PREFER, AVAILABLE
 
 STATUS = 'status'
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
@@ -26,8 +27,9 @@ class AvailableSectionFilter(django_filters.ModelChoiceFilter):
             return qs
 
         return qs.filter(
-            Q(leader_supplement__preferred_sections=value) |
-            Q(leader_supplement__available_sections=value))
+            Q(leader_supplement__leadersectionchoice__preference=PREFER) |
+            Q(leader_supplement__leadersectionchoice__preference=AVAILABLE),
+            leader_supplement__leadersectionchoice__section=value)
 
 
 class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
@@ -41,8 +43,9 @@ class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
             return qs
 
         return qs.filter(
-            Q(leader_supplement__preferred_triptypes=value) |
-            Q(leader_supplement__available_triptypes=value))
+            Q(leader_supplement__leadertriptypechoice__preference=PREFER) |
+            Q(leader_supplement__leadertriptypechoice__preference=AVAILABLE),
+            leader_supplement__leadertriptypechoice__triptype=value)
 
 
 _Choice = namedtuple('_Choice', ['value', 'display', 'action'])
