@@ -1,3 +1,4 @@
+import random
 
 from django.db import models
 from django.db.models import Q
@@ -49,13 +50,19 @@ class ApplicationManager(models.Manager):
         from fyt.applications.models import GeneralApplication
         PENDING = GeneralApplication.PENDING
 
-        return (self.completed_applications(trips_year=trips_year).
+        apps = (self.completed_applications(trips_year=trips_year).
                 filter(application__status=PENDING)
                 .exclude(grades__grader=user)
                 .exclude(skips__grader=user)
                 .annotate(grade_count=models.Count('grades'))
-                .filter(grade_count=num)
-                .order_by('?').first())  # random
+                .filter(grade_count=num))
+
+        # choose random element manually
+        # .order_by('?') is buggy in 1.8
+        cnt = apps.count()
+        if cnt > 0:
+            return apps[random.randrange(0, cnt)]
+        return None
 
     def completed_applications(self, trips_year):
         return self.filter(trips_year=trips_year).exclude(document='')
