@@ -101,11 +101,6 @@ class GraderTablePermissionRequired(BasePermissionMixin,
     )
 
 
-class CreateApplicationPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
-    """ Access for users allowed to create/edit croo and leader applications """
-    permission_required = 'permissions.can_create_applications'
-
-
 class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """
     For users allowed to report incidents in the safety log

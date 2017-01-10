@@ -53,10 +53,6 @@ def can_edit_settings():
     return get_permission('can_edit_settings',
                           'Can change database settings')
 
-def can_create_applications():
-    return get_permission('can_create_applications',
-                          'Can create leader and croo applications')
-
 def can_grade_leader_applications():
     return get_permission('can_grade_leader_applications',
                           'Can grade leader applications')
@@ -89,7 +85,6 @@ def directors():
         can_edit_settings(),
         can_grade_croo_applications(),
         can_grade_leader_applications(),
-        can_create_applications(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
     ])

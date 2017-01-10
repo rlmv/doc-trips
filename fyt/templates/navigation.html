@@ -30,7 +30,7 @@
                 <li><a href="{% url 'db:current' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
                 {% endif %}
 
-                {% if perms.permissions.can_edit_settings or perms.permissions.can_create_applications %}
+                {% if perms.permissions.can_edit_settings %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-fw fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
 
@@ -44,7 +44,7 @@
                         <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-fw fa-calendar"></span> Calendar and Access </a></li>
                         {% endif %}
 
-                        {% if perms.permissions.can_create_applications %}
+                        {% if perms.permissions.can_edit_settings %}
                         <li><a href="{% url 'applications:setup' %}"><span class="fa fa-fw fa-file-word-o"></span> Volunteer Applications</a></li>
                         <li><a href="{% url 'settings:settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
                         {% endif %}
