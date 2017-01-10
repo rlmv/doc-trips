@@ -39,6 +39,7 @@ However, there are some subtleties which complicate matters:
 certian croos. There is a special provision which lets Croo heads
 grade ONLY applications which have a certain qualification. This
 allows Croo heads to do a once-over of their potential croo members.
+
 (2) In order to accomodate this there is a subclass of Croo Redirect and
 Grading Views which pass around the pk of the targeted Qualification.
 
@@ -46,6 +47,7 @@ Grading Views which pass around the pk of the targeted Qualification.
 they do so, an appropriate SkippedGrade object is created which links
 the grader to the skipped application. Once a grader has skipped an
 application they will not see it again, UNLESS:
+
 (4) the grader is a Croo Head. If a Croo Head skips a Croo application in
 the normal grading process, and this application has been tagged as
 qualified for this Head's Croo, the Croo head will see the application
