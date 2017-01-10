@@ -179,11 +179,7 @@ class GenericGroupForm(forms.Form):
         logger.info('Updating group %s to be %r' % (self.group, members_list))
 
 
-class SetPermissions(LoginRequiredMixin, PermissionRequiredMixin, FormView):
-
-    redirect_unauthenticated_users = True
-    permission_required = 'permissions.can_edit_settings'
-    raise_exception = True
+class SetPermissions(SettingsPermissionRequired, FormView):
 
     template_name = 'permissions/set_permissions.html'
     success_url = reverse_lazy('permissions:set_permissions')
