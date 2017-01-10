@@ -36,26 +36,16 @@
 
                     <ul class="dropdown-menu" role="menu">
 
-                        {% if perms.permissions.can_edit_settings %}
                         <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-fw fa-user-plus"></span> User Permissions </a></li>
-                        {% endif %}
 
-                        {% if perms.permissions.can_edit_settings %}
                         <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-fw fa-calendar"></span> Calendar and Access </a></li>
-                        {% endif %}
 
-                        {% if perms.permissions.can_edit_settings %}
                         <li><a href="{% url 'applications:setup' %}"><span class="fa fa-fw fa-file-word-o"></span> Volunteer Applications</a></li>
                         <li><a href="{% url 'settings:settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
-                        {% endif %}
 
-                        {% if perms.permissions.can_edit_db %}
                         <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-fw fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
-                        {% endif %}
 
-                        {% if perms.permissions.can_edit_db %}
                         <li><a href="{% url 'db:migrate' %}"><i class="fa fa-bomb"></i> Migrate </a></li>
-                        {% endif %}
 
                     </ul>
                 </li>

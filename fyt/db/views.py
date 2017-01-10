@@ -20,7 +20,8 @@ from . import forward
 from .forms import tripsyear_modelform_factory
 from .models import TripsYear
 from fyt.permissions.views import (
-    DatabaseReadPermissionRequired, DatabaseEditPermissionRequired)
+    DatabaseReadPermissionRequired, DatabaseEditPermissionRequired,
+    SettingsPermissionRequired)
 from fyt.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
 
 
@@ -300,7 +301,8 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
         return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
 
 
-class MigrateForward(DatabaseFormView):
+class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
+                     TripsYearMixin, FormView):
     """
     Migrate the database to the next ``trips_year`
     """
