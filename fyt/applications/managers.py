@@ -57,8 +57,8 @@ class ApplicationManager(models.Manager):
                 .annotate(grade_count=models.Count('grades'))
                 .filter(grade_count=num))
 
-        # choose random element manually
-        # .order_by('?') is buggy in 1.8
+        # Manually choose random element because .order_by('?') is buggy
+        # See https://code.djangoproject.com/ticket/26390
         cnt = apps.count()
         if cnt > 0:
             return apps[random.randrange(0, cnt)]
