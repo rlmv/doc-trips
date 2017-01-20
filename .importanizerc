@@ -1,0 +1,22 @@
+{
+    "exclude": [
+        "*/migrations/*.py"
+    ],
+    "groups": [
+        {
+            "type": "stdlib"
+        },
+        {
+            "type": "remainder"
+        },
+        {
+            "type": "local"
+        },
+        {
+            "type": "packages",
+            "packages": [
+                "fyt"
+            ]
+        }
+    ]
+}

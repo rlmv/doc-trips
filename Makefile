@@ -33,6 +33,9 @@ superuser:
 test:
 	$(MANAGE) test --nomigrations
 
+tidy:
+	$(VENV)/bin/importanize -v fyt
+
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations
 	$(COVERAGE) report -m
