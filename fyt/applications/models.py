@@ -252,7 +252,9 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         'complements you. Each leadership style is equally valuable, and we '
         'will use answers to this question to balance our teams as a whole.'
     )
-
+    document = models.FileField(
+        'application answers', blank=True, db_index=True
+    )
     # ------ certs -------
     medical_certifications = models.TextField(
         "Current trainings in First Aid and CPR are required for all DOC "
