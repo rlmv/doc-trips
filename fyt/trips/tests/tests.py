@@ -1,11 +1,9 @@
 import math
-import os
 import unittest
 from datetime import date, time, timedelta
 
 import webtest
 from django.core.exceptions import ValidationError
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 

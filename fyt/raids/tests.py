@@ -1,11 +1,9 @@
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 
-from fyt.db.models import TripsYear
 from fyt.db.mommy_recipes import trips_year as trips_year_recipe
-from fyt.raids.models import Comment, Raid
+from fyt.raids.models import Raid
 from fyt.test.testcases import TripsTestCase, WebTestCase
 
 
@@ -30,7 +28,6 @@ class RaidViewsTestCase(WebTestCase):
         resp.form.submit()
         with self.assertRaises(Raid.DoesNotExist):
             Raid.objects.get()
-
 
     def test_only_directors_can_see_delete_link(self):
         trips_year = trips_year_recipe.make()

@@ -1,11 +1,9 @@
 
-
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.bootstrap import InlineField
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from django import forms
-from django.core.urlresolvers import reverse
 
 from fyt.applications.models import GeneralApplication, LeaderSupplement
 from fyt.incoming.models import IncomingStudent
