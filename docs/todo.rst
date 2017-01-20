@@ -7,6 +7,7 @@ External
 
 Immediate
 ---------
+* Revamp landing page content - link to DOC pages
 * Show errors in leader application form.
 * Make section/triptypes optional in leader form if the leader supplement has
   not yet been uploaded.
