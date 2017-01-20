@@ -3,6 +3,7 @@ from django.conf.urls import url
 from fyt.db.urlhelpers import DB_REGEX
 from fyt.safety.views import *
 
+
 urlpatterns = [
     url(r'^$', IncidentList.as_view(), name='list'),
     url(r'^new/$', NewIncident.as_view(), name='create'),

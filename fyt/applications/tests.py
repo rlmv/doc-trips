@@ -1,29 +1,33 @@
 
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
-from django.contrib.auth import get_user_model
 from model_mommy import mommy
 
-from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
 from .forms import CrooApplicationGradeForm
 from .models import (
-        LeaderSupplement as LeaderApplication,
-        CrooSupplement,
-        GeneralApplication, LeaderApplicationGrade,
-        ApplicationInformation, CrooApplicationGrade,
-        QualificationTag,
-        SkippedLeaderGrade, SkippedCrooGrade,
-        PortalContent)
-from fyt.timetable.models import Timetable
-from fyt.croos.models import Croo
-from fyt.trips.models import Section, Trip, TripType
+    ApplicationInformation,
+    CrooApplicationGrade,
+    CrooSupplement,
+    GeneralApplication,
+    LeaderApplicationGrade,
+    LeaderSupplement as LeaderApplication,
+    PortalContent,
+    QualificationTag,
+    SkippedCrooGrade,
+    SkippedLeaderGrade,
+)
+
 from fyt.applications.views.graders import get_graders
-from fyt.applications.views.grading import SKIP, SHOW_GRADE_AVG_INTERVAL
-from fyt.utils.choices import PREFER, AVAILABLE
+from fyt.applications.views.grading import SHOW_GRADE_AVG_INTERVAL, SKIP
+from fyt.croos.models import Croo
+from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
+from fyt.timetable.models import Timetable
+from fyt.trips.models import Section, Trip, TripType
+from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=GeneralApplication.PENDING, trips_year=None,

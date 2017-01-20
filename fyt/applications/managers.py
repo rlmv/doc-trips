@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 from fyt.db.models import TripsYear
-from fyt.utils.choices import PREFER, AVAILABLE
+from fyt.utils.choices import AVAILABLE, PREFER
 
 
 class ApplicationManager(models.Manager):

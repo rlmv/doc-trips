@@ -1,13 +1,13 @@
 
 from unittest.mock import patch
 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.utils import override_settings
-from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.users.models import DartmouthUser, MAX_NETID_LENGTH
 from fyt.test.testcases import WebTestCase
+from fyt.users.models import MAX_NETID_LENGTH, DartmouthUser
 
 
 def lookup_email(*args, **kwargs):

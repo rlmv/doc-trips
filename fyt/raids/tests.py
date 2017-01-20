@@ -1,12 +1,13 @@
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
-from django.core.urlresolvers import reverse
 
-from fyt.test.testcases import TripsTestCase, WebTestCase
 from fyt.db.models import TripsYear
 from fyt.db.mommy_recipes import trips_year as trips_year_recipe
-from fyt.raids.models import Raid, Comment
+from fyt.raids.models import Comment, Raid
+from fyt.test.testcases import TripsTestCase, WebTestCase
+
 
 raid_recipe = Recipe(Raid, trips_year=foreign_key(trips_year_recipe))
 

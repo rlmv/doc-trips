@@ -2,13 +2,14 @@ import webtest
 from django.db import models
 from model_mommy import mommy
 
-from ..forward import forward, Forward
+from ..forward import Forward, forward
 from ..models import TripsYear
+
 from fyt.applications.models import GeneralApplication as Application
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.test import TripsTestCase, WebTestCase
-from fyt.transport.models import Route, Vehicle, Stop
+from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import TripTemplate
 
 

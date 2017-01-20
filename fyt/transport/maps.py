@@ -1,6 +1,7 @@
 import googlemaps
-from googlemaps.exceptions import TransportError, ApiError
 from django.conf import settings
+from googlemaps.exceptions import ApiError, TransportError
+
 
 """
 Interface with the Google maps API

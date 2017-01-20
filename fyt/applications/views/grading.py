@@ -1,28 +1,38 @@
 import logging
 
 from braces.views import FormMessagesMixin
-from vanilla import RedirectView, TemplateView, FormView
+from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from crispy_forms.bootstrap import FormActions
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import models
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from vanilla import FormView, RedirectView, TemplateView
 
+from fyt.applications.forms import (
+    CrooApplicationGradeForm,
+    LeaderApplicationGradeForm,
+)
+from fyt.applications.models import (
+    CrooApplicationGrade,
+    CrooSupplement,
+    LeaderApplicationGrade,
+    LeaderSupplement,
+    QualificationTag,
+    SkippedCrooGrade,
+    SkippedLeaderGrade,
+)
 from fyt.db.models import TripsYear
 from fyt.db.views import DatabaseDeleteView
-from fyt.applications.models import (
-    LeaderSupplement, CrooSupplement,
-    CrooApplicationGrade, LeaderApplicationGrade,
-    QualificationTag, SkippedLeaderGrade, SkippedCrooGrade)
-from fyt.applications.forms import (
-    CrooApplicationGradeForm, LeaderApplicationGradeForm)
 from fyt.permissions.views import (
-    CrooGraderPermissionRequired, LeaderGraderPermissionRequired)
+    CrooGraderPermissionRequired,
+    LeaderGraderPermissionRequired,
+)
 from fyt.timetable.models import Timetable
+
 
 """
 These views contain all the logic for grading Croo and Leader applications.

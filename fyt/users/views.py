@@ -1,5 +1,5 @@
-from vanilla import UpdateView
 from django.contrib import auth
+from vanilla import UpdateView
 
 from fyt.users.models import DartmouthUser
 from fyt.utils.forms import crispify

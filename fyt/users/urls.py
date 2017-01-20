@@ -2,8 +2,9 @@
 
 from django.conf.urls import url
 
-from fyt.webauth.views import login, logout
 from fyt.users.views import UpdateEmail
+from fyt.webauth.views import login, logout
+
 
 urlpatterns = [
     url(r'^login/$', login, name='login'),

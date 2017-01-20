@@ -1,12 +1,14 @@
 
 
 from django import template
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
+from django.shortcuts import render
 
-from django.contrib.auth import get_user_model
 from fyt.db.templatetags.links import *
+
+
 register = template.Library()
 
 @register.simple_tag

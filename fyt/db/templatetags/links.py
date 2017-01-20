@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 
 from fyt.db.models import TripsYear
 
+
 register = template.Library()
 
 

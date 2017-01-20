@@ -1,9 +1,9 @@
 
-from crispy_forms.layout import Layout, Submit, Field, HTML, Row, Div
 from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Div, Field, Layout, Row, Submit
+from django import forms
 
 from fyt.transport.models import StopOrder
-from django import forms
 
 
 class StopOrderForm(forms.ModelForm):

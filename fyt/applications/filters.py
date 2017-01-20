@@ -1,14 +1,15 @@
 
 from collections import namedtuple
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Div
 import django_filters
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Layout, Row, Submit
 from django.db.models import Q
 
 from fyt.applications.models import GeneralApplication, QualificationTag
 from fyt.trips.models import Section, TripType
-from fyt.utils.choices import PREFER, AVAILABLE
+from fyt.utils.choices import AVAILABLE, PREFER
+
 
 STATUS = 'status'
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'

@@ -2,6 +2,7 @@ import re
 
 from django.core.exceptions import ValidationError
 
+
 LAT_LNG_PARSER = re.compile(r'(-?\d+.\d+)[ ,] *(-?\d+.\d+)')
 LAT_LNG_TARGET = re.compile(r'(-?\d+.\d+,-?\d+.\d+)')
 

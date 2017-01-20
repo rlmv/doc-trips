@@ -1,8 +1,7 @@
 
 from django.conf import settings
-
-from storages.backends.s3boto import S3BotoStorage
 from pipeline.storage import PipelineMixin
+from storages.backends.s3boto import S3BotoStorage
 from whitenoise.django import GzipManifestStaticFilesStorage
 
 

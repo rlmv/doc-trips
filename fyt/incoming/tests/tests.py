@@ -6,15 +6,23 @@ from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from model_mommy import mommy
 
-from fyt.test.testcases import TripsYearTestCase, WebTestCase
-from fyt.incoming.models import (
-    Registration, IncomingStudent, sort_by_lastname, RegistrationSectionChoice,
-    RegistrationTripTypeChoice, FIRST_CHOICE, PREFER, AVAILABLE, NOT_AVAILABLE)
 from fyt.incoming.forms import RegistrationForm
-from fyt.trips.models import Trip, TripType, Section
-from fyt.incoming.models import Settings
+from fyt.incoming.models import (
+    AVAILABLE,
+    FIRST_CHOICE,
+    NOT_AVAILABLE,
+    PREFER,
+    IncomingStudent,
+    Registration,
+    RegistrationSectionChoice,
+    RegistrationTripTypeChoice,
+    Settings,
+    sort_by_lastname,
+)
+from fyt.test.testcases import TripsYearTestCase, WebTestCase
 from fyt.timetable.models import Timetable
-from fyt.transport.models import Stop, Route
+from fyt.transport.models import Route, Stop
+from fyt.trips.models import Section, Trip, TripType
 
 
 def resolve_path(fname):

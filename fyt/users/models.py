@@ -1,8 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
+from django.db import models
 from django.utils.deprecation import CallableFalse, CallableTrue
 
-from fyt.dartdm.lookup import lookup_email, EmailLookupException
+from fyt.dartdm.lookup import EmailLookupException, lookup_email
+
 
 MAX_NETID_LENGTH = 20
 

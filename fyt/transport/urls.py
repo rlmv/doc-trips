@@ -4,6 +4,7 @@ from django.conf.urls import url
 from fyt.db.urlhelpers import DB_REGEX
 from fyt.transport.views import *
 
+
 scheduledtransport_urlpatterns = [
     url(DB_REGEX['LIST'], ScheduledTransportMatrix.as_view(),
         name='index'),

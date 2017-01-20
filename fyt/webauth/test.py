@@ -1,7 +1,7 @@
 import unittest
 
 from fyt.test.testcases import TripsYearTestCase
-from fyt.webauth.views import protocol, host_url
+from fyt.webauth.views import host_url, protocol
 
 
 class GroupPermissionsTest(TripsYearTestCase):

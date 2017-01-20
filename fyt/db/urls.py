@@ -1,24 +1,37 @@
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 
 from fyt.applications.urls import (
-    application_urlpatterns, croograde_urlpatterns, grader_urlpatterns,
-    leadergrade_urlpatterns
+    application_urlpatterns,
+    croograde_urlpatterns,
+    grader_urlpatterns,
+    leadergrade_urlpatterns,
 )
 from fyt.croos.urls import croo_urlpatterns
 from fyt.db.views import (
-    DatabaseLandingPage, RedirectToCurrentDatabase, MigrateForward)
-from fyt.incoming.urls import (
-    registration_urlpatterns, trippee_urlpatterns
+    DatabaseLandingPage,
+    MigrateForward,
+    RedirectToCurrentDatabase,
 )
+from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
 from fyt.transport.urls import (
-    externalbus_urlpatterns, route_urlpatterns, scheduledtransport_urlpatterns,
-    stop_urlpatterns, vehicle_urlpatterns,
+    externalbus_urlpatterns,
+    route_urlpatterns,
+    scheduledtransport_urlpatterns,
+    stop_urlpatterns,
+    vehicle_urlpatterns,
 )
 from fyt.trips.urls import (
-    campsite_urlpatterns, checklist_urlpatterns, foodbox_urlpatterns,
-    leader_urlpatterns, section_urlpatterns, packet_urlpatterns,
-    template_urlpatterns, trip_urlpatterns, triptype_urlpatterns,
+    campsite_urlpatterns,
+    checklist_urlpatterns,
+    foodbox_urlpatterns,
+    leader_urlpatterns,
+    packet_urlpatterns,
+    section_urlpatterns,
+    template_urlpatterns,
+    trip_urlpatterns,
+    triptype_urlpatterns,
 )
+
 
 """
 All database urlpatterns take a trips_year param.

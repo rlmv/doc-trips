@@ -2,9 +2,10 @@
 import logging
 from zipfile import BadZipFile
 
-import mammoth
 import bleach
+import mammoth
 from django.utils.safestring import mark_safe
+
 
 logger = logging.getLogger(__name__)
 

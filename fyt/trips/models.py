@@ -7,12 +7,16 @@ from django.db import models
 from django.db.models import Q
 
 from .managers import (
-    SectionDatesManager, SectionManager,
-    TripManager, CampsiteManager
+    CampsiteManager,
+    SectionDatesManager,
+    SectionManager,
+    TripManager,
 )
+
 from fyt.db.models import DatabaseModel
-from fyt.transport.models import Stop, Route
+from fyt.transport.models import Route, Stop
 from fyt.utils.cache import cache_as
+
 
 """
 TODO: use these in place of magic numbers?

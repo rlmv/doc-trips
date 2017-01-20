@@ -1,7 +1,8 @@
-from django.template import Library, loader, Context
 from django.conf import settings
+from django.template import Context, Library, loader
 
-from fyt.transport.maps import _split_stops, MapError
+from fyt.transport.maps import MapError, _split_stops
+
 
 register = Library()
 

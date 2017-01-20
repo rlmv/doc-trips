@@ -1,9 +1,15 @@
 
 from django.conf.urls import url
 
+from fyt.croos.views import (
+    CrooCreateView,
+    CrooDeleteView,
+    CrooDetailView,
+    CrooListView,
+    CrooUpdateView,
+)
 from fyt.db.urlhelpers import DB_REGEX
-from fyt.croos.views import (CrooListView, CrooCreateView, CrooUpdateView,
-                             CrooDetailView, CrooDeleteView)
+
 
 croo_urlpatterns = [
     url(DB_REGEX['LIST'], CrooListView.as_view(), name='index'),

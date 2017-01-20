@@ -1,13 +1,20 @@
-from vanilla import FormView, DetailView, ListView, CreateView, DeleteView, UpdateView
 from braces.views import SetHeadlineMixin
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from vanilla import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    UpdateView,
+)
 
-from fyt.permissions.views import SafetyLogPermissionRequired
 from fyt.db.views import TripsYearMixin
-from fyt.safety.models import Incident
+from fyt.permissions.views import SafetyLogPermissionRequired
 from fyt.safety.forms import IncidentForm, IncidentUpdateForm
+from fyt.safety.models import Incident
 from fyt.utils.forms import crispify
 
 

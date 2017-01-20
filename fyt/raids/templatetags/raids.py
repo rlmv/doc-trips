@@ -1,7 +1,8 @@
 
 from django import template
-from django.utils.http import urlquote
 from django.core.urlresolvers import reverse
+from django.utils.http import urlquote
+
 
 register = template.Library()
 

@@ -1,9 +1,9 @@
-from model_mommy import mommy
 from django.db import IntegrityError
+from model_mommy import mommy
 
-from fyt.test.testcases import WebTestCase, TripsYearTestCase
-from fyt.trips.models import Campsite, TripTemplate
 from fyt.db.forms import tripsyear_modelform_factory
+from fyt.test.testcases import TripsYearTestCase, WebTestCase
+from fyt.trips.models import Campsite, TripTemplate
 
 
 class DatabaseModelTestCase(TripsYearTestCase):

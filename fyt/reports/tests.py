@@ -1,5 +1,5 @@
-import io
 import csv
+import io
 import tempfile
 import unittest
 from datetime import date
@@ -7,14 +7,14 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.test.testcases import WebTestCase, TripsTestCase
-from fyt.applications.tests import ApplicationTestMixin
 from fyt.applications.models import GeneralApplication
-from fyt.incoming.models import Registration, IncomingStudent, Settings
+from fyt.applications.tests import ApplicationTestMixin
+from fyt.incoming.models import IncomingStudent, Registration, Settings
+from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
+from fyt.test.testcases import TripsTestCase, WebTestCase
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip
-from fyt.utils.choices import S, M, L, XL
-from fyt.reports.views import leader_tshirts, croo_tshirts, trippee_tshirts
+from fyt.utils.choices import L, M, S, XL
 
 
 def save_and_open_csv(resp):

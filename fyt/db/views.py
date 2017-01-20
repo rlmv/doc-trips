@@ -1,28 +1,41 @@
 import logging
 
-from django import forms
-from django.db import models
-from django.http import Http404, HttpResponseRedirect
-from django.contrib import messages
-from django.core.urlresolvers import reverse, reverse_lazy
-from django.db import IntegrityError, transaction
-from django.utils.safestring import mark_safe
-from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
-from vanilla import (
-    ListView, UpdateView, CreateView, DeleteView,
-    TemplateView, DetailView, FormView, RedirectView)
 from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, HTML
 from crispy_forms.bootstrap import FormActions
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Submit
+from django import forms
+from django.contrib import messages
+from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.db import IntegrityError, models, transaction
+from django.http import Http404, HttpResponseRedirect
+from django.utils.safestring import mark_safe
+from vanilla import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    RedirectView,
+    TemplateView,
+    UpdateView,
+)
 
 from . import forward
 from .forms import tripsyear_modelform_factory
 from .models import TripsYear
+
 from fyt.permissions.views import (
-    DatabaseReadPermissionRequired, DatabaseEditPermissionRequired,
-    SettingsPermissionRequired)
-from fyt.utils.views import CrispyFormMixin, SetExplanationMixin, ExtraContextMixin
+    DatabaseEditPermissionRequired,
+    DatabaseReadPermissionRequired,
+    SettingsPermissionRequired,
+)
+from fyt.utils.views import (
+    CrispyFormMixin,
+    ExtraContextMixin,
+    SetExplanationMixin,
+)
 
 
 logger = logging.getLogger(__name__)

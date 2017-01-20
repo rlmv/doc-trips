@@ -1,12 +1,14 @@
-from django.forms import ModelForm
-from django.core.urlresolvers import reverse_lazy
+from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.core.urlresolvers import reverse_lazy
+from django.forms import ModelForm
 from vanilla import UpdateView
-from bootstrap3_datetime.widgets import DateTimePicker
 
 from .models import Timetable
+
 from fyt.permissions.views import SettingsPermissionRequired
+
 
 OPTIONS = {'format': 'MM/DD/YYYY HH:mm'}
 # 'MM/DD/YYYY hh:mm a'} won't work without changing

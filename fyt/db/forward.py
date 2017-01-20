@@ -6,15 +6,19 @@ from django.conf import settings
 from django.db.transaction import atomic
 
 from .models import TripsYear
+
 from fyt.applications.models import (
-    ApplicationInformation, PortalContent,
+    ApplicationInformation,
     GeneralApplication as Application,
-    QualificationTag)
+    PortalContent,
+    QualificationTag,
+)
 from fyt.croos.models import Croo
-from fyt.incoming.models import Settings, IncomingStudent, Registration
+from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.raids.models import RaidInfo
-from fyt.transport.models import Vehicle, Route, Stop
-from fyt.trips.models import TripTemplate, TripType, Campsite, Document
+from fyt.transport.models import Route, Stop, Vehicle
+from fyt.trips.models import Campsite, Document, TripTemplate, TripType
+
 
 logger = logging.getLogger(__name__)
 

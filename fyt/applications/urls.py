@@ -1,34 +1,37 @@
 
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 
-from fyt.db.urlhelpers import DB_REGEX
 from fyt.applications.views.application import (
-    NewApplication,
-    ContinueApplication,
-    SetupApplication,
-    ApplicationIndex,
-    ApplicationDetail,
-    ApplicationUpdate,
-    ApplicationStatusUpdate,
+    ApplicationAdminUpdate,
     ApplicationCertsUpdate,
-    ApplicationAdminUpdate)
-from fyt.applications.views.grading import(
-    RedirectToNextGradableCrooApplication,
-    RedirectToNextGradableCrooApplicationForQualification,
+    ApplicationDetail,
+    ApplicationIndex,
+    ApplicationStatusUpdate,
+    ApplicationUpdate,
+    ContinueApplication,
+    NewApplication,
+    SetupApplication,
+)
+from fyt.applications.views.assign import AssignToCroo, AssignToTrip
+from fyt.applications.views.graders import GraderList
+from fyt.applications.views.grading import (
+    DeleteCrooGrade,
+    DeleteLeaderGrade,
     GradeCrooApplication,
     GradeCrooApplicationForQualification,
-    NoCrooApplicationsLeftToGrade,
-    RedirectToNextGradableLeaderApplication,
     GradeLeaderApplication,
-    NoLeaderApplicationsLeftToGrade,
     GraderLandingPage,
-    DeleteCrooGrade,
-    DeleteLeaderGrade)
-from fyt.applications.views.assign import AssignToTrip, AssignToCroo
-from fyt.applications.views.graders import GraderList
-from fyt.applications.views.portal import (
-    VolunteerPortalView, EditVolunteerPortalContent
+    NoCrooApplicationsLeftToGrade,
+    NoLeaderApplicationsLeftToGrade,
+    RedirectToNextGradableCrooApplication,
+    RedirectToNextGradableCrooApplicationForQualification,
+    RedirectToNextGradableLeaderApplication,
 )
+from fyt.applications.views.portal import (
+    EditVolunteerPortalContent,
+    VolunteerPortalView,
+)
+from fyt.db.urlhelpers import DB_REGEX
 
 
 grade_urlpatterns = [

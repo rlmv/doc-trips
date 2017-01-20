@@ -1,29 +1,38 @@
 import io
 import logging
 
+import django_tables2 as tables
+from braces.views import FormMessagesMixin
 from django import forms
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.core.exceptions import MultipleObjectsReturned
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import MultipleObjectsReturned
+from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from vanilla import CreateView, UpdateView, TemplateView, FormView
-from braces.views import FormMessagesMixin
-import django_tables2 as tables
+from vanilla import CreateView, FormView, TemplateView, UpdateView
 
 from .filters import RegistrationFilterSet
-from .forms import (RegistrationForm, CSVFileForm,
-                    AssignmentForm, TrippeeInfoForm)
-from .models import Registration, IncomingStudent, Settings
-from .tables import RegistrationTable, IncomingStudentTable
+from .forms import (
+    AssignmentForm,
+    CSVFileForm,
+    RegistrationForm,
+    TrippeeInfoForm,
+)
+from .models import IncomingStudent, Registration, Settings
+from .tables import IncomingStudentTable, RegistrationTable
+
 from fyt.db.models import TripsYear
 from fyt.db.views import (
-    TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView, DatabaseListView,
-    DatabaseCreateView, DatabaseDetailView
+    DatabaseCreateView,
+    DatabaseDeleteView,
+    DatabaseDetailView,
+    DatabaseListView,
+    DatabaseUpdateView,
+    TripsYearMixin,
 )
 from fyt.permissions.views import DatabaseEditPermissionRequired
 from fyt.timetable.models import Timetable
@@ -31,6 +40,7 @@ from fyt.trips.models import TripType
 from fyt.users.models import DartmouthUser
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
+
 
 """
 Views for incoming students.

@@ -1,19 +1,28 @@
 
-from django.db import models
-from django.db.models import Q
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models import Q
 
-from .managers import (CrooApplicationManager, LeaderApplicationManager,
-                       GeneralApplicationManager)
-from fyt.db.models import DatabaseModel
+from .managers import (
+    CrooApplicationManager,
+    GeneralApplicationManager,
+    LeaderApplicationManager,
+)
+
 from fyt.croos.models import Croo
-from fyt.trips.models import Trip, Section, TripType
-from fyt.utils.choices import (TSHIRT_SIZE_CHOICES, PREFER, AVAILABLE,
-                               NOT_AVAILABLE)
-from fyt.utils.models import MedicalMixin
+from fyt.db.models import DatabaseModel
+from fyt.trips.models import Section, Trip, TripType
+from fyt.utils.choices import (
+    AVAILABLE,
+    NOT_AVAILABLE,
+    PREFER,
+    TSHIRT_SIZE_CHOICES,
+)
 from fyt.utils.model_fields import NullYesNoField, YesNoField
+from fyt.utils.models import MedicalMixin
+
 
 """
 Models for Leaders and Croo applications

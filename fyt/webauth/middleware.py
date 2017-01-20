@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import auth
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 
 from fyt.webauth.views import login as cas_login, logout as cas_logout
 

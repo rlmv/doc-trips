@@ -1,7 +1,8 @@
 
-from crispy_forms.layout import Submit, Layout, HTML, Div, Row, Fieldset, Field
+from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 
 from fyt.utils.fmt import section_range
+
 
 """
 crispy_form layouts

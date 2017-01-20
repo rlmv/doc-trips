@@ -1,22 +1,29 @@
 
 import logging
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Column, Fieldset, Layout, Row, Submit
 from django import forms
 from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import (
-    LoginRequiredMixin, PermissionRequiredMixin)
-
-from vanilla import FormView
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+)
+from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Row, Column
+from vanilla import FormView
 
-from fyt.permissions.permissions import (
-    directors, graders, directorate, trip_leader_trainers, safety_leads, olcs)
-from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.dartdm import lookup
+from fyt.dartdm.forms import DartmouthDirectoryLookupField
+from fyt.permissions.permissions import (
+    directorate,
+    directors,
+    graders,
+    olcs,
+    safety_leads,
+    trip_leader_trainers,
+)
 
 
 logger = logging.getLogger(__name__)

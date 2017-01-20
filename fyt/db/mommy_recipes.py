@@ -1,5 +1,7 @@
 from model_mommy.recipe import Recipe, foreign_key
+
 from fyt.db.models import TripsYear
+
 
 trips_year = Recipe(
     TripsYear,

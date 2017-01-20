@@ -4,9 +4,9 @@ from unittest.mock import MagicMock
 from django.template import Context, Template
 from model_mommy import mommy
 
+from fyt.db.templatetags.links import pass_null
 from fyt.test.testcases import TripsTestCase
 from fyt.trips.models import Section
-from fyt.db.templatetags.links import pass_null
 
 
 class NullPassThroughDecorator(unittest.TestCase):

@@ -1,10 +1,10 @@
 
-from urllib.parse import urljoin, urlencode
+from urllib.parse import urlencode, urljoin
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.conf import settings
-from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib import auth
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render
 
 from fyt.dartdm.lookup import EmailLookupException

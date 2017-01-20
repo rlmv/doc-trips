@@ -10,6 +10,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+import dj_database_url
+from model_mommy.generators import gen_string
+
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -104,7 +109,6 @@ ROOT_URLCONF = 'fyt.urls'
 
 WSGI_APPLICATION = 'fyt.wsgi.application'
 
-import dj_database_url
 # use SQLite for local testing instead of Postgres
 sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
@@ -244,7 +248,6 @@ LOGGING = {
     },
 }
 
-from model_mommy.generators import gen_string
 MOMMY_CUSTOM_FIELDS_GEN = {
     'fyt.users.models.NetIdField': gen_string,
 }

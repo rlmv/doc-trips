@@ -1,18 +1,24 @@
 import re
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit, Fieldset, Field, Submit, Row, Div, HTML
+from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
 
-from .models import (Registration, IncomingStudent, RegistrationSectionChoice,
-                     RegistrationTripTypeChoice, REGISTRATION_SECTION_CHOICES,
-                     REGISTRATION_TRIPTYPE_CHOICES)
 from .layouts import RegistrationFormLayout, join_with_and
-from fyt.incoming.models import Settings
+from .models import (
+    REGISTRATION_SECTION_CHOICES,
+    REGISTRATION_TRIPTYPE_CHOICES,
+    IncomingStudent,
+    Registration,
+    RegistrationSectionChoice,
+    RegistrationTripTypeChoice,
+)
+
 from fyt.db.models import TripsYear
+from fyt.incoming.models import Settings
 from fyt.transport.models import Stop
-from fyt.trips.fields import TrippeeSectionChoiceField, TripChoiceField
-from fyt.trips.models import Section, TripType, Trip
+from fyt.trips.fields import TripChoiceField, TrippeeSectionChoiceField
+from fyt.trips.models import Section, Trip, TripType
 
 
 class RoundTripStopChoiceField(forms.ModelChoiceField):

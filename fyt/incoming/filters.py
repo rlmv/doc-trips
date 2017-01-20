@@ -1,12 +1,13 @@
 
 import django_filters
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
 from django.db.models import Q
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Div
 
 from fyt.incoming.models import Registration
 from fyt.transport.models import Stop
+
 
 EXCHANGE = 'is_exchange'
 TRANSFER = 'is_transfer'

@@ -1,15 +1,15 @@
 import unittest
 
-from model_mommy import mommy
 from django.core.exceptions import ValidationError
 from django.template import Context, Template
 from django.test import TestCase
+from model_mommy import mommy
 
-from fyt.utils.matrix import OrderedMatrix
-from fyt.utils.fmt import section_range
-from fyt.trips.models import Section
 from fyt.test.testcases import TripsYearTestCase
+from fyt.trips.models import Section
+from fyt.utils.fmt import section_range
 from fyt.utils.lat_lng import parse_lat_lng, validate_lat_lng
+from fyt.utils.matrix import OrderedMatrix
 
 
 class OrderedMatrixTestCase(unittest.TestCase):

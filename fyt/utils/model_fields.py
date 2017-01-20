@@ -1,6 +1,7 @@
 
 from django.db import models
 
+
 YES_NO_CHOICES = (
     (True, 'Yes'),
     (False, 'No')

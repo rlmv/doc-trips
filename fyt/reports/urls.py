@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from fyt.reports.views import *
 
+
 urlpatterns = [
     url(r'^applications/all/$', VolunteerCSV.as_view(), name='all_apps'),
     url(r'^applications/leader-apps/$', TripLeaderApplicationsCSV.as_view(),

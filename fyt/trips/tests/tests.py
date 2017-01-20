@@ -1,27 +1,35 @@
+import math
 import os
 import unittest
-import math
-from datetime import date, timedelta, time
+from datetime import date, time, timedelta
 
 import webtest
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from ..models import (
-    Trip, Section, TripTemplate, Campsite,
+    NUM_BAGELS_REGULAR,
+    NUM_BAGELS_SUPPLEMENT,
+    Campsite,
+    Section,
+    Trip,
+    TripTemplate,
     validate_triptemplate_name,
-    NUM_BAGELS_REGULAR, NUM_BAGELS_SUPPLEMENT
 )
-from fyt.transport.models import Route
-from fyt.test.testcases import WebTestCase, TripsYearTestCase as TripsTestCase
-from fyt.applications.tests import make_application
+
 from fyt.applications.models import GeneralApplication
+from fyt.applications.tests import make_application
 from fyt.incoming.models import (
-    IncomingStudent, Registration, RegistrationSectionChoice,
-    RegistrationTripTypeChoice)
-from fyt.utils.choices import PREFER, AVAILABLE
+    IncomingStudent,
+    Registration,
+    RegistrationSectionChoice,
+    RegistrationTripTypeChoice,
+)
+from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
+from fyt.transport.models import Route
+from fyt.utils.choices import AVAILABLE, PREFER
 
 
 class TripTestCase(WebTestCase):

@@ -1,8 +1,9 @@
 from model_mommy import mommy
 
-from fyt.test.testcases import TripsYearTestCase as TripsTestCase
-from fyt.croos.models import Croo
 from fyt.applications.models import GeneralApplication
+from fyt.croos.models import Croo
+from fyt.test.testcases import TripsYearTestCase as TripsTestCase
+
 
 class CrooModelTestCase(TripsTestCase):
 

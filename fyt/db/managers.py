@@ -1,6 +1,7 @@
 
 from django.db import models
 
+
 # TODO: test cases
 
 class TripsYearManager(models.Manager):

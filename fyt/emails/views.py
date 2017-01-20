@@ -1,14 +1,14 @@
 from collections import OrderedDict
 
-from vanilla import TemplateView
-from django.core.exceptions import ImproperlyConfigured
 from braces.views import SetHeadlineMixin
+from django.core.exceptions import ImproperlyConfigured
+from vanilla import TemplateView
 
-from fyt.db.views import TripsYearMixin
-from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.applications.models import GeneralApplication
-from fyt.trips.models import TripType, Section
+from fyt.db.views import TripsYearMixin
 from fyt.incoming.models import IncomingStudent, Registration
+from fyt.permissions.views import DatabaseReadPermissionRequired
+from fyt.trips.models import Section, TripType
 
 
 class BaseEmailList(DatabaseReadPermissionRequired, TripsYearMixin,

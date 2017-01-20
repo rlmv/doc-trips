@@ -6,6 +6,7 @@ from vanilla import ListView
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 
+
 DartmouthUser = get_user_model()
 
 

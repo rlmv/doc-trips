@@ -1,4 +1,3 @@
-
 """
 Common choices used by trippees and leaders
 """

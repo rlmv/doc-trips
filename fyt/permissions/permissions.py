@@ -3,6 +3,7 @@ from django.contrib.auth.models import Group
 
 from fyt.permissions.models import SitePermission
 
+
 """
 Be careful changing the names of these permissions -- there can
 be Unique constraint issues. You may need to add a data migration

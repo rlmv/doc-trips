@@ -3,8 +3,8 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from fyt.timetable.models import Timetable
 from fyt.test.testcases import TripsTestCase
+from fyt.timetable.models import Timetable
 
 
 class TimetableTestCase(TripsTestCase):

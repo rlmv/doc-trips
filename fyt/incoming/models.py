@@ -9,14 +9,20 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from .managers import IncomingStudentManager, RegistrationManager
+
 from fyt.db.models import DatabaseModel
 from fyt.transport.models import Stop
-from fyt.trips.models import Trip, Section, TripType
+from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import NetIdField
-from fyt.utils.choices import (TSHIRT_SIZE_CHOICES, FIRST_CHOICE, PREFER,
-                               AVAILABLE, NOT_AVAILABLE)
+from fyt.utils.choices import (
+    AVAILABLE,
+    FIRST_CHOICE,
+    NOT_AVAILABLE,
+    PREFER,
+    TSHIRT_SIZE_CHOICES,
+)
+from fyt.utils.model_fields import NullYesNoField, YesNoField
 from fyt.utils.models import MedicalMixin
-from fyt.utils.model_fields import YesNoField, NullYesNoField
 
 
 def sort_by_lastname(students):

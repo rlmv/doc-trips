@@ -1,18 +1,21 @@
 from collections import defaultdict
 
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db import models
 
 from fyt.db.models import DatabaseModel
 from fyt.transport.managers import (
-    StopManager, RouteManager, ScheduledTransportManager,
-    ExternalBusManager, ExternalPassengerManager,
-    StopOrderManager
+    ExternalBusManager,
+    ExternalPassengerManager,
+    RouteManager,
+    ScheduledTransportManager,
+    StopManager,
+    StopOrderManager,
 )
 from fyt.transport.maps import get_directions
-from fyt.utils.lat_lng import validate_lat_lng
 from fyt.utils.cache import cache_as
+from fyt.utils.lat_lng import validate_lat_lng
 
 
 def sort_by_distance(stops, reverse=False):

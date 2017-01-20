@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 
 from fyt.safety.models import Incident
 
+
 register = template.Library()
 
 

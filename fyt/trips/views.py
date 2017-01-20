@@ -1,43 +1,63 @@
+from collections import OrderedDict, defaultdict
 from statistics import mean
-from collections import defaultdict, OrderedDict
 
-from django.core.urlresolvers import reverse
-from django.utils.safestring import mark_safe
-from django.forms.models import modelformset_factory
-from vanilla import FormView, UpdateView
-from crispy_forms.layout import Submit
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
+from crispy_forms.layout import Submit
+from django.core.urlresolvers import reverse
+from django.forms.models import modelformset_factory
+from django.utils.safestring import mark_safe
+from vanilla import FormView, UpdateView
 
-from .models import (
-    Trip, TripTemplate, Document, TripType, Campsite, Section,
-    NUM_BAGELS_SUPPLEMENT, NUM_BAGELS_REGULAR
-)
 from .forms import (
-    SectionForm, LeaderAssignmentForm,
-    TrippeeAssignmentForm, FoodboxFormsetHelper
+    FoodboxFormsetHelper,
+    LeaderAssignmentForm,
+    SectionForm,
+    TrippeeAssignmentForm,
 )
+from .models import (
+    NUM_BAGELS_REGULAR,
+    NUM_BAGELS_SUPPLEMENT,
+    Campsite,
+    Document,
+    Section,
+    Trip,
+    TripTemplate,
+    TripType,
+)
+
 from fyt.applications.models import (
-    LeaderSupplement, GeneralApplication, LeaderSectionChoice,
-    LeaderTripTypeChoice
-)
-from fyt.incoming.models import (
-    IncomingStudent, RegistrationSectionChoice, RegistrationTripTypeChoice,
-    FIRST_CHOICE, PREFER, AVAILABLE
+    GeneralApplication,
+    LeaderSectionChoice,
+    LeaderSupplement,
+    LeaderTripTypeChoice,
 )
 from fyt.db.views import (
-    DatabaseCreateView, BaseUpdateView, DatabaseUpdateView, DatabaseDeleteView,
-    DatabaseListView, DatabaseDetailView, DatabaseTemplateView,
-    TripsYearMixin
+    BaseUpdateView,
+    DatabaseCreateView,
+    DatabaseDeleteView,
+    DatabaseDetailView,
+    DatabaseListView,
+    DatabaseTemplateView,
+    DatabaseUpdateView,
+    TripsYearMixin,
+)
+from fyt.incoming.models import (
+    AVAILABLE,
+    FIRST_CHOICE,
+    PREFER,
+    IncomingStudent,
+    RegistrationSectionChoice,
+    RegistrationTripTypeChoice,
 )
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
+    DatabaseEditPermissionRequired,
     TripInfoEditPermissionRequired,
-    DatabaseEditPermissionRequired
 )
-from fyt.utils.views import PopulateMixin
+from fyt.transport.models import ExternalBus, ScheduledTransport
 from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
-from fyt.transport.models import ExternalBus, ScheduledTransport
+from fyt.utils.views import PopulateMixin
 
 
 class _SectionMixin():

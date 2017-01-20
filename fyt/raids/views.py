@@ -1,18 +1,18 @@
 from braces.views import SetHeadlineMixin
-from vanilla import ListView, DetailView, CreateView, FormView, TemplateView
-from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count
-from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
+from django.db.models import Count
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
+from vanilla import CreateView, DetailView, FormView, ListView, TemplateView
 
-from fyt.db.views import TripsYearMixin, DatabaseUpdateView, DatabaseDeleteView
-from fyt.raids.models import Raid, Comment, RaidInfo
+from fyt.db.views import DatabaseDeleteView, DatabaseUpdateView, TripsYearMixin
 from fyt.raids.forms import CommentForm
-from fyt.trips.models import Trip, Campsite
-from fyt.utils.views import PopulateMixin
+from fyt.raids.models import Comment, Raid, RaidInfo
+from fyt.trips.models import Campsite, Trip
 from fyt.utils.forms import crispify
+from fyt.utils.views import PopulateMixin
 
 
 class _RaidMixin(LoginRequiredMixin, TripsYearMixin):

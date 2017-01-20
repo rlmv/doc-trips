@@ -1,4 +1,3 @@
-
 """
 Constants for generating and reversing urls the database.
 """

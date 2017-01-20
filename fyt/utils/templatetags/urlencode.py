@@ -2,6 +2,7 @@ from urllib.parse import urlencode as _urlencode
 
 from django import template
 
+
 register = template.Library()
 
 

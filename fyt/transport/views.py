@@ -2,30 +2,43 @@ from collections import defaultdict
 from datetime import datetime
 from pprint import pprint
 
-from vanilla.views import TemplateView, FormView
-from django.core.urlresolvers import reverse
-from django.conf import settings
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from crispy_forms.layout import Submit
-from crispy_forms.helper import FormHelper
 from braces.views import FormValidMessageMixin
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from vanilla.views import FormView, TemplateView
 
-from fyt.db.views import (DatabaseCreateView, DatabaseUpdateView,
-                          DatabaseDeleteView, DatabaseListView,
-                          DatabaseDetailView, DatabaseTemplateView,
-                          TripsYearMixin)
-from fyt.permissions.views import DatabaseReadPermissionRequired, DatabaseEditPermissionRequired
-from fyt.transport.models import (
-    Stop, Route, Vehicle, ScheduledTransport, ExternalBus, StopOrder
+from fyt.db.views import (
+    DatabaseCreateView,
+    DatabaseDeleteView,
+    DatabaseDetailView,
+    DatabaseListView,
+    DatabaseTemplateView,
+    DatabaseUpdateView,
+    TripsYearMixin,
 )
-from fyt.transport.maps import MapError
+from fyt.incoming.models import IncomingStudent
+from fyt.permissions.views import (
+    DatabaseEditPermissionRequired,
+    DatabaseReadPermissionRequired,
+)
 from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
+from fyt.transport.maps import MapError
+from fyt.transport.models import (
+    ExternalBus,
+    Route,
+    ScheduledTransport,
+    Stop,
+    StopOrder,
+    Vehicle,
+)
 from fyt.trips.models import Section, Trip
+from fyt.utils.cache import cache_as, preload
 from fyt.utils.matrix import OrderedMatrix
 from fyt.utils.views import PopulateMixin
-from fyt.utils.cache import cache_as, preload
-from fyt.incoming.models import IncomingStudent
 
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'

@@ -1,8 +1,9 @@
 
 from datetime import timedelta
 
-from django.utils import timezone
 from django.db import models
+from django.utils import timezone
+
 
 """
 Our calendar is represented by a singleton Timetable object which

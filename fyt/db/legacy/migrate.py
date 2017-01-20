@@ -1,11 +1,11 @@
 
-from sqlalchemy import create_engine
 from django.conf import settings
 from django.db import connections
+from sqlalchemy import create_engine
 
-from fyt.trips.models import Campsite, TripType, TripTemplate
-from fyt.transport.models import Vehicle, Route, Stop
 from fyt.db.models import TripsYear
+from fyt.transport.models import Route, Stop, Vehicle
+from fyt.trips.models import Campsite, TripTemplate, TripType
 
 
 """

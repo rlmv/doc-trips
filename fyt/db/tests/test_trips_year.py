@@ -1,10 +1,10 @@
-from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from fyt.db.views import TripsYearMixin
 from fyt.test.testcases import WebTestCase
-from fyt.trips.models import Campsite, TripType, TripTemplate, Section
+from fyt.trips.models import Campsite, Section, TripTemplate, TripType
 
 
 class TripsYearMixinTestCase(WebTestCase):

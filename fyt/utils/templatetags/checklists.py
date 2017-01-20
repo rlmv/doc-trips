@@ -2,6 +2,7 @@ from django import template
 
 from fyt.incoming.models import sort_by_lastname
 
+
 register = template.Library()
 
 

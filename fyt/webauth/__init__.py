@@ -7,6 +7,7 @@ Dartmouth WebAuth.
 from django.conf import settings
 from six import iteritems
 
+
 __all__ = []
 
 _DEFAULTS = {

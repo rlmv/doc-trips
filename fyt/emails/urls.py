@@ -1,7 +1,14 @@
 
 from django.conf.urls import url
 
-from fyt.emails.views import Applicants, LeadersByTripType, LeadersBySection, IncomingStudents, Trippees
+from fyt.emails.views import (
+    Applicants,
+    IncomingStudents,
+    LeadersBySection,
+    LeadersByTripType,
+    Trippees,
+)
+
 
 urlpatterns = [
     url(r'^applicants/$', Applicants.as_view(), name='applicants'),

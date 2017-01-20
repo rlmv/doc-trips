@@ -1,10 +1,10 @@
-from django import forms
-from crispy_forms.layout import Layout, Field, Submit, Row, Div, HTML, Fieldset
-from crispy_forms.helper import FormHelper
 from bootstrap3_datetime.widgets import DateTimePicker
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
+from django import forms
 
-from fyt.trips.models import Trip
 from fyt.safety.models import Incident, IncidentUpdate
+from fyt.trips.models import Trip
 
 
 class IncidentForm(forms.ModelForm):

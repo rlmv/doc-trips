@@ -1,5 +1,3 @@
-
-
 def section_range(sxns):
     """
     Given an interable of sections [<Section A>, <Section B>, <Section C>],

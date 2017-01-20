@@ -1,27 +1,41 @@
-from datetime import date, timedelta
-import unittest
 import itertools
+import unittest
+from datetime import date, timedelta
 
 from django.core.exceptions import ValidationError
-from django.utils import timezone
-from django.db.models import ProtectedError
-from django.db import IntegrityError
 from django.core.urlresolvers import reverse
+from django.db import IntegrityError
+from django.db.models import ProtectedError
+from django.utils import timezone
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 
+from fyt.db.mommy_recipes import trips_year
+from fyt.incoming.models import IncomingStudent
 from fyt.test.testcases import TripsYearTestCase, WebTestCase
-from fyt.transport.models import Stop, Route, ScheduledTransport, ExternalBus, StopOrder, sort_by_distance
-from fyt.transport.constants import Hanover, Lodge, ConstantStop
 from fyt.transport import maps
+from fyt.transport.constants import ConstantStop, Hanover, Lodge
+from fyt.transport.models import (
+    ExternalBus,
+    Route,
+    ScheduledTransport,
+    Stop,
+    StopOrder,
+    sort_by_distance,
+)
 from fyt.transport.views import (
-    get_internal_route_matrix, get_internal_rider_matrix, Riders,
-    get_internal_issues_matrix, NOT_SCHEDULED, EXCEEDS_CAPACITY,
-    get_actual_rider_matrix, TransportChecklist, preload_transported_trips
+    EXCEEDS_CAPACITY,
+    NOT_SCHEDULED,
+    Riders,
+    TransportChecklist,
+    get_actual_rider_matrix,
+    get_internal_issues_matrix,
+    get_internal_rider_matrix,
+    get_internal_route_matrix,
+    preload_transported_trips,
 )
 from fyt.trips.models import Section, Trip
-from fyt.incoming.models import IncomingStudent
-from fyt.db.mommy_recipes import trips_year
+
 
 """
 TODO: rewrite matrix tests to only test _rider_matrix

@@ -7,15 +7,17 @@
 # python cas_tests.py [username]
 # You will need to edit the constants below to match your setup ...
 
-import unittest
-import sys
-import commands
 import getpass
-import urllib2
+import sys
+import unittest
 import urllib
-from urlparse import urljoin
-import cookielib
 from xml.dom import minidom
+
+import commands
+import cookielib
+import urllib2
+from urlparse import urljoin
+
 
 # Add in a separate test_config file if you wish of the following format
 try:

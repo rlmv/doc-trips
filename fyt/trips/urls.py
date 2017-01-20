@@ -1,7 +1,9 @@
 from django.conf.urls import url
 
 from .views import *
+
 from fyt.db.urlhelpers import DB_REGEX
+
 
 """
 OOdles of urls. These patterns all included in the main

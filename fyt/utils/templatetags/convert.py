@@ -1,7 +1,8 @@
 
 from django import template
 
-from fyt.utils.convert import convert_docx_filefield_to_html, ConversionError
+from fyt.utils.convert import ConversionError, convert_docx_filefield_to_html
+
 
 register = template.Library()
 

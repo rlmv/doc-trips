@@ -2,6 +2,7 @@ from vanilla import UpdateView
 
 from ..forms import TripAssignmentForm
 from ..models import GeneralApplication
+
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import ApplicationEditPermissionRequired
 from fyt.utils.forms import crispify

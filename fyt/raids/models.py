@@ -1,10 +1,10 @@
-from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.db import models
 
 from fyt.db.models import DatabaseModel
-from fyt.trips.models import Trip, Campsite
+from fyt.trips.models import Campsite, Trip
 
 
 class Raid(DatabaseModel):

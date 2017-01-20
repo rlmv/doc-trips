@@ -1,15 +1,16 @@
 import json
 import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.conf import settings
 
 from fyt.applications.models import ApplicationInformation, PortalContent
 from fyt.db.models import TripsYear
 from fyt.incoming.models import Settings
 from fyt.raids.models import RaidInfo
 from fyt.timetable.models import Timetable
+
 
 DATA_DIR = os.path.join(settings.BASE_DIR, 'db/initial_data')
 

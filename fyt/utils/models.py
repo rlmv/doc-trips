@@ -2,6 +2,7 @@ from django.db import models
 
 from .model_fields import NullYesNoField
 
+
 LEAVE_BLANK = "Leave blank if not applicable"
 
 

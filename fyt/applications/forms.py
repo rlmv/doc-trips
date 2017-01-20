@@ -1,20 +1,26 @@
-from django import forms
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, HTML, Div, Field, Row
-from crispy_forms.bootstrap import Alert
 from bootstrap3_datetime.widgets import DateTimePicker
+from crispy_forms.bootstrap import Alert
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
+from django import forms
 
 from fyt.applications.models import (
-    GeneralApplication, CrooSupplement, LeaderSupplement,
-    CrooApplicationGrade, LeaderApplicationGrade, QualificationTag,
-    LeaderSectionChoice, LeaderTripTypeChoice, LEADER_SECTION_CHOICES,
-    LEADER_TRIPTYPE_CHOICES)
+    LEADER_SECTION_CHOICES,
+    LEADER_TRIPTYPE_CHOICES,
+    CrooApplicationGrade,
+    CrooSupplement,
+    GeneralApplication,
+    LeaderApplicationGrade,
+    LeaderSectionChoice,
+    LeaderSupplement,
+    LeaderTripTypeChoice,
+    QualificationTag,
+)
 from fyt.db.models import TripsYear
-from fyt.trips.models import Section, TripType, Trip
+from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
 from fyt.trips.fields import LeaderSectionChoiceField, TripChoiceField
+from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.forms import crispify
-
-from fyt.incoming.forms import _BaseChoiceWidget, _BaseChoiceField
 
 
 class TripAssignmentForm(forms.ModelForm):

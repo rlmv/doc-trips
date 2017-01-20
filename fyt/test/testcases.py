@@ -2,11 +2,17 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-from model_mommy import mommy
 from django_webtest import WebTest
+from model_mommy import mommy
 
 from fyt.db.models import TripsYear
-from fyt.permissions.permissions import directors, graders, directorate, trip_leader_trainers, safety_leads
+from fyt.permissions.permissions import (
+    directorate,
+    directors,
+    graders,
+    safety_leads,
+    trip_leader_trainers,
+)
 
 
 class TripsYearTestCaseUtils():

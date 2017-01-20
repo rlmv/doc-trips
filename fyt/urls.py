@@ -4,9 +4,10 @@ from django.contrib import admin
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
 
+from fyt.incoming.urls import settings_urlpatterns
 from fyt.permissions.permissions import initialize_groups_and_permissions
 from fyt.views import HomePage, RaiseError
-from fyt.incoming.urls import settings_urlpatterns
+
 
 admin.autodiscover()
 

@@ -1,19 +1,18 @@
 import csv
 
 from braces.views import AllVerbsMixin
-from vanilla import View
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import Q, Avg
 from django.http import HttpResponse
-from django.db.models import Avg, Q
+from vanilla import View
 
-from fyt.db.views import TripsYearMixin, DatabaseTemplateView
 from fyt.applications.models import GeneralApplication as Application
-from fyt.incoming.models import Registration, IncomingStudent
-from fyt.incoming.models import Settings
+from fyt.db.views import DatabaseTemplateView, TripsYearMixin
+from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired
-from fyt.utils.choices import S, M, L, XL
-from fyt.utils.cache import cache_as
 from fyt.trips.models import Trip
+from fyt.utils.cache import cache_as
+from fyt.utils.choices import L, M, S, XL
 
 
 class GenericReportView(DatabaseReadPermissionRequired,

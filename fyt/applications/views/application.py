@@ -1,34 +1,36 @@
-from vanilla import (
-    DetailView, CreateView, UpdateView, ListView)
-from braces.views import (
-    GroupRequiredMixin, FormMessagesMixin)
+from braces.views import FormMessagesMixin, GroupRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Avg, Value as V
 from django.db.models.functions import Coalesce
-from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from vanilla import CreateView, DetailView, ListView, UpdateView
 
-from fyt.db.views import CrispyFormMixin
-from fyt.db.views import TripsYearMixin
+from fyt.applications.filters import ApplicationFilterSet
+from fyt.applications.forms import (
+    ApplicationAdminForm,
+    ApplicationForm,
+    ApplicationStatusForm,
+    CertificationForm,
+    CrooSupplementForm,
+    LeaderSupplementForm,
+)
+from fyt.applications.models import ApplicationInformation, GeneralApplication
+from fyt.applications.tables import ApplicationTable
+from fyt.croos.models import Croo
 from fyt.db.models import TripsYear
+from fyt.db.views import CrispyFormMixin, TripsYearMixin
+from fyt.permissions.views import (
+    ApplicationEditPermissionRequired,
+    DatabaseReadPermissionRequired,
+    SettingsPermissionRequired,
+)
 from fyt.timetable.models import Timetable
 from fyt.trips.models import TripType
-from fyt.croos.models import Croo
-from fyt.applications.models import GeneralApplication, ApplicationInformation
-from fyt.applications.forms import (
-    ApplicationForm, CrooSupplementForm,
-    LeaderSupplementForm, CertificationForm,
-    ApplicationStatusForm, ApplicationAdminForm)
-from fyt.applications.filters import ApplicationFilterSet
-from fyt.applications.tables import ApplicationTable
-from fyt.permissions.views import (
-    SettingsPermissionRequired,
-    DatabaseReadPermissionRequired,
-    ApplicationEditPermissionRequired)
-from fyt.utils.views import ExtraContextMixin
 from fyt.utils.forms import crispify
+from fyt.utils.views import ExtraContextMixin
 
 
 class IfApplicationAvailable():
