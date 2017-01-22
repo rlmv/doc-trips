@@ -359,7 +359,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'needs',
         'trippee_confidentiality',
         'in_goodstanding_with_college',
-        'trainings'
+        'trainings',
+        'document'
     ]
     leaderapplication_fields = [
         ('preferred sections', 'new_preferred_sections'),
@@ -369,7 +370,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'relevant_experience',
         'trip_preference_comments',
         'cannot_participate_in',
-        'document'
+        '_old_document'  # Deprecated field - include conditionally?
     ]
     trainings_fields = [
         'community_building',
@@ -387,7 +388,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'safety_lead_willing',
         'kitchen_lead_willing',
         'kitchen_lead_qualifications',
-        'document'
+        '_old_document'  # Deprecated field - include conditionally?
     ]
 
     def extra_context(self):

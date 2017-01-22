@@ -101,7 +101,6 @@ class CrooSupplementForm(forms.ModelForm):
     class Meta:
         model = CrooSupplement
         fields = (
-            'document',
             'licensed',
             'college_certified',
             'sprinter_certified',
@@ -153,7 +152,6 @@ class LeaderSupplementForm(forms.ModelForm):
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
-            'document'
         )
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -349,20 +347,6 @@ class LeaderSupplementLayout(Layout):
     def __init__(self):
         super().__init__(
             Fieldset(
-                'Application',
-                HTML(
-                    '<p> Download the <a href="{% if information.leader_supplement_questions %}{{ information.leader_supplement_questions.url }}{% endif %}"> '
-                    'Trip Leader Application</a>. Thoughtfully answer the '
-                    'questions and upload your responses in a Word (.docx) '
-                    'document. <strong>Leave the original application questions '
-                    'in the document with your responses.</strong> Your Trip '
-                    'Leader application will not be considered complete until '
-                    'you have uploaded answers to these questions. Be sure to '
-                    'save your application after uploading.</p>'
-                ),
-                'document',
-            ),
-            Fieldset(
                 'Trip Leader Availability',
                 Alert(
                     content=NOT_USED_IN_SCORING,
@@ -393,11 +377,6 @@ class CrooSupplementLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            Fieldset(
-                'Application',
-                HTML("""<p> Download the <a href="{% if information.croo_supplement_questions %}{{ information.croo_supplement_questions.url }}{% endif %}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
-                'document',
-            ),
             Fieldset(
                 'Driving',
                 'licensed',

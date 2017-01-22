@@ -447,7 +447,9 @@ class LeaderSupplement(DatabaseModel):
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='leader_supplement'
     )
-    document = models.FileField(
+
+    # Deprecated leader application
+    _old_document = models.FileField(
         'leader application answers', blank=True, db_index=True
     )
 
@@ -582,7 +584,9 @@ class CrooSupplement(DatabaseModel):
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='croo_supplement'
     )
-    document = models.FileField('Croo Application Answers', blank=True)
+
+    # Deprecated croo application
+    _old_document = models.FileField('Croo Application Answers', blank=True)
 
     # --- driving ------
     licensed = NullYesNoField(
