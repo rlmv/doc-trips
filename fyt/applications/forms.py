@@ -76,7 +76,9 @@ class ApplicationForm(forms.ModelForm):
             'hanover_in_fall',
             'role_preference',
             'leadership_style',
-            'document'
+            'document',
+            'leader_willing',
+            'croo_willing'
         )
 
         widgets = {
@@ -311,6 +313,8 @@ class ApplicationLayout(Layout):
             Fieldset(
                 'Additional Information',
                 'hanover_in_fall',
+                'leader_willing',
+                'croo_willing',
                 'role_preference',
                 'leadership_style',
             ),
