@@ -354,6 +354,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
+    @property
     def leader_application_complete(self):
         """
         A leader application is complete if the application document is
@@ -362,6 +363,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         """
         return bool(self.document and self.leader_willing)
 
+    @property
     def croo_application_complete(self):
         """
         A croo application is complete if the application document is

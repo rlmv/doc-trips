@@ -223,20 +223,20 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         app = make_application(trips_year=trips_year)
 
         app.leader_willing = False
-        self.assertFalse(app.leader_application_complete())
+        self.assertFalse(app.leader_application_complete)
 
         app.leader_willing = True
-        self.assertTrue(app.leader_application_complete())
+        self.assertTrue(app.leader_application_complete)
 
     def test_croo_application_complete(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
 
         app.croo_willing = False
-        self.assertFalse(app.croo_application_complete())
+        self.assertFalse(app.croo_application_complete)
 
         app.croo_willing = True
-        self.assertTrue(app.croo_application_complete())
+        self.assertTrue(app.croo_application_complete)
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
