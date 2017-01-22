@@ -14,36 +14,36 @@
 <h4> Administrative Info <a href="{% url 'db:generalapplication:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
 <table class="table table-condensed table-striped">
 
-  <tr>
-    <td class="col-sm-3 text-right"><strong>Status</strong></td>
-    <td> {{ application.status }} </td>
-    <td>  <a href="{% url 'db:generalapplication:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
-  </tr>
+    <tr>
+        <td class="col-sm-3 text-right"><strong>Status</strong></td>
+        <td> {{ application.status }} </td>
+        <td>  <a href="{% url 'db:generalapplication:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
+    </tr>
 
-  <tr>
-    <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
-    {% if application.assigned_trip %}
-    <td> 
-      {{ application.assigned_trip | detail_link }}
-    </td>
-    <td> 
-      <a href="{% url 'db:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.leader_supplement.pk %}">remove </a> 
-    </td>
-    {% else %}
-    <td> * </td> <td> <a href="{{ trip_assignment_url }}"> assign </a> </td>
-    {% endif %}
-  </tr>
+    <tr>
+        <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
+        {% if application.assigned_trip %}
+        <td>
+            {{ application.assigned_trip | detail_link }}
+        </td>
+        <td>
+            <a href="{% url 'db:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.leader_supplement.pk %}">remove </a>
+        </td>
+        {% else %}
+        <td> * </td> <td> <a href="{{ trip_assignment_url }}"> assign </a> </td>
+        {% endif %}
+    </tr>
 
-   <tr>
-    <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
-    {% if application.assigned_croo %}
-    <td> {{ application.assigned_croo | detail_link }} </td>
-    <td> TODO: remove link </td>
-    {% else %}
-    <td> * </td> <td> <a href="{{ croo_assignment_url }}"> assign </a> </td>
-    {% endif %}
-   </tr>
-    
+    <tr>
+        <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
+        {% if application.assigned_croo %}
+        <td> {{ application.assigned_croo | detail_link }} </td>
+        <td> TODO: remove link </td>
+        {% else %}
+        <td> * </td> <td> <a href="{{ croo_assignment_url }}"> assign </a> </td>
+        {% endif %}
+    </tr>
+
 </table>
 
 
@@ -54,60 +54,60 @@
 {# grades #}
 <h4> Trip Leader Grades {% if application.leader_application_complete %}<a href="{% url 'applications:grade:leader' pk=application.leader_supplement.pk %}">add</a>{% endif %}</h4>
 <table class="table table-condensed table-striped">
-  <tr>
-    <th class="col-sm-1"> Grade </th>
-    <th class="col-sm-2"> Hard skills </th>
-    <th class="col-sm-2"> Soft skills </th>
-    <th> Comment </th>
-    <th> Grader </th>
-    <th> </th>
-  </tr>
-  {% for grade in application.leader_supplement.grades.all %}
-  <tr>
-    <td> {{ grade.grade }} </td>
-    <td> {{ grade.hard_skills }} </td>
-    <td> {{ grade.soft_skills }} </td>
-    <td> {{ grade.comment }} </td>
-    <td> {{ grade.grader }} </td>
-    <td> {{ grade|delete_link }} </td>
-  </tr>
-  {% endfor %}
-  {% if application.leader_supplement.average_grade %}
-  <tr class="info">
-    <td> {{ application.leader_supplement.average_grade|floatformat:1 }} </td>
-    <td> AVERAGE </td> <td/> <td/> <td/> <td/>
-  </tr>
-  {% endif %}
+    <tr>
+        <th class="col-sm-1"> Grade </th>
+        <th class="col-sm-2"> Hard skills </th>
+        <th class="col-sm-2"> Soft skills </th>
+        <th> Comment </th>
+        <th> Grader </th>
+        <th> </th>
+    </tr>
+    {% for grade in application.leader_supplement.grades.all %}
+    <tr>
+        <td> {{ grade.grade }} </td>
+        <td> {{ grade.hard_skills }} </td>
+        <td> {{ grade.soft_skills }} </td>
+        <td> {{ grade.comment }} </td>
+        <td> {{ grade.grader }} </td>
+        <td> {{ grade|delete_link }} </td>
+    </tr>
+    {% endfor %}
+    {% if application.leader_supplement.average_grade %}
+    <tr class="info">
+        <td> {{ application.leader_supplement.average_grade|floatformat:1 }} </td>
+        <td> AVERAGE </td> <td/> <td/> <td/> <td/>
+    </tr>
+    {% endif %}
 </table>
 
 <h4> Croo Grades {% if application.croo_application_complete %}<a href="{% url 'applications:grade:croo' pk=application.croo_supplement.pk %}">add</a>{% endif %}</h4>
 <table class="table table-condensed table-striped">
-  <tr>
-    <th class="col-sm-1"> Grade </th>
-    <th class="col-sm-2"> Hard skills </th>
-    <th class="col-sm-2"> Soft skills </th>
-    <th> Qualifications </th>
-    <th> Comment </th>
-    <th> Grader </th>
-    <th> </th>
-  </tr>
-  {% for grade in application.croo_supplement.grades.all %}
-  <tr>
-    <td> {{ grade.grade }} </td>
-    <td> {{ grade.hard_skills }} </td>
-    <td> {{ grade.soft_skills }} </td>
-    <td> {{ grade.qualifications.all|join:", " }} </td>
-    <td> {{ grade.comment }} </td>
-    <td> {{ grade.grader }} </td>
-    <td> {{ grade|delete_link }} </td>
-  </tr>
-  {% endfor %}
-  {% if application.croo_supplement.average_grade %}
-  <tr class="info">
-    <td> {{ application.croo_supplement.average_grade|floatformat:1 }} </td>
-    <td> AVERAGE </td> <td/> <td/> <td/> <td/> <td/>
-  </tr>
-  {% endif %}
+    <tr>
+        <th class="col-sm-1"> Grade </th>
+        <th class="col-sm-2"> Hard skills </th>
+        <th class="col-sm-2"> Soft skills </th>
+        <th> Qualifications </th>
+        <th> Comment </th>
+        <th> Grader </th>
+        <th> </th>
+    </tr>
+    {% for grade in application.croo_supplement.grades.all %}
+    <tr>
+        <td> {{ grade.grade }} </td>
+        <td> {{ grade.hard_skills }} </td>
+        <td> {{ grade.soft_skills }} </td>
+        <td> {{ grade.qualifications.all|join:", " }} </td>
+        <td> {{ grade.comment }} </td>
+        <td> {{ grade.grader }} </td>
+        <td> {{ grade|delete_link }} </td>
+    </tr>
+    {% endfor %}
+    {% if application.croo_supplement.average_grade %}
+    <tr class="info">
+        <td> {{ application.croo_supplement.average_grade|floatformat:1 }} </td>
+        <td> AVERAGE </td> <td/> <td/> <td/> <td/> <td/>
+    </tr>
+    {% endif %}
 </table>
 
 
@@ -116,58 +116,58 @@
 <h4> Application {{ application | edit_link }} </h4>
 <div role="tabpanel">
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
 
-    <li role="presentation" class="active">
-      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	{{ application | checkmark_if_true }}
-	General Information
-      </a>
-    </li>
+        <li role="presentation" class="active">
+            <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
+                {{ application | checkmark_if_true }}
+                General Information
+            </a>
+        </li>
 
-    <li role="presentation">
-      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{{ application.leader_application_complete | checkmark_if_true }}
-	Trip Leader Application
-      </a>
-    </li>
+        <li role="presentation">
+            <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
+                {{ application.leader_application_complete | checkmark_if_true }}
+                Trip Leader Application
+            </a>
+        </li>
 
-    <li role="presentation">
-      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{{ application.croo_application_complete | checkmark_if_true }} 
-	Croo Application
-      </a>
-    </li>
+        <li role="presentation">
+            <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
+                {{ application.croo_application_complete | checkmark_if_true }}
+                Croo Application
+            </a>
+        </li>
 
-  </ul>
+    </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="general">
-	<br/>
-	<div><p> {{ information.general_info|safe }} </p></div>
-	{% detail application generalapplication_fields %}
-      </div>
+        <div role="tabpanel" class="tab-pane active" id="general">
+            <br/>
+            <div><p> {{ information.general_info|safe }} </p></div>
+            {% detail application generalapplication_fields %}
+        </div>
 
-      <div role="tabpanel" class="tab-pane" id="leader">
-	<br/>
-	<div><p> {{ information.leader_info|safe }} </p></div>
-	{% detail application.leader_supplement leaderapplication_fields %}
-	<div>
-	  {% display_docx_filefield_as_html application.leader_supplement.document %}
-	</div>
-      </div>
+        <div role="tabpanel" class="tab-pane" id="leader">
+            <br/>
+            <div><p> {{ information.leader_info|safe }} </p></div>
+            {% detail application.leader_supplement leaderapplication_fields %}
+            <div>
+                {% display_docx_filefield_as_html application.leader_supplement.document %}
+            </div>
+        </div>
 
-      <div role="tabpanel" class="tab-pane" id="croo">
-	<br/>
-	<div><p> {{ information.croo_info|safe }} </p></div>
-	{% detail application.croo_supplement crooapplication_fields %}
-	<div>
-	  {% display_docx_filefield_as_html application.croo_supplement.document %}
-	</div>
-      </div>
-      
+        <div role="tabpanel" class="tab-pane" id="croo">
+            <br/>
+            <div><p> {{ information.croo_info|safe }} </p></div>
+            {% detail application.croo_supplement crooapplication_fields %}
+            <div>
+                {% display_docx_filefield_as_html application.croo_supplement.document %}
+            </div>
+        </div>
+
     </div>
 
 </div>
