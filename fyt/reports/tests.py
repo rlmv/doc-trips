@@ -50,10 +50,8 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_current_trips_year()
         application = self.make_application(trips_year=trips_year)
         non_applicant = self.make_application(trips_year=trips_year)
-        non_applicant.croo_supplement.document = ''
-        non_applicant.croo_supplement.save()
-        non_applicant.leader_supplement.document = ''
-        non_applicant.leader_supplement.save()
+        non_applicant.document = ''
+        non_applicant.save()
         res = self.app.get(reverse('db:reports:all_apps',
                                    kwargs={'trips_year': trips_year}),
                            user=self.mock_director())

@@ -6,6 +6,7 @@ from django.db.models import Q
 from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 
+# TODO: refactor grade choices to query off the GeneralApplication
 
 class ApplicationManager(models.Manager):
     """
@@ -64,15 +65,21 @@ class ApplicationManager(models.Manager):
             return apps[random.randrange(0, cnt)]
         return None
 
-    def completed_applications(self, trips_year):
-        return self.filter(trips_year=trips_year).exclude(document='')
-
 
 class LeaderApplicationManager(ApplicationManager):
-    pass
+
+    def completed_applications(self, trips_year):
+        return (self.filter(trips_year=trips_year)
+                    .exclude(application__document='')
+                    .filter(application__leader_willing=True))
 
 
 class CrooApplicationManager(ApplicationManager):
+
+    def completed_applications(self, trips_year):
+        return (self.filter(trips_year=trips_year)
+                    .exclude(application__document='')
+                    .filter(application__croo_willing=True))
 
     def next_to_grade_for_qualification(self, user, qualification):
         """
@@ -139,27 +146,29 @@ class GeneralApplicationManager(models.Manager):
 
     def leader_applications(self, trips_year):
         return (self.filter(trips_year=trips_year)
-                    .exclude(leader_supplement__document=""))
+                    .exclude(document="")
+                    .filter(leader_willing=True))
 
     def croo_applications(self, trips_year):
         return (self.filter(trips_year=trips_year)
-                    .exclude(croo_supplement__document=""))
+                    .exclude(document="")
+                    .filter(croo_willing=True))
 
     def leader_or_croo_applications(self, trips_year):
         """ Return all GenApps with either complete croo OR tl parts """
         return (self.filter(trips_year=trips_year)
-                    .exclude(Q(leader_supplement__document="") &
-                             Q(croo_supplement__document="")))
+                    .exclude(document="")
+                    .filter(Q(leader_willing=True) | Q(croo_willing=True)))
 
     def incomplete_leader_applications(self, trips_year):
         return self.filter(
-            trips_year=trips_year,
-            leader_supplement__document="")
+            Q(document="") | Q(leader_willing=False),
+            trips_year=trips_year)
 
     def incomplete_croo_applications(self, trips_year):
         return self.filter(
-            trips_year=trips_year,
-            croo_supplement__document="")
+            Q(document="") | Q(croo_willing=False),
+            trips_year=trips_year)
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
