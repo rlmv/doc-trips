@@ -36,10 +36,17 @@ class ApplicationInformation(DatabaseModel):
     class Meta:
         unique_together = ['trips_year']
 
+    application_questions = models.FileField(
+        'Application questions', help_text='.docx file')
+
+    # Deprecated questions for split croo/leader application
+    # ----------------------------------------------------------
     leader_supplement_questions = models.FileField(
         'Leader Application questions', help_text='.docx file')
+
     croo_supplement_questions = models.FileField(
         'Croo Application questions', help_text='.docx file')
+    # ----------------------------------------------------------
 
     application_header = models.TextField(
         blank=True, help_text=(

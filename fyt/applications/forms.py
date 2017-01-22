@@ -75,7 +75,8 @@ class ApplicationForm(forms.ModelForm):
             'summer_training_ok',
             'hanover_in_fall',
             'role_preference',
-            'leadership_style'
+            'leadership_style',
+            'document'
         )
 
         widgets = {
@@ -292,6 +293,20 @@ class ApplicationLayout(Layout):
                 ),
                 'spring_training_ok',
                 'summer_training_ok',
+            ),
+            Fieldset(
+                'Application',
+                HTML(
+                    '<p> Download the <a href="{% if information.application_questions %}{{ information.application_questions.url }}{% endif %}"> '
+                    'Application</a>. Thoughtfully answer the '
+                    'questions and upload your responses in a Word (.docx) '
+                    'document. <strong>Leave the original application questions '
+                    'in the document with your responses.</strong> Your Trip '
+                    'Leader application will not be considered complete until '
+                    'you have uploaded answers to these questions. Be sure to '
+                    'save your application after uploading.</p>'
+                ),
+                'document',
             ),
             Fieldset(
                 'Additional Information',
