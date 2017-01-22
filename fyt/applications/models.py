@@ -265,12 +265,12 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         'application answers', blank=True, db_index=True
     )
 
-    leader_willing = YesNoField(
+    leader_willing = models.BooleanField(
         'I would like to be considered for a Trip Leader position. '
         'I understand... (describe commitments, etc.)'
     )
-    croo_willing = YesNoField(
-        'I would like to be considered for a Croo posision. '
+    croo_willing = models.BooleanField(
+        'I would like to be considered for a Croo position. '
         'I understand...'
     )
 
