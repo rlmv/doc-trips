@@ -65,7 +65,6 @@ class ApplicationTestMixin():
         t.applications_close += timedelta(1)
         t.save()
 
-
     def close_application(self):
         """ close leader applications """
         t = Timetable.objects.timetable()
