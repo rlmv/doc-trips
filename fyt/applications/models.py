@@ -356,17 +356,19 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
 
     def leader_application_complete(self):
         """
-        Leader application is complete if supplement is uploaded
+        A leader application is complete if the application document is
+        uploaded and the applicant has indicated that they want to be a
+        leader.
         """
-        return (hasattr(self, 'leader_supplement') and
-                self.leader_supplement.document)
+        return bool(self.document and self.leader_willing)
 
     def croo_application_complete(self):
         """
-        Croo application is complete if supplement is uploaded
+        A croo application is complete if the application document is
+        uploaded and the applicant has indicated that they want to be on
+        a croo.
         """
-        return (hasattr(self, 'croo_supplement') and
-                self.croo_supplement.document)
+        return bool(self.document and self.croo_willing)
 
     def get_preferred_trips(self):
         return self.leader_supplement.get_preferred_trips()

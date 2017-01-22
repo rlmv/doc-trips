@@ -37,7 +37,8 @@ def make_application(status=GeneralApplication.PENDING, trips_year=None,
         GeneralApplication,
         status=status,
         trips_year=trips_year,
-        assigned_trip=assigned_trip)
+        assigned_trip=assigned_trip,
+        document='some/file')
 
     leader_app = mommy.make(
         LeaderApplication,
@@ -216,6 +217,26 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         pref = ls.leadertriptypechoice_set.first()
         self.assertEqual(pref.triptype, triptype)
         self.assertEqual(pref.preference, AVAILABLE)
+
+    def test_leader_application_complete(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+
+        app.leader_willing = False
+        self.assertFalse(app.leader_application_complete())
+
+        app.leader_willing = True
+        self.assertTrue(app.leader_application_complete())
+
+    def test_croo_application_complete(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+
+        app.croo_willing = False
+        self.assertFalse(app.croo_application_complete())
+
+        app.croo_willing = True
+        self.assertTrue(app.croo_application_complete())
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
