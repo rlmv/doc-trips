@@ -158,7 +158,7 @@
             <div><p> {{ information.leader_info|safe }} </p></div>
             {% detail application.leader_supplement leaderapplication_fields %}
             <div>
-                {% display_docx_filefield_as_html application.leader_supplement._old_document %}
+                {% display_docx_filefield_as_html application.leader_supplement.deprecated_document %}
             </div>
         </div>
 
@@ -167,7 +167,7 @@
             <div><p> {{ information.croo_info|safe }} </p></div>
             {% detail application.croo_supplement crooapplication_fields %}
             <div>
-                {% display_docx_filefield_as_html application.croo_supplement._old_document %}
+                {% display_docx_filefield_as_html application.croo_supplement.deprecated_document %}
             </div>
         </div>
 

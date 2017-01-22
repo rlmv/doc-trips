@@ -452,6 +452,9 @@ class LeaderSupplement(DatabaseModel):
     _old_document = models.FileField(
         'leader application answers', blank=True, db_index=True
     )
+    @property
+    def deprecated_document(self):
+        return self._old_document
 
     #  ------  trip and section availability ------
     _old_preferred_sections = models.ManyToManyField(
@@ -587,6 +590,10 @@ class CrooSupplement(DatabaseModel):
 
     # Deprecated croo application
     _old_document = models.FileField('Croo Application Answers', blank=True)
+
+    @property
+    def deprecated_document(self):
+        return self._old_document
 
     # --- driving ------
     licensed = NullYesNoField(
