@@ -232,7 +232,10 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     model = ApplicationInformation
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
-    fields = '__all__'
+    fields = [
+        'application_questions',
+        'application_header'
+    ]
 
     def get_object(self):
         """

@@ -39,31 +39,32 @@ class ApplicationInformation(DatabaseModel):
     application_questions = models.FileField(
         'Application questions', help_text='.docx file')
 
-    # Deprecated questions for split croo/leader application
-    # ----------------------------------------------------------
-    leader_supplement_questions = models.FileField(
-        'Leader Application questions', help_text='.docx file')
-
-    croo_supplement_questions = models.FileField(
-        'Croo Application questions', help_text='.docx file')
-    # ----------------------------------------------------------
-
     application_header = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of all application pages"
         )
     )
-    general_info = models.TextField(
+
+    # Deprecated questions from split croo/leader application
+    # ----------------------------------------------------------
+
+    _old_leader_supplement_questions = models.FileField(
+        'Leader Application questions', help_text='.docx file')
+
+    _old_croo_supplement_questions = models.FileField(
+        'Croo Application questions', help_text='.docx file')
+
+    _old_general_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of the General Information tab"
         )
     )
-    leader_info = models.TextField(
+    _old_leader_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of the Leader Application tab"
         )
     )
-    croo_info = models.TextField(
+    _old_croo_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of Croo Application tab"
         )
