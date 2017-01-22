@@ -236,6 +236,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         ('PREFER_CROO', 'Prefer Croo'),
         ('N/A', 'N/A'),
     )
+    # TODO: rewrite this/connect to croo_willing/leader_willing
     role_preference = models.CharField(
         "While Trips Directorate will ultimately decide where we think "
         "you will be most successful in the program, we would like to "
@@ -245,6 +246,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         "please choose 'N/A'",
         choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20
     )
+
     leadership_style = models.TextField(
         'Describe your leadership style and your role in a group. Please go to '
         '<a href="https://sites.google.com/a/stgregoryschool.org/mr-roberts/home/theoretical-and-applied-leadership/leadership-squares">this website</a> '
@@ -262,6 +264,16 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     document = models.FileField(
         'application answers', blank=True, db_index=True
     )
+
+    leader_willing = YesNoField(
+        'I would like to be considered for a Trip Leader position. '
+        'I understand... (describe commitments, etc.)'
+    )
+    croo_willing = YesNoField(
+        'I would like to be considered for a Croo posision. '
+        'I understand...'
+    )
+
     # ------ certs -------
     medical_certifications = models.TextField(
         "Current trainings in First Aid and CPR are required for all DOC "
