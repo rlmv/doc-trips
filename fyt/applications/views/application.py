@@ -74,6 +74,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     and CrooSupplement in the same view.
     """
     model = GeneralApplication
+    context_object_name = 'application'
     template_name = 'applications/application.html'
 
     form_valid_message = "Your application has been saved"
@@ -402,12 +403,9 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
 class ApplicationUpdate(ApplicationEditPermissionRequired,
                         BlockDirectorate, ApplicationFormsMixin,
                         TripsYearMixin, UpdateView):
-
     template_name = 'applications/application_update.html'
-    context_object_name = 'application'
 
     def get_instances(self):
-
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
