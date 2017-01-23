@@ -146,7 +146,6 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="general">
             <br/>
-            <div><p> {{ information.general_info|safe }} </p></div>
             {% detail application generalapplication_fields %}
             <div>
                 {% display_docx_filefield_as_html application.document %}
@@ -155,7 +154,6 @@
 
         <div role="tabpanel" class="tab-pane" id="leader">
             <br/>
-            <div><p> {{ information.leader_info|safe }} </p></div>
             {% detail application.leader_supplement leaderapplication_fields %}
             <div>
                 {% display_docx_filefield_as_html application.leader_supplement.deprecated_document %}
@@ -164,7 +162,6 @@
 
         <div role="tabpanel" class="tab-pane" id="croo">
             <br/>
-            <div><p> {{ information.croo_info|safe }} </p></div>
             {% detail application.croo_supplement crooapplication_fields %}
             <div>
                 {% display_docx_filefield_as_html application.croo_supplement.deprecated_document %}

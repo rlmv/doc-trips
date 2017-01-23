@@ -40,19 +40,16 @@
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="general">
                 <br/>
-                <div><p> {{ information.general_info|safe }} </p></div>
                 {% crispy form %}
             </div>
 
             <div role="tabpanel" class="tab-pane" id="leader">
                 <br/>
-                <div><p> {{ information.leader_info|safe }} </p></div>
                 {% crispy leader_form %}
             </div>
 
             <div role="tabpanel" class="tab-pane" id="croo">
                 <br/>
-                <div><p> {{ information.croo_info|safe }} </p></div>
                 {% crispy croo_form %}
             </div>
 
