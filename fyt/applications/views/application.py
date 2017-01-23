@@ -10,6 +10,7 @@ from vanilla import CreateView, DetailView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
+    AgreementForm,
     ApplicationAdminForm,
     ApplicationForm,
     ApplicationStatusForm,
@@ -62,10 +63,12 @@ class ContinueIfAlreadyApplied():
 
         return super().dispatch(request, *args, **kwargs)
 
+
 # Form constants
 GENERAL_FORM = 'form'
 LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
+AGREEMENT_FORM = 'agreement_form'
 
 
 class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
@@ -104,6 +107,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     def get_form_classes(self):
         return {
             GENERAL_FORM: ApplicationForm,
+            AGREEMENT_FORM: AgreementForm,
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
         }
@@ -115,7 +119,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         return {
             GENERAL_FORM: None,
             LEADER_FORM: None,
-            CROO_FORM: None
+            CROO_FORM: None,
+            AGREEMENT_FORM: None
         }
 
     def get_forms(self, instances,  **kwargs):
@@ -174,6 +179,8 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         Connect the application instances
         """
         trips_year = self.get_trips_year()
+
+        forms[GENERAL_FORM].update_agreements(forms[AGREEMENT_FORM])
         forms[GENERAL_FORM].instance.applicant = self.request.user
         forms[GENERAL_FORM].instance.trips_year = trips_year
         application = forms[GENERAL_FORM].save()
@@ -213,6 +220,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
+            AGREEMENT_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
         }
@@ -418,6 +426,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
+            AGREEMENT_FORM: self.object
         }
 
     def get_context_data(self, **kwargs):

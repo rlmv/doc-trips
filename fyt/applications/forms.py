@@ -68,9 +68,6 @@ class ApplicationForm(forms.ModelForm):
             'medical_certifications',
             'medical_experience',
             'peer_training',
-            'trippee_confidentiality',
-            'in_goodstanding_with_college',
-            'trainings',
             'spring_training_ok',
             'summer_training_ok',
             'hanover_in_fall',
@@ -94,6 +91,55 @@ class ApplicationForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout()
+
+    # TODO: get rid of the need for this
+    def update_agreements(self, agreement_form):
+        """Update the agreements submitted in the agreement form."""
+        for f in agreement_form.fields:
+            value = getattr(agreement_form.instance, f)
+            setattr(self.instance, f, value)
+
+
+class AgreementForm(forms.ModelForm):
+    """
+    An extra form that allows us to separate the agreements section from the
+    rest of the general application form.
+
+    Crispy forms doesn't allow a single ModelForm to be split into separate
+    layouts.
+    """
+
+    class Meta:
+        model = GeneralApplication
+        fields = [
+            'trippee_confidentiality',
+            'in_goodstanding_with_college',
+            'trainings',
+        ]
+
+    def __init__(self, trips_year, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = AgreementLayout()
+
+
+class AgreementLayout(Layout):
+    def __init__(self):
+        super().__init__(
+            Fieldset(
+                'Agreements',
+                HTML(
+                    "<p>You must agree to the following statements in order "
+                    "to lead a Trip or participate on a Croo. Checking each "
+                    "box indicates your acceptance of the conditions for your "
+                    "participation in DOC Trips.</p>"
+                ),
+                'trippee_confidentiality',
+                'in_goodstanding_with_college',
+                'trainings',
+            )
+        )
 
 
 class CrooSupplementForm(forms.ModelForm):
@@ -324,18 +370,6 @@ class ApplicationLayout(Layout):
                 Field('medical_conditions', rows=3),
                 'epipen',
                 Field('needs', rows=3),
-            ),
-            Fieldset(
-                'Agreements',
-                HTML(
-                    "<p>You must agree to the following statements in order "
-                    "to lead a Trip or participate on a Croo. Checking each "
-                    "box indicates your acceptance of the conditions for your "
-                    "participation in DOC Trips.</p>"
-                ),
-                'trippee_confidentiality',
-                'in_goodstanding_with_college',
-                'trainings',
             ),
         )
 
