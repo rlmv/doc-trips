@@ -114,10 +114,9 @@ sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
     'default': dj_database_url.config(default=sqlite)
 }
-# Enable Connection Pooling on Heroku databases
-# see https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
-#if not DATABASES['default']['NAME'] == 'db.sqlite3':
-#DATABASES['default']['ENGINE'] = 'django_postgrespool'
+# TODO: use PgBouncer for connection pooling?
+# https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
+DATABASES['default']['CONN_MAX_AGE'] = 500
 
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
