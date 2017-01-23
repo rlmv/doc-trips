@@ -247,6 +247,7 @@ LOGGING = {
     },
 }
 
+# model-mommy testing
 MOMMY_CUSTOM_FIELDS_GEN = {
     'fyt.users.models.NetIdField': gen_string,
 }
