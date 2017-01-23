@@ -297,28 +297,31 @@ class ApplicationLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            Alert(
-                content=NOT_USED_IN_SCORING,
-                dismiss=False, css_class='alert-info'
+            Fieldset(
+                'General Information',
+                Alert(
+                    content=NOT_USED_IN_SCORING,
+                    dismiss=False, css_class='alert-info'
+                ),
+                Row(
+                    Div('class_year', css_class='col-sm-3'),
+                    Div('gender', css_class='col-sm-3'),
+                    Div('race_ethnicity', css_class='col-sm-3'),
+                ),
+                Row(
+                    Div('hinman_box', css_class='col-sm-3'),
+                    Div('phone', css_class='col-sm-3'),
+                    Div('summer_address', css_class='col-sm-5'),
+                ),
+                Row(
+                    Div('tshirt_size', css_class='col-sm-3'),
+                ),
+                'from_where',
+                'what_do_you_like_to_study',
+                'hanover_in_fall',
+                'personal_activities',
+                'feedback',
             ),
-            Row(
-                Div('class_year', css_class='col-sm-3'),
-                Div('gender', css_class='col-sm-3'),
-                Div('race_ethnicity', css_class='col-sm-3'),
-            ),
-            Row(
-                Div('hinman_box', css_class='col-sm-3'),
-                Div('phone', css_class='col-sm-3'),
-                Div('summer_address', css_class='col-sm-5'),
-            ),
-            Row(
-                Div('tshirt_size', css_class='col-sm-3'),
-            ),
-            'from_where',
-            'what_do_you_like_to_study',
-            'hanover_in_fall',
-            'personal_activities',
-            'feedback',
             Fieldset(
                 'Trainings',
                 'medical_certifications',
