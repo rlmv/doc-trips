@@ -7,58 +7,58 @@
 
 <div role="tabpanel">
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
 
-    <li role="presentation" class="active">
-      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	{{ application | checkmark_if_true }}
-	General Information
-      </a>
-    </li>
+        <li role="presentation" class="active">
+            <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
+                {{ application | checkmark_if_true }}
+                General Information
+            </a>
+        </li>
 
-    <li role="presentation">
-      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{{ application.leader_application_complete | checkmark_if_true }}
-	Trip Leader Application
-      </a>
-    </li>
+        <li role="presentation">
+            <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
+                {{ application.leader_application_complete | checkmark_if_true }}
+                Trip Leader Application
+            </a>
+        </li>
 
-    <li role="presentation">
-      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{{ application.croo_application_complete | checkmark_if_true }} 
-	Croo Application
-      </a>
-    </li>
+        <li role="presentation">
+            <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
+                {{ application.croo_application_complete | checkmark_if_true }}
+                Croo Application
+            </a>
+        </li>
 
-  </ul>
+    </ul>
 
-  {# this must be outside the tab-content, otherwise the tab panels are mashed together #}
-  <form action="" method="post" enctype="multipart/form-data">
+    {# this must be outside the tab-content, otherwise the tab panels are mashed together #}
+    <form action="" method="post" enctype="multipart/form-data">
 
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="general">
-	<br/>
-	<div><p> {{ information.general_info|safe }} </p></div>
-	{% crispy form %}
-      </div>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="general">
+                <br/>
+                <div><p> {{ information.general_info|safe }} </p></div>
+                {% crispy form %}
+            </div>
 
-      <div role="tabpanel" class="tab-pane" id="leader">
-	<br/>
-	<div><p> {{ information.leader_info|safe }} </p></div>
-	{% crispy leader_form %}      
-      </div>
+            <div role="tabpanel" class="tab-pane" id="leader">
+                <br/>
+                <div><p> {{ information.leader_info|safe }} </p></div>
+                {% crispy leader_form %}
+            </div>
 
-      <div role="tabpanel" class="tab-pane" id="croo">
-	<br/>
-	<div><p> {{ information.croo_info|safe }} </p></div>
-	{% crispy croo_form %}
-      </div>
-      
-    </div>
+            <div role="tabpanel" class="tab-pane" id="croo">
+                <br/>
+                <div><p> {{ information.croo_info|safe }} </p></div>
+                {% crispy croo_form %}
+            </div>
 
-    <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/> 
-  </form>
+        </div>
+
+        <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/>
+    </form>
 
 </div>
