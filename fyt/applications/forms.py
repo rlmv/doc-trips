@@ -268,8 +268,9 @@ class ApplicationLayout(Layout):
             Row(
                 Div('tshirt_size', css_class='col-sm-3'),
             ),
-            Field('from_where'),
-            Field('what_do_you_like_to_study'),
+            'from_where',
+            'what_do_you_like_to_study',
+            'hanover_in_fall',
             'personal_activities',
             'feedback',
             Fieldset(
@@ -301,26 +302,23 @@ class ApplicationLayout(Layout):
                     'Application</a>. Thoughtfully answer the '
                     'questions and upload your responses in a Word (.docx) '
                     'document. <strong>Leave the original application questions '
-                    'in the document with your responses.</strong> Your Trip '
-                    'Leader application will not be considered complete until '
+                    'in the document with your responses.</strong> Your '
+                    'application will not be considered complete until '
                     'you have uploaded answers to these questions. Be sure to '
                     'save your application after uploading.</p>'
                 ),
                 'document',
-            ),
-            Fieldset(
-                'Additional Information',
-                'hanover_in_fall',
+                'leadership_style',
                 'leader_willing',
                 'croo_willing',
                 'role_preference',
-                'leadership_style',
             ),
             Fieldset(
                 'Medical Information',
-                HTML(
-                    "<p>(This information will not affect your candidacy)</p>"
-                 ),
+                Alert(
+                    content="This information will not affect your candidacy",
+                    dismiss=False, css_class='alert-info'
+                ),
                 Field('food_allergies', rows=3),
                 Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
@@ -328,7 +326,7 @@ class ApplicationLayout(Layout):
                 Field('needs', rows=3),
             ),
             Fieldset(
-                'Notices',
+                'Agreements',
                 HTML(
                     "<p>You must agree to the following statements in order "
                     "to lead a Trip or participate on a Croo. Checking each "
