@@ -36,27 +36,35 @@ class ApplicationInformation(DatabaseModel):
     class Meta:
         unique_together = ['trips_year']
 
-    leader_supplement_questions = models.FileField(
-        'Leader Application questions', help_text='.docx file')
-    croo_supplement_questions = models.FileField(
-        'Croo Application questions', help_text='.docx file')
+    application_questions = models.FileField(
+        'Application questions', help_text='.docx file')
 
     application_header = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of all application pages"
         )
     )
-    general_info = models.TextField(
+
+    # Deprecated questions from split croo/leader application
+    # ----------------------------------------------------------
+
+    _old_leader_supplement_questions = models.FileField(
+        'Leader Application questions', help_text='.docx file')
+
+    _old_croo_supplement_questions = models.FileField(
+        'Croo Application questions', help_text='.docx file')
+
+    _old_general_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of the General Information tab"
         )
     )
-    leader_info = models.TextField(
+    _old_leader_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of the Leader Application tab"
         )
     )
-    croo_info = models.TextField(
+    _old_croo_info = models.TextField(
         blank=True, help_text=(
             "This will be displayed at the top of Croo Application tab"
         )
@@ -229,6 +237,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         ('PREFER_CROO', 'Prefer Croo'),
         ('N/A', 'N/A'),
     )
+    # TODO: rewrite this/connect to croo_willing/leader_willing
     role_preference = models.CharField(
         "While Trips Directorate will ultimately decide where we think "
         "you will be most successful in the program, we would like to "
@@ -238,6 +247,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         "please choose 'N/A'",
         choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20
     )
+
     leadership_style = models.TextField(
         'Describe your leadership style and your role in a group. Please go to '
         '<a href="https://sites.google.com/a/stgregoryschool.org/mr-roberts/home/theoretical-and-applied-leadership/leadership-squares">this website</a> '
@@ -251,6 +261,18 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         'we can effectively pair you with a co-leader or fellow croolings who '
         'complements you. Each leadership style is equally valuable, and we '
         'will use answers to this question to balance our teams as a whole.'
+    )
+    document = models.FileField(
+        'application answers', blank=True, db_index=True
+    )
+
+    leader_willing = models.BooleanField(
+        'I would like to be considered for a Trip Leader position. '
+        'I understand... (describe commitments, etc.)'
+    )
+    croo_willing = models.BooleanField(
+        'I would like to be considered for a Croo position. '
+        'I understand...'
     )
 
     # ------ certs -------
@@ -333,19 +355,23 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
+    @property
     def leader_application_complete(self):
         """
-        Leader application is complete if supplement is uploaded
+        A leader application is complete if the application document is
+        uploaded and the applicant has indicated that they want to be a
+        leader.
         """
-        return (hasattr(self, 'leader_supplement') and
-                self.leader_supplement.document)
+        return bool(self.document and self.leader_willing)
 
+    @property
     def croo_application_complete(self):
         """
-        Croo application is complete if supplement is uploaded
+        A croo application is complete if the application document is
+        uploaded and the applicant has indicated that they want to be on
+        a croo.
         """
-        return (hasattr(self, 'croo_supplement') and
-                self.croo_supplement.document)
+        return bool(self.document and self.croo_willing)
 
     def get_preferred_trips(self):
         return self.leader_supplement.get_preferred_trips()
@@ -422,9 +448,14 @@ class LeaderSupplement(DatabaseModel):
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='leader_supplement'
     )
-    document = models.FileField(
+
+    # Deprecated leader application
+    _old_document = models.FileField(
         'leader application answers', blank=True, db_index=True
     )
+    @property
+    def deprecated_document(self):
+        return self._old_document
 
     #  ------  trip and section availability ------
     _old_preferred_sections = models.ManyToManyField(
@@ -557,7 +588,13 @@ class CrooSupplement(DatabaseModel):
     application = models.OneToOneField(
         GeneralApplication, editable=False, related_name='croo_supplement'
     )
-    document = models.FileField('Croo Application Answers', blank=True)
+
+    # Deprecated croo application
+    _old_document = models.FileField('Croo Application Answers', blank=True)
+
+    @property
+    def deprecated_document(self):
+        return self._old_document
 
     # --- driving ------
     licensed = NullYesNoField(

@@ -68,14 +68,14 @@ class ApplicationForm(forms.ModelForm):
             'medical_certifications',
             'medical_experience',
             'peer_training',
-            'trippee_confidentiality',
-            'in_goodstanding_with_college',
-            'trainings',
             'spring_training_ok',
             'summer_training_ok',
             'hanover_in_fall',
             'role_preference',
-            'leadership_style'
+            'leadership_style',
+            'document',
+            'leader_willing',
+            'croo_willing'
         )
 
         widgets = {
@@ -92,13 +92,61 @@ class ApplicationForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout()
 
+    # TODO: get rid of the need for this
+    def update_agreements(self, agreement_form):
+        """Update the agreements submitted in the agreement form."""
+        for f in agreement_form.fields:
+            value = getattr(agreement_form.instance, f)
+            setattr(self.instance, f, value)
+
+
+class AgreementForm(forms.ModelForm):
+    """
+    An extra form that allows us to separate the agreements section from the
+    rest of the general application form.
+
+    Crispy forms doesn't allow a single ModelForm to be split into separate
+    layouts.
+    """
+
+    class Meta:
+        model = GeneralApplication
+        fields = [
+            'trippee_confidentiality',
+            'in_goodstanding_with_college',
+            'trainings',
+        ]
+
+    def __init__(self, trips_year, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = AgreementLayout()
+
+
+class AgreementLayout(Layout):
+    def __init__(self):
+        super().__init__(
+            Fieldset(
+                'Agreements',
+                HTML(
+                    "<p>You must agree to the following statements in order "
+                    "to lead a Trip or participate on a Croo. Checking each "
+                    "box indicates your acceptance of the conditions for your "
+                    "participation in DOC Trips.</p>"
+                ),
+                'trippee_confidentiality',
+                'in_goodstanding_with_college',
+                'trainings',
+            )
+        )
+
 
 class CrooSupplementForm(forms.ModelForm):
 
     class Meta:
         model = CrooSupplement
         fields = (
-            'document',
             'licensed',
             'college_certified',
             'sprinter_certified',
@@ -150,7 +198,6 @@ class LeaderSupplementForm(forms.ModelForm):
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
-            'document'
         )
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -250,27 +297,31 @@ class ApplicationLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            Alert(
-                content=NOT_USED_IN_SCORING,
-                dismiss=False, css_class='alert-info'
+            Fieldset(
+                'General Information',
+                Alert(
+                    content=NOT_USED_IN_SCORING,
+                    dismiss=False, css_class='alert-info'
+                ),
+                Row(
+                    Div('class_year', css_class='col-sm-3'),
+                    Div('gender', css_class='col-sm-3'),
+                    Div('race_ethnicity', css_class='col-sm-3'),
+                ),
+                Row(
+                    Div('hinman_box', css_class='col-sm-3'),
+                    Div('phone', css_class='col-sm-3'),
+                    Div('summer_address', css_class='col-sm-5'),
+                ),
+                Row(
+                    Div('tshirt_size', css_class='col-sm-3'),
+                ),
+                'from_where',
+                'what_do_you_like_to_study',
+                'hanover_in_fall',
+                'personal_activities',
+                'feedback',
             ),
-            Row(
-                Div('class_year', css_class='col-sm-3'),
-                Div('gender', css_class='col-sm-3'),
-                Div('race_ethnicity', css_class='col-sm-3'),
-            ),
-            Row(
-                Div('hinman_box', css_class='col-sm-3'),
-                Div('phone', css_class='col-sm-3'),
-                Div('summer_address', css_class='col-sm-5'),
-            ),
-            Row(
-                Div('tshirt_size', css_class='col-sm-3'),
-            ),
-            Field('from_where'),
-            Field('what_do_you_like_to_study'),
-            'personal_activities',
-            'feedback',
             Fieldset(
                 'Trainings',
                 'medical_certifications',
@@ -294,33 +345,34 @@ class ApplicationLayout(Layout):
                 'summer_training_ok',
             ),
             Fieldset(
-                'Additional Information',
-                'hanover_in_fall',
-                'role_preference',
+                'Application',
+                HTML(
+                    '<p> Download the <a href="{% if information.application_questions %}{{ information.application_questions.url }}{% endif %}"> '
+                    'Application</a>. Thoughtfully answer the '
+                    'questions and upload your responses in a Word (.docx) '
+                    'document. <strong>Leave the original application questions '
+                    'in the document with your responses.</strong> Your '
+                    'application will not be considered complete until '
+                    'you have uploaded answers to these questions. Be sure to '
+                    'save your application after uploading.</p>'
+                ),
+                'document',
                 'leadership_style',
+                'leader_willing',
+                'croo_willing',
+                'role_preference',
             ),
             Fieldset(
                 'Medical Information',
-                HTML(
-                    "<p>(This information will not affect your candidacy)</p>"
-                 ),
+                Alert(
+                    content="This information will not affect your candidacy",
+                    dismiss=False, css_class='alert-info'
+                ),
                 Field('food_allergies', rows=3),
                 Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
                 'epipen',
                 Field('needs', rows=3),
-            ),
-            Fieldset(
-                'Notices',
-                HTML(
-                    "<p>You must agree to the following statements in order "
-                    "to lead a Trip or participate on a Croo. Checking each "
-                    "box indicates your acceptance of the conditions for your "
-                    "participation in DOC Trips.</p>"
-                ),
-                'trippee_confidentiality',
-                'in_goodstanding_with_college',
-                'trainings',
             ),
         )
 
@@ -329,20 +381,6 @@ class LeaderSupplementLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            Fieldset(
-                'Application',
-                HTML(
-                    '<p> Download the <a href="{% if information.leader_supplement_questions %}{{ information.leader_supplement_questions.url }}{% endif %}"> '
-                    'Trip Leader Application</a>. Thoughtfully answer the '
-                    'questions and upload your responses in a Word (.docx) '
-                    'document. <strong>Leave the original application questions '
-                    'in the document with your responses.</strong> Your Trip '
-                    'Leader application will not be considered complete until '
-                    'you have uploaded answers to these questions. Be sure to '
-                    'save your application after uploading.</p>'
-                ),
-                'document',
-            ),
             Fieldset(
                 'Trip Leader Availability',
                 Alert(
@@ -374,11 +412,6 @@ class CrooSupplementLayout(Layout):
 
     def __init__(self):
         super().__init__(
-            Fieldset(
-                'Application',
-                HTML("""<p> Download the <a href="{% if information.croo_supplement_questions %}{{ information.croo_supplement_questions.url }}{% endif %}">Croo Application</a>. Thoughtfully answer the questions and upload your responses in a Word (.docx) document. <strong>Leave the original application questions in the document with your responses.</strong> Your Croo application will not be considered complete until you have uploaded answers to these questions. Scroll down and click 'Save' after uploading your answers.</p>"""),
-                'document',
-            ),
             Fieldset(
                 'Driving',
                 'licensed',

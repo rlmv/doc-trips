@@ -1,3 +1,4 @@
+
 from braces.views import FormMessagesMixin, GroupRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -10,6 +11,7 @@ from vanilla import CreateView, DetailView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
+    AgreementForm,
     ApplicationAdminForm,
     ApplicationForm,
     ApplicationStatusForm,
@@ -62,10 +64,24 @@ class ContinueIfAlreadyApplied():
 
         return super().dispatch(request, *args, **kwargs)
 
+
 # Form constants
 GENERAL_FORM = 'form'
 LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
+AGREEMENT_FORM = 'agreement_form'
+
+FORM_ORDERING = [
+    GENERAL_FORM,
+    LEADER_FORM,
+    CROO_FORM,
+    AGREEMENT_FORM
+]
+
+
+def order_forms(forms):
+    """Convert a dict of forms into a list to pass to the context."""
+    return [forms[name] for name in FORM_ORDERING]
 
 
 class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
@@ -74,11 +90,12 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     and CrooSupplement in the same view.
     """
     model = GeneralApplication
+    context_object_name = 'application'
     template_name = 'applications/application.html'
 
     form_valid_message = "Your application has been saved"
     form_invalid_message = (
-        "Uh oh. Looks like there's a problem somewhere in your application"
+        "Uh oh, it looks like there's a problem with your application"
     )
 
     def get_trips_year(self):
@@ -103,6 +120,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     def get_form_classes(self):
         return {
             GENERAL_FORM: ApplicationForm,
+            AGREEMENT_FORM: AgreementForm,
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
         }
@@ -114,7 +132,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         return {
             GENERAL_FORM: None,
             LEADER_FORM: None,
-            CROO_FORM: None
+            CROO_FORM: None,
+            AGREEMENT_FORM: None
         }
 
     def get_forms(self, instances,  **kwargs):
@@ -133,10 +152,12 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         """
         for form in forms.values():
             form.save()
+        self.messages.success(self.get_form_valid_message())
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, forms):
-        context = self.get_context_data(**forms)
+        self.messages.error(self.get_form_invalid_message())
+        context = self.get_context_data(form_invalid=True, **forms)
         return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
@@ -149,6 +170,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             trips_year=trips_year
         )
         return super().get_context_data(
+            forms=order_forms(kwargs),
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
             information=information,
@@ -173,6 +195,8 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         Connect the application instances
         """
         trips_year = self.get_trips_year()
+
+        forms[GENERAL_FORM].update_agreements(forms[AGREEMENT_FORM])
         forms[GENERAL_FORM].instance.applicant = self.request.user
         forms[GENERAL_FORM].instance.trips_year = trips_year
         application = forms[GENERAL_FORM].save()
@@ -212,6 +236,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
+            AGREEMENT_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
         }
@@ -231,7 +256,10 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     model = ApplicationInformation
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
-    fields = '__all__'
+    fields = [
+        'application_questions',
+        'application_header'
+    ]
 
     def get_object(self):
         """
@@ -299,6 +327,9 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                 'applicant__name',
                 'trips_year_id',
                 'status',
+                'document',
+                'leader_willing',
+                'croo_willing',
                 'community_building',
                 'risk_management',
                 'wilderness_skills',
@@ -355,7 +386,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'needs',
         'trippee_confidentiality',
         'in_goodstanding_with_college',
-        'trainings'
+        'trainings',
+        'document'
     ]
     leaderapplication_fields = [
         ('preferred sections', 'new_preferred_sections'),
@@ -365,7 +397,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'relevant_experience',
         'trip_preference_comments',
         'cannot_participate_in',
-        'document'
+        '_old_document'  # Deprecated field - include conditionally?
     ]
     trainings_fields = [
         'community_building',
@@ -383,7 +415,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'safety_lead_willing',
         'kitchen_lead_willing',
         'kitchen_lead_qualifications',
-        'document'
+        '_old_document'  # Deprecated field - include conditionally?
     ]
 
     def extra_context(self):
@@ -399,20 +431,21 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         }
 
 
-class ApplicationUpdate(ApplicationEditPermissionRequired,
-                        BlockDirectorate, ApplicationFormsMixin,
-                        TripsYearMixin, UpdateView):
-
+class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
+                        ApplicationFormsMixin, TripsYearMixin, UpdateView):
     template_name = 'applications/application_update.html'
-    context_object_name = 'application'
+
+    def get_form_valid_message(self):
+        return "Succesfully updated {}'s application".format(
+            self.object.applicant.name)
 
     def get_instances(self):
-
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
+            AGREEMENT_FORM: self.object
         }
 
     def get_context_data(self, **kwargs):

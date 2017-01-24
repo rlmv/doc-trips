@@ -1,64 +1,38 @@
 {% load crispy_forms_tags %}
 {% load icons %}
 
+{% if form_invalid %}
+<div class="alert alert-danger">
+    <h4><i class="fa fa-warning"></i> Issues </h4>
+    <p> Your application will not be saved until you resolve each of the following issues: </p>
+    <p>
+        {% for form in forms %}
+            {{ form.non_field_errors }}
+            <ul class="list-group">
+            {% for field in form %}
+                {% if field.errors %}
+                <a class="list-group-item list-group-item-danger" href="#{{ field.id_for_label }}">
+                    <h5 class="list-group-item-heading alert-link">{{ field.errors.0 }}</h5>
+                    <p class="list-group-item-text">{{ field.label }}</p>
+                </a>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    </p>
+</div>
+{% endif %}
+
 <div><p> {{ information.application_header|safe }}</p></div>
 
 {% include "applications/_application_complete.html" %}
 
-<div role="tabpanel">
+<div>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% for form in forms %}
+            {% crispy form %}
+        {% endfor %}
 
-  <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-
-    <li role="presentation" class="active">
-      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">      
-	{{ application | checkmark_if_true }}
-	General Information
-      </a>
-    </li>
-
-    <li role="presentation">
-      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-	{{ application.leader_application_complete | checkmark_if_true }}
-	Trip Leader Application
-      </a>
-    </li>
-
-    <li role="presentation">
-      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-	{{ application.croo_application_complete | checkmark_if_true }} 
-	Croo Application
-      </a>
-    </li>
-
-  </ul>
-
-  {# this must be outside the tab-content, otherwise the tab panels are mashed together #}
-  <form action="" method="post" enctype="multipart/form-data">
-
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="general">
-	<br/>
-	<div><p> {{ information.general_info|safe }} </p></div>
-	{% crispy form %}
-      </div>
-
-      <div role="tabpanel" class="tab-pane" id="leader">
-	<br/>
-	<div><p> {{ information.leader_info|safe }} </p></div>
-	{% crispy leader_form %}      
-      </div>
-
-      <div role="tabpanel" class="tab-pane" id="croo">
-	<br/>
-	<div><p> {{ information.croo_info|safe }} </p></div>
-	{% crispy croo_form %}
-      </div>
-      
-    </div>
-
-    <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/> 
-  </form>
-
+        <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/>
+    </form>
 </div>
