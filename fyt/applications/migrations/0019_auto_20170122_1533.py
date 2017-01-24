@@ -19,9 +19,7 @@ def populate_document_field(apps, schema_editor):
     for app in Application.objects.all():
         if app.leader_supplement.document or app.croo_supplement.document:
             app.document = (
-                "Created before separate applications were deprecated. "
-                "See application.leader_supplement.document and "
-                "application.croo_supplement.document."
+                "Created before separate applications were deprecated."
             )
             app.save()
 
