@@ -6,11 +6,11 @@
 {% include "applications/_application_complete.html" %}
 
 <div>
+
     <form action="" method="post" enctype="multipart/form-data">
-        {% crispy form %}
-        {% crispy leader_form %}
-        {% crispy croo_form %}
-        {% crispy agreement_form %}
+        {% for form in forms %}
+            {% crispy form %}
+        {% endfor %}
 
         <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/>
     </form>

@@ -71,6 +71,18 @@ LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
 AGREEMENT_FORM = 'agreement_form'
 
+FORM_ORDERING = [
+    GENERAL_FORM,
+    LEADER_FORM,
+    CROO_FORM,
+    AGREEMENT_FORM
+]
+
+
+def order_forms(forms):
+    """Convert a dict of forms into a list to pass to the context."""
+    return [forms[name] for name in FORM_ORDERING]
+
 
 class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     """
@@ -158,6 +170,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             trips_year=trips_year
         )
         return super().get_context_data(
+            forms=order_forms(kwargs),
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
             information=information,
