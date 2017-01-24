@@ -95,7 +95,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
 
     form_valid_message = "Your application has been saved"
     form_invalid_message = (
-        "Uh oh. Looks like there's a problem somewhere in your application"
+        "Uh oh, it looks like there's a problem with your application"
     )
 
     def get_trips_year(self):
