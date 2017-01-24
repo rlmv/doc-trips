@@ -1,3 +1,4 @@
+
 from braces.views import FormMessagesMixin, GroupRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
@@ -139,9 +140,11 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         """
         for form in forms.values():
             form.save()
+        self.messages.success(self.get_form_valid_message())
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, forms):
+        self.messages.error(self.get_form_invalid_message())
         context = self.get_context_data(**forms)
         return self.render_to_response(context)
 
@@ -419,6 +422,10 @@ class ApplicationUpdate(ApplicationEditPermissionRequired,
                         BlockDirectorate, ApplicationFormsMixin,
                         TripsYearMixin, UpdateView):
     template_name = 'applications/application_update.html'
+
+    def get_form_valid_message(self):
+        return "Succesfully updated {}'s application".format(
+            self.object.applicant.name)
 
     def get_instances(self):
         self.object = self.get_object()
