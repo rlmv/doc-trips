@@ -455,6 +455,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
         trips_year = self.kwargs['trips_year']
         info = ApplicationInformation.objects.get(trips_year=trips_year)
         return super(ApplicationFormsMixin, self).get_context_data(
+            forms=order_forms(kwargs),
             trips_year=trips_year, information=info,
             triptypes=TripType.objects.filter(trips_year=trips_year),
             **kwargs
