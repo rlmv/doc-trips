@@ -418,9 +418,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         }
 
 
-class ApplicationUpdate(ApplicationEditPermissionRequired,
-                        BlockDirectorate, ApplicationFormsMixin,
-                        TripsYearMixin, UpdateView):
+class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
+                        ApplicationFormsMixin, TripsYearMixin, UpdateView):
     template_name = 'applications/application_update.html'
 
     def get_form_valid_message(self):
