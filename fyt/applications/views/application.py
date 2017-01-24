@@ -157,7 +157,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
 
     def form_invalid(self, forms):
         self.messages.error(self.get_form_invalid_message())
-        context = self.get_context_data(**forms)
+        context = self.get_context_data(form_invalid=True, **forms)
         return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):

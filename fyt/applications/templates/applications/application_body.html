@@ -1,12 +1,33 @@
 {% load crispy_forms_tags %}
 {% load icons %}
 
+{% if form_invalid %}
+<div class="alert alert-danger">
+    <h4><i class="fa fa-warning"></i> Issues </h4>
+    <p> Your application will not be saved until you resolve each of the following issues: </p>
+    <p>
+        {% for form in forms %}
+            {{ form.non_field_errors }}
+            <ul class="list-group">
+            {% for field in form %}
+                {% if field.errors %}
+                <a class="list-group-item list-group-item-danger" href="#{{ field.id_for_label }}">
+                    <h5 class="list-group-item-heading alert-link">{{ field.errors.0 }}</h5>
+                    <p class="list-group-item-text">{{ field.label }}</p>
+                </a>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        {% endfor %}
+    </p>
+</div>
+{% endif %}
+
 <div><p> {{ information.application_header|safe }}</p></div>
 
 {% include "applications/_application_complete.html" %}
 
 <div>
-
     <form action="" method="post" enctype="multipart/form-data">
         {% for form in forms %}
             {% crispy form %}
