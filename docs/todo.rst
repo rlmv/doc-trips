@@ -29,7 +29,6 @@ and somehow submits both, then there will be two applications or registrations.
 * Put bagel info constants onto a model.
 * Urlencode dynamic querystrings
 * Add ``/CPR`` to leader med certs? (and migrate existing)
-* Generalize high-level admin permssions: ``db:write``
 
 Questions
 ---------
