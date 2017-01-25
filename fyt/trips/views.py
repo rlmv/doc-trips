@@ -287,6 +287,7 @@ class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
         'gets_supplemental',
     ]
 
+
 class TripTypeDelete(DatabaseDeleteView):
     model = TripType
     success_url_pattern = 'db:triptype:index'
