@@ -1,14 +1,13 @@
 
-VENV=venv
-PYTHON=$(VENV)/bin/python
-PIP=$(VENV)/bin/pip
-COVERAGE=$(VENV)/bin/coverage
-MANAGE=$(PYTHON) manage.py
-DB=fyt/db.sqlite3
-DB_BACKUP=fyt/db.sqlite3.bak
+VENV = venv
+PYTHON = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
+COVERAGE = $(VENV)/bin/coverage
+MANAGE = $(PYTHON) manage.py
+DB = fyt/db.sqlite3
+DB_BACKUP = fyt/db.sqlite3.bak
 
-.PHONY: install migrations migrate test coverage clean deploy docs db_fresh \
-	    db_from_remote flush
+.PHONY: docs
 
 all:
 	$(MANAGE) runserver
