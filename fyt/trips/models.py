@@ -372,9 +372,10 @@ class TripType(DatabaseModel):
     name = models.CharField(max_length=255, db_index=True)
     leader_description = models.TextField()
     trippee_description = models.TextField()
-    packing_list = models.TextField(blank=True)
+
     # TODO: the packing list should be inherited, somehow.
     # can we have some sort of common/base packing list? and add in extras?
+    packing_list = models.TextField(blank=True)
 
     # --- foodbox info ----
     half_kickin = models.PositiveSmallIntegerField(
