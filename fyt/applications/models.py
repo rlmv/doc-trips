@@ -78,6 +78,23 @@ class ApplicationQuestion(DatabaseModel):
     question = models.TextField(blank=False)
 
 
+class Answer(models.Model):
+    """
+    Through model for application answers.
+    """
+    class Meta:
+        unique_together = ('application', 'question')
+        ordering = ['question']
+
+    application = models.ForeignKey(
+        'GeneralApplication', on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(
+        ApplicationQuestion, on_delete=models.CASCADE
+    )
+    answer = models.TextField(blank=True)
+
+
 class PortalContent(DatabaseModel):
     """
     Content to display to users in the volunteer portal
