@@ -1,9 +1,10 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load icons %}
 
 {% block header %}
-<h1> 
-  Trip Types 
+<h1>
+  Trip Types
   <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
     <i class="fa fa-plus"></i> New Trip Type
   </a>
@@ -16,12 +17,14 @@
 <table class="table">
   <tr>
     <th>Trip type</th>
+    <th>Hidden</th>
     <th>Trippee Description</th>
     <th>Leader Description</th>
   </tr>
   {% for type in triptypes %}
-  <tr> 
+  <tr>
     <td>{{ type | detail_link }}</td>
+    <td>{{ type.hidden | ok_if_true }}</td>
     <td>{{ type.trippee_description }}</td>
     <td>{{ type.leader_description }}</td>
     <td>{{ type | edit_link }}</td>

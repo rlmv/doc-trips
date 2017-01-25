@@ -266,15 +266,26 @@ class TripTypeDetail(DatabaseDetailView):
     model = TripType
     fields = [
         'name',
+        'hidden',
         'trippee_description',
         'leader_description',
-        'packing_list'
+        'packing_list',
+        'half_kickin',
+        'gets_supplemental',
     ]
 
 
 class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
     model = TripType
-
+    fields = [
+        'name',
+        'hidden',
+        'leader_description',
+        'trippee_description',
+        'packing_list',
+        'half_kickin',
+        'gets_supplemental',
+    ]
 
 class TripTypeDelete(DatabaseDeleteView):
     model = TripType

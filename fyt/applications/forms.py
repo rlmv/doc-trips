@@ -209,7 +209,7 @@ class LeaderSupplementForm(forms.ModelForm):
         self.fields['section_preference'] = SectionChoiceField(
             sections, instance=instance, label='Section Preference')
 
-        triptypes = TripType.objects.filter(trips_year=trips_year)
+        triptypes = TripType.objects.visible(trips_year)
         self.fields['triptype_preference'] = TripTypeChoiceField(
             triptypes, instance=instance, label='Trip Type Preference')
 

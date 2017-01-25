@@ -174,7 +174,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             trips_year=trips_year,
             timetable=Timetable.objects.timetable(),
             information=information,
-            triptypes=TripType.objects.filter(trips_year=trips_year),
+            triptypes=TripType.objects.visible(trips_year),
             **kwargs
         )
 
@@ -457,7 +457,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
         return super(ApplicationFormsMixin, self).get_context_data(
             forms=order_forms(kwargs),
             trips_year=trips_year, information=info,
-            triptypes=TripType.objects.filter(trips_year=trips_year),
+            triptypes=TripType.objects.visible(trips_year),
             **kwargs
         )
 

@@ -92,7 +92,7 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['trips_year'] = trips_year = TripsYear.objects.current()
-        context['triptypes'] = TripType.objects.filter(trips_year=trips_year)
+        context['triptypes'] = TripType.objects.visible(trips_year)
         context['registration_deadline'] = (
             Timetable.objects.timetable().trippee_registrations_close)
         context['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
