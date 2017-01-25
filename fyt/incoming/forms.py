@@ -124,9 +124,8 @@ class _BaseChoiceField(forms.MultiValueField):
                 old_choice.preference = preference
                 old_choice.save()
 
-        # If a section is deleted, the choice will also be deleted.
-        # We only get here if there is a race condition.
-        assert len(old_choices) == 0
+        # If there are remaining choices then a triptype has been hidden
+        # if len(old_choices) > 0:
 
 
 class _BaseChoiceWidget(forms.MultiWidget):
