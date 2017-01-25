@@ -74,7 +74,12 @@ class ApplicationQuestion(DatabaseModel):
     """
     An application question.
     """
-    index = models.PositiveIntegerField('the order of the questions')
+    class Meta:
+        ordering = ['index']
+
+    index = models.PositiveIntegerField(
+        'the order of the questions', unique=True
+    )
     question = models.TextField(blank=False)
 
 
