@@ -6,6 +6,7 @@ from django.db.models import Q
 from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 
+
 # TODO: refactor grade choices to query off the GeneralApplication
 
 class ApplicationManager(models.Manager):

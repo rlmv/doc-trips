@@ -1,5 +1,8 @@
 
 from braces.views import FormMessagesMixin, GroupRequiredMixin
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -7,7 +10,7 @@ from django.db.models import Avg, Value as V
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from vanilla import CreateView, DetailView, ListView, UpdateView
+from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -19,7 +22,11 @@ from fyt.applications.forms import (
     CrooSupplementForm,
     LeaderSupplementForm,
 )
-from fyt.applications.models import ApplicationInformation, GeneralApplication
+from fyt.applications.models import (
+    ApplicationInformation,
+    ApplicationQuestion,
+    GeneralApplication,
+)
 from fyt.applications.tables import ApplicationTable
 from fyt.croos.models import Croo
 from fyt.db.models import TripsYear
@@ -276,6 +283,41 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
         return {
             'trips_year': TripsYear.objects.current()
         }
+
+
+QuestionFormset = forms.models.modelformset_factory(
+    ApplicationQuestion, extra=10, fields='__all__', can_delete=True
+)
+
+
+class EditQuestions(SettingsPermissionRequired, FormView):
+    template_name = 'applications/questions.html'
+
+    def get_trips_year(self):
+        return TripsYear.objects.current()
+
+    def get_queryset(self):
+        trips_year = self.get_trips_year()
+        return ApplicationQuestion.objects.filter(trips_year=trips_year)
+
+    def get_form(self, **kwargs):
+        formset = QuestionFormset(queryset=self.get_queryset(), **kwargs)
+        formset.helper = FormHelper()
+        formset.helper.add_input(Submit('submit', 'Save'))
+        return formset
+
+    def form_valid(self, formset):
+        # Add trips_year to new questions
+        trips_year = self.get_trips_year()
+        for form in formset.extra_forms:
+            if form.has_changed():
+                form.instance.trips_year = trips_year
+
+        formset.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.request.path
 
 
 class BlockDirectorate(GroupRequiredMixin):
