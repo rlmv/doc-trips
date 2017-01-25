@@ -18,7 +18,7 @@ from fyt.applications.models import (
 )
 from fyt.db.models import TripsYear
 from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
-from fyt.trips.fields import LeaderSectionChoiceField, TripChoiceField
+from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.forms import crispify
 
