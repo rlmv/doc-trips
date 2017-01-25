@@ -305,7 +305,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
 
     # ------- notices -------
     trippee_confidentiality = models.BooleanField(
-        "If selected to be a Trips Leader or a Croo member, I understand "
+        "If selected to be a Trips volunteer, I understand "
         "that I will be given access to Trippees' confidential medical "
         "information for safety purposes. I pledge to maintain the "
         "confidentiality of this information, except as is required by "
@@ -319,11 +319,11 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         default=False, validators=[validate_condition_true]
     )
     trainings = models.BooleanField(
-        "I understand that if I am accepted as a Crooling or Trip Leader "
+        "I understand that if I am accepted as a Trips volunteer "
         "I will be required to get First Aid and CPR training, as well as "
-        "attend croo and leader specific training. I understand that if I "
-        "do not meet these requirements, I will not be able to be on a "
-        "Croo/lead a trip.",
+        "attend croo- and leader-specific trainings. I understand that if I "
+        "do not meet these requirements, I will not be able to volunteer for "
+        "Trips.",
         default=False, validators=[validate_condition_true]
     )
     spring_training_ok = models.BooleanField(
