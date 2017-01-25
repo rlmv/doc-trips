@@ -301,9 +301,9 @@ class ApplicationLayout(Layout):
                 'Volunteer Roles',
                 HTML(
                     'Please select which volunteer position(s) you are '
-                    'applying for. This application serves as the application '
-                    'for both croo and trip leader positions. When you check '
-                    'the box for either and/or both positions, please be aware '
+                    'applying for. This page serves as the application for '
+                    'both croo and trip leader positions. When you check the '
+                    'box for either and/or both positions, please be aware '
                     'of the commitment you are making to the program.'
                 ),
                 'leader_willing',
