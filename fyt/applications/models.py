@@ -173,6 +173,8 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         (CANCELED, 'Canceled'),
     )
 
+    answers = models.ManyToManyField(ApplicationQuestion, through=Answer)
+
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(
         settings.AUTH_USER_MODEL, editable=False, related_name='applications'
