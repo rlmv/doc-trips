@@ -180,3 +180,13 @@ class CampsiteManager(models.Manager):
             matrix[trip.template.campsite2][trip.section.at_campsite2].append(trip)
 
         return matrix
+
+
+class TripTypeManager(models.Manager):
+
+    def visible(self, trips_year):
+        """
+        Return the triptypes which are not hidden from leader applications and
+        incoming student registrations.
+        """
+        return self.filter(trips_year=trips_year, hidden=False)

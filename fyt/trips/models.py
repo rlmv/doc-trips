@@ -11,6 +11,7 @@ from .managers import (
     SectionDatesManager,
     SectionManager,
     TripManager,
+    TripTypeManager,
 )
 
 from fyt.db.models import DatabaseModel
@@ -377,6 +378,11 @@ class TripType(DatabaseModel):
     # can we have some sort of common/base packing list? and add in extras?
     packing_list = models.TextField(blank=True)
 
+    hidden = models.BooleanField(
+        'hide this TripType from leader applications and incoming student '
+        'registrations', default=False
+    )
+
     # --- foodbox info ----
     half_kickin = models.PositiveSmallIntegerField(
         'minimum # for a half foodbox', default=10
@@ -384,6 +390,8 @@ class TripType(DatabaseModel):
     gets_supplemental = models.BooleanField(
         'gets a supplemental foodbox?', default=False
     )
+
+    objects = TripTypeManager()
 
     class Meta:
         ordering = ['name']

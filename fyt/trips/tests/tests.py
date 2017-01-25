@@ -14,6 +14,7 @@ from ..models import (
     Section,
     Trip,
     TripTemplate,
+    TripType,
     validate_triptemplate_name,
 )
 
@@ -237,6 +238,16 @@ class QuickTestViews(WebTestCase):
 
         for name in names:
             res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
+
+
+class TripTypeManagerTestCase(TripsTestCase):
+
+    def test_visible(self):
+        trips_year = self.init_trips_year()
+        hidden = mommy.make(TripType, trips_year=trips_year, hidden=True)
+        visible = mommy.make(TripType, trips_year=trips_year, hidden=False)
+
+        self.assertQsEqual(TripType.objects.visible(trips_year), [visible])
 
 
 class SectionManagerTestCase(TripsTestCase):
