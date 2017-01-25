@@ -298,6 +298,19 @@ class ApplicationLayout(Layout):
     def __init__(self):
         super().__init__(
             Fieldset(
+                'Volunteer Roles',
+                HTML(
+                    'Please select which volunteer position(s) you are '
+                    'applying for. This application serves as the application '
+                    'for both croo and trip leader positions. When you check '
+                    'the box for either and/or both positions, please be aware '
+                    'of the commitment you are making to the program.'
+                ),
+                'leader_willing',
+                'croo_willing',
+                'role_preference',
+            ),
+            Fieldset(
                 'General Information',
                 Alert(
                     content=NOT_USED_IN_SCORING,
@@ -358,9 +371,6 @@ class ApplicationLayout(Layout):
                 ),
                 'document',
                 'leadership_style',
-                'leader_willing',
-                'croo_willing',
-                'role_preference',
             ),
             Fieldset(
                 'Medical Information',
