@@ -70,6 +70,14 @@ class ApplicationInformation(DatabaseModel):
     )
 
 
+class ApplicationQuestion(DatabaseModel):
+    """
+    An application question.
+    """
+    index = models.PositiveIntegerField('the order of the questions')
+    question = models.TextField(blank=False)
+
+
 class PortalContent(DatabaseModel):
     """
     Content to display to users in the volunteer portal
