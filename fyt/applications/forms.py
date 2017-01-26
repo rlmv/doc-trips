@@ -7,6 +7,8 @@ from django import forms
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
     LEADER_TRIPTYPE_CHOICES,
+    Answer,
+    ApplicationQuestion,
     CrooApplicationGrade,
     CrooSupplement,
     GeneralApplication,
@@ -88,9 +90,76 @@ class ApplicationForm(forms.ModelForm):
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.questions = ApplicationQuestion.objects.filter(
+            trips_year=trips_year
+        )
+
+        if self.instance:
+            self.old_answers = self.instance.answer_set.all()
+        else:
+            self.old_answers = []
+
+        initial = {
+            q: "" for q in self.questions
+        }
+
+        if self.instance:
+            initial.update({
+                a.question: a.answer for a in self.old_answers
+            })
+
+        for question in self.questions:
+            self.fields[self._question_name(question)] = (
+                self._question_field(question, initial[question])
+            )
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = ApplicationLayout()
+        self.helper.layout = ApplicationLayout(
+            [self._question_name(q) for q in self.questions]
+        )
+
+    def _question_name(self, question):
+        """Name of a dynamic application question field."""
+        return "question_{}".format(question.pk)
+
+    def _question_field(self, question, initial):
+        """Dynamically create a field for the question."""
+        return forms.CharField(
+            initial=initial,
+            label=question.question,
+            required=False
+        )
+
+    def save_answers(self, instance):
+        """
+        Save answers to dynamic questions.
+        """
+        def get_answer(question):
+            return self.cleaned_data[self._question_name(question)]
+
+        new_questions = set(self.questions)
+
+        # Update old answers
+        for answer in self.old_answers:
+            answer.answer = get_answer(answer.question)
+            answer.save()
+            new_questions.remove(answer.question)
+
+        # Save remaining new answers
+        for q in new_questions:
+            Answer.objects.create(
+                question=q,
+                application=instance,
+                answer = get_answer(q)
+            )
+
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        self.save_answers(instance)
+
+        return instance
 
     # TODO: get rid of the need for this
     def update_agreements(self, agreement_form):
@@ -295,8 +364,11 @@ NOT_USED_IN_SCORING = (
 
 class ApplicationLayout(Layout):
 
-    def __init__(self):
+    def __init__(self, dynamic_questions):
         super().__init__(
+            Fieldset(
+                'Dynamic questions',
+                *(Field(f, rows=5) for f in dynamic_questions)),
             Fieldset(
                 'Volunteer Roles',
                 HTML(
