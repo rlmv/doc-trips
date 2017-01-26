@@ -129,7 +129,8 @@ class ApplicationForm(forms.ModelForm):
         return forms.CharField(
             initial=initial,
             label=question.question,
-            required=False
+            required=False,
+            widget=forms.Textarea(attrs={'rows': 5})
         )
 
     def save_answers(self, instance):
@@ -368,7 +369,8 @@ class ApplicationLayout(Layout):
         super().__init__(
             Fieldset(
                 'Dynamic questions',
-                *(Field(f, rows=5) for f in dynamic_questions)),
+                *dynamic_questions
+            ),
             Fieldset(
                 'Volunteer Roles',
                 HTML(
