@@ -10,20 +10,28 @@
 
 <p> Hi directors! This is where you set up the Leader and Croo application. You need to do a few things:
 <ol>
-  <li> Upload the Leader application questions and Croo application questions. They should be .docx format. </li>
-  <li> Go into the database and add this year's <a href="{% url 'db:section:index' trips_year=trips_year.year %}">Sections</a>. </li> 
-  <li> Make any changes to this year's <a href="{% url 'db:triptype:index' trips_year=trips_year.year %}">Trip Types</a>. Applicants see the 'Leader description' of each trip type.</li>
-  <li> Edit the information below, as needed. </li>
+  <li> Go into the database and add this year's <a href="{% url 'db:section:index' trips_year=trips_year.year %}">Sections</a>. </li>
+  <li> Make any changes to this year's <a href="{% url 'db:triptype:index' trips_year=trips_year.year %}">Trip Types</a>. Applicants see the 'Leader description' of each trip type. Be sure to hide any trip types that are not going to run this year.</li>
   <li> Pick the date that the application becomes available and the application deadline. Put these dates in the <a href="{% url 'timetable:timetable' %}">Calendar</a>. Of course, feel free to play around with these and test the application.</li>
+  <li>Edit the application questions and other information below.</li>
 </ol>
 </p>
 
 </div>
 
 {% crispy form %}
+
+{% for question in questions %}
+    <h3>Question {{ forloop.counter }}</h3>
+    <p>{{ question.question|safe }}</p>
+{% endfor %}
+
+<p>
+<a href="{% url 'applications:setup_questions' %}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit application questions</a>
+</p>
+
 {% endblock content %}
 
 {% block scripts %}
 {% javascript "summernote" %}
 {% endblock %}
-

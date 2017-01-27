@@ -1,5 +1,9 @@
 
-from braces.views import FormMessagesMixin, GroupRequiredMixin
+from braces.views import (
+    FormMessagesMixin,
+    FormValidMessageMixin,
+    GroupRequiredMixin,
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
@@ -24,8 +28,8 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import (
     ApplicationInformation,
-    Question,
     GeneralApplication,
+    Question,
 )
 from fyt.applications.tables import ApplicationTable
 from fyt.croos.models import Croo
@@ -250,7 +254,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
 
 
 class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
-                       CrispyFormMixin, UpdateView):
+                       FormValidMessageMixin, CrispyFormMixin, UpdateView):
     """
     Let directors create/edit this year's application
 
@@ -264,9 +268,9 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
     fields = [
-        'application_questions',
         'application_header'
     ]
+    form_valid_message = "Application successfully updated"
 
     def get_object(self):
         """
@@ -280,18 +284,22 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
         return crispify(super().get_form(**kwargs))
 
     def extra_context(self):
+        trips_year = TripsYear.objects.current()
         return {
-            'trips_year': TripsYear.objects.current()
+            'trips_year': trips_year,
+            'questions': Question.objects.filter(trips_year=trips_year)
         }
 
 
 QuestionFormset = forms.models.modelformset_factory(
-    Question, extra=10, fields='__all__', can_delete=True
+    Question, extra=6, fields='__all__', can_delete=True
 )
 
 
-class EditQuestions(SettingsPermissionRequired, FormView):
+class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView):
     template_name = 'applications/questions.html'
+    success_url = reverse_lazy('applications:setup')
+    form_valid_message = "Application successfully updated"
 
     def get_trips_year(self):
         return TripsYear.objects.current()
@@ -314,10 +322,7 @@ class EditQuestions(SettingsPermissionRequired, FormView):
                 form.instance.trips_year = trips_year
 
         formset.save()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return self.request.path
+        return super().form_valid(formset)
 
 
 class BlockDirectorate(GroupRequiredMixin):

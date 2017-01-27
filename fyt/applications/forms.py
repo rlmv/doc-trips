@@ -8,7 +8,6 @@ from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
     LEADER_TRIPTYPE_CHOICES,
     Answer,
-    Question,
     CrooApplicationGrade,
     CrooSupplement,
     GeneralApplication,
@@ -17,6 +16,7 @@ from fyt.applications.models import (
     LeaderSupplement,
     LeaderTripTypeChoice,
     QualificationTag,
+    Question,
 )
 from fyt.db.models import TripsYear
 from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
