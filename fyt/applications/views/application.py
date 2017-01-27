@@ -24,7 +24,7 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import (
     ApplicationInformation,
-    ApplicationQuestion,
+    Question,
     GeneralApplication,
 )
 from fyt.applications.tables import ApplicationTable
@@ -286,7 +286,7 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
 
 
 QuestionFormset = forms.models.modelformset_factory(
-    ApplicationQuestion, extra=10, fields='__all__', can_delete=True
+    Question, extra=10, fields='__all__', can_delete=True
 )
 
 
@@ -298,7 +298,7 @@ class EditQuestions(SettingsPermissionRequired, FormView):
 
     def get_queryset(self):
         trips_year = self.get_trips_year()
-        return ApplicationQuestion.objects.filter(trips_year=trips_year)
+        return Question.objects.filter(trips_year=trips_year)
 
     def get_form(self, **kwargs):
         formset = QuestionFormset(queryset=self.get_queryset(), **kwargs)

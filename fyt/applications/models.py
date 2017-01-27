@@ -70,7 +70,7 @@ class ApplicationInformation(DatabaseModel):
     )
 
 
-class ApplicationQuestion(DatabaseModel):
+class Question(DatabaseModel):
     """
     An application question.
     """
@@ -95,7 +95,7 @@ class Answer(models.Model):
         'GeneralApplication', on_delete=models.CASCADE
     )
     question = models.ForeignKey(
-        ApplicationQuestion, on_delete=models.CASCADE
+        Question, on_delete=models.CASCADE
     )
     answer = models.TextField(blank=True)
 
@@ -173,7 +173,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         (CANCELED, 'Canceled'),
     )
 
-    answers = models.ManyToManyField(ApplicationQuestion, through=Answer)
+    answers = models.ManyToManyField(Question, through=Answer)
 
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(

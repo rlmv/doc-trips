@@ -8,7 +8,7 @@ from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
     LEADER_TRIPTYPE_CHOICES,
     Answer,
-    ApplicationQuestion,
+    Question,
     CrooApplicationGrade,
     CrooSupplement,
     GeneralApplication,
@@ -91,7 +91,7 @@ class ApplicationForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.questions = ApplicationQuestion.objects.filter(
+        self.questions = Question.objects.filter(
             trips_year=trips_year
         )
 
