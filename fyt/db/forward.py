@@ -9,6 +9,7 @@ from .models import TripsYear
 
 from fyt.applications.models import (
     ApplicationInformation,
+    ApplicationQuestion,
     GeneralApplication as Application,
     PortalContent,
     QualificationTag,
@@ -40,6 +41,7 @@ class Forward():
     #: all models which need to be migrated
     MODELS_FORWARD = [
         ApplicationInformation,
+        ApplicationQuestion,
         PortalContent,
         QualificationTag,
         Settings,
