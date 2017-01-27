@@ -78,7 +78,9 @@ class Question(DatabaseModel):
         ordering = ['index']
 
     index = models.PositiveIntegerField(
-        'the order of the questions', unique=True
+        'order', unique=True, help_text=(
+            'change this value to re-order the questions'
+        )
     )
     question = models.TextField(blank=False)
 
