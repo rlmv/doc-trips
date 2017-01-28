@@ -453,15 +453,23 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
 
     def test_get_leader_applications(self):
         trips_year = self.init_current_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
+
+        # Complete
         app1 = self.make_application(trips_year=trips_year)
+        app1.answer_question(question, 'An answer!')
 
+        # Not complete - empty answer
         app2 = self.make_application(trips_year=trips_year)
-        app2.document = '' #  incomplete
-        app2.save()
+        app2.answer_question(question, "")
 
+        # Not complete - missing answer
         app3 = self.make_application(trips_year=trips_year)
-        app3.leader_willing = False
-        app3.save()
+
+        # Not a leader application
+        app4 = self.make_application(trips_year=trips_year)
+        app4.leader_willing = False
+        app4.save()
 
         # Complete
         qs = GeneralApplication.objects.leader_applications(trips_year)
@@ -469,19 +477,27 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
 
         # Incomplete
         qs = GeneralApplication.objects.incomplete_leader_applications(trips_year)
-        self.assertQsEqual(qs, [app2, app3])
+        self.assertQsEqual(qs, [app2, app3, app4])
 
     def test_get_croo_applications(self):
         trips_year = self.init_current_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
+
+        # Complete
         app1 = self.make_application(trips_year=trips_year)
+        app1.answer_question(question, 'An answer!')
 
+        # Not complete - empty answer
         app2 = self.make_application(trips_year=trips_year)
-        app2.document = '' #  incomplete
-        app2.save()
+        app2.answer_question(question, "")
 
+        # Not complete - missing answer
         app3 = self.make_application(trips_year=trips_year)
-        app3.croo_willing = False
-        app3.save()
+
+        # Not a croo application
+        app4 = self.make_application(trips_year=trips_year)
+        app4.croo_willing = False
+        app4.save()
 
         # Complete
         qs = GeneralApplication.objects.croo_applications(trips_year)
@@ -489,27 +505,32 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
 
         # Incomplete
         qs = GeneralApplication.objects.incomplete_croo_applications(trips_year)
-        self.assertQsEqual(qs, [app2, app3])
+        self.assertQsEqual(qs, [app2, app3, app4])
 
     def test_get_leader_or_croo_applications(self):
         trips_year = self.init_current_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
 
         app1 = self.make_application(trips_year=trips_year)
+        app1.answer_question(question, 'An answer!')
         app1.leader_willing = False
         app1.save()
 
         app2 = self.make_application(trips_year=trips_year)
-        app1.croo_willing = False
+        app2.answer_question(question, 'An answer!')
+        app2.croo_willing = False
         app2.save()
 
         app3 = self.make_application(trips_year=trips_year)
+        app3.answer_question(question, 'An answer!')
         app3.leader_willing = False
         app3.croo_willing = False
         app3.save()
 
         app4 = self.make_application(trips_year=trips_year)
-        app4.document = ''
-        app4.save()
+
+        app5 = self.make_application(trips_year=trips_year)
+        app5.answer_question(question, '')
 
         qs = GeneralApplication.objects.leader_or_croo_applications(trips_year)
         self.assertEqual(set(qs), set([app1, app2]))

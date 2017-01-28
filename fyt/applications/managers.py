@@ -71,7 +71,9 @@ class LeaderApplicationManager(ApplicationManager):
 
     def completed_applications(self, trips_year):
         return (self.filter(trips_year=trips_year)
-                    .exclude(application__document='')
+                    .annotate(models.Count('application__answer'))
+                    .exclude(application__answer__answer="")
+                    .filter(application__answer__count=question_count(trips_year))
                     .filter(application__leader_willing=True))
 
 
@@ -79,7 +81,9 @@ class CrooApplicationManager(ApplicationManager):
 
     def completed_applications(self, trips_year):
         return (self.filter(trips_year=trips_year)
-                    .exclude(application__document='')
+                    .annotate(models.Count('application__answer'))
+                    .exclude(application__answer__answer="")
+                    .filter(application__answer__count=question_count(trips_year))
                     .filter(application__croo_willing=True))
 
     def next_to_grade_for_qualification(self, user, qualification):
@@ -145,34 +149,53 @@ class GeneralApplicationManager(models.Manager):
                 leader_supplement__leadertriptypechoice__triptype=triptype,
                 leader_supplement__leadertriptypechoice__preference__in=opts))
 
+    def _with_answer_count(self, trips_year):
+        """
+        Annotates the applications with `answer__count`, the number of
+        answers that the application has.
+        """
+        return self.filter(trips_year=trips_year).annotate(models.Count('answer'))
+
+    def _with_all_answers(self, trips_year):
+        """
+        Applications with all answers complete.
+        """
+        return (self._with_answer_count(trips_year)
+                    .exclude(answer__answer="")
+                    .filter(answer__count=question_count(trips_year)))
+
     def leader_applications(self, trips_year):
-        return (self.filter(trips_year=trips_year)
-                    .exclude(document="")
-                    .filter(leader_willing=True))
+        return self._with_all_answers(trips_year).filter(leader_willing=True)
 
     def croo_applications(self, trips_year):
-        return (self.filter(trips_year=trips_year)
-                    .exclude(document="")
-                    .filter(croo_willing=True))
+        return self._with_all_answers(trips_year).filter(croo_willing=True)
 
     def leader_or_croo_applications(self, trips_year):
         """ Return all GenApps with either complete croo OR tl parts """
-        return (self.filter(trips_year=trips_year)
-                    .exclude(document="")
+        return (self._with_all_answers(trips_year)
                     .filter(Q(leader_willing=True) | Q(croo_willing=True)))
 
     def incomplete_leader_applications(self, trips_year):
-        return self.filter(
-            Q(document="") | Q(leader_willing=False),
-            trips_year=trips_year)
+        return (self._with_answer_count(trips_year)
+                    .filter(
+                        Q(answer__answer="") |
+                        Q(leader_willing=False) |
+                        Q(answer__count__lt=question_count(trips_year))))
 
     def incomplete_croo_applications(self, trips_year):
-        return self.filter(
-            Q(document="") | Q(croo_willing=False),
-            trips_year=trips_year)
+        return (self._with_answer_count(trips_year)
+                    .filter(
+                        Q(answer__answer="") |
+                        Q(croo_willing=False) |
+                        Q(answer__count__lt=question_count(trips_year))))
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
 
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
+
+
+def question_count(trips_year):
+    from .models import Question
+    return Question.objects.filter(trips_year=trips_year).count()
