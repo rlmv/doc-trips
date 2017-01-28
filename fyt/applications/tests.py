@@ -323,11 +323,12 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
             self.mock_user()
 
     def test_dont_grade_incomplete_application(self):
+        question = mommy.make(Question, trips_year=self.trips_year)
+
         app1 = self.make_application()
-        app1.document = ''
-        app1.save()
 
         app2 = self.make_application()
+        app2.answer_question(question, 'An answer')
         app2.leader_willing = False
         app2.save()
 
@@ -416,15 +417,16 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
     def test_only_complete_applications(self):
         trip = mommy.make(Trip, trips_year=self.current_trips_year)
+        question = mommy.make(Question, trips_year=self.current_trips_year)
+
         prospective = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
+        prospective.answer_question(question, 'An answer')
         prospective.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         prospective.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         not_prosp = self.make_application(status=GeneralApplication.LEADER_WAITLIST)
         not_prosp.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         not_prosp.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
-        not_prosp.document = ''
-        not_prosp.save()
 
         prospects = GeneralApplication.objects.prospective_leaders_for_trip(trip)
         self.assertEquals(list(prospects), [prospective])
