@@ -84,6 +84,9 @@ class Question(DatabaseModel):
     )
     question = models.TextField(blank=False)
 
+    def __str__(self):
+        return "Question: {}".format(self.question)
+
 
 class Answer(models.Model):
     """
@@ -100,6 +103,9 @@ class Answer(models.Model):
         Question, on_delete=models.CASCADE
     )
     answer = models.TextField(blank=True)
+
+    def __str__(self):
+        return "Answer: {}".format(self.answer)
 
 
 class PortalContent(DatabaseModel):
