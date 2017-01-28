@@ -144,17 +144,22 @@ class ApplicationForm(forms.ModelForm):
 
         # Update old answers
         for answer in self.old_answers:
-            answer.answer = get_answer(answer.question)
-            answer.save()
+            new_answer = get_answer(answer.question)
+            if new_answer != answer.answer:
+                print('changed', answer.answer, 'to', new_answer)
+                answer.answer = new_answer
+                answer.save()
+
             new_questions.remove(answer.question)
 
         # Save remaining new answers
         for q in new_questions:
-            Answer.objects.create(
+            answer = Answer.objects.create(
                 question=q,
                 application=instance,
                 answer = get_answer(q)
             )
+            print('new', answer)
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
