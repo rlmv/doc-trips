@@ -9,6 +9,7 @@ from model_mommy import mommy
 
 from .forms import CrooApplicationGradeForm
 from .models import (
+    Answer,
     ApplicationInformation,
     CrooApplicationGrade,
     CrooSupplement,
@@ -19,6 +20,7 @@ from .models import (
     QualificationTag,
     SkippedCrooGrade,
     SkippedLeaderGrade,
+    Question,
 )
 
 from fyt.applications.views.graders import get_graders
@@ -228,6 +230,19 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         app.leader_willing = True
         self.assertTrue(app.leader_application_complete)
 
+        # Not complete because there is an unanswered question
+        question = mommy.make(Question, trips_year=trips_year)
+        self.assertFalse(app.leader_application_complete)
+
+        # Not complete because there is a blank answer
+        answer = mommy.make(Answer, application=app, question=question, answer="")
+        self.assertFalse(app.leader_application_complete)
+
+        # Complete - answered
+        answer.answer = 'Some text!'
+        answer.save()
+        self.assertTrue(app.leader_application_complete)
+
     def test_croo_application_complete(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
@@ -236,6 +251,19 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertFalse(app.croo_application_complete)
 
         app.croo_willing = True
+        self.assertTrue(app.croo_application_complete)
+
+        # Not complete because there is an unanswered question
+        question = mommy.make(Question, trips_year=trips_year)
+        self.assertFalse(app.croo_application_complete)
+
+        # Not complete because there is a blank answer
+        answer = mommy.make(Answer, application=app, question=question, answer="")
+        self.assertFalse(app.croo_application_complete)
+
+        # Complete - answered
+        answer.answer = 'Some text!'
+        answer.save()
         self.assertTrue(app.croo_application_complete)
 
 

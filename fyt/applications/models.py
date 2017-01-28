@@ -394,23 +394,34 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
+    def all_questions_answered(self):
+        """
+        Returns True if all the dynamic questions are answered.
+        """
+        questions = Question.objects.filter(trips_year=self.trips_year)
+        q_ids = set(q.id for q in questions)
+
+        for answer in self.answer_set.all():
+            if answer.answer:  # "" is not an answer
+                q_ids.remove(answer.question_id)
+
+        return len(q_ids) == 0
+
     @property
     def leader_application_complete(self):
         """
-        A leader application is complete if the application document is
-        uploaded and the applicant has indicated that they want to be a
-        leader.
+        A leader application is complete if all questions are answered
+        and the applicant has indicated that they want to be a leader.
         """
-        return bool(self.document and self.leader_willing)
+        return self.leader_willing and self.all_questions_answered()
 
     @property
     def croo_application_complete(self):
         """
-        A croo application is complete if the application document is
-        uploaded and the applicant has indicated that they want to be on
-        a croo.
+        A croo application is complete if all questions are answered
+        and the applicant has indicated that they want to be on a croo.
         """
-        return bool(self.document and self.croo_willing)
+        return self.croo_willing and self.all_questions_answered()
 
     def get_preferred_trips(self):
         return self.leader_supplement.get_preferred_trips()
