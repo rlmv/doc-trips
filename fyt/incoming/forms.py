@@ -57,7 +57,13 @@ class _BaseChoiceField(forms.MultiValueField):
         `sectionchoice_set` or `triptypechoice_set`.
         """
         attr = self._model.__name__.lower() + '_set'
-        return getattr(instance, attr).all().order_by(self._type_name)
+        qs = getattr(instance, attr).all().order_by(self._type_name)
+
+        # Hack - keep hidden triptypes out of this
+        if self._type_name is 'triptype':
+            qs = qs.exclude(triptype__hidden=True)
+
+        return qs
 
     def __init__(self, qs, instance, **kwargs):
         self.qs = qs
@@ -125,7 +131,7 @@ class _BaseChoiceField(forms.MultiValueField):
                 old_choice.save()
 
         # If there are remaining choices then a triptype has been hidden
-        # if len(old_choices) > 0:
+        assert len(old_choices) == 0
 
 
 class _BaseChoiceWidget(forms.MultiWidget):
