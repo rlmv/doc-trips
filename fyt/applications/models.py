@@ -423,6 +423,16 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         """
         return self.croo_willing and self.all_questions_answered()
 
+    def answer_question(self, question, text):
+        """
+        Utility function to answer a question; mainly used for testing.
+        """
+        return Answer.objects.create(
+            application=self,
+            question=question,
+            answer=text
+        )
+
     def get_preferred_trips(self):
         return self.leader_supplement.get_preferred_trips()
 

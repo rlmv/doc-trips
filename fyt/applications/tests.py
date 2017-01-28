@@ -266,6 +266,19 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         answer.save()
         self.assertTrue(app.croo_application_complete)
 
+    def test_answer_question(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+
+        question = mommy.make(Question, trips_year=trips_year)
+        app.answer_question(question, "An answer!")
+
+        self.assertEqual(app.answer_set.count(), 1)
+        answer = app.answer_set.first()
+        self.assertEqual(answer.question, question)
+        self.assertEqual(answer.answer, "An answer!")
+        self.assertEqual(answer.application, app)
+
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 
