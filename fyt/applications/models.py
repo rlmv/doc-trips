@@ -25,6 +25,15 @@ from fyt.utils.models import MedicalMixin
 
 """
 Models for Leaders and Croo applications
+
+Note 1/28/2017: I refactored applications to use dynamic questions and answers.
+Previously, applicants uploaded a .docx file with their answers in it, and
+this determined whether the application was complete. With the new schema,
+'completeness' is determined by whether the applicant answered all the
+questions and indicated that they are willing to be a volunteer (leader or
+croo.) These 'willing' fields were populated with historical data so that the
+completeness of old applications did not change with this migration. All
+queries should return the same results.
 """
 
 
