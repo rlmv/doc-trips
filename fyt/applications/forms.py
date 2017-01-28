@@ -140,7 +140,7 @@ class ApplicationForm(forms.ModelForm):
         def get_answer(question):
             return self.cleaned_data[self._question_name(question)]
 
-        new_questions = set(self.questions)
+        unanswered_questions = set(self.questions)
 
         # Update old answers
         for answer in self.old_answers:
@@ -150,10 +150,10 @@ class ApplicationForm(forms.ModelForm):
                 answer.answer = new_answer
                 answer.save()
 
-            new_questions.remove(answer.question)
+            unanswered_questions.remove(answer.question)
 
         # Save remaining new answers
-        for q in new_questions:
+        for q in unanswered_questions:
             answer = Answer.objects.create(
                 question=q,
                 application=instance,
