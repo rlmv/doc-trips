@@ -156,7 +156,7 @@ class ApplicationForm(forms.ModelForm):
             answer = Answer.objects.create(
                 question=q,
                 application=instance,
-                answer = get_answer(q)
+                answer=get_answer(q)
             )
             print('new', answer)
 
