@@ -260,7 +260,6 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
 
     Used by directors to edit application questions, general information.
 
-    TOOD: show previous year's application documents???
     TODO: stick this under the db namespace and use TripsYearMixin.
     """
 
@@ -374,7 +373,6 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                 'applicant__name',
                 'trips_year_id',
                 'status',
-                'document',
                 'leader_willing',
                 'croo_willing',
                 'community_building',
@@ -434,7 +432,6 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'trippee_confidentiality',
         'in_goodstanding_with_college',
         'trainings',
-        'document'
     ]
     leaderapplication_fields = [
         ('preferred sections', 'new_preferred_sections'),

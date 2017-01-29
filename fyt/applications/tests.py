@@ -40,7 +40,6 @@ def make_application(status=GeneralApplication.PENDING, trips_year=None,
         status=status,
         trips_year=trips_year,
         assigned_trip=assigned_trip,
-        document='some/file',
         leader_willing=True,
         croo_willing=True)
 
