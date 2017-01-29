@@ -3,6 +3,7 @@
 {% load detail_view %}
 {% load icons %}
 {% load convert %}
+{% load answers %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -147,6 +148,10 @@
         <div role="tabpanel" class="tab-pane active" id="general">
             <br/>
             {% detail application generalapplication_fields %}
+            <div>
+                <h4> Application questions </h4>
+                {% display_answers application %}
+            </div>
         </div>
 
         <div role="tabpanel" class="tab-pane" id="leader">
