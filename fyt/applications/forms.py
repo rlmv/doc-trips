@@ -79,15 +79,6 @@ class ApplicationForm(forms.ModelForm):
             'croo_willing'
         )
 
-        widgets = {
-            'personal_activities': forms.Textarea(attrs={'rows': 4}),
-            'feedback': forms.Textarea(attrs={'rows': 4}),
-            'medical_certifications': forms.Textarea(attrs={'rows': 4}),
-            'medical_experience': forms.Textarea(attrs={'rows': 4}),
-            'peer_training': forms.Textarea(attrs={'rows': 4}),
-            'leadership_style': forms.Textarea(attrs={'rows': 8}),
-        }
-
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -231,9 +222,6 @@ class CrooSupplementForm(forms.ModelForm):
             'kitchen_lead_willing',
             'kitchen_lead_qualifications',
         )
-        widgets = {
-            'kitchen_lead_qualifications': forms.Textarea(attrs={'rows': 2}),
-        }
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -407,14 +395,14 @@ class ApplicationLayout(Layout):
                 'from_where',
                 'what_do_you_like_to_study',
                 'hanover_in_fall',
-                'personal_activities',
-                'feedback',
+                Field('personal_activities', rows=4),
+                Field('feedback', rows=4),
             ),
             Fieldset(
                 'Trainings',
-                'medical_certifications',
-                'medical_experience',
-                'peer_training',
+                Field('medical_certifications', rows=4),
+                Field('medical_experience', rows=4),
+                Field('peer_training', rows=4),
                 HTML(
                     "<p><strong>If selected to be a DOC trip leader, you must "
                     "complete various trainings before Trips begins. These "
@@ -434,7 +422,7 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Application',
-                'leadership_style',
+                Field('leadership_style', rows=8),
                 *dynamic_questions
             ),
             Fieldset(
@@ -522,7 +510,7 @@ class CrooSupplementLayout(Layout):
                     "(non-Trips).</p>"
                 ),
                 'kitchen_lead_willing',
-                'kitchen_lead_qualifications',
+                Field('kitchen_lead_qualifications', rows=2),
             )
         )
 
