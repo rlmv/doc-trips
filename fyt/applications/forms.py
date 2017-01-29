@@ -85,6 +85,7 @@ class ApplicationForm(forms.ModelForm):
             'medical_certifications': forms.Textarea(attrs={'rows': 4}),
             'medical_experience': forms.Textarea(attrs={'rows': 4}),
             'peer_training': forms.Textarea(attrs={'rows': 4}),
+            'leadership_style': forms.Textarea(attrs={'rows': 8}),
         }
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -129,7 +130,7 @@ class ApplicationForm(forms.ModelForm):
             initial=initial,
             label=question.question,
             required=False,
-            widget=forms.Textarea(attrs={'rows': 5})
+            widget=forms.Textarea(attrs={'rows': 8})
         )
 
     def save_answers(self, instance):
@@ -372,10 +373,6 @@ class ApplicationLayout(Layout):
     def __init__(self, dynamic_questions):
         super().__init__(
             Fieldset(
-                'Dynamic questions',
-                *dynamic_questions
-            ),
-            Fieldset(
                 'Volunteer Roles',
                 HTML(
                     'Please select which volunteer position(s) you are '
@@ -438,6 +435,7 @@ class ApplicationLayout(Layout):
             Fieldset(
                 'Application',
                 'leadership_style',
+                *dynamic_questions
             ),
             Fieldset(
                 'Medical Information',
