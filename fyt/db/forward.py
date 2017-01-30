@@ -9,10 +9,10 @@ from .models import TripsYear
 
 from fyt.applications.models import (
     ApplicationInformation,
-    Question,
     GeneralApplication as Application,
     PortalContent,
     QualificationTag,
+    Question,
 )
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings

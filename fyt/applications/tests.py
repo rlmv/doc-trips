@@ -18,9 +18,9 @@ from .models import (
     LeaderSupplement as LeaderApplication,
     PortalContent,
     QualificationTag,
+    Question,
     SkippedCrooGrade,
     SkippedLeaderGrade,
-    Question,
 )
 
 from fyt.applications.views.graders import get_graders
