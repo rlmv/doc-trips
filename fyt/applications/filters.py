@@ -12,6 +12,7 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 STATUS = 'status'
+COMPLETE = 'complete'
 CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
@@ -51,9 +52,11 @@ class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
 
 _Choice = namedtuple('_Choice', ['value', 'display', 'action'])
 
+
 class ApplicationTypeFilter(django_filters.ChoiceFilter):
     """Filter for different types of applications."""
-    def __init__(self):
+    def __init__(self, trips_year):
+        self.trips_year = trips_year
         self.actions = {c.value: c.action for c in self.choices}
         filter_choices = [(c.value, c.display) for c in self.choices]
         super().__init__(self, choices=filter_choices)
@@ -68,18 +71,20 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
     ]
 
     def croo_applications(self, qs):
-        return qs.exclude(croo_supplement__document='')
+        return qs & GeneralApplication.objects.croo_applications(
+            self.trips_year)
 
     def leader_applications(self, qs):
-        return qs.exclude(leader_supplement__document='')
+        return qs & GeneralApplication.objects.leader_applications(
+            self.trips_year)
 
     def either_applications(self, qs):
-        return qs.exclude(Q(leader_supplement__document='') &
-                          Q(croo_supplement__document=''))
+        return qs & GeneralApplication.objects.leader_or_croo_applications(
+            self.trips_year)
 
     def both_applications(self, qs):
-        return qs.exclude(Q(leader_supplement__document='') |
-                          Q(croo_supplement__document=''))
+        return qs & GeneralApplication.objects.leader_and_croo_applications(
+            self.trips_year)
 
     def filter(self, qs, value):
         if not value or not self.actions[value]:
@@ -111,7 +116,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
-    complete = ApplicationTypeFilter()  # not associated with a specific field
 
     def lookup_user_by_name(self, qs, value):
         if not value:
@@ -128,6 +132,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
     def __init__(self, *args, **kwargs):
         trips_year = kwargs.pop('trips_year')
         super().__init__(*args, **kwargs)
+
+        self.filters[COMPLETE] = ApplicationTypeFilter(trips_year)
 
         # add a blank choice
         self.filters[STATUS].field.choices.insert(0, ('', 'Any'))
@@ -150,7 +156,7 @@ class FilterSetFormHelper(FormHelper):
 
         self.form_method = 'GET'
         self.layout = Layout(
-            filter_row('complete'),
+            filter_row(COMPLETE),
             filter_row(STATUS),
             filter_row('name'),
             filter_row('netid'),

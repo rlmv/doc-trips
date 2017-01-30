@@ -175,6 +175,10 @@ class GeneralApplicationManager(models.Manager):
         return (self._with_all_answers(trips_year)
                     .filter(Q(leader_willing=True) | Q(croo_willing=True)))
 
+    def leader_and_croo_applications(self, trips_year):
+        return (self._with_all_answers(trips_year)
+                    .filter(leader_willing=True, croo_willing=True))
+
     def incomplete_leader_applications(self, trips_year):
         return (self._with_answer_count(trips_year)
                     .filter(

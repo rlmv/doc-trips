@@ -533,8 +533,14 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         app5 = self.make_application(trips_year=trips_year)
         app5.answer_question(question, '')
 
+        app6 = self.make_application(trips_year=trips_year)
+        app6.answer_question(question, 'An answer!')
+
         qs = GeneralApplication.objects.leader_or_croo_applications(trips_year)
-        self.assertEqual(set(qs), set([app1, app2]))
+        self.assertQsEqual(qs, [app1, app2, app6])
+
+        qs = GeneralApplication.objects.leader_and_croo_applications(trips_year)
+        self.assertQsEqual(qs, [app6])
 
     def test_leaders(self):
         trips_year = self.init_trips_year()
