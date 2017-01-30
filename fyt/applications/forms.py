@@ -7,6 +7,7 @@ from django import forms
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
     LEADER_TRIPTYPE_CHOICES,
+    Answer,
     CrooApplicationGrade,
     CrooSupplement,
     GeneralApplication,
@@ -15,6 +16,7 @@ from fyt.applications.models import (
     LeaderSupplement,
     LeaderTripTypeChoice,
     QualificationTag,
+    Question,
 )
 from fyt.db.models import TripsYear
 from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
@@ -73,24 +75,88 @@ class ApplicationForm(forms.ModelForm):
             'hanover_in_fall',
             'role_preference',
             'leadership_style',
-            'document',
             'leader_willing',
             'croo_willing'
         )
 
-        widgets = {
-            'personal_activities': forms.Textarea(attrs={'rows': 4}),
-            'feedback': forms.Textarea(attrs={'rows': 4}),
-            'medical_certifications': forms.Textarea(attrs={'rows': 4}),
-            'medical_experience': forms.Textarea(attrs={'rows': 4}),
-            'peer_training': forms.Textarea(attrs={'rows': 4}),
-        }
-
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.questions = Question.objects.filter(
+            trips_year=trips_year
+        )
+
+        if self.instance:
+            self.old_answers = self.instance.answer_set.all()
+        else:
+            self.old_answers = []
+
+        initial = {
+            q: "" for q in self.questions
+        }
+
+        if self.instance:
+            initial.update({
+                a.question: a.answer for a in self.old_answers
+            })
+
+        for question in self.questions:
+            self.fields[self._question_name(question)] = (
+                self._question_field(question, initial[question])
+            )
+
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = ApplicationLayout()
+        self.helper.layout = ApplicationLayout(
+            [self._question_name(q) for q in self.questions]
+        )
+
+    def _question_name(self, question):
+        """Name of a dynamic application question field."""
+        return "question_{}".format(question.pk)
+
+    def _question_field(self, question, initial):
+        """Dynamically create a field for the question."""
+        return forms.CharField(
+            initial=initial,
+            label=question.question,
+            required=False,
+            widget=forms.Textarea(attrs={'rows': 8})
+        )
+
+    def save_answers(self, instance):
+        """
+        Save answers to dynamic questions.
+        """
+        def get_answer(question):
+            return self.cleaned_data[self._question_name(question)]
+
+        unanswered_questions = set(self.questions)
+
+        # Update old answers
+        for answer in self.old_answers:
+            new_answer = get_answer(answer.question)
+            if new_answer != answer.answer:
+                print('changed', answer.answer, 'to', new_answer)
+                answer.answer = new_answer
+                answer.save()
+
+            unanswered_questions.remove(answer.question)
+
+        # Save remaining new answers
+        for q in unanswered_questions:
+            answer = Answer.objects.create(
+                question=q,
+                application=instance,
+                answer=get_answer(q)
+            )
+            print('new', answer)
+
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        self.save_answers(instance)
+
+        return instance
 
     # TODO: get rid of the need for this
     def update_agreements(self, agreement_form):
@@ -156,9 +222,6 @@ class CrooSupplementForm(forms.ModelForm):
             'kitchen_lead_willing',
             'kitchen_lead_qualifications',
         )
-        widgets = {
-            'kitchen_lead_qualifications': forms.Textarea(attrs={'rows': 2}),
-        }
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -295,7 +358,7 @@ NOT_USED_IN_SCORING = (
 
 class ApplicationLayout(Layout):
 
-    def __init__(self):
+    def __init__(self, dynamic_questions):
         super().__init__(
             Fieldset(
                 'Volunteer Roles',
@@ -332,14 +395,14 @@ class ApplicationLayout(Layout):
                 'from_where',
                 'what_do_you_like_to_study',
                 'hanover_in_fall',
-                'personal_activities',
-                'feedback',
+                Field('personal_activities', rows=4),
+                Field('feedback', rows=4),
             ),
             Fieldset(
                 'Trainings',
-                'medical_certifications',
-                'medical_experience',
-                'peer_training',
+                Field('medical_certifications', rows=4),
+                Field('medical_experience', rows=4),
+                Field('peer_training', rows=4),
                 HTML(
                     "<p><strong>If selected to be a DOC trip leader, you must "
                     "complete various trainings before Trips begins. These "
@@ -359,18 +422,8 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Application',
-                HTML(
-                    '<p> Download the <a href="{% if information.application_questions %}{{ information.application_questions.url }}{% endif %}"> '
-                    'Application</a>. Thoughtfully answer the '
-                    'questions and upload your responses in a Word (.docx) '
-                    'document. <strong>Leave the original application questions '
-                    'in the document with your responses.</strong> Your '
-                    'application will not be considered complete until '
-                    'you have uploaded answers to these questions. Be sure to '
-                    'save your application after uploading.</p>'
-                ),
-                'document',
-                'leadership_style',
+                Field('leadership_style', rows=8),
+                *dynamic_questions
             ),
             Fieldset(
                 'Medical Information',
@@ -457,7 +510,7 @@ class CrooSupplementLayout(Layout):
                     "(non-Trips).</p>"
                 ),
                 'kitchen_lead_willing',
-                'kitchen_lead_qualifications',
+                Field('kitchen_lead_qualifications', rows=2),
             )
         )
 

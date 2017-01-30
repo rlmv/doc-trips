@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load detail_view %}
-{% load convert %}
+{% load answers %}
 
 {# generic grading view for both Croo and Leader applications #}
 
@@ -29,7 +29,7 @@
 
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
-{% display_docx_filefield_as_html application.application.document %}
+{% display_answers application.application %}
 
 {% if extra_fields %}
 <div class="well">

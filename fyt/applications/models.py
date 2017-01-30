@@ -1,7 +1,6 @@
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 
@@ -14,6 +13,7 @@ from .managers import (
 from fyt.croos.models import Croo
 from fyt.db.models import DatabaseModel
 from fyt.trips.models import Section, Trip, TripType
+from fyt.utils.cache import cache_as
 from fyt.utils.choices import (
     AVAILABLE,
     NOT_AVAILABLE,
@@ -26,6 +26,15 @@ from fyt.utils.models import MedicalMixin
 
 """
 Models for Leaders and Croo applications
+
+Note 1/28/2017: I refactored applications to use dynamic questions and answers.
+Previously, applicants uploaded a .docx file with their answers in it, and
+this determined whether the application was complete. With the new schema,
+'completeness' is determined by whether the applicant answered all the
+questions and indicated that they are willing to be a volunteer (leader or
+croo.) These 'willing' fields were populated with historical data so that the
+completeness of old applications did not change with this migration. All
+queries should return the same results.
 """
 
 
@@ -69,6 +78,44 @@ class ApplicationInformation(DatabaseModel):
             "This will be displayed at the top of Croo Application tab"
         )
     )
+
+
+class Question(DatabaseModel):
+    """
+    An application question.
+    """
+    class Meta:
+        ordering = ['index']
+
+    index = models.PositiveIntegerField(
+        'order', unique=True, help_text=(
+            'change this value to re-order the questions'
+        )
+    )
+    question = models.TextField(blank=False)
+
+    def __str__(self):
+        return "Question: {}".format(self.question)
+
+
+class Answer(models.Model):
+    """
+    Through model for application answers.
+    """
+    class Meta:
+        unique_together = ('application', 'question')
+        ordering = ['question']
+
+    application = models.ForeignKey(
+        'GeneralApplication', on_delete=models.CASCADE
+    )
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE
+    )
+    answer = models.TextField(blank=True)
+
+    def __str__(self):
+        return "Answer: {}".format(self.answer)
 
 
 class PortalContent(DatabaseModel):
@@ -143,6 +190,8 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         (REJECTED, 'Rejected'),
         (CANCELED, 'Canceled'),
     )
+
+    answers = models.ManyToManyField(Question, through=Answer)
 
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(
@@ -262,9 +311,6 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         'complements you. Each leadership style is equally valuable, and we '
         'will use answers to this question to balance our teams as a whole.'
     )
-    document = models.FileField(
-        'application answers', blank=True, db_index=True
-    )
 
     leader_willing = models.BooleanField(
         'I would like to be considered for a Trip Leader position. '
@@ -355,23 +401,53 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
+    def all_questions_answered(self):
+        """
+        Returns True if all the dynamic questions are answered.
+        """
+        q_ids = set(q.id for q in self.get_questions())
+
+        for answer in self.answer_set.all():
+            if answer.answer:  # "" is not an answer
+                q_ids.remove(answer.question_id)
+
+        return len(q_ids) == 0
+
+    GET_QUESTIONS = '_get_questions'
+
+    @cache_as(GET_QUESTIONS)
+    def get_questions(self):
+        """
+        Used to cache this year's questions so that large querysets can be
+        preloaded to improve efficiency.
+        """
+        return Question.objects.filter(trips_year=self.trips_year)
+
     @property
     def leader_application_complete(self):
         """
-        A leader application is complete if the application document is
-        uploaded and the applicant has indicated that they want to be a
-        leader.
+        A leader application is complete if all questions are answered
+        and the applicant has indicated that they want to be a leader.
         """
-        return bool(self.document and self.leader_willing)
+        return self.leader_willing and self.all_questions_answered()
 
     @property
     def croo_application_complete(self):
         """
-        A croo application is complete if the application document is
-        uploaded and the applicant has indicated that they want to be on
-        a croo.
+        A croo application is complete if all questions are answered
+        and the applicant has indicated that they want to be on a croo.
         """
-        return bool(self.document and self.croo_willing)
+        return self.croo_willing and self.all_questions_answered()
+
+    def answer_question(self, question, text):
+        """
+        Utility function to answer a question; mainly used for testing.
+        """
+        return Answer.objects.create(
+            application=self,
+            question=question,
+            answer=text
+        )
 
     def get_preferred_trips(self):
         return self.leader_supplement.get_preferred_trips()

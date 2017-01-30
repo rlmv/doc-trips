@@ -7,6 +7,7 @@ External
 
 Immediate
 ---------
+* Prefix ``cache_as`` attrs with something
 * Fix race conditions around Section & TripType preferences
 * Croo waitlist. Needs to support people simultaneously being on the croo
   waitlist and trip leaders, or croo waitlist and leader waitlist, etc

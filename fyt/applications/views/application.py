@@ -1,5 +1,12 @@
 
-from braces.views import FormMessagesMixin, GroupRequiredMixin
+from braces.views import (
+    FormMessagesMixin,
+    FormValidMessageMixin,
+    GroupRequiredMixin,
+)
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -7,7 +14,7 @@ from django.db.models import Avg, Value as V
 from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from vanilla import CreateView, DetailView, ListView, UpdateView
+from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -19,7 +26,11 @@ from fyt.applications.forms import (
     CrooSupplementForm,
     LeaderSupplementForm,
 )
-from fyt.applications.models import ApplicationInformation, GeneralApplication
+from fyt.applications.models import (
+    ApplicationInformation,
+    GeneralApplication,
+    Question,
+)
 from fyt.applications.tables import ApplicationTable
 from fyt.croos.models import Croo
 from fyt.db.models import TripsYear
@@ -31,6 +42,7 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.trips.models import TripType
+from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
 
@@ -243,13 +255,12 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
 
 
 class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
-                       CrispyFormMixin, UpdateView):
+                       FormValidMessageMixin, CrispyFormMixin, UpdateView):
     """
     Let directors create/edit this year's application
 
     Used by directors to edit application questions, general information.
 
-    TOOD: show previous year's application documents???
     TODO: stick this under the db namespace and use TripsYearMixin.
     """
 
@@ -257,9 +268,9 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
     fields = [
-        'application_questions',
         'application_header'
     ]
+    form_valid_message = "Application successfully updated"
 
     def get_object(self):
         """
@@ -273,9 +284,45 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
         return crispify(super().get_form(**kwargs))
 
     def extra_context(self):
+        trips_year = TripsYear.objects.current()
         return {
-            'trips_year': TripsYear.objects.current()
+            'trips_year': trips_year,
+            'questions': Question.objects.filter(trips_year=trips_year)
         }
+
+
+QuestionFormset = forms.models.modelformset_factory(
+    Question, extra=6, fields='__all__', can_delete=True
+)
+
+
+class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView):
+    template_name = 'applications/questions.html'
+    success_url = reverse_lazy('applications:setup')
+    form_valid_message = "Application successfully updated"
+
+    def get_trips_year(self):
+        return TripsYear.objects.current()
+
+    def get_queryset(self):
+        trips_year = self.get_trips_year()
+        return Question.objects.filter(trips_year=trips_year)
+
+    def get_form(self, **kwargs):
+        formset = QuestionFormset(queryset=self.get_queryset(), **kwargs)
+        formset.helper = FormHelper()
+        formset.helper.add_input(Submit('submit', 'Save'))
+        return formset
+
+    def form_valid(self, formset):
+        # Add trips_year to new questions
+        trips_year = self.get_trips_year()
+        for form in formset.extra_forms:
+            if form.has_changed():
+                form.instance.trips_year = trips_year
+
+        formset.save()
+        return super().form_valid(formset)
 
 
 class BlockDirectorate(GroupRequiredMixin):
@@ -306,6 +353,20 @@ class BlockDirectorate(GroupRequiredMixin):
         )
 
 
+def preload_questions(qs, trips_year):
+    """
+    Preload the _get_questions cache on a queryset of applications so that
+    `leader_application_complete` and `croo_application_complete` can be
+    efficiently computed.
+    """
+    questions = Question.objects.filter(trips_year=trips_year)
+
+    for app in qs:
+        preload(app, app.GET_QUESTIONS, questions)
+
+    return qs
+
+
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                        TripsYearMixin, ExtraContextMixin, ListView):
     model = GeneralApplication
@@ -327,7 +388,6 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                 'applicant__name',
                 'trips_year_id',
                 'status',
-                'document',
                 'leader_willing',
                 'croo_willing',
                 'community_building',
@@ -337,6 +397,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                 'fa_cert',
                 'fa_other',
             )
+            .prefetch_related('answer_set')
         )
 
     def extra_context(self):
@@ -345,10 +406,11 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             self.request.GET, queryset=self.object_list,
             trips_year=self.kwargs['trips_year']
         )
-        table = ApplicationTable(filter.qs, self.request)
+        filter_qs = preload_questions(filter.qs, self.kwargs['trips_year'])
+        table = ApplicationTable(filter_qs, self.request)
         return {
             'table': table,
-            'application_count': len(filter.qs),
+            'application_count': len(filter_qs),
             'applications_filter': filter
         }
 
@@ -387,7 +449,6 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'trippee_confidentiality',
         'in_goodstanding_with_college',
         'trainings',
-        'document'
     ]
     leaderapplication_fields = [
         ('preferred sections', 'new_preferred_sections'),

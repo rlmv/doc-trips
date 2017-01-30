@@ -3,6 +3,7 @@
 {% load detail_view %}
 {% load icons %}
 {% load convert %}
+{% load answers %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -148,7 +149,8 @@
             <br/>
             {% detail application generalapplication_fields %}
             <div>
-                {% display_docx_filefield_as_html application.document %}
+                <h4> Application questions </h4>
+                {% display_answers application %}
             </div>
         </div>
 

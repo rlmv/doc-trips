@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Application Questions </h2>
+{% endblock %}
+
+{% block content %}
+
+<p> Create application questions. </p>
+<div>
+  {% crispy form %}
+</div>
+{% endblock %}

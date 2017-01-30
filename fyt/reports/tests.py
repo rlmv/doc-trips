@@ -7,7 +7,7 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.applications.models import GeneralApplication
+from fyt.applications.models import GeneralApplication, Question
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
@@ -48,10 +48,13 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
 
     def test_volunteer_csv(self):
         trips_year = self.init_current_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
+
         application = self.make_application(trips_year=trips_year)
+        application.answer_question(question, 'An answer')
+
         non_applicant = self.make_application(trips_year=trips_year)
-        non_applicant.document = ''
-        non_applicant.save()
+
         res = self.app.get(reverse('db:reports:all_apps',
                                    kwargs={'trips_year': trips_year}),
                            user=self.mock_director())

@@ -9,6 +9,7 @@ from fyt.applications.views.application import (
     ApplicationStatusUpdate,
     ApplicationUpdate,
     ContinueApplication,
+    EditQuestions,
     NewApplication,
     SetupApplication,
 )
@@ -62,6 +63,7 @@ urlpatterns = [
     url(r'^apply/$', NewApplication.as_view(), name='apply'),
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
+    url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
 ]
 
