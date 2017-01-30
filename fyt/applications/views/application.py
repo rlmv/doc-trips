@@ -42,6 +42,7 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.trips.models import TripType
+from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
 
@@ -352,6 +353,20 @@ class BlockDirectorate(GroupRequiredMixin):
         )
 
 
+def preload_questions(qs, trips_year):
+    """
+    Preload the _get_questions cache on a queryset of applications so that
+    `leader_application_complete` and `croo_application_complete` can be
+    efficiently computed.
+    """
+    questions = Question.objects.filter(trips_year=trips_year)
+
+    for app in qs:
+        preload(app, app.GET_QUESTIONS, questions)
+
+    return qs
+
+
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                        TripsYearMixin, ExtraContextMixin, ListView):
     model = GeneralApplication
@@ -382,6 +397,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                 'fa_cert',
                 'fa_other',
             )
+            .prefetch_related('answer_set')
         )
 
     def extra_context(self):
@@ -390,10 +406,11 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             self.request.GET, queryset=self.object_list,
             trips_year=self.kwargs['trips_year']
         )
-        table = ApplicationTable(filter.qs, self.request)
+        filter_qs = preload_questions(filter.qs, self.kwargs['trips_year'])
+        table = ApplicationTable(filter_qs, self.request)
         return {
             'table': table,
-            'application_count': len(filter.qs),
+            'application_count': len(filter_qs),
             'applications_filter': filter
         }
 

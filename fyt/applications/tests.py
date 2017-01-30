@@ -221,39 +221,33 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
 
     def test_leader_application_complete(self):
         trips_year = self.init_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
         app = make_application(trips_year=trips_year)
+        app.leader_willing = True
 
+        # Not complete because there is an unanswered question
+        self.assertFalse(app.leader_application_complete)
+
+        # Not complete because there is a blank answer
+        answer = mommy.make(Answer, application=app, question=question, answer="")
+        self.assertFalse(app.leader_application_complete)
+
+        # Complete - answered
+        answer.answer = 'Some text!'
+        answer.save()
+        self.assertTrue(app.leader_application_complete)
+
+        # Answered but unwilling
         app.leader_willing = False
         self.assertFalse(app.leader_application_complete)
 
-        app.leader_willing = True
-        self.assertTrue(app.leader_application_complete)
-
-        # Not complete because there is an unanswered question
-        question = mommy.make(Question, trips_year=trips_year)
-        self.assertFalse(app.leader_application_complete)
-
-        # Not complete because there is a blank answer
-        answer = mommy.make(Answer, application=app, question=question, answer="")
-        self.assertFalse(app.leader_application_complete)
-
-        # Complete - answered
-        answer.answer = 'Some text!'
-        answer.save()
-        self.assertTrue(app.leader_application_complete)
-
     def test_croo_application_complete(self):
         trips_year = self.init_trips_year()
+        question = mommy.make(Question, trips_year=trips_year)
         app = make_application(trips_year=trips_year)
-
-        app.croo_willing = False
-        self.assertFalse(app.croo_application_complete)
-
         app.croo_willing = True
-        self.assertTrue(app.croo_application_complete)
 
         # Not complete because there is an unanswered question
-        question = mommy.make(Question, trips_year=trips_year)
         self.assertFalse(app.croo_application_complete)
 
         # Not complete because there is a blank answer
@@ -264,6 +258,10 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         answer.answer = 'Some text!'
         answer.save()
         self.assertTrue(app.croo_application_complete)
+
+        # Answered but unwilling
+        app.croo_willing = False
+        self.assertFalse(app.croo_application_complete)
 
     def test_answer_question(self):
         trips_year = self.init_trips_year()

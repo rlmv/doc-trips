@@ -13,6 +13,7 @@ from .managers import (
 from fyt.croos.models import Croo
 from fyt.db.models import DatabaseModel
 from fyt.trips.models import Section, Trip, TripType
+from fyt.utils.cache import cache_as
 from fyt.utils.choices import (
     AVAILABLE,
     NOT_AVAILABLE,
@@ -404,14 +405,23 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         """
         Returns True if all the dynamic questions are answered.
         """
-        questions = Question.objects.filter(trips_year=self.trips_year)
-        q_ids = set(q.id for q in questions)
+        q_ids = set(q.id for q in self.get_questions())
 
         for answer in self.answer_set.all():
             if answer.answer:  # "" is not an answer
                 q_ids.remove(answer.question_id)
 
         return len(q_ids) == 0
+
+    GET_QUESTIONS = '_get_questions'
+
+    @cache_as(GET_QUESTIONS)
+    def get_questions(self):
+        """
+        Used to cache this year's questions so that large querysets can be
+        preloaded to improve efficiency.
+        """
+        return Question.objects.filter(trips_year=self.trips_year)
 
     @property
     def leader_application_complete(self):
