@@ -64,8 +64,8 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
     # (query value, display name, action/method)
     choices = [
         _Choice('any', 'All Applications', None),
-        _Choice('croo', 'Croo Applications', 'croo_applications'),
         _Choice('leader', 'Leader Applications', 'leader_applications'),
+        _Choice('croo', 'Croo Applications', 'croo_applications'),
         _Choice('either', 'Leader OR Croo Applications', 'either_applications'),
         _Choice('both', 'Leader AND Croo Applications', 'both_applications'),
     ]
