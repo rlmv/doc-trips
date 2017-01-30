@@ -2,11 +2,11 @@
 {% load crispy_forms_tags %}
 {% load pipeline %}
 
-{% block content %}
-<div>
-<h3> Set up Croo and Trip Leader application for Trips {{ trips_year.year }} </h3>
+{% block header %}
+<h2> Setup Volunteer application for Trips {{ trips_year.year }} </h2>
+{% endblock %}
 
-{# TODO: show last year's application questions? #}
+{% block content %}
 
 <p> Hi directors! This is where you set up the Leader and Croo application. You need to do a few things:
 <ol>
@@ -16,8 +16,6 @@
   <li>Edit the application questions and other information below.</li>
 </ol>
 </p>
-
-</div>
 
 {% crispy form %}
 
