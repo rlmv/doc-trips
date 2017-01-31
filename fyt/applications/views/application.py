@@ -281,7 +281,7 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
         return obj
 
     def get_form(self, **kwargs):
-        return crispify(super().get_form(**kwargs))
+        return crispify(super().get_form(**kwargs), submit_text='Save')
 
     def extra_context(self):
         trips_year = TripsYear.objects.current()
