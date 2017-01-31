@@ -348,6 +348,7 @@ class BlockDirectorate(GroupRequiredMixin):
             in_group = self.check_membership(self.get_group_required())
             if not in_group:
                 raise PermissionDenied
+
         return super(GroupRequiredMixin, self).dispatch(
             request, *args, **kwargs
         )
