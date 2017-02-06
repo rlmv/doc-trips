@@ -1,8 +1,14 @@
 
 {% extends "base.html" %}
 
-{% block content %}
-<h3> Work in progress </h3>
+{% block header %}
+<h2> DOC First-Year Trips </h2>
+{% endblock %}
 
-This is the new DOC Trips website. 
+{% block content %}
+<p><a href="http://outdoors.dartmouth.edu/firstyear/">Click here</a> for more information about the First-Year Trips program.</p>
+
+<p>Incoming students, <a href={% url 'incoming:portal' %}>click here</a> to register for a trip.</p>
+
+<p>Current students can find the volunteer application <a href={% url 'applications:portal' %}>here</a>.</p>
 {% endblock %}

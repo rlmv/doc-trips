@@ -13,7 +13,6 @@ Immediate
   waitlist and trip leaders, or croo waitlist and leader waitlist, etc
 * Add trainings signup app
 * Add checkboxes/formset for batch updating FA/CPR trainings.
-* Revamp landing page content - link to DOC pages
 * Make section/triptypes optional in leader form if the leader supplement has
   not yet been uploaded.
 * Spreadsheets for various registration sub-categories
