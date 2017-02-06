@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from .forms import CrooApplicationGradeForm
+from .forms import CrooApplicationGradeForm, LeaderSupplementForm
 from .models import (
     Answer,
     ApplicationInformation,
@@ -289,24 +289,6 @@ class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
         self.mock_user()
         response = self.app.get(reverse('applications:apply'), user=self.user)
         self.assertTemplateUsed(response, 'applications/not_available.html')
-
-
-class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
-
-    csrf_checks = False
-
-    def setUp(self):
-        self.init_current_trips_year()
-        self.init_previous_trips_year()
-
-    def test_file_uploads_dont_overwrite_each_other(self):
-            # TODO / scrap
-        self.mock_user()
-        self.open_application()
-
-        res = self.app.get(reverse('applications:apply'), user=self.user)
-        # print(res)
-        #  print(res.form)
 
 
 class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
