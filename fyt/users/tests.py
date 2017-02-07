@@ -87,3 +87,12 @@ class UserEmailMiddlewareTestCase(WebTestCase):
             netid='d34898z', name='test', email='')
         resp = self.app.get(reverse('users:logout'), user=user).follow()
         self.assertFalse(resp.request.path.startswith(reverse('users:update_email')))
+
+
+class UserUrlsTestCase(WebTestCase):
+
+    def test_unauthorized_user_is_redirected_to_login(self):
+        target_url = reverse('applications:portal')
+        resp = self.app.get(target_url, status=302)
+        login_url = reverse('users:login') + '?next=' + target_url
+        self.assertEqual(resp.url, login_url)
