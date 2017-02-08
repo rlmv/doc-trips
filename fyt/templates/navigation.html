@@ -11,7 +11,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href={% url "home" %}><span class="fa fa-tree"></span> DOC Trips</a>
+            <a class="navbar-brand" href={% url "home" %}><i class="fa fa-tree"></i> DOC Trips</a>
         </div>
 
         <!---- collapses to a dropdown for small screens -->
@@ -23,26 +23,26 @@
                 <li><a href="{% url 'applications:portal' %}">Volunteers</a></li>
 
                 {% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
-                <li><a href="{% url 'applications:grade:graders' %}"><span class="fa fa-fw fa-pencil-square-o"></span> Grade Applications</a></li>
+                <li><a href="{% url 'applications:grade:graders' %}"><i class="fa fa-fw fa-pencil-square-o"></i> Grade Applications</a></li>
                 {% endif %}
 
                 {% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
-                <li><a href="{% url 'db:current' %}"><span class="fa fa-fw fa-database"></span> Database</a></li>
+                <li><a href="{% url 'db:current' %}"><i class="fa fa-fw fa-database"></i> Database</a></li>
                 {% endif %}
 
                 {% if perms.permissions.can_edit_settings %}
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="fa fa-fw fa-gear"></span> Settings <span class="fa fa-caret-down"></span></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-fw fa-gear"></i> Settings <i class="fa fa-caret-down"></i></a>
 
                     <ul class="dropdown-menu" role="menu">
 
-                        <li><a href="{% url 'permissions:set_permissions' %}"><span class="fa fa-fw fa-user-plus"></span> User Permissions </a></li>
+                        <li><a href="{% url 'permissions:set_permissions' %}"><i class="fa fa-fw fa-user-plus"></i> User Permissions </a></li>
 
-                        <li><a href="{% url 'timetable:timetable' %}"><span class="fa fa-fw fa-calendar"></span> Calendar and Access </a></li>
+                        <li><a href="{% url 'timetable:timetable' %}"><i class="fa fa-fw fa-calendar"></i> Calendar and Access </a></li>
 
-                        <li><a href="{% url 'applications:setup' %}"><span class="fa fa-fw fa-file-word-o"></span> Volunteer Applications</a></li>
+                        <li><a href="{% url 'applications:setup' %}"><i class="fa fa-fw fa-file-word-o"></i> Volunteer Applications</a></li>
 
-                        <li><a href="{% url 'settings:settings' %}"><span class="fa fa-fw fa-file-word-o"></span> Registration </a></li>
+                        <li><a href="{% url 'settings:settings' %}"><i class="fa fa-fw fa-file-word-o"></i> Registration </a></li>
 
                         <li><a href="{% url 'applications:setup_portal' %}"><i class="fa fa-fw fa-file-text-o"></i> Trip Assignment Descriptions </a></li>
 
@@ -59,14 +59,14 @@
                 {% if user.is_authenticated %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <span class="fa fa-fw fa-user"></span> {{ user }} <span class="fa fa-caret-down">
+                        <i class="fa fa-fw fa-user"></i> {{ user }} <i class="fa fa-caret-down"></i>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="{% url 'users:logout' %}"> Logout <span class="fa fa-fw fa-sign-out"></span></a></li>
+                            <li><a href="{% url 'users:logout' %}"> Logout <i class="fa fa-fw fa-sign-out"></i></a></li>
                         </ul>
                     </li>
                     {% else %}
-                    <li> <a class="navbar-link" href="{% url 'users:login' %}"><span class="fa fa-fw fa-sign-in"></span> Login</a></li>
+                    <li> <a class="navbar-link" href="{% url 'users:login' %}"><i class="fa fa-fw fa-sign-in"></i> Login</a></li>
                     {% endif %}
                 </ul>
 

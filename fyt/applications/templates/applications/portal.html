@@ -6,12 +6,12 @@
 
 {% block content %}
 
-<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">Logout <span class="fa fa-sign-out"></span></a></p>
+<p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">Logout <i class="fa fa-sign-out"></i></a></p>
 
 <h2> Trip Leader and Croo Application </h2>
 <strong>
 {% if timetable.applications_available %}
-<p><a href="{% url 'applications:apply' %}"> <span class="fa fa-edit"></span> Edit your application &mdash; available until {{ timetable.applications_close }} </a></p>
+<p><a href="{% url 'applications:apply' %}"> <i class="fa fa-edit"></i> Edit your application &mdash; available until {{ timetable.applications_close }} </a></p>
 {% else %}
 <p> Trip and Croo Applications are not available at this time </p>
 {% endif %}
