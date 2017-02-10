@@ -545,6 +545,55 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertQsEqual(GeneralApplication.objects.croo_members(trips_year), [croo])
 
 
+class ApplicationFormsTestCase(TripsTestCase):
+
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.section = mommy.make(Section, trips_year=self.trips_year, pk=1)
+        self.app = make_application(trips_year=self.trips_year)
+        self.leader_app = self.app.leader_supplement
+
+    def test_adds_section_fields(self):
+        form = LeaderSupplementForm(self.trips_year)
+        self.assertIn('section_1', form.fields)
+
+    def test_initial_section_choice_is_populated(self):
+        self.leader_app.set_section_preference(self.section, 'PREFER')
+        form = LeaderSupplementForm(self.trips_year, instance=self.leader_app)
+        self.assertEqual(form.fields['section_1'].initial, 'PREFER')
+
+    def test_new_section_choice_is_saved(self):
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'section_1': 'AVAILABLE'})
+        form.save()
+
+        prefs = self.leader_app.leadersectionchoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].section, self.section)
+        self.assertEqual(prefs[0].preference, 'AVAILABLE')
+
+    def test_existing_section_choice_is_updated(self):
+        # Initial choice
+        self.leader_app.set_section_preference(self.section, 'PREFER')
+
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'section_1': 'AVAILABLE'})
+        form.save()
+
+        prefs = self.leader_app.leadersectionchoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].section, self.section)
+        self.assertEqual(prefs[0].preference, 'AVAILABLE')
+
+    def test_section_field_names(self):
+        section_3 = mommy.make(Section, trips_year=self.trips_year, pk=3)
+        form = LeaderSupplementForm(self.trips_year)
+
+        self.assertEqual(form._section_field_names(), ['section_1', 'section_3'])
+
+
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
 
     def setUp(self):

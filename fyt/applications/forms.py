@@ -268,9 +268,8 @@ class LeaderSupplementForm(forms.ModelForm):
 
         instance = kwargs.get('instance')
 
-        sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['section_preference'] = SectionChoiceField(
-            sections, instance=instance, label='Section Preference')
+        self.sections = Section.objects.filter(trips_year=trips_year)
+        self._add_section_fields(self.sections)
 
         triptypes = TripType.objects.visible(trips_year)
         self.fields['triptype_preference'] = TripTypeChoiceField(
@@ -278,13 +277,66 @@ class LeaderSupplementForm(forms.ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = LeaderSupplementLayout()
+        self.helper.layout = LeaderSupplementLayout(self._section_field_names())
+
+    def _section_field_name(self, section):
+        """The name of a section choice field."""
+        return "section_{}".format(section.pk)
+
+    def _section_field_names(self):
+        return [self._section_field_name(s) for s in self.sections]
+
+    def _section_field(self, section, initial):
+        """Dynamically create a field for a section preference."""
+        return forms.ChoiceField(
+            initial=initial,
+            choices=LEADER_SECTION_CHOICES,
+            required=True,
+            label=str(section)
+        )
+
+    def _add_section_fields(self, sections):
+        initial = self._get_initial_section_choices(sections)
+
+        for section in sections:
+            field = self._section_field(section, initial[section])
+            self.fields[self._section_field_name(section)] = field
+
+    def _get_initial_section_choices(self, sections):
+        initial = {s: "" for s in sections}
+
+        if self.instance:
+            initial.update({
+                pref.section: pref.preference
+                for pref in self.instance.leadersectionchoice_set.all()
+            })
+
+        return initial
+
+    def _save_section_choices(self):
+
+        def get_preference(section):
+            return self.cleaned_data[self._section_field_name(section)]
+
+        sections = set(self.sections)
+
+        # Update old answers
+        for pref in self.instance.leadersectionchoice_set.all():
+            new_pref = get_preference(pref.section)
+            if new_pref != pref.preference:
+                pref.preference = new_pref
+                pref.save()
+
+            sections.remove(pref.section)
+
+        # Save new answers
+        for s in sections:
+            self.instance.set_section_preference(s, get_preference(s))
 
     def save(self):
         application = super().save()
 
-        self.fields['section_preference'].save_preferences(
-            application, self.cleaned_data['section_preference'])
+        self._save_section_choices()
 
         self.fields['triptype_preference'].save_preferences(
             application, self.cleaned_data['triptype_preference'])
@@ -442,7 +494,7 @@ class ApplicationLayout(Layout):
 
 class LeaderSupplementLayout(Layout):
 
-    def __init__(self):
+    def __init__(self, section_fields):
         super().__init__(
             Fieldset(
                 'Trip Leader Availability',
@@ -459,7 +511,10 @@ class LeaderSupplementLayout(Layout):
                     "absolutely cannot participate on those dates or in that "
                     "activity.</p>"
                 ),
-                'section_preference',
+                Fieldset(
+                    'Sections',
+                    *section_fields
+                ),
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
