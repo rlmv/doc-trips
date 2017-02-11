@@ -12,14 +12,11 @@ from fyt.applications.models import (
     CrooSupplement,
     GeneralApplication,
     LeaderApplicationGrade,
-    LeaderSectionChoice,
     LeaderSupplement,
-    LeaderTripTypeChoice,
     QualificationTag,
     Question,
 )
 from fyt.db.models import TripsYear
-from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.forms import crispify
@@ -228,28 +225,6 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = CrooSupplementLayout()
-
-
-class LeaderSectionChoiceWidget(_BaseChoiceWidget):
-    # TODO: override for Leader Section preferences
-    def label_value(self, section):
-        return '%s &mdash; %s' % (section.name, section.leader_date_str())
-
-
-class SectionChoiceField(_BaseChoiceField):
-    _type_name = 'section'
-    _target_name = 'application'
-    _model = LeaderSectionChoice
-    _widget = LeaderSectionChoiceWidget
-    _choices = LEADER_SECTION_CHOICES
-
-
-class TripTypeChoiceField(_BaseChoiceField):
-    _type_name = 'triptype'
-    _target_name = 'application'
-    _model = LeaderTripTypeChoice
-    _widget = _BaseChoiceWidget
-    _choices = LEADER_TRIPTYPE_CHOICES
 
 
 class SectionPreferenceHandler:
