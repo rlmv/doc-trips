@@ -257,6 +257,7 @@ class PreferenceHandler:
     Class that handles section and triptype preferences and dynamic
     application questions.
     """
+
     # The name of the attribute on the instance which links to the queryset
     # of through objects
     through_qs_name = 'leadersectionchoice_set'
@@ -337,8 +338,11 @@ class PreferenceHandler:
         return initial
 
     def save(self):
-        """Save the through objects."""
+        """
+        Save the through objects.
 
+        This must be called after the form's `save` method has been called.
+        """
         def get_cleaned_data(target):
             return self.form.cleaned_data[self.formfield_name(target)]
 
@@ -358,6 +362,14 @@ class PreferenceHandler:
         # Save new answers
         for t in targets:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
+
+
+class TripTypePreferenceHandler(PreferenceHandler):
+    through_qs_name = 'leadertriptypechoice_set'
+    through_creator = 'set_triptype_preference'
+    data_field = 'preference'
+    target_field = 'triptype'
+    choices = LEADER_TRIPTYPE_CHOICES
 
 
 class LeaderSupplementForm(forms.ModelForm):
@@ -382,20 +394,20 @@ class LeaderSupplementForm(forms.ModelForm):
         self.fields.update(self.section_preference_handler.get_formfields())
 
         triptypes = TripType.objects.visible(trips_year)
-        self.fields['triptype_preference'] = TripTypeChoiceField(
-            triptypes, instance=instance, label='Trip Type Preference')
+        self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
+        self.fields.update(self.triptype_handler.get_formfields())
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = LeaderSupplementLayout(self.section_preference_handler.formfield_names())
+        self.helper.layout = LeaderSupplementLayout(
+            self.section_preference_handler.formfield_names(),
+            self.triptype_handler.formfield_names())
 
     def save(self):
         application = super().save()
 
         self.section_preference_handler.save()
-
-        self.fields['triptype_preference'].save_preferences(
-            application, self.cleaned_data['triptype_preference'])
+        self.triptype_handler.save()
 
         return application
 
@@ -550,7 +562,7 @@ class ApplicationLayout(Layout):
 
 class LeaderSupplementLayout(Layout):
 
-    def __init__(self, section_fields):
+    def __init__(self, section_fields, triptype_fields):
         super().__init__(
             Fieldset(
                 'Trip Leader Availability',
@@ -574,7 +586,10 @@ class LeaderSupplementLayout(Layout):
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
-                'triptype_preference',
+                Fieldset(
+                    'Trip Types',
+                    *triptype_fields
+                ),
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),
                 Field('cannot_participate_in', rows=2),

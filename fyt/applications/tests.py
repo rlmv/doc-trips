@@ -545,7 +545,7 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertQsEqual(GeneralApplication.objects.croo_members(trips_year), [croo])
 
 
-class ApplicationFormsTestCase(TripsTestCase):
+class LeaderSupplementFormTestCase(TripsTestCase):
 
     def setUp(self):
         self.trips_year = self.init_trips_year()
@@ -594,6 +594,23 @@ class ApplicationFormsTestCase(TripsTestCase):
         form = LeaderSupplementForm(self.trips_year)
 
         self.assertEqual(form.section_preference_handler.formfield_names(), ['section_1', 'section_3'])
+
+    def test_triptype_field(self):
+        triptype1 = mommy.make(
+            TripType,
+            trips_year=self.trips_year,
+            pk=1
+        )
+
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'triptype_1': 'NOT AVAILABLE', 'section_1': 'PREFER'})
+        form.save()
+
+        prefs = self.leader_app.leadertriptypechoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].triptype, triptype1)
+        self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
 
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
