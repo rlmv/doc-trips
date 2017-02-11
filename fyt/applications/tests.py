@@ -549,7 +549,8 @@ class ApplicationFormsTestCase(TripsTestCase):
 
     def setUp(self):
         self.trips_year = self.init_trips_year()
-        self.section = mommy.make(Section, trips_year=self.trips_year, pk=1)
+        self.section = mommy.make(
+            Section, trips_year=self.trips_year, pk=1, name='A')
         self.app = make_application(trips_year=self.trips_year)
         self.leader_app = self.app.leader_supplement
 
@@ -588,10 +589,11 @@ class ApplicationFormsTestCase(TripsTestCase):
         self.assertEqual(prefs[0].preference, 'AVAILABLE')
 
     def test_section_field_names(self):
-        section_3 = mommy.make(Section, trips_year=self.trips_year, pk=3)
+        section_3 = mommy.make(
+            Section, trips_year=self.trips_year, pk=3, name='C')
         form = LeaderSupplementForm(self.trips_year)
 
-        self.assertEqual(form._section_field_names(), ['section_1', 'section_3'])
+        self.assertEqual(form.section_preference_handler._section_field_names(), ['section_1', 'section_3'])
 
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
