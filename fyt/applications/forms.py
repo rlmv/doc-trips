@@ -295,6 +295,10 @@ class SectionPreferenceHandler:
     def create_through(self, instance, target, data):
         return getattr(instance, self.through_creator)(target, data)
 
+    def formfield_label(self, section):
+        """The label for the formfield - section specific"""
+        return '%s &mdash; %s' % (section.name, section.leader_date_str())
+
     def formfield_name(self, section):
         """The name of the choice form field."""
         return "{}_{}".format(self.target_field, section.pk)
@@ -309,7 +313,7 @@ class SectionPreferenceHandler:
             initial=initial,
             choices=self.choices,
             required=True,
-            label=str(target)
+            label=self.formfield_label(target)
         )
 
     def get_formfields(self):
@@ -370,6 +374,9 @@ class TripTypePreferenceHandler(SectionPreferenceHandler):
     data_field = 'preference'
     target_field = 'triptype'
     choices = LEADER_TRIPTYPE_CHOICES
+
+    def formfield_label(self, triptype):
+        return triptype.name
 
 
 class LeaderSupplementForm(forms.ModelForm):

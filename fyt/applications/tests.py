@@ -1,5 +1,5 @@
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -550,13 +550,19 @@ class LeaderSupplementFormTestCase(TripsTestCase):
     def setUp(self):
         self.trips_year = self.init_trips_year()
         self.section = mommy.make(
-            Section, trips_year=self.trips_year, pk=1, name='A')
+            Section, trips_year=self.trips_year, pk=1, name='A',
+            leaders_arrive=date(2015, 1, 1))
         self.app = make_application(trips_year=self.trips_year)
         self.leader_app = self.app.leader_supplement
 
     def test_adds_section_fields(self):
         form = LeaderSupplementForm(self.trips_year)
         self.assertIn('section_1', form.fields)
+
+    def test_section_field_label(self):
+        form = LeaderSupplementForm(self.trips_year)
+        self.assertEqual(form.fields['section_1'].label,
+                         'A &mdash; Jan 01 to Jan 06')
 
     def test_initial_section_choice_is_populated(self):
         self.leader_app.set_section_preference(self.section, 'PREFER')
@@ -603,6 +609,7 @@ class LeaderSupplementFormTestCase(TripsTestCase):
     def test_triptype_field(self):
         triptype1 = mommy.make(
             TripType,
+            name='Climbing',
             trips_year=self.trips_year,
             pk=1
         )
@@ -611,6 +618,8 @@ class LeaderSupplementFormTestCase(TripsTestCase):
             self.trips_year, instance=self.leader_app,
             data={'triptype_1': 'NOT AVAILABLE', 'section_1': 'PREFER'})
         form.save()
+
+        self.assertEqual(form.fields['triptype_1'].label, 'Climbing')
 
         prefs = self.leader_app.leadertriptypechoice_set.all()
         self.assertEquals(len(prefs), 1)
