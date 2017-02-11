@@ -588,12 +588,12 @@ class ApplicationFormsTestCase(TripsTestCase):
         self.assertEqual(prefs[0].section, self.section)
         self.assertEqual(prefs[0].preference, 'AVAILABLE')
 
-    def test_section_field_names(self):
+    def test_formfield_names(self):
         section_3 = mommy.make(
             Section, trips_year=self.trips_year, pk=3, name='C')
         form = LeaderSupplementForm(self.trips_year)
 
-        self.assertEqual(form.section_preference_handler._section_field_names(), ['section_1', 'section_3'])
+        self.assertEqual(form.section_preference_handler.formfield_names(), ['section_1', 'section_3'])
 
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):

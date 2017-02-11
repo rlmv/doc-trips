@@ -257,66 +257,107 @@ class PreferenceHandler:
     Class that handles section and triptype preferences and dynamic
     application questions.
     """
+    # The name of the attribute on the instance which links to the queryset
+    # of through objects
+    through_qs_name = 'leadersectionchoice_set'
 
-    def __init__(self, form, choices, sections):
+    # Name of the method on the instance which creates a new through object
+    # with the specified (target, data) arguments.
+    through_creator = 'set_section_preference'
+
+    # The name of the extra data field on the through model
+    data_field = 'preference'
+
+    # The name of the field containing the other end of the M2M relationship
+    # (section, triptype, etc.) on the through model
+    target_field = 'section'
+
+    # Choices allowed in the data field of the through object
+    choices = LEADER_SECTION_CHOICES
+
+    def __init__(self, form, targets):
         self.form = form
-        self.choices = choices
-        self.sections = sections
+        self.targets = targets
 
-    def _section_field_name(self, section):
-        """The name of a section choice field."""
-        return "section_{}".format(section.pk)
+    def get_target(self, through):
+        return getattr(through, self.target_field)
 
-    def _section_field_names(self):
-        return [self._section_field_name(s) for s in self.sections]
+    def get_data(self, through):
+        return getattr(through, self.data_field)
 
-    def _section_field(self, section, initial):
-        """Dynamically create a field for a section preference."""
+    def set_data(self, through, data):
+        setattr(through, self.data_field, data)
+
+    def through_qs(self, instance):
+        return getattr(instance, self.through_qs_name).all()
+
+    def create_through(self, instance, target, data):
+        return getattr(instance, self.through_creator)(target, data)
+
+    def formfield_name(self, section):
+        """The name of the choice form field."""
+        return "{}_{}".format(self.target_field, section.pk)
+
+    def formfield_names(self):
+        """The names of all formfields created by this handler."""
+        return [self.formfield_name(t) for t in self.targets]
+
+    def formfield(self, target, initial):
+        """Dynamically create a field for a target preference."""
         return forms.ChoiceField(
             initial=initial,
-            choices=LEADER_SECTION_CHOICES,
+            choices=self.choices,
             required=True,
-            label=str(section)
+            label=str(target)
         )
 
-    def _get_section_fields(self):
-        initial = self._get_initial_section_choices()
+    def get_formfields(self):
+        """
+        Get all formfields for these targets, populated with initial data.
+        """
+        initial = self.get_initial()
 
         return {
-            self._section_field_name(s): self._section_field(s, initial[s])
-            for s in self.sections
+            self.formfield_name(t): self.formfield(t, initial[t])
+            for t in self.targets
         }
 
-    def _get_initial_section_choices(self):
-        initial = {s: "" for s in self.sections}
+    def get_initial(self):
+        """
+        Get a dictionary of initial data, keyed by target.
+        """
+        initial = {t: "" for t in self.targets}
 
         if self.form.instance:
             initial.update({
-                pref.section: pref.preference
-                for pref in self.form.instance.leadersectionchoice_set.all()
+                self.get_target(pref): self.get_data(pref)
+                for pref in self.through_qs(self.form.instance)
             })
 
         return initial
 
     def save(self):
+        """Save the through objects."""
 
-        def get_preference(section):
-            return self.form.cleaned_data[self._section_field_name(section)]
+        def get_cleaned_data(target):
+            return self.form.cleaned_data[self.formfield_name(target)]
 
-        sections = set(self.sections)
+        targets = set(self.targets)
 
         # Update old answers
-        for pref in self.form.instance.leadersectionchoice_set.all():
-            new_pref = get_preference(pref.section)
-            if new_pref != pref.preference:
-                pref.preference = new_pref
+        for pref in self.through_qs(self.form.instance):
+            target = self.get_target(pref)
+            new_data = get_cleaned_data(target)
+
+            if new_data != self.get_data(pref):
+                self.set_data(pref, new_data)
                 pref.save()
 
-            sections.remove(pref.section)
+            targets.remove(target)
 
         # Save new answers
-        for s in sections:
-            self.form.instance.set_section_preference(s, get_preference(s))
+        for t in targets:
+            self.create_through(self.form.instance, t, get_cleaned_data(t))
 
 
 class LeaderSupplementForm(forms.ModelForm):
@@ -337,8 +378,8 @@ class LeaderSupplementForm(forms.ModelForm):
 
         self.sections = Section.objects.filter(trips_year=trips_year)
         self.section_preference_handler = PreferenceHandler(
-            self, LEADER_SECTION_CHOICES, self.sections)
-        self.fields.update(self.section_preference_handler._get_section_fields())
+            self, self.sections)
+        self.fields.update(self.section_preference_handler.get_formfields())
 
         triptypes = TripType.objects.visible(trips_year)
         self.fields['triptype_preference'] = TripTypeChoiceField(
@@ -346,7 +387,7 @@ class LeaderSupplementForm(forms.ModelForm):
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = LeaderSupplementLayout(self.section_preference_handler._section_field_names())
+        self.helper.layout = LeaderSupplementLayout(self.section_preference_handler.formfield_names())
 
     def save(self):
         application = super().save()
