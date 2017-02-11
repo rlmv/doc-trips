@@ -252,7 +252,7 @@ class TripTypeChoiceField(_BaseChoiceField):
     _choices = LEADER_TRIPTYPE_CHOICES
 
 
-class PreferenceHandler:
+class SectionPreferenceHandler:
     """
     Class that handles section and triptype preferences and dynamic
     application questions.
@@ -364,7 +364,7 @@ class PreferenceHandler:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
 
 
-class TripTypePreferenceHandler(PreferenceHandler):
+class TripTypePreferenceHandler(SectionPreferenceHandler):
     through_qs_name = 'leadertriptypechoice_set'
     through_creator = 'set_triptype_preference'
     data_field = 'preference'
@@ -386,12 +386,9 @@ class LeaderSupplementForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        instance = kwargs.get('instance')
-
-        self.sections = Section.objects.filter(trips_year=trips_year)
-        self.section_preference_handler = PreferenceHandler(
-            self, self.sections)
-        self.fields.update(self.section_preference_handler.get_formfields())
+        sections = Section.objects.filter(trips_year=trips_year)
+        self.section_handler = SectionPreferenceHandler(self, sections)
+        self.fields.update(self.section_handler.get_formfields())
 
         triptypes = TripType.objects.visible(trips_year)
         self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
@@ -400,13 +397,13 @@ class LeaderSupplementForm(forms.ModelForm):
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout(
-            self.section_preference_handler.formfield_names(),
+            self.section_handler.formfield_names(),
             self.triptype_handler.formfield_names())
 
     def save(self):
         application = super().save()
 
-        self.section_preference_handler.save()
+        self.section_handler.save()
         self.triptype_handler.save()
 
         return application

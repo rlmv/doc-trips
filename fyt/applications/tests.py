@@ -589,11 +589,16 @@ class LeaderSupplementFormTestCase(TripsTestCase):
         self.assertEqual(prefs[0].preference, 'AVAILABLE')
 
     def test_formfield_names(self):
-        section_3 = mommy.make(
-            Section, trips_year=self.trips_year, pk=3, name='C')
+        mommy.make(
+            Section,
+            trips_year=self.trips_year,
+            pk=3,
+            name='C'
+        )
         form = LeaderSupplementForm(self.trips_year)
 
-        self.assertEqual(form.section_preference_handler.formfield_names(), ['section_1', 'section_3'])
+        self.assertEqual(form.section_handler.formfield_names(),
+                         ['section_1', 'section_3'])
 
     def test_triptype_field(self):
         triptype1 = mommy.make(
