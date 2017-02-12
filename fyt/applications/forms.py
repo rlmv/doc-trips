@@ -3,6 +3,7 @@ from crispy_forms.bootstrap import Alert
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
@@ -227,29 +228,29 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper.layout = CrooSupplementLayout()
 
 
-class SectionPreferenceHandler:
+class PreferenceHandler:
     """
-    Class that handles section and triptype preferences and dynamic
+    Base class that handles section and triptype preferences and dynamic
     application questions.
     """
 
     # The name of the attribute on the instance which links to the queryset
     # of through objects
-    through_qs_name = 'leadersectionchoice_set'
+    through_qs_name = None
 
     # Name of the method on the instance which creates a new through object
     # with the specified (target, data) arguments.
-    through_creator = 'set_section_preference'
+    through_creator = None
 
     # The name of the extra data field on the through model
-    data_field = 'preference'
+    data_field = None
 
     # The name of the field containing the other end of the M2M relationship
     # (section, triptype, etc.) on the through model
-    target_field = 'section'
+    target_field = None
 
     # Choices allowed in the data field of the through object
-    choices = LEADER_SECTION_CHOICES
+    choices = None
 
     def __init__(self, form, targets):
         self.form = form
@@ -270,13 +271,13 @@ class SectionPreferenceHandler:
     def create_through(self, instance, target, data):
         return getattr(instance, self.through_creator)(target, data)
 
-    def formfield_label(self, section):
-        """The label for the formfield - section specific"""
-        return '%s &mdash; %s' % (section.name, section.leader_date_str())
+    def formfield_label(self, target):
+        """The label for the formfield."""
+        raise ImproperlyConfigured('Implement `formfield_label`')
 
-    def formfield_name(self, section):
+    def formfield_name(self, target):
         """The name of the choice form field."""
-        return "{}_{}".format(self.target_field, section.pk)
+        return "{}_{}".format(self.target_field, target.pk)
 
     def formfield_names(self):
         """The names of all formfields created by this handler."""
@@ -343,7 +344,18 @@ class SectionPreferenceHandler:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
 
 
-class TripTypePreferenceHandler(SectionPreferenceHandler):
+class SectionPreferenceHandler(PreferenceHandler):
+    through_qs_name = 'leadersectionchoice_set'
+    through_creator = 'set_section_preference'
+    data_field = 'preference'
+    target_field = 'section'
+    choices = LEADER_SECTION_CHOICES
+
+    def formfield_label(self, section):
+        return '%s &mdash; %s' % (section.name, section.leader_date_str())
+
+
+class TripTypePreferenceHandler(PreferenceHandler):
     through_qs_name = 'leadertriptypechoice_set'
     through_creator = 'set_triptype_preference'
     data_field = 'preference'
