@@ -367,6 +367,20 @@ class Registration(MedicalMixin, DatabaseModel):
         TripType, through=RegistrationTripTypeChoice
     )
 
+    def set_section_preference(self, section, preference):
+        RegistrationSectionChoice.objects.create(
+            registration=self,
+            section=section,
+            preference=preference
+        )
+
+    def set_triptype_preference(self, triptype, preference):
+        RegistrationTripTypeChoice.objects.create(
+            registration=self,
+            triptype=triptype,
+            preference=preference
+        )
+
     def sections_by_preference(self, preference):
         qs = (self.registrationsectionchoice_set
                 .filter(preference=preference)

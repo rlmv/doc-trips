@@ -14,6 +14,7 @@ from .models import (
     RegistrationTripTypeChoice,
 )
 
+from fyt.applications.forms import PreferenceHandler
 from fyt.db.models import TripsYear
 from fyt.incoming.models import Settings
 from fyt.transport.models import Stop
@@ -188,6 +189,28 @@ class TripTypeChoiceField(_BaseChoiceField):
     _choices = REGISTRATION_TRIPTYPE_CHOICES
 
 
+class SectionPreferenceHandler(PreferenceHandler):
+    through_qs_name = 'registrationsectionchoice_set'
+    through_creator = 'set_section_preference'
+    data_field = 'preference'
+    target_field = 'section'
+    choices = REGISTRATION_SECTION_CHOICES
+
+    def formfield_label(self, section):
+        return '{} &mdash; {}' .format(section.name, section.trippee_date_str())
+
+
+class TripTypePreferenceHandler(PreferenceHandler):
+    through_qs_name = 'registrationtriptypechoice_set'
+    through_creator = 'set_triptype_preference'
+    data_field = 'preference'
+    target_field = 'triptype'
+    choices = REGISTRATION_TRIPTYPE_CHOICES
+
+    def formfield_label(self, triptype):
+        return triptype.name
+
+
 class RegistrationForm(forms.ModelForm):
     """
     Form for Trippee registration
@@ -219,12 +242,12 @@ class RegistrationForm(forms.ModelForm):
         self.trips_year = trips_year
 
         sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['section_preference'] = SectionChoiceField(
-            sections, instance=instance, label='')
+        self.section_handler = SectionPreferenceHandler(self, sections)
+        self.fields.update(self.section_handler.get_formfields())
 
         triptypes = TripType.objects.visible(trips_year)
-        self.fields['triptype_preference'] = TripTypeChoiceField(
-            triptypes, instance=instance, label='')
+        self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
+        self.fields.update(self.triptype_handler.get_formfields())
 
         external_stops = Stop.objects.external(trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
@@ -268,16 +291,16 @@ class RegistrationForm(forms.ModelForm):
             'doc_membership_cost': settings.doc_membership_cost,
             'contact_url': settings.contact_url,
         }
-        self.helper.layout = RegistrationFormLayout(**kwargs)
+        self.helper.layout = RegistrationFormLayout(
+            self.section_handler.formfield_names(),
+            self.triptype_handler.formfield_names(),
+            **kwargs)
 
     def save(self):
         registration = super().save()
 
-        self.fields['section_preference'].save_preferences(
-            registration, self.cleaned_data['section_preference'])
-
-        self.fields['triptype_preference'].save_preferences(
-            registration, self.cleaned_data['triptype_preference'])
+        self.section_handler.save()
+        self.triptype_handler.save()
 
         return registration
 
