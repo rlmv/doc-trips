@@ -80,79 +80,19 @@ class ApplicationForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.questions = Question.objects.filter(
-            trips_year=trips_year
-        )
-
-        if self.instance:
-            self.old_answers = self.instance.answer_set.all()
-        else:
-            self.old_answers = []
-
-        initial = {
-            q: "" for q in self.questions
-        }
-
-        if self.instance:
-            initial.update({
-                a.question: a.answer for a in self.old_answers
-            })
-
-        for question in self.questions:
-            self.fields[self._question_name(question)] = (
-                self._question_field(question, initial[question])
-            )
+        questions = Question.objects.filter(trips_year=trips_year)
+        self.question_handler = QuestionHandler(self, questions)
+        self.fields.update(self.question_handler.get_formfields())
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = ApplicationLayout(
-            [self._question_name(q) for q in self.questions]
+            self.question_handler.formfield_names()
         )
-
-    def _question_name(self, question):
-        """Name of a dynamic application question field."""
-        return "question_{}".format(question.pk)
-
-    def _question_field(self, question, initial):
-        """Dynamically create a field for the question."""
-        return forms.CharField(
-            initial=initial,
-            label=question.question,
-            required=False,
-            widget=forms.Textarea(attrs={'rows': 8})
-        )
-
-    def save_answers(self, instance):
-        """
-        Save answers to dynamic questions.
-        """
-        def get_answer(question):
-            return self.cleaned_data[self._question_name(question)]
-
-        unanswered_questions = set(self.questions)
-
-        # Update old answers
-        for answer in self.old_answers:
-            new_answer = get_answer(answer.question)
-            if new_answer != answer.answer:
-                print('changed', answer.answer, 'to', new_answer)
-                answer.answer = new_answer
-                answer.save()
-
-            unanswered_questions.remove(answer.question)
-
-        # Save remaining new answers
-        for q in unanswered_questions:
-            answer = Answer.objects.create(
-                question=q,
-                application=instance,
-                answer=get_answer(q)
-            )
-            print('new', answer)
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        self.save_answers(instance)
+        self.question_handler.save()
 
         return instance
 
@@ -342,6 +282,27 @@ class PreferenceHandler:
         # Save new answers
         for t in targets:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
+
+
+class QuestionHandler(PreferenceHandler):
+    """
+    Handler for dynamic questions and answers.
+    """
+    through_qs_name = 'answer_set'
+    through_creator = 'answer_question'
+    data_field = 'answer'
+    target_field = 'question'
+
+    def formfield_label(self, question):
+        return question.question
+
+    def formfield(self, question, initial):
+        return forms.CharField(
+            initial=initial,
+            label=self.formfield_label(question),
+            required=False,
+            widget=forms.Textarea(attrs={'rows': 8})
+        )
 
 
 class SectionPreferenceHandler(PreferenceHandler):
