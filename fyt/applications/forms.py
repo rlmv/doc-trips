@@ -3,6 +3,7 @@ from crispy_forms.bootstrap import Alert
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
@@ -12,14 +13,11 @@ from fyt.applications.models import (
     CrooSupplement,
     GeneralApplication,
     LeaderApplicationGrade,
-    LeaderSectionChoice,
     LeaderSupplement,
-    LeaderTripTypeChoice,
     QualificationTag,
     Question,
 )
 from fyt.db.models import TripsYear
-from fyt.incoming.forms import _BaseChoiceField, _BaseChoiceWidget
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.forms import crispify
@@ -230,26 +228,142 @@ class CrooSupplementForm(forms.ModelForm):
         self.helper.layout = CrooSupplementLayout()
 
 
-class LeaderSectionChoiceWidget(_BaseChoiceWidget):
-    # TODO: override for Leader Section preferences
-    def label_value(self, section):
+class PreferenceHandler:
+    """
+    Base class that handles section and triptype preferences and dynamic
+    application questions.
+    """
+
+    # The name of the attribute on the instance which links to the queryset
+    # of through objects
+    through_qs_name = None
+
+    # Name of the method on the instance which creates a new through object
+    # with the specified (target, data) arguments.
+    through_creator = None
+
+    # The name of the extra data field on the through model
+    data_field = None
+
+    # The name of the field containing the other end of the M2M relationship
+    # (section, triptype, etc.) on the through model
+    target_field = None
+
+    # Choices allowed in the data field of the through object
+    choices = None
+
+    def __init__(self, form, targets):
+        self.form = form
+        self.targets = targets
+
+    def get_target(self, through):
+        return getattr(through, self.target_field)
+
+    def get_data(self, through):
+        return getattr(through, self.data_field)
+
+    def set_data(self, through, data):
+        setattr(through, self.data_field, data)
+
+    def through_qs(self, instance):
+        return getattr(instance, self.through_qs_name).all()
+
+    def create_through(self, instance, target, data):
+        return getattr(instance, self.through_creator)(target, data)
+
+    def formfield_label(self, target):
+        """The label for the formfield."""
+        raise ImproperlyConfigured('Implement `formfield_label`')
+
+    def formfield_name(self, target):
+        """The name of the choice form field."""
+        return "{}_{}".format(self.target_field, target.pk)
+
+    def formfield_names(self):
+        """The names of all formfields created by this handler."""
+        return [self.formfield_name(t) for t in self.targets]
+
+    def formfield(self, target, initial):
+        """Dynamically create a field for a target preference."""
+        return forms.ChoiceField(
+            initial=initial,
+            choices=self.choices,
+            required=True,
+            label=self.formfield_label(target)
+        )
+
+    def get_formfields(self):
+        """
+        Get all formfields for these targets, populated with initial data.
+        """
+        initial = self.get_initial()
+
+        return {
+            self.formfield_name(t): self.formfield(t, initial[t])
+            for t in self.targets
+        }
+
+    def get_initial(self):
+        """
+        Get a dictionary of initial data, keyed by target.
+        """
+        initial = {t: "" for t in self.targets}
+
+        if self.form.instance:
+            initial.update({
+                self.get_target(pref): self.get_data(pref)
+                for pref in self.through_qs(self.form.instance)
+            })
+
+        return initial
+
+    def save(self):
+        """
+        Save the through objects.
+
+        This must be called after the form's `save` method has been called.
+        """
+        def get_cleaned_data(target):
+            return self.form.cleaned_data[self.formfield_name(target)]
+
+        targets = set(self.targets)
+
+        # Update old answers
+        for pref in self.through_qs(self.form.instance):
+            target = self.get_target(pref)
+            new_data = get_cleaned_data(target)
+
+            if new_data != self.get_data(pref):
+                self.set_data(pref, new_data)
+                pref.save()
+
+            targets.remove(target)
+
+        # Save new answers
+        for t in targets:
+            self.create_through(self.form.instance, t, get_cleaned_data(t))
+
+
+class SectionPreferenceHandler(PreferenceHandler):
+    through_qs_name = 'leadersectionchoice_set'
+    through_creator = 'set_section_preference'
+    data_field = 'preference'
+    target_field = 'section'
+    choices = LEADER_SECTION_CHOICES
+
+    def formfield_label(self, section):
         return '%s &mdash; %s' % (section.name, section.leader_date_str())
 
 
-class SectionChoiceField(_BaseChoiceField):
-    _type_name = 'section'
-    _target_name = 'application'
-    _model = LeaderSectionChoice
-    _widget = LeaderSectionChoiceWidget
-    _choices = LEADER_SECTION_CHOICES
+class TripTypePreferenceHandler(PreferenceHandler):
+    through_qs_name = 'leadertriptypechoice_set'
+    through_creator = 'set_triptype_preference'
+    data_field = 'preference'
+    target_field = 'triptype'
+    choices = LEADER_TRIPTYPE_CHOICES
 
-
-class TripTypeChoiceField(_BaseChoiceField):
-    _type_name = 'triptype'
-    _target_name = 'application'
-    _model = LeaderTripTypeChoice
-    _widget = _BaseChoiceWidget
-    _choices = LEADER_TRIPTYPE_CHOICES
+    def formfield_label(self, triptype):
+        return triptype.name
 
 
 class LeaderSupplementForm(forms.ModelForm):
@@ -266,28 +380,25 @@ class LeaderSupplementForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        instance = kwargs.get('instance')
-
         sections = Section.objects.filter(trips_year=trips_year)
-        self.fields['section_preference'] = SectionChoiceField(
-            sections, instance=instance, label='Section Preference')
+        self.section_handler = SectionPreferenceHandler(self, sections)
+        self.fields.update(self.section_handler.get_formfields())
 
         triptypes = TripType.objects.visible(trips_year)
-        self.fields['triptype_preference'] = TripTypeChoiceField(
-            triptypes, instance=instance, label='Trip Type Preference')
+        self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
+        self.fields.update(self.triptype_handler.get_formfields())
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = LeaderSupplementLayout()
+        self.helper.layout = LeaderSupplementLayout(
+            self.section_handler.formfield_names(),
+            self.triptype_handler.formfield_names())
 
     def save(self):
         application = super().save()
 
-        self.fields['section_preference'].save_preferences(
-            application, self.cleaned_data['section_preference'])
-
-        self.fields['triptype_preference'].save_preferences(
-            application, self.cleaned_data['triptype_preference'])
+        self.section_handler.save()
+        self.triptype_handler.save()
 
         return application
 
@@ -442,7 +553,7 @@ class ApplicationLayout(Layout):
 
 class LeaderSupplementLayout(Layout):
 
-    def __init__(self):
+    def __init__(self, section_fields, triptype_fields):
         super().__init__(
             Fieldset(
                 'Trip Leader Availability',
@@ -459,11 +570,17 @@ class LeaderSupplementLayout(Layout):
                     "absolutely cannot participate on those dates or in that "
                     "activity.</p>"
                 ),
-                'section_preference',
+                Fieldset(
+                    'Sections',
+                    *section_fields
+                ),
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
                 ),
-                'triptype_preference',
+                Fieldset(
+                    'Trip Types',
+                    *triptype_fields
+                ),
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),
                 Field('cannot_participate_in', rows=2),

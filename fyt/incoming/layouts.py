@@ -21,7 +21,7 @@ def join_with_and(iter):
 
 class RegistrationFormLayout(Layout):
 
-    def __init__(self, **kwargs):
+    def __init__(self, section_fields, triptype_fields, **kwargs):
 
         local_sections = join_with_and(kwargs['local_sections'])
         local_sections_range = section_range(kwargs['local_sections'])
@@ -62,8 +62,8 @@ class RegistrationFormLayout(Layout):
                      "<p> " + not_local_sections + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students on sections " + not_local_sections_range + " can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
                      "<p> " + international_sections + " are the sections for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of International Student Orientation. </p> "
                      "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned it is incredibly difficult for us to change it! </strong></p>"
-                 ),
-                Field('section_preference'),
+                ),
+                Layout(*section_fields),
                 HTML("<p> If you have a particular, immovable scheduling conflict and need to come on a specific section, please elaborate below. Let us know which section(s) you can attend and which ones you cannot. </p>"),
                 Field('schedule_conflicts', rows=3),
             ),
@@ -74,8 +74,8 @@ class RegistrationFormLayout(Layout):
                      "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choose increases if you: </p>"
                      "<ul> <li>submit all your registration materials by the deadline, </li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections " + local_sections_range + ", Other regions: Sections " + not_local_sections_range + "), and </li> <li> are available for many sections. </li> </ul>"
                      "<p><strong> Registering early does not increase your chances of getting your desired trip. However, you must register by the deadline. </strong></p>"
-                 ),
-                Field('triptype_preference'),
+                ),
+                *triptype_fields
             ),
             Fieldset(
                 'T-Shirts',

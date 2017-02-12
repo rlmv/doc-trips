@@ -393,31 +393,14 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(section_preference, AVAILABLE)
 
 
-# TODO: import these from incoming tests
-
-
-def _section_preference(registration, section, preference):
-    RegistrationSectionChoice.objects.create(
-        registration=registration,
-        section=section,
-        preference=preference)
-
-
-def _triptype_preference(registration, triptype, preference):
-    RegistrationTripTypeChoice.objects.create(
-        registration=registration,
-        triptype=triptype,
-        preference=preference)
-
-
 class AssignTrippeeTestCase(WebTestCase):
 
     def test_trip_assignment(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         registration = mommy.make(Registration, trips_year=trips_year)
-        _section_preference(registration, trip.section, PREFER)
-        _triptype_preference(registration, trip.template.triptype, PREFER)
+        registration.set_section_preference(trip.section, PREFER)
+        registration.set_triptype_preference(trip.template.triptype, PREFER)
         trippee = mommy.make(
             IncomingStudent, trips_year=trips_year,
             registration=registration)

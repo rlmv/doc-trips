@@ -1,5 +1,5 @@
 import os
-from datetime import timedelta
+from datetime import date, timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import reverse
@@ -325,20 +325,6 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         self.assertEqual([inc2, inc3, inc1], sort_by_lastname([inc1, inc2, inc3]))
 
 
-def _section_preference(registration, section, preference):
-    RegistrationSectionChoice.objects.create(
-        registration=registration,
-        section=section,
-        preference=preference)
-
-
-def _triptype_preference(registration, triptype, preference):
-    RegistrationTripTypeChoice.objects.create(
-        registration=registration,
-        triptype=triptype,
-        preference=preference)
-
-
 class RegistrationModelTestCase(TripsYearTestCase):
 
     def test_must_agree_to_waiver(self):
@@ -378,8 +364,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
         trip2 = mommy.make(Trip, trips_year=trips_year, template__swimtest_required=False)
 
         reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.NON_SWIMMER)
-        _section_preference(reg, trip1.section, PREFER)
-        _section_preference(reg, trip2.section, PREFER)
+        reg.set_section_preference(trip1.section, PREFER)
+        reg.set_section_preference(trip2.section, PREFER)
 
         self.assertEqual(list(reg._base_trips_qs()), [trip2])
 
@@ -390,8 +376,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
         trip3 = mommy.make(Trip, trips_year=trips_year)
 
         reg = mommy.make(Registration, trips_year=trips_year, swimming_ability=Registration.COMPETENT)
-        _section_preference(reg, trip1.section, PREFER)
-        _section_preference(reg, trip2.section, AVAILABLE)
+        reg.set_section_preference(trip1.section, PREFER)
+        reg.set_section_preference(trip2.section, AVAILABLE)
 
         self.assertEqual(set(reg._base_trips_qs()), set([trip1, trip2]))
 
@@ -405,8 +391,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
         reg = mommy.make(Registration, trips_year=trips_year,
                          swimming_ability=Registration.COMPETENT)
-        _section_preference(reg, section1, AVAILABLE)
-        _triptype_preference(reg, firstchoice_triptype, FIRST_CHOICE)
+        reg.set_section_preference(section1, AVAILABLE)
+        reg.set_triptype_preference(firstchoice_triptype, FIRST_CHOICE)
 
         self.assertEqual([trip1], list(reg.get_firstchoice_trips()))
 
@@ -422,8 +408,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
         reg = mommy.make(Registration, trips_year=trips_year,
                          swimming_ability=Registration.COMPETENT)
-        _section_preference(reg, section1, PREFER)
-        _triptype_preference(reg, triptype, PREFER)
+        reg.set_section_preference(section1, PREFER)
+        reg.set_triptype_preference(triptype, PREFER)
 
         self.assertEqual([trip1], list(reg.get_preferred_trips()))
 
@@ -439,8 +425,8 @@ class RegistrationModelTestCase(TripsYearTestCase):
 
         reg = mommy.make(Registration, trips_year=trips_year,
                          swimming_ability=Registration.COMPETENT)
-        _section_preference(reg, section1, PREFER)
-        _triptype_preference(reg, triptype, AVAILABLE)
+        reg.set_section_preference(section1, PREFER)
+        reg.set_triptype_preference(triptype, AVAILABLE)
 
         self.assertEqual([trip1], list(reg.get_available_trips()))
 
@@ -554,20 +540,20 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         # Available for both the section and triptype
         available = mommy.make(IncomingStudent, trips_year=trips_year,
                                registration=mommy.make(Registration, trips_year=trips_year))
-        _section_preference(available.registration, trip.section, PREFER)
-        _triptype_preference(available.registration, trip.template.triptype, AVAILABLE)
+        available.registration.set_section_preference(trip.section, PREFER)
+        available.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         # Available for the section but not the triptype
         unavailable1 = mommy.make(IncomingStudent, trips_year=trips_year,
                                   registration=mommy.make(Registration, trips_year=trips_year))
-        _section_preference(unavailable1.registration, trip.section, PREFER)
+        unavailable1.registration.set_section_preference(trip.section, PREFER)
 
         # Available for the triptype, but not the section
         unavailable2 = mommy.make(IncomingStudent, trips_year=trips_year,
                                  registration=mommy.make(Registration, trips_year=trips_year))
-        _section_preference(unavailable2.registration, trip.section, NOT_AVAILABLE)
-        _section_preference(unavailable2.registration, mommy.make(Section, trips_year=trips_year), PREFER)
-        _triptype_preference(unavailable2.registration, trip.template.triptype, AVAILABLE)
+        unavailable2.registration.set_section_preference(trip.section, NOT_AVAILABLE)
+        unavailable2.registration.set_section_preference(mommy.make(Section, trips_year=trips_year), PREFER)
+        unavailable2.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
 
@@ -581,15 +567,15 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
             IncomingStudent, trips_year=trips_year,
             registration__swimming_ability=Registration.BEGINNER
         )
-        _section_preference(available.registration, trip.section, PREFER)
-        _triptype_preference(available.registration, trip.template.triptype, AVAILABLE)
+        available.registration.set_section_preference(trip.section, PREFER)
+        available.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         unavailable = mommy.make(
             IncomingStudent, trips_year=trips_year,
             registration__swimming_ability=Registration.NON_SWIMMER
         )
-        _section_preference(unavailable.registration, trip.section, PREFER)
-        _triptype_preference(unavailable.registration, trip.template.triptype, AVAILABLE)
+        unavailable.registration.set_section_preference(trip.section, PREFER)
+        unavailable.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
 
@@ -758,20 +744,60 @@ class RegistrationViewsTestCase(WebTestCase):
 
 class RegistrationFormTestCase(TripsYearTestCase):
 
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        mommy.make(Settings, trips_year=self.trips_year)  # must exist
+        self.reg = mommy.make(Registration, trips_year=self.trips_year)
+
     def test_registration_form_without_instance_uses_current_trips_year(self):
-        trips_year = self.init_current_trips_year()
-        mommy.make(Settings, trips_year=trips_year)  # must exist
-        reg = mommy.make(Registration, trips_year=trips_year)
         form = RegistrationForm()
-        self.assertEqual(form.trips_year, trips_year)
+        self.assertEqual(form.trips_year, self.trips_year)
 
     def test_registration_form_uses_trips_year_from_instance(self):
-        trips_year = self.init_trips_year()
         prev_trips_year = self.init_previous_trips_year()
         mommy.make(Settings, trips_year=prev_trips_year)  # must exist
         reg = mommy.make(Registration, trips_year=prev_trips_year)
         form = RegistrationForm(instance=reg)
         self.assertEqual(form.trips_year, prev_trips_year)
+
+    def test_section_and_triptype_preferences(self):
+        triptype = mommy.make(TripType, pk=1, trips_year=self.trips_year)
+        section = mommy.make(Section, pk=1, trips_year=self.trips_year,
+                             leaders_arrive=date(2015, 1, 1), name='A')
+
+        form = RegistrationForm(instance=self.reg, data={
+            'name': 'test',
+            'gender': 'hi',
+            'previous_school': 'nah',
+            'phone': '134',
+            'email': 'asf@gmail.com',
+            'tshirt_size': 'L',
+            'regular_exercise': False,
+            'swimming_ability': 'BEGINNER',
+            'camping_experience': False,
+            'hiking_experience': True,
+            'financial_assistance': True,
+            'waiver': True,
+            'doc_membership': False,
+            'green_fund_donation': 0,
+            'triptype_1': 'FIRST CHOICE',
+            'section_1': 'PREFER'
+        })
+        form.save()
+
+        self.assertEqual(form.fields['section_1'].label,
+                         'A &mdash; Jan 02 to Jan 06')
+
+        tts = self.reg.registrationtriptypechoice_set.all()
+        self.assertEqual(len(tts), 1)
+        self.assertEqual(tts[0].triptype, triptype)
+        self.assertEqual(tts[0].preference, 'FIRST CHOICE')
+
+        secs = self.reg.registrationsectionchoice_set.all()
+        self.assertEqual(len(secs), 1)
+        self.assertEqual(secs[0].section, section)
+        self.assertEqual(secs[0].preference, 'PREFER')
+
 
 
 class IncomingStudentViewsTestCase(WebTestCase):

@@ -1,5 +1,5 @@
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from .forms import CrooApplicationGradeForm
+from .forms import CrooApplicationGradeForm, LeaderSupplementForm
 from .models import (
     Answer,
     ApplicationInformation,
@@ -291,24 +291,6 @@ class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
         self.assertTemplateUsed(response, 'applications/not_available.html')
 
 
-class ApplicationFormTestCase(ApplicationTestMixin, WebTestCase):
-
-    csrf_checks = False
-
-    def setUp(self):
-        self.init_current_trips_year()
-        self.init_previous_trips_year()
-
-    def test_file_uploads_dont_overwrite_each_other(self):
-            # TODO / scrap
-        self.mock_user()
-        self.open_application()
-
-        res = self.app.get(reverse('applications:apply'), user=self.user)
-        # print(res)
-        #  print(res.form)
-
-
 class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
     """
     Tested against the LeaderApplication model only;
@@ -561,6 +543,88 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         )
         not_croo = self.make_application(trips_year=trips_year)
         self.assertQsEqual(GeneralApplication.objects.croo_members(trips_year), [croo])
+
+
+class LeaderSupplementFormTestCase(TripsTestCase):
+
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.section = mommy.make(
+            Section, trips_year=self.trips_year, pk=1, name='A',
+            leaders_arrive=date(2015, 1, 1))
+        self.app = make_application(trips_year=self.trips_year)
+        self.leader_app = self.app.leader_supplement
+
+    def test_adds_section_fields(self):
+        form = LeaderSupplementForm(self.trips_year)
+        self.assertIn('section_1', form.fields)
+
+    def test_section_field_label(self):
+        form = LeaderSupplementForm(self.trips_year)
+        self.assertEqual(form.fields['section_1'].label,
+                         'A &mdash; Jan 01 to Jan 06')
+
+    def test_initial_section_choice_is_populated(self):
+        self.leader_app.set_section_preference(self.section, 'PREFER')
+        form = LeaderSupplementForm(self.trips_year, instance=self.leader_app)
+        self.assertEqual(form.fields['section_1'].initial, 'PREFER')
+
+    def test_new_section_choice_is_saved(self):
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'section_1': 'AVAILABLE'})
+        form.save()
+
+        prefs = self.leader_app.leadersectionchoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].section, self.section)
+        self.assertEqual(prefs[0].preference, 'AVAILABLE')
+
+    def test_existing_section_choice_is_updated(self):
+        # Initial choice
+        self.leader_app.set_section_preference(self.section, 'PREFER')
+
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'section_1': 'AVAILABLE'})
+        form.save()
+
+        prefs = self.leader_app.leadersectionchoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].section, self.section)
+        self.assertEqual(prefs[0].preference, 'AVAILABLE')
+
+    def test_formfield_names(self):
+        mommy.make(
+            Section,
+            trips_year=self.trips_year,
+            pk=3,
+            name='C'
+        )
+        form = LeaderSupplementForm(self.trips_year)
+
+        self.assertEqual(form.section_handler.formfield_names(),
+                         ['section_1', 'section_3'])
+
+    def test_triptype_field(self):
+        triptype1 = mommy.make(
+            TripType,
+            name='Climbing',
+            trips_year=self.trips_year,
+            pk=1
+        )
+
+        form = LeaderSupplementForm(
+            self.trips_year, instance=self.leader_app,
+            data={'triptype_1': 'NOT AVAILABLE', 'section_1': 'PREFER'})
+        form.save()
+
+        self.assertEqual(form.fields['triptype_1'].label, 'Climbing')
+
+        prefs = self.leader_app.leadertriptypechoice_set.all()
+        self.assertEquals(len(prefs), 1)
+        self.assertEqual(prefs[0].triptype, triptype1)
+        self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
 
 
 class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
