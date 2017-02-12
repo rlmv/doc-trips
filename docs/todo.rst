@@ -8,7 +8,6 @@ External
 Immediate
 ---------
 * Prefix ``cache_as`` attrs with something
-* Fix race conditions around Section & TripType preferences
 * Croo waitlist. Needs to support people simultaneously being on the croo
   waitlist and trip leaders, or croo waitlist and leader waitlist, etc
 * Add trainings signup app
@@ -16,7 +15,6 @@ Immediate
 * Make section/triptypes optional in leader form if the leader supplement has
   not yet been uploaded.
 * Spreadsheets for various registration sub-categories
-* Make it possible to hide triptypes for a year.
 * Fix race conditions around applications and registrations: *I think* if a user
 has two windows open, such that they both get directed to create a new application,
 and somehow submits both, then there will be two applications or registrations.
