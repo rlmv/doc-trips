@@ -7,7 +7,11 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from .forms import CrooApplicationGradeForm, LeaderSupplementForm
+from .forms import (
+    ApplicationForm,
+    CrooApplicationGradeForm,
+    LeaderSupplementForm,
+)
 from .models import (
     Answer,
     ApplicationInformation,
@@ -543,6 +547,62 @@ class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         )
         not_croo = self.make_application(trips_year=trips_year)
         self.assertQsEqual(GeneralApplication.objects.croo_members(trips_year), [croo])
+
+
+class ApplicationFormTestCase(TripsTestCase):
+
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.app = make_application(trips_year=self.trips_year)
+        self.question = mommy.make(
+            Question,
+            trips_year=self.trips_year,
+            pk=1,
+            index=0,
+            question="Favorite fruit?"
+        )
+
+    def test_question_fields(self):
+        form = ApplicationForm(
+            self.trips_year,
+            instance=self.app,
+            data={
+                'class_year': '2014',
+                'hinman_box': '3153',
+                'phone': '134-124-1351',
+                'gender': 'male',
+                'race_ethnicity': '',
+                'summer_address': '',
+                'tshirt_size': 'S',
+                'from_where': 'Philadelphia',
+                'what_do_you_like_to_study': 'the blues',
+                'personal_activities': '',
+                'feedback': '',
+                'food_allergies': '',
+                'dietary_restrictions': '',
+                'medical_conditions': '',
+                'epipen': False,
+                'needs': '',
+                'medical_certifications': None,
+                'medical_experience': '',
+                'peer_training': '',
+                'spring_training_ok': False,
+                'summer_training_ok': True,
+                'hanover_in_fall': True,
+                'role_preference': 'PREFER_LEADER',
+                'leadership_style': 'leader of the loaves',
+                'leader_willing': True,
+                'croo_willing': True,
+                'question_1': 'Blueberries'
+            })
+        form.save()
+
+        self.assertEqual(form.fields['question_1'].label, 'Favorite fruit?')
+
+        answers = self.app.answer_set.all()
+        self.assertEqual(len(answers), 1)
+        self.assertEqual(answers[0].question, self.question)
+        self.assertEqual(answers[0].answer, 'Blueberries')
 
 
 class LeaderSupplementFormTestCase(TripsTestCase):
