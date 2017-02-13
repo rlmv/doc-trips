@@ -19,15 +19,15 @@ class DartmouthDirectoryLookupFieldTestCase(TestCase):
             field.compress(['Robert L. Marchmanxyzsgasdgasdf'])
 
         answer = {
-            'netid': 'd34898x',
-            'name_with_affil': 'Robert L. Marchman 14 (Alum/14)',
-            'name_with_year': 'Robert L. Marchman 14'
+            'netid': 'a002bxd',
+            'name_with_affil': 'Robert L. Marchman IV (Alum/76)',
+            'name_with_year': 'Robert L. Marchman IV'
         }
 
         # Entered before typeahead completed
-        self.assertEqual(field.compress(['Robert L. Marchman 14']), answer)
+        self.assertEqual(field.compress(['Robert L. Marchman IV']), answer)
 
         # Entered after typeahead completed
-        data_list = ['Robert L. Marchman 14', 'd34898x',
-                     'Robert L. Marchman 14 (Alum/14)']
+        data_list = ['Robert L. Marchman IV', 'a002bxd',
+                     'Robert L. Marchman IV (Alum/76)']
         self.assertEqual(field.compress(data_list), answer)
