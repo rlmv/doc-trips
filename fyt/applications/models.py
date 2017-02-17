@@ -260,6 +260,16 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     )
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
+    height = models.CharField(max_length=10, blank=True)
+    weight = models.CharField(max_length=10, blank=True)
+
+    gear = models.TextField(
+        "What outdoor gear is available to you? Will you be able to borrow "
+        "gear from friends and family or will you need assistance from DOC "
+        "Trips to find gear?",
+        blank=True
+    )
+
     from_where = models.CharField('Where are you from?', max_length=255)
     what_do_you_like_to_study = models.CharField(
         'What do you like to study?', max_length=255
