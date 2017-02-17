@@ -426,8 +426,11 @@ class CertificationForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Update'))
 
 
-NOT_USED_IN_SCORING = (
-    "Answers in this section will not be used in the scoring process"
+ALERT_NOT_USED_IN_SCORING = Alert(
+    dismiss=False, css_class='alert-info', content=(
+        "Answers in this section will not be used in the scoring process and "
+        "do not affect your candidacy."
+    )
 )
 
 
@@ -450,10 +453,7 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'General Information',
-                Alert(
-                    content=NOT_USED_IN_SCORING,
-                    dismiss=False, css_class='alert-info'
-                ),
+                ALERT_NOT_USED_IN_SCORING,
                 Row(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -475,6 +475,7 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Gear',
+                ALERT_NOT_USED_IN_SCORING,
                 HTML(
                     "<p>We will use this information to fit gear for you for "
                     "trips that require it (e.g. paddles and life jackets for "
@@ -516,10 +517,7 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Medical Information',
-                Alert(
-                    content="This information will not affect your candidacy",
-                    dismiss=False, css_class='alert-info'
-                ),
+                ALERT_NOT_USED_IN_SCORING,
                 Field('food_allergies', rows=3),
                 Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
@@ -535,10 +533,7 @@ class LeaderSupplementLayout(Layout):
         super().__init__(
             Fieldset(
                 'Trip Leader Availability',
-                Alert(
-                    content=NOT_USED_IN_SCORING,
-                    dismiss=False, css_class='alert-info'
-                ),
+                ALERT_NOT_USED_IN_SCORING,
                 HTML(
                     "<p>Please indicate your availibity for each section and "
                     "type of trip. <strong>Preferred</strong> means you will "
@@ -572,6 +567,7 @@ class CrooSupplementLayout(Layout):
         super().__init__(
             Fieldset(
                 'Driving',
+                ALERT_NOT_USED_IN_SCORING,
                 'licensed',
                 'college_certified',
                 'sprinter_certified',
