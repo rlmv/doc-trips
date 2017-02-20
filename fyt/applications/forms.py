@@ -544,13 +544,17 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Trip Leader Availability',
                 HTML(
-                    "<p>Please indicate your availibity for each section and "
+                    "<p>Please indicate your availabity for each section and "
                     "type of trip. <strong>Preferred</strong> means you will "
                     "be most satisfied with this option; you can prefer more "
                     "than one option. <strong>Available</strong> means you "
                     "could do it. <strong>Not Available</strong> means you "
                     "absolutely cannot participate on those dates or in that "
-                    "activity.</p>"
+                    "activity.</p> "
+                    "<p>Please keep in mind that your availability will "
+                    "affect our ability to place you on a trip&mdash;the more "
+                    "available you are, the more likely we will be able to "
+                    "place you.</p>"
                 ),
                 Fieldset(
                     'Sections',
