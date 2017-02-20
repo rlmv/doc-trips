@@ -589,6 +589,47 @@ class LeaderSupplement(DatabaseModel):
         blank=True
     )
 
+    class_2_3_paddler = YesNoField(
+        'Can you comfortably paddle Class II/III rapids?'
+    )
+    ledyard_level_1 = YesNoField(
+        'Are you a Level I Ledyard whitewater kayaking leader or anticipate '
+        'becoming one before the fall term?'
+    )
+    ledyard_level_2 = YesNoField(
+        'Are you a Level II Ledyard whitewater kayaking leader or anticipate '
+        'becoming one before the fall term?'
+    )
+    paddling_experience = models.TextField(
+        'Please describe any relevant kayaking or canoeing experience you '
+        'have.',
+        blank=True
+    )
+    climbing_course = YesNoField(
+        'Have you taken a DOC-sponsored top rope course/anchor building '
+        'course, or do you plan to take one before fall term?'
+    )
+    dmc_leader = YesNoField(
+        'Are you a Dartmouth Mountaineering Club leader or will you become '
+        'one before the fall term?'
+    )
+    climbing_experience = models.TextField(
+        'Please describe any relevant climbing experience you have.',
+        blank=True
+    )
+    dmbc_leader = YesNoField(
+        'Are you a leader in the Mountain Biking Club or will you become one '
+        'before fall term?'
+    )
+    biking_experience = models.TextField(
+        'Please describe any relevant mountain biking experience you have.',
+        blank=True
+    )
+    bike_maintenance_experience = models.TextField(
+        'Please describe any experience you have with bike maintenance.',
+        blank=True
+    )
+
     def set_section_preference(self, section, preference):
         """Set the applicant's preference for a section."""
         LeaderSectionChoice.objects.create(

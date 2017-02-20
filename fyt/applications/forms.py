@@ -352,6 +352,16 @@ class LeaderSupplementForm(forms.ModelForm):
             'trip_preference_comments',
             'cannot_participate_in',
             'relevant_experience',
+            'class_2_3_paddler',
+            'ledyard_level_1',
+            'ledyard_level_2',
+            'paddling_experience',
+            'climbing_course',
+            'dmc_leader',
+            'climbing_experience',
+            'dmbc_leader',
+            'biking_experience',
+            'bike_maintenance_experience',
         )
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -559,6 +569,19 @@ class LeaderSupplementLayout(Layout):
                 Fieldset(
                     'Sections',
                     *section_fields
+                ),
+                Fieldset(
+                    'Wilderness Experience',
+                    'class_2_3_paddler',
+                    'ledyard_level_1',
+                    'ledyard_level_2',
+                    Field('paddling_experience', rows=2),
+                    'climbing_course',
+                    'dmc_leader',
+                    Field('climbing_experience', rows=2),
+                    'dmbc_leader',
+                    Field('biking_experience', rows=2),
+                    Field('bike_maintenance_experience', rows=2),
                 ),
                 HTML(
                     '<p> {% include "applications/triptype_modal.html" %}</p>'
