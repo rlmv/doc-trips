@@ -474,11 +474,9 @@ class ApplicationLayout(Layout):
                 Row(
                     Div('hinman_box', css_class='col-sm-3'),
                     Div('phone', css_class='col-sm-3'),
-                    Div('summer_address', css_class='col-sm-5'),
-                ),
-                Row(
                     Div('tshirt_size', css_class='col-sm-3'),
                 ),
+                'summer_address',
                 'from_where',
                 'what_do_you_like_to_study',
                 'hanover_in_fall',

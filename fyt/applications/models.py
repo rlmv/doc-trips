@@ -251,12 +251,15 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     class_year = models.PositiveIntegerField()
     gender = models.CharField(max_length=25)
     race_ethnicity = models.CharField(
-        'race/ethnicity', max_length=255, blank=True, help_text='optional'
+        'Race/Ethnicity', max_length=255, blank=True
     )
     hinman_box = models.CharField(max_length=10)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
-        blank=True, max_length=255, help_text="don't worry if you don't know yet"
+        blank=True, max_length=255, help_text=(
+            'Tell us your home address if you are not yet sure of your summer '
+            'address.'
+        )
     )
     tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
 
