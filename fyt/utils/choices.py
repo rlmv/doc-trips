@@ -4,15 +4,19 @@ Common choices used by trippees and leaders
 
 # TODO: move to `model_fields`?
 
+XS = 'XS'
 S = 'S'
 M = 'M'
 L = 'L'
 XL = 'XL'
+XXL = 'XXL'
 TSHIRT_SIZE_CHOICES = (
+    (XS, 'Extra Small'),
     (S, 'Small'),
     (M, 'Medium'),
     (L, 'Large'),
-    (XL, 'Extra large'),
+    (XL, 'Extra Large'),
+    (XXL, 'Extra Extra Large'),
 )
 
 
