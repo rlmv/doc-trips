@@ -581,11 +581,12 @@ class LeaderSupplement(DatabaseModel):
         blank=True
     )
     relevant_experience = models.TextField(
-        "For each type of trip you are interested in leading, please describe "
-        "your level of expertise and any amount of previous experience that "
-        "might qualify you to lead that particular trip (DOC Wilderness "
-        "Leader, lifeguard training, yoga experience, mountain biking "
-        "enthusiast, photography class, NOLS, etc.).",
+        'WITHOUT repeating anything you have already told us, please describe '
+        'your level of expertise and any previous experience that you could '
+        'bring to each trip type that you selected (e.g. lifeguard training, '
+        'yoga experience, meditation experience, fishing experience, '
+        'photography class, Walden enthusiast, NOLS, Cabin and Trail leader, '
+        'etc).',
         blank=True
     )
 
