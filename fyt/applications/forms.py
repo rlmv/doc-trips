@@ -460,9 +460,12 @@ class ApplicationLayout(Layout):
                 'croo_willing',
                 'role_preference',
             ),
+            SectionAlert(
+                'NON-GRADED SECTION',
+                'Answers in these sections will NOT be used in the scoring process.'
+            ),
             Fieldset(
                 'General Information',
-                ALERT_NOT_USED_IN_SCORING,
                 Row(
                     Div('class_year', css_class='col-sm-3'),
                     Div('gender', css_class='col-sm-3'),
@@ -485,7 +488,6 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Gear',
-                ALERT_NOT_USED_IN_SCORING,
                 HTML(
                     "<p>We will use this information to fit gear for you for "
                     "trips that require it (e.g. paddles and life jackets for "
@@ -522,7 +524,6 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Medical Information',
-                ALERT_NOT_USED_IN_SCORING,
                 Field('food_allergies', rows=3),
                 Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
@@ -532,14 +533,23 @@ class ApplicationLayout(Layout):
         )
 
 
+def SectionAlert(header, content):
+    return Alert(
+        dismiss=False, css_class='alert-info', content=(
+            '<h3>{}</h3> <p>{}</p>'.format(header, content)
+        )
+    )
+
+
 class QuestionLayout(Layout):
 
     def __init__(self, dynamic_questions):
         super().__init__(
-            Fieldset(
-                'Application',
-                *dynamic_questions
-            )
+            SectionAlert(
+                'GRADED SECTION',
+                'This is the ONLY section that will be available to readers during the blind reading and scoring process.'
+            ),
+            *dynamic_questions
         )
 
 
@@ -549,7 +559,6 @@ class LeaderSupplementLayout(Layout):
         super().__init__(
             Fieldset(
                 'Trip Leader Availability',
-                ALERT_NOT_USED_IN_SCORING,
                 HTML(
                     "<p>Please indicate your availibity for each section and "
                     "type of trip. <strong>Preferred</strong> means you will "
@@ -583,7 +592,6 @@ class CrooSupplementLayout(Layout):
         super().__init__(
             Fieldset(
                 'Driving',
-                ALERT_NOT_USED_IN_SCORING,
                 'licensed',
                 'college_certified',
                 'sprinter_certified',
