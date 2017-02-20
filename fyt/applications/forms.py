@@ -76,7 +76,6 @@ class ApplicationForm(forms.ModelForm):
             'hanover_in_fall',
             'transfer_exchange',
             'role_preference',
-            'leadership_style',
             'leader_willing',
             'croo_willing'
         )
@@ -486,7 +485,6 @@ class ApplicationLayout(Layout):
                 'transfer_exchange',
                 Field('personal_activities', rows=4),
                 Field('feedback', rows=4),
-                Field('leadership_style', rows=8),
             ),
             Fieldset(
                 'Gear',
