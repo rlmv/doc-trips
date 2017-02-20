@@ -342,28 +342,24 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
 
     # ------ certs -------
     medical_certifications = models.TextField(
-        "Current trainings in First Aid and CPR are required for all DOC "
-        "trip leaders and croo members. Please list any relevant medical "
+        "Please list any relevant medical "
         "certifications you hold (e.g. First Aid, CPR, Wilderness First Aid, "
         "Wilderness First Responder, Emergency Medical Technician, Wilderness "
         "Emergency Medical Technician, Outdoor Emergency Care). Also list the "
-        "program that sponsored the certification, and the dates they expire. "
-        "If you do not currently have such a certification (or if your "
-        "certification will expire before Trips ends), we will be in touch "
-        "about how you can get trained through Trips-sponsored First Aid & "
-        "CPR courses in the spring and summer.",
+        "program that sponsored the certification, and the dates they expire.",
         blank=True, help_text=(
             "eg. 'First Aid - American Red Cross, expires October 2013.'"
         )
     )
     medical_experience = models.TextField(
-        "Briefly describe your experience with your safety certifications. "
-        "How frequently do you use your certification and in what circumstances?",
+        "Briefly describe your experience using your medical certifications. "
+        "How frequently do you use your certifications and in what "
+        "circumstances?",
         blank=True
     )
     peer_training = models.TextField(
         "List and briefly describe any peer training program "
-        "(DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc.) that you "
+        "(e.g. DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc.) that you "
         "have lead or participated in.",
         blank=True
     )

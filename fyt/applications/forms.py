@@ -506,18 +506,10 @@ class ApplicationLayout(Layout):
                 Field('medical_experience', rows=4),
                 Field('peer_training', rows=4),
                 HTML(
-                    "<p><strong>If selected to be a DOC trip leader, you must "
-                    "complete various trainings before Trips begins. These "
-                    "trainings are important in providing leaders with the "
-                    "proper skills to lead a fun and safe trip. The training "
-                    "program includes 10-12 hours (not necessarily all at once) "
-                    "of training sessions covering First Aid/CPR, Community "
-                    "Building, Wilderness Skills, Risk Management, and "
-                    "Trip-specific outdoor experience. Leaders can get PE "
-                    "credit for the trainings. Croo members are also required "
-                    "to complete First Aid and CPR training, as well as attend "
-                    "Croo specific trainings. Sessions are offered throughout "
-                    "the spring and summer terms.</strong></p>"
+                    "<p>If selected to be a trip leader, you must complete training before Trips begins to ensure the safety and engagement of the first-years who you will be responsible for for five days and four nights. The position requires you to complete 9 hours of trip leader training in the spring OR summer term, 3 hours for a First Aid certification, and 3 hours for a CPR certification.</p>"
+                    "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to complete 6+ hours of croo training (different hour requirements for different croos), 3 hours for a First Aid certification, and 3 hours for a CPR certification.</p>"
+                    "<p>NOTE: Trip leaders are eligible for PE credit once they have completed trainings AND served their role in Trips. We are currently working with the PE department to provide this perk for croolings as well.</p>"
+                    "<p><strong>Please select which terms you would be available to complete trip leader and croo trainings. (Trip leader and croo trainings are DOC Trips-specific, while First Aid and CPR certifications can be acquired off-campus.) Please indicate both if you are available for both.</strong></p>"
                 ),
                 'spring_training_ok',
                 'summer_training_ok',
