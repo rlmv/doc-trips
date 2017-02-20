@@ -151,9 +151,9 @@ class AgreementLayout(Layout):
                 'Agreements',
                 HTML(
                     "<p>You must agree to the following statements in order "
-                    "to lead a Trip or participate on a Croo. Checking each "
-                    "box indicates your acceptance of the conditions for your "
-                    "participation in DOC Trips.</p>"
+                    "to volunteer for Trips. Checking each box indicates your "
+                    "acceptance of the conditions required to participate in "
+                    "DOC Trips.</p>"
                 ),
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',

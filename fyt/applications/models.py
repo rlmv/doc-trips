@@ -374,8 +374,8 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         default=False, validators=[validate_condition_true]
     )
     in_goodstanding_with_college = models.BooleanField(
-        "By applying to lead a DOC Trip, I acknowledge that I am in good "
-        "standing with the College. This may be verified by DOC Trips "
+        "By applying to volunteer for Trips, I acknowledge that I am in good "
+        "standing with the College. This will be verified by DOC Trips "
         "through the Undergraduate Dean’s Office.",
         default=False, validators=[validate_condition_true]
     )
