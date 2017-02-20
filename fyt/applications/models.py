@@ -284,11 +284,10 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         blank=True
     )
     feedback = models.TextField(
-        "If you have any experience with Trips, what would you "
-        "change about the program (big or small)?  If you do not "
-        "have experience with Trips, what would you change about "
-        "the program OR what would you change about your introduction "
-        "to Dartmouth?",
+        "Based on your prior knowledge of and experience with Trips, do you "
+        "have any suggestions to improve the program? If so, what? Remember "
+        "that this question is ungraded and optional, but your feedback will "
+        "help us improve the program for incoming students!",
         blank=True
     )
     hanover_in_fall = YesNoField(
