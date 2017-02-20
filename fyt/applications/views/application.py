@@ -25,6 +25,7 @@ from fyt.applications.forms import (
     CertificationForm,
     CrooSupplementForm,
     LeaderSupplementForm,
+    QuestionForm,
 )
 from fyt.applications.models import (
     ApplicationInformation,
@@ -81,12 +82,14 @@ class ContinueIfAlreadyApplied():
 GENERAL_FORM = 'form'
 LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
+QUESTION_FORM = 'question_form'
 AGREEMENT_FORM = 'agreement_form'
 
 FORM_ORDERING = [
     GENERAL_FORM,
     LEADER_FORM,
     CROO_FORM,
+    QUESTION_FORM,
     AGREEMENT_FORM
 ]
 
@@ -135,6 +138,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             AGREEMENT_FORM: AgreementForm,
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
+            QUESTION_FORM: QuestionForm,
         }
 
     def get_instances(self):
@@ -145,6 +149,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             GENERAL_FORM: None,
             LEADER_FORM: None,
             CROO_FORM: None,
+            QUESTION_FORM: None,
             AGREEMENT_FORM: None
         }
 
@@ -213,6 +218,9 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         forms[GENERAL_FORM].instance.trips_year = trips_year
         application = forms[GENERAL_FORM].save()
 
+        forms[QUESTION_FORM].instance = application
+        forms[QUESTION_FORM].save()
+
         forms[LEADER_FORM].instance.application = application
         forms[LEADER_FORM].instance.trips_year = trips_year
         forms[LEADER_FORM].save()
@@ -249,6 +257,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         return {
             GENERAL_FORM: self.object,
             AGREEMENT_FORM: self.object,
+            QUESTION_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
         }
@@ -510,7 +519,8 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
-            AGREEMENT_FORM: self.object
+            AGREEMENT_FORM: self.object,
+            QUESTION_FORM: self.object
         }
 
     def get_context_data(self, **kwargs):

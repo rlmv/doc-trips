@@ -83,21 +83,9 @@ class ApplicationForm(forms.ModelForm):
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        questions = Question.objects.filter(trips_year=trips_year)
-        self.question_handler = QuestionHandler(self, questions)
-        self.fields.update(self.question_handler.get_formfields())
-
         self.helper = FormHelper(self)
         self.helper.form_tag = False
-        self.helper.layout = ApplicationLayout(
-            self.question_handler.formfield_names()
-        )
-
-    def save(self, **kwargs):
-        instance = super().save(**kwargs)
-        self.question_handler.save()
-
-        return instance
+        self.helper.layout = ApplicationLayout()
 
     # TODO: get rid of the need for this
     def update_agreements(self, agreement_form):
@@ -105,6 +93,30 @@ class ApplicationForm(forms.ModelForm):
         for f in agreement_form.fields:
             value = getattr(agreement_form.instance, f)
             setattr(self.instance, f, value)
+
+
+class QuestionForm(forms.Form):
+    """
+    A form for answering dynamic application questions.
+    """
+
+    def __init__(self, trips_year, *args, instance=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.instance = instance
+
+        questions = Question.objects.filter(trips_year=trips_year)
+        self.question_handler = QuestionHandler(self, questions)
+        self.fields.update(self.question_handler.get_formfields())
+
+        self.helper = FormHelper(self)
+        self.helper.form_tag = False
+        self.helper.layout = QuestionLayout(
+            self.question_handler.formfield_names()
+        )
+
+    def save(self, **kwargs):
+        self.question_handler.save()
 
 
 class AgreementForm(forms.ModelForm):
@@ -436,7 +448,7 @@ ALERT_NOT_USED_IN_SCORING = Alert(
 
 class ApplicationLayout(Layout):
 
-    def __init__(self, dynamic_questions):
+    def __init__(self):
         super().__init__(
             Fieldset(
                 'Volunteer Roles',
@@ -469,6 +481,7 @@ class ApplicationLayout(Layout):
                 'hanover_in_fall',
                 Field('personal_activities', rows=4),
                 Field('feedback', rows=4),
+                Field('leadership_style', rows=8),
             ),
             Fieldset(
                 'Gear',
@@ -508,11 +521,6 @@ class ApplicationLayout(Layout):
                 'summer_training_ok',
             ),
             Fieldset(
-                'Application',
-                Field('leadership_style', rows=8),
-                *dynamic_questions
-            ),
-            Fieldset(
                 'Medical Information',
                 ALERT_NOT_USED_IN_SCORING,
                 Field('food_allergies', rows=3),
@@ -521,6 +529,17 @@ class ApplicationLayout(Layout):
                 'epipen',
                 Field('needs', rows=3),
             ),
+        )
+
+
+class QuestionLayout(Layout):
+
+    def __init__(self, dynamic_questions):
+        super().__init__(
+            Fieldset(
+                'Application',
+                *dynamic_questions
+            )
         )
 
 

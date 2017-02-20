@@ -8,9 +8,9 @@ from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from .forms import (
-    ApplicationForm,
     CrooApplicationGradeForm,
     LeaderSupplementForm,
+    QuestionForm
 )
 from .models import (
     Answer,
@@ -563,38 +563,13 @@ class ApplicationFormTestCase(TripsTestCase):
         )
 
     def test_question_fields(self):
-        form = ApplicationForm(
+        form = QuestionForm(
             self.trips_year,
             instance=self.app,
             data={
-                'class_year': '2014',
-                'hinman_box': '3153',
-                'phone': '134-124-1351',
-                'gender': 'male',
-                'race_ethnicity': '',
-                'summer_address': '',
-                'tshirt_size': 'S',
-                'from_where': 'Philadelphia',
-                'what_do_you_like_to_study': 'the blues',
-                'personal_activities': '',
-                'feedback': '',
-                'food_allergies': '',
-                'dietary_restrictions': '',
-                'medical_conditions': '',
-                'epipen': False,
-                'needs': '',
-                'medical_certifications': None,
-                'medical_experience': '',
-                'peer_training': '',
-                'spring_training_ok': False,
-                'summer_training_ok': True,
-                'hanover_in_fall': True,
-                'role_preference': 'PREFER_LEADER',
-                'leadership_style': 'leader of the loaves',
-                'leader_willing': True,
-                'croo_willing': True,
                 'question_1': 'Blueberries'
             })
+        self.assertTrue(form.is_valid())
         form.save()
 
         self.assertEqual(form.fields['question_1'].label, 'Favorite fruit?')
