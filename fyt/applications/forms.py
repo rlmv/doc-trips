@@ -439,14 +439,6 @@ class CertificationForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Update'))
 
 
-ALERT_NOT_USED_IN_SCORING = Alert(
-    dismiss=False, css_class='alert-info', content=(
-        "Answers in this section will not be used in the scoring process and "
-        "do not affect your candidacy."
-    )
-)
-
-
 class ApplicationLayout(Layout):
 
     def __init__(self):
