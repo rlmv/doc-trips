@@ -565,21 +565,16 @@ class LeaderSupplement(DatabaseModel):
     )
 
     # ------- availibilty and experience --------
-    trip_preference_comments = models.TextField(
-        "Looking at the Trips descriptions, please feel free to use "
-        "this space to address any concerns or explain your availability. "
-        "This will only be used to help us in Trip assignments, it will "
-        "not be considered when your application is being read.",
+
+    availability = models.TextField(
+        "Looking at the Trips descriptions, please feel free to use this "
+        "space to address any concerns or explain your availability. If "
+        "applicable, please also elaborate on any particular trips or "
+        "activities that you absolutely CANNOT participate in. All "
+        "information in this application will remain confidential.",
         blank=True
     )
-    cannot_participate_in = models.TextField(
-        "If applicable, please elaborate (to the extent you feel comfortable) "
-        "on any particular trips or activities that you absolutely cannot "
-        "participate in. This information will be used exclusively for trip "
-        "assignments & co-leader pairings. All information in this application "
-        "will remain confidential.",
-        blank=True
-    )
+
     relevant_experience = models.TextField(
         'WITHOUT repeating anything you have already told us, please describe '
         'your level of expertise and any previous experience that you could '

@@ -480,8 +480,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'biking_experience',
         'bike_maintenance_experience',
         'relevant_experience',
-        'trip_preference_comments',
-        'cannot_participate_in',
+        'availability',
         'co_leader',
         '_old_document'  # Deprecated field - include conditionally?
     ]

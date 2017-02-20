@@ -349,8 +349,7 @@ class LeaderSupplementForm(forms.ModelForm):
         model = LeaderSupplement
 
         fields = (
-            'trip_preference_comments',
-            'cannot_participate_in',
+            'availability',
             'relevant_experience',
             'class_2_3_paddler',
             'ledyard_level_1',
@@ -591,10 +590,9 @@ class LeaderSupplementLayout(Layout):
                     'Trip Types',
                     *triptype_fields
                 ),
-                Field('relevant_experience', rows=4),
-                Field('trip_preference_comments', rows=2),
-                Field('cannot_participate_in', rows=2),
-                Field('co_leader', rows=2),
+                Field('relevant_experience', rows=3),
+                Field('availability', rows=3),
+                Field('co_leader', rows=3),
             ),
         )
 
