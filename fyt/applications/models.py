@@ -589,6 +589,11 @@ class LeaderSupplement(DatabaseModel):
         'etc).',
         blank=True
     )
+    co_leader = models.TextField(
+        'Please describe the qualities you would seek in an ideal co-leader. '
+        'Be candid so we can best pair you.',
+        blank=True
+    )
 
     class_2_3_paddler = YesNoField(
         'Can you comfortably paddle Class II/III rapids?'

@@ -362,6 +362,7 @@ class LeaderSupplementForm(forms.ModelForm):
             'dmbc_leader',
             'biking_experience',
             'bike_maintenance_experience',
+            'co_leader',
         )
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -593,6 +594,7 @@ class LeaderSupplementLayout(Layout):
                 Field('relevant_experience', rows=4),
                 Field('trip_preference_comments', rows=2),
                 Field('cannot_participate_in', rows=2),
+                Field('co_leader', rows=2),
             ),
         )
 

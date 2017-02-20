@@ -482,6 +482,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'relevant_experience',
         'trip_preference_comments',
         'cannot_participate_in',
+        'co_leader',
         '_old_document'  # Deprecated field - include conditionally?
     ]
     trainings_fields = [
