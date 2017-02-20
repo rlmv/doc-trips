@@ -583,11 +583,15 @@ class LeaderSupplementLayout(Layout):
                     Field('biking_experience', rows=2),
                     Field('bike_maintenance_experience', rows=2),
                 ),
-                HTML(
-                    '<p> {% include "applications/triptype_modal.html" %}</p>'
-                ),
                 Fieldset(
                     'Trip Types',
+                    HTML(
+                        "<p>For trip leader applicants only. Please keep in "
+                        "mind that your availability will affect our ability "
+                        "to place you on a trip&mdash;the more available you "
+                        "are, the more likely we will be able to place you.</p>"
+                        '<p>{% include "applications/triptype_modal.html" %}</p>'
+                    ),
                     *triptype_fields
                 ),
                 Field('relevant_experience', rows=3),
