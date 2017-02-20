@@ -16,13 +16,13 @@ class MedicalMixin(models.Model):
     food_allergies = models.TextField(
         "Please list any food allergies you have "
         "(e.g. peanuts, shellfish). Describe what happens when you come "
-        "into contact with this allergen (e.g. 'I get hives', 'I go into "
+        "into contact with this allergen (e.g. 'I get hives,' 'I go into "
         "anaphylactic shock').",
         blank=True, help_text=LEAVE_BLANK
     )
     dietary_restrictions = models.TextField(
         "Do you have any other dietary restrictions we should be aware of "
-        "(vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
+        "(e.g. vegetarian, gluten-free, etc.)? We can accommodate ANY and ALL "
         "dietary needs as long as we know in advance.",
         blank=True, help_text=LEAVE_BLANK
     )
@@ -30,7 +30,7 @@ class MedicalMixin(models.Model):
         "Do you have any other medical conditions, past injuries, disabilities "
         "or other allergies that we should be aware of? Please describe any "
         "injury, condition, disability, or illness which we should take "
-        "into consideration in assigning you to a trip",
+        "into consideration in assigning you a trip",
         blank=True, help_text=LEAVE_BLANK
     )
     epipen = NullYesNoField(
