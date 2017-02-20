@@ -278,8 +278,8 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         'What do you like to study?', max_length=255
     )
     personal_activities = models.TextField(
-        "In order of importance to you, please list your activities "
-        "and involvements at Dartmouth and beyond (e.g. greek "
+        "In order of importance to you, please list your activities, "
+        "involvements, and communities at Dartmouth and beyond (e.g. greek "
         "affiliation, affinity group, campus organization, team, etc)",
         blank=True
     )
