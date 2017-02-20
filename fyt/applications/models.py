@@ -294,6 +294,11 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     hanover_in_fall = YesNoField(
         'Are you planning to be in Hanover this fall?'
     )
+
+    transfer_exchange = YesNoField(
+        'Are you a transfer or exchange student?'
+    )
+
     LEADER_CROO_PREFERENCE = (
         ('PREFER_LEADER', 'Prefer Trip Leader'),
         ('PREFER_CROO', 'Prefer Crooling'),
