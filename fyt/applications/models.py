@@ -293,15 +293,14 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     )
     LEADER_CROO_PREFERENCE = (
         ('PREFER_LEADER', 'Prefer Trip Leader'),
-        ('PREFER_CROO', 'Prefer Croo'),
+        ('PREFER_CROO', 'Prefer Crooling'),
         ('N/A', 'N/A'),
     )
     # TODO: rewrite this/connect to croo_willing/leader_willing
     role_preference = models.CharField(
-        "While Trips Directorate will ultimately decide where we think "
-        "you will be most successful in the program, we would like to "
+        "While Trips Directorate will place you, we would like to "
         "know your preferences. If you are submitting a Trip Leader "
-        "application AND a Croo application, please indicate which "
+        "application AND a Crooling application, please indicate which "
         "position you prefer. If you are only applying to one position, "
         "please choose 'N/A'",
         choices=LEADER_CROO_PREFERENCE, default='N/A', max_length=20
@@ -323,12 +322,12 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     )
 
     leader_willing = models.BooleanField(
-        'I would like to be considered for a Trip Leader position. '
-        'I understand... (describe commitments, etc.)'
+        'I would like to be considered for a trip leader position. '
     )
     croo_willing = models.BooleanField(
-        'I would like to be considered for a Croo position. '
-        'I understand...'
+        'I would like to be considered for a crooling position. (NOTE: ‘19s '
+        'who are taking classes this sophomore summer can NOT apply, given '
+        'the conflict of dates.)'
     )
 
     # ------ certs -------

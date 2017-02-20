@@ -56,6 +56,7 @@ Cosmetic
 
 Long term
 ---------
+* Remove `19s reference from `croo_willing` text
 * Validate ``trips_year`` consistancy between related objects
 * Preview link to leader and trippee assignment pages.
 * Tidy up the webauth app: remove unused config options
