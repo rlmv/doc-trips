@@ -613,9 +613,9 @@ class CrooSupplementLayout(Layout):
                 'Croo Positions',
                 HTML(
                     "<p>Every croo has at least one or more <strong>Safety "
-                    "Leads</strong> who are responsible for medical care & "
-                    "evacuations at their respective location (Hanover, the "
-                    "Grant, etc). Safety Leads are an integral part of each "
+                    "Leads</strong> who are responsible for medical care and "
+                    "evacuations at their respective location (Hanover, Grant, "
+                    "Oak Hill, etc). Safety Leads are an integral part of each "
                     "croo and, in addition to their medical responsibilities, "
                     "are included in all other croo activities.  If you have a "
                     "WFR, EMT, W-EMT, OEC, or equivalent medical certification, "
@@ -625,15 +625,16 @@ class CrooSupplementLayout(Layout):
                 ),
                 'safety_lead_willing',
                 HTML(
-                    "<p>Lodj Croo has two <strong>Kitchen Witches/Wizards</strong> "
-                    "who are responsible for ordering, preparing, and cooking "
+                    "<p>Lodj Croo has one <strong>Kitchen Magician</strong> "
+                    "who is responsible for ordering, preparing, and cooking "
                     "all the food at the Lodj during Trips. This role includes "
                     "a significant amount of responsibility and requires some "
                     "additional time before Trips begins to assist in ordering "
                     "all the necessary food items for the Lodj. You are eligible "
-                    "to be a Kitchen Witch/Wizard if you have worked at the "
+                    "to be a Kitchen Magician if you have worked at the "
                     "Moosilauke Ravine Lodge during its normal operations "
-                    "(non-Trips).</p>"
+                    "(non-Trips) or have other experience cooking in "
+                    "industrial kitchens.</p>"
                 ),
                 'kitchen_lead_willing',
                 Field('kitchen_lead_qualifications', rows=2),
