@@ -489,7 +489,7 @@ class ApplicationLayout(Layout):
             Fieldset(
                 'Gear',
                 HTML(
-                    "<p>We will use this information to fit gear for you for "
+                    "<p>We will use this information to fit gear for you on "
                     "trips that require it (e.g. paddles and life jackets for "
                     "canoeing and kayaking trips, harnesses for climbing "
                     "trips, etc.)</p>"

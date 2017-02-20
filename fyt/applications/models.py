@@ -267,9 +267,12 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     weight = models.CharField(max_length=10, blank=True)
 
     gear = models.TextField(
-        "What outdoor gear is available to you? Will you be able to borrow "
-        "gear from friends and family or will you need assistance from DOC "
-        "Trips to find gear?",
+        "Most trips require participants to have a frame pack, sleeping bag, "
+        "and sleeping pad. What outdoor gear is available to you? Will you be "
+        "able to borrow gear from friends and family or will you require "
+        "rentals from DOC Trips?  While we will do our best to accommodate "
+        "your gear needs if you are selected, priority will be given to "
+        "first-years.",
         blank=True
     )
 
