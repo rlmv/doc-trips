@@ -629,6 +629,14 @@ class LeaderSupplement(DatabaseModel):
         'Please describe any experience you have with bike maintenance.',
         blank=True
     )
+    cnt_leader = YesNoField(
+        'Are you a Cabin and Trail leader or will you become one before the '
+        'fall term?'
+    )
+    hiking_experience = models.TextField(
+        'Please describe any hiking experience you have.',
+        blank=True
+    )
 
     def set_section_preference(self, section, preference):
         """Set the applicant's preference for a section."""

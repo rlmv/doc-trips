@@ -360,8 +360,11 @@ class LeaderSupplementForm(forms.ModelForm):
             'dmbc_leader',
             'biking_experience',
             'bike_maintenance_experience',
+            'cnt_leader',
+            'hiking_experience',
             'co_leader',
         )
+
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -567,6 +570,8 @@ class LeaderSupplementLayout(Layout):
                 'dmbc_leader',
                 Field('biking_experience', rows=2),
                 Field('bike_maintenance_experience', rows=2),
+                'cnt_leader',
+                Field('hiking_experience', rows=2),
             ),
             Fieldset(
                 'Trip Leader Availability',
