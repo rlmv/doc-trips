@@ -602,8 +602,7 @@ class LeaderSupplement(DatabaseModel):
         'becoming one before the fall term?'
     )
     paddling_experience = models.TextField(
-        'Please describe any relevant kayaking or canoeing experience you '
-        'have.',
+        'Please describe any kayaking or canoeing experience you have.',
         blank=True
     )
     climbing_course = YesNoField(
@@ -615,7 +614,7 @@ class LeaderSupplement(DatabaseModel):
         'one before the fall term?'
     )
     climbing_experience = models.TextField(
-        'Please describe any relevant climbing experience you have.',
+        'Please describe any climbing experience you have.',
         blank=True
     )
     dmbc_leader = YesNoField(
@@ -623,7 +622,7 @@ class LeaderSupplement(DatabaseModel):
         'before fall term?'
     )
     biking_experience = models.TextField(
-        'Please describe any relevant mountain biking experience you have.',
+        'Please describe any mountain biking experience you have.',
         blank=True
     )
     bike_maintenance_experience = models.TextField(
