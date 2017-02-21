@@ -609,7 +609,10 @@ class ApplicationFormTestCase(TripsTestCase):
         self.assertTrue(form.is_valid())
         form.save()
 
-        self.assertEqual(form.fields['question_1'].label, 'Favorite fruit?')
+        self.assertEqual(
+            form.fields['question_1'].label,
+            'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A TRIP LEADER. Favorite fruit?'
+        )
 
         answers = self.app.answer_set.all()
         self.assertEqual(len(answers), 1)
