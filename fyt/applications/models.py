@@ -112,6 +112,11 @@ class Question(DatabaseModel):
         return "Question: {}".format(self.question)
 
 
+def validate_word_count(value):
+    if len(value.split()) > 300:
+        raise ValidationError('Your answer must be less than 300 words long.')
+
+
 class Answer(models.Model):
     """
     Through model for application answers.
@@ -126,7 +131,7 @@ class Answer(models.Model):
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE
     )
-    answer = models.TextField(blank=True)
+    answer = models.TextField(blank=True, validators=[validate_word_count])
 
     def __str__(self):
         return "Answer: {}".format(self.answer)

@@ -16,6 +16,7 @@ from fyt.applications.models import (
     LeaderSupplement,
     QualificationTag,
     Question,
+    validate_word_count
 )
 from fyt.db.models import TripsYear
 from fyt.trips.fields import TripChoiceField
@@ -300,6 +301,13 @@ class PreferenceHandler:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
 
 
+class WordCountedCharField(forms.CharField):
+
+    def validate(self, value):
+        super().validate(value)
+        validate_word_count(value)
+
+
 class QuestionHandler(PreferenceHandler):
     """
     Handler for dynamic questions and answers.
@@ -319,7 +327,7 @@ class QuestionHandler(PreferenceHandler):
         return prefix[question.type] + question.question
 
     def formfield(self, question, initial):
-        return forms.CharField(
+        return WordCountedCharField(
             initial=initial,
             label=self.formfield_label(question),
             required=False,
@@ -551,7 +559,7 @@ class QuestionLayout(Layout):
         super().__init__(
             SectionAlert(
                 'GRADED SECTION',
-                'This is the ONLY section that will be available to readers during the blind reading and scoring process.'
+                'This is the ONLY section that will be available to readers during the blind reading and scoring process. Each answer may be no longer than 300 words.'
             ),
             *dynamic_questions
         )

@@ -281,6 +281,29 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertEqual(answer.application, app)
 
 
+class AnswerModelTestCase(ApplicationTestMixin, TripsTestCase):
+
+    def test_word_count_validation(self):
+        trips_year = self.init_trips_year()
+        question = mommy.make(Question)
+        application = self.make_application(trips_year=trips_year)
+
+        answer = Answer(
+            question=question,
+            application=application,
+            answer=''
+        )
+        answer.full_clean()
+
+        answer = Answer(
+            question=question,
+            application=application,
+            answer=('word ' * 301)
+        )
+        with self.assertRaises(ValidationError):
+            answer.full_clean()
+
+
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 
     def test_anonymous_user_does_not_crash_application(self):
