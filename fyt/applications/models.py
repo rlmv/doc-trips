@@ -591,6 +591,14 @@ class LeaderSupplement(DatabaseModel):
 
     # ------- availibilty and experience --------
 
+    section_availability = models.TextField(
+        'Students that plan to attend pre-orientation programs or are '
+        'transfer/exchange students will be placed on particular sections, as '
+        'indicated above. If you would like to lead a trip on a section with '
+        'these students, please indicate your preference here.',
+        blank=True
+    )
+
     availability = models.TextField(
         "Looking at the Trips descriptions, please feel free to use this "
         "space to address any concerns or explain your availability. If "

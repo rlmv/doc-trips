@@ -484,6 +484,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'hiking_experience',
         'relevant_experience',
         'availability',
+        'section_availability',
         'co_leader',
         '_old_document'  # Deprecated field - include conditionally?
     ]

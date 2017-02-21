@@ -396,6 +396,7 @@ class LeaderSupplementForm(forms.ModelForm):
             'cnt_leader',
             'hiking_experience',
             'co_leader',
+            'section_availability',
         )
 
 
@@ -626,6 +627,7 @@ class LeaderSupplementLayout(Layout):
                 'Sections',
                 *section_fields
             ),
+            Field('section_availability', rows=2),
             Fieldset(
                 'Trip Types',
                 HTML(
