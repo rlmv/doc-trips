@@ -276,7 +276,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         blank=True
     )
 
-    from_where = models.CharField('Where are you from?', max_length=255)
+    from_where = models.CharField('Hometown', max_length=255)
     what_do_you_like_to_study = models.CharField(
         'What do you like to study?', max_length=255
     )
