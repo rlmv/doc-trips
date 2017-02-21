@@ -21,6 +21,7 @@ from fyt.db.models import TripsYear
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.forms import crispify
+from fyt.utils.choices import NOT_AVAILABLE
 
 
 class TripAssignmentForm(forms.ModelForm):
@@ -262,7 +263,7 @@ class PreferenceHandler:
         """
         Get a dictionary of initial data, keyed by target.
         """
-        initial = {t: "" for t in self.targets}
+        initial = {t: self.default for t in self.targets}
 
         if self.form.instance:
             initial.update({
@@ -307,6 +308,7 @@ class QuestionHandler(PreferenceHandler):
     through_creator = 'answer_question'
     data_field = 'answer'
     target_field = 'question'
+    default = ''
 
     def formfield_label(self, question):
         return question.question
@@ -326,6 +328,7 @@ class SectionPreferenceHandler(PreferenceHandler):
     data_field = 'preference'
     target_field = 'section'
     choices = LEADER_SECTION_CHOICES
+    default = NOT_AVAILABLE
 
     def formfield_label(self, section):
         return '%s &mdash; %s' % (section.name, section.leader_date_str())
@@ -337,6 +340,7 @@ class TripTypePreferenceHandler(PreferenceHandler):
     data_field = 'preference'
     target_field = 'triptype'
     choices = LEADER_TRIPTYPE_CHOICES
+    default = NOT_AVAILABLE
 
     def formfield_label(self, triptype):
         return triptype.name

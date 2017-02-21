@@ -612,6 +612,11 @@ class LeaderSupplementFormTestCase(TripsTestCase):
         self.assertEqual(form.fields['section_1'].label,
                          'A &mdash; Jan 01 to Jan 06')
 
+    def test_default_section_choice(self):
+        form = LeaderSupplementForm(self.trips_year, instance=self.leader_app,
+                                    data=self.data({}))
+        self.assertEqual(form.fields['section_1'].initial, 'NOT AVAILABLE')
+
     def test_initial_section_choice_is_populated(self):
         self.leader_app.set_section_preference(self.section, 'PREFER')
         form = LeaderSupplementForm(self.trips_year, instance=self.leader_app)

@@ -495,7 +495,7 @@ class LeaderSectionChoice(models.Model):
         Section, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=LEADER_SECTION_CHOICES
+        max_length=20, choices=LEADER_SECTION_CHOICES, default=NOT_AVAILABLE
     )
 
     def __str__(self):
@@ -514,7 +514,7 @@ class LeaderTripTypeChoice(models.Model):
         TripType, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=LEADER_TRIPTYPE_CHOICES
+        max_length=20, choices=LEADER_TRIPTYPE_CHOICES, default=NOT_AVAILABLE
     )
 
     def __str__(self):
