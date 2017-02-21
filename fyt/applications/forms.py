@@ -344,7 +344,23 @@ class SectionPreferenceHandler(PreferenceHandler):
     default = NOT_AVAILABLE
 
     def formfield_label(self, section):
-        return '%s &mdash; %s' % (section.name, section.leader_date_str())
+        types = []
+        if section.is_exchange:
+            types.append('Exchange')
+        if section.is_transfer:
+            types.append('Transfer')
+        if section.is_fysep:
+            types.append('FYSEP')
+        if section.is_international:
+            types.append('International Student Orientation')
+        if section.is_native:
+            types.append('Native American Orientation')
+
+        type_str = '/'.join(types)
+
+        return '{} &mdash; {} ({})'.format(
+            section.name, section.leader_date_str(), type_str
+        )
 
 
 class TripTypePreferenceHandler(PreferenceHandler):
