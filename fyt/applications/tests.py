@@ -559,7 +559,8 @@ class ApplicationFormTestCase(TripsTestCase):
             trips_year=self.trips_year,
             pk=1,
             index=0,
-            question="Favorite fruit?"
+            question="Favorite fruit?",
+            type='LEADER',
         )
 
     def test_question_fields(self):

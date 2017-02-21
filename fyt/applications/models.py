@@ -94,6 +94,20 @@ class Question(DatabaseModel):
     )
     question = models.TextField(blank=False)
 
+    ALL = 'ALL'
+    LEADER = 'LEADER'
+    CROO = 'CROO'
+    TYPE_CHOICES = (
+        (ALL, 'All applicants'),
+        (LEADER, 'Leader applicants only'),
+        (CROO, 'Croo applicants only'),
+    )
+    type = models.CharField(
+        'Is this a question for all applicants, leader applicants, or croo '
+        'applicants?',
+        max_length=10, choices=TYPE_CHOICES, default=ALL
+    )
+
     def __str__(self):
         return "Question: {}".format(self.question)
 

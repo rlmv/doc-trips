@@ -311,7 +311,12 @@ class QuestionHandler(PreferenceHandler):
     default = ''
 
     def formfield_label(self, question):
-        return question.question
+        prefix = {
+            Question.ALL: '',
+            Question.LEADER: 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A TRIP LEADER. ',
+            Question.CROO: 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A CROOLING. '
+        }
+        return prefix[question.type] + question.question
 
     def formfield(self, question, initial):
         return forms.CharField(
