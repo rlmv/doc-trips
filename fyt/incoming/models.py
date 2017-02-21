@@ -516,7 +516,7 @@ class Registration(MedicalMixin, DatabaseModel):
 
     schedule_conflicts = models.TextField(blank=True)
 
-    tshirt_size = models.CharField(max_length=2, choices=TSHIRT_SIZE_CHOICES)
+    tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES)
 
     #  ----- physical condition and experience ------
 
