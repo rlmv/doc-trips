@@ -550,6 +550,25 @@ class LeaderSupplementLayout(Layout):
     def __init__(self, section_fields, triptype_fields):
         super().__init__(
             Fieldset(
+                'Wilderness Experience',
+                HTML(
+                    "<p>As we mentioned before, outdoor ability is NOT "
+                    "required to volunteer for Trips, but certain croos and "
+                    "trips do require wilderness skills, so these questions "
+                    "will help us place you appropriately.</p>"
+                ),
+                'class_2_3_paddler',
+                'ledyard_level_1',
+                'ledyard_level_2',
+                Field('paddling_experience', rows=2),
+                'climbing_course',
+                'dmc_leader',
+                Field('climbing_experience', rows=2),
+                'dmbc_leader',
+                Field('biking_experience', rows=2),
+                Field('bike_maintenance_experience', rows=2),
+            ),
+            Fieldset(
                 'Trip Leader Availability',
                 HTML(
                     "<p>Please indicate your availabity for each section and "
@@ -564,38 +583,25 @@ class LeaderSupplementLayout(Layout):
                     "available you are, the more likely we will be able to "
                     "place you.</p>"
                 ),
-                Fieldset(
-                    'Sections',
-                    *section_fields
-                ),
-                Fieldset(
-                    'Wilderness Experience',
-                    'class_2_3_paddler',
-                    'ledyard_level_1',
-                    'ledyard_level_2',
-                    Field('paddling_experience', rows=2),
-                    'climbing_course',
-                    'dmc_leader',
-                    Field('climbing_experience', rows=2),
-                    'dmbc_leader',
-                    Field('biking_experience', rows=2),
-                    Field('bike_maintenance_experience', rows=2),
-                ),
-                Fieldset(
-                    'Trip Types',
-                    HTML(
-                        "<p>For trip leader applicants only. Please keep in "
-                        "mind that your availability will affect our ability "
-                        "to place you on a trip&mdash;the more available you "
-                        "are, the more likely we will be able to place you.</p>"
-                        '<p>{% include "applications/triptype_modal.html" %}</p>'
-                    ),
-                    *triptype_fields
-                ),
-                Field('relevant_experience', rows=3),
-                Field('availability', rows=3),
-                Field('co_leader', rows=3),
             ),
+            Fieldset(
+                'Sections',
+                *section_fields
+            ),
+            Fieldset(
+                'Trip Types',
+                HTML(
+                    "<p>For trip leader applicants only. Please keep in "
+                    "mind that your availability will affect our ability "
+                    "to place you on a trip&mdash;the more available you "
+                    "are, the more likely we will be able to place you.</p>"
+                    '<p>{% include "applications/triptype_modal.html" %}</p>'
+                ),
+                *triptype_fields
+            ),
+            Field('relevant_experience', rows=3),
+            Field('availability', rows=3),
+            Field('co_leader', rows=3),
         )
 
 
