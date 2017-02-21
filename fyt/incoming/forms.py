@@ -20,6 +20,7 @@ from fyt.incoming.models import Settings
 from fyt.transport.models import Stop
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
+from fyt.utils.choices import NOT_AVAILABLE
 
 
 class RoundTripStopChoiceField(forms.ModelChoiceField):
@@ -44,6 +45,7 @@ class SectionPreferenceHandler(PreferenceHandler):
     data_field = 'preference'
     target_field = 'section'
     choices = REGISTRATION_SECTION_CHOICES
+    default = NOT_AVAILABLE
 
     def formfield_label(self, section):
         return '{} &mdash; {}' .format(section.name, section.trippee_date_str())
@@ -55,6 +57,7 @@ class TripTypePreferenceHandler(PreferenceHandler):
     data_field = 'preference'
     target_field = 'triptype'
     choices = REGISTRATION_TRIPTYPE_CHOICES
+    default = NOT_AVAILABLE
 
     def formfield_label(self, triptype):
         return triptype.name

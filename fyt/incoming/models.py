@@ -329,7 +329,8 @@ class RegistrationSectionChoice(models.Model):
         Section, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=REGISTRATION_SECTION_CHOICES
+        max_length=20, choices=REGISTRATION_SECTION_CHOICES,
+        default=NOT_AVAILABLE
     )
 
     def __str__(self):
@@ -349,7 +350,8 @@ class RegistrationTripTypeChoice(models.Model):
         TripType, on_delete=models.CASCADE
     )
     preference = models.CharField(
-        max_length=20, choices=REGISTRATION_TRIPTYPE_CHOICES
+        max_length=20, choices=REGISTRATION_TRIPTYPE_CHOICES,
+        default=NOT_AVAILABLE
     )
 
     def __str__(self):
