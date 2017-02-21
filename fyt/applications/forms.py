@@ -557,8 +557,8 @@ class LeaderSupplementLayout(Layout):
                 HTML(
                     "<p>As we mentioned before, outdoor ability is NOT "
                     "required to volunteer for Trips, but certain croos and "
-                    "trips do require wilderness skills, so these questions "
-                    "will help us place you appropriately.</p>"
+                    "trips do require wilderness skills. These questions will"
+                    "help us place you appropriately.</p>"
                 ),
                 'class_2_3_paddler',
                 'ledyard_level_1',
