@@ -326,10 +326,18 @@ class QuestionHandler(PreferenceHandler):
         }
         return prefix[question.type] + question.question
 
+    def formfield_help_text(self, question):
+        return {
+            Question.ALL: None,
+            Question.LEADER: 'Leave this blank if you are only applying for a crooling position',
+            Question.CROO: 'Leave this blank if you are only applying for a trip leader position.'
+        }[question.type]
+
     def formfield(self, question, initial):
         return WordCountedCharField(
             initial=initial,
             label=self.formfield_label(question),
+            help_text=self.formfield_help_text(question),
             required=False,
             widget=forms.Textarea(attrs={'rows': 8})
         )
