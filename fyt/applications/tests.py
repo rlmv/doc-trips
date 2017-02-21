@@ -225,20 +225,27 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
 
     def test_leader_application_complete(self):
         trips_year = self.init_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
+        question1 = mommy.make(Question, trips_year=trips_year, type=Question.ALL)
+        question2 = mommy.make(Question, trips_year=trips_year, type=Question.LEADER)
+        question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
+
         app = make_application(trips_year=trips_year)
         app.leader_willing = True
 
         # Not complete because there is an unanswered question
         self.assertFalse(app.leader_application_complete)
 
+        # Not complete because the leader question is unanswered
+        app.answer_question(question1, 'An answer')
+        self.assertFalse(app.leader_application_complete)
+
         # Not complete because there is a blank answer
-        answer = mommy.make(Answer, application=app, question=question, answer="")
+        answer2 = app.answer_question(question2, '')
         self.assertFalse(app.leader_application_complete)
 
         # Complete - answered
-        answer.answer = 'Some text!'
-        answer.save()
+        answer2.answer = 'Some text!'
+        answer2.save()
         self.assertTrue(app.leader_application_complete)
 
         # Answered but unwilling
@@ -247,7 +254,9 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
 
     def test_croo_application_complete(self):
         trips_year = self.init_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
+        question1 = mommy.make(Question, trips_year=trips_year, type=Question.ALL)
+        question2 = mommy.make(Question, trips_year=trips_year, type=Question.LEADER)
+        question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
         app = make_application(trips_year=trips_year)
         app.croo_willing = True
 
@@ -255,12 +264,16 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertFalse(app.croo_application_complete)
 
         # Not complete because there is a blank answer
-        answer = mommy.make(Answer, application=app, question=question, answer="")
+        app.answer_question(question1, 'Answer')
+        self.assertFalse(app.croo_application_complete)
+
+        # Not complete because the croo question is unanswered
+        answer3 = app.answer_question(question3, '')
         self.assertFalse(app.croo_application_complete)
 
         # Complete - answered
-        answer.answer = 'Some text!'
-        answer.save()
+        answer3.answer = 'Some text!'
+        answer3.save()
         self.assertTrue(app.croo_application_complete)
 
         # Answered but unwilling

@@ -435,15 +435,21 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
-    def all_questions_answered(self):
+    def all_questions_answered(self, type):
         """
-        Returns True if all the dynamic questions are answered.
+        Returns True if all the dynamic questions are answered, for the
+        given type of question.
         """
-        q_ids = set(q.id for q in self.get_questions())
+        types = [Question.ALL, type]
+
+        q_ids = set(q.id for q in self.get_questions() if q.type in types)
 
         for answer in self.answer_set.all():
             if answer.answer:  # "" is not an answer
-                q_ids.remove(answer.question_id)
+                try:
+                    q_ids.remove(answer.question_id)
+                except KeyError:
+                    pass
 
         return len(q_ids) == 0
 
@@ -463,7 +469,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         A leader application is complete if all questions are answered
         and the applicant has indicated that they want to be a leader.
         """
-        return self.leader_willing and self.all_questions_answered()
+        return self.leader_willing and self.all_questions_answered(Question.LEADER)
 
     @property
     def croo_application_complete(self):
@@ -471,7 +477,7 @@ class GeneralApplication(MedicalMixin, DatabaseModel):
         A croo application is complete if all questions are answered
         and the applicant has indicated that they want to be on a croo.
         """
-        return self.croo_willing and self.all_questions_answered()
+        return self.croo_willing and self.all_questions_answered(Question.CROO)
 
     def answer_question(self, question, text):
         """
