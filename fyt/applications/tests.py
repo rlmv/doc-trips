@@ -590,6 +590,19 @@ class LeaderSupplementFormTestCase(TripsTestCase):
         self.app = make_application(trips_year=self.trips_year)
         self.leader_app = self.app.leader_supplement
 
+    def data(self, additional):
+        d = {
+            'class_2_3_paddler': True,
+            'ledyard_level_2': True,
+            'ledyard_level_1': True,
+            'climbing_course': True,
+            'dmc_leader': True,
+            'cnt_leader': True,
+            'dmbc_leader': True,
+        }
+        d.update(additional)
+        return d
+
     def test_adds_section_fields(self):
         form = LeaderSupplementForm(self.trips_year)
         self.assertIn('section_1', form.fields)
@@ -607,7 +620,8 @@ class LeaderSupplementFormTestCase(TripsTestCase):
     def test_new_section_choice_is_saved(self):
         form = LeaderSupplementForm(
             self.trips_year, instance=self.leader_app,
-            data={'section_1': 'AVAILABLE'})
+            data=self.data({'section_1': 'AVAILABLE'})
+        )
         form.save()
 
         prefs = self.leader_app.leadersectionchoice_set.all()
@@ -621,7 +635,7 @@ class LeaderSupplementFormTestCase(TripsTestCase):
 
         form = LeaderSupplementForm(
             self.trips_year, instance=self.leader_app,
-            data={'section_1': 'AVAILABLE'})
+            data=self.data({'section_1': 'AVAILABLE'}))
         form.save()
 
         prefs = self.leader_app.leadersectionchoice_set.all()
@@ -651,7 +665,11 @@ class LeaderSupplementFormTestCase(TripsTestCase):
 
         form = LeaderSupplementForm(
             self.trips_year, instance=self.leader_app,
-            data={'triptype_1': 'NOT AVAILABLE', 'section_1': 'PREFER'})
+            data=self.data({
+                'triptype_1': 'NOT AVAILABLE',
+                'section_1': 'PREFER'
+            })
+        )
         form.save()
 
         self.assertEqual(form.fields['triptype_1'].label, 'Climbing')
