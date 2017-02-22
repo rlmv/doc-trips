@@ -118,7 +118,7 @@ class Question(DatabaseModel):
 
     @property
     def display_text(self):
-        base_prefix = 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A {} '
+        base_prefix = 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A {}. '
 
         if self.leader_only:
             prefix = base_prefix.format('TRIP LEADER')
