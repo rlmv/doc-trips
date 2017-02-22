@@ -86,9 +86,10 @@ class Question(DatabaseModel):
     """
     class Meta:
         ordering = ['index']
+        unique_together = ['index', 'trips_year']
 
     index = models.PositiveIntegerField(
-        'order', unique=True, help_text=(
+        'order', help_text=(
             'change this value to re-order the questions'
         )
     )
