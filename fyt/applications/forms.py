@@ -301,13 +301,6 @@ class PreferenceHandler:
             self.create_through(self.form.instance, t, get_cleaned_data(t))
 
 
-class WordCountedCharField(forms.CharField):
-
-    def validate(self, value):
-        super().validate(value)
-        validate_word_count(value)
-
-
 class QuestionHandler(PreferenceHandler):
     """
     Handler for dynamic questions and answers.
@@ -334,12 +327,13 @@ class QuestionHandler(PreferenceHandler):
         }[question.type]
 
     def formfield(self, question, initial):
-        return WordCountedCharField(
+        return forms.CharField(
             initial=initial,
             label=self.formfield_label(question),
             help_text=self.formfield_help_text(question),
             required=False,
-            widget=forms.Textarea(attrs={'rows': 8})
+            widget=forms.Textarea(attrs={'rows': 8}),
+            validators=[validate_word_count]
         )
 
 

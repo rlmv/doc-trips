@@ -603,9 +603,8 @@ class ApplicationFormTestCase(TripsTestCase):
         form = QuestionForm(
             self.trips_year,
             instance=self.app,
-            data={
-                'question_1': 'Blueberries'
-            })
+            data={'question_1': 'Blueberries'}
+        )
         self.assertTrue(form.is_valid())
         form.save()
 
@@ -618,6 +617,14 @@ class ApplicationFormTestCase(TripsTestCase):
         self.assertEqual(len(answers), 1)
         self.assertEqual(answers[0].question, self.question)
         self.assertEqual(answers[0].answer, 'Blueberries')
+
+    def test_question_field_word_count(self):
+        form = QuestionForm(
+            self.trips_year,
+            instance=self.app,
+            data={'question_1': 'word ' * 301}
+        )
+        self.assertFalse(form.is_valid())
 
 
 class LeaderSupplementFormTestCase(TripsTestCase):
