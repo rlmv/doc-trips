@@ -355,11 +355,11 @@ class SectionPreferenceHandler(PreferenceHandler):
             types.append('Native American Orientation')
 
         if types:
-            type_str = '({})'.format('/'.join(types))
+            type_str = ' ({})'.format('/'.join(types))
         else:
             type_str = ''
 
-        return '{} &mdash; {} {}'.format(
+        return '{} &mdash; {}{}'.format(
             section.name, section.leader_date_str(), type_str
         )
 
