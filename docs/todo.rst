@@ -7,6 +7,7 @@ External
 
 Immediate
 ---------
+* Reset calendar when migrating db forward to next year.
 * Rename from_where to hometown
 * Migrate leadership_style question to dynamic questions; remove.
 * Prefix ``cache_as`` attrs with something
