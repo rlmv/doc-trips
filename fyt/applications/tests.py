@@ -317,6 +317,22 @@ class AnswerModelTestCase(ApplicationTestMixin, TripsTestCase):
             answer.full_clean()
 
 
+class QuestionModelTestCase(TripsTestCase):
+
+    def test_leader_and_croo_only(self):
+        question = mommy.make(Question, type=Question.ALL)
+        self.assertFalse(question.leader_only)
+        self.assertFalse(question.croo_only)
+
+        question = mommy.make(Question, type=Question.LEADER)
+        self.assertTrue(question.leader_only)
+        self.assertFalse(question.croo_only)
+
+        question = mommy.make(Question, type=Question.CROO)
+        self.assertFalse(question.leader_only)
+        self.assertTrue(question.croo_only)
+
+
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
 
     def test_anonymous_user_does_not_crash_application(self):

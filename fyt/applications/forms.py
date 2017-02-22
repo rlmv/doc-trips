@@ -312,19 +312,15 @@ class QuestionHandler(PreferenceHandler):
     default = ''
 
     def formfield_label(self, question):
-        prefix = {
-            Question.ALL: '',
-            Question.LEADER: 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A TRIP LEADER. ',
-            Question.CROO: 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A CROOLING. '
-        }
-        return prefix[question.type] + question.question
+        return question.display_text
 
     def formfield_help_text(self, question):
-        return {
-            Question.ALL: None,
-            Question.LEADER: 'Leave this blank if you are only applying for a crooling position',
-            Question.CROO: 'Leave this blank if you are only applying for a trip leader position.'
-        }[question.type]
+        base_text = 'Leave this blank if you are only applying for a {} position'
+
+        if question.leader_only:
+            return base_text.format('crooling')
+        elif question.croo_only:
+            return base_text.format('trip leader')
 
     def formfield(self, question, initial):
         return forms.CharField(

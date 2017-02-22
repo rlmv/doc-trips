@@ -108,6 +108,27 @@ class Question(DatabaseModel):
         max_length=10, choices=TYPE_CHOICES, default=ALL
     )
 
+    @property
+    def leader_only(self):
+        return self.type == self.LEADER
+
+    @property
+    def croo_only(self):
+        return self.type == self.CROO
+
+    @property
+    def display_text(self):
+        base_prefix = 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A {} '
+
+        if self.leader_only:
+            prefix = base_prefix.format('TRIP LEADER')
+        elif self.croo_only:
+            prefix = base_prefix.format('CROOLING')
+        else:
+            prefix = ''
+
+        return prefix + self.question
+
     def __str__(self):
         return "Question: {}".format(self.question)
 

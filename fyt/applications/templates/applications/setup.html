@@ -21,7 +21,7 @@
 
 {% for question in questions %}
     <h3>Question {{ forloop.counter }}</h3>
-    <p>{{ question.question|safe }}</p>
+    <p>{{ question.display_text }}</p>
 {% endfor %}
 
 <p>
