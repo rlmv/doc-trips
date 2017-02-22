@@ -9,6 +9,7 @@ Immediate
 ---------
 * Reset calendar when migrating db forward to next year.
 * Rename from_where to hometown
+* Move trip assignment text from model to HTML.
 * Migrate leadership_style question to dynamic questions; remove.
 * Prefix ``cache_as`` attrs with something
 * Croo waitlist. Needs to support people simultaneously being on the croo
