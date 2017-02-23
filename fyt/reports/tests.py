@@ -14,7 +14,7 @@ from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test.testcases import TripsTestCase, WebTestCase
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip
-from fyt.utils.choices import L, M, S, XL
+from fyt.utils.choices import L, M, S, XL, XS, XXL
 
 
 def save_and_open_csv(resp):
@@ -494,7 +494,7 @@ class TShirtCountTestCase(TripsTestCase):
             tshirt_size=S
         )
         target = {
-            S: 1, M: 0, L: 0, XL: 0
+            XS: 0, S: 1, M: 0, L: 0, XL: 0, XXL: 0
         }
         self.assertEqual(target, leader_tshirts(trips_year))
 
@@ -507,7 +507,7 @@ class TShirtCountTestCase(TripsTestCase):
             tshirt_size=M
         )
         target = {
-            S: 0, M: 1, L: 0, XL: 0
+            XS: 0, S: 0, M: 1, L: 0, XL: 0, XXL: 0
         }
         self.assertEqual(target, croo_tshirts(trips_year))
 
@@ -519,6 +519,6 @@ class TShirtCountTestCase(TripsTestCase):
             tshirt_size=L
         )
         target = {
-            S: 0, M: 0, L: 1, XL: 0
+            XS:0, S: 0, M: 0, L: 1, XL: 0, XXL: 0
         }
         self.assertEqual(target, trippee_tshirts(trips_year))

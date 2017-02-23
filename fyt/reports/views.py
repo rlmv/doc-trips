@@ -1,4 +1,5 @@
 import csv
+from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
@@ -12,7 +13,7 @@ from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.trips.models import Trip
 from fyt.utils.cache import cache_as
-from fyt.utils.choices import L, M, S, XL
+from fyt.utils.choices import TSHIRT_SIZES
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -263,23 +264,28 @@ class DocMembers(GenericReportView):
 
 def _tshirt_count(qs):
     """
-    Return a dict with S, M, L, XL keys, each
+    Return an OrderedDict with XS, S, M, L, XL, XXL keys, each
     with the number of shirts needed in that size.
     """
-    counts = {S: 0, M: 0, L: 0, XL: 0}
-    for size in [S, M, L, XL]:
+    counts = OrderedDict([(size, 0) for size in TSHIRT_SIZES])
+
+    for size in TSHIRT_SIZES:
         counts[size] += qs.filter(tshirt_size=size).count()
+
     return counts
+
 
 def leader_tshirts(trips_year):
     return _tshirt_count(Application.objects.filter(
         trips_year=trips_year, status=Application.LEADER
     ))
 
+
 def croo_tshirts(trips_year):
     return _tshirt_count(Application.objects.filter(
         trips_year=trips_year, status=Application.CROO
     ))
+
 
 def trippee_tshirts(trips_year):
     return _tshirt_count(Registration.objects.filter(
@@ -293,13 +299,13 @@ class TShirts(DatabaseTemplateView):
     """
     template_name = "reports/tshirts.html"
 
-    def get_context_data(self, **kwargs):
-        kwargs.update({
-            'leaders': leader_tshirts(self.kwargs['trips_year']),
-            'croos': croo_tshirts(self.kwargs['trips_year']),
-            'trippees': trippee_tshirts(self.kwargs['trips_year'])
-        })
-        return super().get_context_data(**kwargs)
+    def extra_context(self):
+        trips_year = self.get_trips_year()
+        return {
+            'leaders': leader_tshirts(trips_year),
+            'croos': croo_tshirts(trips_year),
+            'trippees': trippee_tshirts(trips_year)
+        }
 
 
 class Housing(GenericReportView):

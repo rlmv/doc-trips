@@ -10,6 +10,7 @@ M = 'M'
 L = 'L'
 XL = 'XL'
 XXL = 'XXL'
+
 TSHIRT_SIZE_CHOICES = (
     (XS, 'Extra Small'),
     (S, 'Small'),
@@ -18,6 +19,8 @@ TSHIRT_SIZE_CHOICES = (
     (XL, 'Extra Large'),
     (XXL, 'Extra Extra Large'),
 )
+
+TSHIRT_SIZES = [choice[0] for choice in TSHIRT_SIZE_CHOICES]
 
 
 FIRST_CHOICE = 'FIRST CHOICE'
