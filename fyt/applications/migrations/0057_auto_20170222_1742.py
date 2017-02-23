@@ -20,6 +20,7 @@ def migrate_leadership_style(apps, schema_editor):
     Question = apps.get_model('applications', 'Question')
     Answer = apps.get_model('applications', 'Answer')
     GeneralApplication = apps.get_model('applications', 'GeneralApplication')
+    TripsYear = apps.get_model('db', 'TripsYear')
 
     text = (
         'Describe your leadership style and your role in a group. Please go to '
@@ -35,22 +36,25 @@ def migrate_leadership_style(apps, schema_editor):
         'complements you. Each leadership style is equally valuable, and we '
         'will use answers to this question to balance our teams as a whole.')
 
-    question = Question.objects.create(
-        trips_year_id=YEAR,
-        question=text,
-        type='ALL',
-        index=0
-    )
+    # Don't break new dev databases
+    if TripsYear.objects.filter(year=YEAR).exists():
 
-    for app in GeneralApplication.objects.filter(trips_year=YEAR):
-        answer = app.leadership_style.strip() or "NO ANSWER"
-        print(answer)
-
-        Answer.objects.create(
-            application=app,
-            question=question,
-            answer=answer
+        question = Question.objects.create(
+            trips_year_id=YEAR,
+            question=text,
+            type='ALL',
+            index=0
         )
+
+        for app in GeneralApplication.objects.filter(trips_year=YEAR):
+            answer = app.leadership_style.strip() or "NO ANSWER"
+            print(answer)
+
+            Answer.objects.create(
+                application=app,
+                question=question,
+                answer=answer
+            )
 
 
 class Migration(migrations.Migration):
