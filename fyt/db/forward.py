@@ -38,7 +38,7 @@ def bulk_update(qs):
     _bulk_update(qs, batch_size=SQLITE_BATCH_LIMIT)
 
 
-class Forward():
+class Forward:
     """
     Manages the state of the database migration to the next ``trips_year``.
     """
