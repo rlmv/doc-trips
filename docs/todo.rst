@@ -7,7 +7,6 @@ External
 
 Immediate
 ---------
-* Reset calendar when migrating db forward to next year.
 * Rename from_where to hometown
 * Move trip assignment text from model to HTML.
 * Prefix ``cache_as`` attrs with something
@@ -15,9 +14,7 @@ Immediate
   waitlist and trip leaders, or croo waitlist and leader waitlist, etc
 * Add trainings signup app
 * Add checkboxes/formset for batch updating FA/CPR trainings.
-* Make section/triptypes optional in leader form if the leader supplement has
-  not yet been uploaded.
-* Spreadsheets for various registration sub-categories
+* Add spreadsheets for various registration sub-categories
 * Fix race conditions around applications and registrations: *I think* if a user
 has two windows open, such that they both get directed to create a new application,
 and somehow submits both, then there will be two applications or registrations.
