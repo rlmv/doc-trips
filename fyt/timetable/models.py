@@ -95,3 +95,14 @@ class Timetable(models.Model):
         now = timezone.now()
         return (self.trippee_registrations_open < now and
                 now < self.trippee_registrations_close)
+
+    def reset(self):
+        """
+        Hide all statuses.
+        """
+        self.hide_volunteer_page = False
+        self.application_status_available = False
+        self.leader_assignment_available = False
+        self.trippee_assignment_available = False
+
+        self.save()

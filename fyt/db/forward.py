@@ -17,6 +17,7 @@ from fyt.applications.models import (
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.raids.models import RaidInfo
+from fyt.timetable.models import Timetable
 from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import Campsite, Document, TripTemplate, TripType
 
@@ -72,6 +73,7 @@ class Forward():
 
         self.delete_trippee_medical_info()
         self.delete_application_medical_info()
+        self.reset_timetable()
 
     def copy_object_forward(self, obj):
         """
@@ -133,6 +135,12 @@ class Forward():
             app.clear_medical_info()
 
         bulk_update(applications, batch_size=SQLITE_BATCH_LIMIT)
+
+    def reset_timetable(self):
+        """
+        Reset the timetable.
+        """
+        Timetable.objects.timetable().reset()
 
 
 @atomic

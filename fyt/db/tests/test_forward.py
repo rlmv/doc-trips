@@ -9,6 +9,7 @@ from fyt.applications.models import GeneralApplication as Application
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.test import TripsTestCase, WebTestCase
+from fyt.timetable.models import Timetable
 from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import TripTemplate
 
@@ -183,6 +184,24 @@ class MigrateForwardTestCase(TripsTestCase):
 
         next_croo = Croo.objects.get(trips_year=(trips_year.year + 1))
         self.assertDataEqual(next_croo, croo)
+
+    def test_timetable_is_reset(self):
+        trips_year = self.init_trips_year()
+
+        timetable = Timetable.objects.timetable()
+        timetable.hide_volunteer_page = True
+        timetable.application_status_available = True
+        timetable.leader_assignment_available = True
+        timetable.trippee_assignment_available = True
+        timetable.save()
+
+        forward()
+
+        timetable = Timetable.objects.timetable()
+        self.assertFalse(timetable.hide_volunteer_page)
+        self.assertFalse(timetable.application_status_available)
+        self.assertFalse(timetable.leader_assignment_available)
+        self.assertFalse(timetable.trippee_assignment_available)
 
 
 class MigrateForwardWebTestCase(WebTestCase):
