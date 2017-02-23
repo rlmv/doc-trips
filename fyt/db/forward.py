@@ -1,7 +1,7 @@
 import copy
 import logging
 
-from bulk_update.helper import bulk_update
+from bulk_update.helper import bulk_update as _bulk_update
 from django.conf import settings
 from django.db.transaction import atomic
 
@@ -32,6 +32,10 @@ if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
     SQLITE_BATCH_LIMIT = 1
 else:
     SQLITE_BATCH_LIMIT = None
+
+
+def bulk_update(qs):
+    _bulk_update(qs, batch_size=SQLITE_BATCH_LIMIT)
 
 
 class Forward():
@@ -123,8 +127,8 @@ class Forward():
         for reg in registrations:
             reg.clear_medical_info()
 
-        bulk_update(incoming, batch_size=SQLITE_BATCH_LIMIT)
-        bulk_update(registrations, batch_size=SQLITE_BATCH_LIMIT)
+        bulk_update(incoming)
+        bulk_update(registrations)
 
     def delete_application_medical_info(self):
         """
@@ -134,7 +138,7 @@ class Forward():
         for app in applications:
             app.clear_medical_info()
 
-        bulk_update(applications, batch_size=SQLITE_BATCH_LIMIT)
+        bulk_update(applications)
 
     def reset_timetable(self):
         """
