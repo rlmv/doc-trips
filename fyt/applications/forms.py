@@ -16,13 +16,13 @@ from fyt.applications.models import (
     LeaderSupplement,
     QualificationTag,
     Question,
-    validate_word_count
+    validate_word_count,
 )
 from fyt.db.models import TripsYear
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
-from fyt.utils.forms import crispify
 from fyt.utils.choices import NOT_AVAILABLE
+from fyt.utils.forms import crispify
 
 
 class TripAssignmentForm(forms.ModelForm):

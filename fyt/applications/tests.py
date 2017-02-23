@@ -7,11 +7,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from .forms import (
-    CrooApplicationGradeForm,
-    LeaderSupplementForm,
-    QuestionForm
-)
+from .forms import CrooApplicationGradeForm, LeaderSupplementForm, QuestionForm
 from .models import (
     Answer,
     ApplicationInformation,
