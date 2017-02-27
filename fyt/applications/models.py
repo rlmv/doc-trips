@@ -608,7 +608,9 @@ class LeaderSupplement(DatabaseModel):
 
     availability = models.TextField(
         "Looking at the Trips descriptions, please feel free to use this "
-        "space to address any concerns or explain your availability. If "
+        "space to address any concerns or explain your availability. "
+        "(Attention '19s: If you are available for more than Sections H, I, "
+        "and J, please explain how.) If "
         "applicable, please also elaborate on any particular trips or "
         "activities that you absolutely CANNOT participate in. All "
         "information in this application will remain confidential.",
@@ -620,8 +622,7 @@ class LeaderSupplement(DatabaseModel):
         'your level of expertise and any previous experience that you could '
         'bring to each trip type that you selected (e.g. lifeguard training, '
         'yoga experience, meditation experience, fishing experience, '
-        'photography class, Walden enthusiast, NOLS, Cabin and Trail leader, '
-        'etc).',
+        'photography class, Walden enthusiast, etc).',
         blank=True
     )
     co_leader = models.TextField(
