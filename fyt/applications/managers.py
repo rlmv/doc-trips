@@ -164,40 +164,81 @@ class GeneralApplicationManager(models.Manager):
                     .exclude(answer__answer="")
                     .filter(answer__count=question_count(trips_year)))
 
+    def idea(self, trips_year):
+        questions = Question.objects.filter(
+            trips_year=trips_year, type__in=[Question.LEADER, Question.ALL])
+
+        query = Q(leader_willing=False)
+        for q in questions:
+            query |= (Q(answer__answer="") & Q(answer__question=q))
+
+        return self.filter(trips_year=trips_year).filter(query)
+
     def leader_applications(self, trips_year):
-        return self._with_all_answers(trips_year).filter(leader_willing=True)
+        from .models import Question
+        questions = Question.objects.filter(
+            trips_year=trips_year, type__in=[Question.LEADER, Question.ALL])
+
+        qs = self.filter(trips_year=trips_year, leader_willing=True)
+
+        for question in questions:
+            qs = qs.filter(Q(answer__question=question) & ~Q(answer__answer=""))
+
+        return qs
 
     def croo_applications(self, trips_year):
-        return self._with_all_answers(trips_year).filter(croo_willing=True)
+        from .models import Question
+        questions = Question.objects.filter(
+            trips_year=trips_year, type__in=[Question.CROO, Question.ALL])
 
+        qs = self.filter(trips_year=trips_year, croo_willing=True)
+
+        for question in questions:
+            qs = qs.filter(Q(answer__question=question) & ~Q(answer__answer=""))
+
+        return qs
+
+    # NOTE: There's a bug in Django (https://code.djangoproject.com/ticket/26959
+    # and https://code.djangoproject.com/ticket/26522) which causes non-
+    # deterministic failures when `|`ing together the leader and croo
+    # querysets so we have to use this instead.
     def leader_or_croo_applications(self, trips_year):
-        """ Return all GenApps with either complete croo OR tl parts """
-        return (self._with_all_answers(trips_year)
-                    .filter(Q(leader_willing=True) | Q(croo_willing=True)))
+        """
+        Return all applications which have either the leader or croo section
+        complete.
+        """
+        leader_pks = pks(self.leader_applications(trips_year))
+        croo_pks = pks(self.croo_applications(trips_year))
+
+        return self.filter(trips_year=trips_year).filter(
+            Q(pk__in=leader_pks) | Q(pk__in=croo_pks))
 
     def leader_and_croo_applications(self, trips_year):
-        return (self._with_all_answers(trips_year)
-                    .filter(leader_willing=True, croo_willing=True))
+        return (self.leader_applications(trips_year) &
+                self.croo_applications(trips_year))
+
+    # TODO: is this how we should define incomplete applications?
 
     def incomplete_leader_applications(self, trips_year):
-        return (self._with_answer_count(trips_year)
-                    .filter(
-                        Q(answer__answer="") |
-                        Q(leader_willing=False) |
-                        Q(answer__count__lt=question_count(trips_year))))
+        leader_pks = pks(self.leader_applications(trips_year))
+        return self.filter(trips_year=trips_year).exclude(pk__in=leader_pks)
 
     def incomplete_croo_applications(self, trips_year):
-        return (self._with_answer_count(trips_year)
-                    .filter(
-                        Q(answer__answer="") |
-                        Q(croo_willing=False) |
-                        Q(answer__count__lt=question_count(trips_year))))
+        croo_pks = pks(self.croo_applications(trips_year))
+        return self.filter(trips_year=trips_year).exclude(pk__in=croo_pks)
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)
 
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
+
+
+def pks(qs):
+    """
+    Return the primary keys of a queryset.
+    """
+    return qs.values_list('pk', flat=True)
 
 
 def question_count(trips_year):

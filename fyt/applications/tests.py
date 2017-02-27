@@ -484,95 +484,78 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
 
 class GeneralApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
 
-    def test_get_leader_applications(self):
-        trips_year = self.init_current_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
+    def setUp(self):
+        self.init_trips_year()
+        self.q_general = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.ALL)
+        self.q_leader = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.LEADER)
+        self.q_croo = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.CROO)
 
-        # Complete
-        app1 = self.make_application(trips_year=trips_year)
-        app1.answer_question(question, 'An answer!')
+        # Complete leader & croo app
+        self.app1 = self.make_application()
+        self.app1.answer_question(self.q_general, 'answer')
+        self.app1.answer_question(self.q_leader, 'answer')
+        self.app1.answer_question(self.q_croo, 'answer')
+
+        # Complete leader
+        self.app2 = self.make_application()
+        self.app2.answer_question(self.q_general, 'answer')
+        self.app2.answer_question(self.q_leader, 'answer')
+
+        # Complete croo
+        self.app3 = self.make_application()
+        self.app3.answer_question(self.q_general, 'answer')
+        self.app3.answer_question(self.q_croo, 'answer')
+
+        # Not complete - missing croo & leader answer
+        self.app4 = self.make_application()
+        self.app4.answer_question(self.q_general, 'answer')
 
         # Not complete - empty answer
-        app2 = self.make_application(trips_year=trips_year)
-        app2.answer_question(question, "")
+        self.app5 = self.make_application()
+        self.app5.answer_question(self.q_general, '')
+        self.app5.answer_question(self.q_leader, 'answer')
+        self.app5.answer_question(self.q_croo, 'answer')
 
-        # Not complete - missing answer
-        app3 = self.make_application(trips_year=trips_year)
+        # Not a leader app
+        self.app6 = self.make_application()
+        self.app6.answer_question(self.q_general, 'answer')
+        self.app6.answer_question(self.q_leader, 'answer')
+        self.app6.leader_willing = False
+        self.app6.save()
 
-        # Not a leader application
-        app4 = self.make_application(trips_year=trips_year)
-        app4.leader_willing = False
-        app4.save()
+        # Not a croo app
+        self.app7 = self.make_application()
+        self.app7.answer_question(self.q_general, 'answer')
+        self.app7.answer_question(self.q_croo, 'answer')
+        self.app7.croo_willing = False
+        self.app7.save()
 
-        # Complete
-        qs = GeneralApplication.objects.leader_applications(trips_year)
-        self.assertQsEqual(qs, [app1])
-
-        # Incomplete
-        qs = GeneralApplication.objects.incomplete_leader_applications(trips_year)
-        self.assertQsEqual(qs, [app2, app3, app4])
+    def test_get_leader_applications(self):
+        qs = GeneralApplication.objects.leader_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1, self.app2])
 
     def test_get_croo_applications(self):
-        trips_year = self.init_current_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
-
-        # Complete
-        app1 = self.make_application(trips_year=trips_year)
-        app1.answer_question(question, 'An answer!')
-
-        # Not complete - empty answer
-        app2 = self.make_application(trips_year=trips_year)
-        app2.answer_question(question, "")
-
-        # Not complete - missing answer
-        app3 = self.make_application(trips_year=trips_year)
-
-        # Not a croo application
-        app4 = self.make_application(trips_year=trips_year)
-        app4.croo_willing = False
-        app4.save()
-
-        # Complete
-        qs = GeneralApplication.objects.croo_applications(trips_year)
-        self.assertQsEqual(qs, [app1])
-
-        # Incomplete
-        qs = GeneralApplication.objects.incomplete_croo_applications(trips_year)
-        self.assertQsEqual(qs, [app2, app3, app4])
+        qs = GeneralApplication.objects.croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1, self.app3])
 
     def test_get_leader_or_croo_applications(self):
-        trips_year = self.init_current_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
+        qs = GeneralApplication.objects.leader_or_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
 
-        app1 = self.make_application(trips_year=trips_year)
-        app1.answer_question(question, 'An answer!')
-        app1.leader_willing = False
-        app1.save()
+    def test_get_leader_and_croo_applications(self):
+        qs = GeneralApplication.objects.leader_and_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1])
 
-        app2 = self.make_application(trips_year=trips_year)
-        app2.answer_question(question, 'An answer!')
-        app2.croo_willing = False
-        app2.save()
+    def test_incomplete_leader_applications(self):
+        qs = GeneralApplication.objects.incomplete_leader_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app3, self.app4, self.app5, self.app6, self.app7])
 
-        app3 = self.make_application(trips_year=trips_year)
-        app3.answer_question(question, 'An answer!')
-        app3.leader_willing = False
-        app3.croo_willing = False
-        app3.save()
-
-        app4 = self.make_application(trips_year=trips_year)
-
-        app5 = self.make_application(trips_year=trips_year)
-        app5.answer_question(question, '')
-
-        app6 = self.make_application(trips_year=trips_year)
-        app6.answer_question(question, 'An answer!')
-
-        qs = GeneralApplication.objects.leader_or_croo_applications(trips_year)
-        self.assertQsEqual(qs, [app1, app2, app6])
-
-        qs = GeneralApplication.objects.leader_and_croo_applications(trips_year)
-        self.assertQsEqual(qs, [app6])
+    def test_incomplete_croo_applications(self):
+        qs = GeneralApplication.objects.incomplete_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app2, self.app4, self.app5, self.app6, self.app7])
 
     def test_leaders(self):
         trips_year = self.init_trips_year()
