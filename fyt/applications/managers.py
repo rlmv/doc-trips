@@ -147,31 +147,6 @@ class VolunteerManager(models.Manager):
                 leader_supplement__leadertriptypechoice__triptype=triptype,
                 leader_supplement__leadertriptypechoice__preference__in=opts))
 
-    def _with_answer_count(self, trips_year):
-        """
-        Annotates the applications with `answer__count`, the number of
-        answers that the application has.
-        """
-        return self.filter(trips_year=trips_year).annotate(models.Count('answer'))
-
-    def _with_all_answers(self, trips_year):
-        """
-        Applications with all answers complete.
-        """
-        return (self._with_answer_count(trips_year)
-                    .exclude(answer__answer="")
-                    .filter(answer__count=question_count(trips_year)))
-
-    def idea(self, trips_year):
-        questions = Question.objects.filter(
-            trips_year=trips_year, type__in=[Question.LEADER, Question.ALL])
-
-        query = Q(leader_willing=False)
-        for q in questions:
-            query |= (Q(answer__answer="") & Q(answer__question=q))
-
-        return self.filter(trips_year=trips_year).filter(query)
-
     def leader_applications(self, trips_year):
         from .models import Question
         questions = Question.objects.for_leaders(trips_year)
