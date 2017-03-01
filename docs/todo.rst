@@ -7,7 +7,6 @@ External
 
 Immediate
 ---------
-* Remove Section-specific info from `availability` field
 * Output answers with newline formatting
 * Rename from_where to hometown
 * Move trip assignment text from model to HTML.
@@ -17,6 +16,8 @@ Immediate
 * Add trainings signup app
 * Add checkboxes/formset for batch updating FA/CPR trainings.
 * Add spreadsheets for various registration sub-categories
+* Remove Section-specific info from `availability` field
+* Remove `19s reference from `croo_willing` text
 * Fix race conditions around applications and registrations: *I think* if a user
 has two windows open, such that they both get directed to create a new application,
 and somehow submits both, then there will be two applications or registrations.
@@ -58,13 +59,11 @@ Cosmetic
 
 Long term
 ---------
-* Remove `19s reference from `croo_willing` text
 * Validate ``trips_year`` consistancy between related objects
 * Preview link to leader and trippee assignment pages.
 * Tidy up the webauth app: remove unused config options
 * Move Leader and Croo grading to a separate ``grade`` app
 * Use ``model_mommy`` recipes for tests
-* Implement more robust .docx parsing for applications, or figure out a base format which always makes pretty HTML.
 * Always show the database menu to folks with view permissions.
 * Add dropdown search to Incident reports so that the ``caller`` and ``subject`` fields are linked to ``User`` objects
 * Skip ``application`` tests if S3 times out.
