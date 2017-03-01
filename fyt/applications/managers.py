@@ -70,21 +70,19 @@ class ApplicationManager(models.Manager):
 class LeaderApplicationManager(ApplicationManager):
 
     def completed_applications(self, trips_year):
-        return (self.filter(trips_year=trips_year)
-                    .annotate(models.Count('application__answer'))
-                    .exclude(application__answer__answer="")
-                    .filter(application__answer__count=question_count(trips_year))
-                    .filter(application__leader_willing=True))
+        from .models import Volunteer
+        leader_applications = Volunteer.objects.leader_applications(trips_year)
+
+        return self.filter(application__pk__in=pks(leader_applications))
 
 
 class CrooApplicationManager(ApplicationManager):
 
     def completed_applications(self, trips_year):
-        return (self.filter(trips_year=trips_year)
-                    .annotate(models.Count('application__answer'))
-                    .exclude(application__answer__answer="")
-                    .filter(application__answer__count=question_count(trips_year))
-                    .filter(application__croo_willing=True))
+        from .models import Volunteer
+        croo_applications = Volunteer.objects.croo_applications(trips_year)
+
+        return self.filter(application__pk__in=pks(croo_applications))
 
     def next_to_grade_for_qualification(self, user, qualification):
         """
@@ -237,11 +235,6 @@ def pks(qs):
     Return the primary keys of a queryset.
     """
     return qs.values_list('pk', flat=True)
-
-
-def question_count(trips_year):
-    from .models import Question
-    return Question.objects.filter(trips_year=trips_year).count()
 
 
 class QuestionManager(models.Manager):
