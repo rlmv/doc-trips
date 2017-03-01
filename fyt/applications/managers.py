@@ -181,8 +181,9 @@ class VolunteerManager(models.Manager):
         leader_pks = pks(self.leader_applications(trips_year))
         croo_pks = pks(self.croo_applications(trips_year))
 
-        return self.filter(trips_year=trips_year).filter(
-            Q(pk__in=leader_pks) | Q(pk__in=croo_pks))
+        either_pks = set(leader_pks).union(croo_pks)
+
+        return self.filter(trips_year=trips_year).filter(pk__in=either_pks)
 
     # NOTE: the same bug affects ANDs as well
     def leader_and_croo_applications(self, trips_year):
