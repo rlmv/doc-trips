@@ -176,8 +176,7 @@ class VolunteerManager(models.Manager):
 
     def leader_applications(self, trips_year):
         from .models import Question
-        questions = Question.objects.filter(
-            trips_year=trips_year, type__in=[Question.LEADER, Question.ALL])
+        questions = Question.objects.for_leaders(trips_year)
 
         qs = self.filter(trips_year=trips_year, leader_willing=True)
 
@@ -188,8 +187,7 @@ class VolunteerManager(models.Manager):
 
     def croo_applications(self, trips_year):
         from .models import Question
-        questions = Question.objects.filter(
-            trips_year=trips_year, type__in=[Question.CROO, Question.ALL])
+        questions = Question.objects.for_croos(trips_year)
 
         qs = self.filter(trips_year=trips_year, croo_willing=True)
 
@@ -244,3 +242,14 @@ def pks(qs):
 def question_count(trips_year):
     from .models import Question
     return Question.objects.filter(trips_year=trips_year).count()
+
+
+class QuestionManager(models.Manager):
+
+    def for_leaders(self, trips_year):
+        target_types = [self.model.LEADER, self.model.ALL]
+        return self.filter(trips_year=trips_year).filter(type__in=target_types)
+
+    def for_croos(self, trips_year):
+        target_types = [self.model.CROO, self.model.ALL]
+        return self.filter(trips_year=trips_year).filter(type__in=target_types)

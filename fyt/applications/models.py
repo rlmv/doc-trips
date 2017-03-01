@@ -8,6 +8,7 @@ from .managers import (
     CrooApplicationManager,
     VolunteerManager,
     LeaderApplicationManager,
+    QuestionManager,
 )
 
 from fyt.croos.models import Croo
@@ -87,6 +88,8 @@ class Question(DatabaseModel):
     class Meta:
         ordering = ['index']
         unique_together = ['index', 'trips_year']
+
+    objects = QuestionManager()
 
     index = models.PositiveIntegerField(
         'order', help_text=(

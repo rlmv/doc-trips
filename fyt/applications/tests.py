@@ -315,18 +315,32 @@ class AnswerModelTestCase(ApplicationTestMixin, TripsTestCase):
 
 class QuestionModelTestCase(TripsTestCase):
 
-    def test_leader_and_croo_only(self):
-        question = mommy.make(Question, type=Question.ALL)
-        self.assertFalse(question.leader_only)
-        self.assertFalse(question.croo_only)
+    def setUp(self):
+        self.init_trips_year()
+        self.q_general = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.ALL)
+        self.q_leader = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.LEADER)
+        self.q_croo = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.CROO)
 
-        question = mommy.make(Question, type=Question.LEADER)
-        self.assertTrue(question.leader_only)
-        self.assertFalse(question.croo_only)
+    def test_leader_only(self):
+        self.assertFalse(self.q_general.leader_only)
+        self.assertTrue(self.q_leader.leader_only)
+        self.assertFalse(self.q_croo.leader_only)
 
-        question = mommy.make(Question, type=Question.CROO)
-        self.assertFalse(question.leader_only)
-        self.assertTrue(question.croo_only)
+    def test_croo_only(self):
+        self.assertFalse(self.q_general.croo_only)
+        self.assertFalse(self.q_leader.croo_only)
+        self.assertTrue(self.q_croo.croo_only)
+
+    def test_for_leaders(self):
+        qs = Question.objects.for_leaders(self.trips_year)
+        self.assertQsEqual(qs, [self.q_general, self.q_leader])
+
+    def test_for_croos(self):
+        qs = Question.objects.for_croos(self.trips_year)
+        self.assertQsEqual(qs, [self.q_general, self.q_croo])
 
 
 class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
