@@ -184,9 +184,14 @@ class VolunteerManager(models.Manager):
         return self.filter(trips_year=trips_year).filter(
             Q(pk__in=leader_pks) | Q(pk__in=croo_pks))
 
+    # NOTE: the same bug affects ANDs as well
     def leader_and_croo_applications(self, trips_year):
-        return (self.leader_applications(trips_year) &
-                self.croo_applications(trips_year))
+        leader_pks = pks(self.leader_applications(trips_year))
+        croo_pks = pks(self.croo_applications(trips_year))
+
+        shared_pks = set(leader_pks) & set(croo_pks)
+
+        return self.filter(trips_year=trips_year).filter(pk__in=shared_pks)
 
     # TODO: is this how we should define incomplete applications?
 
