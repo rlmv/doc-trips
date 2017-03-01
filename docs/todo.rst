@@ -7,6 +7,7 @@ External
 
 Immediate
 ---------
+* Fix application filters / Django bug
 * Output answers with newline formatting
 * Rename from_where to hometown
 * Move trip assignment text from model to HTML.
