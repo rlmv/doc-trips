@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from vanilla import TemplateView, UpdateView
 
-from fyt.applications.models import GeneralApplication, PortalContent
+from fyt.applications.models import Volunteer, PortalContent
 from fyt.db.models import TripsYear
 from fyt.permissions.views import SettingsPermissionRequired
 from fyt.timetable.models import Timetable
@@ -22,15 +22,15 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
         context['content'] = content = PortalContent.objects.get(trips_year=trips_year)
 
         try:
-            application = GeneralApplication.objects.get(
+            application = Volunteer.objects.get(
                 trips_year=trips_year,
                 applicant=self.request.user
             )
             status_description = content.get_status_description(application.status)
             context['is_trip_leader'] = (
-                application.status == GeneralApplication.LEADER
+                application.status == Volunteer.LEADER
             )
-        except GeneralApplication.DoesNotExist:
+        except Volunteer.DoesNotExist:
             application = None
             status_description = "You did not submit an application"
 

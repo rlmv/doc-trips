@@ -4,7 +4,7 @@ from django.contrib import admin
 from fyt.applications.models import (
     CrooApplicationGrade,
     CrooSupplement,
-    GeneralApplication,
+    Volunteer,
     LeaderApplicationGrade,
     LeaderSupplement,
     QualificationTag,
@@ -13,7 +13,7 @@ from fyt.applications.models import (
 )
 
 
-admin.site.register(GeneralApplication)
+admin.site.register(Volunteer)
 admin.site.register(CrooSupplement)
 admin.site.register(LeaderSupplement)
 admin.site.register(CrooApplicationGrade)

@@ -1,7 +1,7 @@
 from vanilla import UpdateView
 
 from ..forms import TripAssignmentForm
-from ..models import GeneralApplication
+from ..models import Volunteer
 
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import ApplicationEditPermissionRequired
@@ -16,7 +16,7 @@ class AssignToTrip(ApplicationEditPermissionRequired, TripsYearMixin,
 
     Shows availability, preferences
     """
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'applications/trip_assignment_update.html'
     form_class = TripAssignmentForm
 
@@ -37,7 +37,7 @@ class AssignToCroo(ApplicationEditPermissionRequired,
     """
     Assign volunteer to a croo
     """
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'db/update.html'
     fields = ['assigned_croo']
 

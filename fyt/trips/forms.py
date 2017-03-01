@@ -5,7 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 
-from fyt.applications.models import GeneralApplication, LeaderSupplement
+from fyt.applications.models import Volunteer, LeaderSupplement
 from fyt.incoming.models import IncomingStudent
 from fyt.trips.models import Section, Trip
 
@@ -32,7 +32,7 @@ class SectionForm(forms.ModelForm):
 class LeaderAssignmentForm(forms.ModelForm):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = ['assigned_trip']
         widgets = {
             'assigned_trip': forms.HiddenInput()
@@ -49,7 +49,7 @@ class LeaderAssignmentForm(forms.ModelForm):
         Change status to leader if trip assignment is successful
         """
         if self.cleaned_data.get('assigned_trip'):
-            self.instance.status = GeneralApplication.LEADER
+            self.instance.status = Volunteer.LEADER
         return super().clean()
 
 

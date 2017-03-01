@@ -8,7 +8,7 @@ LEAVE_BLANK = "Leave blank if not applicable"
 
 class MedicalMixin(models.Model):
     """
-    Medical information shared by GeneralApplications and IncomingStudents
+    Medical information shared by Volunteers and IncomingStudents
     """
     class Meta:
         abstract = True

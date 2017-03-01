@@ -6,7 +6,7 @@ from django.db.models import Q
 
 from .managers import (
     CrooApplicationManager,
-    GeneralApplicationManager,
+    VolunteerManager,
     LeaderApplicationManager,
 )
 
@@ -148,7 +148,7 @@ class Answer(models.Model):
         ordering = ['question']
 
     application = models.ForeignKey(
-        'GeneralApplication', on_delete=models.CASCADE
+        'Volunteer', on_delete=models.CASCADE
     )
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE
@@ -189,15 +189,15 @@ class PortalContent(DatabaseModel):
 
     def get_status_description(self, status):
         """
-        Given a GeneralApplication.status choice, return the description
+        Given a Volunteer.status choice, return the description
         """
         return {
-            GeneralApplication.PENDING: self.PENDING_description,
-            GeneralApplication.CROO: self.CROO_description,
-            GeneralApplication.LEADER: self.LEADER_description,
-            GeneralApplication.LEADER_WAITLIST: self.LEADER_WAITLIST_description,
-            GeneralApplication.REJECTED: self.REJECTED_description,
-            GeneralApplication.CANCELED: self.CANCELED_description
+            Volunteer.PENDING: self.PENDING_description,
+            Volunteer.CROO: self.CROO_description,
+            Volunteer.LEADER: self.LEADER_description,
+            Volunteer.LEADER_WAITLIST: self.LEADER_WAITLIST_description,
+            Volunteer.REJECTED: self.REJECTED_description,
+            Volunteer.CANCELED: self.CANCELED_description
         }[status]
 
 
@@ -206,16 +206,14 @@ def validate_condition_true(value):
         raise ValidationError('You must agree to this condition')
 
 
-class GeneralApplication(MedicalMixin, DatabaseModel):
+class Volunteer(MedicalMixin, DatabaseModel):
     """
     Contains shared information for Croo and Leader applications.
-
-    TODO: rename to Application? Volunteer? mv questionaire to separate model?
     """
     class Meta:
         ordering = ['applicant']
 
-    objects = GeneralApplicationManager()
+    objects = VolunteerManager()
 
     PENDING = 'PENDING'
     CROO = 'CROO'
@@ -569,7 +567,7 @@ class LeaderSupplement(DatabaseModel):
     )
 
     application = models.OneToOneField(
-        GeneralApplication, editable=False, related_name='leader_supplement'
+        Volunteer, editable=False, related_name='leader_supplement'
     )
 
     # Deprecated leader application
@@ -767,7 +765,7 @@ class CrooSupplement(DatabaseModel):
     objects = CrooApplicationManager()
 
     application = models.OneToOneField(
-        GeneralApplication, editable=False, related_name='croo_supplement'
+        Volunteer, editable=False, related_name='croo_supplement'
     )
 
     # Deprecated croo application

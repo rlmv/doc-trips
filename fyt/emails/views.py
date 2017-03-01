@@ -4,7 +4,7 @@ from braces.views import SetHeadlineMixin
 from django.core.exceptions import ImproperlyConfigured
 from vanilla import TemplateView
 
-from fyt.applications.models import GeneralApplication
+from fyt.applications.models import Volunteer
 from fyt.db.views import TripsYearMixin
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.permissions.views import DatabaseReadPermissionRequired
@@ -60,26 +60,26 @@ class Applicants(BaseEmailList):
     def get_email_lists(self):
 
         trips_year = self.get_trips_year()
-        qs = GeneralApplication.objects.filter(trips_year=trips_year)
+        qs = Volunteer.objects.filter(trips_year=trips_year)
 
         email_list = [
             ('all applicants', emails(qs)),
             ('complete leader applications', emails(
-                GeneralApplication.objects.leader_applications(trips_year))),
+                Volunteer.objects.leader_applications(trips_year))),
             ('complete croo applications', emails(
-                GeneralApplication.objects.croo_applications(trips_year))),
+                Volunteer.objects.croo_applications(trips_year))),
             ('incomplete leader applications', emails(
-                GeneralApplication.objects.incomplete_leader_applications(trips_year))),
+                Volunteer.objects.incomplete_leader_applications(trips_year))),
             ('incomplete croo applications', emails(
-                GeneralApplication.objects.incomplete_croo_applications(trips_year))),
+                Volunteer.objects.incomplete_croo_applications(trips_year))),
             ('leaders', emails(qs.filter(
-                status=GeneralApplication.LEADER))),
+                status=Volunteer.LEADER))),
             ('leader waitlist', emails(
-                qs.filter(status=GeneralApplication.LEADER_WAITLIST))),
+                qs.filter(status=Volunteer.LEADER_WAITLIST))),
             ('croo members', emails(
-                qs.filter(status=GeneralApplication.CROO))),
+                qs.filter(status=Volunteer.CROO))),
             ('rejected applicants', emails(
-                qs.filter(status=GeneralApplication.REJECTED))),
+                qs.filter(status=Volunteer.REJECTED))),
         ]
 
         return email_list
@@ -92,8 +92,8 @@ class LeadersByTripType(BaseEmailList):
     def get_email_lists(self):
 
         trips_year = self.get_trips_year()
-        leaders = GeneralApplication.objects.filter(
-            trips_year=trips_year, status=GeneralApplication.LEADER)
+        leaders = Volunteer.objects.filter(
+            trips_year=trips_year, status=Volunteer.LEADER)
         email_list = []
         triptypes = TripType.objects.filter(trips_year=trips_year)
         for triptype in triptypes:
@@ -109,8 +109,8 @@ class LeadersBySection(BaseEmailList):
 
     def get_email_lists(self):
         trips_year = self.get_trips_year()
-        leaders = GeneralApplication.objects.filter(
-            trips_year=trips_year, status=GeneralApplication.LEADER)
+        leaders = Volunteer.objects.filter(
+            trips_year=trips_year, status=Volunteer.LEADER)
         email_list = []
 
         sections = Section.objects.filter(trips_year=trips_year)

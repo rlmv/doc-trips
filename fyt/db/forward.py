@@ -9,7 +9,7 @@ from .models import TripsYear
 
 from fyt.applications.models import (
     ApplicationInformation,
-    GeneralApplication as Application,
+    Volunteer as Application,
     PortalContent,
     QualificationTag,
     Question,
@@ -132,7 +132,7 @@ class Forward:
 
     def delete_application_medical_info(self):
         """
-        Delete all medical info saved on ``GeneralApplications``
+        Delete all medical info saved on ``Volunteers``
         """
         applications = Application.objects.filter(trips_year=self.curr_year)
         for app in applications:

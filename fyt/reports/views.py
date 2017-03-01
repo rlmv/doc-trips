@@ -7,7 +7,7 @@ from django.db.models import Q, Avg
 from django.http import HttpResponse
 from vanilla import View
 
-from fyt.applications.models import GeneralApplication as Application
+from fyt.applications.models import Volunteer as Application
 from fyt.db.views import DatabaseTemplateView, TripsYearMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired

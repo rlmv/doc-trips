@@ -18,7 +18,7 @@ from ..models import (
     validate_triptemplate_name,
 )
 
-from fyt.applications.models import GeneralApplication
+from fyt.applications.models import Volunteer
 from fyt.applications.tests import make_application
 from fyt.incoming.models import (
     IncomingStudent,
@@ -373,9 +373,9 @@ class AssignLeaderTestCase(WebTestCase):
         res = self.app.get(url, user=self.mock_director())
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
-        volunteer = GeneralApplication.objects.get(pk=volunteer.pk)  # refresh
+        volunteer = Volunteer.objects.get(pk=volunteer.pk)  # refresh
         self.assertEqual(volunteer.assigned_trip, trip)
-        self.assertEqual(volunteer.status, GeneralApplication.LEADER)
+        self.assertEqual(volunteer.status, Volunteer.LEADER)
 
     def test_assign_trip_computes_section_and_type_preferences(self):
         trips_year = self.init_trips_year()
@@ -460,8 +460,8 @@ class TripManagerTestCase(TripsTestCase):
         trip = mommy.make(Trip, section=section,
                           template=template, trips_year=trips_year)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
-        mommy.make(GeneralApplication, trips_year=trips_year, assigned_trip=trip)
-        mommy.make(GeneralApplication, trips_year=trips_year, assigned_trip=trip)
+        mommy.make(Volunteer, trips_year=trips_year, assigned_trip=trip)
+        mommy.make(Volunteer, trips_year=trips_year, assigned_trip=trip)
         matrix = Trip.objects.matrix(trips_year)
         self.assertEqual(matrix[template][section].num_trippees, 1)
         self.assertEqual(matrix[template][section].num_trippees, matrix[template][section].trippees.count())
@@ -601,7 +601,7 @@ class ViewsTestCase(WebTestCase):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         trippee = mommy.make(
-            GeneralApplication,
+            Volunteer,
             trips_year=trips_year,
             assigned_trip=trip,
             medical_conditions='magic',

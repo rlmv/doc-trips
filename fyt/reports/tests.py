@@ -7,7 +7,7 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.applications.models import GeneralApplication, Question
+from fyt.applications.models import Volunteer, Question
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
@@ -69,7 +69,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_trips_year()
         leader = self.make_application(
             trips_year=trips_year,
-            status=GeneralApplication.LEADER
+            status=Volunteer.LEADER
         )
         not_leader = self.make_application(trips_year=trips_year)
 
@@ -86,7 +86,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_trips_year()
         croo = self.make_application(
             trips_year=trips_year,
-            status=GeneralApplication.CROO
+            status=Volunteer.CROO
         )
         not_croo = self.make_application(trips_year=trips_year)
 
@@ -373,23 +373,23 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         trips_year = self.init_trips_year()
 
         leader = mommy.make(
-            GeneralApplication, trips_year=trips_year,
-            status=GeneralApplication.LEADER,
+            Volunteer, trips_year=trips_year,
+            status=Volunteer.LEADER,
             assigned_trip=mommy.make(Trip, trips_year=trips_year),
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             epipen=True,
         )
         croo = mommy.make(
-            GeneralApplication, trips_year=trips_year,
-            status=GeneralApplication.CROO,
+            Volunteer, trips_year=trips_year,
+            status=Volunteer.CROO,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             epipen=False
         )
         neither = mommy.make(
-            GeneralApplication, trips_year=trips_year,
-            status=GeneralApplication.PENDING
+            Volunteer, trips_year=trips_year,
+            status=Volunteer.PENDING
         )
         url = reverse('db:reports:volunteer_dietary', kwargs={'trips_year': trips_year})
         resp = self.app.get(url, user=self.mock_director())
@@ -397,7 +397,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         target = [{
             'name': croo.applicant.name,
             'netid': croo.applicant.netid,
-            'role': GeneralApplication.CROO,
+            'role': Volunteer.CROO,
             'trip': '',
             'food allergies': croo.food_allergies,
             'dietary restrictions': croo.dietary_restrictions,
@@ -405,7 +405,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         }, {
             'name': leader.applicant.name,
             'netid': leader.applicant.netid,
-            'role': GeneralApplication.LEADER,
+            'role': Volunteer.LEADER,
             'trip': str(leader.assigned_trip),
             'food allergies': leader.food_allergies,
             'dietary restrictions': leader.dietary_restrictions,
@@ -487,9 +487,9 @@ class TShirtCountTestCase(TripsTestCase):
     def test_tshirt_count_leaders(self):
         trips_year = self.init_trips_year()
         mommy.make(
-            GeneralApplication,
+            Volunteer,
             trips_year=trips_year,
-            status=GeneralApplication.LEADER,
+            status=Volunteer.LEADER,
             assigned_trip__trips_year=trips_year,
             tshirt_size=S
         )
@@ -501,9 +501,9 @@ class TShirtCountTestCase(TripsTestCase):
     def test_tshirt_count_croos(self):
         trips_year = self.init_trips_year()
         mommy.make(
-            GeneralApplication,
+            Volunteer,
             trips_year=trips_year,
-            status=GeneralApplication.CROO,
+            status=Volunteer.CROO,
             tshirt_size=M
         )
         target = {

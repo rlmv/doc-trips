@@ -40,7 +40,7 @@ All database urlpatterns take a trips_year param.
 database_urlpatterns = [
     url(r'^$', DatabaseLandingPage.as_view(), name='landing_page'),
     url(r'^applications/',
-        include(application_urlpatterns, namespace='generalapplication')),
+        include(application_urlpatterns, namespace='volunteer')),
     url(r'^campsites/',
         include(campsite_urlpatterns, namespace='campsite')),
     url(r'^checklists/',

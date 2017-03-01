@@ -12,13 +12,13 @@
 {% block content %}
 
 {# administrative info #}
-<h4> Administrative Info <a href="{% url 'db:generalapplication:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
+<h4> Administrative Info <a href="{% url 'db:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
 <table class="table table-condensed table-striped">
 
     <tr>
         <td class="col-sm-3 text-right"><strong>Status</strong></td>
         <td> {{ application.status }} </td>
-        <td>  <a href="{% url 'db:generalapplication:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
+        <td>  <a href="{% url 'db:volunteer:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
     </tr>
 
     <tr>
@@ -48,7 +48,7 @@
 </table>
 
 
-<h4> Trainings <a href="{% url 'db:generalapplication:update_trainings' trips_year=application.trips_year pk=application.pk %}">edit</a></h4>
+<h4> Trainings <a href="{% url 'db:volunteer:update_trainings' trips_year=application.trips_year pk=application.pk %}">edit</a></h4>
 {% detail application trainings_fields %}
 
 
@@ -147,7 +147,7 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="general">
             <br/>
-            {% detail application generalapplication_fields %}
+            {% detail application volunteer_fields %}
             <div>
                 <h4> Application questions </h4>
                 {% display_answers application %}

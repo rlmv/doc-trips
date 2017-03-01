@@ -6,7 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django.db.models import Q
 
-from fyt.applications.models import GeneralApplication, QualificationTag
+from fyt.applications.models import Volunteer, QualificationTag
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 
@@ -71,19 +71,19 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
     ]
 
     def croo_applications(self, qs):
-        return qs & GeneralApplication.objects.croo_applications(
+        return qs & Volunteer.objects.croo_applications(
             self.trips_year)
 
     def leader_applications(self, qs):
-        return qs & GeneralApplication.objects.leader_applications(
+        return qs & Volunteer.objects.leader_applications(
             self.trips_year)
 
     def either_applications(self, qs):
-        return qs & GeneralApplication.objects.leader_or_croo_applications(
+        return qs & Volunteer.objects.leader_or_croo_applications(
             self.trips_year)
 
     def both_applications(self, qs):
-        return qs & GeneralApplication.objects.leader_and_croo_applications(
+        return qs & Volunteer.objects.leader_and_croo_applications(
             self.trips_year)
 
     def filter(self, qs, value):
@@ -111,7 +111,7 @@ class CrooQualificationFilter(django_filters.ModelMultipleChoiceFilter):
 class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = [STATUS]
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')

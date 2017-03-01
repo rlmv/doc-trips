@@ -29,7 +29,7 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import (
     ApplicationInformation,
-    GeneralApplication,
+    Volunteer,
     Question,
 )
 from fyt.applications.tables import ApplicationTable
@@ -104,7 +104,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
     View mixin which handles forms for GenearlApplication, LeaderSupplement,
     and CrooSupplement in the same view.
     """
-    model = GeneralApplication
+    model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application.html'
 
@@ -380,7 +380,7 @@ def preload_questions(qs, trips_year):
 
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
                        TripsYearMixin, ExtraContextMixin, ListView):
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
@@ -428,11 +428,11 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
 
 class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
                         ExtraContextMixin, TripsYearMixin, DetailView):
-    model = GeneralApplication
+    model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
 
-    generalapplication_fields = [
+    volunteer_fields = [
         'class_year',
         'gender',
         'race_ethnicity',
@@ -508,14 +508,14 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
 
     def extra_context(self):
         return {
-            'generalapplication_fields': self.generalapplication_fields,
+            'volunteer_fields': self.volunteer_fields,
             'leaderapplication_fields': self.leaderapplication_fields,
             'trainings_fields': self.trainings_fields,
             'crooapplication_fields': self.crooapplication_fields,
             'trip_assignment_url': reverse(
-                'db:generalapplication:update_trip', kwargs=self.kwargs),
+                'db:volunteer:update_trip', kwargs=self.kwargs),
             'croo_assignment_url': reverse(
-                'db:generalapplication:update_croo', kwargs=self.kwargs)
+                'db:volunteer:update_croo', kwargs=self.kwargs)
         }
 
 
@@ -556,7 +556,7 @@ class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
     """
     Edit Application status
     """
-    model = GeneralApplication
+    model = Volunteer
     form_class = ApplicationStatusForm
     template_name = 'applications/status_update.html'
 
@@ -567,13 +567,13 @@ class ApplicationCertsUpdate(ApplicationEditPermissionRequired,
     """
     Edit certifications
     """
-    model = GeneralApplication
+    model = Volunteer
     form_class = CertificationForm
     template_name = 'applications/trainings_update.html'
 
     def get_success_url(self):
         """
-        Redirect back to GeneralApplication
+        Redirect back to Volunteer
         """
         return self.object.get_absolute_url()
 
@@ -584,7 +584,7 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     """
     Update status, trip/croo assignment etc.
     """
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'db/update.html'
     fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
     form_class = ApplicationAdminForm

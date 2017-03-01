@@ -80,7 +80,7 @@ class _ApplicationTable(tables.Table):
 
     def render_status(self, record):
         kwargs = {'pk': record.pk, 'trips_year': record.trips_year_id}
-        url = reverse('db:generalapplication:update_status', kwargs=kwargs)
+        url = reverse('db:volunteer:update_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
     def render_avg_leader_grade(self, value):

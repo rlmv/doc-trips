@@ -26,7 +26,7 @@ from .models import (
 )
 
 from fyt.applications.models import (
-    GeneralApplication,
+    Volunteer,
     LeaderSectionChoice,
     LeaderSupplement,
     LeaderTripTypeChoice,
@@ -563,7 +563,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
     * ``triptype_pref`` - 'prefer' or 'available'
     * ``section_pref`` - 'prefer' or 'available'
     """
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'trips/assign_leader.html'
     context_object_name = 'leader_applications'
 
@@ -661,7 +661,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
 class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
                          SetHeadlineMixin, FormValidMessageMixin,
                          TripsYearMixin, UpdateView):
-    model = GeneralApplication
+    model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'db/update.html'
 
@@ -694,7 +694,7 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
     """
     Remove a leader's assigned trip
     """
-    model = GeneralApplication
+    model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'trips/remove_leader_assignment.html'
 
@@ -837,7 +837,7 @@ class LeaderChecklist(_SectionMixin, DatabaseListView):
     """
     All leaders for a section.
     """
-    model = GeneralApplication
+    model = Volunteer
     template_name = 'trips/person_checklist.html'
     header_text = 'Leader'
 

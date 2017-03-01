@@ -41,7 +41,7 @@
       <a class="btn btn-xs btn-primary" href="{{ assign_url }}"> Assign to {{ trip }} </a>
       {% endif %}
     </td>
-    <td> <a href="{% url 'db:generalapplication:update_status' trips_year=trip.trips_year_id pk=leader.pk %}"> {{ leader.status }} </a></td>
+    <td> <a href="{% url 'db:volunteer:update_status' trips_year=trip.trips_year_id pk=leader.pk %}"> {{ leader.status }} </a></td>
     <td> {{ triptype_pref|lower }} </td>
     <td> {{ section_pref|lower }} </td>
   </tr>

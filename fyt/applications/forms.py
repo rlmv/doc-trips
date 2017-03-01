@@ -11,7 +11,7 @@ from fyt.applications.models import (
     Answer,
     CrooApplicationGrade,
     CrooSupplement,
-    GeneralApplication,
+    Volunteer,
     LeaderApplicationGrade,
     LeaderSupplement,
     QualificationTag,
@@ -30,7 +30,7 @@ class TripAssignmentForm(forms.ModelForm):
     Update a leader's assigned trip
     """
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = ['assigned_trip']
 
     assigned_trip = TripChoiceField(queryset=None)
@@ -49,7 +49,7 @@ class TripAssignmentForm(forms.ModelForm):
 class ApplicationForm(forms.ModelForm):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = (
             'class_year',
             'hinman_box',
@@ -131,7 +131,7 @@ class AgreementForm(forms.ModelForm):
     """
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = [
             'trippee_confidentiality',
             'in_goodstanding_with_college',
@@ -430,7 +430,7 @@ class LeaderSupplementForm(forms.ModelForm):
 class ApplicationStatusForm(forms.ModelForm):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = ('status',)
 
     def __init__(self, *args, **kwargs):
@@ -441,7 +441,7 @@ class ApplicationStatusForm(forms.ModelForm):
 class ApplicationAdminForm(forms.ModelForm):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
 
     def __init__(self, *args, **kwargs):
@@ -463,7 +463,7 @@ TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
 class CertificationForm(forms.ModelForm):
 
     class Meta:
-        model = GeneralApplication
+        model = Volunteer
         fields = (
             'community_building',
             'risk_management',

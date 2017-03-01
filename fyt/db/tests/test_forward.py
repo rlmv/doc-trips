@@ -5,7 +5,7 @@ from model_mommy import mommy
 from ..forward import Forward, forward
 from ..models import TripsYear
 
-from fyt.applications.models import GeneralApplication as Application
+from fyt.applications.models import Volunteer as Application
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.test import TripsTestCase, WebTestCase

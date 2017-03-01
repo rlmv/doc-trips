@@ -7,7 +7,7 @@ from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
-# TODO: refactor grade choices to query off the GeneralApplication
+# TODO: refactor grade choices to query off the Volunteer
 
 class ApplicationManager(models.Manager):
     """
@@ -28,7 +28,7 @@ class ApplicationManager(models.Manager):
         one grade.
         (2) has not already been graded by this user
         (3) the application is not qualified, deprecated, etc. See
-        GeneralApplication status field. It should be PENDING.
+        Volunteer status field. It should be PENDING.
 
         Return None if no applications need to be graded.
         """
@@ -46,11 +46,11 @@ class ApplicationManager(models.Manager):
         Return a random PENDING application that user has not graded,
         which has only been graded by num people.
 
-        Note that the status lives on the parent GeneralApplication object.
+        Note that the status lives on the parent Volunteer object.
         """
-        # grab the value of GeneralApplication.PENDING
-        from fyt.applications.models import GeneralApplication
-        PENDING = GeneralApplication.PENDING
+        # grab the value of Volunteer.PENDING
+        from fyt.applications.models import Volunteer
+        PENDING = Volunteer.PENDING
 
         apps = (self.completed_applications(trips_year=trips_year).
                 filter(application__status=PENDING)
@@ -105,9 +105,9 @@ class CrooApplicationManager(ApplicationManager):
         """
         trips_year = TripsYear.objects.current()
 
-        # grab the value of GeneralApplication.PENDING
-        from fyt.applications.models import GeneralApplication
-        PENDING = GeneralApplication.PENDING
+        # grab the value of Volunteer.PENDING
+        from fyt.applications.models import Volunteer
+        PENDING = Volunteer.PENDING
 
         return (self.completed_applications(trips_year=trips_year)
                 .filter(grades__qualifications=qualification)
@@ -119,7 +119,7 @@ class CrooApplicationManager(ApplicationManager):
                 .order_by('?').first())
 
 
-class GeneralApplicationManager(models.Manager):
+class VolunteerManager(models.Manager):
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -130,7 +130,7 @@ class GeneralApplicationManager(models.Manager):
         """
         Get prospective leaders who can lead Trip trip.
 
-        Returns all GeneralApplications which
+        Returns all Volunteers which
         (1) are for the same trips_year as trip
         (2) are complete
         (3) prefer or are available for trip's TripType and Section
