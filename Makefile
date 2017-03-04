@@ -30,7 +30,7 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test:
-	$(MANAGE) test --nomigrations
+	$(MANAGE) test --keepdb --nomigrations
 
 tidy:
 	$(VENV)/bin/importanize -v fyt
