@@ -109,14 +109,14 @@ ROOT_URLCONF = 'fyt.urls'
 
 WSGI_APPLICATION = 'fyt.wsgi.application'
 
-# use SQLite for local testing instead of Postgres
-sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+# Fallback on SQLite for local testing instead of Postgres
+# sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
-    'default': dj_database_url.config(default=sqlite)
+    'default': dj_database_url.config(conn_max_age=500)
+#    'default': dj_database_url.config(default=sqlite, conn_max_age=500)
 }
 # TODO: use PgBouncer for connection pooling?
-# https://devcenter.heroku.com/articles/python-concurrency-and-database-connections
-DATABASES['default']['CONN_MAX_AGE'] = 500
+# https://devcenter.heroku.com/articles/python-concurrency-and-database-connection
 
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
