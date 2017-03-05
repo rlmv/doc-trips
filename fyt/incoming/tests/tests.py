@@ -88,17 +88,20 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         self.assertEqual(incoming.get_gender(), 'female')
 
     def test_financial_aid_in_range_0_to_100(self):
-        trips_year=self.init_trips_year()
+        trips_year = self.init_trips_year()
+
         with self.assertRaises(ValidationError):
-            mommy.make(
+            mommy.prepare(
                 IncomingStudent, trips_year=trips_year,
                 financial_aid=-1
             ).full_clean()
+
         with self.assertRaises(ValidationError):
             mommy.prepare(
                 IncomingStudent, trips_year=trips_year,
                 financial_aid=101
             ).full_clean()
+
         mommy.prepare(
             IncomingStudent, trips_year=trips_year,
             financial_aid=100

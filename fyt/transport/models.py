@@ -75,7 +75,8 @@ class Stop(DatabaseModel):
     # mostly used for external routes
     dropoff_time = models.TimeField(blank=True, null=True)
     pickup_time = models.TimeField(blank=True, null=True)
-    distance = models.IntegerField(help_text=(
+
+    distance = models.PositiveIntegerField(help_text=(
         "this rough distance from Hanover is used for bus routing"
     ))
 
