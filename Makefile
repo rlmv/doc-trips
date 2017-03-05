@@ -4,8 +4,13 @@ PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
 COVERAGE = $(VENV)/bin/coverage
 MANAGE = $(PYTHON) manage.py
-DB = fyt/db.sqlite3
-DB_BACKUP = fyt/db.sqlite3.bak
+
+SQLITE = fyt/db.sqlite3
+SQLITE_BACKUP = fyt/db.sqlite3.bak
+
+POSTGRES = fyt
+POSTGRES_USER = fytuser
+POSTGRES_DUMP = latest.dump
 
 .PHONY: docs
 
@@ -43,6 +48,7 @@ coverage:
 clean:
 	rm -rf *.pyc
 	rm -rf *~
+	rm $(POSTGRES_DUMP)
 
 flush:
 	$(MANAGE) sqlflush | $(MANAGE) dbshell
@@ -50,14 +56,20 @@ flush:
 docs:
 	cd docs && make html
 
-db_from_remote:
+sqlite_from_remote:
 	./scripts/load_remote_db.sh
 
-db_fresh: migrate
+sqlite_fresh: migrate
 	$(MANAGE) init_db 2015
 
-backup:
-	cp $(DB) $(DB_BACKUP)
+sqlite_backup:
+	cp $(SQLITE) $(SQLITE_BACKUP)
 
-restore:
-	cp $(DB_BACKUP) $(DB)
+sqlite_restore:
+	cp $(SQLITE_BACKUP) $(SQLITE)
+
+postgres_from_remote:
+	heroku pg:backups:capture
+	heroku pg:backups:download --output $(POSTGRES_DUMP)
+	pg_restore -v --clean --no-acl --no-owner -n public -1 -h localhost \
+		-U $(POSTGRES_USER) -d $(POSTGRES) $(POSTGRES_DUMP)
