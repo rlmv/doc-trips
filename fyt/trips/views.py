@@ -630,19 +630,19 @@ class AssignLeader(_TripMixin, DatabaseListView):
         context['trip'] = trip = self.get_trip()
 
         triptype_pref = {
-            pref.application_id: pref.preference
+            pref.application.application_id: pref.preference
             for pref in LeaderTripTypeChoice.objects.filter(
                 triptype=trip.template.triptype,
                 preference__in=[PREFER, AVAILABLE]
-            )
+            ).select_related('application')
         }
 
         section_pref = {
-            pref.application_id: pref.preference
+            pref.application.application_id: pref.preference
             for pref in LeaderSectionChoice.objects.filter(
                 section=trip.section,
                 preference__in=[PREFER, AVAILABLE]
-            )
+            ).select_related('application')
         }
 
         def process_leader(leader):
