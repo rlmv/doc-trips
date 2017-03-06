@@ -1,4 +1,5 @@
 
+PYVENV = pyvenv-3.4
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
@@ -18,7 +19,8 @@ all:
 	$(MANAGE) runserver
 
 install:
-	pyvenv $(VENV)
+	$(PYVENV) $(VENV)
+	$(PIP) install --upgrade pip
 	$(PIP) install --upgrade -r requirements.txt
 
 deploy:
