@@ -1,10 +1,10 @@
 import unittest
 
-from fyt.test.testcases import TripsYearTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.webauth.views import host_url, protocol
 
 
-class GroupPermissionsTest(TripsYearTestCase):
+class GroupPermissionsTest(FytTestCase):
 
     def test_group_permissions_work_with_custom_backend(self):
         # None of the permissions worked when the backend

@@ -26,12 +26,12 @@ from fyt.incoming.models import (
     RegistrationSectionChoice,
     RegistrationTripTypeChoice,
 )
-from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.transport.models import Route
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
-class TripTestCase(WebTestCase):
+class TripTestCase(FytTestCase):
 
     csrf_checks = False
 
@@ -78,7 +78,7 @@ class TripTestCase(WebTestCase):
             self.app.get(reverse('db:trip:index', kwargs={'trips_year': self.trips_year}), user=user)
 
 
-class TripModelTestCase(TripsTestCase):
+class TripModelTestCase(FytTestCase):
 
     def test_gets_half_foodbox(self):
         trips_year = self.init_trips_year()
@@ -136,7 +136,7 @@ class TripModelTestCase(TripsTestCase):
         self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_SUPPLEMENT))
 
 
-class TripRouteOverridesTestCase(WebTestCase):
+class TripRouteOverridesTestCase(FytTestCase):
 
     def test_override_routes_in_trip_update_form(self):
         trips_year = self.init_trips_year()
@@ -221,7 +221,7 @@ class TripRouteOverridesTestCase(WebTestCase):
         self.assertEqual(trip.size(), 3)
 
 
-class QuickTestViews(WebTestCase):
+class QuickTestViews(FytTestCase):
 
     def test_index_views(self):
         trips_year = self.init_trips_year()
@@ -240,7 +240,7 @@ class QuickTestViews(WebTestCase):
             res = self.app.get(reverse(name, kwargs={'trips_year': trips_year}), user=director)
 
 
-class TripTypeManagerTestCase(TripsTestCase):
+class TripTypeManagerTestCase(FytTestCase):
 
     def test_visible(self):
         trips_year = self.init_trips_year()
@@ -250,7 +250,7 @@ class TripTypeManagerTestCase(TripsTestCase):
         self.assertQsEqual(TripType.objects.visible(trips_year), [visible])
 
 
-class SectionManagerTestCase(TripsTestCase):
+class SectionManagerTestCase(FytTestCase):
 
     def test_local(self):
 
@@ -326,7 +326,7 @@ class SectionManagerTestCase(TripsTestCase):
                          sorted(list(set(section1.leader_dates + section2.leader_dates))))
 
 
-class SectionModelTestCase(TripsTestCase):
+class SectionModelTestCase(FytTestCase):
 
     def test_model_trip_dates(self):
         ty = self.init_trips_year()
@@ -361,7 +361,7 @@ class TripTemplateValidatorTest(unittest.TestCase):
         validate_triptemplate_name(525)
         validate_triptemplate_name(999)
 
-class AssignLeaderTestCase(WebTestCase):
+class AssignLeaderTestCase(FytTestCase):
 
     def test_trip_assignment_automatically_sets_LEADER_status(self):
         trips_year = self.init_trips_year()
@@ -393,7 +393,7 @@ class AssignLeaderTestCase(WebTestCase):
         self.assertEqual(section_preference, AVAILABLE)
 
 
-class AssignTrippeeTestCase(WebTestCase):
+class AssignTrippeeTestCase(FytTestCase):
 
     def test_trip_assignment(self):
         trips_year = self.init_trips_year()
@@ -413,7 +413,7 @@ class AssignTrippeeTestCase(WebTestCase):
         self.assertEqual(trippee.trip_assignment, trip)
 
 
-class TripManagerTestCase(TripsTestCase):
+class TripManagerTestCase(FytTestCase):
 
     def test_manager_automatically_selects_section_and_template(self):
         trips_year = self.init_trips_year()
@@ -540,7 +540,7 @@ class TripManagerTestCase(TripsTestCase):
             self.assertEqual(trip.size(), 1)
 
 
-class CampsiteManagerTestCase(TripsTestCase):
+class CampsiteManagerTestCase(FytTestCase):
 
     def test_campsite_matrix(self):
         trips_year = self.init_trips_year()
@@ -580,7 +580,7 @@ class CampsiteManagerTestCase(TripsTestCase):
         self.assertEqual(target, actual)
 
 
-class ViewsTestCase(WebTestCase):
+class ViewsTestCase(FytTestCase):
 
     csrf_checks = False
 
@@ -666,7 +666,7 @@ class ViewsTestCase(WebTestCase):
         self.assertContains(resp, 'Carries an EpiPen')
 
 
-class TripTemplateDocumentUploadTestCase(WebTestCase):
+class TripTemplateDocumentUploadTestCase(FytTestCase):
 
     def test_uploaded_document_is_attached_to_TripTemplate(self):
         trips_year = self.init_trips_year()

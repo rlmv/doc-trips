@@ -11,11 +11,11 @@ from fyt.applications.models import (
     Answer,
     CrooApplicationGrade,
     CrooSupplement,
-    Volunteer,
     LeaderApplicationGrade,
     LeaderSupplement,
     QualificationTag,
     Question,
+    Volunteer,
     validate_word_count,
 )
 from fyt.db.models import TripsYear

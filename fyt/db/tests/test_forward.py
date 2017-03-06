@@ -8,7 +8,7 @@ from ..models import TripsYear
 from fyt.applications.models import Volunteer as Application
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration
-from fyt.test import TripsTestCase, WebTestCase
+from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import TripTemplate
@@ -18,7 +18,7 @@ def all_field_names(obj):
     return [f.name for f in obj._meta.get_fields()]
 
 
-class MigrateForwardTestCase(TripsTestCase):
+class MigrateForwardTestCase(FytTestCase):
 
     def assertDataEqual(self, obj1, obj2):
         """
@@ -204,7 +204,7 @@ class MigrateForwardTestCase(TripsTestCase):
         self.assertFalse(timetable.trippee_assignment_available)
 
 
-class MigrateForwardWebTestCase(WebTestCase):
+class MigrateForwardFytTestCase(FytTestCase):
 
     def test_triptemplate_documents_are_migrated(self):
         trips_year = self.init_trips_year()

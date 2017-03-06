@@ -5,7 +5,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 
-from fyt.applications.models import Volunteer, LeaderSupplement
+from fyt.applications.models import LeaderSupplement, Volunteer
 from fyt.incoming.models import IncomingStudent
 from fyt.trips.models import Section, Trip
 

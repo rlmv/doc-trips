@@ -2,11 +2,11 @@ from django.db import IntegrityError
 from model_mommy import mommy
 
 from fyt.db.forms import tripsyear_modelform_factory
-from fyt.test.testcases import TripsYearTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.trips.models import Campsite, TripTemplate
 
 
-class DatabaseModelTestCase(TripsYearTestCase):
+class DatabaseModelTestCase(FytTestCase):
 
     def test_trips_year_field_is_required(self):
         self.assertRaises(IntegrityError, mommy.make, Campsite, trips_year=None)
@@ -20,7 +20,7 @@ class DatabaseModelTestCase(TripsYearTestCase):
         self.assertEqual(triptemplate.model_name_lower(), 'triptemplate')
 
 
-class DatabaseMixinTestCase(WebTestCase):
+class DatabaseMixinTestCase(FytTestCase):
     """ DatabaseMixin integration tests """
     csrf_checks = False
 
@@ -33,14 +33,14 @@ class DatabaseMixinTestCase(WebTestCase):
         self.app.get(url, user=self.mock_director(), status=200)
 
 
-class RedirectToCurrentDatabaseTestCase(WebTestCase):
+class RedirectToCurrentDatabaseTestCase(FytTestCase):
 
     def test_db_redirect_access_without_permissions(self):
         trips_year = self.init_trips_year()
         self.app.get('/db/', user=self.mock_user(), status=403)
 
 
-class FormFieldCallbackTestCase(TripsYearTestCase):
+class FormFieldCallbackTestCase(FytTestCase):
 
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
         trips_year = self.init_trips_year()

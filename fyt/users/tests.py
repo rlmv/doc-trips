@@ -2,11 +2,10 @@
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
-from django.test import TestCase
 from django.test.utils import override_settings
 from model_mommy import mommy
 
-from fyt.test.testcases import WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.users.models import MAX_NETID_LENGTH, DartmouthUser
 
 
@@ -14,7 +13,7 @@ def lookup_email(*args, **kwargs):
     return 'email'
 
 
-class UserManagerTestCase(TestCase):
+class UserManagerTestCase(FytTestCase):
 
     @patch('fyt.users.models.lookup_email', new=lookup_email)
     def test_create_user(self):
@@ -53,7 +52,7 @@ class UserManagerTestCase(TestCase):
         self.assertEqual(user.email, email)
 
 
-class NetIdFieldTestCase(TestCase):
+class NetIdFieldTestCase(FytTestCase):
 
     def test_lowercase_conversion(self):
         netid = 'D34898Z'
@@ -66,7 +65,7 @@ class NetIdFieldTestCase(TestCase):
         self.assertEqual(user, DartmouthUser.objects.get(netid=netid))
 
 
-class UserEmailMiddlewareTestCase(WebTestCase):
+class UserEmailMiddlewareTestCase(FytTestCase):
 
     def test_user_with_no_email_must_manually_add_email(self):
         user = DartmouthUser.objects.create(
@@ -89,7 +88,7 @@ class UserEmailMiddlewareTestCase(WebTestCase):
         self.assertFalse(resp.request.path.startswith(reverse('users:update_email')))
 
 
-class UserUrlsTestCase(WebTestCase):
+class UserUrlsTestCase(FytTestCase):
 
     def test_unauthorized_user_is_redirected_to_login(self):
         target_url = reverse('applications:portal')

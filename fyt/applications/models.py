@@ -6,9 +6,9 @@ from django.db.models import Q
 
 from .managers import (
     CrooApplicationManager,
-    VolunteerManager,
     LeaderApplicationManager,
     QuestionManager,
+    VolunteerManager,
 )
 
 from fyt.croos.models import Croo

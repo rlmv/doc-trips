@@ -1,10 +1,10 @@
 from model_mommy import mommy
 
-from fyt.test import WebTestCase
+from fyt.test import FytTestCase
 from fyt.trips.models import Section
 
 
-class DetailViewTestCase(WebTestCase):
+class DetailViewTestCase(FytTestCase):
 
     def test_urls_in_context(self):
         trips_year = self.init_trips_year()

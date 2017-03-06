@@ -1,7 +1,6 @@
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import TestCase
 from django_webtest import WebTest
 from model_mommy import mommy
 
@@ -15,7 +14,23 @@ from fyt.permissions.permissions import (
 )
 
 
-class TripsYearTestCaseUtils():
+class FytTestCase(WebTest):
+    """
+    WebTest allows us to make requests without having to mock CAS
+    authentication. See django_webtest for more details.
+
+    For some reason whitenoise's GzipManifestStaticFilesStorage doesn't
+    work with WebTest. We patch it here back to the django default storage.
+    """
+
+    def _patch_settings(self):
+        super()._patch_settings()
+        self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
+        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+    def _unpatch_settings(self):
+        super()._unpatch_settings()
+        settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
 
     def init_current_trips_year(self):
         """
@@ -120,27 +135,3 @@ class TripsYearTestCaseUtils():
         """
         return self.assertQuerysetEqual(qs, values, transform=transform,
                                         ordered=ordered, msg=msg)
-
-
-class TripsYearTestCase(TestCase, TripsYearTestCaseUtils):
-    pass
-TripsTestCase = TripsYearTestCase
-
-
-class WebTestCase(WebTest, TripsYearTestCaseUtils):
-    """
-    Can make requests without have to mock CAS
-    authentication. See django_webtest for more details.
-
-    For some reason whitenoise's GzipManifestStaticFilesStorage doesn't
-    work with WebTest. We patch it here back to the django default storage.
-    """
-
-    def _patch_settings(self):
-        super()._patch_settings()
-        self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
-        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-    def _unpatch_settings(self):
-        super()._unpatch_settings()
-        settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE

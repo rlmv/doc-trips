@@ -1,11 +1,11 @@
 
 from django.core.exceptions import ValidationError
-from django.test import TestCase
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
+from fyt.test.testcases import FytTestCase
 
 
-class DartmouthDirectoryLookupFieldTestCase(TestCase):
+class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
     def test_compress(self):
         field = DartmouthDirectoryLookupField()

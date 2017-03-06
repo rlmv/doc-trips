@@ -2,10 +2,10 @@ from model_mommy import mommy
 
 from fyt.applications.models import Volunteer
 from fyt.croos.models import Croo
-from fyt.test.testcases import TripsYearTestCase as TripsTestCase
+from fyt.test.testcases import FytTestCase
 
 
-class CrooModelTestCase(TripsTestCase):
+class CrooModelTestCase(FytTestCase):
 
     def test_safety_leads(self):
         trips_year = self.init_current_trips_year()

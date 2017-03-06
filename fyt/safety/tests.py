@@ -5,11 +5,11 @@ from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from fyt.safety.models import Incident
-from fyt.test.testcases import WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.trips.models import Trip
 
 
-class IncidentViewsTestCase(WebTestCase):
+class IncidentViewsTestCase(FytTestCase):
 
     csrf_checks = False
 

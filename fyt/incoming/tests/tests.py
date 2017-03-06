@@ -19,7 +19,7 @@ from fyt.incoming.models import (
     Settings,
     sort_by_lastname,
 )
-from fyt.test.testcases import TripsYearTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Route, Stop
 from fyt.trips.models import Section, Trip, TripType
@@ -32,7 +32,7 @@ def resolve_path(fname):
     return os.path.join(os.path.dirname(__file__), fname)
 
 
-class IncomingStudentModelTestCase(TripsYearTestCase):
+class IncomingStudentModelTestCase(FytTestCase):
 
     FILE = resolve_path('incoming_students.csv')
 
@@ -328,7 +328,7 @@ class IncomingStudentModelTestCase(TripsYearTestCase):
         self.assertEqual([inc2, inc3, inc1], sort_by_lastname([inc1, inc2, inc3]))
 
 
-class RegistrationModelTestCase(TripsYearTestCase):
+class RegistrationModelTestCase(FytTestCase):
 
     def test_must_agree_to_waiver(self):
         with self.assertRaisesMessage(
@@ -471,7 +471,7 @@ class RegistrationModelTestCase(TripsYearTestCase):
             ).full_clean()
 
 
-class ImportIncomingStudentsTestCase(TripsYearTestCase):
+class ImportIncomingStudentsTestCase(FytTestCase):
 
     FILE = resolve_path('incoming_students.csv')
     FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
@@ -507,7 +507,7 @@ class ImportIncomingStudentsTestCase(TripsYearTestCase):
         IncomingStudent.objects.get(netid='id_1')
 
 
-class ImportIncomingStudentHinmanBoxes(TripsYearTestCase):
+class ImportIncomingStudentHinmanBoxes(FytTestCase):
 
     FILE = resolve_path('hinman_boxes.csv')
 
@@ -527,7 +527,7 @@ class ImportIncomingStudentHinmanBoxes(TripsYearTestCase):
         self.assertEqual(imported, [incoming])
 
 
-class IncomingStudentsManagerTestCase(TripsYearTestCase):
+class IncomingStudentsManagerTestCase(FytTestCase):
 
     def test_unregistered(self):
         trips_year = self.init_current_trips_year()
@@ -667,7 +667,7 @@ class IncomingStudentsManagerTestCase(TripsYearTestCase):
         self.assertQsEqual(IncomingStudent.objects.cancelled(trips_year), [cancelled])
 
 
-class RegistrationViewsTestCase(WebTestCase):
+class RegistrationViewsTestCase(FytTestCase):
 
     csrf_checks = False
 
@@ -745,7 +745,7 @@ class RegistrationViewsTestCase(WebTestCase):
         self.assertEqual(trippee.gender, 'm')
 
 
-class RegistrationFormTestCase(TripsYearTestCase):
+class RegistrationFormTestCase(FytTestCase):
 
     def setUp(self):
         self.trips_year = self.init_trips_year()
@@ -803,7 +803,7 @@ class RegistrationFormTestCase(TripsYearTestCase):
 
 
 
-class IncomingStudentViewsTestCase(WebTestCase):
+class IncomingStudentViewsTestCase(FytTestCase):
 
     def test_delete_view(self):
         trips_year = self.init_current_trips_year()
@@ -817,7 +817,7 @@ class IncomingStudentViewsTestCase(WebTestCase):
             IncomingStudent.objects.get(pk=incoming.pk)
 
 
-class RegistrationManagerTestCase(TripsYearTestCase):
+class RegistrationManagerTestCase(FytTestCase):
 
     def test_requesting_financial_aid(self):
         trips_year = self.init_current_trips_year()

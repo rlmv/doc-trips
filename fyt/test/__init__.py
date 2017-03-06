@@ -1,2 +1,2 @@
 
-from fyt.test.testcases import TripsTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase

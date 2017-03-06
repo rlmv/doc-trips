@@ -7,11 +7,11 @@ from datetime import date
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from fyt.applications.models import Volunteer, Question
+from fyt.applications.models import Question, Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
-from fyt.test.testcases import TripsTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip
 from fyt.utils.choices import L, M, S, XL, XS, XXL
@@ -28,7 +28,7 @@ def save_and_open_csv(resp):
     return csv.DictReader(f)
 
 
-class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
+class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
     def assertStopsIteration(self, iter):
         with self.assertRaises(StopIteration):
@@ -482,7 +482,7 @@ class ReportViewsTestCase(WebTestCase, ApplicationTestMixin):
         self.assertEqual(rows, target)
 
 
-class TShirtCountTestCase(TripsTestCase):
+class TShirtCountTestCase(FytTestCase):
 
     def test_tshirt_count_leaders(self):
         trips_year = self.init_trips_year()

@@ -4,20 +4,20 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.db.mommy_recipes import trips_year as trips_year_recipe
 from fyt.raids.models import Raid
-from fyt.test.testcases import TripsTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 
 
 raid_recipe = Recipe(Raid, trips_year=foreign_key(trips_year_recipe))
 
 
-class RaidModelsTestCase(TripsTestCase):
+class RaidModelsTestCase(FytTestCase):
 
     def test_raid_requires_trip_or_campsite(self):
         with self.assertRaises(ValidationError):
             raid_recipe.prepare(campsite=None, trip=None).full_clean()
 
 
-class RaidViewsTestCase(WebTestCase):
+class RaidViewsTestCase(FytTestCase):
 
     def test_only_directors_can_delete_raids(self):
         trips_year = trips_year_recipe.make()

@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from vanilla import TemplateView, UpdateView
 
-from fyt.applications.models import Volunteer, PortalContent
+from fyt.applications.models import PortalContent, Volunteer
 from fyt.db.models import TripsYear
 from fyt.permissions.views import SettingsPermissionRequired
 from fyt.timetable.models import Timetable

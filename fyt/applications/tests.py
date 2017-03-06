@@ -13,7 +13,6 @@ from .models import (
     ApplicationInformation,
     CrooApplicationGrade,
     CrooSupplement,
-    Volunteer,
     LeaderApplicationGrade,
     LeaderSupplement as LeaderApplication,
     PortalContent,
@@ -21,12 +20,13 @@ from .models import (
     Question,
     SkippedCrooGrade,
     SkippedLeaderGrade,
+    Volunteer,
 )
 
 from fyt.applications.views.graders import get_graders
 from fyt.applications.views.grading import SHOW_GRADE_AVG_INTERVAL, SKIP
 from fyt.croos.models import Croo
-from fyt.test.testcases import TripsYearTestCase as TripsTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
@@ -80,7 +80,7 @@ class ApplicationTestMixin():
         return make_application(trips_year=trips_year, **kwargs)
 
 
-class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
+class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_must_be_LEADER_to_be_assigned_trip(self):
         trips_year = self.init_current_trips_year()
@@ -290,7 +290,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertEqual(answer.application, app)
 
 
-class AnswerModelTestCase(ApplicationTestMixin, TripsTestCase):
+class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_word_count_validation(self):
         trips_year = self.init_trips_year()
@@ -313,7 +313,7 @@ class AnswerModelTestCase(ApplicationTestMixin, TripsTestCase):
             answer.full_clean()
 
 
-class QuestionModelTestCase(TripsTestCase):
+class QuestionModelTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -343,7 +343,7 @@ class QuestionModelTestCase(TripsTestCase):
         self.assertQsEqual(qs, [self.q_general, self.q_croo])
 
 
-class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
+class ApplicationAccessTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_anonymous_user_does_not_crash_application(self):
         self.init_current_trips_year()
@@ -357,7 +357,7 @@ class ApplicationAccessTestCase(ApplicationTestMixin, WebTestCase):
         self.assertTemplateUsed(response, 'applications/not_available.html')
 
 
-class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
+class ApplicationManagerTestCase(ApplicationTestMixin, FytTestCase):
     """
     Tested against the LeaderApplication model only;
     there should be no difference with the CrooApplciation model.
@@ -435,7 +435,7 @@ class ApplicationManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertIsNone(next)
 
 
-class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, TripsTestCase):
+class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -496,7 +496,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, Trip
         self.assertEquals(list(prospects), [])
 
 
-class VolunteerManagerTestCase(ApplicationTestMixin, TripsTestCase):
+class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -594,7 +594,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, TripsTestCase):
         self.assertQsEqual(Volunteer.objects.croo_members(trips_year), [croo])
 
 
-class ApplicationFormTestCase(TripsTestCase):
+class ApplicationFormTestCase(FytTestCase):
 
     def setUp(self):
         self.trips_year = self.init_trips_year()
@@ -636,7 +636,7 @@ class ApplicationFormTestCase(TripsTestCase):
         self.assertFalse(form.is_valid())
 
 
-class LeaderSupplementFormTestCase(TripsTestCase):
+class LeaderSupplementFormTestCase(FytTestCase):
 
     def setUp(self):
         self.trips_year = self.init_trips_year()
@@ -741,7 +741,7 @@ class LeaderSupplementFormTestCase(TripsTestCase):
         self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
 
 
-class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
+class GradeViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_current_trips_year()
@@ -768,7 +768,7 @@ class GradeViewsTestCase(ApplicationTestMixin, WebTestCase):
                 self.assertTemplateNotUsed(res, 'applications/grading_not_available.html')
 
 
-class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
+class GradingViewTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_show_average_grade_every_interval_in_messages(self):
         trips_year = self.init_current_trips_year()
@@ -907,7 +907,7 @@ class GradingViewTestCase(ApplicationTestMixin, WebTestCase):
         self.assertNotIn(qualification, form.fields['qualifications'].queryset)
 
 
-class GradersDatabaseListViewTestCase(TripsTestCase):
+class GradersDatabaseListViewTestCase(FytTestCase):
 
     def test_get_graders_returns_only_people_who_have_submitted_grades(self):
         trips_year = self.init_current_trips_year()
@@ -978,7 +978,7 @@ class GradersDatabaseListViewTestCase(TripsTestCase):
         self.assertEqual(graders[0].avg_croo_grade, 1)
 
 
-class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
+class DeleteGradeViews(ApplicationTestMixin, FytTestCase):
 
     def test_delete_leader_grade_is_restricted_to_directors(self):
         trips_year = self.init_current_trips_year()
@@ -1017,7 +1017,7 @@ class DeleteGradeViews(ApplicationTestMixin, WebTestCase):
         self.assertRedirects(res, application.detail_url())
 
 
-class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
+class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_assignment_view(self):
         trips_year = self.init_current_trips_year()
@@ -1029,7 +1029,7 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, WebTestCase):
         res = self.app.get(url, user=self.mock_director())
 
 
-class AssignToCrooTestCase(ApplicationTestMixin, WebTestCase):
+class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_assignment_view(self):
         trips_year = self.init_current_trips_year()
@@ -1048,7 +1048,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, WebTestCase):
         self.assertEqual(list(croo.croo_members.all()), [application])
 
 
-class DbVolunteerPagesAccessTestCase(WebTestCase):
+class DbVolunteerPagesAccessTestCase(FytTestCase):
 
     def test_directorate_can_normally_see_volunteer_pages(self):
         trips_year = self.init_current_trips_year()
@@ -1069,7 +1069,7 @@ class DbVolunteerPagesAccessTestCase(WebTestCase):
         res = self.app.get(url, user=self.mock_tlt())
 
 
-class PortalContentModelTestCase(ApplicationTestMixin, TripsTestCase):
+class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_get_status_description(self):
         trips_year = self.init_current_trips_year()

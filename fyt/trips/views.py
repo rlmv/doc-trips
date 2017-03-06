@@ -26,10 +26,10 @@ from .models import (
 )
 
 from fyt.applications.models import (
-    Volunteer,
     LeaderSectionChoice,
     LeaderSupplement,
     LeaderTripTypeChoice,
+    Volunteer,
 )
 from fyt.db.views import (
     BaseUpdateView,

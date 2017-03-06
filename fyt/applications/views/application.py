@@ -27,11 +27,7 @@ from fyt.applications.forms import (
     LeaderSupplementForm,
     QuestionForm,
 )
-from fyt.applications.models import (
-    ApplicationInformation,
-    Volunteer,
-    Question,
-)
+from fyt.applications.models import ApplicationInformation, Question, Volunteer
 from fyt.applications.tables import ApplicationTable
 from fyt.croos.models import Croo
 from fyt.db.models import TripsYear

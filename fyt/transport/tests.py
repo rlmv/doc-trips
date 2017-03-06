@@ -12,7 +12,7 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.db.mommy_recipes import trips_year
 from fyt.incoming.models import IncomingStudent
-from fyt.test.testcases import TripsYearTestCase, WebTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.transport import maps
 from fyt.transport.constants import ConstantStop, Hanover, Lodge
 from fyt.transport.models import (
@@ -47,7 +47,7 @@ stoporder_recipe = Recipe(
     stop_type=itertools.cycle([StopOrder.PICKUP, StopOrder.DROPOFF])
 )
 
-class TransportModelTestCase(TripsYearTestCase):
+class TransportModelTestCase(FytTestCase):
 
     def test_stop_is_protected_on_route_fk_deletion(self):
         trips_year = self.init_trips_year()
@@ -57,7 +57,7 @@ class TransportModelTestCase(TripsYearTestCase):
             route.delete()
 
 
-class StopModelTestCase(TripsYearTestCase):
+class StopModelTestCase(FytTestCase):
 
     def test_category_handles_null_routes(self):
         stop = mommy.make(Stop, route=None)
@@ -117,7 +117,7 @@ class StopModelTestCase(TripsYearTestCase):
         self.assertEqual([stop1, stop2], sort_by_distance([stop2, stop1], reverse=True))
 
 
-class StopManagerTestCase(TripsYearTestCase):
+class StopManagerTestCase(FytTestCase):
 
     def test_external(self):
         trips_year = self.init_trips_year()
@@ -128,7 +128,7 @@ class StopManagerTestCase(TripsYearTestCase):
         self.assertEqual([external_stop], list(Stop.objects.external(trips_year)))
 
 
-class RouteManagerTestCase(TripsYearTestCase):
+class RouteManagerTestCase(FytTestCase):
 
     def test_external(self):
         trips_year = self.init_trips_year()
@@ -147,7 +147,7 @@ class RouteManagerTestCase(TripsYearTestCase):
         self.assertQsEqual(Route.objects.internal(trips_year), [internal_route])
 
 
-class ScheduledTransportManagerTestCase(TripsYearTestCase):
+class ScheduledTransportManagerTestCase(FytTestCase):
 
     def test_internal(self):
         ty = self.init_trips_year()
@@ -158,7 +158,7 @@ class ScheduledTransportManagerTestCase(TripsYearTestCase):
         self.assertQsEqual(ScheduledTransport.objects.internal(ty), [internal])
 
 
-class TestViews(WebTestCase):
+class TestViews(FytTestCase):
 
     def test_index_views(self):
         trips_year = self.init_trips_year()
@@ -173,7 +173,7 @@ class TestViews(WebTestCase):
             self.app.get(url, user=director)
 
 
-class ScheduledTransportMatrixTestCase(TripsYearTestCase):
+class ScheduledTransportMatrixTestCase(FytTestCase):
 
     def test_internal_matrix(self):
         trips_year = self.init_trips_year()
@@ -260,7 +260,7 @@ class ScheduledTransportMatrixTestCase(TripsYearTestCase):
             self.assertQsEqual(return_bus.returning(), [trip])
 
 
-class RidersMatrixTestCase(TripsYearTestCase):
+class RidersMatrixTestCase(FytTestCase):
 
     def test_internal_riders_matrix_with_single_trip(self):
         ty = self.init_trips_year()
@@ -386,7 +386,7 @@ class RidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_internal_rider_matrix(ty))
 
 
-class ActualRidersMatrixTestCase(TripsYearTestCase):
+class ActualRidersMatrixTestCase(FytTestCase):
 
     def test_basic_matrix(self):
         trips_year = self.init_trips_year()
@@ -451,7 +451,7 @@ class ActualRidersMatrixTestCase(TripsYearTestCase):
         self.assertEqual(target, get_actual_rider_matrix(ty))
 
 
-class IssuesMatrixTestCase(TripsYearTestCase):
+class IssuesMatrixTestCase(FytTestCase):
 
     def test_unscheduled(self):
         ty = self.init_trips_year()
@@ -540,7 +540,7 @@ class RidersClassTestCase(unittest.TestCase):
         self.assertNotEqual(Riders(1,2,3), Riders(0,0,0))
 
 
-class TransportChecklistTest(TripsYearTestCase):
+class TransportChecklistTest(FytTestCase):
 
     def test_get_date(self):
         view = TransportChecklist()
@@ -549,7 +549,7 @@ class TransportChecklistTest(TripsYearTestCase):
         self.assertEqual(view.get_date(), d)
 
 
-class ExternalBusManager(TripsYearTestCase):
+class ExternalBusManager(FytTestCase):
 
     def test_schedule_matrix(self):
         trips_year = self.init_trips_year()
@@ -665,7 +665,7 @@ class ExternalBusManager(TripsYearTestCase):
         self.assertEqual(target, actual)
 
 
-class TransportViewsTestCase(WebTestCase):
+class TransportViewsTestCase(FytTestCase):
 
     csrf_checks = False
 
@@ -701,7 +701,7 @@ class TransportViewsTestCase(WebTestCase):
         ScheduledTransport.objects.get(date=date(2015, 1, 2), route=route)
 
 
-class InternalTransportModelTestCase(TripsYearTestCase):
+class InternalTransportModelTestCase(FytTestCase):
 
     def test_INTERNAL_validation(self):
         trips_year = self.init_trips_year()
@@ -917,7 +917,7 @@ class InternalTransportModelTestCase(TripsYearTestCase):
         self.assertQsEqual(StopOrder.objects.all(), [])
 
 
-class StopOrderingTestCase(WebTestCase):
+class StopOrderingTestCase(FytTestCase):
 
     def test_stop_property(self):
         stop = mommy.make(Stop)
@@ -983,7 +983,7 @@ class StopOrderingTestCase(WebTestCase):
         self.assertEqual(order.stop, trip.template.dropoff_stop)
 
 
-class ExternalBusModelTestCase(TripsYearTestCase):
+class ExternalBusModelTestCase(FytTestCase):
 
     def test_EXTERNAL_validation(self):
         transport = mommy.make(ExternalBus, route__category=Route.INTERNAL)
@@ -1092,7 +1092,7 @@ class ExternalBusModelTestCase(TripsYearTestCase):
         self.assertEqual(bus.date_from_hanover, date(2015, 1, 6))
 
 
-class MapsTestCases(TripsYearTestCase):
+class MapsTestCases(FytTestCase):
 
     def test_split_stops_handling(self):
         orig, waypoints, dest = maps._split_stops([Hanover(), Lodge()])
@@ -1127,7 +1127,7 @@ class MapsTestCases(TripsYearTestCase):
             maps.get_directions([Hanover()])
 
 
-class ConstantStopTestCase(TripsYearTestCase):
+class ConstantStopTestCase(FytTestCase):
 
     def test_cannot_save_ConstantStop(self):
         stop = ConstantStop()

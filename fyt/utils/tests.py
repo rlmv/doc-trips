@@ -2,10 +2,9 @@ import unittest
 
 from django.core.exceptions import ValidationError
 from django.template import Context, Template
-from django.test import TestCase
 from model_mommy import mommy
 
-from fyt.test.testcases import TripsYearTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.trips.models import Section
 from fyt.utils.fmt import section_range
 from fyt.utils.lat_lng import parse_lat_lng, validate_lat_lng
@@ -36,7 +35,7 @@ class OrderedMatrixTestCase(unittest.TestCase):
         self.assertEqual(m[0][0], 0)
 
 
-class FmtUtilsTest(TripsYearTestCase):
+class FmtUtilsTest(FytTestCase):
 
     def test_section_range(self):
         mommy.make(Section, name="A")
@@ -76,7 +75,7 @@ class LatLngRegex(unittest.TestCase):
             validate_lat_lng('13.0,153.5  13.0,153.5 ')
 
 
-class UrlencodeTagTestCase(TestCase):
+class UrlencodeTagTestCase(FytTestCase):
 
     def test_tag(self):
         out = Template(

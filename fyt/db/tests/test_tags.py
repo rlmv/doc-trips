@@ -5,7 +5,7 @@ from django.template import Context, Template
 from model_mommy import mommy
 
 from fyt.db.templatetags.links import pass_null
-from fyt.test.testcases import TripsTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.trips.models import Section
 
 
@@ -19,7 +19,7 @@ class NullPassThroughDecorator(unittest.TestCase):
         self.assertEqual(add_one(False), False)
 
 
-class LinkTagTestCase(TripsTestCase):
+class LinkTagTestCase(FytTestCase):
 
     def test_detail_link(self):
         trips_year = self.init_trips_year()

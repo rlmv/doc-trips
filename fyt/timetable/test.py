@@ -3,11 +3,11 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from fyt.test.testcases import TripsTestCase
+from fyt.test.testcases import FytTestCase
 from fyt.timetable.models import Timetable
 
 
-class TimetableTestCase(TripsTestCase):
+class TimetableTestCase(FytTestCase):
 
     def test_application_grace_period(self):
         now = timezone.now()

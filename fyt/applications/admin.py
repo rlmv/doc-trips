@@ -4,12 +4,12 @@ from django.contrib import admin
 from fyt.applications.models import (
     CrooApplicationGrade,
     CrooSupplement,
-    Volunteer,
     LeaderApplicationGrade,
     LeaderSupplement,
     QualificationTag,
     SkippedCrooGrade,
     SkippedLeaderGrade,
+    Volunteer,
 )
 
 

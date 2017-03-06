@@ -6,7 +6,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django.db.models import Q
 
-from fyt.applications.models import Volunteer, QualificationTag
+from fyt.applications.models import QualificationTag, Volunteer
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 
