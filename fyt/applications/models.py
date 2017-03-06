@@ -825,6 +825,58 @@ class CrooSupplement(DatabaseModel):
         return str(self.application)
 
 
+class Score(DatabaseModel):
+    """
+    A score for a volunteer application.
+
+    Note: this is a new model added in 2017 to replace LeaderApplicationGrade
+    and CrooApplicationGrade which were used for split leader/croo applications.
+    """
+    SCORE_CHOICES = (
+        (1, "1 -- Bad application -- I really don't want this person to be a "
+            "volunteer and I have serious concerns"),
+        (2, "2 -- Poor application -- I have some concerns about this person "
+            "being a Trips volunteer"),
+        (3, "3 -- Fine application -- This person might work well as a "
+            "volunteer but I have some questions"),
+        (4, "4 -- Good application -- I would consider this person to be a "
+            "volunteer but I wouldn't be heartbroken if they were not "
+            "selected"),
+        (5, "5 -- Great application -- I think this person would be a "
+            "fantastic volunteer"),
+        (6, "6 -- Incredible application -- I think this person should be one "
+            "of the first to be selected to be a volunteer. I would be very "
+            "frustrated/angry if this person is not selected"),
+    )
+
+    grader = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, related_name='scores'
+    )
+    application = models.ForeignKey(
+        Volunteer, editable=False, related_name='scores'
+    )
+    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+
+    # ... TODO
+
+
+class Skip(DatabaseModel):
+    """
+    Marks an application as skipped.
+
+    If a grader skips an application they will not be shown the application
+    again.
+    """
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+
+    application = models.ForeignKey(
+        Volunteer, editable=False, related_name='skips'
+    )
+
+
+# Deprecated models (contain historical data only)
+# ----------------------------------------
+
 class AbstractGrade(DatabaseModel):
     """
     Abstract model for shared grade information
