@@ -1,3 +1,4 @@
+import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -25,11 +26,19 @@ class FytTestCase(WebTest):
 
     def _patch_settings(self):
         super()._patch_settings()
+
+        # Disable logging to console during testing.
+        # Note that this disables all logging; if you need to test whether
+        # something is being logged than you'll need to come up with a better
+        # solution to this.
+        logging.disable(logging.CRITICAL)
+
         self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
         settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
     def _unpatch_settings(self):
         super()._unpatch_settings()
+        logging.disable(logging.NOTSET)
         settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
 
     def init_current_trips_year(self):
