@@ -5,15 +5,25 @@ External
 --------
 * Fix django-braces to allow `is_authenticated` be a property.
 
+Upgrades
+--------
+* Upgrade to Python 3.6
+* Upgrade to Django 1.11 on release
+* Upgrade packages
+* Split dependencies into dev/production files
+
 Immediate
 ---------
+* Move grading to a separate `grade` app?
+* Add more filter options
 * Fix application filters / Django bug
-* Output answers with newline formatting
-* Rename from_where to hometown
+* Output application answers with newline formatting
+* Rename Volunteer.from_where to hometown
 * Move trip assignment text from model to HTML.
-* Prefix ``cache_as`` attrs with something
-* Croo waitlist. Needs to support people simultaneously being on the croo
+* Prefix ``cache_as`` attribute name with something
+* Add a croo waitlist. Needs to support people simultaneously being on the croo
   waitlist and trip leaders, or croo waitlist and leader waitlist, etc
+* Add a global page of all spreadsheets.
 * Add trainings signup app
 * Add checkboxes/formset for batch updating FA/CPR trainings.
 * Add spreadsheets for various registration sub-categories
@@ -24,17 +34,14 @@ has two windows open, such that they both get directed to create a new applicati
 and somehow submits both, then there will be two applications or registrations.
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
-* PDF uploads of maps and documents for trip templates
 * Show leader itinerary on leader assignment page.
 * Refactor internal transport matrix and numbers
 * Validate that ``TripTemplates`` cannot use external stops (perhaps with Internal and ExternalStop proxy models?)
 * Restrict ``Trip`` route overrides to ``EXTERNAL`` routes.
 * Expose raid blog instructions edit field
 * Export foodboxes by section? (the spread sheet does have a section column, yes? so perhaps not necessary?)
-* Global page of all spreadsheets.
 * Use global constants for transport attributes (eg. over_capacity) which are added to the ``Stops`` in GMaps directions for Internal and External stops.
 * Put bagel info constants onto a model.
-* Urlencode dynamic querystrings
 * Add ``/CPR`` to leader med certs? (and migrate existing)
 
 Questions
@@ -49,10 +56,10 @@ Cosmetic
 * Rename ``incoming.Settings`` to something nicer
 * Rename ``Volunteer.assigned_trip`` to ``trip_assignment``. Share assignment form with ``IncomingStudent``?
 * Generalize Create/New button
-* Shaw overbooked campsites in matrix
-* Warn when a trip is over booked on the leader/trippee assignment
+* Show overbooked campsites in matrix
+* Warn when a trip is overbooked on the leader/trippee assignment
 * Show warning if transport for a ``ScheduledTrip`` is not scheduled
-* Utility singleton model mixin
+* Make a utility singleton model mixin
 * Use ``timedelta`` constants for all date intervals.
 * Use tables2 for transport matrix?
 * Add a note about not being able to delete ``PROTECTED`` objects.
@@ -60,16 +67,14 @@ Cosmetic
 
 Long term
 ---------
+* Add PDF uploads of maps and documents for trip templates
 * Validate ``trips_year`` consistancy between related objects
-* Preview link to leader and trippee assignment pages.
+* Add a preview link to leader and trippee assignment pages
 * Tidy up the webauth app: remove unused config options
-* Move Leader and Croo grading to a separate ``grade`` app
 * Use ``model_mommy`` recipes for tests
 * Always show the database menu to folks with view permissions.
 * Add dropdown search to Incident reports so that the ``caller`` and ``subject`` fields are linked to ``User`` objects
-* Skip ``application`` tests if S3 times out.
 * Add ``croo_head`` field to Croos
-* Cache directions requests (this may be unecessary)
 * Pass ``trips_year`` to forms instead of using ``TripsYear.objects.current()``. This especially shows up in ``fyt.applications.forms``.
 
 
