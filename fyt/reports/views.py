@@ -133,6 +133,7 @@ class CrooMembersCSV(TripLeadersCSV):
             self.kwargs['trips_year']
         )
 
+
 class FinancialAidCSV(GenericReportView):
 
     file_prefix = 'Financial-aid'
