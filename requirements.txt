@@ -4,6 +4,7 @@ boto==2.36.0
 coverage==3.7.1
 googlemaps==2.2
 dj-database-url==0.4.2
+django==1.10
 django-bulk-update==1.1.10
 django-crispy-forms==1.6.0
 django-extensions==1.6.1
@@ -26,10 +27,6 @@ requests==2.6.0
 sphinx==1.3.1
 webtest==2.0.26
 whitenoise==1.0.6
-
-# Use a patched version of Django until 2.0
-# See https://code.djangoproject.com/ticket/26522
-https://github.com/rlmv/django/archive/stable/1.10.x.zip
 
 -e git://github.com/nkunihiko/django-bootstrap3-datetimepicker.git@2fa9ea5f56c16ec10aa3288a989a17a4332bcb97#egg=django_bootstrap3_datetimepicker-origin
 -e git://github.com/brack3t/django-braces.git@f8dcfca48c1b6f4a182bab6892068732e7b32072#egg=django_braces-origin
