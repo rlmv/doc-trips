@@ -226,6 +226,38 @@ class VolunteerManager(models.Manager):
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
 
+    def next_to_score(self, grader):
+        """
+        Return the next application for ``grader`` to score.
+
+        This is an application which meets the following conditions:
+
+        * is for the current trips_year
+        * is complete
+        * is PENDING
+        * has not already been graded by this user
+        * has been graded fewer than NUM_SCORES times
+
+        TODO:
+        * If the grader is a croo captain, prefer croo grades.
+        * If the grader is not a croo captain, don't add the last score to an
+          app which hasn't been graded by a croo captain; that is, every croo
+          application must be graded at least once by a croo captain.
+        """
+        trips_year = TripsYear.objects.current()
+
+        return self.leader_or_croo_applications(
+            trips_year=trips_year
+        ).filter(
+            status=self.model.PENDING
+        ).exclude(
+            scores__grader=grader
+        ).annotate(
+            models.Count('scores')
+        ).exclude(
+            scores__count__gte=self.model.NUM_SCORES
+        ).first()
+
 
 def pks(qs):
     """

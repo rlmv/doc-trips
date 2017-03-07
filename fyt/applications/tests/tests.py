@@ -33,15 +33,16 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
-                     assigned_trip=None):
+                     assigned_trip=None, leader_willing=True,
+                     croo_willing=True):
 
     application = mommy.make(
         Volunteer,
         status=status,
         trips_year=trips_year,
         assigned_trip=assigned_trip,
-        leader_willing=True,
-        croo_willing=True)
+        leader_willing=leader_willing,
+        croo_willing=croo_willing)
 
     leader_app = mommy.make(
         LeaderApplication,
@@ -288,6 +289,19 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(answer.question, question)
         self.assertEqual(answer.answer, "An answer!")
         self.assertEqual(answer.application, app)
+
+    def test_add_score(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+        user = self.mock_user()
+
+        app.add_score(user, 3)  # TODO: test kwargs
+
+        score = app.scores.first()
+        self.assertEqual(score.application, app)
+        self.assertEqual(score.grader, user)
+        self.assertEqual(score.score, 3)
+        self.assertEqual(score.trips_year, trips_year)
 
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):

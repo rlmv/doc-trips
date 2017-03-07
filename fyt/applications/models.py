@@ -216,6 +216,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
     class Meta:
         ordering = ['applicant']
 
+    # Maximum number of scores for an application
+    NUM_SCORES = 3
+
     objects = VolunteerManager()
 
     PENDING = 'PENDING'
@@ -502,6 +505,18 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
+
+    def add_score(self, grader, score, **kwargs):
+        """
+        Add a Score by `user` to the application.
+        """
+        return Score.objects.create(
+            trips_year=self.trips_year,
+            application=self,
+            grader=grader,
+            score=score,
+            **kwargs
+        )
 
     def __str__(self):
         return self.name
