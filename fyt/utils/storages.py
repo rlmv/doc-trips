@@ -2,7 +2,7 @@
 from django.conf import settings
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto import S3BotoStorage
-from whitenoise.django import GzipManifestStaticFilesStorage
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
 class S3FileStorage(S3BotoStorage):
@@ -12,9 +12,9 @@ class S3FileStorage(S3BotoStorage):
     location = getattr(settings, 'FILE_STORAGE_PREFIX', None)
 
 
-class GzipManifestPipelineStorage(PipelineMixin, GzipManifestStaticFilesStorage):
+class WhitenoisePipelineStorage(PipelineMixin,
+                                CompressedManifestStaticFilesStorage):
     """
-    Use both Gzip and Pipeline for staticfiles
+    Use both Whitenoise and Pipeline for staticfiles
     """
     pass
-
