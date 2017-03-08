@@ -847,6 +847,9 @@ class Score(DatabaseModel):
     Note: this is a new model added in 2017 to replace LeaderApplicationGrade
     and CrooApplicationGrade which were used for split leader/croo applications.
     """
+    class Meta:
+        unique_together = ['grader', 'application']
+
     SCORE_CHOICES = (
         (1, "1 -- Bad application -- I really don't want this person to be a "
             "volunteer and I have serious concerns"),
@@ -882,6 +885,9 @@ class Skip(DatabaseModel):
     If a grader skips an application they will not be shown the application
     again.
     """
+    class Meta:
+        unique_together = ['grader', 'application']
+
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 
     application = models.ForeignKey(
