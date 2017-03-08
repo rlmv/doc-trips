@@ -16,12 +16,6 @@
   {% url 'db:reports:all_apps' trips_year=trips_year as url_ %}
   {{ url_|download_button:"All Applications" }}
 
-  {% url 'db:reports:trip_leader_apps' trips_year=trips_year as url_ %}
-  {{ url_|download_button:"Trip Leader Applications" }}
-
-  {% url 'db:reports:croo_apps' trips_year=trips_year as url_ %}
-  {{ url_|download_button:"Croo Applications" }}
-
   {% url 'db:reports:volunteer_dietary' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Dietary Restrictions" }}
 

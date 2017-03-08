@@ -5,10 +5,6 @@ from fyt.reports.views import *
 
 urlpatterns = [
     url(r'^applications/all/$', VolunteerCSV.as_view(), name='all_apps'),
-    url(r'^applications/leader-apps/$', TripLeaderApplicationsCSV.as_view(),
-        name='trip_leader_apps'),
-    url(r'^applications/croo-member-apps/$', CrooApplicationsCSV.as_view(),
-        name='croo_apps'),
     url(r'^applications/leaders/$', TripLeadersCSV.as_view(),
         name='leaders'),
     url(r'^applications/croo-members/$', CrooMembersCSV.as_view(),

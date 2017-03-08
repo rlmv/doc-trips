@@ -66,52 +66,6 @@ class VolunteerCSV(GenericReportView):
         return [user.name, application.class_year, user.netid]
 
 
-class TripLeaderApplicationsCSV(GenericReportView):
-
-    file_prefix = 'TL-applicants'
-    header = ['name', 'class year', 'netid', 'avg score']
-
-    def get_queryset(self):
-        return (Application.objects
-                .leader_applications(self.kwargs['trips_year'])
-                .annotate(avg_score=Avg('leader_supplement__grades__grade'))
-                .prefetch_related('leader_supplement__grades'))
-
-    def get_row(self, application):
-        user = application.applicant
-        if application.avg_score:
-            avg_score = "%.1f" % application.avg_score
-        else:
-            avg_score = None
-        row = [user.name, application.class_year,
-               user.netid, avg_score]
-        return row + [grade.grade for grade in
-                      application.leader_supplement.grades.all()]
-
-
-class CrooApplicationsCSV(GenericReportView):
-
-    file_prefix = 'Croo-applicants'
-    header = ['name', 'class year', 'netid', 'avg score']
-
-    def get_queryset(self):
-        return (Application.objects
-                .croo_applications(self.kwargs['trips_year'])
-                .annotate(avg_score=Avg('croo_supplement__grades__grade'))
-                .prefetch_related('croo_supplement__grades'))
-
-    def get_row(self, application):
-        user = application.applicant
-        if application.avg_score:
-            avg_score = "%.1f" % application.avg_score
-        else:
-            avg_score = None
-        row = [user.name, application.class_year,
-               user.netid, avg_score]
-        return row + [grade.grade for grade in
-                      application.croo_supplement.grades.all()]
-
-
 class TripLeadersCSV(GenericReportView):
     file_prefix = 'Leaders'
 
