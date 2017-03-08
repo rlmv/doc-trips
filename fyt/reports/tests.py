@@ -65,7 +65,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'class year': str(app.class_year),
             'gender': app.gender,
             'race/ethnicity': app.race_ethnicity,
-            'hometown': app.from_where,
+            'hometown': app.hometown,
         }]
 
         self.assertViewReturns('db:reports:all_apps', target)

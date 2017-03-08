@@ -86,7 +86,7 @@ class VolunteerCSV(GenericReportView):
             application.class_year,
             application.gender,
             application.race_ethnicity,
-            application.from_where,
+            application.hometown,
         ]
 
 

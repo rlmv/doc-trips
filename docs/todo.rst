@@ -18,7 +18,6 @@ Immediate
 * Add more filter options
 * Fix application filters / Django bug
 * Output application answers with newline formatting
-* Rename Volunteer.from_where to hometown
 * Move trip assignment text from model to HTML.
 * Prefix ``cache_as`` attribute name with something
 * Add a croo waitlist. Needs to support people simultaneously being on the croo
