@@ -96,12 +96,16 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
         return 'Score submitted for Application #{}'.format(self.kwargs['pk'])
 
     def get_headline(self):
-        return 'Score Application #{}: NetId {}'.format(
-            self.kwargs['pk'], self.application.applicant.netid)
+        return 'Score {}: NetId {}'.format(
+            self.application_name, self.application.applicant.netid)
 
     @cached_property
     def application(self):
         return get_object_or_404(Volunteer, pk=self.kwargs['pk'])
+
+    @property
+    def application_name(self):
+        return "Application #{}".format(self.kwargs['pk'])
 
     def get(self, request, *args, **kwargs):
         self.show_average_grade(request.user)
@@ -128,6 +132,7 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
         """
         if SKIP in request.POST:
             self.application.skip(self.request.user)
+            self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())
 
         return super().post(request, *args, **kwargs)
