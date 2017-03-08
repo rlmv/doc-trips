@@ -43,27 +43,32 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         ``target`` is a list of ``dicts``
         """
         url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
-        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
-        self.assertEqual(rows, target)
+        resp = self.app.get(url, user=self.mock_director())
+
+        self.assertTrue(resp['Content-Disposition'].startswith(
+            'attachment; filename="'))
+        self.assertEqual(list(save_and_open_csv(resp)), target)
 
     def test_volunteer_csv(self):
         trips_year = self.init_current_trips_year()
         question = mommy.make(Question, trips_year=trips_year)
+        app = self.make_application(trips_year=trips_year)
+        app.croo_willing = False
+        app.save()
+        app.answer_question(question, 'An answer')
 
-        application = self.make_application(trips_year=trips_year)
-        application.answer_question(question, 'An answer')
+        target = [{
+            'name': app.name,
+            'netid': app.applicant.netid,
+            'leader app': 'yes',
+            'croo app': 'no',
+            'class year': str(app.class_year),
+            'gender': app.gender,
+            'race/ethnicity': app.race_ethnicity,
+            'hometown': app.from_where,
+        }]
 
-        non_applicant = self.make_application(trips_year=trips_year)
-
-        res = self.app.get(reverse('db:reports:all_apps',
-                                   kwargs={'trips_year': trips_year}),
-                           user=self.mock_director())
-        self.assertTrue(res['Content-Disposition'].startswith('attachment; filename="'))
-        rows = list(save_and_open_csv(res))
-        row = rows[0]
-        self.assertEqual(row['name'], application.applicant.name)
-        self.assertEqual(row['netid'], application.applicant.netid)
-        self.assertEqual(len(rows), 1)
+        self.assertViewReturns('db:reports:all_apps', target)
 
     def test_trip_leader_csv(self):
         trips_year = self.init_trips_year()

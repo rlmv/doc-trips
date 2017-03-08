@@ -360,6 +360,7 @@ class BlockDirectorate(GroupRequiredMixin):
         )
 
 
+# TODO: move to queryset method
 def preload_questions(qs, trips_year):
     """
     Preload the _get_questions cache on a queryset of applications so that

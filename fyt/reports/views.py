@@ -8,12 +8,17 @@ from django.http import HttpResponse
 from vanilla import View
 
 from fyt.applications.models import Volunteer as Application
+from fyt.applications.views.application import preload_questions
 from fyt.db.views import DatabaseTemplateView, TripsYearMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.trips.models import Trip
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
+
+
+def yes_no(value):
+    return 'yes' if value else 'no'
 
 
 class GenericReportView(DatabaseReadPermissionRequired,
@@ -54,16 +59,35 @@ class GenericReportView(DatabaseReadPermissionRequired,
 class VolunteerCSV(GenericReportView):
 
     file_prefix = 'TL-and-Croo-applicants'
-    header = ['name', 'class year', 'netid']
+    header = [
+        'name',
+        'netid',
+        'leader app',
+        'croo app',
+        'class year',
+        'gender',
+        'race/ethnicity',
+        'hometown'
+    ]
 
     def get_queryset(self):
-        return Application.objects.leader_or_croo_applications(
-            self.kwargs['trips_year']
+        qs = Application.objects.leader_or_croo_applications(
+            trips_year=self.kwargs['trips_year']
         )
+        return preload_questions(qs, self.kwargs['trips_year'])
 
     def get_row(self, application):
         user = application.applicant
-        return [user.name, application.class_year, user.netid]
+        return [
+            user.name,
+            user.netid,
+            yes_no(application.leader_application_complete),
+            yes_no(application.croo_application_complete),
+            application.class_year,
+            application.gender,
+            application.race_ethnicity,
+            application.from_where,
+        ]
 
 
 class TripLeadersCSV(GenericReportView):
