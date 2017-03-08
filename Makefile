@@ -37,7 +37,7 @@ superuser:
 	$(MANAGE) setsuperuser d34898x
 
 test:
-	$(MANAGE) test --nomigrations --noinput
+	$(MANAGE) test --nomigrations --noinput --parallel 2
 
 tidy:
 	$(VENV)/bin/importanize -v fyt
