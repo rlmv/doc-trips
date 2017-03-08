@@ -518,6 +518,16 @@ class Volunteer(MedicalMixin, DatabaseModel):
             **kwargs
         )
 
+    def skip(self, grader):
+        """
+        Skip this application in scoring.
+        """
+        return Skip.objects.create(
+            trips_year=self.trips_year,
+            application=self,
+            grader=grader
+        )
+
     def __str__(self):
         return self.name
 

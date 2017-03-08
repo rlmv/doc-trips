@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 
 from . import ApplicationTestMixin
 from ..models import Volunteer, Score, Skip
+from fyt.applications.views.scoring import SKIP
 from fyt.test import FytTestCase
 
 
@@ -52,6 +53,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.mock_director()
+        self.mock_grader()
         self.mock_user()
 
     score_urls = [
@@ -60,6 +62,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
     ]
 
     not_available = 'applications/scoring_not_available.html'
+    no_applications = 'applications/no_applications.html'
 
     def test_cant_score_before_application_deadline(self):
         self.open_application()
@@ -74,7 +77,40 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
             self.assertTemplateNotUsed(resp, self.not_available)
 
     def test_scoring_permissions(self):
-        self.open_application()
+        self.close_application()
         for url in self.score_urls + [reverse('applications:score:scoring')]:
             self.app.get(url, user=self.director)
             self.app.get(url, user=self.user, status=403)
+
+    def test_score_application(self):
+        self.close_application()
+        app = self.make_application(trips_year=self.trips_year)
+
+        url = reverse('applications:score:next')
+        resp = self.app.get(url, user=self.grader).follow()
+        resp.form['score'] = 3
+        resp = resp.form.submit()
+
+        self.assertEqual(len(app.scores.all()), 1)
+        score = app.scores.first()
+        self.assertEqual(score.score, 3)
+        self.assertEqual(score.grader, self.grader)
+        self.assertEqual(score.application, app)
+        self.assertEqual(score.trips_year, self.trips_year)
+
+    def test_skip_application(self):
+        self.close_application()
+        app = self.make_application(trips_year=self.trips_year)
+
+        url = reverse('applications:score:next')
+        resp = self.app.get(url, user=self.grader).follow()
+        resp.form.submit(SKIP)
+
+        self.assertEqual(len(app.skips.all()), 1)
+        skip = app.skips.first()
+        self.assertEqual(skip.grader, self.grader)
+        self.assertEqual(skip.application, app)
+        self.assertEqual(skip.trips_year, self.trips_year)
+
+        resp = self.app.get(url, user=self.grader).follow()
+        self.assertTemplateUsed(resp, self.no_applications)
