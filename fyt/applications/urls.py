@@ -28,6 +28,11 @@ from fyt.applications.views.grading import (
     RedirectToNextGradableCrooApplicationForQualification,
     RedirectToNextGradableLeaderApplication,
 )
+from fyt.applications.views.scoring import (
+    NoApplicationsLeftToScore,
+    RedirectToNextScorableApplication,
+    Scoring,
+)
 from fyt.applications.views.portal import (
     EditVolunteerPortalContent,
     VolunteerPortalView,
@@ -56,6 +61,14 @@ grade_urlpatterns = [
         name='no_leaders_left'),
 ]
 
+score_urlpatterns = [
+    url(r'^$', Scoring.as_view(), name='scoring'),
+    url(r'^none/$', NoApplicationsLeftToScore.as_view(),
+        name='no_applications_left'),
+    url(r'^next/$', RedirectToNextScorableApplication.as_view(),
+        name='next'),
+]
+
 urlpatterns = [
     url(r'^$', VolunteerPortalView.as_view(), name='portal'),
     url(r'^setup/portal$', EditVolunteerPortalContent.as_view(),
@@ -65,6 +78,7 @@ urlpatterns = [
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
     url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
+    url(r'^score/', include(score_urlpatterns, namespace='score')),
 ]
 
 # ----- protected database views ----------

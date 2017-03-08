@@ -23,7 +23,7 @@
                 <li><a href="{% url 'applications:portal' %}">Volunteers</a></li>
 
                 {% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
-                <li><a href="{% url 'applications:grade:graders' %}"><i class="fa fa-fw fa-pencil-square-o"></i> Grade Applications</a></li>
+                <li><a href="{% url 'applications:score:scoring' %}"><i class="fa fa-fw fa-pencil-square-o"></i> Score Applications</a></li>
                 {% endif %}
 
                 {% if perms.permissions.can_view_db or perms.permissions.can_edit_db %}
