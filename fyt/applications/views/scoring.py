@@ -31,7 +31,7 @@ from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 
 
-SHOW_GRADE_AVG_INTERVAL = 10
+SHOW_SCORE_AVG_INTERVAL = 10
 SKIP = 'skip'
 
 logger = logging.getLogger(__name__)
@@ -81,7 +81,8 @@ class RedirectToNextScorableApplication(LeaderGraderPermissionRequired,
 
 
 class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
-                       ExtraContextMixin, SetHeadlineMixin, CreateView):
+                       ExtraContextMixin, SetHeadlineMixin, FormMessagesMixin,
+                       CreateView):
     """
     Score a Volunteer application.
     """
@@ -89,15 +90,37 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
     fields = '__all__'
     template_name = 'applications/grade.html'
     success_url = reverse_lazy('applications:score:next')
+    form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
+
+    def get_form_valid_message(self):
+        return 'Score submitted for Application #{}'.format(self.kwargs['pk'])
 
     def get_headline(self):
         return 'Score Application #{}: NetId {}'.format(
-            self.kwargs['pk'], self.application.applicant.netid
-        )
+            self.kwargs['pk'], self.application.applicant.netid)
 
     @cached_property
     def application(self):
         return get_object_or_404(Volunteer, pk=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        self.show_average_grade(request.user)
+        return super().get(request, *args, **kwargs)
+
+    def show_average_grade(self, grader):
+        """
+        Show the grader their average grade every SHOW_GRADE_AVG_INTERVAL in
+        a message.
+        """
+        scores = grader.scores.filter(trips_year=TripsYear.objects.current())
+
+        if (scores.count() % SHOW_SCORE_AVG_INTERVAL == 0 and
+                scores.count() != 0):
+            avg_score = scores.aggregate(models.Avg('score'))
+
+            msg = ("FYI your average awarded score is {}. "
+                   "We'll show you your average score every {} grades.")
+            self.messages.info(msg.format(avg_score, SHOW_SCORE_AVG_INTERVAL))
 
     def post(self, request, *args, **kwargs):
         """

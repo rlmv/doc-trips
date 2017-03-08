@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from . import ApplicationTestMixin
 from ..models import Volunteer, Score, Skip
-from fyt.applications.views.scoring import SKIP
+from fyt.applications.views.scoring import SKIP, SHOW_SCORE_AVG_INTERVAL
 from fyt.test import FytTestCase
 
 
@@ -119,3 +119,17 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         resp = self.app.get(url, user=self.grader).follow()
         self.assertTemplateUsed(resp, self.no_applications)
+
+    def test_show_average_grade_in_messages(self):
+        self.close_application()
+        self.make_application(trips_year=self.trips_year)
+
+        for i in range(SHOW_SCORE_AVG_INTERVAL):
+            mommy.make(Score, trips_year=self.trips_year, grader=self.grader)
+
+        url = reverse('applications:score:next')
+        resp = self.app.get(url, user=self.grader).follow()
+
+        messages = list(resp.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('average', messages[0].message)
