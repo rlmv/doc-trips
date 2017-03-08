@@ -47,6 +47,11 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
         self.assertIsNone(Volunteer.objects.next_to_score(self.user))
 
+    def test_skip_application(self):
+        app = self.make_application()
+        app.skip(self.user)
+        self.assertIsNone(Volunteer.objects.next_to_score(self.user))
+
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 

@@ -236,6 +236,7 @@ class VolunteerManager(models.Manager):
         * is complete
         * is PENDING
         * has not already been graded by this user
+        * has not been skipped by this user
         * has been graded fewer than NUM_SCORES times
 
         TODO:
@@ -252,6 +253,8 @@ class VolunteerManager(models.Manager):
             status=self.model.PENDING
         ).exclude(
             scores__grader=grader
+        ).exclude(
+            skips__grader=grader
         ).annotate(
             models.Count('scores')
         ).exclude(
