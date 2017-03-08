@@ -120,10 +120,10 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
 
         if (scores.count() % SHOW_SCORE_AVG_INTERVAL == 0 and
                 scores.count() != 0):
-            avg_score = scores.aggregate(models.Avg('score'))
+            avg_score = scores.aggregate(models.Avg('score'))['score__avg']
 
-            msg = ("FYI your average awarded score is {}. "
-                   "We'll show you your average score every {} grades.")
+            msg = ("FYI, your average awarded score is {}. "
+                   "You'll see your average score every {} grades.")
             self.messages.info(msg.format(avg_score, SHOW_SCORE_AVG_INTERVAL))
 
     def post(self, request, *args, **kwargs):

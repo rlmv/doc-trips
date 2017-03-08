@@ -125,11 +125,16 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.make_application(trips_year=self.trips_year)
 
         for i in range(SHOW_SCORE_AVG_INTERVAL):
-            mommy.make(Score, trips_year=self.trips_year, grader=self.grader)
+            mommy.make(
+                Score,
+                trips_year=self.trips_year,
+                grader=self.grader,
+                score=3
+            )
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
 
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertIn('average', messages[0].message)
+        self.assertIn('average awarded score is 3', messages[0].message)
