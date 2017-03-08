@@ -147,8 +147,11 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
         form.helper.layout.append(
             FormActions(
                 Submit('submit', 'Submit Score'),
-                Submit('skip', 'Skip this Application',
-                       css_class='btn-warning'),
+                Submit(
+                    'skip', 'Skip this Application',
+                    css_class='btn-warning',
+                    formnovalidate=True  # Disable browser validation
+                ),
             )
         )
         return form
