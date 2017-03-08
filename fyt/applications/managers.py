@@ -1,13 +1,29 @@
 import random
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import Lookup, Q
+from django.db.models.fields import Field
 
 from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
 # TODO: refactor grade choices to query off the Volunteer
+
+
+@Field.register_lookup
+class NotEqual(Lookup):
+    """
+    Register a not-equals lookup.
+    """
+    lookup_name = 'ne'
+
+    def as_sql(self, qn, connection):
+        lhs, lhs_params = self.process_lhs(qn, connection)
+        rhs, rhs_params = self.process_rhs(qn, connection)
+        params = lhs_params + rhs_params
+        return '%s <> %s' % (lhs, rhs), params
+
 
 class ApplicationManager(models.Manager):
     """
@@ -154,7 +170,7 @@ class VolunteerManager(models.Manager):
         qs = self.filter(trips_year=trips_year, leader_willing=True)
 
         for question in questions:
-            qs = qs.filter(Q(answer__question=question) & ~Q(answer__answer=""))
+            qs = qs.filter(answer__question=question, answer__answer__ne="")
 
         return qs
 
@@ -165,7 +181,7 @@ class VolunteerManager(models.Manager):
         qs = self.filter(trips_year=trips_year, croo_willing=True)
 
         for question in questions:
-            qs = qs.filter(Q(answer__question=question) & ~Q(answer__answer=""))
+            qs = qs.filter(answer__question=question, answer__answer__ne="")
 
         return qs
 

@@ -517,10 +517,12 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.app2 = self.make_application()
         self.app2.answer_question(self.q_general, 'answer')
         self.app2.answer_question(self.q_leader, 'answer')
+        self.app2.answer_question(self.q_croo, '')
 
         # Complete croo
         self.app3 = self.make_application()
         self.app3.answer_question(self.q_general, 'answer')
+        self.app3.answer_question(self.q_leader, '')
         self.app3.answer_question(self.q_croo, 'answer')
 
         # Not complete - missing croo & leader answer
