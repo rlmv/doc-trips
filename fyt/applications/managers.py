@@ -1,10 +1,12 @@
 import random
 
 from django.db import models
-from django.db.models import Lookup, Q
+from django.db.models import Case, Lookup, Q, When
 from django.db.models.fields import Field
 
 from fyt.db.models import TripsYear
+from fyt.permissions import permissions
+from fyt.users.models import DartmouthUser
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
@@ -239,15 +241,25 @@ class VolunteerManager(models.Manager):
         * has not been skipped by this user
         * has been graded fewer than NUM_SCORES times
 
-        TODO:
-        * If the grader is a croo captain, prefer croo grades.
+        Furthermore:
         * If the grader is not a croo captain, don't add the last score to an
-          app which hasn't been graded by a croo captain; that is, every croo
+          app which hasn't been scored by a croo captain; that is, every croo
           application must be graded at least once by a croo captain.
+
+        TODO:
+        * If the grader is a croo captain, prefer croo grades until each app
+          has at least one score from a croo head
         """
         trips_year = TripsYear.objects.current()
 
-        return self.leader_or_croo_applications(
+        croo_heads = DartmouthUser.objects.filter(
+            Q(groups__permissions=permissions.can_grade_as_croo_head()) |
+            Q(is_superuser=True)
+        )
+
+        croo_app_pks = self.croo_applications(trips_year)
+
+        qs = self.leader_or_croo_applications(
             trips_year=trips_year
         ).filter(
             status=self.model.PENDING
@@ -257,9 +269,46 @@ class VolunteerManager(models.Manager):
             skips__grader=grader
         ).annotate(
             models.Count('scores')
-        ).exclude(
-            scores__count__gte=self.model.NUM_SCORES
-        ).first()
+        ).annotate(
+            # TODO: should this be stored on the Score model instead?
+            # Permissions change and we want to remember that scores were
+            # given by croo heads.
+            has_croo_head_score=TrueIf(scores__grader__in=croo_heads)
+        ).annotate(
+            is_croo_application=TrueIf(pk__in=croo_app_pks)
+        )
+
+        MAX = self.model.NUM_SCORES
+
+        if grader in croo_heads:
+            qs = qs.filter(scores__count__lt=MAX)
+        else:
+            # Reserve one grade for a croo head
+            qs = qs.filter(
+                scores__count__lt=Case(
+                    # Leader app; don't reserve
+                    When(is_croo_application=False,
+                         then=MAX),
+                    # Otherwise, is a croo application
+                    When(has_croo_head_score=True,
+                         then=MAX),
+                    # Still needs a croo head score
+                    default=(MAX - 1)
+                )
+            )
+        return qs.first()
+
+
+def TrueIf(**kwargs):
+    """
+    Return a case expression that evaluates to True if the query conditions
+    are met, else False
+    """
+    return Case(
+        When(then=True, **kwargs),
+        default=False,
+        output_field=models.BooleanField()
+    )
 
 
 def pks(qs):

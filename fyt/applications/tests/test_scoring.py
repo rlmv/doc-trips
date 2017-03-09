@@ -13,7 +13,13 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
-        self.user = self.mock_user()
+        self.mock_user()
+        self.mock_director()
+        self.mock_directorate()
+
+    def make_scores(self, app, n):
+        for i in range(n):
+            mommy.make(Score, trips_year=self.trips_year, application=app)
 
     def test_only_score_apps_for_this_year(self):
         last_year = self.init_previous_trips_year()
@@ -42,15 +48,31 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_only_score_3_times(self):
         app = self.make_application()
-        for i in range(Volunteer.NUM_SCORES):
-            mommy.make(Score, trips_year=self.trips_year, application=app)
+        self.make_scores(app, Volunteer.NUM_SCORES)
 
         self.assertIsNone(Volunteer.objects.next_to_score(self.user))
+        self.assertIsNone(Volunteer.objects.next_to_score(self.director))
 
     def test_skip_application(self):
         app = self.make_application()
         app.skip(self.user)
         self.assertIsNone(Volunteer.objects.next_to_score(self.user))
+
+    def test_reserve_one_score_for_croo_heads(self):
+        app = self.make_application()
+        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+
+        self.assertIsNone(Volunteer.objects.next_to_score(self.user))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.director))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.directorate))
+
+    def test_dont_reserve_croo_head_scores_for_leader_applications(self):
+        app = self.make_application(croo_willing=False)
+        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.user))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.director))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.directorate))
 
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):

@@ -62,6 +62,11 @@ def can_grade_croo_applications():
     return get_permission('can_grade_croo_applications',
                           'Can grade croo applicaions')
 
+# TODO: rename
+def can_grade_as_croo_head():
+    return get_permission('can_grade_as_croo_head',
+                          'Can grade applications reserved for croo heads')
+
 def can_edit_applications_and_assign_trip_leaders():
     """ Permission specific to TLTs so they can tweak leader applications """
     return get_permission('can_edit_applications_and_assign_leaders',
@@ -86,6 +91,7 @@ def directors():
         can_edit_settings(),
         can_grade_croo_applications(),
         can_grade_leader_applications(),
+        can_grade_as_croo_head(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
     ])
@@ -98,6 +104,7 @@ def directorate():
         can_view_database(),
         can_grade_leader_applications(),
         can_grade_croo_applications(),
+        can_grade_as_croo_head(),
     ])
     return directorate
 
