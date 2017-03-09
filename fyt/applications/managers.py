@@ -257,6 +257,8 @@ class VolunteerManager(models.Manager):
 
         croo_app_pks = self.croo_applications(trips_year)
 
+        NUM_SCORES = self.model.NUM_SCORES
+
         qs = self.leader_or_croo_applications(
             trips_year=trips_year
         ).filter(
@@ -267,6 +269,8 @@ class VolunteerManager(models.Manager):
             skips__grader=grader
         ).annotate(
             models.Count('scores')
+        ).filter(
+            scores__count__lt=NUM_SCORES
         ).annotate(
             # TODO: should this be stored on the Score model instead?
             # Permissions change and we want to remember that scores were
@@ -276,12 +280,8 @@ class VolunteerManager(models.Manager):
             is_croo_application=TrueIf(pk__in=croo_app_pks)
         )
 
-        MAX = self.model.NUM_SCORES
-
+        # Croo head: try and pick a croo app which needs a croo head score
         if grader in croo_heads:
-            qs = qs.filter(scores__count__lt=MAX)
-
-            # Try and pick a croo app which needs a croo head score
             needs_croo_head_score = qs.filter(
                 has_croo_head_score=False,
                 is_croo_application=True)
@@ -289,18 +289,14 @@ class VolunteerManager(models.Manager):
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
 
+        # Otherwise, reserve one score on each app for a croo head
         else:
-            # Reserve one score on each app for a croo head
             qs = qs.filter(
                 scores__count__lt=Case(
-                    # Leader app; don't reserve
-                    When(is_croo_application=False,
-                         then=MAX),
-                    # Otherwise, is a croo application
-                    When(has_croo_head_score=True,
-                         then=MAX),
-                    # Otherwise, needs a croo head score
-                    default=(MAX - 1)
+                    When(is_croo_application=True,
+                         has_croo_head_score=False,
+                         then=(NUM_SCORES - 1)),
+                    default=NUM_SCORES
                 )
             )
         return qs.first()
