@@ -245,10 +245,8 @@ class VolunteerManager(models.Manager):
         * If the grader is not a croo captain, don't add the last score to an
           app which hasn't been scored by a croo captain; that is, every croo
           application must be graded at least once by a croo captain.
-
-        TODO:
         * If the grader is a croo captain, prefer croo grades until each app
-          has at least one score from a croo head
+          has at least one score from a croo head.
         """
         trips_year = TripsYear.objects.current()
 
@@ -282,8 +280,17 @@ class VolunteerManager(models.Manager):
 
         if grader in croo_heads:
             qs = qs.filter(scores__count__lt=MAX)
+
+            # Try and pick a croo app which needs a croo head score
+            needs_croo_head_score = qs.filter(
+                has_croo_head_score=False,
+                is_croo_application=True)
+
+            if needs_croo_head_score.first():
+                qs = needs_croo_head_score
+
         else:
-            # Reserve one grade for a croo head
+            # Reserve one score on each app for a croo head
             qs = qs.filter(
                 scores__count__lt=Case(
                     # Leader app; don't reserve
@@ -292,7 +299,7 @@ class VolunteerManager(models.Manager):
                     # Otherwise, is a croo application
                     When(has_croo_head_score=True,
                          then=MAX),
-                    # Still needs a croo head score
+                    # Otherwise, needs a croo head score
                     default=(MAX - 1)
                 )
             )
