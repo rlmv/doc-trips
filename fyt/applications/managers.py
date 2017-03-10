@@ -291,7 +291,13 @@ class VolunteerManager(models.Manager):
                     default=NUM_SCORES
                 )
             )
-        return qs.first()
+
+        # Manually choose random element because .order_by('?') is buggy
+        # See https://code.djangoproject.com/ticket/26390
+        if qs.count() > 0:
+            return qs[random.randrange(0, qs.count())]
+
+        return None
 
 
 def TrueIf(**kwargs):
