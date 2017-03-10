@@ -1,11 +1,11 @@
 
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
-from django.core.urlresolvers import reverse
-
+from ..models import Score, Volunteer
 from . import ApplicationTestMixin
-from ..models import Volunteer, Score, Skip
-from fyt.applications.views.scoring import SKIP, SHOW_SCORE_AVG_INTERVAL
+
+from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL, SKIP
 from fyt.test import FytTestCase
 
 

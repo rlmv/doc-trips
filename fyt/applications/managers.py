@@ -1,12 +1,10 @@
 import random
 
 from django.db import models
-from django.db.models import Case, Lookup, Q, When
+from django.db.models import Case, Lookup, When
 from django.db.models.fields import Field
 
 from fyt.db.models import TripsYear
-from fyt.permissions import permissions
-from fyt.users.models import DartmouthUser
 from fyt.utils.choices import AVAILABLE, PREFER
 
 

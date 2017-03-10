@@ -4,29 +4,16 @@ from braces.views import FormMessagesMixin, SetHeadlineMixin
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from django.contrib import messages
-from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.utils.functional import cached_property
 from django.db import models
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
-from fyt.applications.forms import (
-    CrooApplicationGradeForm,
-    LeaderApplicationGradeForm,
-)
-from fyt.applications.models import (
-    Score,
-    Volunteer
-)
+from fyt.applications.models import Score, Volunteer
 from fyt.db.models import TripsYear
-from fyt.db.views import DatabaseDeleteView
-from fyt.permissions.views import (
-    CrooGraderPermissionRequired,
-    LeaderGraderPermissionRequired,
-)
+from fyt.permissions.views import LeaderGraderPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 

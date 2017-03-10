@@ -1,3 +1,3 @@
 
 
-from .tests import make_application, ApplicationTestMixin
+from .tests import ApplicationTestMixin, make_application

@@ -28,15 +28,15 @@ from fyt.applications.views.grading import (
     RedirectToNextGradableCrooApplicationForQualification,
     RedirectToNextGradableLeaderApplication,
 )
+from fyt.applications.views.portal import (
+    EditVolunteerPortalContent,
+    VolunteerPortalView,
+)
 from fyt.applications.views.scoring import (
     NoApplicationsLeftToScore,
     RedirectToNextScorableApplication,
     ScoreApplication,
     Scoring,
-)
-from fyt.applications.views.portal import (
-    EditVolunteerPortalContent,
-    VolunteerPortalView,
 )
 from fyt.db.urlhelpers import DB_REGEX
 
