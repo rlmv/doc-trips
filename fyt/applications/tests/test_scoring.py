@@ -9,6 +9,27 @@ from fyt.applications.views.scoring import SKIP, SHOW_SCORE_AVG_INTERVAL
 from fyt.test import FytTestCase
 
 
+class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
+
+    def test_create_score_saves_croo_head_status(self):
+        self.init_trips_year()
+        app = self.make_application(trips_year=self.trips_year)
+
+        score = Score.objects.create(
+            trips_year=app.trips_year,
+            application=app,
+            grader=self.mock_user(),  # Not a croo head
+            score=3)
+        self.assertFalse(score.croo_head)
+
+        score = Score.objects.create(
+            trips_year=app.trips_year,
+            application=app,
+            grader=self.mock_director(),  # Croo head
+            score=3)
+        self.assertTrue(score.croo_head)
+
+
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):

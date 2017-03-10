@@ -885,7 +885,25 @@ class Score(DatabaseModel):
     )
     score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
 
+    # We save this as a field instead of referencing grader.permissions
+    # so that we can remember this info even after permissions change.
+    croo_head = models.BooleanField(
+        'was the score created by a croo head?', default=False, editable=False
+    )
+
     # ... TODO
+
+    def save(self, **kwargs):
+        """
+        Set croo_head.
+        """
+        # TODO: import/load this string from permissions module
+        croo_head_perm = 'permissions.can_grade_as_croo_head'
+
+        if self.pk is None and self.grader.has_perm(croo_head_perm):
+            self.croo_head = True
+
+        return super().save(**kwargs)
 
 
 class Skip(DatabaseModel):
