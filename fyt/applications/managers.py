@@ -247,6 +247,9 @@ class VolunteerManager(models.Manager):
           application must be graded at least once by a croo captain.
         * If the grader is a croo captain, prefer croo grades until each app
           has at least one score from a croo head.
+
+        TODO:
+        * Prefer applications with fewer grades.
         """
         trips_year = TripsYear.objects.current()
 
