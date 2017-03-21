@@ -777,13 +777,6 @@ class LeaderSupplement(DatabaseModel):
             .exclude(id__in=self.get_preferred_trips().all())
         )
 
-    def average_grade(self):
-        """
-        Average grade for the leader application.
-        """
-        r = self.grades.all().aggregate(models.Avg('grade'))
-        return r['grade__avg']
-
     def get_absolute_url(self):
         return self.application.get_absolute_url()
 
@@ -843,11 +836,6 @@ class CrooSupplement(DatabaseModel):
             "organizing food for large groups)"
         ), blank=True
     )
-
-    def average_grade(self):
-        """ Average grade for the croo application """
-        r = self.grades.all().aggregate(models.Avg('grade'))
-        return r['grade__avg']
 
     def get_absolute_url(self):
         return self.application.get_absolute_url()
