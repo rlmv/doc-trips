@@ -5,8 +5,6 @@ from django.db import models
 from django.db.models import Q
 
 from .managers import (
-    CrooApplicationManager,
-    LeaderApplicationManager,
     QuestionManager,
     VolunteerManager,
 )
@@ -589,9 +587,6 @@ class LeaderSupplement(DatabaseModel):
     """
     Leader application answers
     """
-    NUMBER_OF_GRADES = 4
-
-    objects = LeaderApplicationManager()
 
     section_choice = models.ManyToManyField(
         Section, through=LeaderSectionChoice
@@ -788,8 +783,6 @@ class CrooSupplement(DatabaseModel):
     """
     Croo application answers
     """
-    NUMBER_OF_GRADES = 4
-    objects = CrooApplicationManager()
 
     application = models.OneToOneField(
         Volunteer, editable=False, related_name='croo_supplement'
