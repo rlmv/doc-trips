@@ -33,6 +33,7 @@ from fyt.applications.views.portal import (
     VolunteerPortalView,
 )
 from fyt.applications.views.scoring import (
+    DeleteScore,
     NoApplicationsLeftToScore,
     RedirectToNextScorableApplication,
     ScoreApplication,
@@ -100,6 +101,10 @@ application_urlpatterns = [
         name='update_trip'),
     url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
         name='update_croo'),
+]
+
+score_urlpatterns = [
+    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteScore.as_view(), name='delete')
 ]
 
 leadergrade_urlpatterns = [

@@ -13,6 +13,7 @@ from vanilla import CreateView, RedirectView, TemplateView
 
 from fyt.applications.models import Score, Volunteer
 from fyt.db.models import TripsYear
+from fyt.db.views import DatabaseDeleteView
 from fyt.permissions.views import LeaderGraderPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
@@ -153,3 +154,10 @@ class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
             'application': self.application,
             'score_choices': [desc for _, desc in Score.SCORE_CHOICES],
         }
+
+
+class DeleteScore(DatabaseDeleteView):
+    model = Score
+
+    def get_success_url(self):
+        return self.object.application.detail_url()

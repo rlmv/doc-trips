@@ -188,3 +188,20 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertIn('average awarded score is 3', messages[0].message)
+
+    def test_delete_score_is_restricted_to_directors(self):
+        score = mommy.make(Score, trips_year=self.trips_year)
+        url = reverse('db:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk})
+        res = self.app.get(url, user=self.mock_tlt(), status=403)
+        res = self.app.get(url, user=self.mock_directorate(), status=403)
+        res = self.app.get(url, user=self.grader, status=403)
+        res = self.app.get(url, user=self.user, status=403)
+        res = self.app.get(url, user=self.director)
+
+    def test_delete_score_redirects_to_app(self):
+        application = self.make_application(self.trips_year)
+        score = mommy.make(Score, trips_year=self.trips_year, application=application)
+        url = reverse('db:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk})
+        resp = self.app.get(url, user=self.director)
+        resp = resp.form.submit()
+        self.assertRedirects(resp, application.detail_url())

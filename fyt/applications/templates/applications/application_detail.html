@@ -60,11 +60,13 @@
     <tr>
         <th class="col-sm-1"> Score </th>
         <th> Grader </th>
+        <th> </th>
     </tr>
     {% for score in application.scores.all %}
     <tr>
         <td> {{ score.score }} </td>
         <td> {{ score.grader }} </td>
+        <td> {{ score|delete_link }} </td>
     <tr>
     {% endfor %}
 </table>
