@@ -528,6 +528,12 @@ class Volunteer(MedicalMixin, DatabaseModel):
             grader=grader
         )
 
+    def average_score(self):
+        """
+        Return the average score given to the application.
+        """
+        return self.scores.all().aggregate(models.Avg('score'))['score__avg']
+
     def __str__(self):
         return self.name
 

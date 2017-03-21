@@ -69,6 +69,13 @@
         <td> {{ score|delete_link }} </td>
     <tr>
     {% endfor %}
+
+    {% if application.average_score %}
+    <tr class="info">
+        <td> {{ application.average_score|floatformat:1 }} </td>
+        <td> AVERAGE </td> <td/> <td/>
+    </tr>
+    {% endif %}
 </table>
 
 {% if application.leader_supplement.grades.exists %}

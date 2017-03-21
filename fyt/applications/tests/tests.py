@@ -303,6 +303,13 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(score.score, 3)
         self.assertEqual(score.trips_year, trips_year)
 
+    def test_average_score(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+        app.add_score(self.mock_user(), 3)
+        app.add_score(self.mock_grader(), 4)
+        self.assertEqual(app.average_score(), 3.5)
+
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):
 
