@@ -62,12 +62,15 @@ class VolunteerCSV(GenericReportView):
     header = [
         'name',
         'netid',
+        'status',
         'leader app',
         'croo app',
         'class year',
         'gender',
         'race/ethnicity',
-        'hometown'
+        'hometown',
+        'clubs/interests',
+        'co-leader',
     ]
 
     def get_queryset(self):
@@ -81,12 +84,15 @@ class VolunteerCSV(GenericReportView):
         return [
             user.name,
             user.netid,
+            application.status,
             yes_no(application.leader_application_complete),
             yes_no(application.croo_application_complete),
             application.class_year,
             application.gender,
             application.race_ethnicity,
             application.hometown,
+            application.personal_activities,
+            application.leader_supplement.co_leader,
         ]
 
 

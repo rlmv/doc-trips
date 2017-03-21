@@ -60,12 +60,15 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         target = [{
             'name': app.name,
             'netid': app.applicant.netid,
+            'status': app.status,
             'leader app': 'yes',
             'croo app': 'no',
             'class year': str(app.class_year),
             'gender': app.gender,
             'race/ethnicity': app.race_ethnicity,
             'hometown': app.hometown,
+            'clubs/interests': app.personal_activities,
+            'co-leader': app.leader_supplement.co_leader,
         }]
 
         self.assertViewReturns('db:reports:all_apps', target)
