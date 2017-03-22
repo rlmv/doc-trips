@@ -1,29 +1,20 @@
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from ..forms import CrooApplicationGradeForm, LeaderSupplementForm, QuestionForm
+from ..forms import LeaderSupplementForm, QuestionForm
 from ..models import (
     Answer,
-    ApplicationInformation,
-    CrooApplicationGrade,
     CrooSupplement,
-    LeaderApplicationGrade,
     LeaderSupplement as LeaderApplication,
     PortalContent,
-    QualificationTag,
     Question,
-    SkippedCrooGrade,
-    SkippedLeaderGrade,
     Volunteer,
 )
 
-from fyt.applications.views.graders import get_graders
 from fyt.croos.models import Croo
 from fyt.test.testcases import FytTestCase
 from fyt.timetable.models import Timetable
