@@ -9,6 +9,10 @@
 
 <p> Sweet! You're helping us score applications. There sure are a lot of them... We will feed you random applications; you will score each application no more than once. You should skip an application if you recognize the applicant. </p>
 
+{% if perms.permissions.can_score_as_croo_head %}
+<p> You are a Croo Head. You will be scoring Croo applications until each application has at least one score from you or another Croo Head.</p>
+{% endif %}
+
 <h4><a href="{% url 'applications:score:next' %}">Score Applications</a></h4>
 
 {% endblock content %}
