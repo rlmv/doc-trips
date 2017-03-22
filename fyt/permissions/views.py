@@ -93,7 +93,7 @@ class GraderPermissionRequired(BasePermissionMixin,
     """Users allowed to score applications."""
     permission_required = (
         'permissions.can_score_applications',
-        'permissions.can_grade_as_croo_head'
+        'permissions.can_score_as_croo_head'
     )
 
 
@@ -103,7 +103,7 @@ class GraderTablePermissionRequired(BasePermissionMixin,
     permission_required = (
         'permissions.can_view_db',
         'permissions.can_score_applications',
-        'permissions.can_grade_as_croo_head'
+        'permissions.can_score_as_croo_head'
     )
 
 

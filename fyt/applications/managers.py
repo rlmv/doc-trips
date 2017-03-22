@@ -166,7 +166,7 @@ class VolunteerManager(models.Manager):
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
-        if grader.has_perm('permissions.can_grade_as_croo_head'):
+        if grader.has_perm('permissions.can_score_as_croo_head'):
             needs_croo_head_score = qs.filter(
                 has_croo_head_score=False,
                 is_croo_application=True)
