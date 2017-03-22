@@ -25,7 +25,7 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=self.mock_director(),  # Croo head
+            grader=self.mock_croo_head(),  # Croo head
             score=3)
         self.assertTrue(score.croo_head)
 
@@ -37,6 +37,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.mock_user()
         self.mock_director()
         self.mock_directorate()
+        self.mock_croo_head()
 
     def make_scores(self, app, n):
         for i in range(n):
@@ -84,8 +85,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
 
         self.assertIsNone(Volunteer.objects.next_to_score(self.user))
-        self.assertEqual(app, Volunteer.objects.next_to_score(self.director))
-        self.assertEqual(app, Volunteer.objects.next_to_score(self.directorate))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.croo_head))
 
     def test_dont_reserve_croo_head_scores_for_leader_applications(self):
         app = self.make_application(croo_willing=False)
@@ -94,13 +94,13 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(app, Volunteer.objects.next_to_score(self.user))
         self.assertEqual(app, Volunteer.objects.next_to_score(self.director))
         self.assertEqual(app, Volunteer.objects.next_to_score(self.directorate))
+        self.assertEqual(app, Volunteer.objects.next_to_score(self.croo_head))
 
     def test_croo_heads_prefer_croo_apps(self):
         app1 = self.make_application(croo_willing=False)  # Leader only
         app2 = self.make_application()
 
-        self.assertEqual(app2, Volunteer.objects.next_to_score(self.director))
-        self.assertEqual(app2, Volunteer.objects.next_to_score(self.directorate))
+        self.assertEqual(app2, Volunteer.objects.next_to_score(self.croo_head))
 
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):

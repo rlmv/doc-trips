@@ -89,13 +89,9 @@ class TripInfoEditPermissionRequired(BasePermissionMixin,
     )
 
 
-class GraderPermissionRequired(BasePermissionMixin,
-                               MultiplePermissionsRequiredMixin):
+class GraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """Users allowed to score applications."""
-    permission_required = (
-        'permissions.can_score_applications',
-        'permissions.can_score_as_croo_head'
-    )
+    permission_required = 'permissions.can_score_applications'
 
 
 class GraderTablePermissionRequired(BasePermissionMixin,
