@@ -25,7 +25,7 @@ class DatabaseMixinTestCase(FytTestCase):
     csrf_checks = False
 
     def test_need_database_permissions_to_access_database_pages(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         campsite = mommy.make(Campsite, trips_year=trips_year)
 
         url = campsite.update_url()

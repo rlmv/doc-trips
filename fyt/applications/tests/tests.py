@@ -67,14 +67,14 @@ class ApplicationTestMixin():
 
     def make_application(self, trips_year=None, **kwargs):
         if trips_year is None:
-            trips_year = self.current_trips_year
+            trips_year = self.trips_year
         return make_application(trips_year=trips_year, **kwargs)
 
 
 class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_must_be_LEADER_to_be_assigned_trip(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
             application = mommy.make(
                     Volunteer,
@@ -92,7 +92,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         application.full_clean()
 
     def test_must_be_CROO_to_be_assigned_croo(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'LEADER', 'REJECTED', 'CANCELED']:
             application = mommy.make(
                 Volunteer,
@@ -110,7 +110,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         application.full_clean()
 
     def test_get_preferred_trips(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         application = self.make_application(trips_year=trips_year)
         ls = application.leader_supplement
         preferred_trip = mommy.make(Trip, trips_year=trips_year)
@@ -120,7 +120,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual([preferred_trip], list(application.get_preferred_trips()))
 
     def test_get_available_trips(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         application = self.make_application(trips_year=trips_year)
         ls = application.leader_supplement
         preferred_triptype = mommy.make(TripType, trips_year=trips_year)
@@ -143,7 +143,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
 
     def test_get_first_aid_cert(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         application = mommy.make(Volunteer, trips_year=trips_year,
                                  fa_cert='WFR')
         self.assertEqual(application.get_first_aid_cert(), 'WFR')
@@ -357,10 +357,10 @@ class QuestionModelTestCase(FytTestCase):
 class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
-        self.init_current_trips_year()
+        self.init_trips_year()
 
     def test_prospective_leader_with_preferred_choices(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
 
         app = self.make_application(status=Volunteer.LEADER)
         app.leader_supplement.set_section_preference(trip.section, PREFER)
@@ -370,7 +370,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         self.assertEquals(list(prospects), [app])
 
     def test_prospective_leader_with_available_choices(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
 
         app = self.make_application(status=Volunteer.LEADER_WAITLIST)
         app.leader_supplement.set_section_preference(trip.section, AVAILABLE)
@@ -380,8 +380,8 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         self.assertEquals(list(prospects), [app])
 
     def test_only_complete_applications(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
-        question = mommy.make(Question, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
+        question = mommy.make(Question, trips_year=self.trips_year)
 
         prospective = self.make_application(status=Volunteer.LEADER_WAITLIST)
         prospective.answer_question(question, 'An answer')
@@ -396,7 +396,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         self.assertEquals(list(prospects), [prospective])
 
     def test_without_section_preference(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
 
         # otherwise available
         app = self.make_application(status=Volunteer.LEADER)
@@ -406,7 +406,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         self.assertEquals(list(prospects), [])
 
     def test_without_triptype_preference(self):
-        trip = mommy.make(Trip, trips_year=self.current_trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
 
         app = self.make_application(status=Volunteer.LEADER)
         app.leader_supplement.set_section_preference(trip.section, PREFER)
@@ -665,7 +665,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
 class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_assignment_view(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         application = self.make_application(
             trips_year=trips_year, status=Volunteer.LEADER
         )
@@ -677,7 +677,7 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):
 class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_assignment_view(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         application = self.make_application(
             trips_year=trips_year, status=Volunteer.CROO
         )
@@ -696,7 +696,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
 class DbVolunteerPagesAccessTestCase(FytTestCase):
 
     def test_directorate_can_normally_see_volunteer_pages(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=False)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
@@ -705,7 +705,7 @@ class DbVolunteerPagesAccessTestCase(FytTestCase):
         res = self.app.get(url, user=self.mock_tlt())
 
     def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=True)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.mock_director())
@@ -717,7 +717,7 @@ class DbVolunteerPagesAccessTestCase(FytTestCase):
 class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_get_status_description(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         content = mommy.make(
             PortalContent, trips_year=trips_year,
             PENDING_description='pending',

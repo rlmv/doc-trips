@@ -48,7 +48,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         self.assertEqual(list(save_and_open_csv(resp)), target)
 
     def test_volunteer_csv(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         question = mommy.make(Question, trips_year=trips_year)
         app = self.make_application(trips_year=trips_year)
         app.croo_willing = False

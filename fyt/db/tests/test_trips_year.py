@@ -13,11 +13,11 @@ class TripsYearMixinTestCase(FytTestCase):
     csrf_checks = False
 
     def setUp(self):
-        self.init_current_trips_year()
+        self.init_trips_year()
         self.init_old_trips_year()
 
     def test_dispatch_for_trips_year(self):
-        year = self.init_current_trips_year()
+        year = self.init_trips_year()
         response = self.app.get('/db/'+str(year.year)+'/',
                                 user=self.mock_director())
         self.assertEquals(response.status_code, 200)
@@ -30,7 +30,7 @@ class TripsYearMixinTestCase(FytTestCase):
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
         """Use Section as model, instead of hacking together an example"""
         data = model_to_dict(mommy.prepare(Section))
-        url = Section.create_url(self.current_trips_year)
+        url = Section.create_url(self.trips_year)
         response = self.app.post(url, data, user=self.mock_director())
 
         # should not display form error in page
@@ -38,7 +38,7 @@ class TripsYearMixinTestCase(FytTestCase):
 
         # should have object in the database
         s = Section.objects.get(name=data['name'])
-        self.assertEquals(s.trips_year, self.current_trips_year)
+        self.assertEquals(s.trips_year, self.trips_year)
 
     def test_trips_year_queryset_filtering(self):
         """

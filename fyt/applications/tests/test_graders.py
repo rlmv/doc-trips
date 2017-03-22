@@ -14,7 +14,7 @@ class GraderViewsTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
-        self.init_previous_trips_year()
+        self.init_old_trips_year()
         self.mock_user()
         self.mock_grader()
 
@@ -55,7 +55,7 @@ class GraderViewsTestCase(FytTestCase):
 class OldGraderViewsTestCase(FytTestCase):
 
     def test_old_get_graders_returns_only_people_who_have_submitted_grades(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
         grader = grade.grader
         random_other_user = self.mock_user()
@@ -64,7 +64,7 @@ class OldGraderViewsTestCase(FytTestCase):
         self.assertNotIn(random_other_user, graders)
 
     def test_old_get_graders_returns_distinct_queryset(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         grader = self.mock_grader()
         mommy.make(
             LeaderApplicationGrade, 2,

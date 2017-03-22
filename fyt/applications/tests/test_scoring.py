@@ -44,7 +44,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
             mommy.make(Score, trips_year=self.trips_year, application=app)
 
     def test_only_score_apps_for_this_year(self):
-        last_year = self.init_previous_trips_year()
+        last_year = self.init_old_trips_year()
 
         app1 = self.make_application(trips_year=self.trips_year)
         app2 = self.make_application(trips_year=last_year)

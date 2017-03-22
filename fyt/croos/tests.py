@@ -8,7 +8,7 @@ from fyt.test import FytTestCase
 class CrooModelTestCase(FytTestCase):
 
     def test_safety_leads(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         croo = mommy.make(Croo, trips_year=trips_year)
         CROO = Volunteer.CROO
         safety_lead = mommy.make(Volunteer, trips_year=trips_year,
@@ -18,7 +18,7 @@ class CrooModelTestCase(FytTestCase):
         self.assertEqual([safety_lead], list(croo.safety_leads()))
 
     def test_non_safety_leads(self):
-        trips_year = self.init_current_trips_year()
+        trips_year = self.init_trips_year()
         croo = mommy.make(Croo, trips_year=trips_year)
         CROO = Volunteer.CROO
         safety_lead = mommy.make(Volunteer, trips_year=trips_year,

@@ -42,7 +42,7 @@ class FytTestCase(WebTest):
         logging.disable(logging.NOTSET)
         settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
 
-    def init_current_trips_year(self):
+    def init_trips_year(self):
         """
         Initialize a current trips_year object in the test database.
 
@@ -51,21 +51,11 @@ class FytTestCase(WebTest):
         trips_year.
         """
         self.trips_year = mommy.make(TripsYear, year=2014, is_current=True)
-        self.current_trips_year = self.trips_year
-        self.trips_year.save()
-
         return self.trips_year
-
-    init_trips_year = init_current_trips_year
 
     def init_old_trips_year(self):
         self.old_trips_year = mommy.make(TripsYear, year=2013, is_current=False)
-        self.previous_trips_year = self.old_trips_year
-        self.old_trips_year.save()
-
         return self.old_trips_year
-
-    init_previous_trips_year = init_old_trips_year
 
     def mock_user(self):
         """
