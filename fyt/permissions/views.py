@@ -17,6 +17,7 @@ from vanilla import FormView
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.permissions.permissions import (
+    croo_heads,
     directorate,
     directors,
     graders,
@@ -193,6 +194,7 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     def get_forms(self, *args, **kwargs):
         groups = [
             directors(),
+            croo_heads(),
             trip_leader_trainers(),
             olcs(),
             directorate(),

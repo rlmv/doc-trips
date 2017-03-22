@@ -34,8 +34,10 @@ def initialize_groups_and_permissions():
     trip_leader_trainers()
     directors()
     directorate()
+    croo_heads()
     graders()
     safety_leads()
+    olcs()
 
 
 def can_view_database():
@@ -92,7 +94,6 @@ def directors():
         can_edit_database(),
         can_edit_settings(),
         can_score_applications(),
-        can_score_as_croo_head(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
     ])
@@ -104,9 +105,18 @@ def directorate():
     directorate.permissions.set([
         can_view_database(),
         can_score_applications(),
-        can_score_as_croo_head(),
     ])
     return directorate
+
+
+def croo_heads():
+    heads, _ = Group.objects.get_or_create(name='croo heads')
+    heads.permissions.set([
+        can_view_database(),
+        can_score_applications(),
+        can_score_as_croo_head(),
+    ])
+    return heads
 
 
 def trip_leader_trainers():
