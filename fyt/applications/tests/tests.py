@@ -9,7 +9,7 @@ from ..forms import LeaderSupplementForm, QuestionForm
 from ..models import (
     Answer,
     CrooSupplement,
-    LeaderSupplement as LeaderApplication,
+    LeaderSupplement,
     PortalContent,
     Question,
     Volunteer,
@@ -35,7 +35,7 @@ def make_application(status=Volunteer.PENDING, trips_year=None,
         croo_willing=croo_willing)
 
     leader_app = mommy.make(
-        LeaderApplication,
+        LeaderSupplement,
         application=application,
         trips_year=trips_year)
 
