@@ -22,7 +22,7 @@
                 <li><a href="{% url 'incoming:portal' %}"> Incoming Students </a></li>
                 <li><a href="{% url 'applications:portal' %}">Volunteers</a></li>
 
-                {% if perms.permissions.can_grade_croo_applications or perms.permissions.can_grade_leader_applications %}
+                {% if perms.permissions.can_score_applications or perms.permissions.can_grade_as_croo_head %}
                 <li><a href="{% url 'applications:score:scoring' %}"><i class="fa fa-fw fa-pencil-square-o"></i> Score Applications</a></li>
                 {% endif %}
 

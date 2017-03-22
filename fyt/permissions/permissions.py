@@ -62,6 +62,9 @@ def can_grade_croo_applications():
     return get_permission('can_grade_croo_applications',
                           'Can grade croo applicaions')
 
+def can_score_applications():
+    return get_permission('can_score_applications', 'Can score applications')
+
 # TODO: rename
 def can_grade_as_croo_head():
     return get_permission('can_grade_as_croo_head',
@@ -89,8 +92,7 @@ def directors():
         can_view_database(),
         can_edit_database(),
         can_edit_settings(),
-        can_grade_croo_applications(),
-        can_grade_leader_applications(),
+        can_score_applications(),
         can_grade_as_croo_head(),
         can_edit_applications_and_assign_trip_leaders(),
         can_report_incidents()
@@ -102,8 +104,7 @@ def directorate():
     directorate, _ = Group.objects.get_or_create(name='directorate')
     directorate.permissions.set([
         can_view_database(),
-        can_grade_leader_applications(),
-        can_grade_croo_applications(),
+        can_score_applications(),
         can_grade_as_croo_head(),
     ])
     return directorate
@@ -114,7 +115,7 @@ def trip_leader_trainers():
     tlts, _ = Group.objects.get_or_create(name='trip leader trainers')
     tlts.permissions.set([
         can_view_database(),
-        can_grade_leader_applications(),
+        can_score_applications(),
         can_edit_applications_and_assign_trip_leaders(),
     ])
     return tlts
@@ -124,8 +125,7 @@ def olcs():
     olcs, _ = Group.objects.get_or_create(name='outdoor logistics coordinators')
     olcs.permissions.set([
         can_view_database(),
-        can_grade_leader_applications(),
-        can_grade_croo_applications(),
+        can_score_applications(),
         can_edit_trip_info(),
     ])
     return olcs
@@ -142,6 +142,6 @@ def safety_leads():
 def graders():
     graders, _ = Group.objects.get_or_create(name='graders')
     graders.permissions.set([
-        can_grade_leader_applications(),
+        can_score_applications(),
     ])
     return graders

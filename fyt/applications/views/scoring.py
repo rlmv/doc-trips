@@ -14,7 +14,7 @@ from vanilla import CreateView, RedirectView, TemplateView
 from fyt.applications.models import Score, Volunteer
 from fyt.db.models import TripsYear
 from fyt.db.views import DatabaseDeleteView
-from fyt.permissions.views import LeaderGraderPermissionRequired
+from fyt.permissions.views import GraderPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 
@@ -25,7 +25,7 @@ SKIP = 'skip'
 logger = logging.getLogger(__name__)
 
 
-class Scoring(LeaderGraderPermissionRequired, TemplateView):
+class Scoring(GraderPermissionRequired, TemplateView):
     """
     Landing page for scoring.
     """
@@ -42,7 +42,7 @@ class IfScoringAvailable():
         return super().dispatch(request, *args, **kwargs)
 
 
-class NoApplicationsLeftToScore(LeaderGraderPermissionRequired,
+class NoApplicationsLeftToScore(GraderPermissionRequired,
                                 IfScoringAvailable, TemplateView):
     """
     Tell user there are no more applications for her to grade
@@ -50,7 +50,7 @@ class NoApplicationsLeftToScore(LeaderGraderPermissionRequired,
     template_name = 'applications/no_applications.html'
 
 
-class RedirectToNextScorableApplication(LeaderGraderPermissionRequired,
+class RedirectToNextScorableApplication(GraderPermissionRequired,
                                         IfScoringAvailable, RedirectView):
     """
     Redirect to the next Volunteer application that needs to be scored.
@@ -68,7 +68,7 @@ class RedirectToNextScorableApplication(LeaderGraderPermissionRequired,
         return reverse('applications:score:add', kwargs=kwargs)
 
 
-class ScoreApplication(LeaderGraderPermissionRequired, IfScoringAvailable,
+class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
                        ExtraContextMixin, SetHeadlineMixin, FormMessagesMixin,
                        CreateView):
     """
