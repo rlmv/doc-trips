@@ -10,8 +10,10 @@ from fyt.permissions.views import GraderTablePermissionRequired
 DartmouthUser = get_user_model()
 
 
-def get_graders(trips_year):
+def _old_get_graders(trips_year):
     """
+    Deprecated when scoring changed to use a single Score object.
+
     Return all Users who have graded applications this year.
 
     Returns both croo and leader graders. Attachs an 'avg_leader_grade'
@@ -50,4 +52,4 @@ class GraderList(GraderTablePermissionRequired, TripsYearMixin, ListView):
     context_object_name = 'graders'
 
     def get_queryset(self):
-        return get_graders(self.kwargs['trips_year'])
+        return _old_get_graders(self.kwargs['trips_year'])
