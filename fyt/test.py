@@ -57,85 +57,72 @@ class FytTestCase(WebTest):
         self.old_trips_year = mommy.make(TripsYear, year=2013, is_current=False)
         return self.old_trips_year
 
+    def make_person(self, name, *groups):
+        """
+        Create a user in the given groups.
+        """
+        netid = name
+        email = name + '@dartmouth.edu'
+
+        user = DartmouthUser.objects.create_user(netid, name, email)
+        user.groups.add(*groups)
+
+        return user
+
     def make_user(self):
         """
         Create a user.
         """
-        netid = 'user'
-        email = netid + '@dartmouth.edu'
-        self.user = DartmouthUser.objects.create_user(netid, netid, email)
-
+        self.user = self.make_person('user')
         return self.user
 
     def make_incoming_student(self):
-        netid = 'incoming'
-        name = 'incoming'
-        email = netid + '@dartmouth.edu'
-        self.user = DartmouthUser.objects.create_user(netid, name, email)
-
-        return self.user
+        """
+        Create an incoming student.
+        """
+        self.incoming = self.make_person('incoming')
+        return self.incoming
 
     def make_director(self):
         """
-        Create a user with director permissions, and log the user in.
+        Create a user with director permissions.
         """
-        netid = 'director'
-        email = netid + '@dartmouth.edu'
-        self.director = DartmouthUser.objects.create_user(netid, netid, email)
-        self.director.groups.add(directors())
-        self.director.save()
-
+        self.director = self.make_person('director', directors())
         return self.director
 
     def make_croo_head(self):
-        netid = 'croo head'
-        email = netid + '@dartmouth.edu'
-        self.croo_head = DartmouthUser.objects.create_user(netid, netid, email)
-        self.croo_head.groups.add(croo_heads())
-        self.croo_head.save()
-
+        """
+        Create a user with croo head permissions.
+        """
+        self.croo_head = self.make_person('croo head', croo_heads())
         return self.croo_head
 
     def make_directorate(self):
         """
-        Create a user with directorate permissions, and log the user in.
+        Create a user with directorate permissions.
         """
-        netid = 'directorate'
-        email = netid + '@dartmouth.edu'
-        self.directorate = DartmouthUser.objects.create_user(netid, netid, email)
-        self.directorate.groups.add(directorate())
-        self.directorate.save()
-
+        self.directorate = self.make_person('directorate', directorate())
         return self.directorate
 
     def make_tlt(self):
         """
-        Create a user with trip leader trainer permissions, and log the user in.
+        Create a user with TLT permissions.
         """
-        netid = 'tlt'
-        email = netid + '@dartmouth.edu'
-        self.tlt = DartmouthUser.objects.create_user(netid, netid, email)
-        self.tlt.groups.add(trip_leader_trainers())
-        self.tlt.save()
-
+        self.tlt = self.make_person('tlt', trip_leader_trainers())
         return self.tlt
 
     def make_grader(self):
-        netid = 'grader'
-        email = netid + '@dartmouth.edu'
-        self.grader = DartmouthUser.objects.create_user(netid, netid, email)
-        self.grader.groups.add(graders())
-        self.grader.save()
-
+        """
+        Create a user with grader permissions.
+        """
+        self.grader = self.make_person('grader', graders())
         return self.grader
 
     def make_safety_lead(self):
-        netid = 'safety'
-        email = netid + '@dartmouth.edu'
-        self.safety_lead = DartmouthUser.objects.create_user(netid, netid, email)
-        self.safety_lead.groups.add(safety_leads())
-        self.safety_lead.save()
-
+        """
+        Create a user with grader permissions.
+        """
+        self.safety_lead = self.make_person('safety', safety_leads())
         return self.safety_lead
 
     def assertQsEqual(self, qs, values, transform=lambda x: x, ordered=False, msg=None):
