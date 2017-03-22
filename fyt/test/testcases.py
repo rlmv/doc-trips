@@ -7,6 +7,7 @@ from model_mommy import mommy
 
 from fyt.db.models import TripsYear
 from fyt.permissions.permissions import (
+    croo_heads,
     directorate,
     directors,
     graders,
@@ -95,6 +96,15 @@ class FytTestCase(WebTest):
         self.director.save()
 
         return self.director
+
+    def mock_croo_head(self):
+        netid = 'croo head'
+        email = netid + '@dartmouth.edu'
+        self.croo_head = get_user_model().objects.create_user(netid, netid, email)
+        self.croo_head.groups.add(croo_heads())
+        self.croo_head.save()
+
+        return self.croo_head
 
     def mock_directorate(self):
         """

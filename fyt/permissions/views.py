@@ -17,6 +17,7 @@ from vanilla import FormView
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.permissions.permissions import (
+    croo_heads,
     directorate,
     directors,
     graders,
@@ -88,14 +89,9 @@ class TripInfoEditPermissionRequired(BasePermissionMixin,
     )
 
 
-class LeaderGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
-    """ Only allow access to users with permission to grade leaderapplications. """
-    permission_required = 'permissions.can_grade_leader_applications'
-
-
-class CrooGraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
-    """ ONly users with permission to grade crooapplications. """
-    permission_required = 'permissions.can_grade_croo_applications'
+class GraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
+    """Users allowed to score applications."""
+    permission_required = 'permissions.can_score_applications'
 
 
 class GraderTablePermissionRequired(BasePermissionMixin,
@@ -103,8 +99,8 @@ class GraderTablePermissionRequired(BasePermissionMixin,
     """Users with permission to see the graders table in the database."""
     permission_required = (
         'permissions.can_view_db',
-        'permissions.can_grade_leader_applications',
-        'permissions.can_grade_croo_applications'
+        'permissions.can_score_applications',
+        'permissions.can_score_as_croo_head'
     )
 
 
@@ -194,6 +190,7 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     def get_forms(self, *args, **kwargs):
         groups = [
             directors(),
+            croo_heads(),
             trip_leader_trainers(),
             olcs(),
             directorate(),

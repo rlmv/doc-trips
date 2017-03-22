@@ -1,7 +1,7 @@
 import random
 
 from django.db import models
-from django.db.models import Lookup, Q
+from django.db.models import Case, Lookup, When
 from django.db.models.fields import Field
 
 from fyt.db.models import TripsYear
@@ -23,114 +23,6 @@ class NotEqual(Lookup):
         rhs, rhs_params = self.process_rhs(qn, connection)
         params = lhs_params + rhs_params
         return '%s <> %s' % (lhs, rhs), params
-
-
-class ApplicationManager(models.Manager):
-    """
-    Shared manager for Leader and Croo grades
-
-    Requires model to have a NUMBER_OF_GRADES property which
-    specifies how many times the application should be graded.
-    """
-
-    def next_to_grade(self, user):
-        """
-        Find the next application to grade for user.
-
-        This is an application which meets the following conditions:
-        (0) is for the current trips_year
-        (1) has not yet been graded if there are apps in the database
-        which have not been graded, otherwise an application with only
-        one grade.
-        (2) has not already been graded by this user
-        (3) the application is not qualified, deprecated, etc. See
-        Volunteer status field. It should be PENDING.
-
-        Return None if no applications need to be graded.
-        """
-        trips_year = TripsYear.objects.current()
-
-        for i in range(self.model.NUMBER_OF_GRADES):
-            application = self._get_random_application(user, trips_year, i)
-            if application:
-                return application
-
-        return None
-
-    def _get_random_application(self, user, trips_year, num):
-        """
-        Return a random PENDING application that user has not graded,
-        which has only been graded by num people.
-
-        Note that the status lives on the parent Volunteer object.
-        """
-        # grab the value of Volunteer.PENDING
-        from fyt.applications.models import Volunteer
-        PENDING = Volunteer.PENDING
-
-        apps = (self.completed_applications(trips_year=trips_year).
-                filter(application__status=PENDING)
-                .exclude(grades__grader=user)
-                .exclude(skips__grader=user)
-                .annotate(grade_count=models.Count('grades'))
-                .filter(grade_count=num))
-
-        # Manually choose random element because .order_by('?') is buggy
-        # See https://code.djangoproject.com/ticket/26390
-        cnt = apps.count()
-        if cnt > 0:
-            return apps[random.randrange(0, cnt)]
-        return None
-
-
-class LeaderApplicationManager(ApplicationManager):
-
-    def completed_applications(self, trips_year):
-        from .models import Volunteer
-        leader_applications = Volunteer.objects.leader_applications(trips_year)
-
-        return self.filter(application__pk__in=pks(leader_applications))
-
-
-class CrooApplicationManager(ApplicationManager):
-
-    def completed_applications(self, trips_year):
-        from .models import Volunteer
-        croo_applications = Volunteer.objects.croo_applications(trips_year)
-
-        return self.filter(application__pk__in=pks(croo_applications))
-
-    def next_to_grade_for_qualification(self, user, qualification):
-        """
-        Find the next croo application which has qualification
-        for user to grade.
-
-        We're just serving apps for the specified qualification
-        and don't care about limits to the total number of grades.
-        If the grader skipped an app in regular grading we still
-        include if.
-        However, if the grader skipped an app while grading for
-        this qualification we exclude it from the the query.
-
-        TODO: pass in the trips year? - tie grading to a trips_year url?
-        TODO: tests for the manager in addition to the view tests
-
-        Return None if no applications need to be graded.
-        """
-        trips_year = TripsYear.objects.current()
-
-        # grab the value of Volunteer.PENDING
-        from fyt.applications.models import Volunteer
-        PENDING = Volunteer.PENDING
-
-        return (self.completed_applications(trips_year=trips_year)
-                .filter(grades__qualifications=qualification)
-                .filter(application__status=PENDING)
-                # satisfy BOTH condifions for the same skip:
-                .exclude(skips__grader=user,
-                         skips__for_qualification=qualification)
-                .exclude(grades__grader=user)
-                .order_by('?').first())
 
 
 class VolunteerManager(models.Manager):
@@ -225,6 +117,92 @@ class VolunteerManager(models.Manager):
 
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
+
+    def next_to_score(self, grader):
+        """
+        Return the next application for ``grader`` to score.
+
+        This is an application which meets the following conditions:
+
+        * is for the current trips_year
+        * is complete
+        * is PENDING
+        * has not already been graded by this user
+        * has not been skipped by this user
+        * has been graded fewer than NUM_SCORES times
+
+        Furthermore:
+        * If the grader is not a croo captain, don't add the last score to an
+          app which hasn't been scored by a croo captain; that is, every croo
+          application must be graded at least once by a croo captain.
+        * If the grader is a croo captain, prefer croo grades until each app
+          has at least one score from a croo head.
+
+        TODO:
+        * Prefer applications with fewer grades.
+        """
+        trips_year = TripsYear.objects.current()
+
+        croo_app_pks = self.croo_applications(trips_year)
+
+        NUM_SCORES = self.model.NUM_SCORES
+
+        qs = self.leader_or_croo_applications(
+            trips_year=trips_year
+        ).filter(
+            status=self.model.PENDING
+        ).exclude(
+            scores__grader=grader
+        ).exclude(
+            skips__grader=grader
+        ).annotate(
+            models.Count('scores')
+        ).filter(
+            scores__count__lt=NUM_SCORES
+        ).annotate(
+            has_croo_head_score=TrueIf(scores__croo_head=True)
+        ).annotate(
+            is_croo_application=TrueIf(pk__in=croo_app_pks)
+        )
+
+        # Croo head: try and pick a croo app which needs a croo head score
+        if grader.has_perm('permissions.can_score_as_croo_head'):
+            needs_croo_head_score = qs.filter(
+                has_croo_head_score=False,
+                is_croo_application=True)
+
+            if needs_croo_head_score.first():
+                qs = needs_croo_head_score
+
+        # Otherwise, reserve one score on each app for a croo head
+        else:
+            qs = qs.filter(
+                scores__count__lt=Case(
+                    When(is_croo_application=True,
+                         has_croo_head_score=False,
+                         then=(NUM_SCORES - 1)),
+                    default=NUM_SCORES
+                )
+            )
+
+        # Manually choose random element because .order_by('?') is buggy
+        # See https://code.djangoproject.com/ticket/26390
+        if qs.count() > 0:
+            return random.choice(qs)
+
+        return None
+
+
+def TrueIf(**kwargs):
+    """
+    Return a case expression that evaluates to True if the query conditions
+    are met, else False
+    """
+    return Case(
+        When(then=True, **kwargs),
+        default=False,
+        output_field=models.BooleanField()
+    )
 
 
 def pks(qs):

@@ -15,45 +15,29 @@ from fyt.applications.views.application import (
 )
 from fyt.applications.views.assign import AssignToCroo, AssignToTrip
 from fyt.applications.views.graders import GraderList
-from fyt.applications.views.grading import (
-    DeleteCrooGrade,
-    DeleteLeaderGrade,
-    GradeCrooApplication,
-    GradeCrooApplicationForQualification,
-    GradeLeaderApplication,
-    GraderLandingPage,
-    NoCrooApplicationsLeftToGrade,
-    NoLeaderApplicationsLeftToGrade,
-    RedirectToNextGradableCrooApplication,
-    RedirectToNextGradableCrooApplicationForQualification,
-    RedirectToNextGradableLeaderApplication,
-)
+
 from fyt.applications.views.portal import (
     EditVolunteerPortalContent,
     VolunteerPortalView,
 )
+from fyt.applications.views.scoring import (
+    DeleteScore,
+    NoApplicationsLeftToScore,
+    RedirectToNextScorableApplication,
+    ScoreApplication,
+    Scoring,
+)
 from fyt.db.urlhelpers import DB_REGEX
 
 
-grade_urlpatterns = [
-    url(r'^$', GraderLandingPage.as_view(), name='graders'),
-    url(r'^croos/$', RedirectToNextGradableCrooApplication.as_view(),
-        name='next_croo'),
-    url(r'^croos/(?P<pk>[0-9]+)/$', GradeCrooApplication.as_view(),
-        name='croo'),
-    url(r'^croos/for/(?P<qualification_pk>[0-9]+)/$',
-        RedirectToNextGradableCrooApplicationForQualification.as_view(),
-        name='next_croo'),
-    url(r'^croos/for/(?P<qualification_pk>[0-9]+)/(?P<pk>[0-9]+)/$',
-        GradeCrooApplicationForQualification.as_view(), name='croo'),
-    url(r'^croos/none/$', NoCrooApplicationsLeftToGrade.as_view(),
-        name='no_croo_left'),
-    url(r'^leaders/$', RedirectToNextGradableLeaderApplication.as_view(),
-        name='next_leader'),
-    url(r'^leaders/(?P<pk>[0-9]+)$', GradeLeaderApplication.as_view(),
-        name='leader'),
-    url(r'^leaders/none/$', NoLeaderApplicationsLeftToGrade.as_view(),
-        name='no_leaders_left'),
+score_urlpatterns = [
+    url(r'^$', Scoring.as_view(), name='scoring'),
+    url(r'^none/$', NoApplicationsLeftToScore.as_view(),
+        name='no_applications_left'),
+    url(r'^next/$', RedirectToNextScorableApplication.as_view(),
+        name='next'),
+    url(r'^(?P<pk>[0-9]+)/$', ScoreApplication.as_view(),
+        name='add'),
 ]
 
 urlpatterns = [
@@ -64,7 +48,7 @@ urlpatterns = [
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
-    url(r'^grade/', include(grade_urlpatterns, namespace='grade')),
+    url(r'^score/', include(score_urlpatterns, namespace='score')),
 ]
 
 # ----- protected database views ----------
@@ -85,13 +69,8 @@ application_urlpatterns = [
         name='update_croo'),
 ]
 
-leadergrade_urlpatterns = [
-    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteLeaderGrade.as_view(),
-        name='delete'),
-]
-
-croograde_urlpatterns = [
-    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteCrooGrade.as_view(), name='delete'),
+score_urlpatterns = [
+    url(r'^(?P<pk>[0-9]+)/delete/$', DeleteScore.as_view(), name='delete')
 ]
 
 grader_urlpatterns = [

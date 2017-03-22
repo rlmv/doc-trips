@@ -1,17 +1,24 @@
 
-from django.contrib.auth import get_user_model
 from django.db.models import Q, Avg
 from vanilla import ListView
 
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
+from fyt.users.models import DartmouthUser
+from fyt.utils.views import ExtraContextMixin
 
 
-DartmouthUser = get_user_model()
+def users_with_old_grades(trips_year):
+    return DartmouthUser.objects.filter(
+        Q(leaderapplicationgrades__trips_year=trips_year) |
+        Q(crooapplicationgrades__trips_year=trips_year)
+    ).distinct()
 
 
-def get_graders(trips_year):
+def _old_get_graders(trips_year):
     """
+    Deprecated when scoring changed to use a single Score object.
+
     Return all Users who have graded applications this year.
 
     Returns both croo and leader graders. Attachs an 'avg_leader_grade'
@@ -20,11 +27,7 @@ def get_graders(trips_year):
     grades have to be restricted to this trips_year; a user could have
     graded the year before and we don't want to confuse their averages.
     """
-    users = (
-        DartmouthUser.objects.filter(
-            Q(leaderapplicationgrades__trips_year=trips_year) |
-            Q(crooapplicationgrades__trips_year=trips_year))
-        .distinct())
+    users = users_with_old_grades(trips_year)
 
     for user in users:
         leader_grades = user.leaderapplicationgrades.filter(trips_year=trips_year)
@@ -38,7 +41,23 @@ def get_graders(trips_year):
     return users
 
 
-class GraderList(GraderTablePermissionRequired, TripsYearMixin, ListView):
+# TODO: use subqueries in Django 1.11
+def get_graders(trips_year):
+    """
+    Return all users who have scored applications this year.
+    """
+    qs = DartmouthUser.objects.filter(scores__trips_year=trips_year).distinct()
+
+    for user in qs:
+        scores = user.scores.filter(trips_year=trips_year)
+        user.score_count = scores.count()
+        user.score_avg = scores.aggregate(Avg('score'))['score__avg']
+
+    return qs
+
+
+class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
+                 TripsYearMixin, ListView):
     """
     List view of all graders for this trips year
 
@@ -50,4 +69,16 @@ class GraderList(GraderTablePermissionRequired, TripsYearMixin, ListView):
     context_object_name = 'graders'
 
     def get_queryset(self):
-        return get_graders(self.kwargs['trips_year'])
+        trips_year = self.get_trips_year()
+
+        if users_with_old_grades(trips_year).exists():
+            assert not get_graders(trips_year).exists()
+            return _old_get_graders(trips_year)
+
+        return get_graders(trips_year)
+
+    def extra_context(self):
+        return {
+            'show_old_grades': users_with_old_grades(
+                self.get_trips_year()).exists()
+        }

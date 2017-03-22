@@ -1,30 +1,20 @@
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from .forms import CrooApplicationGradeForm, LeaderSupplementForm, QuestionForm
-from .models import (
+from ..forms import LeaderSupplementForm, QuestionForm
+from ..models import (
     Answer,
-    ApplicationInformation,
-    CrooApplicationGrade,
     CrooSupplement,
-    LeaderApplicationGrade,
-    LeaderSupplement as LeaderApplication,
+    LeaderSupplement,
     PortalContent,
-    QualificationTag,
     Question,
-    SkippedCrooGrade,
-    SkippedLeaderGrade,
     Volunteer,
 )
 
-from fyt.applications.views.graders import get_graders
-from fyt.applications.views.grading import SHOW_GRADE_AVG_INTERVAL, SKIP
 from fyt.croos.models import Croo
 from fyt.test.testcases import FytTestCase
 from fyt.timetable.models import Timetable
@@ -33,18 +23,19 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
-                     assigned_trip=None):
+                     assigned_trip=None, leader_willing=True,
+                     croo_willing=True):
 
     application = mommy.make(
         Volunteer,
         status=status,
         trips_year=trips_year,
         assigned_trip=assigned_trip,
-        leader_willing=True,
-        croo_willing=True)
+        leader_willing=leader_willing,
+        croo_willing=croo_willing)
 
     leader_app = mommy.make(
-        LeaderApplication,
+        LeaderSupplement,
         application=application,
         trips_year=trips_year)
 
@@ -289,6 +280,26 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(answer.answer, "An answer!")
         self.assertEqual(answer.application, app)
 
+    def test_add_score(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+        user = self.mock_user()
+
+        app.add_score(user, 3)  # TODO: test kwargs
+
+        score = app.scores.first()
+        self.assertEqual(score.application, app)
+        self.assertEqual(score.grader, user)
+        self.assertEqual(score.score, 3)
+        self.assertEqual(score.trips_year, trips_year)
+
+    def test_average_score(self):
+        trips_year = self.init_trips_year()
+        app = make_application(trips_year=trips_year)
+        app.add_score(self.mock_user(), 3)
+        app.add_score(self.mock_grader(), 4)
+        self.assertEqual(app.average_score(), 3.5)
+
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):
 
@@ -341,98 +352,6 @@ class QuestionModelTestCase(FytTestCase):
     def test_for_croos(self):
         qs = Question.objects.for_croos(self.trips_year)
         self.assertQsEqual(qs, [self.q_general, self.q_croo])
-
-
-class ApplicationAccessTestCase(ApplicationTestMixin, FytTestCase):
-
-    def test_anonymous_user_does_not_crash_application(self):
-        self.init_current_trips_year()
-        self.app.get(reverse('applications:apply'))
-
-    def test_application_not_visible_if_not_available(self):
-        self.init_current_trips_year()
-        self.close_application()
-        self.mock_user()
-        response = self.app.get(reverse('applications:apply'), user=self.user)
-        self.assertTemplateUsed(response, 'applications/not_available.html')
-
-
-class ApplicationManagerTestCase(ApplicationTestMixin, FytTestCase):
-    """
-    Tested against the LeaderApplication model only;
-    there should be no difference with the CrooApplciation model.
-    """
-    def setUp(self):
-            self.init_current_trips_year()
-            self.init_previous_trips_year()
-            self.mock_user()
-
-    def test_dont_grade_incomplete_application(self):
-        question = mommy.make(Question, trips_year=self.trips_year)
-
-        app1 = self.make_application()
-
-        app2 = self.make_application()
-        app2.answer_question(question, 'An answer')
-        app2.leader_willing = False
-        app2.save()
-
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertIsNone(next)
-
-    def test_with_no_grades(self):
-        application = self.make_application()
-
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertEqual(application.leader_supplement, next)
-
-    def test_graded_ungraded_priority(self):
-        app1 = self.make_application()
-        grade = mommy.make(LeaderApplicationGrade, trips_year=self.current_trips_year,
-                           application=app1.leader_supplement)
-        app2 = self.make_application()
-
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertEqual(next, app2.leader_supplement, 'app with no grades should have priority')
-
-    def test_user_can_only_grade_application_once(self):
-        application = self.make_application()
-        grade = mommy.make(LeaderApplicationGrade, grader=self.user,
-                           application=application.leader_supplement,
-                           trips_year=self.trips_year)
-
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertIsNone(next, 'no applications should be available')
-
-    def test_only_grade_pending_applications(self):
-        self.make_application(status=Volunteer.LEADER)
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertIsNone(next, 'only PENDING apps should be gradable')
-
-    def test_can_only_grade_applications_for_the_current_trips_year(self):
-        self.make_application(trips_year=self.previous_trips_year)
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertIsNone(next, 'should not be able to grade apps from previous years')
-
-    def test_correct_number_of_grades(self):
-        application = self.make_application()
-        for i in range(LeaderApplication.NUMBER_OF_GRADES):
-                mommy.make(
-                    LeaderApplicationGrade,
-                    trips_year=self.trips_year,
-                    application=application.leader_supplement
-                )
-        next = LeaderApplication.objects.next_to_grade(self.user)
-        self.assertIsNone(next, 'can only grade NUMBER_OF_GRADES times')
-
-    def test_skipped_applications_are_not_returned(self):
-        application = self.make_application()
-        grader = self.mock_grader()
-        skip = mommy.make(SkippedLeaderGrade, application=application.leader_supplement,
-                          trips_year=self.trips_year, grader=grader)
-
-        next = LeaderApplication.objects.next_to_grade(grader)
-        self.assertIsNone(next)
 
 
 class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytTestCase):
@@ -741,282 +660,6 @@ class LeaderSupplementFormTestCase(FytTestCase):
         self.assertEquals(len(prefs), 1)
         self.assertEqual(prefs[0].triptype, triptype1)
         self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
-
-
-class GradeViewsTestCase(ApplicationTestMixin, FytTestCase):
-
-    def setUp(self):
-        self.init_current_trips_year()
-        self.mock_director()
-        self.mock_user()
-
-    grade_views = ['applications:grade:next_leader',
-                   #'applications:grade:leader',
-                   'applications:grade:no_leaders_left',
-                   'applications:grade:next_croo',
-                   #'applications:grade:croo',
-                   'applications:grade:no_croo_left']
-
-    def test_not_gradeable_before_application_deadline(self):
-        self.open_application()
-        for view in self.grade_views:
-                res = self.app.get(reverse(view), user=self.director).maybe_follow()
-                self.assertTemplateUsed(res, 'applications/grading_not_available.html')
-
-    def test_gradable_after_application_deadline(self):
-        self.close_application() # puts deadline in the past
-        for view in self.grade_views:
-                res = self.app.get(reverse(view), user=self.director).maybe_follow()
-                self.assertTemplateNotUsed(res, 'applications/grading_not_available.html')
-
-
-class GradingViewTestCase(ApplicationTestMixin, FytTestCase):
-
-    def test_show_average_grade_every_interval_in_messages(self):
-        trips_year = self.init_current_trips_year()
-        grader = self.mock_grader()
-        self.close_application()
-
-        application = self.make_application(trips_year=trips_year).leader_supplement
-
-        for i in range(SHOW_GRADE_AVG_INTERVAL):
-                mommy.make(LeaderApplicationGrade, trips_year=trips_year, grader=grader)
-
-        res = self.app.get(reverse('applications:grade:next_leader'), user=grader).follow()
-        messages = list(res.context['messages'])
-        self.assertEqual(len(messages), 1)
-        self.assertIn('average', messages[0].message)
-
-    def test_redirect_to_next_for_qualification_does_not_break(self):
-        self.init_current_trips_year()
-        self.mock_director()
-
-        self.close_application() # open grading
-
-        # setup application with one grade suggesting a Croo
-        app = self.make_application()
-        qualification = mommy.make(QualificationTag, trips_year=self.trips_year)
-        grade = mommy.make(CrooApplicationGrade, application=app.croo_supplement,
-                           qualifications=[qualification], trips_year=self.trips_year)
-
-        # try and grade only for that croo
-        res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'qualification_pk': qualification.pk}),
-                           user=self.director)
-
-    def test_skips_applications_adds_skip_object_to_database(self):
-        trips_year = self.init_current_trips_year()
-        application = self.make_application(trips_year=trips_year)
-        grader = self.mock_grader()
-
-        res = self.app.get(reverse('applications:grade:leader',
-                                   kwargs={'pk': application.leader_supplement.pk}), user=grader)
-        res2 = res.form.submit(SKIP)
-
-        skips = SkippedLeaderGrade.objects.all()
-        self.assertEqual(len(skips), 1)
-        skip = skips[0]
-        self.assertEqual(skip.grader, grader)
-        self.assertEqual(skip.application, application.leader_supplement)
-
-        # and we shouldn't see the application anymore
-        res = self.app.get(reverse('applications:grade:next_leader'),
-                           user=grader).follow()
-        self.assertTemplateUsed(res, 'applications/no_applications.html')
-
-    def test_skipped_app_in_normal_view_is_shown_again_in_qualification_specific_view(self):
-        trips_year = self.init_current_trips_year()
-        self.close_application()
-        application = self.make_application(trips_year=trips_year)
-        # directors have permission to grade croo apps
-        grader = self.mock_director()
-
-        # skip an application in normal grading
-        res = self.app.get(reverse('applications:grade:croo',
-                                   kwargs={'pk': application.croo_supplement.pk}), user=grader)
-        res2 = res.form.submit(SKIP)
-
-        # make a qualification and stick the tag on this qualification
-        qualification = mommy.make(QualificationTag, trips_year=trips_year)
-        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement,
-                           qualifications=[qualification], trips_year=trips_year)
-
-        res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'qualification_pk': qualification.pk}),
-                           user=grader).follow()
-        self.assertEqual(res.context['view'].get_application(), application.croo_supplement)
-
-    def test_skiping_application_in_qualification_grading_adds_skip_object_to_database(self):
-        trips_year = self.init_current_trips_year()
-        application = self.make_application(trips_year=trips_year)
-        grader = self.mock_director()
-
-        # make a qualification and tag this application
-        qualification = mommy.make(QualificationTag, trips_year=trips_year)
-        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement,
-                           qualifications=[qualification], trips_year=trips_year)
-
-        res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'qualification_pk': qualification.pk}),
-                           user=grader).follow()
-        res = res.form.submit(SKIP)
-
-        # skip now exists,
-        skips = SkippedCrooGrade.objects.all()
-        self.assertEqual(len(skips), 1)
-        skip = skips[0]
-        self.assertEqual(skip.grader, grader)
-        self.assertEqual(skip.application, application.croo_supplement)
-        # and was added for this qualification:
-        self.assertEqual(skip.for_qualification, qualification)
-
-        # and we shouldn't see the application anymore
-        res = self.app.get(reverse('applications:grade:next_croo'),
-                           user=grader).follow()
-        self.assertTemplateUsed(res, 'applications/no_applications.html')
-
-    def test_skipped_app_for_qualification_is_not_shown_again_in_qualification_grading(self):
-        trips_year = self.init_current_trips_year()
-        self.close_application()
-        application = self.make_application(trips_year=trips_year)
-        # directors have permission to grade croo apps
-        grader = self.mock_director()
-
-        # make a qualification
-        qualification = mommy.make(QualificationTag, trips_year=trips_year)
-
-        # and stick the qualification on this application
-        grade = mommy.make(CrooApplicationGrade, application=application.croo_supplement,
-                           qualifications=[qualification], trips_year=trips_year)
-
-        res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'qualification_pk': qualification.pk}),
-                           user=grader).follow()
-        res.form.submit(SKIP)
-
-        res = self.app.get(reverse('applications:grade:next_croo',
-                                   kwargs={'qualification_pk': qualification.pk}),
-                           user=grader).follow()
-        self.assertTemplateUsed(res, 'applications/no_applications.html')
-
-    def test_croo_qualifications_are_filtered_for_current_trips_year(self):
-        trips_year = self.init_trips_year()
-        qualification = mommy.make(
-                QualificationTag,
-                trips_year=self.init_old_trips_year()
-        )
-        form = CrooApplicationGradeForm()
-        self.assertNotIn(qualification, form.fields['qualifications'].queryset)
-
-
-class GradersDatabaseListViewTestCase(FytTestCase):
-
-    def test_get_graders_returns_only_people_who_have_submitted_grades(self):
-        trips_year = self.init_current_trips_year()
-        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
-        grader = grade.grader
-        random_other_user = self.mock_user()
-        graders = get_graders(trips_year)
-        self.assertIn(grader, graders)
-        self.assertNotIn(random_other_user, graders)
-
-    def test_get_graders_returns_distinct_queryset(self):
-        trips_year = self.init_current_trips_year()
-        grader = self.mock_grader()
-        mommy.make(
-                LeaderApplicationGrade, 2,
-                trips_year=trips_year,
-                grader=grader
-        )
-        graders = get_graders(trips_year)
-        self.assertIn(grader, graders)
-        self.assertEqual(len(graders), 1)
-
-    def test_get_graders_only_returns_graders_from_this_year(self):
-        trips_year = self.init_trips_year()
-        old_trips_year = self.init_old_trips_year()
-        grader = self.mock_grader()
-        mommy.make(
-                LeaderApplicationGrade,
-                trips_year=old_trips_year,
-                grader=grader
-        )
-        mommy.make(
-                CrooApplicationGrade,
-                trips_year=old_trips_year,
-                grader=grader
-        )
-        self.assertEqual([], list(get_graders(trips_year)))
-
-    def test_get_graders_avgs_only_includes_grades_from_trips_year(self):
-        trips_year = self.init_trips_year()
-        old_trips_year = self.init_old_trips_year()
-        grader = self.mock_grader()
-        mommy.make(
-                LeaderApplicationGrade,
-                trips_year=trips_year,
-                grader=grader, grade=1
-        )
-        mommy.make(
-                LeaderApplicationGrade,
-                trips_year=old_trips_year,
-                grader=grader, grade=2
-        )
-        mommy.make(
-                CrooApplicationGrade,
-                trips_year=trips_year,
-                grader=grader, grade=1
-        )
-        mommy.make(
-                CrooApplicationGrade,
-                trips_year=old_trips_year,
-                grader=grader, grade=2
-        )
-        graders = get_graders(trips_year)
-        self.assertEqual(len(graders), 1)
-        self.assertEqual(graders[0].leader_grade_count, 1)
-        self.assertEqual(graders[0].avg_leader_grade, 1)
-        self.assertEqual(graders[0].croo_grade_count, 1)
-        self.assertEqual(graders[0].avg_croo_grade, 1)
-
-
-class DeleteGradeViews(ApplicationTestMixin, FytTestCase):
-
-    def test_delete_leader_grade_is_restricted_to_directors(self):
-        trips_year = self.init_current_trips_year()
-        grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year)
-        url = reverse('db:leaderapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
-        res = self.app.get(url, user=self.mock_tlt(), status=403)
-        res = self.app.get(url, user=self.mock_directorate(), status=403)
-        res = self.app.get(url, user=self.mock_grader(), status=403)
-        res = self.app.get(url, user=self.mock_director())
-
-    def test_delete_croo_grade_is_restricted_to_directors(self):
-        trips_year = self.init_current_trips_year()
-        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year)
-        url = reverse('db:crooapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
-        res = self.app.get(url, user=self.mock_tlt(), status=403)
-        res = self.app.get(url, user=self.mock_directorate(), status=403)
-        res = self.app.get(url, user=self.mock_grader(), status=403)
-        res = self.app.get(url, user=self.mock_director())
-
-    def test_delete_leader_grade_redirects_to_app(self):
-        trips_year = self.init_current_trips_year()
-        application = self.make_application(trips_year)
-        grade = mommy.make(LeaderApplicationGrade, trips_year=trips_year, application=application.leader_supplement)
-        url = reverse('db:leaderapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
-        res = self.app.get(url, user=self.mock_director())
-        res = res.form.submit()
-        self.assertRedirects(res, application.detail_url())
-
-    def test_delete_croo_grade_redirects_to_app(self):
-        trips_year = self.init_current_trips_year()
-        application = self.make_application(trips_year)
-        grade = mommy.make(CrooApplicationGrade, trips_year=trips_year, application=application.croo_supplement)
-        url = reverse('db:crooapplicationgrade:delete', kwargs={'trips_year': trips_year, 'pk': grade.pk})
-        res = self.app.get(url, user=self.mock_director())
-        res = res.form.submit()
-        self.assertRedirects(res, application.detail_url())
 
 
 class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):

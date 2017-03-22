@@ -5,8 +5,6 @@ from django.db import models
 from django.db.models import Q
 
 from .managers import (
-    CrooApplicationManager,
-    LeaderApplicationManager,
     QuestionManager,
     VolunteerManager,
 )
@@ -215,6 +213,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
     """
     class Meta:
         ordering = ['applicant']
+
+    # Maximum number of scores for an application
+    NUM_SCORES = 3
 
     objects = VolunteerManager()
 
@@ -503,6 +504,34 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
+    def add_score(self, grader, score, **kwargs):
+        """
+        Add a Score by `user` to the application.
+        """
+        return Score.objects.create(
+            trips_year=self.trips_year,
+            application=self,
+            grader=grader,
+            score=score,
+            **kwargs
+        )
+
+    def skip(self, grader):
+        """
+        Skip this application in scoring.
+        """
+        return Skip.objects.create(
+            trips_year=self.trips_year,
+            application=self,
+            grader=grader
+        )
+
+    def average_score(self):
+        """
+        Return the average score given to the application.
+        """
+        return self.scores.all().aggregate(models.Avg('score'))['score__avg']
+
     def __str__(self):
         return self.name
 
@@ -558,9 +587,6 @@ class LeaderSupplement(DatabaseModel):
     """
     Leader application answers
     """
-    NUMBER_OF_GRADES = 4
-
-    objects = LeaderApplicationManager()
 
     section_choice = models.ManyToManyField(
         Section, through=LeaderSectionChoice
@@ -746,13 +772,6 @@ class LeaderSupplement(DatabaseModel):
             .exclude(id__in=self.get_preferred_trips().all())
         )
 
-    def average_grade(self):
-        """
-        Average grade for the leader application.
-        """
-        r = self.grades.all().aggregate(models.Avg('grade'))
-        return r['grade__avg']
-
     def get_absolute_url(self):
         return self.application.get_absolute_url()
 
@@ -764,8 +783,6 @@ class CrooSupplement(DatabaseModel):
     """
     Croo application answers
     """
-    NUMBER_OF_GRADES = 4
-    objects = CrooApplicationManager()
 
     application = models.OneToOneField(
         Volunteer, editable=False, related_name='croo_supplement'
@@ -813,17 +830,88 @@ class CrooSupplement(DatabaseModel):
         ), blank=True
     )
 
-    def average_grade(self):
-        """ Average grade for the croo application """
-        r = self.grades.all().aggregate(models.Avg('grade'))
-        return r['grade__avg']
-
     def get_absolute_url(self):
         return self.application.get_absolute_url()
 
     def __str__(self):
         return str(self.application)
 
+
+class Score(DatabaseModel):
+    """
+    A score for a volunteer application.
+
+    Note: this is a new model added in 2017 to replace LeaderApplicationGrade
+    and CrooApplicationGrade which were used for split leader/croo applications.
+    """
+    class Meta:
+        unique_together = ['grader', 'application']
+
+    SCORE_CHOICES = (
+        (1, "1 -- Bad application -- I really don't want this person to be a "
+            "volunteer and I have serious concerns"),
+        (2, "2 -- Poor application -- I have some concerns about this person "
+            "being a Trips volunteer"),
+        (3, "3 -- Fine application -- This person might work well as a "
+            "volunteer but I have some questions"),
+        (4, "4 -- Good application -- I would consider this person to be a "
+            "volunteer but I wouldn't be heartbroken if they were not "
+            "selected"),
+        (5, "5 -- Great application -- I think this person would be a "
+            "fantastic volunteer"),
+        (6, "6 -- Incredible application -- I think this person should be one "
+            "of the first to be selected to be a volunteer. I would be very "
+            "frustrated/angry if this person is not selected"),
+    )
+
+    grader = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, related_name='scores'
+    )
+    application = models.ForeignKey(
+        Volunteer, editable=False, related_name='scores'
+    )
+    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+
+    # We save this as a field instead of referencing grader.permissions
+    # so that we can remember this info even after permissions change.
+    croo_head = models.BooleanField(
+        'was the score created by a croo head?', default=False, editable=False
+    )
+
+    # ... TODO
+
+    def save(self, **kwargs):
+        """
+        Set croo_head.
+        """
+        # TODO: import/load this string from permissions module
+        croo_head_perm = 'permissions.can_score_as_croo_head'
+
+        if self.pk is None and self.grader.has_perm(croo_head_perm):
+            self.croo_head = True
+
+        return super().save(**kwargs)
+
+
+class Skip(DatabaseModel):
+    """
+    Marks an application as skipped.
+
+    If a grader skips an application they will not be shown the application
+    again.
+    """
+    class Meta:
+        unique_together = ['grader', 'application']
+
+    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+
+    application = models.ForeignKey(
+        Volunteer, editable=False, related_name='skips'
+    )
+
+
+# Deprecated models (contain historical data only)
+# ----------------------------------------
 
 class AbstractGrade(DatabaseModel):
     """
@@ -835,12 +923,20 @@ class AbstractGrade(DatabaseModel):
         abstract = True
 
     SCORE_CHOICES = (
-        (1, "1 -- Bad application -- I really don't want this person to be a volunteer and I have serious concerns"),
-        (2, "2 -- Poor application -- I have some concerns about this person being a Trips volunteer"),
-        (3, "3 -- Fine application -- This person might work well as a volunteer but I have some questions"),
-        (4, "4 -- Good application -- I would consider this person to be a volunteer but I wouldn't be heartbroken if they were not selected"),
-        (5, "5 -- Great application -- I think this person would be a fantastic volunteer"),
-        (6, "6 -- Incredible application -- I think this person should be one of the first to be selected to be a volunteer. I would be very frustrated/angry if this person is not selected"),
+        (1, "1 -- Bad application -- I really don't want this person to be a "
+            "volunteer and I have serious concerns"),
+        (2, "2 -- Poor application -- I have some concerns about this person "
+            "being a Trips volunteer"),
+        (3, "3 -- Fine application -- This person might work well as a "
+            "volunteer but I have some questions"),
+        (4, "4 -- Good application -- I would consider this person to be a "
+            "volunteer but I wouldn't be heartbroken if they were not "
+            "selected"),
+        (5, "5 -- Great application -- I think this person would be a "
+            "fantastic volunteer"),
+        (6, "6 -- Incredible application -- I think this person should be one "
+            "of the first to be selected to be a volunteer. I would be very "
+            "frustrated/angry if this person is not selected"),
     )
 
     # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.

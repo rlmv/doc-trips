@@ -53,7 +53,33 @@
 
 
 {# grades #}
-<h4> Trip Leader Grades {% if application.leader_application_complete %}<a href="{% url 'applications:grade:leader' pk=application.leader_supplement.pk %}">add</a>{% endif %}</h4>
+
+<h4> Scores {% if application.leader_application_complete or application.croo_application_complete %}<a href="{% url 'applications:score:add' pk=application.pk %}">add</a>{% endif %}</h4>
+
+<table class="table table-condensed table-striped">
+    <tr>
+        <th class="col-sm-1"> Score </th>
+        <th> Grader </th>
+        <th> </th>
+    </tr>
+    {% for score in application.scores.all %}
+    <tr>
+        <td> {{ score.score }} </td>
+        <td> {{ score.grader }} </td>
+        <td> {{ score|delete_link }} </td>
+    <tr>
+    {% endfor %}
+
+    {% if application.average_score %}
+    <tr class="info">
+        <td> {{ application.average_score|floatformat:1 }} </td>
+        <td> AVERAGE </td> <td/> <td/>
+    </tr>
+    {% endif %}
+</table>
+
+{% if application.leader_supplement.grades.exists %}
+<h4> Trip Leader Grades </h4>
 <table class="table table-condensed table-striped">
     <tr>
         <th class="col-sm-1"> Grade </th>
@@ -80,8 +106,10 @@
     </tr>
     {% endif %}
 </table>
+{% endif %}
 
-<h4> Croo Grades {% if application.croo_application_complete %}<a href="{% url 'applications:grade:croo' pk=application.croo_supplement.pk %}">add</a>{% endif %}</h4>
+{% if application.croo_supplement.grades.exists %}
+<h4> Croo Grades </h4>
 <table class="table table-condensed table-striped">
     <tr>
         <th class="col-sm-1"> Grade </th>
@@ -110,6 +138,7 @@
     </tr>
     {% endif %}
 </table>
+{% endif %}
 
 
 {# application body #}

@@ -2,9 +2,8 @@ from django.conf.urls import include, url
 
 from fyt.applications.urls import (
     application_urlpatterns,
-    croograde_urlpatterns,
     grader_urlpatterns,
-    leadergrade_urlpatterns,
+    score_urlpatterns,
 )
 from fyt.croos.urls import croo_urlpatterns
 from fyt.db.views import (
@@ -53,10 +52,6 @@ database_urlpatterns = [
         include(foodbox_urlpatterns, namespace='foodbox')),
     url(r'^grades/',
         include(grader_urlpatterns)),
-    url(r'^grades/croo/',
-        include(croograde_urlpatterns, namespace='crooapplicationgrade')),
-    url(r'^grades/leader/',
-        include(leadergrade_urlpatterns, namespace='leaderapplicationgrade')),
     url(r'^incidents/',
         include('fyt.safety.urls', namespace='safety')),
     url(r'^leaders/',
@@ -71,6 +66,8 @@ database_urlpatterns = [
         include('fyt.reports.urls', namespace='reports')),
     url(r'^routes/',
         include(route_urlpatterns, namespace='route')),
+    url(r'^scores/',
+        include(score_urlpatterns, namespace='score')),
     url(r'^sections/',
         include(section_urlpatterns, namespace='section')),
     url(r'^stops/',
