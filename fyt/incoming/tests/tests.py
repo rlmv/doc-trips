@@ -19,7 +19,7 @@ from fyt.incoming.models import (
     Settings,
     sort_by_lastname,
 )
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.transport.models import Route, Stop
 from fyt.trips.models import Section, Trip, TripType

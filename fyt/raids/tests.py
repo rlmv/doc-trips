@@ -3,7 +3,7 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.db.mommy_recipes import trips_year as trips_year_recipe
 from fyt.raids.models import Raid
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 
 
 raid_recipe = Recipe(Raid, trips_year=foreign_key(trips_year_recipe))

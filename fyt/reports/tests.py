@@ -9,7 +9,7 @@ from fyt.applications.models import Question, Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.transport.models import Stop
 from fyt.trips.models import Trip
 from fyt.utils.choices import L, M, S, XL, XS, XXL

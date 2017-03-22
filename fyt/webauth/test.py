@@ -1,6 +1,6 @@
 import unittest
 
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.webauth.views import host_url, protocol
 
 

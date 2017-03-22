@@ -5,7 +5,7 @@ from django.forms.models import model_to_dict
 from model_mommy import mommy
 
 from fyt.safety.models import Incident
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.trips.models import Trip
 
 

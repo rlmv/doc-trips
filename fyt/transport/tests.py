@@ -11,7 +11,7 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.db.mommy_recipes import trips_year
 from fyt.incoming.models import IncomingStudent
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.transport import maps
 from fyt.transport.constants import ConstantStop, Hanover, Lodge
 from fyt.transport.models import (

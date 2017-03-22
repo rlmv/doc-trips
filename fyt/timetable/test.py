@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
 
 

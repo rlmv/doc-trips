@@ -2,7 +2,7 @@
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 
 
 class DartmouthDirectoryLookupFieldTestCase(FytTestCase):

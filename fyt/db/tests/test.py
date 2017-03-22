@@ -2,7 +2,7 @@ from django.db import IntegrityError
 from model_mommy import mommy
 
 from fyt.db.forms import tripsyear_modelform_factory
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, TripTemplate
 
 

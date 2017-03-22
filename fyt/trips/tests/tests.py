@@ -26,7 +26,7 @@ from fyt.incoming.models import (
     RegistrationSectionChoice,
     RegistrationTripTypeChoice,
 )
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.transport.models import Route
 from fyt.utils.choices import AVAILABLE, PREFER
 

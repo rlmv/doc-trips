@@ -2,7 +2,7 @@ from model_mommy import mommy
 
 from fyt.applications.models import Volunteer
 from fyt.croos.models import Croo
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 
 
 class CrooModelTestCase(FytTestCase):

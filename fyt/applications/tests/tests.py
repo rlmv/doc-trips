@@ -16,7 +16,7 @@ from ..models import (
 )
 
 from fyt.croos.models import Croo
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import AVAILABLE, PREFER

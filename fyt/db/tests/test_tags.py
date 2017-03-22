@@ -4,7 +4,7 @@ from django.template import Context, Template
 from model_mommy import mommy
 
 from fyt.db.templatetags.links import pass_null
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.trips.models import Section
 
 

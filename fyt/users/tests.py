@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from model_mommy import mommy
 
-from fyt.test.testcases import FytTestCase
+from fyt.test import FytTestCase
 from fyt.users.models import MAX_NETID_LENGTH, DartmouthUser
 
 
