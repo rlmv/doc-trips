@@ -188,7 +188,7 @@ class VolunteerManager(models.Manager):
         # Manually choose random element because .order_by('?') is buggy
         # See https://code.djangoproject.com/ticket/26390
         if qs.count() > 0:
-            return qs[random.randrange(0, qs.count())]
+            return random.choice(qs)
 
         return None
 
