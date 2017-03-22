@@ -1,11 +1,7 @@
 from collections import defaultdict
 from datetime import datetime
-from pprint import pprint
 
 from braces.views import FormValidMessageMixin
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -26,7 +22,6 @@ from fyt.permissions.views import (
     DatabaseReadPermissionRequired,
 )
 from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
-from fyt.transport.maps import MapError
 from fyt.transport.models import (
     ExternalBus,
     Route,

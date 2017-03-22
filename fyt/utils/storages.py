@@ -17,4 +17,3 @@ class WhitenoisePipelineStorage(PipelineMixin,
     """
     Use both Whitenoise and Pipeline for staticfiles
     """
-    pass

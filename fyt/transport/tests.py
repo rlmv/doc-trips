@@ -6,7 +6,6 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import ProtectedError
-from django.utils import timezone
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 

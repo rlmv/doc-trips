@@ -1,2 +1,1 @@
-
-from fyt.test.testcases import FytTestCase
+from .testcases import FytTestCase

@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.safestring import mark_safe
 
 from fyt.db.models import DatabaseModel
 from fyt.trips.models import Trip

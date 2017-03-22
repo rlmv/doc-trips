@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, Avg
+from django.db.models import Q
 from django.http import HttpResponse
 from vanilla import View
 

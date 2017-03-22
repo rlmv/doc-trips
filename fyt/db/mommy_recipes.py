@@ -1,4 +1,4 @@
-from model_mommy.recipe import Recipe, foreign_key
+from model_mommy.recipe import Recipe
 
 from fyt.db.models import TripsYear
 

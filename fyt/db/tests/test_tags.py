@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import MagicMock
 
 from django.template import Context, Template
 from model_mommy import mommy

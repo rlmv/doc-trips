@@ -1,7 +1,5 @@
 import csv
-import io
 import tempfile
-import unittest
 from datetime import date
 
 from django.core.urlresolvers import reverse

@@ -1,6 +1,5 @@
 
 import logging
-from zipfile import BadZipFile
 
 import bleach
 import mammoth

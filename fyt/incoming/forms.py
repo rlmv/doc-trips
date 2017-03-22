@@ -1,4 +1,3 @@
-import re
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit

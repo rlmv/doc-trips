@@ -15,7 +15,6 @@ from fyt.applications.views.application import (
 )
 from fyt.applications.views.assign import AssignToCroo, AssignToTrip
 from fyt.applications.views.graders import GraderList
-
 from fyt.applications.views.portal import (
     EditVolunteerPortalContent,
     VolunteerPortalView,
