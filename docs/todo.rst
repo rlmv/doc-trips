@@ -14,6 +14,7 @@ Upgrades
 
 Immediate
 ---------
+* Use subqueries for get_graders (Django 1.11).
 * Move grading to a separate `grade` app?
 * Add more filter options
 * Fix application filters / Django bug
