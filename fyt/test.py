@@ -1,7 +1,6 @@
 import logging
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django_webtest import WebTest
 from model_mommy import mommy
 
@@ -14,6 +13,7 @@ from fyt.permissions.permissions import (
     safety_leads,
     trip_leader_trainers,
 )
+from fyt.users.models import DartmouthUser
 
 
 class FytTestCase(WebTest):
@@ -57,82 +57,82 @@ class FytTestCase(WebTest):
         self.old_trips_year = mommy.make(TripsYear, year=2013, is_current=False)
         return self.old_trips_year
 
-    def mock_user(self):
+    def make_user(self):
         """
-        Create a mock user.
+        Create a user.
         """
         netid = 'user'
         email = netid + '@dartmouth.edu'
-        self.user = get_user_model().objects.create_user(netid, netid, email)
+        self.user = DartmouthUser.objects.create_user(netid, netid, email)
 
         return self.user
 
-    def mock_incoming_student(self):
+    def make_incoming_student(self):
         netid = 'incoming'
         name = 'incoming'
         email = netid + '@dartmouth.edu'
-        self.user = get_user_model().objects.create_user(netid, name, email)
+        self.user = DartmouthUser.objects.create_user(netid, name, email)
 
         return self.user
 
-    def mock_director(self):
+    def make_director(self):
         """
         Create a user with director permissions, and log the user in.
         """
         netid = 'director'
         email = netid + '@dartmouth.edu'
-        self.director = get_user_model().objects.create_user(netid, netid, email)
+        self.director = DartmouthUser.objects.create_user(netid, netid, email)
         self.director.groups.add(directors())
         self.director.save()
 
         return self.director
 
-    def mock_croo_head(self):
+    def make_croo_head(self):
         netid = 'croo head'
         email = netid + '@dartmouth.edu'
-        self.croo_head = get_user_model().objects.create_user(netid, netid, email)
+        self.croo_head = DartmouthUser.objects.create_user(netid, netid, email)
         self.croo_head.groups.add(croo_heads())
         self.croo_head.save()
 
         return self.croo_head
 
-    def mock_directorate(self):
+    def make_directorate(self):
         """
         Create a user with directorate permissions, and log the user in.
         """
         netid = 'directorate'
         email = netid + '@dartmouth.edu'
-        self.directorate = get_user_model().objects.create_user(netid, netid, email)
+        self.directorate = DartmouthUser.objects.create_user(netid, netid, email)
         self.directorate.groups.add(directorate())
         self.directorate.save()
 
         return self.directorate
 
-    def mock_tlt(self):
+    def make_tlt(self):
         """
         Create a user with trip leader trainer permissions, and log the user in.
         """
         netid = 'tlt'
         email = netid + '@dartmouth.edu'
-        self.tlt = get_user_model().objects.create_user(netid, netid, email)
+        self.tlt = DartmouthUser.objects.create_user(netid, netid, email)
         self.tlt.groups.add(trip_leader_trainers())
         self.tlt.save()
 
         return self.tlt
 
-    def mock_grader(self):
+    def make_grader(self):
         netid = 'grader'
         email = netid + '@dartmouth.edu'
-        self.grader = get_user_model().objects.create_user(netid, netid, email)
+        self.grader = DartmouthUser.objects.create_user(netid, netid, email)
         self.grader.groups.add(graders())
         self.grader.save()
 
         return self.grader
 
-    def mock_safety_lead(self):
+    def make_safety_lead(self):
         netid = 'safety'
         email = netid + '@dartmouth.edu'
-        self.safety_lead = get_user_model().objects.create_user(netid, netid, email)
+        self.safety_lead = DartmouthUser.objects.create_user(netid, netid, email)
         self.safety_lead.groups.add(safety_leads())
         self.safety_lead.save()
 

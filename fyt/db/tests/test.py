@@ -29,15 +29,15 @@ class DatabaseMixinTestCase(FytTestCase):
         campsite = mommy.make(Campsite, trips_year=trips_year)
 
         url = campsite.update_url()
-        self.app.get(url, user=self.mock_user(), status=403)
-        self.app.get(url, user=self.mock_director(), status=200)
+        self.app.get(url, user=self.make_user(), status=403)
+        self.app.get(url, user=self.make_director(), status=200)
 
 
 class RedirectToCurrentDatabaseTestCase(FytTestCase):
 
     def test_db_redirect_access_without_permissions(self):
         trips_year = self.init_trips_year()
-        self.app.get('/db/', user=self.mock_user(), status=403)
+        self.app.get('/db/', user=self.make_user(), status=403)
 
 
 class FormFieldCallbackTestCase(FytTestCase):

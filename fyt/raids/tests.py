@@ -22,8 +22,8 @@ class RaidViewsTestCase(FytTestCase):
         trips_year = trips_year_recipe.make()
         raid = raid_recipe.make(trips_year=trips_year)
         url = raid.delete_url()
-        self.app.get(url, user=self.mock_user(), status=403)  # No good
-        resp = self.app.get(url, user=self.mock_director())  # OK
+        self.app.get(url, user=self.make_user(), status=403)  # No good
+        resp = self.app.get(url, user=self.make_director())  # OK
         resp.form.submit()
         with self.assertRaises(Raid.DoesNotExist):
             Raid.objects.get()
@@ -32,8 +32,8 @@ class RaidViewsTestCase(FytTestCase):
         trips_year = trips_year_recipe.make()
         raid = raid_recipe.make(trips_year=trips_year)
 
-        resp = self.app.get(raid.detail_url(), user=self.mock_user())
+        resp = self.app.get(raid.detail_url(), user=self.make_user())
         self.assertNotContains(resp, 'delete')
 
-        resp = self.app.get(raid.detail_url(), user=self.mock_director())
+        resp = self.app.get(raid.detail_url(), user=self.make_director())
         self.assertContains(resp, 'delete')

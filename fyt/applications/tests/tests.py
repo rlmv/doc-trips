@@ -283,7 +283,7 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_add_score(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
-        user = self.mock_user()
+        user = self.make_user()
 
         app.add_score(user, 3)  # TODO: test kwargs
 
@@ -296,8 +296,8 @@ class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_average_score(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
-        app.add_score(self.mock_user(), 3)
-        app.add_score(self.mock_grader(), 4)
+        app.add_score(self.make_user(), 3)
+        app.add_score(self.make_grader(), 4)
         self.assertEqual(app.average_score(), 3.5)
 
 
@@ -671,7 +671,7 @@ class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):
         )
         url = reverse('db:volunteer:update_trip',
                       kwargs={'trips_year': trips_year, 'pk': application.pk})
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
 
 
 class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
@@ -686,7 +686,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
             'db:volunteer:update_croo',
             kwargs={'trips_year': trips_year, 'pk': application.pk}
         )
-        form = self.app.get(url, user=self.mock_director()).form
+        form = self.app.get(url, user=self.make_director()).form
         form['assigned_croo'] = croo.pk
         res = form.submit()
         croo = Croo.objects.get(pk=croo.pk)
@@ -699,19 +699,19 @@ class DbVolunteerPagesAccessTestCase(FytTestCase):
         trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=False)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
-        res = self.app.get(url, user=self.mock_director())
-        res = self.app.get(url, user=self.mock_grader(), status=403)
-        res = self.app.get(url, user=self.mock_directorate())
-        res = self.app.get(url, user=self.mock_tlt())
+        res = self.app.get(url, user=self.make_director())
+        res = self.app.get(url, user=self.make_grader(), status=403)
+        res = self.app.get(url, user=self.make_directorate())
+        res = self.app.get(url, user=self.make_tlt())
 
     def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
         trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=True)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
-        res = self.app.get(url, user=self.mock_director())
-        res = self.app.get(url, user=self.mock_grader(), status=403)
-        res = self.app.get(url, user=self.mock_directorate(), status=403)
-        res = self.app.get(url, user=self.mock_tlt())
+        res = self.app.get(url, user=self.make_director())
+        res = self.app.get(url, user=self.make_grader(), status=403)
+        res = self.app.get(url, user=self.make_directorate(), status=403)
+        res = self.app.get(url, user=self.make_tlt())
 
 
 class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):

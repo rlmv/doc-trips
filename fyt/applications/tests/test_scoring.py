@@ -18,14 +18,14 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=self.mock_user(),  # Not a croo head
+            grader=self.make_user(),  # Not a croo head
             score=3)
         self.assertFalse(score.croo_head)
 
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=self.mock_croo_head(),  # Croo head
+            grader=self.make_croo_head(),  # Croo head
             score=3)
         self.assertTrue(score.croo_head)
 
@@ -34,10 +34,10 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
-        self.mock_user()
-        self.mock_director()
-        self.mock_directorate()
-        self.mock_croo_head()
+        self.make_user()
+        self.make_director()
+        self.make_directorate()
+        self.make_croo_head()
 
     def make_scores(self, app, n):
         for i in range(n):
@@ -107,9 +107,9 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
-        self.mock_director()
-        self.mock_grader()
-        self.mock_user()
+        self.make_director()
+        self.make_grader()
+        self.make_user()
 
     score_urls = [
         reverse('applications:score:next'),
@@ -192,8 +192,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
     def test_delete_score_is_restricted_to_directors(self):
         score = mommy.make(Score, trips_year=self.trips_year)
         url = reverse('db:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk})
-        res = self.app.get(url, user=self.mock_tlt(), status=403)
-        res = self.app.get(url, user=self.mock_directorate(), status=403)
+        res = self.app.get(url, user=self.make_tlt(), status=403)
+        res = self.app.get(url, user=self.make_directorate(), status=403)
         res = self.app.get(url, user=self.grader, status=403)
         res = self.app.get(url, user=self.user, status=403)
         res = self.app.get(url, user=self.director)

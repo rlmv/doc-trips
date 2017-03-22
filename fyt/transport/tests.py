@@ -161,7 +161,7 @@ class TestViews(FytTestCase):
 
     def test_index_views(self):
         trips_year = self.init_trips_year()
-        director = self.mock_director()
+        director = self.make_director()
         names = [
             'db:stop:index',
             'db:route:index',
@@ -676,7 +676,7 @@ class TransportViewsTestCase(FytTestCase):
         # Visit matrix page
         url = reverse('db:externalbus:matrix',
                       kwargs={'trips_year': trips_year})
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
         # click 'add' button for the single entry
         res = res.click(description='<i class="fa fa-plus"></i>')
         # which takes us to the create page, prepopulated w/ data
@@ -693,7 +693,7 @@ class TransportViewsTestCase(FytTestCase):
         # visit matrix
         url = reverse('db:scheduledtransport:index',
                       kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         # click add
         resp = resp.click(linkid="1-2-2015-create-1")
         resp.form.submit()
@@ -945,7 +945,7 @@ class StopOrderingTestCase(FytTestCase):
         )
         url = reverse('db:scheduledtransport:order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
-        self.app.get(url, user=self.mock_director())
+        self.app.get(url, user=self.make_director())
         so = StopOrder.objects.get(
             bus=bus, trip=trip, stop_type=StopOrder.DROPOFF,
             order=trip.template.dropoff_stop.distance
@@ -974,7 +974,7 @@ class StopOrderingTestCase(FytTestCase):
 
         url = reverse('db:scheduledtransport:order',
                       kwargs={'trips_year': trips_year, 'bus_pk': bus.pk})
-        form = self.app.get(url, user=self.mock_director()).form
+        form = self.app.get(url, user=self.make_director()).form
         form['form-0-trip'] = other_trip.pk
         form.submit()
 

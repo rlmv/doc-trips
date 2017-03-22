@@ -16,9 +16,9 @@ class IncidentViewsTestCase(FytTestCase):
     def test_safety_leads_can_access_incident_report(self):
         trips_year = self.init_trips_year()
         url = reverse('db:safety:list', kwargs={'trips_year': trips_year})
-        self.app.get(url, user=self.mock_user(), status=403)
-        self.app.get(url, user=self.mock_director())  # OK
-        self.app.get(url, user=self.mock_safety_lead())  # OK
+        self.app.get(url, user=self.make_user(), status=403)
+        self.app.get(url, user=self.make_director())  # OK
+        self.app.get(url, user=self.make_safety_lead())  # OK
 
     def test_new_incident_adds_trip_year(self):
         trips_year = self.init_trips_year()
@@ -29,5 +29,5 @@ class IncidentViewsTestCase(FytTestCase):
                 trip=mommy.make(Trip, trips_year=trips_year),
                 when=datetime.datetime.now()
             ))
-        self.app.post(url, data, user=self.mock_director())
+        self.app.post(url, data, user=self.make_director())
         self.assertEqual(Incident.objects.get().trips_year, trips_year)

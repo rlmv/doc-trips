@@ -52,7 +52,7 @@ class TripTestCase(FytTestCase):
         response = self.app.post(
             Trip.create_url(self.trips_year),
             {'template': trip.template.pk, 'section': trip.section.pk},
-            user=self.mock_director()
+            user=self.make_director()
         )
         # should have unique constraint error
         self.assertIn('unique constraint', str(response.content).lower())
@@ -73,7 +73,7 @@ class TripTestCase(FytTestCase):
                    template=template2, trips_year=trips_year)
         mommy.make(Trip, section=section2,
                    template=template2, trips_year=trips_year)
-        user = self.mock_director()
+        user = self.make_director()
         with self.assertNumQueries(17):
             self.app.get(reverse('db:trip:index', kwargs={'trips_year': self.trips_year}), user=user)
 
@@ -145,7 +145,7 @@ class TripRouteOverridesTestCase(FytTestCase):
         trip = mommy.make(Trip, trips_year=trips_year,
                           section=section, template=template)
         route = mommy.make(Route, trips_year=trips_year)
-        res = self.app.get(trip.update_url(), user=self.mock_director())
+        res = self.app.get(trip.update_url(), user=self.make_director())
         form = res.form
         form['dropoff_route'] = route.pk
         form['pickup_route'] = route.pk
@@ -225,7 +225,7 @@ class QuickTestViews(FytTestCase):
 
     def test_index_views(self):
         trips_year = self.init_trips_year()
-        director = self.mock_director()
+        director = self.make_director()
 
         names = [
             'db:trip:index',
@@ -370,7 +370,7 @@ class AssignLeaderTestCase(FytTestCase):
         volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
         volunteer = Volunteer.objects.get(pk=volunteer.pk)  # refresh
@@ -384,7 +384,7 @@ class AssignLeaderTestCase(FytTestCase):
         volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
         url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
         leader_list = list(res.context['leader_applications'])
         self.assertEqual(len(leader_list), 1)
         (leader, _, triptype_preference, section_preference) = leader_list[0]
@@ -406,7 +406,7 @@ class AssignTrippeeTestCase(FytTestCase):
             registration=registration)
 
         url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
         trippee = IncomingStudent.objects.get(pk=trippee.pk)
@@ -590,7 +590,7 @@ class ViewsTestCase(FytTestCase):
         template = mommy.make(TripTemplate, trips_year=trips_year)
         url = reverse('db:trip:index', kwargs={'trips_year': trips_year})
         # get matrix
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         # click add -> CreateView
         resp = resp.click(description='<i class="fa fa-plus"></i>')
         # submit create form
@@ -611,7 +611,7 @@ class ViewsTestCase(FytTestCase):
             epipen=True
         )
         url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         self.assertContains(resp, 'magic')
         self.assertContains(resp, 'mangoes')
         self.assertContains(resp, 'gluten free')
@@ -633,7 +633,7 @@ class ViewsTestCase(FytTestCase):
             )
         )
         url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         self.assertNotContains(resp, 'magic')
         self.assertNotContains(resp, 'dinosaurs')
         self.assertContains(resp, 'sparkles')
@@ -657,7 +657,7 @@ class ViewsTestCase(FytTestCase):
             )
         )
         url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         self.assertContains(resp, 'magic')
         self.assertContains(resp, 'mangoes')
         self.assertContains(resp, 'gluten free')
@@ -671,7 +671,7 @@ class TripTemplateDocumentUploadTestCase(FytTestCase):
     def test_uploaded_document_is_attached_to_TripTemplate(self):
         trips_year = self.init_trips_year()
         tt = mommy.make(TripTemplate, trips_year=trips_year)
-        resp = self.app.get(tt.file_upload_url(), user=self.mock_director())
+        resp = self.app.get(tt.file_upload_url(), user=self.make_director())
         resp.form['name'] = 'Map'
         resp.form['file'] = webtest.Upload('map.txt', b'test data')
         resp.form.submit()

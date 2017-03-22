@@ -41,7 +41,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         ``target`` is a list of ``dicts``
         """
         url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         self.assertTrue(resp['Content-Disposition'].startswith(
             'attachment; filename="'))
@@ -80,7 +80,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         not_leader = self.make_application(trips_year=trips_year)
 
         url = reverse('db:reports:leaders', kwargs={'trips_year': trips_year})
-        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
         target = [{
             'name': leader.name,
             'netid': leader.applicant.netid.upper()
@@ -97,7 +97,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         not_croo = self.make_application(trips_year=trips_year)
 
         url = reverse('db:reports:croo_members', kwargs={'trips_year': trips_year})
-        rows = list(save_and_open_csv(self.app.get(url, user=self.mock_director())))
+        rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
         target = [{
             'name': croo.name,
             'netid': croo.applicant.netid.upper()
@@ -178,7 +178,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         mommy.make(IncomingStudent, trips_year=trips_year)
 
         url = reverse('db:reports:charges', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
@@ -253,7 +253,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trip_assignment=None
         )
         url = reverse('db:reports:housing', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
@@ -300,7 +300,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             registration=reg,
         )
         url = reverse('db:reports:dietary', kwargs={'trips_year': trips_year})
-        resp  = self.app.get(url, user=self.mock_director())
+        resp  = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
@@ -336,7 +336,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             registration=reg,
         )
         url = reverse('db:reports:medical', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
@@ -365,7 +365,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             doc_membership=False
         )
         url = reverse('db:reports:doc_members', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         target = [{
             'name': reg.user.name,
@@ -398,7 +398,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             status=Volunteer.PENDING
         )
         url = reverse('db:reports:volunteer_dietary', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
         rows = list(save_and_open_csv(resp))
         target = [{
             'name': croo.applicant.name,
@@ -431,7 +431,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=trips_year
         )
         url = reverse('db:reports:foodboxes', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{
@@ -467,7 +467,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         )
 
         url = reverse('db:reports:bus_stops', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.mock_director())
+        resp = self.app.get(url, user=self.make_director())
 
         rows = list(save_and_open_csv(resp))
         target = [{

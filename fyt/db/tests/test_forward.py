@@ -209,7 +209,7 @@ class MigrateForwardFytTestCase(FytTestCase):
     def test_triptemplate_documents_are_migrated(self):
         trips_year = self.init_trips_year()
         tt = mommy.make(TripTemplate, trips_year=trips_year)
-        resp = self.app.get(tt.file_upload_url(), user=self.mock_director())
+        resp = self.app.get(tt.file_upload_url(), user=self.make_director())
         resp.form['name'] = 'Map'
         resp.form['file'] = webtest.Upload('map.txt', b'test data')
         resp.form.submit()

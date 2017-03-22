@@ -19,19 +19,19 @@ class TripsYearMixinTestCase(FytTestCase):
     def test_dispatch_for_trips_year(self):
         year = self.init_trips_year()
         response = self.app.get('/db/'+str(year.year)+'/',
-                                user=self.mock_director())
+                                user=self.make_director())
         self.assertEquals(response.status_code, 200)
 
     def test_dispatch_for_nonexistant_year(self):
         response = self.app.get('/db/2314124/', status=404,
-                                user=self.mock_director())
+                                user=self.make_director())
         self.assertEquals(response.status_code, 404)
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
         """Use Section as model, instead of hacking together an example"""
         data = model_to_dict(mommy.prepare(Section))
         url = Section.create_url(self.trips_year)
-        response = self.app.post(url, data, user=self.mock_director())
+        response = self.app.post(url, data, user=self.make_director())
 
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))
@@ -48,7 +48,7 @@ class TripsYearMixinTestCase(FytTestCase):
         ex1 = mommy.make(TripType, trips_year=self.trips_year)
         ex2 = mommy.make(TripType, trips_year=self.old_trips_year)
 
-        response = self.app.get(ex1.index_url(), user=self.mock_director())
+        response = self.app.get(ex1.index_url(), user=self.make_director())
 
         from fyt.trips.views import TripTypeList
         objects = response.context[TripTypeList.context_object_name]
@@ -59,7 +59,7 @@ class TripsYearMixinTestCase(FytTestCase):
         c1 = mommy.make(Campsite, trips_year=self.trips_year)
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
 
-        self.mock_director()
+        self.make_director()
 
         # good request - trips year in url matches trips year of c1
         response = self.app.get(c1.update_url(), user=self.director)
@@ -80,7 +80,7 @@ class TripsYearMixinTestCase(FytTestCase):
         triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
 
         response = self.app.get(triptemplate.update_url(),
-                                user=self.mock_director())
+                                user=self.make_director())
         choices = response.context['form'].fields['campsite1'].queryset
 
         # should only show object from current_trips_year

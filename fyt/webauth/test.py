@@ -11,7 +11,7 @@ class GroupPermissionsTest(FytTestCase):
         # did not inherit from ModelBackend
 
         # the director group SHOULD have a number of permissions
-        user = self.mock_director()
+        user = self.make_director()
         self.assertNotEqual(set(), user.get_all_permissions())
 
 

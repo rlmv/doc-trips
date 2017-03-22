@@ -37,7 +37,7 @@ class IncomingStudentModelTestCase(FytTestCase):
     FILE = resolve_path('incoming_students.csv')
 
     def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
-        user = self.mock_incoming_student()
+        user = self.make_incoming_student()
         trips_year = self.init_trips_year()
         # make existing info for user with netid
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
@@ -45,14 +45,14 @@ class IncomingStudentModelTestCase(FytTestCase):
         self.assertEqual(reg.trippee, incoming)
 
     def test_creating_Registration_without_incoming_info_does_nothing(self):
-        user = self.mock_incoming_student()
+        user = self.make_incoming_student()
         trips_year = self.init_trips_year()
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
         with self.assertRaises(ObjectDoesNotExist):
             reg.trippee
 
     def test_creating_IncomingStudent_connects_to_existing_registration(self):
-        user = self.mock_incoming_student()
+        user = self.make_incoming_student()
         trips_year = self.init_trips_year()
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
@@ -443,7 +443,7 @@ class RegistrationModelTestCase(FytTestCase):
         self.assertEqual(reg.get_incoming_student(), incoming)
 
     def test_match(self):
-        user = self.mock_incoming_student()
+        user = self.make_incoming_student()
         trips_year = self.init_trips_year()
         incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=trips_year)
         reg = mommy.make(Registration, trips_year=trips_year, user=user)
@@ -682,7 +682,7 @@ class RegistrationViewsTestCase(FytTestCase):
         t.trippee_registrations_close += timedelta(1)
         t.save()
         mommy.make(Settings, trips_year=trips_year)
-        user = self.mock_incoming_student()
+        user = self.make_incoming_student()
         student = mommy.make(IncomingStudent, trips_year=trips_year, netid=user.netid)
         reg_data = {
             'name': 'test',
@@ -726,7 +726,7 @@ class RegistrationViewsTestCase(FytTestCase):
             'doc_membership': False,
             'green_fund_donation': 0,
         }
-        resp = self.app.post(url, data, user=self.mock_director()).follow()
+        resp = self.app.post(url, data, user=self.make_director()).follow()
 
         registration = Registration.objects.get()
         user = registration.user
@@ -809,7 +809,7 @@ class IncomingStudentViewsTestCase(FytTestCase):
         trips_year = self.init_trips_year()
         incoming = mommy.make(IncomingStudent, trips_year=trips_year)
         url = incoming.delete_url()
-        res = self.app.get(url, user=self.mock_director())
+        res = self.app.get(url, user=self.make_director())
         res = res.form.submit().follow()
         self.assertEqual(res.request.path,
                          reverse('db:incomingstudent:index', kwargs={'trips_year': trips_year}))
