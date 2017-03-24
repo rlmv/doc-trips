@@ -3,9 +3,10 @@ from urllib.parse import urlencode
 from django.contrib import auth
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.utils.deprecation import MiddlewareMixin
 
 
-class UserEmailRequiredMiddleware(object):
+class UserEmailRequiredMiddleware(MiddlewareMixin):
     """
     If an authenticated user does not have an email set,
     have them to enter it manually.

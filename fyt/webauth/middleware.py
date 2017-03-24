@@ -4,11 +4,12 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.contrib import auth
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.utils.deprecation import MiddlewareMixin
 
 from fyt.webauth.views import login as cas_login, logout as cas_logout
 
 
-class WebAuthMiddleware(object):
+class WebAuthMiddleware(MiddlewareMixin):
     """Middleware that allows CAS authentication on admin pages"""
 
     def process_request(self, request):

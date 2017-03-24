@@ -83,7 +83,7 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -94,7 +94,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'fyt.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
     'fyt.users.middleware.UserEmailRequiredMiddleware',  # fix email lookup failures
-)
+]
 
 AUTH_USER_MODEL = 'users.DartmouthUser'
 AUTHENTICATION_BACKENDS = (
