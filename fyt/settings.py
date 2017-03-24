@@ -38,6 +38,11 @@ FILE_STORAGE_PREFIX = 'uploads'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
 
+# CanonicalHostMiddleware redirects requests for HEROKU_HOST to
+# CANONICAL_HOST.
+HEROKU_HOST = 'doc-trips.herokuapp.com'
+CANONICAL_HOST = 'www.doctrips.org'
+
 # monitoring
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN', ''),
@@ -85,6 +90,7 @@ if DEBUG:
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'fyt.middleware.CanonicalHostMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
