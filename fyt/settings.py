@@ -20,6 +20,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get('DEBUG', False)
+
 # AWS SECRET KEYS and CONFIG
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
@@ -28,29 +31,23 @@ AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
 GOOGLE_MAPS_KEY = os.environ.get('GOOGLE_MAPS_KEY', '')
 GOOGLE_MAPS_BROWSER_KEY = os.environ.get('GOOGLE_MAPS_BROWSER_KEY', '')
 
-# don't overwrite identically named files
-# TODO: change this if we move static files to S3!
-# - will need to implement custom storage classes for STATIC and MEDIA
+# Don't overwrite identically named files
 AWS_S3_FILE_OVERWRITE = False
 DEFAULT_FILE_STORAGE = 'fyt.utils.storages.S3FileStorage'
 FILE_STORAGE_PREFIX = 'uploads'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False)
 
 # CanonicalHostMiddleware redirects requests for HEROKU_HOST to
 # CANONICAL_HOST.
 HEROKU_HOST = 'doc-trips.herokuapp.com'
 CANONICAL_HOST = 'www.doctrips.org'
 
-# monitoring
+# Sentry monitoring
 RAVEN_CONFIG = {
     'dsn': os.environ.get('SENTRY_DSN', ''),
 }
 
-# heroku settings
+# For Heroku
 ALLOWED_HOSTS = ['*']
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -110,7 +107,7 @@ AUTHENTICATION_BACKENDS = (
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 CAS_LOGOUT_COMPLETELY = True
 
-# login_required decorator redirects to here. This is webauth login.
+# login_required decorator redirects to here; this is the Webauth login.
 LOGIN_URL = '/users/login/'
 
 # Security/SSL settings
@@ -159,7 +156,7 @@ STATICFILES_FINDERS = (
 
 # Pipeline - static files
 PIPELINE = {
-    # concatenate assets only -- GzipManifest deals with compression
+    # Concatenate assets only -- GzipManifest deals with compression
     'CSS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'JS_COMPRESSOR': 'pipeline.compressors.NoopCompressor',
     'STYLESHEETS': {
