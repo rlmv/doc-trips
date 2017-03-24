@@ -23,6 +23,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
 
+# Are we testing on Travis?
+TESTING = os.environ.get('TRAVIS', False)
+
 # AWS SECRET KEYS and CONFIG
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
@@ -111,7 +114,7 @@ CAS_LOGOUT_COMPLETELY = True
 LOGIN_URL = '/users/login/'
 
 # Security/SSL settings
-if not DEBUG:
+if not (DEBUG or TESTING):
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
