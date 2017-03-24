@@ -84,6 +84,7 @@ if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -105,6 +106,13 @@ CAS_LOGOUT_COMPLETELY = True
 
 # login_required decorator redirects to here. This is webauth login.
 LOGIN_URL = '/users/login/'
+
+# Security/SSL settings
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'fyt.urls'
 
