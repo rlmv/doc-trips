@@ -87,7 +87,6 @@
         <th class="col-sm-2"> Soft skills </th>
         <th> Comment </th>
         <th> Grader </th>
-        <th> </th>
     </tr>
     {% for grade in application.leader_supplement.grades.all %}
     <tr>
@@ -96,7 +95,6 @@
         <td> {{ grade.soft_skills }} </td>
         <td> {{ grade.comment }} </td>
         <td> {{ grade.grader }} </td>
-        <td> {{ grade|delete_link }} </td>
     </tr>
     {% endfor %}
     {% if application.leader_supplement.average_grade %}
@@ -118,7 +116,6 @@
         <th> Qualifications </th>
         <th> Comment </th>
         <th> Grader </th>
-        <th> </th>
     </tr>
     {% for grade in application.croo_supplement.grades.all %}
     <tr>
@@ -128,7 +125,6 @@
         <td> {{ grade.qualifications.all|join:", " }} </td>
         <td> {{ grade.comment }} </td>
         <td> {{ grade.grader }} </td>
-        <td> {{ grade|delete_link }} </td>
     </tr>
     {% endfor %}
     {% if application.croo_supplement.average_grade %}
