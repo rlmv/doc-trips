@@ -68,6 +68,10 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         _Choice('croo', 'Croo Applications', 'croo_applications'),
         _Choice('either', 'Leader OR Croo Applications', 'either_applications'),
         _Choice('both', 'Leader AND Croo Applications', 'both_applications'),
+        _Choice('incomplete_leader', 'Incomplete Leader Applications',
+                'incomplete_leader_applications'),
+        _Choice('incomplete_croo', 'Incomplete Croo Applications',
+                'incomplete_croo_applications'),
     ]
 
     def croo_applications(self, qs):
@@ -84,6 +88,14 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
 
     def both_applications(self, qs):
         return qs & Volunteer.objects.leader_and_croo_applications(
+            self.trips_year)
+
+    def incomplete_leader_applications(self, qs):
+        return qs & Volunteer.objects.incomplete_leader_applications(
+            self.trips_year)
+
+    def incomplete_croo_applications(self, qs):
+        return qs & Volunteer.objects.incomplete_croo_applications(
             self.trips_year)
 
     def filter(self, qs, value):
