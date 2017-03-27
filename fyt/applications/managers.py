@@ -102,15 +102,27 @@ class VolunteerManager(models.Manager):
 
         return self.filter(trips_year=trips_year).filter(pk__in=shared_pks)
 
-    # TODO: is this how we should define incomplete applications?
-
     def incomplete_leader_applications(self, trips_year):
-        leader_pks = pks(self.leader_applications(trips_year))
-        return self.filter(trips_year=trips_year).exclude(pk__in=leader_pks)
+        """
+        Return all leader applications which are incomplete.
+        """
+        return self.filter(
+            trips_year=trips_year,
+            leader_willing=True
+        ).exclude(
+            pk__in=pks(self.leader_applications(trips_year))
+        )
 
     def incomplete_croo_applications(self, trips_year):
-        croo_pks = pks(self.croo_applications(trips_year))
-        return self.filter(trips_year=trips_year).exclude(pk__in=croo_pks)
+        """
+        Return all croo applications which are incomplete.
+        """
+        return self.filter(
+            trips_year=trips_year,
+            croo_willing=True
+        ).exclude(
+            pk__in=pks(self.croo_applications(trips_year))
+        )
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)

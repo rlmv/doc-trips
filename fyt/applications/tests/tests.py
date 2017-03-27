@@ -486,11 +486,11 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_incomplete_leader_applications(self):
         qs = Volunteer.objects.incomplete_leader_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app3, self.app4, self.app5, self.app6, self.app7])
+        self.assertQsEqual(qs, [self.app3, self.app4, self.app5, self.app7])
 
     def test_incomplete_croo_applications(self):
         qs = Volunteer.objects.incomplete_croo_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app2, self.app4, self.app5, self.app6, self.app7])
+        self.assertQsEqual(qs, [self.app2, self.app4, self.app5, self.app6])
 
     def test_leaders(self):
         trips_year = self.init_trips_year()
