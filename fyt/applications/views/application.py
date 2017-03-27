@@ -430,6 +430,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
     template_name = 'applications/application_detail.html'
 
     volunteer_fields = [
+        ('Applying for trip leader','leader_willing'),
+        ('Applying for croo', 'croo_willing'),
         'class_year',
         'gender',
         'race_ethnicity',
