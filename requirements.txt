@@ -8,7 +8,7 @@ django==1.10
 django-bulk-update==1.1.10
 django-crispy-forms==1.6.0
 django-extensions==1.6.1
-django-debug-toolbar==1.5
+django-debug-toolbar==1.7
 django-filter==0.13.0
 django-pipeline==1.6.9
 django-postgrespool==0.3.0

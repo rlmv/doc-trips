@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.db.models.signals import post_migrate
@@ -35,3 +36,11 @@ urlpatterns = [
     url(r'^users/', include('fyt.users.urls', namespace='users')),
     url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
 ]
+
+
+# Install django-debug-toolbar
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

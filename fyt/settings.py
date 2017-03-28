@@ -87,11 +87,13 @@ INSTALLED_APPS = [
 ]
 if DEBUG:
     INSTALLED_APPS += ['debug_toolbar']
+    INTERNAL_IPS = ['127.0.0.1']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'fyt.middleware.CanonicalHostMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+] + (['debug_toolbar.middleware.DebugToolbarMiddleware'] if DEBUG else []) + [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
