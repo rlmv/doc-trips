@@ -1,5 +1,5 @@
 """
-Django CAS 1.0/2.0 authentication backend, adapted from 
+Django CAS 1.0/2.0 authentication backend, adapted from
 https://github.com/kstateome/django-cas to work with
 Dartmouth WebAuth.
 """
@@ -22,7 +22,7 @@ _DEFAULTS = {
     'CAS_GATEWAY': False,
     'CAS_PROXY_CALLBACK': None,
     'CAS_RESPONSE_CALLBACKS': None,
-    'CAS_CUSTOM_FORBIDDEN':None,
+    'CAS_CUSTOM_FORBIDDEN': None,
     'CAS_LOGOUT_REQUEST_ALLOWED': (),
     'CAS_USER_CREATION': True
 }

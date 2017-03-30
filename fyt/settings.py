@@ -112,9 +112,8 @@ AUTH_USER_MODEL = 'users.DartmouthUser'
 AUTHENTICATION_BACKENDS = (
     'fyt.webauth.backends.WebAuthBackend',
 )
-# Dartmouth WebAuth settings. TODO: move this to cas app?
+# Dartmouth WebAuth server
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
-CAS_LOGOUT_COMPLETELY = True
 
 # login_required decorator redirects to here; this is the Webauth login.
 LOGIN_URL = '/users/login/'
