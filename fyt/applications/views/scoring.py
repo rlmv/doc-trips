@@ -37,7 +37,7 @@ class IfScoringAvailable():
     Only allow grading once applications are closed
     """
     def dispatch(self, request, *args, **kwargs):
-        if not Timetable.objects.timetable().grading_available():
+        if not Timetable.objects.timetable().scoring_available:
             return render(request, 'applications/scoring_not_available.html')
         return super().dispatch(request, *args, **kwargs)
 

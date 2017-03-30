@@ -110,6 +110,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.make_director()
         self.make_grader()
         self.make_user()
+        self.open_scoring()
 
     score_urls = [
         reverse('applications:score:next'),
@@ -119,26 +120,23 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
     not_available = 'applications/scoring_not_available.html'
     no_applications = 'applications/no_applications.html'
 
-    def test_cant_score_before_application_deadline(self):
-        self.open_application()
+    def test_scoring_availability(self):
+        self.close_scoring()
         for url in self.score_urls:
             resp = self.app.get(url, user=self.director).maybe_follow()
             self.assertTemplateUsed(resp, self.not_available)
 
-    def test_can_score_after_application_deadline(self):
-        self.close_application()
+        self.open_scoring()
         for url in self.score_urls:
             resp = self.app.get(url, user=self.director).maybe_follow()
             self.assertTemplateNotUsed(resp, self.not_available)
 
     def test_scoring_permissions(self):
-        self.close_application()
         for url in self.score_urls + [reverse('applications:score:scoring')]:
             self.app.get(url, user=self.director)
             self.app.get(url, user=self.user, status=403)
 
     def test_score_application(self):
-        self.close_application()
         app = self.make_application(trips_year=self.trips_year)
 
         url = reverse('applications:score:next')
@@ -154,7 +152,6 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(score.trips_year, self.trips_year)
 
     def test_skip_application(self):
-        self.close_application()
         app = self.make_application(trips_year=self.trips_year)
 
         url = reverse('applications:score:next')
@@ -171,7 +168,6 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertTemplateUsed(resp, self.no_applications)
 
     def test_show_average_grade_in_messages(self):
-        self.close_application()
         self.make_application(trips_year=self.trips_year)
 
         for i in range(SHOW_SCORE_AVG_INTERVAL):

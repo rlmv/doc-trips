@@ -65,6 +65,16 @@ class ApplicationTestMixin():
         t.applications_close += timedelta(-1)
         t.save()
 
+    def open_scoring(self):
+        t = Timetable.objects.timetable()
+        t.scoring_available = True
+        t.save()
+
+    def close_scoring(self):
+        t = Timetable.objects.timetable()
+        t.scoring_available = False
+        t.save()
+
     def make_application(self, trips_year=None, **kwargs):
         if trips_year is None:
             trips_year = self.trips_year

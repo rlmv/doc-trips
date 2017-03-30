@@ -33,6 +33,12 @@ class Timetable(models.Model):
     applications_open = models.DateTimeField(default=timezone.now)
     applications_close = models.DateTimeField(default=timezone.now)
 
+    scoring_available = models.BooleanField(
+        default=False, help_text=(
+            "Turn this on to begin the scoring process. Graders will have "
+            "access to the scoring page when this is enabled."
+        )
+    )
     hide_volunteer_page = models.BooleanField(
         default=False, help_text=(
             "Enabling this will hide the database Volunteers page from "
@@ -81,12 +87,6 @@ class Timetable(models.Model):
         now = timezone.now()
         return (self.applications_open < now and
                 now < self.applications_close + GRACE_PERIOD)
-
-    def grading_available(self):
-        """
-        Is it before the application deadling?
-        """
-        return self.applications_close < timezone.now()
 
     def registration_available(self):
         """
