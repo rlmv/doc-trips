@@ -3,7 +3,7 @@
 {% for answer in answers %}
     <li class="list-group-item">
         <h5 class="list-group-item-heading">{{ answer.question.question }}</h5>
-        <p class="list-group-item-text">{{ answer.answer }}</p>
+        <p class="list-group-item-text">{{ answer.answer|linebreaks }}</p>
     </li>
 {% endfor %}
 </ul>
