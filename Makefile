@@ -25,7 +25,7 @@ install:
 
 deploy:
 	git push production master
-	heroku run migrate
+	heroku run manage migrate
 
 migrations:
 	$(MANAGE) makemigrations
