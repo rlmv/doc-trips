@@ -1,6 +1,10 @@
+import logging
 
 from django.conf import settings
 from django.shortcuts import redirect
+
+
+log = logging.getLogger(__name__)
 
 
 def CanonicalHostMiddleware(get_response):
@@ -24,6 +28,27 @@ def CanonicalHostMiddleware(get_response):
                 request.get_full_path()
             )
             return redirect(url, permanent=True)
+
+        return get_response(request)
+
+    return middleware
+
+
+def UserLoggerMiddleware(get_response):
+    """
+    Log the user and IP address to facilitate Papertrail debugging.
+    """
+    def middleware(request):
+
+        if settings.PRODUCTION:
+            header = 'HTTP_X_FORWARDED_FOR'
+            if request.META.get(header, None):
+                # Heroku sets the remote host last
+                ip = request.META[header].split(',')[-1].strip()
+            else:
+                ip = request.META['REMOTE_ADDR']
+
+            log.info("ip={} user={}".format(ip, request.user))
 
         return get_response(request)
 

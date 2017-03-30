@@ -106,6 +106,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'fyt.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
     'fyt.users.middleware.UserEmailRequiredMiddleware',  # fix email lookup failures
+    'fyt.middleware.UserLoggerMiddleware',
 ]
 
 AUTH_USER_MODEL = 'users.DartmouthUser'
