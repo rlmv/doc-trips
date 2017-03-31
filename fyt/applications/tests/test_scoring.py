@@ -142,6 +142,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
         resp.form['score'] = 3
+        resp.form['general'] = 'A comment'
         resp = resp.form.submit()
 
         self.assertEqual(len(app.scores.all()), 1)
