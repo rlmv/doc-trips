@@ -2,6 +2,7 @@
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
+from fyt.dartdm.lookup import dartdm_lookup
 from fyt.test import FytTestCase
 
 
@@ -31,3 +32,9 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
         data_list = ['Robert L. Marchman IV', 'a002bxd',
                      'Robert L. Marchman IV (Alum/76)']
         self.assertEqual(field.compress(data_list), answer)
+
+
+class DartdmLookupTestCase(FytTestCase):
+
+    def test_too_short_query(self):
+        self.assertEqual([], dartdm_lookup('A'))
