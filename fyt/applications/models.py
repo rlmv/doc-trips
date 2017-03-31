@@ -867,7 +867,6 @@ class Score(DatabaseModel):
     application = models.ForeignKey(
         Volunteer, editable=False, related_name='scores'
     )
-    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
 
     # We save this as a field instead of referencing grader.permissions
     # so that we can remember this info even after permissions change.
@@ -875,7 +874,21 @@ class Score(DatabaseModel):
         'was the score created by a croo head?', default=False, editable=False
     )
 
-    # ... TODO
+    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+
+    question1 = models.TextField('question 1', blank=True)
+    question2 = models.TextField('question 2', blank=True)
+    question3 = models.TextField('question 3', blank=True)
+    question4 = models.TextField('question 4', blank=True)
+    question5 = models.TextField('question 5', blank=True)
+    question6 = models.TextField('question 6', blank=True)
+
+    general = models.TextField(
+        "Given the notes you made above, please explain the holistic score "
+        "that you assigned. If applicable, please note if the applicant is "
+        "better qualified to be a trip leader or crooling, and please note "
+        "any identities."
+    )
 
     def save(self, **kwargs):
         """

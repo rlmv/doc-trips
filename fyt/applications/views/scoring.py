@@ -3,7 +3,8 @@ import logging
 from braces.views import FormMessagesMixin, SetHeadlineMixin
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit
+from crispy_forms.layout import Field, Layout, Submit
+from django import forms
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db import models
 from django.http import HttpResponseRedirect
@@ -68,6 +69,36 @@ class RedirectToNextScorableApplication(GraderPermissionRequired,
         return reverse('applications:score:add', kwargs=kwargs)
 
 
+class ScoreForm(forms.ModelForm):
+
+    class Meta:
+        model = Score
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            Field('question1', rows=1),
+            Field('question2', rows=1),
+            Field('question3', rows=1),
+            Field('question4', rows=1),
+            Field('question5', rows=1),
+            Field('question6', rows=1),
+            'score',
+            Field('general', rows=3),
+            FormActions(
+                Submit('submit', 'Submit Score'),
+                Submit(
+                    'skip', 'Skip this Application',
+                    css_class='btn-warning',
+                    formnovalidate=True  # Disable browser validation
+                ),
+            )
+        )
+
+
 class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
                        ExtraContextMixin, SetHeadlineMixin, FormMessagesMixin,
                        CreateView):
@@ -75,7 +106,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     Score a Volunteer application.
     """
     model = Score
-    fields = '__all__'
+    form_class = ScoreForm
     template_name = 'applications/grade.html'
     success_url = reverse_lazy('applications:score:next')
     form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
@@ -130,24 +161,6 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         form.instance.application = self.application
         form.instance.trips_year = TripsYear.objects.current()
         return super().form_valid(form)
-
-    def get_form(self, **kwargs):
-        """
-        Add a Skip button to the form
-        """
-        form = super().get_form(**kwargs)
-        form.helper = FormHelper(form)
-        form.helper.layout.append(
-            FormActions(
-                Submit('submit', 'Submit Score'),
-                Submit(
-                    'skip', 'Skip this Application',
-                    css_class='btn-warning',
-                    formnovalidate=True  # Disable browser validation
-                ),
-            )
-        )
-        return form
 
     def extra_context(self):
         return {
