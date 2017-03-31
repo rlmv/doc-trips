@@ -1,7 +1,11 @@
 
-from django.db.models import Q, Avg
+from collections import OrderedDict
+
+from django.db import models
+from django.db.models import Count, Q, Avg, Case, When, Sum
 from vanilla import ListView
 
+from fyt.applications.models import Score
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.users.models import DartmouthUser
@@ -53,7 +57,32 @@ def get_graders(trips_year):
         user.score_count = scores.count()
         user.score_avg = scores.aggregate(Avg('score'))['score__avg']
 
+        # Attach a histogram of scores for each user
+        # score_histogram[1] is the number of `1`s granted, etc.
+        def box(x):
+            return 'score{}'.format(x)
+
+        histogram = scores.annotate(**dict(
+            [box(x), OneIfTrue(score=x)]
+            for x, _ in Score.SCORE_CHOICES)
+        ).aggregate(
+            *(Sum(box(x)) for x, _ in Score.SCORE_CHOICES)
+        )
+
+        user.score_histogram = OrderedDict(
+            (x, histogram[box(x) + '__sum'])
+            for x, _ in Score.SCORE_CHOICES
+        )
+
     return qs
+
+
+def OneIfTrue(**kwargs):
+    return Case(
+        When(then=1, **kwargs),
+        default=0,
+        output_field=models.IntegerField()
+    )
 
 
 class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
@@ -80,5 +109,7 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
     def extra_context(self):
         return {
             'show_old_grades': users_with_old_grades(
-                self.get_trips_year()).exists()
+                self.get_trips_year()).exists(),
+            'score_choices': [x for x, _ in Score.SCORE_CHOICES]
+
         }

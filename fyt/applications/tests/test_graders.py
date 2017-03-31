@@ -49,6 +49,20 @@ class GraderViewsTestCase(FytTestCase):
         self.assertEqual(graders[0].score_count, 1)
         self.assertEqual(graders[0].score_avg, 1)
 
+    def test_get_graders_score_histogram(self):
+        mommy.make(Score, trips_year=self.trips_year, grader=self.grader, score=1)
+        mommy.make(Score, trips_year=self.trips_year, grader=self.grader, score=4)
+        graders = get_graders(self.trips_year)
+
+        histogram = graders[0].score_histogram
+        self.assertEqual(histogram, {
+            1: 1,
+            2: 0,
+            3: 0,
+            4: 1,
+            5: 0,
+            6: 0,
+        })
 
 # Tests for deprecated grade objects
 # Only apply in production to years 2015 & 2016
