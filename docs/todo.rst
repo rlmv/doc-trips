@@ -14,6 +14,7 @@ Upgrades
 
 Immediate
 ---------
+* Allow application extensions for specific users.
 * Use subqueries for get_graders (Django 1.11).
 * Move grading to a separate `grade` app?
 * Add more filter options
