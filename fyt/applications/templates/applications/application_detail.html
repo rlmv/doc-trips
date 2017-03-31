@@ -65,7 +65,10 @@
     {% for score in application.scores.all %}
     <tr>
         <td> {{ score.score }} </td>
-        <td> {{ score.grader }} </td>
+        <td>
+            {{ score.grader }}
+            <span class="label label-primary"> Croo Head </span>
+        </td>
         <td> {{ score|delete_link }} </td>
     <tr>
     {% endfor %}
