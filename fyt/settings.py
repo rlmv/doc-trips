@@ -94,7 +94,7 @@ if DEBUG:
     INTERNAL_IPS = ['127.0.0.1']
 
 MIDDLEWARE = [
-#    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'fyt.middleware.CanonicalHostMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ] + (['debug_toolbar.middleware.DebugToolbarMiddleware'] if DEBUG else []) + [
@@ -121,10 +121,10 @@ LOGIN_URL = '/users/login/'
 
 # Security/SSL settings
 if PRODUCTION:
-    # SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'fyt.urls'
 
