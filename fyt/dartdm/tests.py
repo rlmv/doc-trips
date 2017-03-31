@@ -1,4 +1,6 @@
 
+import unittest
+
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
@@ -34,7 +36,7 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
         self.assertEqual(field.compress(data_list), answer)
 
 
-class DartdmLookupTestCase(FytTestCase):
+class DartdmLookupTestCase(unittest.TestCase):
 
     def test_too_short_query(self):
         self.assertEqual([], dartdm_lookup('A'))
