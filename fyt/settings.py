@@ -141,7 +141,7 @@ DATABASES = {
 
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-CRISPY_FAIL_SILENTLY = not DEBUG
+CRISPY_FAIL_SILENTLY = PRODUCTION
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
