@@ -67,7 +67,9 @@
         <td> {{ score.score }} </td>
         <td>
             {{ score.grader }}
-            <span class="label label-primary"> Croo Head </span>
+            {% if score.croo_head %}
+                <span class="label label-primary"> Croo Head </span>
+            {% endif %}
             <br> <strong>Q1</strong>: {{ score.question1 }}
             <br> <strong>Q2</strong>: {{ score.question2 }}
             <br> <strong>Q3</strong>: {{ score.question3 }}
