@@ -524,6 +524,20 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         not_croo = self.make_application(trips_year=trips_year)
         self.assertQsEqual(Volunteer.objects.croo_members(trips_year), [croo])
 
+    def test_with_scores_ordering(self):
+        app1 = self.make_application()
+        app2 = self.make_application()
+        app2.add_score(self.make_grader(), 2)
+
+        qs = Volunteer.objects.with_scores(self.trips_year)
+        qs = qs.order_by('-norm_avg_score')
+
+        self.assertEqual(qs[0].avg_score, 2)
+        self.assertEqual(qs[0].norm_avg_score, 2)
+
+        self.assertEqual(qs[1].avg_score, None)
+        self.assertEqual(qs[1].norm_avg_score, 0)
+
 
 class ApplicationFormTestCase(FytTestCase):
 

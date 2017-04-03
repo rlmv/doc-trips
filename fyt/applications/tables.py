@@ -39,11 +39,8 @@ class _ApplicationTable(tables.Table):
     status = tables.Column(
         verbose_name='Status'
     )
-    avg_leader_grade = tables.Column(
-        verbose_name='Leader score', order_by=('-normalized_leader_grade')
-    )
-    avg_croo_grade = tables.Column(
-        verbose_name='Croo score', order_by=('-normalized_croo_grade')
+    avg_score = tables.Column(
+        verbose_name='Score', order_by='-norm_avg_score'
     )
     leader_application = tables.Column(
         verbose_name='Leader app',
@@ -83,10 +80,7 @@ class _ApplicationTable(tables.Table):
         url = reverse('db:volunteer:update_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
-    def render_avg_leader_grade(self, value):
-        return "%.1f" % value
-
-    def render_avg_croo_grade(self, value):
+    def render_avg_score(self, value):
         return "%.1f" % value
 
     def render_leader_application(self, value):

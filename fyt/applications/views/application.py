@@ -10,8 +10,6 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.db.models import Avg, Value as V
-from django.db.models.functions import Coalesce
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
@@ -381,31 +379,23 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
-        # Grades are coalesced so that ordering works properly on PostreSQL.
-        # Otherwise null values - of ungraded applications - come before the
-        # actual grades when ApplicationTable orders by the grades.
-        # Note that this issue won't appear on a dev sqlite database.
-        return (
-            super().get_queryset()
-            .annotate(avg_croo_grade=Avg('croo_supplement__grades__grade'))
-            .annotate(avg_leader_grade=Avg('leader_supplement__grades__grade'))
-            .annotate(normalized_croo_grade=Coalesce('avg_croo_grade', V(0.0)))
-            .annotate(normalized_leader_grade=Coalesce('avg_leader_grade', V(0.0)))
-            .only(
-                'applicant__netid',
-                'applicant__name',
-                'trips_year_id',
-                'status',
-                'leader_willing',
-                'croo_willing',
-                'community_building',
-                'risk_management',
-                'wilderness_skills',
-                'croo_training',
-                'fa_cert',
-                'fa_other',
-            )
-            .prefetch_related('answer_set')
+        return Volunteer.objects.with_scores(
+            self.kwargs['trips_year']
+        ).only(
+            'applicant__netid',
+            'applicant__name',
+            'trips_year_id',
+            'status',
+            'leader_willing',
+            'croo_willing',
+            'community_building',
+            'risk_management',
+            'wilderness_skills',
+            'croo_training',
+            'fa_cert',
+            'fa_other',
+        ).prefetch_related(
+            'answer_set'
         )
 
     def extra_context(self):

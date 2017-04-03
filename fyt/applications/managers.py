@@ -1,8 +1,9 @@
 import random
 
 from django.db import models
-from django.db.models import Case, Lookup, When
+from django.db.models import Avg, Case, Lookup, Value as V, When
 from django.db.models.fields import Field
+from django.db.models.functions import Coalesce
 
 from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
@@ -129,6 +130,23 @@ class VolunteerManager(models.Manager):
 
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
+
+    def with_scores(self, trips_year):
+        """
+        Return all applications for this year annotated with an `avg_score`
+        and a `norm_avg_score`.
+
+        Scores are coalesced into the normalized attribute so that, when
+        ordering on Postgres, null values come after the actual scores.
+        Note that this issue won't appear on a dev sqlite database.
+        """
+        return self.filter(
+            trips_year=trips_year
+        ).annotate(
+            avg_score=Avg('scores__score')
+        ).annotate(
+            norm_avg_score=Coalesce('avg_score', V(0.0))
+        )
 
     def next_to_score(self, grader):
         """
