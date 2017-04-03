@@ -102,6 +102,12 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
         self.assertEqual(app2, Volunteer.objects.next_to_score(self.croo_head))
 
+    def test_prefer_apps_with_fewer_scores(self):
+        app1 = self.make_application()
+        app2 = self.make_application()
+        self.make_scores(app2, 1)
+        self.assertEqual(app1, Volunteer.objects.next_to_score(self.director))
+
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 

@@ -1,7 +1,7 @@
 import random
 
 from django.db import models
-from django.db.models import Avg, Case, Lookup, Value as V, When
+from django.db.models import Avg, Case, Lookup, Min, Value as V, When
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 
@@ -167,9 +167,7 @@ class VolunteerManager(models.Manager):
           application must be graded at least once by a croo captain.
         * If the grader is a croo captain, prefer croo grades until each app
           has at least one score from a croo head.
-
-        TODO:
-        * Prefer applications with fewer grades.
+        * Applications with fewer graders are prioritized.
         """
         trips_year = TripsYear.objects.current()
 
@@ -214,6 +212,12 @@ class VolunteerManager(models.Manager):
                     default=NUM_SCORES
                 )
             )
+
+        # Pick an app with fewer scores
+        # TODO: use a subquery
+        qs = qs.filter(
+            scores__count=qs.aggregate(fewest=Min('scores__count'))['fewest']
+        )
 
         # Manually choose random element because .order_by('?') is buggy
         # See https://code.djangoproject.com/ticket/26390
