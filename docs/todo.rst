@@ -11,15 +11,13 @@ Upgrades
 * Upgrade to Django 1.11 on release
 * Upgrade packages
 * Split dependencies into dev/production files
+* Use subqueries for get_graders (Django 1.11).
 
 Immediate
 ---------
 * Allow application extensions for specific users.
-* Use subqueries for get_graders (Django 1.11).
-* Move grading to a separate `grade` app?
 * Add more filter options
 * Fix application filters / Django bug
-* Output application answers with newline formatting
 * Move trip assignment text from model to HTML.
 * Prefix ``cache_as`` attribute name with something
 * Add a croo waitlist. Needs to support people simultaneously being on the croo
@@ -30,16 +28,12 @@ Immediate
 * Add spreadsheets for various registration sub-categories
 * Remove Section-specific info from `availability` field
 * Remove `19s reference from `croo_willing` text
-* Fix race conditions around applications and registrations: *I think* if a user
-has two windows open, such that they both get directed to create a new application,
-and somehow submits both, then there will be two applications or registrations.
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
 * Remove directions from ExternalBus (don't work for cities). Just list coordinates.
 * Show leader itinerary on leader assignment page.
 * Refactor internal transport matrix and numbers
 * Validate that ``TripTemplates`` cannot use external stops (perhaps with Internal and ExternalStop proxy models?)
 * Restrict ``Trip`` route overrides to ``EXTERNAL`` routes.
-* Expose raid blog instructions edit field
 * Export foodboxes by section? (the spread sheet does have a section column, yes? so perhaps not necessary?)
 * Use global constants for transport attributes (eg. over_capacity) which are added to the ``Stops`` in GMaps directions for Internal and External stops.
 * Put bagel info constants onto a model.
@@ -68,6 +62,7 @@ Cosmetic
 
 Long term
 ---------
+* Expose raid blog instructions edit field
 * Add PDF uploads of maps and documents for trip templates
 * Validate ``trips_year`` consistancy between related objects
 * Add a preview link to leader and trippee assignment pages
