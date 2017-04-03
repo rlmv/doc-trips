@@ -1,21 +1,12 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
-{% load detail_view %}
 {% load answers %}
-
-{# generic grading view for both Croo and Leader applications #}
 
 {% block header %}
   <h3> {{ headline }} </h3>
 {% endblock %}
 
 {% block content %}
-
-{% if already_graded_by %}
-<div>
-  <p><strong>Already graded by</strong> {{ already_graded_by|join:", " }} </p>
-</div>
-{% endif %}
 
 <p> Read the application completely before assigning it a score:
   <ul class="list-unstyled">
@@ -28,15 +19,6 @@
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
 {% display_answers application %}
-
-{% if extra_fields %}
-<div class="well">
-  {% for label, field in extra_fields %}
-  <p><strong>{{ label }}:</strong> {{ field }} </p>
-  {% endfor %}
-</div>
-{% endif %}
-
 
 <div>
   {% crispy form %}
