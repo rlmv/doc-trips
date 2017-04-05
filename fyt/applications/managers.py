@@ -195,16 +195,23 @@ class VolunteerManager(models.Manager):
 
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
+            else:
+                qs = qs.filter(scores__count__lt=NUM_SCORES)
 
         # Otherwise, reserve one score on each app for a croo head
         else:
-            qs = qs.filter(
-                scores__count__lt=Case(
-                    When(Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True),
-                         then=(NUM_SCORES - 1)),
-                    default=NUM_SCORES
-                )
-            )
+            qs = qs.filter(scores__count__lt=NUM_SCORES)
+            # qs = qs.filter(
+            #     scores__count__lt=Case(
+            #         When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
+            #         When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
+            #         default=NUM_SCORES,
+            #         output_field=models.IntegerField()
+            #     )
+            # )
+            #
+            # import sqlparse
+            # print(sqlparse.format(str(qs.query), reindent=True, keyword_case='upper'))
 
         # Pick an app with fewer scores
         # TODO: use a subquery
