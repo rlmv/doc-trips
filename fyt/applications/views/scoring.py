@@ -26,11 +26,18 @@ SKIP = 'skip'
 logger = logging.getLogger(__name__)
 
 
-class Scoring(GraderPermissionRequired, TemplateView):
+class Scoring(GraderPermissionRequired, ExtraContextMixin, TemplateView):
     """
     Landing page for scoring.
     """
     template_name = 'applications/scoring.html'
+
+    def extra_context(self):
+        return {
+            'progress': Volunteer.objects.score_progress(
+                TripsYear.objects.current()
+            )
+        }
 
 
 class IfScoringAvailable():

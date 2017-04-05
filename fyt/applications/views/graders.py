@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Count, Q, Avg, Case, When, Sum
 from vanilla import ListView
 
-from fyt.applications.models import Score
+from fyt.applications.models import Score, Volunteer
 from fyt.db.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.users.models import DartmouthUser
@@ -110,6 +110,7 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
         return {
             'show_old_grades': users_with_old_grades(
                 self.get_trips_year()).exists(),
-            'score_choices': [x for x, _ in Score.SCORE_CHOICES]
-
+            'score_choices': [x for x, _ in Score.SCORE_CHOICES],
+            'progress': Volunteer.objects.score_progress(
+                self.get_trips_year())
         }

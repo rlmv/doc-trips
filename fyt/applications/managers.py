@@ -1,7 +1,7 @@
 import random
 
 from django.db import models
-from django.db.models import Avg, Case, Lookup, Min, Q, Value as V, When
+from django.db.models import Avg, Case, Count, F, Lookup, Min, Q, Sum, Value as V, When
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 
@@ -218,6 +218,30 @@ class VolunteerManager(models.Manager):
             return random.choice(qs)
 
         return None
+
+    def score_progress(self, trips_year):
+        """
+        Return a tuple containing the number of scores given so far for each
+        application and the total number of scores required to fully grade
+        all applications.
+
+        This ignores scores more than NUM_SCORES per application.
+        """
+        NUM_SCORES = self.model.NUM_SCORES
+
+        qs = self.leader_or_croo_applications(trips_year)
+
+        total = qs.count() * NUM_SCORES
+
+        complete = sum(
+            min(x.scores__count, NUM_SCORES)
+            for x in qs.annotate(Count('scores')))
+
+        return {
+            'complete': complete,
+            'total': total,
+            'percentage': round(complete / total * 100)
+        }
 
 
 def TrueIf(**kwargs):

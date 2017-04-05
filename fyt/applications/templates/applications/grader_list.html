@@ -1,12 +1,15 @@
 {% extends "db/base.html" %}
 
 {% load dict %}
+{% load progress %}
 
 {% block header %}
 <h2> Graders </h2>
 {% endblock %}
 
 {% block content %}
+
+{% scoring_progress progress %}
 
 <table class="table table-condensed">
 

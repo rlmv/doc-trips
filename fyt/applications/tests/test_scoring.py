@@ -120,6 +120,25 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
         self.assertEqual(app2, Volunteer.objects.next_to_score(self.croo_head))
 
+    def test_score_progress(self):
+        # 1/3 scores
+        app1 = self.make_application()
+        self.make_scores(app1, 1)
+
+        # 10/3 scores becomes 3/3
+        app2 = self.make_application()
+        self.make_scores(app2, 10)
+
+        # 0/3 scores
+        app3 = self.make_application()
+
+        progress = {
+            'complete': 4,
+            'total': 9,
+            'percentage': 44
+        }
+        self.assertEqual(progress, Volunteer.objects.score_progress(self.trips_year))
+
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
