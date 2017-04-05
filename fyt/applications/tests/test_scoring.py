@@ -109,10 +109,15 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(app1, Volunteer.objects.next_to_score(self.director))
 
     def test_wtf_query(self):
+        # Scored croo app
         app1 = self.make_application()
-        self.make_scores(app1, 2)
+        self.make_scores(app1, 1)
         mommy.make(Score, application=app1, score=3, croo_head=True)
+
+        # Unscored leader app - should be prefered because it has fewer
+        # scores and no more croo apps required croo head scores.
         app2 = self.make_application(croo_willing=False)
+
         self.assertEqual(app2, Volunteer.objects.next_to_score(self.croo_head))
 
 
