@@ -247,7 +247,7 @@ class VolunteerManager(models.Manager):
         return {
             'complete': complete,
             'total': total,
-            'percentage': round(complete / total * 100)
+            'percentage': round(complete / total * 100) if total else 100
         }
 
 

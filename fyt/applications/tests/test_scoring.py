@@ -139,6 +139,15 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         }
         self.assertEqual(progress, Volunteer.objects.score_progress(self.trips_year))
 
+    def test_score_progress_with_no_scores(self):
+        # Don't divide by zero
+        progress = {
+            'complete': 0,
+            'total': 0,
+            'percentage': 100
+        }
+        self.assertEqual(progress, Volunteer.objects.score_progress(self.trips_year))
+
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
