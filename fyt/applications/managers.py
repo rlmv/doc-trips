@@ -1,7 +1,7 @@
 import random
 
 from django.db import models
-from django.db.models import Avg, Case, Lookup, Min, Value as V, When
+from django.db.models import Avg, Case, Lookup, Min, Q, Value as V, When
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 
@@ -171,7 +171,7 @@ class VolunteerManager(models.Manager):
         """
         trips_year = TripsYear.objects.current()
 
-        croo_app_pks = self.croo_applications(trips_year)
+        croo_app_pks = pks(self.croo_applications(trips_year))
 
         NUM_SCORES = self.model.NUM_SCORES
 
@@ -185,19 +185,13 @@ class VolunteerManager(models.Manager):
             skips__grader=grader
         ).annotate(
             models.Count('scores')
-        ).filter(
-            scores__count__lt=NUM_SCORES
-        ).annotate(
-            has_croo_head_score=TrueIf(scores__croo_head=True)
-        ).annotate(
-            is_croo_application=TrueIf(pk__in=croo_app_pks)
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
         if grader.has_perm('permissions.can_score_as_croo_head'):
             needs_croo_head_score = qs.filter(
-                has_croo_head_score=False,
-                is_croo_application=True)
+                Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True)
+            )
 
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
@@ -206,8 +200,7 @@ class VolunteerManager(models.Manager):
         else:
             qs = qs.filter(
                 scores__count__lt=Case(
-                    When(is_croo_application=True,
-                         has_croo_head_score=False,
+                    When(Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True),
                          then=(NUM_SCORES - 1)),
                     default=NUM_SCORES
                 )

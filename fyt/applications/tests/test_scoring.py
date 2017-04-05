@@ -41,7 +41,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def make_scores(self, app, n):
         for i in range(n):
-            mommy.make(Score, trips_year=self.trips_year, application=app)
+            mommy.make(Score, croo_head=False, trips_year=self.trips_year, application=app)
 
     def test_only_score_apps_for_this_year(self):
         last_year = self.init_old_trips_year()
@@ -107,6 +107,13 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         app2 = self.make_application()
         self.make_scores(app2, 1)
         self.assertEqual(app1, Volunteer.objects.next_to_score(self.director))
+
+    def test_wtf_query(self):
+        app1 = self.make_application()
+        self.make_scores(app1, 2)
+        mommy.make(Score, application=app1, score=3, croo_head=True)
+        app2 = self.make_application(croo_willing=False)
+        self.assertEqual(app2, Volunteer.objects.next_to_score(self.croo_head))
 
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
