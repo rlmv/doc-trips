@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django_webtest import WebTest
-from model_mommy import mommy
+from model_mommy import mommy, random_gen
 
 from fyt.db.models import TripsYear
 from fyt.permissions.permissions import (
@@ -14,6 +14,9 @@ from fyt.permissions.permissions import (
     trip_leader_trainers,
 )
 from fyt.users.models import DartmouthUser
+
+
+mommy.generators.add('fyt.users.models.NetIdField', random_gen.gen_string)
 
 
 class FytTestCase(WebTest):

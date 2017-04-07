@@ -12,8 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 
 import dj_database_url
-from model_mommy.generators import gen_string
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -268,10 +266,6 @@ LOGGING = {
     },
 }
 
-# model-mommy testing
-MOMMY_CUSTOM_FIELDS_GEN = {
-    'fyt.users.models.NetIdField': gen_string,
-}
 
 # django-filters: Remove "Filter" and "Exclude" help text
 FILTERS_HELP_TEXT_EXCLUDE = False
