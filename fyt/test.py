@@ -16,6 +16,10 @@ from fyt.permissions.permissions import (
 from fyt.users.models import DartmouthUser
 
 
+def gen_class_year():
+    return 2016
+
+mommy.generators.add('fyt.applications.models.ClassYearField', gen_class_year)
 mommy.generators.add('fyt.users.models.NetIdField', random_gen.gen_string)
 
 

@@ -12,6 +12,7 @@ from ..models import (
     LeaderSupplement,
     PortalContent,
     Question,
+    validate_class_year,
     Volunteer,
 )
 
@@ -309,6 +310,13 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         app.add_score(self.make_user(), 3)
         app.add_score(self.make_grader(), 4)
         self.assertEqual(app.average_score(), 3.5)
+
+    def test_class_year_validation(self):
+        validate_class_year(2015)
+        with self.assertRaises(ValidationError):
+            validate_class_year(19)
+        with self.assertRaises(ValidationError):
+            validate_class_year(3200)
 
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):

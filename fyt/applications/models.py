@@ -204,6 +204,15 @@ def validate_condition_true(value):
         raise ValidationError('You must agree to this condition')
 
 
+def validate_class_year(value):
+    if value < 2000 or 2100 < value:
+        raise ValidationError('Class year must look like 2017, 2020, etc.')
+
+
+class ClassYearField(models.PositiveIntegerField):
+    validators = [validate_class_year]
+
+
 class Volunteer(MedicalMixin, DatabaseModel):
     """
     Contains shared information for Croo and Leader applications.
@@ -288,7 +297,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     # ----- general information, not shown to graders ------
 
-    class_year = models.PositiveIntegerField()
+    class_year = ClassYearField()
     gender = models.CharField(max_length=25)
     race_ethnicity = models.CharField(
         'Race/Ethnicity', max_length=255, blank=True
