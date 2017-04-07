@@ -401,8 +401,8 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
     def extra_context(self):
         # TODO: use/make a generic FilterView mixin?
         filter = ApplicationFilterSet(
-            self.request.GET, queryset=self.object_list,
-            trips_year=self.kwargs['trips_year']
+            self.kwargs['trips_year'], self.request.GET,
+            queryset=self.object_list
         )
         filter_qs = preload_questions(filter.qs, self.kwargs['trips_year'])
         table = ApplicationTable(filter_qs, self.request)

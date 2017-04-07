@@ -5,16 +5,11 @@ import django_filters
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django.db.models import Q
+from django.forms import Select
 
 from fyt.applications.models import Volunteer
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
-
-
-STATUS = 'status'
-COMPLETE = 'complete'
-AVAILABLE_SECTIONS = 'available_sections'
-AVAILABLE_TRIPTYPES = 'available_triptypes'
 
 
 class AvailableSectionFilter(django_filters.ModelChoiceFilter):
@@ -108,11 +103,56 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         return action(qs)
 
 
+STATUS = 'status'
+CLASS_YEAR = 'class_year'
+COMPLETE = 'complete'
+AVAILABLE_SECTIONS = 'available_sections'
+AVAILABLE_TRIPTYPES = 'available_triptypes'
+CLASS_2_3 = 'leader_supplement__class_2_3_paddler'
+LEDYARD_LEVEL_1 = 'leader_supplement__ledyard_level_1'
+LEDYARD_LEVEL_2 = 'leader_supplement__ledyard_level_2'
+CLIMBING_COURSE = 'leader_supplement__climbing_course'
+DMC_LEADER = 'leader_supplement__dmc_leader'
+DMBC_LEADER = 'leader_supplement__dmbc_leader'
+CNT_LEADER = 'leader_supplement__cnt_leader'
+SAFETY_LEAD = 'croo_supplement__safety_lead_willing'
+KITCHEN_LEAD = 'croo_supplement__kitchen_lead_willing'
+
+SHORT_LABELS = {
+    STATUS: 'Status',
+    CLASS_YEAR: 'Class Year',
+    CLASS_2_3: 'Class II/III Paddler',
+    LEDYARD_LEVEL_1: 'Ledyard Level 1',
+    LEDYARD_LEVEL_2: 'Ledyard Level 2',
+    CLIMBING_COURSE: 'DOC Climbing Course',
+    DMC_LEADER: 'DMC Leader',
+    DMBC_LEADER: 'DMBC Leader',
+    CNT_LEADER: 'CNT Leader',
+    SAFETY_LEAD: 'Safety Lead Willing',
+    KITCHEN_LEAD: 'Kitchen Magician Willing',
+    AVAILABLE_SECTIONS: 'Available Sections',
+    AVAILABLE_TRIPTYPES: 'Available Trip Types',
+}
+
+BLANK = '--------'
+
 class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = Volunteer
-        fields = [STATUS]
+        fields = [
+            STATUS,
+            CLASS_YEAR,
+            CLASS_2_3,
+            LEDYARD_LEVEL_1,
+            LEDYARD_LEVEL_2,
+            CLIMBING_COURSE,
+            DMC_LEADER,
+            DMBC_LEADER,
+            CNT_LEADER,
+            SAFETY_LEAD,
+            KITCHEN_LEAD
+        ]
 
     name = django_filters.MethodFilter(action='lookup_user_by_name')
     netid = django_filters.MethodFilter(action='lookup_user_by_netid')
@@ -129,18 +169,38 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
         return qs.filter(applicant__netid__iexact=value)
 
-    def __init__(self, *args, **kwargs):
-        trips_year = kwargs.pop('trips_year')
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.filters[COMPLETE] = ApplicationTypeFilter(trips_year)
-
-        # add a blank choice
-        self.filters[STATUS].field.choices.insert(0, ('', 'Any'))
-        self.filters[STATUS].field.label = 'Status'
-
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
+
+        # Add blank choices
+        default_blank = [
+            STATUS,
+            CLASS_2_3,
+            LEDYARD_LEVEL_1,
+            LEDYARD_LEVEL_2,
+            CLIMBING_COURSE,
+            DMC_LEADER,
+            DMBC_LEADER,
+            CNT_LEADER,
+        ]
+        for field in default_blank:
+            self.filters[field].field.choices.insert(0, (None, BLANK))
+            self.filters[field].field.default = None
+
+        # Provide a better default to NullBooleanFields
+        for field in [SAFETY_LEAD, KITCHEN_LEAD]:
+            self.filters[field].field.widget = Select(
+                choices=[(None, BLANK),
+                         (True, 'Yes'),
+                         (False, 'No')])
+
+        # Use abbreviated labels
+        for field, label in SHORT_LABELS.items():
+            self.filters[field].field.label = label
 
         self.form.helper = FilterSetFormHelper(self.form)
 
@@ -157,9 +217,19 @@ class FilterSetFormHelper(FormHelper):
         self.layout = Layout(
             filter_row(COMPLETE),
             filter_row(STATUS),
+            filter_row(CLASS_YEAR),
             filter_row('name'),
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
             filter_row(AVAILABLE_TRIPTYPES),
+            filter_row(CLASS_2_3),
+            filter_row(LEDYARD_LEVEL_1),
+            filter_row(LEDYARD_LEVEL_2),
+            filter_row(CLIMBING_COURSE),
+            filter_row(DMC_LEADER),
+            filter_row(DMBC_LEADER),
+            filter_row(CNT_LEADER),
+            filter_row(SAFETY_LEAD),
+            filter_row(KITCHEN_LEAD),
             filter_row(Submit('submit', 'Filter', css_class='btn-block'))
         )
