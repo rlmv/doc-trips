@@ -160,23 +160,6 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertEqual(app.needs, '')
         self.assertIsNone(app.epipen)
 
-    def test_qualification_tag_is_migrated(self):
-        """ Test whether M2M fields are handled correctly (that is, not at all)"""
-        from fyt.applications.models import QualificationTag, CrooApplicationGrade
-        trips_year = self.init_trips_year()
-        qual = mommy.make(
-            QualificationTag,
-            trips_year=trips_year
-        )
-        grade = mommy.make(
-            CrooApplicationGrade,
-            trips_year=trips_year,
-            qualifications=[qual]
-        )
-        forward()
-        self.assertEqual(len(QualificationTag.objects.all()), 2)
-        self.assertEqual(len(CrooApplicationGrade.objects.all()), 1)
-
     def test_croo_is_migrated(self):
         trips_year = self.init_trips_year()
         croo = mommy.make(Croo, trips_year=trips_year)

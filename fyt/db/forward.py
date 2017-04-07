@@ -10,7 +10,6 @@ from .models import TripsYear
 from fyt.applications.models import (
     ApplicationInformation,
     PortalContent,
-    QualificationTag,
     Question,
     Volunteer as Application,
 )
@@ -48,7 +47,6 @@ class Forward:
         ApplicationInformation,
         Question,
         PortalContent,
-        QualificationTag,
         Settings,
         RaidInfo,
         Stop,
