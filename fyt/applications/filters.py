@@ -6,14 +6,13 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django.db.models import Q
 
-from fyt.applications.models import QualificationTag, Volunteer
+from fyt.applications.models import Volunteer
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
 STATUS = 'status'
 COMPLETE = 'complete'
-CROO_QUALIFICATIONS = 'croo_supplement__grades__qualifications'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
 
@@ -109,17 +108,6 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         return action(qs)
 
 
-class CrooQualificationFilter(django_filters.ModelMultipleChoiceFilter):
-    """Filter croo leaders based on recommended qualifications."""
-    def __init__(self, trips_year):
-        qs = QualificationTag.objects.filter(trips_year=trips_year)
-        super().__init__(name=CROO_QUALIFICATIONS,
-                         label='Croo Qualifications',
-                         queryset=qs)
-        # TODO: this causes a HUGE number of queries. WHY?
-        # widget=forms.CheckboxSelectMultiple()
-
-
 class ApplicationFilterSet(django_filters.FilterSet):
 
     class Meta:
@@ -151,7 +139,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[STATUS].field.choices.insert(0, ('', 'Any'))
         self.filters[STATUS].field.label = 'Status'
 
-        self.filters[CROO_QUALIFICATIONS] = CrooQualificationFilter(trips_year)
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
 
@@ -174,6 +161,5 @@ class FilterSetFormHelper(FormHelper):
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
             filter_row(AVAILABLE_TRIPTYPES),
-            filter_row(CROO_QUALIFICATIONS),
             filter_row(Submit('submit', 'Filter', css_class='btn-block'))
         )
