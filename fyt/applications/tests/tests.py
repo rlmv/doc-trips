@@ -81,18 +81,18 @@ class ApplicationTestMixin():
         return make_application(trips_year=trips_year, **kwargs)
 
 
-class ApplicationModelTestCase(ApplicationTestMixin, FytTestCase):
+class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_must_be_LEADER_to_be_assigned_trip(self):
         trips_year = self.init_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
             application = mommy.make(
-                    Volunteer,
-                    status=getattr(Volunteer, status),
-                    trips_year=trips_year,
-                    trippee_confidentiality=True,
-                    in_goodstanding_with_college=True,
-                    trainings=True
+                Volunteer,
+                status=getattr(Volunteer, status),
+                trips_year=trips_year,
+                trippee_confidentiality=True,
+                in_goodstanding_with_college=True,
+                trainings=True
             )
             application.assigned_trip = mommy.make(Trip, trips_year=trips_year)
             with self.assertRaises(ValidationError):
