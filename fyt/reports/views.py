@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q
+from django.db.models import Avg, Count, Q
 from django.http import HttpResponse
 from vanilla import View
 
@@ -71,11 +71,24 @@ class VolunteerCSV(GenericReportView):
         'hometown',
         'clubs/interests',
         'co-leader',
+        'avg score'
     ]
+
+    def get_header(self):
+        max_score_count = self.get_queryset().aggregate(
+            Count('scores')
+        )['scores__count']
+
+        return self.header + ['score {}'.format(i)
+                              for i in range(1, max_score_count + 1)]
 
     def get_queryset(self):
         qs = Application.objects.leader_or_croo_applications(
             trips_year=self.kwargs['trips_year']
+        ).annotate(
+            avg_score=Avg('scores__score')
+        ).prefetch_related(
+            'scores'
         )
         return preload_questions(qs, self.kwargs['trips_year'])
 
@@ -93,6 +106,9 @@ class VolunteerCSV(GenericReportView):
             application.hometown,
             application.personal_activities,
             application.leader_supplement.co_leader,
+            application.avg_score,
+        ] + [
+            score.score for score in application.scores.all()
         ]
 
 

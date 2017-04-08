@@ -54,6 +54,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         app.croo_willing = False
         app.save()
         app.answer_question(question, 'An answer')
+        app.add_score(self.make_grader(), 4)
+        app.add_score(self.make_directorate(), 5)
 
         target = [{
             'name': app.name,
@@ -67,6 +69,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'hometown': app.hometown,
             'clubs/interests': app.personal_activities,
             'co-leader': app.leader_supplement.co_leader,
+            'avg score': '4.5',
+            'score 1': '5',
+            'score 2': '4',
         }]
 
         self.assertViewReturns('db:reports:all_apps', target)
