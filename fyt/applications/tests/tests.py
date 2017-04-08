@@ -727,8 +727,10 @@ class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
 
 class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
+    def setUp(self):
+        self.init_trips_year()
+
     def test_directorate_can_normally_see_volunteer_pages(self):
-        trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=False)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.make_director())
@@ -737,7 +739,6 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         res = self.app.get(url, user=self.make_tlt())
 
     def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
-        trips_year = self.init_trips_year()
         mommy.make(Timetable, hide_volunteer_page=True)
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
         res = self.app.get(url, user=self.make_director())
@@ -746,7 +747,6 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         res = self.app.get(url, user=self.make_tlt())
 
     def test_volunteer_index_only_shows_complete_applications(self):
-        trips_year = self.init_trips_year()
         complete = self.make_application()
         incomplete = self.make_application(croo_willing=False, leader_willing=False)
 
@@ -754,6 +754,7 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         res = self.app.get(url, user=self.make_director())
         url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
         res = res.click(href=url)
+
         self.assertContains(res, str(complete))
         self.assertNotContains(res, str(incomplete))
 
