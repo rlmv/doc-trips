@@ -39,6 +39,9 @@ class _ApplicationTable(tables.Table):
     status = tables.Column(
         verbose_name='Status'
     )
+    gender = tables.Column(
+        verbose_name='Gender'
+    )
     avg_score = tables.Column(
         verbose_name='Score', order_by='-norm_avg_score'
     )
