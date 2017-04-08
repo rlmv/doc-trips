@@ -10,5 +10,5 @@ def display_answers(application):
     Display the answers to dynamic application questions.
     """
     return {
-        'answers': application.answer_set.all(),
+        'answers': application.get_answers()
     }

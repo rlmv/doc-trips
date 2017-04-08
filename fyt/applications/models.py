@@ -479,6 +479,14 @@ class Volunteer(MedicalMixin, DatabaseModel):
         """
         return Question.objects.filter(trips_year=self.trips_year)
 
+    @cache_as('_get_answers')
+    def get_answers(self):
+        return self.answer_set.all().select_related('question')
+
+    @cache_as('_get_scores')
+    def get_scores(self):
+        return self.scores.all().select_related('grader')
+
     @property
     def leader_application_complete(self):
         """
@@ -533,6 +541,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
             grader=grader
         )
 
+    @cache_as('_average_score')
     def average_score(self):
         """
         Return the average score given to the application.
