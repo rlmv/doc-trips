@@ -71,8 +71,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'clubs/interests': app.personal_activities,
             'co-leader': app.leader_supplement.co_leader,
             'avg score': '4.3',
-            'score 1': '5',
-            'score 2': '4',
+            'score 1': '4',
+            'score 2': '5',
             'score 3': '4',
         }]
 
