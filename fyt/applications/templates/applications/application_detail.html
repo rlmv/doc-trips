@@ -61,23 +61,35 @@
         <th class="col-sm-1"> Score </th>
         <th> Grader </th>
         <th> </th>
+        <th> </th>
     </tr>
     {% for score in application.scores.all %}
     <tr>
         <td> {{ score.score }} </td>
         <td>
-            {{ score.grader }}
+            <strong>{{ score.grader }}</strong>
             {% if score.croo_head %}
                 <span class="label label-primary"> Croo Head </span>
             {% endif %}
-            <br> <strong>Q1</strong>: {{ score.question1 }}
-            <br> <strong>Q2</strong>: {{ score.question2 }}
-            <br> <strong>Q3</strong>: {{ score.question3 }}
-            <br> <strong>Q4</strong>: {{ score.question4 }}
-            <br> <strong>Q5</strong>: {{ score.question5 }}
-            <br> <strong>Q6</strong>: {{ score.question6 }}
-            <br> <strong>Overall</strong>: {{ score.general }}
+
+            <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
+                <p>
+                  <br> <strong>Q1</strong>: {{ score.question1 }}
+                  <br> <strong>Q2</strong>: {{ score.question2 }}
+                  <br> <strong>Q3</strong>: {{ score.question3 }}
+                  <br> <strong>Q4</strong>: {{ score.question4 }}
+                  <br> <strong>Q5</strong>: {{ score.question5 }}
+                  <br> <strong>Q6</strong>: {{ score.question6 }}
+              </p>
+            </div>
+
+            <p>{{ score.general }} </p>
+
+            <a role="button" data-toggle="collapse" href="#scoreSpecifics{{ forloop.counter }}" aria-expanded="false" aria-controls="scoreSpecifics{{ forloop.counter }}">
+                see more <i class="fa fa-caret-down"></i>
+            </a>
         </td>
+
         <td> {{ score|delete_link }} </td>
     <tr>
     {% endfor %}
