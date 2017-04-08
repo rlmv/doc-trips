@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, Max, Q
 from django.http import HttpResponse
 from vanilla import View
 
@@ -62,7 +62,7 @@ class VolunteerCSV(GenericReportView):
     header = [
         'name',
         'netid',
-        'avg score'
+        'avg score',
         'status',
         'leader app',
         'croo app',
@@ -75,12 +75,16 @@ class VolunteerCSV(GenericReportView):
     ]
 
     def get_header(self):
-        max_score_count = self.get_queryset().aggregate(
+        score_count_max = Application.objects.leader_or_croo_applications(
+            trips_year=self.kwargs['trips_year']
+        ).annotate(
             Count('scores')
-        )['scores__count']
+        ).aggregate(
+            Max('scores__count')
+        )['scores__count__max']
 
         return self.header + ['score {}'.format(i)
-                              for i in range(1, max_score_count + 1)]
+                              for i in range(1, score_count_max + 1)]
 
     def get_queryset(self):
         qs = Application.objects.leader_or_croo_applications(
@@ -97,6 +101,7 @@ class VolunteerCSV(GenericReportView):
         return [
             user.name,
             user.netid,
+            application.avg_score,
             application.status,
             yes_no(application.leader_application_complete),
             yes_no(application.croo_application_complete),
@@ -106,7 +111,6 @@ class VolunteerCSV(GenericReportView):
             application.hometown,
             application.personal_activities,
             application.leader_supplement.co_leader,
-            application.avg_score,
         ] + [
             score.score for score in application.scores.all()
         ]
