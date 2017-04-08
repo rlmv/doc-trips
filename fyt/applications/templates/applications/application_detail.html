@@ -73,14 +73,12 @@
             {% endif %}
 
             <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
-                <p>
-                  <br> <strong>Q1</strong>: {{ score.question1 }}
-                  <br> <strong>Q2</strong>: {{ score.question2 }}
-                  <br> <strong>Q3</strong>: {{ score.question3 }}
-                  <br> <strong>Q4</strong>: {{ score.question4 }}
-                  <br> <strong>Q5</strong>: {{ score.question5 }}
-                  <br> <strong>Q6</strong>: {{ score.question6 }}
-              </p>
+              <p><strong>Question 1:</strong> {{ score.question1 }}</p>
+              <p><strong>Question 2:</strong> {{ score.question2 }}</p>
+              <p><strong>Question 3:</strong> {{ score.question3 }}</p>
+              <p><strong>Question 4:</strong> {{ score.question4 }}</p>
+              <p><strong>Question 5:</strong> {{ score.question5 }}</p>
+              <p><strong>Question 6:</strong> {{ score.question6 }}</p>
             </div>
 
             <p>{{ score.general }} </p>
