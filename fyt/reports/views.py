@@ -62,6 +62,7 @@ class VolunteerCSV(GenericReportView):
     header = [
         'name',
         'netid',
+        'avg score'
         'status',
         'leader app',
         'croo app',
@@ -71,7 +72,6 @@ class VolunteerCSV(GenericReportView):
         'hometown',
         'clubs/interests',
         'co-leader',
-        'avg score'
     ]
 
     def get_header(self):
