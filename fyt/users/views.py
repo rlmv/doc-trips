@@ -1,11 +1,12 @@
 from django.contrib import auth
+from django.contrib.auth.mixins import LoginRequiredMixin
 from vanilla import UpdateView
 
 from fyt.users.models import DartmouthUser
 from fyt.utils.forms import crispify
 
 
-class UpdateEmail(UpdateView):
+class UpdateEmail(LoginRequiredMixin, UpdateView):
     model = DartmouthUser
     fields = ['email']
     template_name = 'users/email_form.html'
@@ -14,7 +15,7 @@ class UpdateEmail(UpdateView):
         return self.request.user
 
     def get_form(self, **kwargs):
-        return crispify(super(UpdateEmail, self).get_form(**kwargs), 'Update')
+        return crispify(super().get_form(**kwargs), 'Update')
 
     def get_success_url(self):
-        return self.request.GET[auth.REDIRECT_FIELD_NAME]
+        return self.request.GET.get(auth.REDIRECT_FIELD_NAME, '/')

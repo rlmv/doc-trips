@@ -67,25 +67,34 @@ class NetIdFieldTestCase(FytTestCase):
 
 class UserEmailMiddlewareTestCase(FytTestCase):
 
-    def test_user_with_no_email_must_manually_add_email(self):
-        user = DartmouthUser.objects.create(
+    def setUp(self):
+        self.user = DartmouthUser.objects.create(
             netid='d34898z', name='test', email='')
-        resp = self.app.get('/', user=user, status=302).follow()
-        self.assertEqual(resp.request.path, reverse('users:update_email'))
+        self.update_url = reverse('users:update_email')
+
+    def test_user_with_no_email_must_manually_add_email(self):
+        resp = self.app.get('/', user=self.user, status=302).follow()
+        self.assertEqual(resp.request.path, self.update_url)
         resp.form['email'] = 'd34898z@test.com'
         resp = resp.form.submit().follow()
         # redirects back to original location
         self.assertEqual(resp.request.path, '/')
         # and updates email
-        user = DartmouthUser.objects.get(pk=user.pk)
-        self.assertEqual(user.email, 'd34898z@test.com')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'd34898z@test.com')
+
+    def test_update_email_does_not_need_next_in_querystring(self):
+        resp = self.app.get(self.update_url, user=self.user)
+        resp.form['email'] = 'd34898z@test.com'
+        resp = resp.form.submit().follow()
+        self.assertEqual(resp.request.path, '/')
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.email, 'd34898z@test.com')
 
     @override_settings(CAS_LOGOUT_COMPLETELY=False)
     def test_do_not_ask_for_email_when_logging_out(self):
-        user = DartmouthUser.objects.create(
-            netid='d34898z', name='test', email='')
-        resp = self.app.get(reverse('users:logout'), user=user).follow()
-        self.assertFalse(resp.request.path.startswith(reverse('users:update_email')))
+        resp = self.app.get(reverse('users:logout'), user=self.user).follow()
+        self.assertFalse(resp.request.path.startswith(self.update_url))
 
 
 class UserUrlsTestCase(FytTestCase):
