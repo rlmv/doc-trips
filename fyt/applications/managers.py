@@ -162,12 +162,16 @@ class VolunteerManager(models.Manager):
         * has been graded fewer than NUM_SCORES times
 
         Furthermore:
-        * If the grader is not a croo captain, don't add the last score to an
-          app which hasn't been scored by a croo captain; that is, every croo
-          application must be graded at least once by a croo captain.
         * If the grader is a croo captain, prefer croo grades until each app
           has at least one score from a croo head.
         * Applications with fewer graders are prioritized.
+
+        TODO:
+        * If the grader is not a croo captain, don't add the last score to an
+          app which hasn't been scored by a croo captain; that is, every croo
+          application must be graded at least once by a croo captain. This is
+          currently not working because of what seems like a bug in the Django
+          ORM.
         """
         trips_year = TripsYear.objects.current()
 
@@ -185,6 +189,8 @@ class VolunteerManager(models.Manager):
             skips__grader=grader
         ).annotate(
             models.Count('scores')
+        ).filter(
+            scores__count__lt=NUM_SCORES
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
@@ -195,23 +201,19 @@ class VolunteerManager(models.Manager):
 
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
-            else:
-                qs = qs.filter(scores__count__lt=NUM_SCORES)
 
+        # TODO: make this work
         # Otherwise, reserve one score on each app for a croo head
-        else:
-            qs = qs.filter(scores__count__lt=NUM_SCORES)
-            # qs = qs.filter(
-            #     scores__count__lt=Case(
-            #         When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
-            #         When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
-            #         default=NUM_SCORES,
-            #         output_field=models.IntegerField()
-            #     )
-            # )
-            #
-            # import sqlparse
-            # print(sqlparse.format(str(qs.query), reindent=True, keyword_case='upper'))
+        # else:
+        #     qs = qs.filter(scores__count__lt=NUM_SCORES)
+        #     qs = qs.filter(
+        #         scores__count__lt=Case(
+        #             When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
+        #             When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
+        #             default=NUM_SCORES,
+        #             output_field=models.IntegerField()
+        #         )
+        #     )
 
         # Pick an app with fewer scores
         # TODO: use a subquery
