@@ -21,6 +21,12 @@ def yes_no(value):
     return 'yes' if value else 'no'
 
 
+def fmt_float(value):
+    if value is None:
+        return ''
+    return '{:.1f}'.format(value)
+
+
 class GenericReportView(DatabaseReadPermissionRequired,
                         TripsYearMixin, AllVerbsMixin, View):
     # TODO use a ListView here?
@@ -101,7 +107,7 @@ class VolunteerCSV(GenericReportView):
         return [
             user.name,
             user.netid,
-            application.avg_score,
+            fmt_float(application.avg_score),
             application.status,
             yes_no(application.leader_application_complete),
             yes_no(application.croo_application_complete),
