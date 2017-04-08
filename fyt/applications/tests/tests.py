@@ -725,7 +725,7 @@ class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(list(croo.croo_members.all()), [application])
 
 
-class DbVolunteerPagesAccessTestCase(FytTestCase):
+class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_directorate_can_normally_see_volunteer_pages(self):
         trips_year = self.init_trips_year()
@@ -744,6 +744,18 @@ class DbVolunteerPagesAccessTestCase(FytTestCase):
         res = self.app.get(url, user=self.make_grader(), status=403)
         res = self.app.get(url, user=self.make_directorate(), status=403)
         res = self.app.get(url, user=self.make_tlt())
+
+    def test_volunteer_index_only_shows_complete_applications(self):
+        trips_year = self.init_trips_year()
+        complete = self.make_application()
+        incomplete = self.make_application(croo_willing=False, leader_willing=False)
+
+        url = reverse('db:landing_page', kwargs={'trips_year': trips_year})
+        res = self.app.get(url, user=self.make_director())
+        url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
+        res = res.click(href=url)
+        self.assertContains(res, str(complete))
+        self.assertNotContains(res, str(incomplete))
 
 
 class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
