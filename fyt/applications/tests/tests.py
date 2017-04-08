@@ -732,7 +732,7 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_directorate_can_normally_see_volunteer_pages(self):
         mommy.make(Timetable, hide_volunteer_page=False)
-        url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
+        url = reverse('db:volunteer:index', kwargs={'trips_year': self.trips_year})
         res = self.app.get(url, user=self.make_director())
         res = self.app.get(url, user=self.make_grader(), status=403)
         res = self.app.get(url, user=self.make_directorate())
@@ -740,7 +740,7 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_hiding_volunteer_page_restricts_access_to_directors_only(self):
         mommy.make(Timetable, hide_volunteer_page=True)
-        url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
+        url = reverse('db:volunteer:index', kwargs={'trips_year': self.trips_year})
         res = self.app.get(url, user=self.make_director())
         res = self.app.get(url, user=self.make_grader(), status=403)
         res = self.app.get(url, user=self.make_directorate(), status=403)
@@ -750,9 +750,9 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         complete = self.make_application()
         incomplete = self.make_application(croo_willing=False, leader_willing=False)
 
-        url = reverse('db:landing_page', kwargs={'trips_year': trips_year})
+        url = reverse('db:landing_page', kwargs={'trips_year': self.trips_year})
         res = self.app.get(url, user=self.make_director())
-        url = reverse('db:volunteer:index', kwargs={'trips_year': trips_year})
+        url = reverse('db:volunteer:index', kwargs={'trips_year': self.trips_year})
         res = res.click(href=url)
 
         self.assertContains(res, str(complete))
