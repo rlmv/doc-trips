@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 from .managers import QuestionManager, VolunteerManager
 
@@ -852,6 +853,7 @@ class Score(DatabaseModel):
     """
     class Meta:
         unique_together = ['grader', 'application']
+        ordering = ['created_at']
 
     SCORE_CHOICES = (
         (1, "1 -- Bad application -- I really don't want this person to be a "
@@ -876,6 +878,8 @@ class Score(DatabaseModel):
     application = models.ForeignKey(
         Volunteer, editable=False, related_name='scores'
     )
+
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
 
     # We save this as a field instead of referencing grader.permissions
     # so that we can remember this info even after permissions change.
@@ -921,12 +925,15 @@ class Skip(DatabaseModel):
     """
     class Meta:
         unique_together = ['grader', 'application']
+        ordering = ['created_at']
 
     grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
 
     application = models.ForeignKey(
         Volunteer, editable=False, related_name='skips'
     )
+
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
 
 
 # Deprecated models (contain historical data only)
