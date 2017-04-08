@@ -19,10 +19,10 @@ def cache_as(name):
     """
     def decorator(func):
         @wraps(func)
-        def wrapper(obj, *args, **kwargs):
-            if not hasattr(obj, name):
-                setattr(obj, name, func(obj, *args, **kwargs))
-            return getattr(obj, name)
+        def wrapper(self):
+            if not hasattr(self, name):
+                setattr(self, name, func(self))
+            return getattr(self, name)
         return wrapper
     return decorator
 
