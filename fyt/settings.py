@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     'fyt.reports',
     'fyt.safety',
     'fyt.timetable',
+    'fyt.training',
     'fyt.transport',
     'fyt.trips',
     'fyt.users',
