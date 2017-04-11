@@ -12,5 +12,12 @@ class SessionForm(forms.ModelForm):
         fields = '__all__'
 
         widgets = {
-            'time': DateTimePicker(options={'inline': True})
+            # See http://eonasdan.github.io/bootstrap-datetimepicker/
+            # for more options.
+            'time': DateTimePicker(options={
+                'format': 'MM/DD/YYYY HH:mm',
+                'inline': True,
+                'sideBySide': True,
+                'stepping': 15,
+            })
         }
