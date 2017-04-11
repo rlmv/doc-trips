@@ -14,6 +14,9 @@ class Training(DatabaseModel):
     name = models.CharField(max_length=64)
     description = models.TextField(blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Session(DatabaseModel):
     """
@@ -25,6 +28,9 @@ class Session(DatabaseModel):
     training = models.ForeignKey(Training)
     time = models.DateTimeField()
     duration = models.DurationField()
+
+    def __str__(self):
+        return "{}: {}".format(self.training, self.time)
 
 #
 # class Signup(DatabaseModel):

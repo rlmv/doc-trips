@@ -1,0 +1,16 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h1> Training Sessions
+    <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
+        <i class="fa fa-plus"></i> Add Session
+    </a>
+</h1>
+{% endblock %}
+
+{% block content %}
+{% for session in sessions %}
+    {{ session }}
+{% endfor %}
+{% endblock %}
