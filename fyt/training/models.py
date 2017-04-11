@@ -30,7 +30,8 @@ class Session(DatabaseModel):
     duration = models.DurationField()
 
     def __str__(self):
-        return "{}: {}".format(self.training, self.time)
+        return "{}: {}".format(self.training,
+                               self.time.strftime('%x %H:%M'))
 
 #
 # class Signup(DatabaseModel):
