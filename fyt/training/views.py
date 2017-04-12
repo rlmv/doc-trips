@@ -33,9 +33,11 @@ class SessionList(DatabaseListView):
 
 class SessionDetail(DatabaseDetailView):
     model = Session
+    template_name = 'training/session_detail.html'
     fields = [
         'time',
         'duration',
+        ('registered', 'attendee_set')
     ]
 
 

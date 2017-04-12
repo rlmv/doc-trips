@@ -43,4 +43,7 @@ class Attendee(DatabaseModel):
     sessions = models.ManyToManyField(Session, blank=True)
 
     def __str__(self):
-        return "Attendee {}".format(self.volunteer)
+        return str(self.volunteer)
+
+    def detail_url(self):
+        return self.volunteer.detail_url()

@@ -42,7 +42,14 @@ def detail(db_object, fields=None):
             field = db_object._meta.get_field(field_name)
             value = getattr(db_object, field_name)
         except FieldDoesNotExist:
-            value = getattr(db_object, field_name)()
+
+            value = getattr(db_object, field_name)
+
+            # Handle related managers
+            if isinstance(value, models.Manager):
+                value = value.all()
+            else:
+                value = value()
 
             # Link to object, if possible
             # (Added for Registration section & triptype M2M fields)
