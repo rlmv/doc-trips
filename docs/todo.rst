@@ -13,6 +13,11 @@ Upgrades
 * Split dependencies into dev/production files
 * Use subqueries for get_graders (Django 1.11).
 
+Training
+--------
+* Resolve date/time string localization inconsistencies.
+* Make a nice widget for Session.duration, or just set an end time.
+
 Immediate
 ---------
 * Allow application extensions for specific users.
