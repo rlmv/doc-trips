@@ -9,11 +9,15 @@
   {% if headline %}
   {{ headline }}
   {% else %}
-  Edit {{ view.model|verbose_name|title }} 
+  Edit {{ view.model|verbose_name|title }}
   {% endif %}
 </h2>
 {% endblock header %}
 
 {% block content %}
 {% crispy form %}
+{% endblock %}
+
+{% block scripts %}
+{{ form.media }}
 {% endblock %}

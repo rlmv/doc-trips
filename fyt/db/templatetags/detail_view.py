@@ -20,6 +20,7 @@ def detail(db_object, fields=None):
     passed as (label, accessor) tuples, eg ('Section', 'get_section_name').
     """
 
+    # TODO: fix this
     if not fields:
         fields = db_object._meta.get_all_field_names()
 

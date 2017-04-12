@@ -10,7 +10,11 @@
 {% endblock %}
 
 {% block content %}
+<table class="table table-condensed">
 {% for session in sessions %}
-    {{ session }}
+    <tr>
+        <td>{{ session|detail_link }}</td>
+    </tr>
 {% endfor %}
+</table>
 {% endblock %}
