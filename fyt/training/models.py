@@ -30,6 +30,15 @@ class Session(DatabaseModel):
     time = models.DateTimeField()
     duration = models.DurationField()
 
+    def attendee_emails(self):
+        """Emails for all registered attendees."""
+        return self.attendee_set.values_list(
+            'volunteer__applicant__email', flat=True)
+
+    # TODO: move to view
+    def attendee_emails_str(self):
+        return "; ".join(self.attendee_emails())
+
     def __str__(self):
         return "{}: {}".format(self.training,
                                self.time.strftime('%x %H:%M'))

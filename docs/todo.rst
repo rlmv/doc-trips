@@ -20,6 +20,7 @@ Training
 
 Immediate
 ---------
+* Rewrite display_view logic
 * Allow application extensions for specific users.
 * Add more filter options
 * Fix application filters / Django bug
