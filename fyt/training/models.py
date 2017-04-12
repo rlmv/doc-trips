@@ -1,6 +1,7 @@
 
 from django.db import models
 
+from fyt.applications.models import Volunteer
 from fyt.db.models import DatabaseModel
 
 
@@ -25,7 +26,7 @@ class Session(DatabaseModel):
     class Meta:
         ordering = ['time']
 
-    training = models.ForeignKey(Training)
+    training = models.ForeignKey(Training, on_delete=models.PROTECT)
     time = models.DateTimeField()
     duration = models.DurationField()
 
@@ -33,10 +34,13 @@ class Session(DatabaseModel):
         return "{}: {}".format(self.training,
                                self.time.strftime('%x %H:%M'))
 
-#
-# class Signup(DatabaseModel):
-#     """
-#     A user's registration for a particular training session.
-#     """
-#     volunteer = models.ForeignKey(Volunteer)
-#     session = models.ForeignKey(Session)
+
+class Attendee(DatabaseModel):
+    """
+    A volunteer attending trainings.
+    """
+    volunteer = models.OneToOneField(Volunteer)
+    sessions = models.ManyToManyField(Session, blank=True)
+
+    def __str__(self):
+        return "Attendee {}".format(self.volunteer)

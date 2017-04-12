@@ -2,7 +2,7 @@
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 
-from fyt.training.models import Session
+from fyt.training.models import Attendee, Session
 
 
 class SessionForm(forms.ModelForm):
@@ -20,4 +20,14 @@ class SessionForm(forms.ModelForm):
                 'sideBySide': True,
                 'stepping': 15,
             })
+        }
+
+
+class SignupForm(forms.ModelForm):
+
+    class Meta:
+        model = Attendee
+        fields = ['sessions']
+        widgets = {
+            'sessions': forms.CheckboxSelectMultiple()
         }
