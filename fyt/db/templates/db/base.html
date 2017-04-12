@@ -51,6 +51,11 @@
     </li>
 
     <li>
+      <a href="#"> <i class="fa fa-fw fa-language"></i> Training <i class="fa arrow"></i> </a>
+      <ul class="nav nav-stacked">
+          <li><a href="{% url 'db:session:list' trips_year=trips_year %}"> Sessions </a></li>
+      </ul>
+    <li>
       <a href="#"> <i class="fa fa-fw fa-envelope"></i> Email Lists <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
 	<li> <a href="{% url 'db:emails:applicants' trips_year=trips_year %}"> Applicants </a> </li>
