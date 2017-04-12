@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block header %}
-<h1>Volunteer Portal <small> Trips {{ trips_year }} </small></h1>
+<h1>Volunteers <small> Trips {{ trips_year }} </small></h1>
 {% endblock %}
 
 {% block content %}
@@ -12,8 +12,6 @@
 <strong>
 {% if timetable.applications_available %}
 <p><a href="{% url 'applications:apply' %}"> <i class="fa fa-edit"></i> Edit your application &mdash; available until {{ timetable.applications_close }} </a></p>
-{% else %}
-<p> Trip and Croo Applications are not available at this time </p>
 {% endif %}
 </strong>
 
@@ -25,6 +23,9 @@
 {% else %}
 <p> The status of your application is not available at this time. </p>
 {% endif %}
+
+<h2> Trainings </h2>
+<p> <a href="{% url 'training:signup' %}">Sign up for Trip Leader and Croo Trainings </a> </p>
 
 {% if is_trip_leader %}
 {% if timetable.leader_assignment_available %}
