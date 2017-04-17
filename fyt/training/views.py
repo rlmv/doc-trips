@@ -36,8 +36,9 @@ class SessionDetail(DatabaseDetailView):
     model = Session
     template_name = 'training/session_detail.html'
     fields = [
-        'time',
-        'duration',
+        'date',
+        'start_time',
+        'end_time',
         'registered',
         ('registered emails', 'registered_emails_str'),
         'completed'

@@ -1,8 +1,20 @@
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Row, Layout, Submit
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
 
 from fyt.training.models import Attendee, Session
+
+
+DATE_OPTIONS = {
+    'format': 'MM/DD/YYYY',
+}
+
+TIME_OPTIONS = {
+    'format': 'HH:mm',
+    'stepping': 15,
+}
 
 
 class SessionForm(forms.ModelForm):
@@ -14,13 +26,23 @@ class SessionForm(forms.ModelForm):
         widgets = {
             # See http://eonasdan.github.io/bootstrap-datetimepicker/
             # for more options.
-            'time': DateTimePicker(options={
-                'format': 'MM/DD/YYYY HH:mm',
-                'inline': True,
-                'sideBySide': True,
-                'stepping': 15,
-            })
+            'date': DateTimePicker(options=DATE_OPTIONS),
+            'start_time': DateTimePicker(options=TIME_OPTIONS),
+            'end_time': DateTimePicker(options=TIME_OPTIONS)
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            'training',
+            Row(
+                Div('date', css_class='col-sm-4'),
+                Div('start_time', css_class='col-sm-4'),
+                Div('end_time', css_class='col-sm-4'),
+            ),
+            Submit('submit', 'Save')
+        )
 
 
 class AttendanceForm(forms.ModelForm):
