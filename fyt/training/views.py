@@ -88,6 +88,7 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
 class CanRegister(LoginRequiredMixin, UserPassesTestMixin):
     """Check if the Volunteer can register for trainings."""
     raise_exception = True
+    permission_denied_message = "You are not a Leader or a Croo Member."
 
     def test_func(self):
         try:

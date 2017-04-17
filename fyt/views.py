@@ -2,6 +2,7 @@
 from braces.views import SuperuserRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
+from django.utils.encoding import force_text
 from vanilla import TemplateView
 
 
@@ -18,13 +19,16 @@ class RaiseError(LoginRequiredMixin, SuperuserRequiredMixin, TemplateView):
             "Test error. This is not a bug. Raised by {}".format(request.user))
 
 
-def permission_denied(request):
+def permission_denied(request, exception):
     """
     Custom 403 page.
 
     Show the db navigation if we are already in the db.
     """
-    default_context = {'base_template': 'base.html'}
+    default_context = {
+        'base_template': 'base.html',
+        'exception': force_text(exception)
+    }
 
     if request.path == '/db/':
         # Does not have a trips_year kwarg. Use the base template.
