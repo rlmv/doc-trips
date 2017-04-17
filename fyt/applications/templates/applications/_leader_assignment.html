@@ -5,7 +5,7 @@
 
 {% if trip %}
 <ul class="list-group">
-  <li class="list-group-item"><h2 class="list-group-item-heading"> Trip Assignment <small> {{ trip }}: {{ trip.template.description_summary }} </small></h2> </li>
+  <li class="list-group-item"><h2 class="list-group-item-heading"> <small> {{ trip }}: {{ trip.template.description_summary }} </small></h2> </li>
   <li class="list-group-item"><strong> Trip Type </strong> {{ trip.template.triptype }}</li>
   <li class="list-group-item"><strong> Section {{ trip.section.name }} </strong> {{ trip.section.leader_date_str }} </li>
   <li class="list-group-item"><strong> Leaders </strong> {{ trip.leaders.all|join:", " }} </li>
@@ -41,9 +41,9 @@
 
 <h3> Packing List </h3>
 <p> {{ trip.template.triptype.packing_list|linebreaks }}
+</div>
 
 {% else %}
-<p> You are not currently assigned to a trip. </p>
+    <p> You are not currently assigned to a trip. </p>
 {% endif %}
-  </div>
 </div>

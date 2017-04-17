@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load trip_assignment %}
 
 {% block header %}
 <h1>Volunteers <small> Trips {{ trips_year }} </small></h1>
@@ -10,33 +11,29 @@
 
 <h2> Trip Leader and Croo Application </h2>
 <strong>
-{% if timetable.applications_available %}
-<p><a href="{% url 'applications:apply' %}"> <i class="fa fa-edit"></i> Edit your application &mdash; available until {{ timetable.applications_close }} </a></p>
+{% if applications_available %}
+<p><a href="{% url 'applications:apply' %}"> <i class="fa fa-edit"></i> Edit your application &mdash; available until {{ applications_close }} </a></p>
 {% endif %}
 </strong>
 
 {% include "applications/_application_complete.html" %}
 
 <h2> Application Status </h2>
-{% if timetable.application_status_available %}
-<p>{{ status_description|safe }}</p>
-{% else %}
-<p> The status of your application is not available at this time. </p>
-{% endif %}
+{% if application_status_available %}
+    <p>{{ status_description|safe }}</p>
 
-{% if timetable.application_status_available and show_trainings %}
-<h2> Trainings </h2>
-<p> <a href="{% url 'training:signup' %}">Register for Trip Leader and Croo Trainings </a> </p>
-{% endif %}
+    {% if show_trainings %}
+        <h2> Trainings </h2>
+        <p> <a href="{% url 'training:signup' %}"> <i class="fa fa-calendar"></i> Register for Trip Leader and Croo Trainings </a></p>
+    {% endif %}
 
-{% if is_trip_leader %}
-{% if timetable.leader_assignment_available %}
-{% with trip=application.assigned_trip %}
-{% include "applications/_leader_assignment.html" %}
-{% endwith %}
+    {% if show_trip_assignment %}
+        <h2> Trip Assignment </h2>
+        {% trip_assignment application.assigned_trip content %}
+    {% endif %}
+
 {% else %}
-<p> Information about Trip assignments is not available at this time. </p>
-{% endif %}
+    <p> The status of your application is not available at this time. </p>
 {% endif %}
 
 {% endblock %}

@@ -18,19 +18,33 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        context['timetable'] = Timetable.objects.timetable()
-        context['trips_year'] = trips_year = TripsYear.objects.current()
-        context['content'] = content = PortalContent.objects.get(trips_year=trips_year)
+
+        timetable = Timetable.objects.timetable()
+        trips_year = TripsYear.objects.current()
+        content = PortalContent.objects.get(trips_year=trips_year)
+
+        context['trips_year'] = trips_year
+        context['content'] = content
+        context['applications_available'] = (
+            timetable.applications_available)
+        context['application_status_available'] = (
+            timetable.application_status_available)
+        context['applications_close'] = (
+            timetable.applications_close)
 
         try:
             application = Volunteer.objects.get(
                 trips_year=trips_year,
-                applicant=self.request.user
-            )
-            status_description = content.get_status_description(application.status)
-            context['is_trip_leader'] = (
+                applicant=self.request.user)
+
+            status_description = content.get_status_description(
+                application.status)
+            context['show_trip_assignment'] = (
+                timetable.leader_assignment_available and
                 application.status == Volunteer.LEADER)
-            context['show_trainings'] = trainings_available(application)
+            context['show_trainings'] = (
+                trainings_available(application))
+
         except Volunteer.DoesNotExist:
             application = None
             status_description = "You did not submit an application"
