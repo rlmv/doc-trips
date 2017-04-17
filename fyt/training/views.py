@@ -84,6 +84,12 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
 
 # Volunteer-facing views
 
+def trainings_available(volunteer):
+    allowed = [Volunteer.LEADER,
+               Volunteer.CROO,
+               Volunteer.LEADER_WAITLIST]
+    return volunteer.status in allowed
+
 
 class CanRegister(LoginRequiredMixin, UserPassesTestMixin):
     """Check if the Volunteer can register for trainings."""
@@ -98,11 +104,7 @@ class CanRegister(LoginRequiredMixin, UserPassesTestMixin):
         except Volunteer.DoesNotExist:
             return False
 
-        allowed = [Volunteer.LEADER,
-                   Volunteer.CROO,
-                   Volunteer.LEADER_WAITLIST]
-
-        return volunteer.status in allowed
+        return trainings_available(volunteer)
 
 
 class Signup(CanRegister, UpdateView):

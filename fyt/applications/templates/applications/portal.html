@@ -24,8 +24,10 @@
 <p> The status of your application is not available at this time. </p>
 {% endif %}
 
+{% if timetable.application_status_available and show_trainings %}
 <h2> Trainings </h2>
 <p> <a href="{% url 'training:signup' %}">Register for Trip Leader and Croo Trainings </a> </p>
+{% endif %}
 
 {% if is_trip_leader %}
 {% if timetable.leader_assignment_available %}
