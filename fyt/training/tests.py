@@ -14,11 +14,11 @@ class SessionModelTestCase(FytTestCase):
         self.attendee = mommy.make(
             Attendee,
             trips_year=self.trips_year,
-            sessions=[self.session],
+            registered_sessions=[self.session],
             volunteer__applicant__email='test@gmail.com')
 
     def test_attendee_emails(self):
-        self.assertQsEqual(self.session.attendee_emails(), ['test@gmail.com'])
+        self.assertQsEqual(self.session.registered_emails(), ['test@gmail.com'])
 
 
 class AttendenceFormTestCase(FytTestCase):
@@ -27,7 +27,7 @@ class AttendenceFormTestCase(FytTestCase):
         self.init_trips_year()
         self.session = mommy.make(Session, trips_year=self.trips_year)
         self.attendee = mommy.make(Attendee, trips_year=self.trips_year,
-                                   sessions=[self.session])
+                                   registered_sessions=[self.session])
         self.not_attending = mommy.make(Attendee, trips_year=self.trips_year)
 
     def test_queryset_is_all_registered_volunteers(self):

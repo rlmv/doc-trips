@@ -37,7 +37,7 @@ class AttendanceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['completed'] = forms.ModelMultipleChoiceField(
-            queryset=self.instance.attendee_set.all(),
+            queryset=self.instance.registered.all(),
             initial=self.instance.completed.all(),
             widget=forms.CheckboxSelectMultiple())
 
@@ -51,7 +51,7 @@ class SignupForm(forms.ModelForm):
 
     class Meta:
         model = Attendee
-        fields = ['sessions']
+        fields = ['registered_sessions']
         widgets = {
-            'sessions': forms.CheckboxSelectMultiple()
+            'registered_sessions': forms.CheckboxSelectMultiple()
         }

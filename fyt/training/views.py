@@ -36,8 +36,8 @@ class SessionDetail(DatabaseDetailView):
     fields = [
         'time',
         'duration',
-        ('registered', 'attendee_set'),
-        ('emails', 'attendee_emails_str'),
+        'registered',
+        ('registered emails', 'registered_emails_str'),
         'completed'
     ]
 
