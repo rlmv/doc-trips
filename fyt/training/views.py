@@ -1,6 +1,7 @@
 import logging
 
 from braces.views import SetHeadlineMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
@@ -83,7 +84,27 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
 
 # Volunteer-facing views
 
-class Signup(UpdateView):
+
+class CanRegister(LoginRequiredMixin, UserPassesTestMixin):
+    """Check if the Volunteer can register for trainings."""
+    raise_exception = True
+
+    def test_func(self):
+        try:
+            volunteer = Volunteer.objects.get(
+                trips_year=TripsYear.objects.current(),
+                applicant=self.request.user)
+        except Volunteer.DoesNotExist:
+            return False
+
+        allowed = [Volunteer.LEADER,
+                   Volunteer.CROO,
+                   Volunteer.LEADER_WAITLIST]
+
+        return volunteer.status in allowed
+
+
+class Signup(CanRegister, UpdateView):
 
     model = Attendee
     form_class = SignupForm

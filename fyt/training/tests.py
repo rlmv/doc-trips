@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
+from fyt.applications.models import Volunteer
 from fyt.test import FytTestCase
 from fyt.training.models import Session, Attendee
 from fyt.training.forms import AttendanceForm
@@ -61,7 +62,7 @@ class TrainingViewsTestCase(FytTestCase):
         self.make_tlt()
         self.make_safety_lead()
 
-    def test_db_views_permissions(self):
+    def test_db_view_permissions(self):
         session = mommy.make(Session, trips_year=self.trips_year)
         update_urls = [
             session.update_url(),
@@ -84,3 +85,19 @@ class TrainingViewsTestCase(FytTestCase):
         self.app.get(url, user=self.user, status=403)
         self.app.get(url, user=self.croo_head, status=403)
         self.app.get(url, user=self.safety_lead, status=403)
+
+    def test_external_view_permissions(self):
+        results = {
+            Volunteer.CROO: 200,
+            Volunteer.LEADER: 200,
+            Volunteer.LEADER_WAITLIST: 200,
+            Volunteer.PENDING: 403,
+            Volunteer.PENDING: 403,
+            Volunteer.CANCELED: 403,
+            Volunteer.REJECTED: 403
+        }
+
+        url = reverse('training:signup')
+        for status, code in results.items():
+            app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
+            self.app.get(url, user=app.applicant, status=code)
