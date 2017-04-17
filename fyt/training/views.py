@@ -60,6 +60,9 @@ class SessionUpdate(DatabaseUpdateView):
 class SessionDelete(DatabaseDeleteView):
     model = Session
 
+    def get_success_url(self):
+        return self.object.index_url()
+
 
 class RecordAttendance(DatabaseUpdateView):
     model = Session

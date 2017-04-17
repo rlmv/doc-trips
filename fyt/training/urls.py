@@ -14,7 +14,7 @@ from fyt.training.views import (
 
 # Backend database views
 session_urlpatterns = [
-    url(DB_REGEX['LIST'], SessionList.as_view(), name='list'),
+    url(DB_REGEX['LIST'], SessionList.as_view(), name='index'),
     url(DB_REGEX['CREATE'], NewSession.as_view(), name='create'),
     url(DB_REGEX['DETAIL'], SessionDetail.as_view(), name='detail'),
     url(DB_REGEX['UPDATE'], SessionUpdate.as_view(), name='update'),
