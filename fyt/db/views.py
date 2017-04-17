@@ -143,10 +143,9 @@ class DatabaseListView(DatabaseReadPermissionRequired, ExtraContextMixin,
     pass
 
 
-class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
-                         FormInvalidMessageMixin,
-                         SetExplanationMixin, SetHeadlineMixin,
-                         TripsYearMixin, CrispyFormMixin, CreateView):
+class BaseCreateView(ExtraContextMixin, FormInvalidMessageMixin,
+                     SetExplanationMixin, SetHeadlineMixin, TripsYearMixin,
+                     CrispyFormMixin, CreateView):
 
     fields = '__all__'
     template_name = 'db/create.html'
@@ -175,8 +174,11 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, ExtraContextMixin,
         return helper
 
     def get_success_url(self):
-        """ TODO: for now... """
         return self.object.detail_url()
+
+
+class DatabaseCreateView(DatabaseEditPermissionRequired, BaseCreateView):
+    """Create view with default database permissions."""
 
 
 class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
@@ -222,8 +224,8 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, BaseUpdateView):
     """ Update view with restricted permissions. """
 
 
-class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
-                         SetHeadlineMixin,TripsYearMixin, DeleteView):
+class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin,
+                     DeleteView):
     template_name = 'db/delete.html'
     success_url_pattern = None
 
@@ -267,6 +269,10 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, ExtraContextMixin,
             )
             messages.error(request, msg)
             return HttpResponseRedirect(request.path)
+
+
+class DatabaseDeleteView(DatabaseEditPermissionRequired, BaseDeleteView):
+    """Database delete view with default permissions."""
 
 
 class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,

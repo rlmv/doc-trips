@@ -68,6 +68,10 @@ def can_edit_applications_and_assign_trip_leaders():
     return get_permission('can_edit_applications_and_assign_leaders',
                           'Can change apps in DB and assign leaders')
 
+def can_edit_trainings():
+    """Permissions allowing TLTs and directorate to update trainings."""
+    return get_permission('can_edit_trainings', 'Can edit trainings')
+
 def can_edit_trip_info():
     """ Permissions to allow olcs users to edit trip itineraries """
     return get_permission('can_edit_trip_info', 'Can edit trip itineraries')
@@ -87,7 +91,8 @@ def directors():
         can_edit_settings(),
         can_score_applications(),
         can_edit_applications_and_assign_trip_leaders(),
-        can_report_incidents()
+        can_report_incidents(),
+        can_edit_trainings(),
     ])
     return directors
 
@@ -118,6 +123,7 @@ def trip_leader_trainers():
         can_view_database(),
         can_score_applications(),
         can_edit_applications_and_assign_trip_leaders(),
+        can_edit_trainings(),
     ])
     return tlts
 
@@ -135,7 +141,7 @@ def olcs():
 def safety_leads():
     leads, _ = Group.objects.get_or_create(name='safety leads')
     leads.permissions.set([
-        can_report_incidents()
+        can_report_incidents(),
     ])
     return leads
 

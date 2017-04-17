@@ -1,4 +1,5 @@
 
+from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from fyt.test import FytTestCase
@@ -47,3 +48,39 @@ class AttendenceFormTestCase(FytTestCase):
         form.save()
         self.session.refresh_from_db()
         self.assertQsEqual(self.session.completed.all(), [self.attendee])
+
+
+class TrainingViewsTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.make_user()
+        self.make_director()
+        self.make_directorate()
+        self.make_croo_head()
+        self.make_tlt()
+        self.make_safety_lead()
+
+    def test_db_views_permissions(self):
+        session = mommy.make(Session, trips_year=self.trips_year)
+        update_urls = [
+            session.update_url(),
+            session.delete_url(),
+            Session.create_url(self.trips_year),
+        ]
+        for url in update_urls:
+            self.app.get(url, user=self.tlt)
+            self.app.get(url, user=self.director)
+            self.app.get(url, user=self.directorate, status=403)
+            self.app.get(url, user=self.user, status=403)
+            self.app.get(url, user=self.croo_head, status=403)
+            self.app.get(url, user=self.safety_lead, status=403)
+
+        # Directorate members can also update attendance
+        url = reverse('db:session:update_attendance', kwargs=session.obj_kwargs())
+        self.app.get(url, user=self.tlt)
+        self.app.get(url, user=self.director)
+        self.app.get(url, user=self.directorate)
+        self.app.get(url, user=self.user, status=403)
+        self.app.get(url, user=self.croo_head, status=403)
+        self.app.get(url, user=self.safety_lead, status=403)

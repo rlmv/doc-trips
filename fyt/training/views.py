@@ -9,8 +9,11 @@ from vanilla import FormView, UpdateView
 from fyt.applications.models import Volunteer
 from fyt.db.models import TripsYear
 from fyt.db.views import (
+    BaseCreateView, BaseUpdateView, BaseDeleteView,
     DatabaseCreateView, DatabaseDetailView, DatabaseListView,
     DatabaseUpdateView, DatabaseDeleteView)
+from fyt.permissions.views import TrainingPermissionRequired
+from fyt.permissions.permissions import directorate
 from fyt.training.forms import AttendanceForm, SessionForm, SignupForm
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify
@@ -19,7 +22,7 @@ from fyt.utils.forms import crispify
 log = logging.getLogger(__name__)
 
 
-class NewSession(DatabaseCreateView):
+class NewSession(TrainingPermissionRequired, BaseCreateView):
     model = Session
     form_class = SessionForm
 
@@ -52,25 +55,30 @@ class SessionDetail(DatabaseDetailView):
         }
 
 
-class SessionUpdate(DatabaseUpdateView):
+class SessionUpdate(TrainingPermissionRequired, BaseUpdateView):
     model = Session
     form_class = SessionForm
 
 
-class SessionDelete(DatabaseDeleteView):
+class SessionDelete(TrainingPermissionRequired, BaseDeleteView):
     model = Session
 
     def get_success_url(self):
         return self.object.index_url()
 
 
-class RecordAttendance(DatabaseUpdateView):
+class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
     model = Session
     form_class = AttendanceForm
 
     def get_headline(self):
         return mark_safe(
             "Record Attendance <small>{}</small>".format(self.object))
+
+    def has_permission(self):
+        """Directorate members can also update training attendance."""
+        return super().has_permission() or (
+            directorate() in self.request.user.groups.all())
 
 
 # Volunteer-facing views
