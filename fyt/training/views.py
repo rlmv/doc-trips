@@ -3,6 +3,7 @@ import logging
 from braces.views import SetHeadlineMixin
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView
 
 from fyt.applications.models import Volunteer
@@ -62,6 +63,10 @@ class SessionDelete(DatabaseDeleteView):
 class RecordAttendance(DatabaseUpdateView):
     model = Session
     form_class = AttendanceForm
+
+    def get_headline(self):
+        return mark_safe(
+            "Record Attendance <small>{}</small>".format(self.object))
 
 
 # Volunteer-facing views
