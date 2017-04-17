@@ -1,4 +1,4 @@
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
@@ -101,3 +101,21 @@ class TrainingViewsTestCase(FytTestCase):
         for status, code in results.items():
             app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
             self.app.get(url, user=app.applicant, status=code)
+
+    def test_signing_up_creates_a_new_attendee(self):
+        volunteer = mommy.make(
+            Volunteer, trips_year=self.trips_year, status=Volunteer.LEADER)
+        session = mommy.make(Session, trips_year=self.trips_year)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            volunteer.attendee
+
+        url = reverse('training:signup')
+        resp = self.app.get(url, user=volunteer.applicant)
+        resp.form['registered_sessions'].checked = True
+        resp.form.submit()
+
+        # refresh_from_db doesn't work here?
+        volunteer = Volunteer.objects.get(pk=volunteer.pk)
+        self.assertQsEqual(volunteer.attendee.registered_sessions.all(),
+                          [session])
