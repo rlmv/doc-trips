@@ -42,10 +42,11 @@ class Session(DatabaseModel):
         return "; ".join(self.registered_emails())
 
     def __str__(self):
-        return "{}: {} {}".format(
+        return "{}: {}, {} to {}".format(
             self.training,
-            self.date.strftime('%m/%d'),
-            self.start_time.strftime('%I:%M %p'))
+            self.date.strftime('%B %d'),
+            self.start_time.strftime('%l:%M %p'),
+            self.end_time.strftime('%l:%M %p'))
 
     def update_attendance_url(self):
         return reverse('db:session:update_attendance',

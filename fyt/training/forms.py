@@ -77,3 +77,6 @@ class SignupForm(forms.ModelForm):
         widgets = {
             'registered_sessions': forms.CheckboxSelectMultiple()
         }
+        labels = {
+            'registered_sessions': ''
+        }

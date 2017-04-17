@@ -72,11 +72,11 @@ class RecordAttendance(DatabaseUpdateView):
 
 # Volunteer-facing views
 
-class Signup(SetHeadlineMixin, UpdateView):
+class Signup(UpdateView):
 
     model = Attendee
     form_class = SignupForm
-    template_name = 'form.html'
+    template_name = 'training/signup_form.html'
 
     # TODO: don't 404; tell user that they aren't a volunteer.
     # TODO: don't create Attendee in GET requests
@@ -99,9 +99,6 @@ class Signup(SetHeadlineMixin, UpdateView):
 
     def get_form(self, *args, **kwargs):
         return crispify(super().get_form(*args, **kwargs))
-
-    def get_headline(self):
-        return "Signup for training sessions"
 
     def get_success_url(self):
         return self.request.path
