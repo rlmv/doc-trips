@@ -1,5 +1,6 @@
 
 from django.db import models
+from django.core.urlresolvers import reverse
 
 from fyt.applications.models import Volunteer
 from fyt.db.models import DatabaseModel
@@ -42,6 +43,10 @@ class Session(DatabaseModel):
     def __str__(self):
         return "{}: {}".format(self.training,
                                self.time.strftime('%x %H:%M'))
+
+    def update_attendance_url(self):
+        return reverse('db:session:update_attendance',
+                       kwargs=self.obj_kwargs())
 
 
 class Attendee(DatabaseModel):

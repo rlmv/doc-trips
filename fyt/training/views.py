@@ -33,6 +33,7 @@ class SessionList(DatabaseListView):
 
 class SessionDetail(DatabaseDetailView):
     model = Session
+    template_name = 'training/session_detail.html'
     fields = [
         'time',
         'duration',
@@ -40,6 +41,13 @@ class SessionDetail(DatabaseDetailView):
         ('registered emails', 'registered_emails_str'),
         'completed'
     ]
+
+    def extra_context(self):
+        return {
+            'update_attendance_url': reverse(
+                'db:session:update_attendance',
+                kwargs=self.object.obj_kwargs())
+        }
 
 
 class SessionUpdate(DatabaseUpdateView):
