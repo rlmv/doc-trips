@@ -56,14 +56,6 @@ def can_edit_settings():
     return get_permission('can_edit_settings',
                           'Can change database settings')
 
-def can_grade_leader_applications():
-    return get_permission('can_grade_leader_applications',
-                          'Can grade leader applications')
-
-def can_grade_croo_applications():
-    return get_permission('can_grade_croo_applications',
-                          'Can grade croo applicaions')
-
 def can_score_applications():
     return get_permission('can_score_applications', 'Can score applications')
 
