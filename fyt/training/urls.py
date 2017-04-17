@@ -8,7 +8,8 @@ from fyt.training.views import (
     SessionDetail,
     SessionDelete,
     SessionUpdate,
-    Signup
+    Signup,
+    RecordAttendance,
 )
 
 # Backend database views
@@ -18,6 +19,8 @@ session_urlpatterns = [
     url(DB_REGEX['DETAIL'], SessionDetail.as_view(), name='detail'),
     url(DB_REGEX['UPDATE'], SessionUpdate.as_view(), name='update'),
     url(DB_REGEX['DELETE'], SessionDelete.as_view(), name='delete'),
+    url(r'^(?P<pk>[0-9]+)/update/attendance', RecordAttendance.as_view(),
+        name='update_attendance'),
 ]
 
 # Public-facing views

@@ -23,6 +23,30 @@ class SessionForm(forms.ModelForm):
         }
 
 
+class AttendanceForm(forms.ModelForm):
+    """
+    Form for updating attendance for a training session.
+
+    ModelForms cannot edit reverse ManyToMany relationships, hence the custom
+    field and overriden save method.
+    """
+    class Meta:
+        model = Session
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['completed'] = forms.ModelMultipleChoiceField(
+            queryset=self.instance.attendee_set.all(),
+            initial=self.instance.completed.all(),
+            widget=forms.CheckboxSelectMultiple())
+
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        instance.completed.add(*self.cleaned_data['completed'])
+        return instance
+
+
 class SignupForm(forms.ModelForm):
 
     class Meta:

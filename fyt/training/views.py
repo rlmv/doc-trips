@@ -10,7 +10,7 @@ from fyt.db.models import TripsYear
 from fyt.db.views import (
     DatabaseCreateView, DatabaseDetailView, DatabaseListView,
     DatabaseUpdateView, DatabaseDeleteView)
-from fyt.training.forms import SessionForm, SignupForm
+from fyt.training.forms import AttendanceForm, SessionForm, SignupForm
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify
 
@@ -37,7 +37,8 @@ class SessionDetail(DatabaseDetailView):
         'time',
         'duration',
         ('registered', 'attendee_set'),
-        ('emails', 'attendee_emails_str')
+        ('emails', 'attendee_emails_str'),
+        'completed'
     ]
 
 
@@ -48,6 +49,11 @@ class SessionUpdate(DatabaseUpdateView):
 
 class SessionDelete(DatabaseDeleteView):
     model = Session
+
+
+class RecordAttendance(DatabaseUpdateView):
+    model = Session
+    form_class = AttendanceForm
 
 
 # Volunteer-facing views

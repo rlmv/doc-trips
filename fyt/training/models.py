@@ -50,6 +50,8 @@ class Attendee(DatabaseModel):
     """
     volunteer = models.OneToOneField(Volunteer)
     sessions = models.ManyToManyField(Session, blank=True)
+    complete_sessions = models.ManyToManyField(Session, blank=True,
+                                               related_name='completed')
 
     def __str__(self):
         return str(self.volunteer)
