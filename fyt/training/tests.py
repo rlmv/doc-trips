@@ -31,16 +31,21 @@ class AttendeeModelTestCase(FytTestCase):
     def test_training_complete(self):
         attendee = mommy.make(Attendee, trips_year=self.trips_year)
         self.assertTrue(attendee.training_complete())
+        self.assertEqual(attendee.trainings_to_sessions(), {})
 
         # One unattended training
         training = mommy.make(Training, trips_year=self.trips_year)
         self.assertFalse(attendee.training_complete())
+        self.assertEqual(attendee.trainings_to_sessions(), {
+            training: None})
 
         # Go to a session
-        mommy.make(Session, trips_year=self.trips_year,
-                   training=training, completed=[attendee])
+        session = mommy.make(Session, trips_year=self.trips_year,
+                             training=training, completed=[attendee])
         attendee = Attendee.objects.get(pk=attendee.pk)
         self.assertTrue(attendee.training_complete())
+        self.assertEqual(attendee.trainings_to_sessions(), {
+            training: session})
 
 
 class AttendenceFormTestCase(FytTestCase):

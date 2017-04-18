@@ -1,4 +1,4 @@
-
+from collections import OrderedDict
 from django.db import models
 from django.core.urlresolvers import reverse
 
@@ -75,6 +75,14 @@ class Attendee(DatabaseModel):
         complete = [s.training for s in self.complete_sessions.all()]
 
         return not set(trainings) - set(complete)
+
+    def trainings_to_sessions(self):
+        trainings = Training.objects.filter(trips_year=self.trips_year)
+
+        d = OrderedDict((t, None) for t in trainings)
+        d.update({s.training: s for s in self.complete_sessions.all()})
+
+        return d
 
     def detail_url(self):
         return self.volunteer.detail_url()
