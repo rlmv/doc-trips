@@ -53,22 +53,6 @@ class _ApplicationTable(tables.Table):
         verbose_name='Croo app',
         accessor='croo_application_complete', orderable=False
     )
-    community_building = TrainingColumn(
-        verbose_name='CB', tooltip="Community Building"
-    )
-    risk_management = TrainingColumn(
-        verbose_name='RM', tooltip="Risk Management"
-    )
-    wilderness_skills = TrainingColumn(
-        verbose_name='WS', tooltip="Wilderness Skills"
-    )
-    croo_training = TrainingColumn(
-        verbose_name='CT', tooltip="Croo Training"
-    )
-    first_aid = tables.Column(
-        verbose_name='med cert',
-        accessor='get_first_aid_cert', orderable=False
-    )
 
     class Meta:
         attrs = {

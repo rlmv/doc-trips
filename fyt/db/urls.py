@@ -12,6 +12,7 @@ from fyt.db.views import (
     RedirectToCurrentDatabase,
 )
 from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
+from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (
     externalbus_urlpatterns,
     route_urlpatterns,
@@ -70,10 +71,14 @@ database_urlpatterns = [
         include(score_urlpatterns, namespace='score')),
     url(r'^sections/',
         include(section_urlpatterns, namespace='section')),
+    url(r'^sessions/',
+        include(session_urlpatterns, namespace='session')),
     url(r'^stops/',
         include(stop_urlpatterns, namespace='stop')),
     url(r'^templates/',
         include(template_urlpatterns, namespace='triptemplate')),
+    url(r'^training/',
+        include(attendee_urlpatterns, namespace='attendee')),
     url(r'^transport/external/',
         include(externalbus_urlpatterns, namespace='externalbus')),
     url(r'^transport/internal/',

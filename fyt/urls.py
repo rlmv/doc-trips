@@ -33,6 +33,7 @@ urlpatterns = [
     url(r'^settings/', include(settings_urlpatterns, namespace='settings')),
     url(r'^test/error/', RaiseError.as_view(), name='raise_error'),
     url(r'^timetable/', include('fyt.timetable.urls', namespace='timetable')),
+    url(r'^training/', include('fyt.training.urls', namespace='training')),
     url(r'^users/', include('fyt.users.urls', namespace='users')),
     url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
 ]

@@ -1,0 +1,31 @@
+{% extends "db/base.html" %}
+{% load links %}
+
+{% block header %}
+<h1> Training Sessions
+    <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
+        <i class="fa fa-plus"></i> Add Session
+    </a>
+</h1>
+{% endblock %}
+
+{% block content %}
+<table class="table table-condensed">
+    <tr>
+        <th> Type </th>
+        <th> Date </th>
+        <th> Time </th>
+        <th> End Time </th>
+        <th></th>
+    </tr>
+    {% for session in sessions %}
+        <tr>
+            <td>{{ session|detail_link:session.training }}</td>
+            <td>{{ session.date }}</td>
+            <td>{{ session.start_time }}</td>
+            <td>{{ session.end_time }}</td>
+            <td>{{ session|delete_link }}</td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}

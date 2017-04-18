@@ -2,7 +2,7 @@
 from collections import OrderedDict
 
 from django.db import models
-from django.db.models import Count, Q, Avg, Case, When, Sum
+from django.db.models import Q, Avg, Case, Count, Sum, When
 from vanilla import ListView
 
 from fyt.applications.models import Score, Volunteer

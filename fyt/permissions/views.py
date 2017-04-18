@@ -111,6 +111,17 @@ class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_report_incidents'
 
 
+class TrainingPermissionRequired(BasePermissionMixin,
+                                 MultiplePermissionsRequiredMixin):
+    """
+    For users to schedule trainings and update attendance.
+    """
+    permission_required = (
+        'permissions.can_edit_trainings',
+        'permissions.can_edit_db'
+    )
+
+
 class GenericGroupForm(forms.Form):
 
     members = forms.ModelMultipleChoiceField(

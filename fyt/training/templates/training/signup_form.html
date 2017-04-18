@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Register for Training Sessions </h2>
+{% endblock %}
+
+{% block content %}
+
+{% if object.registered_sessions.exists %}
+<p>
+    You are currently registered for the following sessions:
+    <table class="table">
+        <tr>
+            <th> Type </th>
+            <th> Date </th>
+            <th> Time </th>
+            <th> End Time </th>
+        </tr>
+    {% for session in object.registered_sessions.all %}
+        <tr>
+            <td>{{ session.training }}</td>
+            <td>{{ session.date }}</td>
+            <td>{{ session.start_time }}</td>
+            <td>{{ session.end_time }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</p>
+
+{% endif %}
+
+<h3> Update Registrations </h3>
+{% crispy form %}
+{% endblock %}

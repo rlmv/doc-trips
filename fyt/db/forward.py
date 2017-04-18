@@ -17,6 +17,7 @@ from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.raids.models import RaidInfo
 from fyt.timetable.models import Timetable
+from fyt.training.models import Training
 from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import Campsite, Document, TripTemplate, TripType
 
@@ -57,6 +58,7 @@ class Forward:
         TripType,
         Campsite,
         Croo,
+        Training,
     ]
 
     def __init__(self, curr_year, next_year):
