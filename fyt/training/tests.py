@@ -6,6 +6,17 @@ from fyt.applications.models import Volunteer
 from fyt.test import FytTestCase
 from fyt.training.models import Session, Attendee, Training
 from fyt.training.forms import AttendanceForm
+from model_mommy.recipe import related, Recipe
+
+
+# Don't let model_mommy bung up the OneToOne creation
+def make_attendee(trips_year=None, **kwargs):
+    volunteer = mommy.make(Volunteer, trips_year=trips_year,
+                           applicant__email='test@gmail.com')
+    for k, v in kwargs.items():
+        setattr(volunteer.attendee, k, v)
+    volunteer.attendee.save()
+    return volunteer.attendee
 
 
 class SessionModelTestCase(FytTestCase):
@@ -13,11 +24,9 @@ class SessionModelTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.session = mommy.make(Session, trips_year=self.trips_year)
-        self.attendee = mommy.make(
-            Attendee,
+        self.attendee = make_attendee(
             trips_year=self.trips_year,
-            registered_sessions=[self.session],
-            volunteer__applicant__email='test@gmail.com')
+            registered_sessions=[self.session])
 
     def test_attendee_emails(self):
         self.assertQsEqual(self.session.registered_emails(), ['test@gmail.com'])
@@ -28,8 +37,13 @@ class AttendeeModelTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
 
+    def test_attendee_is_created_for_each_volunteer(self):
+        volunteer = mommy.make(Volunteer, trips_year=self.trips_year)
+        attendee = volunteer.attendee
+        self.assertEqual(attendee.trips_year, self.trips_year)
+
     def test_training_complete(self):
-        attendee = mommy.make(Attendee, trips_year=self.trips_year)
+        attendee = make_attendee(trips_year=self.trips_year)
         self.assertTrue(attendee.training_complete())
         self.assertEqual(attendee.trainings_to_sessions(), {})
 
@@ -53,9 +67,9 @@ class AttendenceFormTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.session = mommy.make(Session, trips_year=self.trips_year)
-        self.attendee = mommy.make(Attendee, trips_year=self.trips_year,
-                                   registered_sessions=[self.session])
-        self.not_attending = mommy.make(Attendee, trips_year=self.trips_year)
+        self.attendee = make_attendee(trips_year=self.trips_year,
+                                      registered_sessions=[self.session])
+        self.not_attending = make_attendee(trips_year=self.trips_year)
 
     def test_queryset_is_all_registered_volunteers(self):
         form = AttendanceForm(instance=self.session)
@@ -126,21 +140,3 @@ class TrainingViewsTestCase(FytTestCase):
         for status, code in results.items():
             app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
             self.app.get(url, user=app.applicant, status=code)
-
-    def test_signing_up_creates_a_new_attendee(self):
-        volunteer = mommy.make(
-            Volunteer, trips_year=self.trips_year, status=Volunteer.LEADER)
-        session = mommy.make(Session, trips_year=self.trips_year)
-
-        with self.assertRaises(ObjectDoesNotExist):
-            volunteer.attendee
-
-        url = reverse('training:signup')
-        resp = self.app.get(url, user=volunteer.applicant)
-        resp.form['registered_sessions'].checked = True
-        resp.form.submit()
-
-        # refresh_from_db doesn't work here?
-        volunteer = Volunteer.objects.get(pk=volunteer.pk)
-        self.assertQsEqual(volunteer.attendee.registered_sessions.all(),
-                          [session])

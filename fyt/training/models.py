@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.urlresolvers import reverse
 
 from fyt.applications.models import Volunteer
@@ -88,3 +90,14 @@ class Attendee(DatabaseModel):
 
     def detail_url(self):
         return self.volunteer.detail_url()
+
+
+# TODO: move this to Volunteer.save?
+@receiver(post_save, sender=Volunteer)
+def create_attendee(instance=None, **kwargs):
+    """
+    Whenever a Volunteer is created, create a corresponding Attendee.
+    """
+    if kwargs.get('created', False):
+        Attendee.objects.create(
+            trips_year=instance.trips_year, volunteer=instance)
