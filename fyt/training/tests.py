@@ -1,12 +1,10 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from fyt.applications.models import Volunteer
 from fyt.test import FytTestCase
-from fyt.training.models import Session, Attendee, Training
 from fyt.training.forms import AttendanceForm
-from model_mommy.recipe import related, Recipe
+from fyt.training.models import Attendee, Session, Training
 
 
 # Don't let model_mommy bung up the OneToOne creation

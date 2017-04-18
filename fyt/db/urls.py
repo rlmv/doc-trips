@@ -12,7 +12,7 @@ from fyt.db.views import (
     RedirectToCurrentDatabase,
 )
 from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
-from fyt.training.urls import session_urlpatterns, attendee_urlpatterns
+from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (
     externalbus_urlpatterns,
     route_urlpatterns,

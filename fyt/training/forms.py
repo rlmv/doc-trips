@@ -1,7 +1,7 @@
 
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Div, Row, Layout, Submit
 from bootstrap3_datetime.widgets import DateTimePicker
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
 
 from fyt.training.models import Attendee, Session

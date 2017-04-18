@@ -1,7 +1,18 @@
 import random
 
 from django.db import models
-from django.db.models import Avg, Case, Count, F, Lookup, Min, Q, Sum, Value as V, When
+from django.db.models import (
+    F,
+    Q,
+    Avg,
+    Case,
+    Count,
+    Lookup,
+    Min,
+    Sum,
+    Value as V,
+    When,
+)
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 

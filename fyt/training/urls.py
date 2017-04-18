@@ -5,13 +5,14 @@ from fyt.db.urlhelpers import DB_REGEX
 from fyt.training.views import (
     AttendeeUpdate,
     NewSession,
-    SessionList,
-    SessionDetail,
+    RecordAttendance,
     SessionDelete,
+    SessionDetail,
+    SessionList,
     SessionUpdate,
     Signup,
-    RecordAttendance,
 )
+
 
 # Backend database views
 session_urlpatterns = [
@@ -27,7 +28,6 @@ session_urlpatterns = [
 attendee_urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/update/$', AttendeeUpdate.as_view(), name='update'),
 ]
-
 
 # Public-facing views
 urlpatterns = [

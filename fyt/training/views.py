@@ -1,21 +1,29 @@
 import logging
 
-from braces.views import SetHeadlineMixin
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
 from django.utils.safestring import mark_safe
-from vanilla import FormView, UpdateView
+from vanilla import UpdateView
 
 from fyt.applications.models import Volunteer
 from fyt.db.models import TripsYear
 from fyt.db.views import (
-    BaseCreateView, BaseUpdateView, BaseDeleteView,
-    DatabaseCreateView, DatabaseDetailView, DatabaseListView,
-    DatabaseUpdateView, DatabaseDeleteView)
-from fyt.permissions.views import TrainingPermissionRequired
+    BaseCreateView,
+    BaseDeleteView,
+    BaseUpdateView,
+    DatabaseCreateView,
+    DatabaseDeleteView,
+    DatabaseDetailView,
+    DatabaseListView,
+)
 from fyt.permissions.permissions import directorate
-from fyt.training.forms import AttendanceForm, SessionForm, SignupForm, AttendeeUpdateForm
+from fyt.permissions.views import TrainingPermissionRequired
+from fyt.training.forms import (
+    AttendanceForm,
+    AttendeeUpdateForm,
+    SessionForm,
+    SignupForm,
+)
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify
 
