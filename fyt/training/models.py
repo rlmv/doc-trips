@@ -66,5 +66,15 @@ class Attendee(DatabaseModel):
     def __str__(self):
         return str(self.volunteer)
 
+    def training_complete(self):
+        """
+        A volunteer has completed all trainings if they attended a session
+        for each type of training.
+        """
+        trainings = Training.objects.filter(trips_year=self.trips_year)
+        complete = [s.training for s in self.complete_sessions.all()]
+
+        return not set(trainings) - set(complete)
+
     def detail_url(self):
         return self.volunteer.detail_url()

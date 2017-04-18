@@ -4,7 +4,7 @@ from model_mommy import mommy
 
 from fyt.applications.models import Volunteer
 from fyt.test import FytTestCase
-from fyt.training.models import Session, Attendee
+from fyt.training.models import Session, Attendee, Training
 from fyt.training.forms import AttendanceForm
 
 
@@ -21,6 +21,26 @@ class SessionModelTestCase(FytTestCase):
 
     def test_attendee_emails(self):
         self.assertQsEqual(self.session.registered_emails(), ['test@gmail.com'])
+
+
+class AttendeeModelTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_training_complete(self):
+        attendee = mommy.make(Attendee, trips_year=self.trips_year)
+        self.assertTrue(attendee.training_complete())
+
+        # One unattended training
+        training = mommy.make(Training, trips_year=self.trips_year)
+        self.assertFalse(attendee.training_complete())
+
+        # Go to a session
+        mommy.make(Session, trips_year=self.trips_year,
+                   training=training, completed=[attendee])
+        attendee = Attendee.objects.get(pk=attendee.pk)
+        self.assertTrue(attendee.training_complete())
 
 
 class AttendenceFormTestCase(FytTestCase):
