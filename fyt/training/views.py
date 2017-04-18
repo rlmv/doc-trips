@@ -15,7 +15,7 @@ from fyt.db.views import (
     DatabaseUpdateView, DatabaseDeleteView)
 from fyt.permissions.views import TrainingPermissionRequired
 from fyt.permissions.permissions import directorate
-from fyt.training.forms import AttendanceForm, SessionForm, SignupForm
+from fyt.training.forms import AttendanceForm, SessionForm, SignupForm, AttendeeUpdateForm
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify
 
@@ -80,6 +80,12 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
         """Directorate members can also update training attendance."""
         return super().has_permission() or (
             directorate() in self.request.user.groups.all())
+
+
+class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
+    model = Attendee
+    delete_button = False
+    form_class = AttendeeUpdateForm
 
 
 # Volunteer-facing views

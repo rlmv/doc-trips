@@ -63,6 +63,8 @@ class Attendee(DatabaseModel):
     complete_sessions = models.ManyToManyField(
         Session, blank=True, related_name='completed')
 
+    first_aid = models.BooleanField(default=False)
+
     def __str__(self):
         return str(self.volunteer)
 

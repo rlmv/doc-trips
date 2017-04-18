@@ -80,3 +80,16 @@ class SignupForm(forms.ModelForm):
         labels = {
             'registered_sessions': ''
         }
+
+
+class AttendeeUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Attendee
+        fields = [
+            'first_aid',
+            'complete_sessions',
+        ]
+        widgets = {
+            'complete_sessions': forms.CheckboxSelectMultiple()
+        }
