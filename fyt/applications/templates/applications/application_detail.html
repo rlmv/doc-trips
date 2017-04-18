@@ -66,7 +66,7 @@
 {% for training, session in application.attendee.trainings_to_sessions.items %}
     <tr>
         <td class="col-sm-3 text-right"><strong>{{ training }}</strong></td>
-        <td>{% if session %} {{ session }} {% else %} * {% endif %}</td>
+        <td>{{ session.date|date:"n/j/Y"|default:"*" }}</td>
     </tr>
 {% endfor %}
 </table>
