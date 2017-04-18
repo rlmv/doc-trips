@@ -43,6 +43,13 @@
     </li>
 
     <li>
+      <a href="#"> <i class="fa fa-fw fa-language"></i> Training <i class="fa arrow"></i> </a>
+      <ul class="nav nav-stacked">
+          <li><a href="{% url 'db:session:index' trips_year=trips_year %}"> Sessions </a></li>
+      </ul>
+    </li>
+
+    <li>
       <a href="#"> <i class="fa fa-fw fa-child"></i> Trippees <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
 	<li> <a  href="{% url 'db:incomingstudent:index' trips_year=trips_year %}"> Incoming Students </a> </li>
@@ -50,11 +57,6 @@
       </ul>
     </li>
 
-    <li>
-      <a href="#"> <i class="fa fa-fw fa-language"></i> Training <i class="fa arrow"></i> </a>
-      <ul class="nav nav-stacked">
-          <li><a href="{% url 'db:session:index' trips_year=trips_year %}"> Sessions </a></li>
-      </ul>
     <li>
       <a href="#"> <i class="fa fa-fw fa-envelope"></i> Email Lists <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
