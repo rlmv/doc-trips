@@ -47,9 +47,23 @@
 
 </table>
 
+<h4>
+    Trainings
+    {% if application.attendee.training_complete %}
+    <span class="label label-success"> Complete </span>
+    {% else %}
+    <span class="label label-warning"> Incomplete </span>
+    {% endif %}
+ </h4>
 
-<h4> Trainings <a href="{% url 'db:volunteer:update_trainings' trips_year=application.trips_year pk=application.pk %}">edit</a></h4>
-{% detail application trainings_fields %}
+<table class="table table-condensed table-striped">
+{% for training, session in application.attendee.trainings_to_sessions.items %}
+    <tr>
+        <td class="col-sm-3 text-right"><strong>{{ training }}</strong></td>
+        <td>{% if session %} {{ session }} {% else %} * {% endif %}</td>
+    </tr>
+{% endfor %}
+</table>
 
 
 {# grades #}
