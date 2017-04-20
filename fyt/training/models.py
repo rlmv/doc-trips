@@ -28,7 +28,7 @@ class Session(DatabaseModel):
     A scheduled session for a certain training type.
     """
     class Meta:
-        ordering = ['start_time']
+        ordering = ['date', 'start_time', 'training']
 
     training = models.ForeignKey(Training, on_delete=models.PROTECT)
     date = models.DateField()
