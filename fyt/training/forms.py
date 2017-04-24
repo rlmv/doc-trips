@@ -97,25 +97,18 @@ class AttendeeUpdateForm(forms.ModelForm):
         }
 
 
-class FirstAidForm(forms.ModelForm):
-
-    class Meta:
-        model = Volunteer
-        fields = ['fa_cert', 'fa_other']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.readonly_data = OrderedDict([
-            ('Name', make_link(self.instance.detail_url(), self.instance)),
-            ('Status', self.instance.get_status_display())
-        ])
-
-
 class FirstAidFormset(forms.modelformset_factory(
-        Volunteer, form=FirstAidForm, extra=0)):
+        Volunteer, fields=['fa_cert', 'fa_other'], extra=0)):
     """
     A formset for all leaders, croo members, and people on the leader waitlist.
+
+    This is rendered by crispy forms as a table. `readonly_data` specifies
+    readonly values to inject into the table for each form instance.
     """
+    readonly_data = [
+        ('Name', 'get_name'),
+        ('Status', 'get_status'),
+    ]
 
     def __init__(self, trips_year, *args, **kwargs):
         qs = (Volunteer.objects.leaders(trips_year) |
@@ -123,6 +116,11 @@ class FirstAidFormset(forms.modelformset_factory(
               Volunteer.objects.leader_waitlist(trips_year))
 
         super().__init__(*args, queryset=qs, **kwargs)
+
+        for form in self.forms:
+            form.readonly_data = OrderedDict([
+                (name, getattr(self, method)(form.instance))
+                for name, method in self.readonly_data])
 
     @property
     def helper(self):
@@ -132,3 +130,11 @@ class FirstAidFormset(forms.modelformset_factory(
         helper.add_input(Submit('submit', 'Save'))
 
         return helper
+
+    def get_name(self, instance):
+        return make_link(instance.detail_url(), instance)
+
+    def get_status(self, instance):
+        return instance.get_status_display()
+
+    
