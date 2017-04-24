@@ -1,9 +1,10 @@
 import logging
 
+from braces.views import SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from vanilla import UpdateView
+from vanilla import FormView, UpdateView
 
 from fyt.applications.models import Volunteer
 from fyt.db.models import TripsYear
@@ -15,12 +16,14 @@ from fyt.db.views import (
     DatabaseDeleteView,
     DatabaseDetailView,
     DatabaseListView,
+    TripsYearMixin,
 )
 from fyt.permissions.permissions import directorate
 from fyt.permissions.views import TrainingPermissionRequired
 from fyt.training.forms import (
     AttendanceForm,
     AttendeeUpdateForm,
+    FirstAidFormset,
     SessionForm,
     SignupForm,
 )
@@ -88,6 +91,24 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
         """Directorate members can also update training attendance."""
         return super().has_permission() or (
             directorate() in self.request.user.groups.all())
+
+
+class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
+                     TripsYearMixin, FormView):
+    """
+    Batch update first aid certifications.
+    """
+    template_name = 'db/form.html'
+
+    def get_headline(self):
+        return 'First Aid Certifications'
+
+    def get_form(self, **kwargs):
+        return FirstAidFormset(trips_year=self.get_trips_year())
+
+    def form_valid(self, formset):
+        formset.save()
+        return super().form_valid(formset)
 
 
 class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):

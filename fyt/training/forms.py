@@ -1,10 +1,13 @@
+from collections import OrderedDict
 
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
 
+from fyt.applications.models import Volunteer
 from fyt.training.models import Attendee, Session
+from fyt.db.templatetags.links import make_link
 
 
 DATE_OPTIONS = {
@@ -87,9 +90,43 @@ class AttendeeUpdateForm(forms.ModelForm):
     class Meta:
         model = Attendee
         fields = [
-            'first_aid',
             'complete_sessions',
         ]
         widgets = {
             'complete_sessions': forms.CheckboxSelectMultiple()
         }
+
+
+class FirstAidForm(forms.ModelForm):
+
+    class Meta:
+        model = Volunteer
+        fields = ['fa_cert', 'fa_other']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.readonly_data = OrderedDict([
+            ('Name', make_link(self.instance.detail_url(), self.instance)),
+            ('Status', self.instance.get_status_display())
+        ])
+
+
+def FirstAidFormset(trips_year, *args, **kwargs):
+    """
+    A formset for all leaders, croo members, and people on the leader waitlist.
+    """
+    formset_class = forms.modelformset_factory(
+        Volunteer, form=FirstAidForm, extra=0)
+
+    qs = (Volunteer.objects.leaders(trips_year) |
+          Volunteer.objects.croo_members(trips_year) |
+          Volunteer.objects.leader_waitlist(trips_year))
+
+    formset = formset_class(*args, queryset=qs, **kwargs)
+
+    formset.helper = FormHelper()
+    # This is an overridden template in fyt/templates
+    formset.helper.template = 'bootstrap3/table_inline_formset.html'
+    formset.helper.add_input(Submit('submit', 'Save'))
+
+    return formset

@@ -2,8 +2,9 @@ from django.core.urlresolvers import reverse
 from model_mommy import mommy
 
 from fyt.applications.models import Volunteer
+from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
-from fyt.training.forms import AttendanceForm
+from fyt.training.forms import AttendanceForm, FirstAidFormset
 from fyt.training.models import Attendee, Session, Training
 
 
@@ -86,6 +87,22 @@ class AttendenceFormTestCase(FytTestCase):
         form.save()
         self.session.refresh_from_db()
         self.assertQsEqual(self.session.completed.all(), [self.attendee])
+
+
+class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.leader = self.make_application(status=Volunteer.LEADER)
+        self.crooling = self.make_application(status=Volunteer.CROO)
+        self.leader_waitlist = self.make_application(
+            status=Volunteer.LEADER_WAITLIST)
+        self.pending = self.make_application(status=Volunteer.PENDING)
+
+    def test_queryset(self):
+        formset = FirstAidFormset(self.trips_year)
+        self.assertQsEqual(formset.queryset,
+            [self.leader, self.crooling, self.leader_waitlist])
 
 
 class TrainingViewsTestCase(FytTestCase):

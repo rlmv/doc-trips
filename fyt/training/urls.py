@@ -6,6 +6,7 @@ from fyt.training.views import (
     AttendeeUpdate,
     NewSession,
     RecordAttendance,
+    RecordFirstAid,
     SessionDelete,
     SessionDetail,
     SessionList,
@@ -27,6 +28,7 @@ session_urlpatterns = [
 
 attendee_urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/update/$', AttendeeUpdate.as_view(), name='update'),
+    url(r'^update/first-aid/$', RecordFirstAid.as_view(), name='first_aid'),
 ]
 
 # Public-facing views

@@ -532,6 +532,13 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         not_croo = self.make_application(trips_year=trips_year)
         self.assertQsEqual(Volunteer.objects.croo_members(trips_year), [croo])
 
+    def test_leader_waitist(self):
+        trips_year = self.init_trips_year()
+        waitlisted = make_application(trips_year=trips_year,
+            status=Volunteer.LEADER_WAITLIST)
+        self.assertQsEqual(Volunteer.objects.leader_waitlist(trips_year),
+                           [waitlisted])
+
     def test_with_scores_ordering(self):
         app1 = self.make_application()
         app2 = self.make_application()

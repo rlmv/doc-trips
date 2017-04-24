@@ -142,6 +142,10 @@ class VolunteerManager(models.Manager):
     def croo_members(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
 
+    def leader_waitlist(self, trips_year):
+        return self.filter(trips_year=trips_year,
+                           status=self.model.LEADER_WAITLIST)
+
     def with_scores(self, trips_year):
         """
         Return all applications for this year annotated with an `avg_score`

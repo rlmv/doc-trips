@@ -266,6 +266,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
     risk_management = models.DateField(null=True, blank=True)
     wilderness_skills = models.DateField(null=True, blank=True)
     croo_training = models.DateField(null=True, blank=True)
+
+    # TODO: move first aid to training app?
+
     OTHER = 'other'
     FIRST_AID_CHOICES = (
         (None, '--'),
