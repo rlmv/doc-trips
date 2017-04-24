@@ -131,4 +131,4 @@ class FirstAidFormset(forms.modelformset_factory(
         helper.template = 'bootstrap3/table_inline_formset.html'
         helper.add_input(Submit('submit', 'Save'))
 
-        return    
+        return helper

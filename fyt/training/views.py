@@ -104,11 +104,14 @@ class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
         return 'First Aid Certifications'
 
     def get_form(self, **kwargs):
-        return FirstAidFormset(trips_year=self.get_trips_year())
+        return FirstAidFormset(trips_year=self.get_trips_year(), **kwargs)
 
     def form_valid(self, formset):
         formset.save()
         return super().form_valid(formset)
+
+    def get_success_url(self):
+        return self.request.path
 
 
 class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
