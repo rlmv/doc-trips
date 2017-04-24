@@ -111,22 +111,24 @@ class FirstAidForm(forms.ModelForm):
         ])
 
 
-def FirstAidFormset(trips_year, *args, **kwargs):
+class FirstAidFormset(forms.modelformset_factory(
+        Volunteer, form=FirstAidForm, extra=0)):
     """
     A formset for all leaders, croo members, and people on the leader waitlist.
     """
-    formset_class = forms.modelformset_factory(
-        Volunteer, form=FirstAidForm, extra=0)
 
-    qs = (Volunteer.objects.leaders(trips_year) |
-          Volunteer.objects.croo_members(trips_year) |
-          Volunteer.objects.leader_waitlist(trips_year))
+    def __init__(self, trips_year, *args, **kwargs):
+        qs = (Volunteer.objects.leaders(trips_year) |
+              Volunteer.objects.croo_members(trips_year) |
+              Volunteer.objects.leader_waitlist(trips_year))
 
-    formset = formset_class(*args, queryset=qs, **kwargs)
+        super().__init__(*args, queryset=qs, **kwargs)
 
-    formset.helper = FormHelper()
-    # This is an overridden template in fyt/templates
-    formset.helper.template = 'bootstrap3/table_inline_formset.html'
-    formset.helper.add_input(Submit('submit', 'Save'))
+    @property
+    def helper(self):
+        helper = FormHelper()
+        # This is an overridden template in fyt/templates
+        helper.template = 'bootstrap3/table_inline_formset.html'
+        helper.add_input(Submit('submit', 'Save'))
 
-    return formset
+        return    
