@@ -143,6 +143,10 @@ DATABASES = {
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 CRISPY_FAIL_SILENTLY = PRODUCTION
 
+# Increase the allowed number of POST parameters so that some large
+# formsets don't cause issues
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 3000
+
 # Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/New_York'
