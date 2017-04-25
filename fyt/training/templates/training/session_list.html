@@ -16,6 +16,7 @@
         <th> Date </th>
         <th> Time </th>
         <th> End Time </th>
+		<th> Location </th>
         <th></th>
     </tr>
     {% for session in sessions %}
@@ -24,6 +25,7 @@
             <td>{{ session.date }}</td>
             <td>{{ session.start_time }}</td>
             <td>{{ session.end_time }}</td>
+			<td>{{ session.location }}</td>
             <td>{{ session|delete_link }}</td>
         </tr>
     {% endfor %}

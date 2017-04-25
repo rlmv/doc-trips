@@ -16,6 +16,7 @@
             <th> Date </th>
             <th> Time </th>
             <th> End Time </th>
+			<th> Location </th>
         </tr>
     {% for session in object.registered_sessions.all %}
         <tr>
@@ -23,6 +24,7 @@
             <td>{{ session.date }}</td>
             <td>{{ session.start_time }}</td>
             <td>{{ session.end_time }}</td>
+			<td>{{ session.location }}</td>
         </tr>
     {% endfor %}
     </table>

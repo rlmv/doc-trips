@@ -44,6 +44,7 @@ class SessionForm(forms.ModelForm):
                 Div('start_time', css_class='col-sm-4'),
                 Div('end_time', css_class='col-sm-4'),
             ),
+            'location',
             Submit('submit', 'Save')
         )
 

@@ -54,6 +54,7 @@ class SessionDetail(DatabaseDetailView):
         'date',
         'start_time',
         'end_time',
+        'location',
         'registered',
         ('registered emails', 'registered_emails_str'),
         'completed'

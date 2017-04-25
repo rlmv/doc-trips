@@ -34,6 +34,7 @@ class Session(DatabaseModel):
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
+    location = models.CharField(max_length=256)
 
     def registered_emails(self):
         """Emails for all registered attendees."""
