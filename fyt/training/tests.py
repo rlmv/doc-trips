@@ -60,6 +60,24 @@ class AttendeeModelTestCase(FytTestCase):
         self.assertEqual(attendee.trainings_to_sessions(), {
             training: session})
 
+    def test_get_first_aid_cert(self):
+        attendee = make_attendee(trips_year=self.trips_year, fa_cert='WFR')
+        self.assertEqual(attendee.get_first_aid_cert(), 'WFR')
+
+    def test_get_first_aid_cert_other(self):
+        attendee = make_attendee(
+            trips_year=self.trips_year,
+            fa_cert=Attendee.OTHER,
+            fa_other='ABC')
+        self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
+
+    def test_get_first_aid_cert_without_explicit_other(self):
+        attendee = make_attendee(
+            trips_year=self.trips_year,
+            fa_cert="",
+            fa_other='ABC')
+        self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
+
 
 class AttendenceFormTestCase(FytTestCase):
 
@@ -102,10 +120,12 @@ class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
     def test_queryset(self):
         formset = FirstAidFormset(self.trips_year)
         self.assertQsEqual(formset.queryset,
-            [self.leader, self.crooling, self.leader_waitlist])
+            [self.leader.attendee, 
+             self.crooling.attendee, 
+             self.leader_waitlist.attendee])
 
 
-class TrainingViewsTestCase(FytTestCase):
+class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -155,3 +175,13 @@ class TrainingViewsTestCase(FytTestCase):
         for status, code in results.items():
             app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
             self.app.get(url, user=app.applicant, status=code)
+            
+    def test_num_queries(self):
+        self.make_application(status=Volunteer.LEADER)
+        url = reverse('db:attendee:first_aid', kwargs={
+            'trips_year': self.trips_year})
+
+        with self.assertNumQueries(15):
+            self.app.get(url, user=self.director)
+            
+            

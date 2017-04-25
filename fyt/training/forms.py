@@ -6,7 +6,7 @@ from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
 
 from fyt.applications.models import Volunteer
-from fyt.training.models import Attendee, Session
+from fyt.training.models import Attendee, Session, TRAINABLE_STATUSES
 from fyt.db.templatetags.links import make_link
 
 
@@ -99,7 +99,7 @@ class AttendeeUpdateForm(forms.ModelForm):
 
 
 class FirstAidFormset(forms.modelformset_factory(
-        Volunteer, fields=['fa_cert', 'fa_other'], extra=0)):
+        Attendee, fields=['fa_cert', 'fa_other'], extra=0)):
     """
     A formset for all leaders, croo members, and people on the leader waitlist.
 
@@ -112,9 +112,21 @@ class FirstAidFormset(forms.modelformset_factory(
     ]
 
     def __init__(self, trips_year, *args, **kwargs):
-        qs = (Volunteer.objects.leaders(trips_year) |
-              Volunteer.objects.croo_members(trips_year) |
-              Volunteer.objects.leader_waitlist(trips_year))
+
+        qs = Attendee.objects.filter(
+            trips_year=trips_year,
+            volunteer__status__in=TRAINABLE_STATUSES
+        ).select_related(
+            'volunteer',
+            'volunteer__applicant'
+        ).only(
+            'volunteer__applicant__name',
+            'volunteer__status',
+            'volunteer__trips_year_id',
+            'volunteer__id',
+            'fa_cert',
+            'fa_other',
+        )
 
         super().__init__(*args, queryset=qs, **kwargs)
 
@@ -136,6 +148,6 @@ class FirstAidFormset(forms.modelformset_factory(
         return make_link(instance.detail_url(), instance)
 
     def get_status(self, instance):
-        return instance.get_status_display()
+        return instance.volunteer.get_status_display()
 
     

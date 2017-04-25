@@ -76,11 +76,6 @@ class _ApplicationTable(tables.Table):
     def render_croo_application(self, value):
         return ok_if_true(value)
 
-    def render_first_aid(self, value):
-        if len(value) > 6:
-            return tooltip_wrap(value[:6], value)
-        return value
-
 
 def ApplicationTable(qs, request):
     """Configure and return an ``_ApplicationTable`` for this request."""

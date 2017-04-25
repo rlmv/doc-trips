@@ -123,11 +123,10 @@ class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
 
 # Volunteer-facing views
 
+TRAINABLE_STATUSES = [Volunteer.LEADER, Volunteer.CROO, Volunteer.LEADER_WAITLIST]
+
 def trainings_available(volunteer):
-    allowed = [Volunteer.LEADER,
-               Volunteer.CROO,
-               Volunteer.LEADER_WAITLIST]
-    return volunteer.status in allowed
+    return volunteer.status in TRAINABLE_STATUSES
 
 
 class CanRegister(LoginRequiredMixin, UserPassesTestMixin):

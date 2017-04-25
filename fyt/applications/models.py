@@ -267,38 +267,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
     wilderness_skills = models.DateField(null=True, blank=True)
     croo_training = models.DateField(null=True, blank=True)
 
-    # TODO: move first aid to training app?
-
-    OTHER = 'other'
-    FIRST_AID_CHOICES = (
-        (None, '--'),
-        ('FA', 'First Aid'),
-        ('CPR', 'CPR'),
-        ('FA/CPR', 'First Aid/CPR'),
-        ('WFA', 'WFA'),
-        ('WFR', 'WFR'),
-        ('W-EMT', 'W-EMT'),
-        ('EMT', 'EMT'),
-        ('OEC', 'OEC'),
-        (OTHER, 'other'),
-    )
-    # first aid certs - filled in by directors
-    fa_cert = models.CharField(
-        'first aid cert', max_length=10, blank=True, default="",
-        choices=FIRST_AID_CHOICES
-    )
-    fa_other = models.CharField(
-        'other first aid cert', max_length=100, blank=True, default=""
-    )
-
-    def get_first_aid_cert(self):
-        """
-        Get the applicants first aid cert; choice or other
-        """
-        if self.fa_cert == self.OTHER or not self.fa_cert:
-            return self.fa_other
-        return self.fa_cert
-
     # ----- general information, not shown to graders ------
 
     class_year = ClassYearField()

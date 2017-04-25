@@ -153,28 +153,6 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
 
-    def test_get_first_aid_cert(self):
-        trips_year = self.init_trips_year()
-        application = mommy.make(Volunteer, trips_year=trips_year,
-                                 fa_cert='WFR')
-        self.assertEqual(application.get_first_aid_cert(), 'WFR')
-
-    def test_get_first_aid_cert_other(self):
-        application = mommy.make(
-            Volunteer,
-            fa_cert=Volunteer.OTHER,
-            fa_other='ABC'
-        )
-        self.assertEqual(application.get_first_aid_cert(), 'ABC')
-
-    def test_get_first_aid_cert_without_explicit_other(self):
-        application = mommy.make(
-            Volunteer,
-            fa_cert="",
-            fa_other='ABC'
-        )
-        self.assertEqual(application.get_first_aid_cert(), 'ABC')
-
     def test_must_agree_to_trippee_confidentiality(self):
         with self.assertRaisesMessage(ValidationError, 'condition'):
             mommy.make(Volunteer,

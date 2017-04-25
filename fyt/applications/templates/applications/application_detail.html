@@ -62,7 +62,7 @@
 <table class="table table-condensed table-striped">
     <tr>
         <td class="col-sm-3 text-right"><strong>First Aid</strong></td>
-        <td>{{ application.get_first_aid_cert|default:"*" }}</td>
+        <td>{{ application.attendee.get_first_aid_cert|default:"*" }}</td>
     </tr>
 {% for training, session in application.attendee.trainings_to_sessions.items %}
     <tr>

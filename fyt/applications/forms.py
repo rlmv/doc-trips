@@ -469,7 +469,6 @@ class CertificationForm(forms.ModelForm):
             'risk_management',
             'wilderness_skills',
             'croo_training',
-            'fa_cert', 'fa_other'
         )
         widgets = {
             'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),

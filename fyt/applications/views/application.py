@@ -393,8 +393,6 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             'risk_management',
             'wilderness_skills',
             'croo_training',
-            'fa_cert',
-            'fa_other',
         ).prefetch_related(
             'answer_set'
         )

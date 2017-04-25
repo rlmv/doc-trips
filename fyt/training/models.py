@@ -57,6 +57,9 @@ class Session(DatabaseModel):
                        kwargs=self.obj_kwargs())
 
 
+TRAINABLE_STATUSES = [Volunteer.LEADER, Volunteer.CROO, Volunteer.LEADER_WAITLIST]
+
+
 class Attendee(DatabaseModel):
     """
     A volunteer attending trainings.
@@ -66,6 +69,33 @@ class Attendee(DatabaseModel):
         Session, blank=True, related_name='registered')
     complete_sessions = models.ManyToManyField(
         Session, blank=True, related_name='completed')
+
+    # First aid
+    OTHER = 'other'
+    FIRST_AID_CHOICES = (
+        (None, '--'),
+        ('FA', 'First Aid'),
+        ('CPR', 'CPR'),
+        ('FA/CPR', 'First Aid/CPR'),
+        ('WFA', 'WFA'),
+        ('WFR', 'WFR'),
+        ('W-EMT', 'W-EMT'),
+        ('EMT', 'EMT'),
+        ('OEC', 'OEC'),
+        (OTHER, 'other'),
+    )
+    fa_cert = models.CharField(
+        'first aid cert', max_length=10, blank=True, default="",
+        choices=FIRST_AID_CHOICES
+    )
+    fa_other = models.CharField(
+        'other first aid cert', max_length=100, blank=True, default=""
+    )
+
+    def get_first_aid_cert(self):
+        if self.fa_cert == self.OTHER or not self.fa_cert:
+            return self.fa_other
+        return self.fa_cert
 
     def __str__(self):
         return str(self.volunteer)
