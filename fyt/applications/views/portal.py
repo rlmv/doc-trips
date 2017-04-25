@@ -7,7 +7,6 @@ from fyt.applications.models import PortalContent, Volunteer
 from fyt.db.models import TripsYear
 from fyt.permissions.views import SettingsPermissionRequired
 from fyt.timetable.models import Timetable
-from fyt.training.views import trainings_available
 from fyt.utils.forms import crispify
 
 
@@ -43,7 +42,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
                 timetable.leader_assignment_available and
                 application.status == Volunteer.LEADER)
             context['show_trainings'] = (
-                trainings_available(application))
+                application.attendee.can_train)
 
         except Volunteer.DoesNotExist:
             application = None

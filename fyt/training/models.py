@@ -97,6 +97,10 @@ class Attendee(DatabaseModel):
             return self.fa_other
         return self.fa_cert
 
+    @property
+    def can_register(self):
+        return self.volunteer.status in TRAINABLE_STATUSES
+
     def __str__(self):
         return str(self.volunteer)
 

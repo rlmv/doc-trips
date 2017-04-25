@@ -78,6 +78,21 @@ class AttendeeModelTestCase(FytTestCase):
             fa_other='ABC')
         self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
 
+    def can_train(self):
+        results = {
+            Volunteer.CROO: True,
+            Volunteer.LEADER: True,
+            Volunteer.LEADER_WAITLIST: True,
+            Volunteer.PENDING: False,
+            Volunteer.PENDING: False,
+            Volunteer.CANCELED: False,
+            Volunteer.REJECTED: False
+        }
+        for status, allowed in results.items():
+            v = mommy.make(Volunteer, status=status)
+            self.assertEqual(v.attendee.can_register, allowed)
+
+
 
 class AttendenceFormTestCase(FytTestCase):
 

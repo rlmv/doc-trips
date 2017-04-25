@@ -123,49 +123,27 @@ class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
 
 # Volunteer-facing views
 
-TRAINABLE_STATUSES = [Volunteer.LEADER, Volunteer.CROO, Volunteer.LEADER_WAITLIST]
-
-def trainings_available(volunteer):
-    return volunteer.status in TRAINABLE_STATUSES
-
-
-class CanRegister(LoginRequiredMixin, UserPassesTestMixin):
-    """Check if the Volunteer can register for trainings."""
-    raise_exception = True
-    permission_denied_message = "You are not a Leader or a Croo Member."
-
-    def test_func(self):
-        try:
-            volunteer = Volunteer.objects.get(
-                trips_year=TripsYear.objects.current(),
-                applicant=self.request.user)
-        except Volunteer.DoesNotExist:
-            return False
-
-        return trainings_available(volunteer)
-
-
-class Signup(CanRegister, UpdateView):
+class Signup(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     model = Attendee
     form_class = SignupForm
     template_name = 'training/signup_form.html'
+    raise_exception = True
+    permission_denied_message = "You are not a Leader or a Croo Member."
 
-    # TODO: don't 404; tell user that they aren't a volunteer.
-    # TODO: don't create Attendee in GET requests
+    def test_func(self):
+        """Check whether the user can register for trainings."""
+        try:
+            attendee = self.get_object()
+        except Attendee.DoesNotExist:
+            return False
+
+        return attendee.can_register
+
     def get_object(self):
-        volunteer = Volunteer.objects.get(
+       return Attendee.objects.get(
             trips_year=self.get_trips_year(),
-            applicant=self.request.user)
-
-        attendee, created = Attendee.objects.get_or_create(
-            volunteer=volunteer,
-            trips_year=self.get_trips_year())
-
-        if created:
-            log.info('Creating new {}'.format(attendee))
-
-        return attendee
+            volunteer__applicant=self.request.user)
 
     def get_trips_year(self):
         return TripsYear.objects.current()
