@@ -92,10 +92,25 @@ class AttendeeUpdateForm(forms.ModelForm):
         model = Attendee
         fields = [
             'complete_sessions',
+            'fa_cert',
+            'fa_other'
         ]
         widgets = {
             'complete_sessions': forms.CheckboxSelectMultiple()
         }
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = Layout(
+            Row(
+                Div('fa_cert', css_class="col-sm-3"),
+                Div('fa_other', css_class="col-sm-3")
+            ),
+            'complete_sessions',
+            Submit('submit', 'Save')
+        )
+        return helper
 
 
 class FirstAidFormset(forms.modelformset_factory(
