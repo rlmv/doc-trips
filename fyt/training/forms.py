@@ -34,10 +34,10 @@ class SessionForm(forms.ModelForm):
             'end_time': DateTimePicker(options=TIME_OPTIONS)
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.layout = Layout(
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = Layout(
             'training',
             Row(
                 Div('date', css_class='col-sm-4'),
@@ -47,6 +47,7 @@ class SessionForm(forms.ModelForm):
             'location',
             Submit('submit', 'Save')
         )
+        return helper
 
 
 class AttendanceForm(forms.ModelForm):
@@ -164,5 +165,3 @@ class FirstAidFormset(forms.modelformset_factory(
 
     def get_status(self, instance):
         return instance.volunteer.get_status_display()
-
-    
