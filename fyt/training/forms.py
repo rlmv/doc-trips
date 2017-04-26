@@ -100,6 +100,12 @@ class AttendeeUpdateForm(forms.ModelForm):
             'complete_sessions': forms.CheckboxSelectMultiple()
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['complete_sessions'].queryset = (
+            self.fields['complete_sessions'].queryset.filter(
+                trips_year=self.instance.trips_year))
+
     @property
     def helper(self):
         helper = FormHelper(self)

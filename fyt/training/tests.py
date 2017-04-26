@@ -4,7 +4,7 @@ from model_mommy import mommy
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
-from fyt.training.forms import AttendanceForm, FirstAidFormset
+from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset
 from fyt.training.models import Attendee, Session, Training
 
 
@@ -122,6 +122,20 @@ class AttendenceFormTestCase(FytTestCase):
         self.assertQsEqual(self.session.completed.all(), [self.attendee])
 
 
+class AttendeeUpdateFormTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.init_old_trips_year()
+
+    def test_complete_sessions_queryset(self):
+        session = mommy.make(Session, trips_year=self.trips_year)
+        old_session = mommy.make(Session, trips_year=self.old_trips_year)
+        attendee = make_attendee(trips_year=self.trips_year)
+        form = AttendeeUpdateForm(instance=attendee)
+        self.assertQsEqual(form.fields['complete_sessions'].queryset, [session])
+
+
 class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
@@ -135,8 +149,8 @@ class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
     def test_queryset(self):
         formset = FirstAidFormset(self.trips_year)
         self.assertQsEqual(formset.queryset,
-            [self.leader.attendee, 
-             self.crooling.attendee, 
+            [self.leader.attendee,
+             self.crooling.attendee,
              self.leader_waitlist.attendee])
 
 
@@ -190,7 +204,7 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
         for status, code in results.items():
             app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
             self.app.get(url, user=app.applicant, status=code)
-            
+
     def test_num_queries(self):
         self.make_application(status=Volunteer.LEADER)
         url = reverse('db:attendee:first_aid', kwargs={
@@ -198,5 +212,3 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         with self.assertNumQueries(15):
             self.app.get(url, user=self.director)
-            
-            
