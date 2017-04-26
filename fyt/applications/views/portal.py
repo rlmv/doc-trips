@@ -1,4 +1,3 @@
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse_lazy
 from vanilla import TemplateView, UpdateView
@@ -42,7 +41,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
                 timetable.leader_assignment_available and
                 application.status == Volunteer.LEADER)
             context['show_trainings'] = (
-                application.attendee.can_train)
+                application.attendee.can_register)
 
         except Volunteer.DoesNotExist:
             application = None
