@@ -5,11 +5,14 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 from fyt.applications.models import Volunteer
 from fyt.training.models import Attendee, Session, TRAINABLE_STATUSES
 from fyt.db.templatetags.links import make_link
+from fyt.training.templatetags.training import capacity_label
 from fyt.utils.fmt import join_with_and
+
 
 
 DATE_OPTIONS = {
@@ -76,11 +79,19 @@ class AttendanceForm(forms.ModelForm):
         return instance
 
 
+class RegisteredSessionsField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, instance):
+        return mark_safe('{} {}'.format(capacity_label(instance), instance))
+
+
 class SignupForm(forms.ModelForm):
 
     class Meta:
         model = Attendee
         fields = ['registered_sessions']
+        field_classes = {
+            'registered_sessions': RegisteredSessionsField
+        }
         widgets = {
             'registered_sessions': forms.CheckboxSelectMultiple()
         }
