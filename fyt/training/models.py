@@ -7,6 +7,7 @@ from django.dispatch import receiver
 
 from fyt.applications.models import Volunteer
 from fyt.db.models import DatabaseModel
+from fyt.training.managers import AttendeeManager
 
 
 class Training(DatabaseModel):
@@ -66,13 +67,12 @@ class Session(DatabaseModel):
                        kwargs=self.obj_kwargs())
 
 
-TRAINABLE_STATUSES = [Volunteer.LEADER, Volunteer.CROO, Volunteer.LEADER_WAITLIST]
-
-
 class Attendee(DatabaseModel):
     """
     A volunteer attending trainings.
     """
+    objects = AttendeeManager()
+
     volunteer = models.OneToOneField(Volunteer)
     registered_sessions = models.ManyToManyField(
         Session, blank=True, related_name='registered')
@@ -106,9 +106,14 @@ class Attendee(DatabaseModel):
             return self.fa_other
         return self.fa_cert
 
+    TRAINABLE_STATUSES = [
+        Volunteer.LEADER,
+        Volunteer.CROO,
+        Volunteer.LEADER_WAITLIST]
+
     @property
     def can_register(self):
-        return self.volunteer.status in TRAINABLE_STATUSES
+        return self.volunteer.status in self.TRAINABLE_STATUSES
 
     def __str__(self):
         return str(self.volunteer)

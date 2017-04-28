@@ -1,4 +1,3 @@
-
 from django.conf.urls import url
 
 from fyt.db.urlhelpers import DB_REGEX
@@ -12,6 +11,7 @@ from fyt.training.views import (
     SessionList,
     SessionUpdate,
     Signup,
+    UpdateRegistration
 )
 
 
@@ -22,8 +22,10 @@ session_urlpatterns = [
     url(DB_REGEX['DETAIL'], SessionDetail.as_view(), name='detail'),
     url(DB_REGEX['UPDATE'], SessionUpdate.as_view(), name='update'),
     url(DB_REGEX['DELETE'], SessionDelete.as_view(), name='delete'),
-    url(r'^(?P<pk>[0-9]+)/update/attendance', RecordAttendance.as_view(),
+    url(r'^(?P<pk>[0-9]+)/update/attendance/$', RecordAttendance.as_view(),
         name='update_attendance'),
+    url(r'^(?P<pk>[0-9]+)/update/registration/$', UpdateRegistration.as_view(),
+        name='update_registration'),
 ]
 
 attendee_urlpatterns = [

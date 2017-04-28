@@ -26,6 +26,7 @@ from fyt.training.forms import (
     FirstAidFormset,
     SessionForm,
     SignupForm,
+    SessionRegistrationForm,
 )
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify
@@ -65,7 +66,10 @@ class SessionDetail(DatabaseDetailView):
         return {
             'update_attendance_url': reverse(
                 'db:session:update_attendance',
-                kwargs=self.object.obj_kwargs())
+                kwargs=self.object.obj_kwargs()),
+            'update_registration_url': reverse(
+                'db:session:update_registration',
+                kwargs=self.object.obj_kwargs()),
         }
 
 
@@ -84,6 +88,7 @@ class SessionDelete(TrainingPermissionRequired, BaseDeleteView):
 class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
     model = Session
     form_class = AttendanceForm
+    delete_button = False
 
     def get_headline(self):
         return mark_safe(
@@ -93,6 +98,16 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
         """Directorate members can also update training attendance."""
         return super().has_permission() or (
             directorate() in self.request.user.groups.all())
+
+
+class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):
+    model = Session
+    form_class = SessionRegistrationForm
+    delete_button = False
+
+    def get_headline(self):
+        return mark_safe(
+            "Update Registrations <small>{}</small>".format(self.object))
 
 
 class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,

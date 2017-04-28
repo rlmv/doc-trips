@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from fyt.applications.models import Volunteer
-from fyt.training.models import Attendee, Session, TRAINABLE_STATUSES
+from fyt.training.models import Attendee, Session
 from fyt.db.templatetags.links import make_link
 from fyt.training.templatetags.training import capacity_label
 from fyt.utils.fmt import join_with_and
@@ -53,6 +53,27 @@ class SessionForm(forms.ModelForm):
             Submit('submit', 'Save')
         )
         return helper
+
+
+class SessionRegistrationForm(forms.ModelForm):
+    """
+    Form used to update registered attendees on the backend.
+    """
+    class Meta:
+        model = Session
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['registered'] = forms.ModelMultipleChoiceField(
+            queryset=Attendee.objects.trainable(self.instance.trips_year),
+            initial=self.instance.registered.all(),
+            widget=forms.CheckboxSelectMultiple())
+
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        instance.registered.add(*self.cleaned_data['registered'])
+        return instance
 
 
 class AttendanceForm(forms.ModelForm):
@@ -164,12 +185,8 @@ class FirstAidFormset(forms.modelformset_factory(
 
     def __init__(self, trips_year, *args, **kwargs):
 
-        qs = Attendee.objects.filter(
-            trips_year=trips_year,
-            volunteer__status__in=TRAINABLE_STATUSES
-        ).select_related(
-            'volunteer',
-            'volunteer__applicant'
+        qs = Attendee.objects.trainable(
+            trips_year
         ).only(
             'volunteer__applicant__name',
             'volunteer__status',

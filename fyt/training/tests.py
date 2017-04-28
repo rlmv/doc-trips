@@ -4,7 +4,7 @@ from model_mommy import mommy
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
-from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset, SignupForm
+from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset, SignupForm, SessionRegistrationForm
 from fyt.training.models import Attendee, Session, Training
 
 
@@ -38,7 +38,7 @@ class SessionModelTestCase(FytTestCase):
         self.assertTrue(self.session.full())
 
 
-class AttendeeModelTestCase(FytTestCase):
+class AttendeeModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -85,7 +85,7 @@ class AttendeeModelTestCase(FytTestCase):
             fa_other='ABC')
         self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
 
-    def can_train(self):
+    def test_can_train(self):
         results = {
             Volunteer.CROO: True,
             Volunteer.LEADER: True,
@@ -95,10 +95,39 @@ class AttendeeModelTestCase(FytTestCase):
             Volunteer.CANCELED: False,
             Volunteer.REJECTED: False
         }
+        trainable = []
         for status, allowed in results.items():
-            v = mommy.make(Volunteer, status=status)
-            self.assertEqual(v.attendee.can_register, allowed)
+            a = self.make_application(status=status).attendee
+            self.assertEqual(a.can_register, allowed)
+            if allowed:
+                trainable.append(a)
 
+        self.assertQsEqual(Attendee.objects.trainable(self.trips_year), trainable)
+
+
+class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.session = mommy.make(Session, trips_year=self.trips_year)
+        self.attendee = self.make_application(status=Volunteer.LEADER).attendee
+        self.make_application(status=Volunteer.REJECTED)
+
+    def test_queryset_is_all_trainable_volunteers(self):
+        form = SessionRegistrationForm(instance=self.session)
+        self.assertQsEqual(form.fields['registered'].queryset, [self.attendee])
+
+    def test_initial_is_populated(self):
+        self.session.registered.add(self.attendee)
+        form = SessionRegistrationForm(instance=self.session)
+        self.assertQsEqual(form.fields['registered'].initial, [self.attendee])
+
+    def test_form_saves_registration(self):
+        form = SessionRegistrationForm({'registered': [self.attendee]},
+                                       instance=self.session)
+        form.save()
+        self.session.refresh_from_db()
+        self.assertQsEqual(self.session.registered.all(), [self.attendee])
 
 
 class AttendenceFormTestCase(FytTestCase):
