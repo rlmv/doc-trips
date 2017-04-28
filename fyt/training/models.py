@@ -73,6 +73,9 @@ class Attendee(DatabaseModel):
     """
     objects = AttendeeManager()
 
+    class Meta:
+        ordering = ['volunteer']
+
     volunteer = models.OneToOneField(Volunteer)
     registered_sessions = models.ManyToManyField(
         Session, blank=True, related_name='registered')
