@@ -4,7 +4,7 @@ from model_mommy import mommy
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
-from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset
+from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset, SignupForm
 from fyt.training.models import Attendee, Session, Training
 
 
@@ -134,6 +134,43 @@ class AttendeeUpdateFormTestCase(FytTestCase):
         attendee = make_attendee(trips_year=self.trips_year)
         form = AttendeeUpdateForm(instance=attendee)
         self.assertQsEqual(form.fields['complete_sessions'].queryset, [session])
+
+
+class SignupFormTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_session_size_is_capped(self):
+        session = mommy.make(Session, trips_year=self.trips_year)
+        for i in range(Session.DEFAULT_CAPACITY):
+            make_attendee(trips_year=self.trips_year,
+                          registered_sessions=[session])
+
+        attendee = make_attendee(trips_year=self.trips_year)
+        form = SignupForm({'registered_sessions': [session]}, instance=attendee)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {
+            'registered_sessions': [
+                "The following sessions are full: {}. Please choose another "
+                "session. If this is the only time you can attend, please "
+                "contact the Trip Leader Trainers directly.".format(
+                    session)]
+        })
+
+    def test_dont_check_capacity_when_previously_registered(self):
+        session = mommy.make(Session, trips_year=self.trips_year)
+        attendee = make_attendee(trips_year=self.trips_year,
+                                 registered_sessions=[session])
+
+        # Then session fills up
+        for i in range(Session.DEFAULT_CAPACITY):
+            make_attendee(trips_year=self.trips_year,
+                          registered_sessions=[session])
+
+        form = SignupForm({'registered_sessions': [session]}, instance=attendee)
+        self.assertTrue(form.is_valid())
+        self.assertQsEqual(form.cleaned_data['registered_sessions'], [session])
 
 
 class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):

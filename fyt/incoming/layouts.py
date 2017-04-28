@@ -1,22 +1,11 @@
-
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 
-from fyt.utils.fmt import section_range
+from fyt.utils.fmt import section_range, join_with_and
 
 
 """
 crispy_form layouts
 """
-
-def join_with_and(iter):
-    """ Given a list ["A", "B", "C"] return "A, B and C" """
-
-    l = list(map(str, iter))
-    if len(l) == 0:
-        return ""
-    elif len(l) == 1:
-        return l[0]
-    return ", ".join(l[:-1]) + " and " + l[-1]
 
 
 class RegistrationFormLayout(Layout):

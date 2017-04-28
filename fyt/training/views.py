@@ -1,6 +1,6 @@
 import logging
 
-from braces.views import SetHeadlineMixin
+from braces.views import SetHeadlineMixin, FormMessagesMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
@@ -123,13 +123,17 @@ class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
 
 # Volunteer-facing views
 
-class Signup(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
+             UpdateView):
 
     model = Attendee
     form_class = SignupForm
     template_name = 'training/signup_form.html'
     raise_exception = True
     permission_denied_message = "You are not a Leader or a Croo Member."
+    form_valid_message = "Your training sessions have been updated"
+    form_invalid_message = "There's an issue with the sessions you've choosen"
+
 
     def test_func(self):
         """Check whether the user can register for trainings."""

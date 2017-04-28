@@ -36,6 +36,9 @@ class Session(DatabaseModel):
     end_time = models.TimeField()
     location = models.CharField(max_length=256)
 
+    # TODO: expose this as editable?
+    DEFAULT_CAPACITY = 70
+
     def registered_emails(self):
         """Emails for all registered attendees."""
         return self.registered.values_list(

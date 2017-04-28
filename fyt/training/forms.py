@@ -4,10 +4,12 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
+from django.core.exceptions import ValidationError
 
 from fyt.applications.models import Volunteer
 from fyt.training.models import Attendee, Session, TRAINABLE_STATUSES
 from fyt.db.templatetags.links import make_link
+from fyt.utils.fmt import join_with_and
 
 
 DATE_OPTIONS = {
@@ -85,6 +87,23 @@ class SignupForm(forms.ModelForm):
         labels = {
             'registered_sessions': ''
         }
+
+    def clean_registered_sessions(self):
+        new_registrations = (
+            set(self.cleaned_data['registered_sessions']) -
+            set(self.instance.registered_sessions.all()))
+
+        full = [session for session in new_registrations
+                if session.registered.count() >= session.DEFAULT_CAPACITY]
+
+        if full:
+            raise ValidationError(
+                "The following sessions are full: {}. Please choose another "
+                "session. If this is the only time you can attend, please "
+                "contact the Trip Leader Trainers directly.".format(
+                    join_with_and(full)))
+
+        return self.cleaned_data['registered_sessions']
 
 
 class AttendeeUpdateForm(forms.ModelForm):

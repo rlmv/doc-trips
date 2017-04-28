@@ -1,9 +1,8 @@
-
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
 
-from .layouts import RegistrationFormLayout, join_with_and
+from .layouts import RegistrationFormLayout
 from .models import (
     REGISTRATION_SECTION_CHOICES,
     REGISTRATION_TRIPTYPE_CHOICES,
@@ -20,6 +19,7 @@ from fyt.transport.models import Stop
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import NOT_AVAILABLE
+from fyt.utils.fmt import join_with_and
 
 
 class RoundTripStopChoiceField(forms.ModelChoiceField):

@@ -9,3 +9,15 @@ def section_range(sxns):
     for i, j in zip(range(len(sxns) - 1), range(1, len(sxns))):
         assert ord(sxns[i]) + 1 == ord(sxns[j]), "sections not contiguous"
     return "%s - %s" % (sxns[0], sxns[-1])
+
+
+
+def join_with_and(iter):
+    """ Given a list ["A", "B", "C"] return "A, B and C" """
+
+    l = list(map(str, iter))
+    if len(l) == 0:
+        return ""
+    elif len(l) == 1:
+        return l[0]
+    return ", ".join(l[:-1]) + " and " + l[-1]
