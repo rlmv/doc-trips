@@ -1,123 +1,123 @@
 @media all {
     body {
-	padding-bottom: 3em;
+        padding-bottom: 3em;
     }
-    
+
     .expand-whitespace {
-	white-space: pre-line;
+        white-space: pre-line;
     }
 
     /* push 'Filter' button inline with input boxes */
     .filter-submit {
-	position: absolute;
-	top: 1.7em;
+        position: absolute;
+        top: 1.7em;
     }
 
     /* line roles checkboxes up with text */
     .filter-checkbox {
-	position: absolute;
-	top: -.7em;
+        position: absolute;
+        top: -.7em;
     }
 
     /* shrink suggested croos filter */
     .filter-croos div {
-	margin-bottom: 0;
+        margin-bottom: 0;
     }
 
     th[data-sort] {
-	cursor: pointer;
+        cursor: pointer;
     }
 
     /* shrink navbar */
     /* move to Bootstrap Less if we use it */
     .navbar-nav > li > a, .navbar-header > a.navbar-brand {
-	padding-top: 11px !important;
-	padding-bottom: 11px !important;
+        padding-top: 11px !important;
+        padding-bottom: 11px !important;
     }
 
     .navbar {
-	min-height: 42px !important;
+        min-height: 42px !important;
     }
 
     .navbar {
-	height: 42px;
+        height: 42px;
     }
 
     /* sidebar */
 
     .sidebar .sidebar-nav.navbar-collapse {
-	padding-right: 0;
-	padding-left: 0;
+        padding-right: 0;
+        padding-left: 0;
     }
 
     .sidebar ul li {
-	border-bottom: 1px solid #e7e7e7;
+        border-bottom: 1px solid #e7e7e7;
     }
 
     .sidebar ul li a.active {
-	background-color: #eee;
+        background-color: #eee;
     }
 
     .sidebar .fa.arrow {
-	float: right;
+        float: right;
     }
 
     .sidebar .fa.arrow:before {
-	content: "\f104";
+        content: "\f104";
     }
 
     .sidebar .active>a>.fa.arrow:before {
-	content: "\f107";
+        content: "\f107";
     }
 
     .sidebar ul li ul li {
-	border-bottom: 0!important;
+        border-bottom: 0!important;
     }
 
     .sidebar ul li ul li a {
-	padding-left: 30px;
+        padding-left: 30px;
     }
 
     .sidebar a {
-	color: inherit;
+        color: inherit;
     }
 
     /* / sidebar */
 
     a.no-color-link {
-	color: inherit;
+        color: inherit;
     }
 
     .text-bright-danger {
-	color: red !important;
+        color: red !important;
     }
 
     .text-bright-success {
-	color: yellowgreen !important;
+        color: yellowgreen !important;
     }
 
     hr.hr-sm {
-	margin-bottom: 0.5em;
-	margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        margin-top: 0.5em;
     }
 }
 
 @media print {
     .no-print {
-	display: none !important;
+        display: none !important;
     }
 
     .page-break-after {
-	page-break-after: always;
+        page-break-after: always;
     }
-    
+
     .no-page-break-inside {
-	page-break-inside: avoid;
+        page-break-inside: avoid;
     }
 
     /* dont insert (/link/url) after links */
-    body a:link:after, body a:visited:after {    
-	content: "";
+    body a:link:after, body a:visited:after {
+        content: "";
     }
 }
 
@@ -125,5 +125,3 @@
 @page {
     margin-top: 1.5cm;
 }
-
-    
