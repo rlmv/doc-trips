@@ -1,5 +1,6 @@
 {% extends "db/base.html" %}
 {% load links %}
+{% load training %}
 
 {% block header %}
 <h1> Training Sessions
@@ -13,19 +14,21 @@
 <table class="table table-condensed">
     <tr>
         <th> Type </th>
+        <th> Size </th>
         <th> Date </th>
         <th> Time </th>
         <th> End Time </th>
-		<th> Location </th>
+        <th> Location </th>
         <th></th>
     </tr>
     {% for session in sessions %}
         <tr>
             <td>{{ session|detail_link:session.training }}</td>
+            <td>{{ session|capacity_label }}</td>
             <td>{{ session.date }}</td>
             <td>{{ session.start_time }}</td>
             <td>{{ session.end_time }}</td>
-			<td>{{ session.location }}</td>
+            <td>{{ session.location }}</td>
             <td>{{ session|delete_link }}</td>
         </tr>
     {% endfor %}

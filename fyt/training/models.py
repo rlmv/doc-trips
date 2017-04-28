@@ -42,6 +42,9 @@ class Session(DatabaseModel):
     def full(self):
         return self.registered.count() >= self.DEFAULT_CAPACITY
 
+    def size(self):
+        return self.registered.count()
+
     def registered_emails(self):
         """Emails for all registered attendees."""
         return self.registered.values_list(
