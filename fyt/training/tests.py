@@ -30,6 +30,13 @@ class SessionModelTestCase(FytTestCase):
     def test_attendee_emails(self):
         self.assertQsEqual(self.session.registered_emails(), ['test@gmail.com'])
 
+    def test_full(self):
+        self.assertFalse(self.session.full())
+        for i in range(Session.DEFAULT_CAPACITY):
+            make_attendee(trips_year=self.trips_year,
+                          registered_sessions=[self.session])
+        self.assertTrue(self.session.full())
+
 
 class AttendeeModelTestCase(FytTestCase):
 

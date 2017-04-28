@@ -93,8 +93,7 @@ class SignupForm(forms.ModelForm):
             set(self.cleaned_data['registered_sessions']) -
             set(self.instance.registered_sessions.all()))
 
-        full = [session for session in new_registrations
-                if session.registered.count() >= session.DEFAULT_CAPACITY]
+        full = [session for session in new_registrations if session.full()]
 
         if full:
             raise ValidationError(

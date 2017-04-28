@@ -39,6 +39,9 @@ class Session(DatabaseModel):
     # TODO: expose this as editable?
     DEFAULT_CAPACITY = 70
 
+    def full(self):
+        return self.registered.count() >= self.DEFAULT_CAPACITY
+
     def registered_emails(self):
         """Emails for all registered attendees."""
         return self.registered.values_list(
