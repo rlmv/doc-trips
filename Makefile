@@ -1,5 +1,4 @@
-
-PYVENV = pyvenv-3.4
+INTERPRETER = python3.6
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
@@ -13,15 +12,17 @@ POSTGRES = fyt
 POSTGRES_USER = fytuser
 POSTGRES_DUMP = latest.dump
 
-.PHONY: docs
+.PHONY: docs venv
 
 all:
 	$(MANAGE) runserver
 
-install:
-	$(PYVENV) $(VENV)
+install: venv
 	$(PIP) install --upgrade pip
 	$(PIP) install --upgrade -r requirements.txt
+
+venv:
+	$(INTERPRETER) -m venv $(VENV)
 
 deploy:
 	git push production master
