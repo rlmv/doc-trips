@@ -1,8 +1,8 @@
-
 import django_filters
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
 from django import forms
+from django.db import models
 from django.db.models import Q
 
 from fyt.incoming.models import Registration
@@ -19,22 +19,6 @@ ATHLETE = 'is_athlete'
 ANY = 'ANY'
 NO = 'NO'
 BLANK = '-------'
-
-
-class BooleanFilter(django_filters.MethodFilter):
-    """Only show registrations where ``field`` is True."""
-
-    def __init__(self, field, **kwargs):
-
-        def _filter(qs, value):
-            if not value:
-                return qs
-
-            kwargs = dict([(field, True)])
-            return qs.filter(**kwargs)
-
-        widget = forms.CheckboxInput()
-        super().__init__(action=_filter, widget=widget, **kwargs)
 
 
 class ExternalBusRequestFilter(django_filters.ChoiceFilter):
@@ -90,21 +74,39 @@ class AthleteFilter(django_filters.ChoiceFilter):
         return qs.filter(is_athlete=value)
 
 
+class SelectBooleanFilter(django_filters.BooleanFilter):
+    """
+    Only filter if the field is True; we don't care about the difference
+    between None and False.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({'widget': forms.CheckboxInput()})
+        super().__init__(*args, **kwargs)
+
+    def filter(self, qs, value):
+        if not value:
+            return qs
+
+        return qs.filter(**dict([(self.name, True)]))
+
+
 class RegistrationFilterSet(django_filters.FilterSet):
 
     class Meta:
         model = Registration
+        fields = []
 
     def __init__(self, *args, **kwargs):
         trips_year = kwargs.pop('trips_year')
         super().__init__(*args, **kwargs)
 
-        self.filters[EXCHANGE] = BooleanFilter(EXCHANGE, label='Exchange')
-        self.filters[TRANSFER] = BooleanFilter(TRANSFER, label='Transfer')
-        self.filters[INTERNATIONAL] = BooleanFilter(INTERNATIONAL,
-                                                    label='International')
-        self.filters[NATIVE] = BooleanFilter(NATIVE, label='Native')
-        self.filters[FYSEP] = BooleanFilter(FYSEP, label='FYSEP')
+        self.filters[EXCHANGE] = SelectBooleanFilter(EXCHANGE, label='Exchange')
+        self.filters[TRANSFER] = SelectBooleanFilter(TRANSFER, label='Transfer')
+        self.filters[INTERNATIONAL] = SelectBooleanFilter(
+            INTERNATIONAL, label='International')
+        self.filters[NATIVE] = SelectBooleanFilter(NATIVE, label='Native')
+        self.filters[FYSEP] = SelectBooleanFilter(FYSEP, label='FYSEP')
 
         self.filters[BUS] = ExternalBusRequestFilter(
             trips_year, label='External Bus Request')

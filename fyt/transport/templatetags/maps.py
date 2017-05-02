@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.template import Context, Library, loader
+from django.template import Library, loader
 
 from fyt.transport.maps import MapError, _split_stops
 
@@ -19,12 +19,12 @@ def embed_map(stops):
 
     return loader.get_template(
         'transport/maps/embed.html'
-    ).render(Context({
+    ).render({
         'orig': orig,
         'waypoints': waypoints,
         'dest': dest,
         'key': settings.GOOGLE_MAPS_BROWSER_KEY
-    }))
+    })
 
 
 @register.inclusion_tag('transport/maps/directions.html')

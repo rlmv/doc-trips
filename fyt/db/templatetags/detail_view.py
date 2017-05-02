@@ -1,5 +1,3 @@
-
-
 from django import template
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -98,5 +96,4 @@ def detail(db_object, fields=None):
         display_fields.append((label, value))
 
     t = template.loader.get_template('db/_detail_view_tag.html')
-    c = template.Context({'fields': display_fields})
-    return t.render(c)
+    return t.render({'fields': display_fields})

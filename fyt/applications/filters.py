@@ -1,4 +1,3 @@
-
 from collections import namedtuple
 
 import django_filters
@@ -154,16 +153,18 @@ class ApplicationFilterSet(django_filters.FilterSet):
             KITCHEN_LEAD
         ]
 
-    name = django_filters.MethodFilter(action='lookup_user_by_name')
-    netid = django_filters.MethodFilter(action='lookup_user_by_netid')
+    name = django_filters.CharFilter(method='lookup_user_by_name',
+                                     label='Name')
+    netid = django_filters.CharFilter(method='lookup_user_by_netid',
+                                      label='NetId')
 
-    def lookup_user_by_name(self, qs, value):
+    def lookup_user_by_name(self, qs, name, value):
         if not value:
             return qs
 
         return qs.filter(applicant__name__icontains=value)
 
-    def lookup_user_by_netid(self, qs, value):
+    def lookup_user_by_netid(self, qs, name, value):
         if not value:
             return qs
 
