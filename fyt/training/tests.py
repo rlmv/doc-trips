@@ -129,6 +129,14 @@ class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
         self.session.refresh_from_db()
         self.assertQsEqual(self.session.registered.all(), [self.attendee])
 
+    def test_form_removes_registrations(self):
+        self.session.registered.add(self.attendee)
+        form = SessionRegistrationForm({'registered': []},
+                                       instance=self.session)
+        form.save()
+        self.session.refresh_from_db()
+        self.assertQsEqual(self.session.registered.all(), [])
+
 
 class AttendenceFormTestCase(FytTestCase):
 
@@ -156,6 +164,13 @@ class AttendenceFormTestCase(FytTestCase):
         form.save()
         self.session.refresh_from_db()
         self.assertQsEqual(self.session.completed.all(), [self.attendee])
+
+    def test_form_removes_attendance(self):
+        self.session.completed.add(self.attendee)
+        form = AttendanceForm({'completed': []}, instance=self.session)
+        form.save()
+        self.session.refresh_from_db()
+        self.assertQsEqual(self.session.completed.all(), [])
 
 
 class AttendeeUpdateFormTestCase(FytTestCase):

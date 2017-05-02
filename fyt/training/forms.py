@@ -68,11 +68,14 @@ class SessionRegistrationForm(forms.ModelForm):
         self.fields['registered'] = forms.ModelMultipleChoiceField(
             queryset=Attendee.objects.trainable(self.instance.trips_year),
             initial=self.instance.registered.all(),
-            widget=forms.CheckboxSelectMultiple())
+            widget=forms.CheckboxSelectMultiple(),
+            required=False)
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        instance.registered.add(*self.cleaned_data['registered'])
+        # TODO: use something other than set for better handling of race
+        # conditions?
+        instance.registered.set(self.cleaned_data['registered'])
         return instance
 
 
@@ -92,11 +95,14 @@ class AttendanceForm(forms.ModelForm):
         self.fields['completed'] = forms.ModelMultipleChoiceField(
             queryset=self.instance.registered.all(),
             initial=self.instance.completed.all(),
-            widget=forms.CheckboxSelectMultiple())
+            widget=forms.CheckboxSelectMultiple(),
+            required=False)
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
-        instance.completed.add(*self.cleaned_data['completed'])
+        # TODO: use something other than set for better handling of race
+        # conditions?
+        instance.completed.set(self.cleaned_data['completed'])
         return instance
 
 
