@@ -1,4 +1,3 @@
-
 from collections import namedtuple
 
 import django_filters
@@ -8,6 +7,8 @@ from django.db.models import Q
 from django.forms import Select
 
 from fyt.applications.models import Volunteer
+from fyt.training.models import Attendee
+from fyt.applications.managers import pks
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 
@@ -103,9 +104,33 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         return action(qs)
 
 
+class FirstAidFilter(django_filters.ChoiceFilter):
+    def __init__(self, trips_year, *args, **kwargs):
+        self.trips_year = trips_year
+        kwargs.update({
+            'choices': (
+                ('', BLANK),
+                ('missing', 'Missing'),
+                ('complete', 'Complete')),
+            'label': 'First Aid Training'
+        })
+        super().__init__(self, *args, **kwargs)
+
+    def filter(self, qs, value):
+        if value == 'missing':
+            return qs.filter(attendee__pk__in=pks(
+                Attendee.objects.first_aid_incomplete(self.trips_year)))
+        elif value == 'complete':
+            return qs.filter(attendee__pk__in=pks(
+                Attendee.objects.first_aid_complete(self.trips_year)))
+        else:
+            return qs
+
+
 STATUS = 'status'
 CLASS_YEAR = 'class_year'
 COMPLETE = 'complete'
+FIRST_AID = 'first_aid'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
 CLASS_2_3 = 'leader_supplement__class_2_3_paddler'
@@ -175,6 +200,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[COMPLETE] = ApplicationTypeFilter(trips_year)
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
+        self.filters[FIRST_AID] = FirstAidFilter(trips_year)
 
         # Add blank choices
         default_blank = [
@@ -222,6 +248,7 @@ class FilterSetFormHelper(FormHelper):
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
             filter_row(AVAILABLE_TRIPTYPES),
+            filter_row(FIRST_AID),
             filter_row(CLASS_2_3),
             filter_row(LEDYARD_LEVEL_1),
             filter_row(LEDYARD_LEVEL_2),

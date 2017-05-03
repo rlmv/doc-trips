@@ -67,24 +67,6 @@ class AttendeeModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(attendee.trainings_to_sessions(), {
             training: session})
 
-    def test_get_first_aid_cert(self):
-        attendee = make_attendee(trips_year=self.trips_year, fa_cert='WFR')
-        self.assertEqual(attendee.get_first_aid_cert(), 'WFR')
-
-    def test_get_first_aid_cert_other(self):
-        attendee = make_attendee(
-            trips_year=self.trips_year,
-            fa_cert=Attendee.OTHER,
-            fa_other='ABC')
-        self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
-
-    def test_get_first_aid_cert_without_explicit_other(self):
-        attendee = make_attendee(
-            trips_year=self.trips_year,
-            fa_cert="",
-            fa_other='ABC')
-        self.assertEqual(attendee.get_first_aid_cert(), 'ABC')
-
     def test_can_train(self):
         results = {
             Volunteer.CROO: True,
@@ -103,6 +85,44 @@ class AttendeeModelTestCase(ApplicationTestMixin, FytTestCase):
                 trainable.append(a)
 
         self.assertQsEqual(Attendee.objects.trainable(self.trips_year), trainable)
+
+
+class AttendeeFirstAidTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.attendee1 = make_attendee(trips_year=self.trips_year, fa_cert='WFR')
+        self.attendee2 = make_attendee(
+            trips_year=self.trips_year,
+            fa_cert=Attendee.OTHER,
+            fa_other='ABC')
+        self.attendee3 = make_attendee(
+            trips_year=self.trips_year,
+            fa_cert='',
+            fa_other='ABC')
+        self.attendee4 = make_attendee(
+            trips_year=self.trips_year,
+            fa_cert='',
+            fa_other='')
+
+    def test_get_first_aid_cert(self):
+        self.assertEqual(self.attendee1.get_first_aid_cert(), 'WFR')
+
+    def test_get_first_aid_cert_other(self):
+        self.assertEqual(self.attendee2.get_first_aid_cert(), 'ABC')
+
+    def test_get_first_aid_cert_without_explicit_other(self):
+        self.assertEqual(self.attendee3.get_first_aid_cert(), 'ABC')
+
+    def test_first_aid_complete(self):
+        self.assertQsEqual(Attendee.objects.first_aid_complete(self.trips_year),
+                           [self.attendee1, self.attendee2, self.attendee3])
+
+    def test_first_aid_incomplete(self):
+        self.assertQsEqual(
+            Attendee.objects.first_aid_incomplete(self.trips_year),
+            [self.attendee4])
+
 
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
