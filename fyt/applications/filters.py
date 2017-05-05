@@ -8,9 +8,9 @@ from django.forms import Select
 
 from fyt.applications.models import Volunteer
 from fyt.training.models import Attendee
-from fyt.applications.managers import pks
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
+from fyt.utils.query import pks
 
 
 class AvailableSectionFilter(django_filters.ModelChoiceFilter):

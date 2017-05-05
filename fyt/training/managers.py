@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Q
 
-from fyt.applications.managers import pks
+from fyt.utils.query import pks
 
 
 class AttendeeManager(models.Manager):

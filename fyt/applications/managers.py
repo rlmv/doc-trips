@@ -18,6 +18,7 @@ from django.db.models.functions import Coalesce
 
 from fyt.db.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
+from fyt.utils.query import pks
 
 
 # TODO: refactor grade choices to query off the Volunteer
@@ -278,13 +279,6 @@ def TrueIf(**kwargs):
         default=False,
         output_field=models.BooleanField()
     )
-
-
-def pks(qs):
-    """
-    Return the primary keys of a queryset.
-    """
-    return qs.values_list('pk', flat=True)
 
 
 class QuestionManager(models.Manager):
