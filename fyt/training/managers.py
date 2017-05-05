@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Q
 
+from fyt.applications.managers import pks
+
 
 class AttendeeManager(models.Manager):
 
@@ -36,4 +38,26 @@ class AttendeeManager(models.Manager):
             trips_year=trips_year
         ).filter(
             fa_cert='', fa_other=''
+        )
+
+    def training_complete(self, trips_year):
+        """
+        All volunteers who have finished their training.
+        """
+        qs = self.filter(trips_year=trips_year)
+
+        from .models import Training
+        for training in Training.objects.filter(trips_year=trips_year):
+            qs = qs.filter(complete_sessions__training=training)
+
+        return qs
+
+    def training_incomplete(self, trips_year):
+        """
+        All volunteers who have not completed their training.
+        """
+        return self.filter(
+            trips_year=trips_year
+        ).exclude(
+            pk__in=pks(self.training_complete(trips_year))
         )

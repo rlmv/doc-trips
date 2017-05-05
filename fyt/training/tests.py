@@ -48,25 +48,6 @@ class AttendeeModelTestCase(ApplicationTestMixin, FytTestCase):
         attendee = volunteer.attendee
         self.assertEqual(attendee.trips_year, self.trips_year)
 
-    def test_training_complete(self):
-        attendee = make_attendee(trips_year=self.trips_year)
-        self.assertTrue(attendee.training_complete())
-        self.assertEqual(attendee.trainings_to_sessions(), {})
-
-        # One unattended training
-        training = mommy.make(Training, trips_year=self.trips_year)
-        self.assertFalse(attendee.training_complete())
-        self.assertEqual(attendee.trainings_to_sessions(), {
-            training: None})
-
-        # Go to a session
-        session = mommy.make(Session, trips_year=self.trips_year,
-                             training=training, completed=[attendee])
-        attendee = Attendee.objects.get(pk=attendee.pk)
-        self.assertTrue(attendee.training_complete())
-        self.assertEqual(attendee.trainings_to_sessions(), {
-            training: session})
-
     def test_can_train(self):
         results = {
             Volunteer.CROO: True,
@@ -85,6 +66,36 @@ class AttendeeModelTestCase(ApplicationTestMixin, FytTestCase):
                 trainable.append(a)
 
         self.assertQsEqual(Attendee.objects.trainable(self.trips_year), trainable)
+
+
+class AttendeeTrainingTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.training = mommy.make(Training, trips_year=self.trips_year)
+        self.attendee1 = make_attendee(trips_year=self.trips_year)
+        self.attendee2 = make_attendee(trips_year=self.trips_year)
+        self.session = mommy.make(Session, trips_year=self.trips_year,
+                                  training=self.training,
+                                  completed=[self.attendee2])
+
+    def test_trainings_to_sessions(self):
+        self.assertEqual(self.attendee1.trainings_to_sessions(),
+                         {self.training: None})
+        self.assertEqual(self.attendee2.trainings_to_sessions(),
+                         {self.training: self.session})
+
+    def test_training_complete_on_model(self):
+        self.assertFalse(self.attendee1.training_complete())
+        self.assertTrue(self.attendee2.training_complete())
+
+    def test_training_complete_manager(self):
+        self.assertQsEqual(Attendee.objects.training_complete(self.trips_year),
+                           [self.attendee2])
+
+    def test_training_incomplete_manager(self):
+        self.assertQsEqual(Attendee.objects.training_incomplete(self.trips_year),
+                           [self.attendee1])
 
 
 class AttendeeFirstAidTestCase(FytTestCase):
