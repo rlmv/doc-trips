@@ -1,9 +1,7 @@
-
 from django.conf.urls import include, url
 
 from fyt.applications.views.application import (
     ApplicationAdminUpdate,
-    ApplicationCertsUpdate,
     ApplicationDetail,
     ApplicationIndex,
     ApplicationStatusUpdate,
@@ -58,8 +56,6 @@ application_urlpatterns = [
     url(DB_REGEX['UPDATE'], ApplicationUpdate.as_view(), name='update'),
     url(r'^(?P<pk>[0-9]+)/update/status/$', ApplicationStatusUpdate.as_view(),
         name='update_status'),
-    url(r'^(?P<pk>[0-9]+)/update/trainings/$', ApplicationCertsUpdate.as_view(),
-        name='update_trainings'),
     url(r'^(?P<pk>[0-9]+)/update/admin/$', ApplicationAdminUpdate.as_view(),
         name='update_admin'),
     url(r'^(?P<pk>[0-9]+)/update/trip/$', AssignToTrip.as_view(),

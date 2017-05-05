@@ -458,33 +458,6 @@ class ApplicationAdminForm(forms.ModelForm):
         )
 
 
-TIMEPICKER_OPTIONS = {'format': 'MM/DD/YYYY', 'pickTime': False}
-
-class CertificationForm(forms.ModelForm):
-
-    class Meta:
-        model = Volunteer
-        fields = (
-            'community_building',
-            'risk_management',
-            'wilderness_skills',
-            'croo_training',
-        )
-        widgets = {
-            'community_building': DateTimePicker(options=TIMEPICKER_OPTIONS),
-            'risk_management': DateTimePicker(options=TIMEPICKER_OPTIONS),
-            'wilderness_skills': DateTimePicker(options=TIMEPICKER_OPTIONS),
-            'croo_training': DateTimePicker(options=TIMEPICKER_OPTIONS,)
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.all().wrap(Div, css_class='col-sm-3')
-        self.helper.all().wrap(Row)
-        self.helper.add_input(Submit('submit', 'Update'))
-
-
 class ApplicationLayout(Layout):
 
     def __init__(self):

@@ -1,4 +1,3 @@
-
 from braces.views import (
     FormMessagesMixin,
     FormValidMessageMixin,
@@ -20,7 +19,6 @@ from fyt.applications.forms import (
     ApplicationAdminForm,
     ApplicationForm,
     ApplicationStatusForm,
-    CertificationForm,
     CrooSupplementForm,
     LeaderSupplementForm,
     QuestionForm,
@@ -547,23 +545,6 @@ class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
     model = Volunteer
     form_class = ApplicationStatusForm
     template_name = 'applications/status_update.html'
-
-
-class ApplicationCertsUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, TripsYearMixin,
-                             UpdateView):
-    """
-    Edit certifications
-    """
-    model = Volunteer
-    form_class = CertificationForm
-    template_name = 'applications/trainings_update.html'
-
-    def get_success_url(self):
-        """
-        Redirect back to Volunteer
-        """
-        return self.object.get_absolute_url()
 
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
