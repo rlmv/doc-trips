@@ -24,13 +24,14 @@ class OrderedMatrix(OrderedDict):
         """
         Remove all empty rows from matrix
 
-        Returns <matrix> with all rows for which
-        matrix[row][col] evaluates to False for all cols
-        removed.
+        Note: this mutates the original matrix.
         """
-        for row, cols in self.items():
-            if not any(cols.values()):
-                self.pop(row)
+        empty = [row for row, cols in self.items()
+                 if not any(cols.values())]
+
+        for row in empty:
+            self.pop(row)
+
         return self
 
     def map(self, func):

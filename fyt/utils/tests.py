@@ -18,8 +18,8 @@ class OrderedMatrixTestCase(unittest.TestCase):
         rows = [0, 1]
         cols = [0, 1]
         m = OrderedMatrix(rows, cols)
-        m[0][0] = True
-        self.assertEqual(m.truncate(), {0: {0: True, 1: None}})
+        m[1][1] = True
+        self.assertEqual(m.truncate(), {1: {0: None, 1: True}})
 
     def test_map(self):
         rows = [0, 1]
