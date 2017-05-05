@@ -1,4 +1,3 @@
-
 from django.contrib.auth.models import Group
 
 from fyt.permissions.models import SitePermission
@@ -141,7 +140,9 @@ def olcs():
 def safety_leads():
     leads, _ = Group.objects.get_or_create(name='safety leads')
     leads.permissions.set([
+        can_view_database(),
         can_report_incidents(),
+        can_edit_trainings(),
     ])
     return leads
 
