@@ -126,10 +126,7 @@ class Attendee(DatabaseModel):
         A volunteer has completed all trainings if they attended a session
         for each type of training.
         """
-        trainings = Training.objects.filter(trips_year=self.trips_year)
-        complete = [s.training for s in self.complete_sessions.all()]
-
-        return not set(trainings) - set(complete)
+        return all(self.trainings_to_sessions().values())
 
     def trainings_to_sessions(self):
         trainings = Training.objects.filter(trips_year=self.trips_year)
