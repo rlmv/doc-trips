@@ -1,10 +1,10 @@
-
 {% extends "db/base.html" %}
 {% load links %}
 {% load detail_view %}
 {% load icons %}
 {% load convert %}
 {% load answers %}
+{% load training %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -51,12 +51,7 @@
 <h4>
     Trainings
     <a href="{% url 'db:attendee:update' trips_year=trips_year pk=application.attendee.pk %}"> edit </a>
-    {% if application.attendee.training_complete %}
-    <span class="label label-success"> Complete </span>
-    {% else %}
-    <span class="label label-warning"> Incomplete </span>
-    {% endif %}
-
+    {{ application|training_label }}
  </h4>
 
 <table class="table table-condensed table-striped">

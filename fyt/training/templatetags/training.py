@@ -19,3 +19,23 @@ def capacity_label(session):
 
     return mark_safe(
         '<span class="label label-{} label-training-capacity"> {} </span>'.format(label, text))
+
+
+@register.filter
+def training_label(volunteer):
+    """
+    Generate a label showing whether the volunteer has completed all
+    trainings and their first aid requirement.
+
+    Note that this takes a Volunteer instance, not an Attendee.
+    """
+    attendee = volunteer.attendee
+    if attendee.first_aid_complete() and attendee.training_complete():
+        label = 'success'
+        text = 'Complete'
+    else:
+        label = 'warning'
+        text = 'Incomplete'
+
+    return mark_safe('<span class="label label-{}"> {} </span>'.format(
+            label, text))

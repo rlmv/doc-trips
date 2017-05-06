@@ -109,6 +109,9 @@ class Attendee(DatabaseModel):
             return self.fa_other
         return self.fa_cert
 
+    def first_aid_complete(self):
+        return bool(self.get_first_aid_cert())
+
     TRAINABLE_STATUSES = [
         Volunteer.LEADER,
         Volunteer.CROO,
