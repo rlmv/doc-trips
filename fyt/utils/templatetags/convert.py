@@ -1,4 +1,3 @@
-
 from django import template
 
 from fyt.utils.convert import ConversionError, convert_docx_filefield_to_html
@@ -15,7 +14,7 @@ def display_docx_filefield_as_html(filefield):
 
     t = template.Template("""
     <div class="alert alert-info" role="alert">
-    Can't see the application, or the formatting is wonky? 
+    Can't see the application, or the formatting is wonky?
     <a href="{{ filefield.url }}">Download the application here </a>
     </div>
     <div class="well">

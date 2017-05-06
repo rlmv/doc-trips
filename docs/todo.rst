@@ -7,19 +7,13 @@ External
 
 Upgrades
 --------
-* Upgrade to Python 3.6
-* Upgrade to Django 1.11 on release
 * Upgrade packages
 * Split dependencies into dev/production files
 * Use subqueries for get_graders (Django 1.11).
 
-Training
---------
-* Resolve date/time string localization inconsistencies.
-* Make a nice widget for Session.duration, or just set an end time.
-
 Immediate
 ---------
+* Test filters
 * Rewrite display_view logic
 * Allow application extensions for specific users.
 * Add more filter options

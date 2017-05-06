@@ -31,7 +31,7 @@ class TripsYearMixinTestCase(FytTestCase):
         """Use Section as model, instead of hacking together an example"""
         data = model_to_dict(mommy.prepare(Section))
         url = Section.create_url(self.trips_year)
-        response = self.app.post(url, data, user=self.make_director())
+        response = self.app.post(url, params=data, user=self.make_director())
 
         # should not display form error in page
         self.assertNotIn('NOT NULL constraint failed', str(response.content))

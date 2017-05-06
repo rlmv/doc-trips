@@ -701,7 +701,7 @@ class RegistrationViewsTestCase(FytTestCase):
             'green_fund_donation': 0,
         }
         url = reverse('incoming:register')
-        self.app.post(url, reg_data, user=user)
+        self.app.post(url, params=reg_data, user=user)
         registration = Registration.objects.get()
         student = IncomingStudent.objects.get()
         self.assertEqual(registration.trippee, student)
@@ -726,7 +726,7 @@ class RegistrationViewsTestCase(FytTestCase):
             'doc_membership': False,
             'green_fund_donation': 0,
         }
-        resp = self.app.post(url, data, user=self.make_director()).follow()
+        resp = self.app.post(url, params=data, user=self.make_director()).follow()
 
         registration = Registration.objects.get()
         user = registration.user
