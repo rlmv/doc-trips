@@ -18,7 +18,6 @@ BUS = 'bus'
 ATHLETE = 'is_athlete'
 ANY = 'ANY'
 NO = 'NO'
-BLANK = '-------'
 
 
 class ExternalBusRequestFilter(django_filters.ChoiceFilter):
@@ -30,8 +29,7 @@ class ExternalBusRequestFilter(django_filters.ChoiceFilter):
         # Some hackery so that we can get add the ANY option. Does not work
         # with the ModelChoiceFilter so we have to set up choices manually.
         choices = [(s.pk, s.name) for s in qs]
-        choices.insert(0, ('', BLANK))
-        choices.insert(1, (ANY, 'All Buses'))
+        choices.insert(0, (ANY, 'All Buses'))
 
         super().__init__(choices=choices, **kwargs)
 
@@ -57,8 +55,7 @@ class AthleteFilter(django_filters.ChoiceFilter):
 
     def __init__(self, *args, **kwargs):
         choices = list(Registration.ATHLETE_CHOICES)
-        choices.insert(0, ('', BLANK))
-        choices.insert(2, (ANY, 'All Athletes'))
+        choices.insert(1, (ANY, 'All Athletes'))
         super().__init__(*args, choices=choices, **kwargs)
 
     def filter(self, qs, value):

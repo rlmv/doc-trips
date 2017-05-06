@@ -109,7 +109,6 @@ class FirstAidFilter(django_filters.ChoiceFilter):
         self.trips_year = trips_year
         kwargs.update({
             'choices': (
-                ('', BLANK),
                 ('missing', 'Missing'),
                 ('complete', 'Complete')),
             'label': 'First Aid Training'
@@ -132,7 +131,6 @@ class TrainingFilter(django_filters.ChoiceFilter):
         self.trips_year = trips_year
         kwargs.update({
             'choices': (
-                ('', BLANK),
                 ('incomplete', 'Incomplete'),
                 ('complete', 'Complete')),
             'label': 'Training'
@@ -228,21 +226,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
         self.filters[FIRST_AID] = FirstAidFilter(trips_year)
         self.filters[TRAINING] = TrainingFilter(trips_year)
-
-        # Add blank choices
-        default_blank = [
-            STATUS,
-            CLASS_2_3,
-            LEDYARD_LEVEL_1,
-            LEDYARD_LEVEL_2,
-            CLIMBING_COURSE,
-            DMC_LEADER,
-            DMBC_LEADER,
-            CNT_LEADER,
-        ]
-        for field in default_blank:
-            self.filters[field].field.choices.insert(0, (None, BLANK))
-            self.filters[field].field.default = None
 
         # Provide a better default to NullBooleanFields
         for field in [SAFETY_LEAD, KITCHEN_LEAD]:
