@@ -127,10 +127,34 @@ class FirstAidFilter(django_filters.ChoiceFilter):
             return qs
 
 
+class TrainingFilter(django_filters.ChoiceFilter):
+    def __init__(self, trips_year, *args, **kwargs):
+        self.trips_year = trips_year
+        kwargs.update({
+            'choices': (
+                ('', BLANK),
+                ('incomplete', 'Incomplete'),
+                ('complete', 'Complete')),
+            'label': 'Training'
+        })
+        super().__init__(self, *args, **kwargs)
+
+    def filter(self, qs, value):
+        if value == 'incomplete':
+            return qs.filter(attendee__pk__in=pks(
+                Attendee.objects.training_incomplete(self.trips_year)))
+        elif value == 'complete':
+            return qs.filter(attendee__pk__in=pks(
+                Attendee.objects.training_complete(self.trips_year)))
+        else:
+            return qs
+
+
 STATUS = 'status'
 CLASS_YEAR = 'class_year'
 COMPLETE = 'complete'
 FIRST_AID = 'first_aid'
+TRAINING = 'training'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
 CLASS_2_3 = 'leader_supplement__class_2_3_paddler'
@@ -201,6 +225,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
         self.filters[FIRST_AID] = FirstAidFilter(trips_year)
+        self.filters[TRAINING] = TrainingFilter(trips_year)
 
         # Add blank choices
         default_blank = [
@@ -243,12 +268,13 @@ class FilterSetFormHelper(FormHelper):
         self.layout = Layout(
             filter_row(COMPLETE),
             filter_row(STATUS),
+            filter_row(FIRST_AID),
+            filter_row(TRAINING),
             filter_row(CLASS_YEAR),
             filter_row('name'),
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
             filter_row(AVAILABLE_TRIPTYPES),
-            filter_row(FIRST_AID),
             filter_row(CLASS_2_3),
             filter_row(LEDYARD_LEVEL_1),
             filter_row(LEDYARD_LEVEL_2),
