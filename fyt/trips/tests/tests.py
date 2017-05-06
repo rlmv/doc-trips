@@ -48,12 +48,11 @@ class TripTestCase(FytTestCase):
             section__trips_year=self.trips_year)
         trip.save()
 
-        #Posting will raise an IntegrityError if validation is not handled
-        response = self.app.post(
-            Trip.create_url(self.trips_year),
-            {'template': trip.template.pk, 'section': trip.section.pk},
-            user=self.make_director()
-        )
+        # Posting will raise an IntegrityError if validation is not handled
+        url = Trip.create_url(self.trips_year)
+        params = {'template': trip.template.pk, 'section': trip.section.pk}
+        response = self.app.post(url, params=params, user=self.make_director())
+
         # should have unique constraint error
         self.assertIn('unique constraint', str(response.content).lower())
         # should not create the trip
