@@ -38,15 +38,10 @@ def verify(ticket, service):
     url = urljoin(settings.CAS_SERVER_URL, 'serviceValidate')
     r = requests.get(url, params=params)
 
-    try:
+    if r.status_code == 200:
         tree = ElementTree.fromstring(r.text)
         if tree[0].tag.endswith('authenticationSuccess'):
             return parse_cas_success(tree)
-        else:
-            return None
-    except Exception as e:
-        # TODO: pass this? return None?
-        raise
 
 
 class WebAuthBackend(ModelBackend):
