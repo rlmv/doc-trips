@@ -105,21 +105,24 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
 
 
 class FirstAidFilter(django_filters.ChoiceFilter):
+    MISSING = 'missing'
+    COMPLETE = 'complete'
+
     def __init__(self, trips_year, *args, **kwargs):
         self.trips_year = trips_year
         kwargs.update({
             'choices': (
-                ('missing', 'Missing'),
-                ('complete', 'Complete')),
+                (self.MISSING, 'Missing'),
+                (self.COMPLETE, 'Complete')),
             'label': 'First Aid Training'
         })
         super().__init__(self, *args, **kwargs)
 
     def filter(self, qs, value):
-        if value == 'missing':
+        if value == self.MISSING:
             return qs.filter(attendee__pk__in=pks(
                 Attendee.objects.first_aid_incomplete(self.trips_year)))
-        elif value == 'complete':
+        elif value == self.COMPLETE:
             return qs.filter(attendee__pk__in=pks(
                 Attendee.objects.first_aid_complete(self.trips_year)))
         else:
