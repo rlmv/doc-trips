@@ -139,7 +139,7 @@ class TrainingFilter(django_filters.ChoiceFilter):
             'choices': (
                 (self.INCOMPLETE, 'Incomplete'),
                 (self.COMPLETE, 'Complete')),
-            'label': str(training)
+            'label': f'{training} Training'
         })
         super().__init__(self, *args, **kwargs)
 
