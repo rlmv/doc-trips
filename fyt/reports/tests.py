@@ -7,6 +7,7 @@ from model_mommy import mommy
 
 from fyt.applications.models import Question, Volunteer
 from fyt.applications.tests import ApplicationTestMixin
+from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
@@ -101,17 +102,20 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
     def test_croo_members_csv(self):
         trips_year = self.init_trips_year()
-        croo = self.make_application(
+        croo = mommy.make(Croo, trips_year=trips_year)
+        crooling = self.make_application(
             trips_year=trips_year,
-            status=Volunteer.CROO
+            status=Volunteer.CROO,
+            assigned_croo=croo
         )
         not_croo = self.make_application(trips_year=trips_year)
 
         url = reverse('db:reports:croo_members', kwargs={'trips_year': trips_year})
         rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
         target = [{
-            'name': croo.name,
-            'netid': croo.applicant.netid
+            'name': crooling.name,
+            'netid': crooling.applicant.netid,
+            'croo': str(crooling.assigned_croo)
         }]
         self.assertEqual(rows, target)
 

@@ -1,4 +1,3 @@
-
 from datetime import date, timedelta
 
 from django.core.exceptions import ValidationError
@@ -24,14 +23,15 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
-                     assigned_trip=None, leader_willing=True,
-                     croo_willing=True):
+                     assigned_trip=None, assigned_croo=None,
+                     leader_willing=True, croo_willing=True):
 
     application = mommy.make(
         Volunteer,
         status=status,
         trips_year=trips_year,
         assigned_trip=assigned_trip,
+        assigned_croo=assigned_croo,
         leader_willing=leader_willing,
         croo_willing=croo_willing)
 

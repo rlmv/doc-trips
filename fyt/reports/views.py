@@ -147,11 +147,12 @@ class CrooMembersCSV(TripLeadersCSV):
             self.kwargs['trips_year']
         )
 
-    header = ['name', 'netid']
-    def get_row(self, leader):
+    header = ['name', 'netid', 'croo']
+    def get_row(self, croo_member):
         return [
-            leader.name,
-            leader.applicant.netid
+            croo_member.name,
+            croo_member.applicant.netid,
+            croo_member.assigned_croo
         ]
 
 
