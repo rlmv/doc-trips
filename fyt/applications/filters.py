@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.forms import Select
 
 from fyt.applications.models import Volunteer
-from fyt.training.models import Attendee
+from fyt.training.models import Attendee, Training
 from fyt.trips.models import Section, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 from fyt.utils.query import pks
@@ -127,23 +127,24 @@ class FirstAidFilter(django_filters.ChoiceFilter):
 
 
 class TrainingFilter(django_filters.ChoiceFilter):
-    def __init__(self, trips_year, *args, **kwargs):
-        self.trips_year = trips_year
+    COMPLETE = 'complete'
+    INCOMPLETE = 'incomplete'
+
+    def __init__(self, training, *args, **kwargs):
+        self.training = training
         kwargs.update({
             'choices': (
-                ('incomplete', 'Incomplete'),
-                ('complete', 'Complete')),
-            'label': 'Training'
+                (self.INCOMPLETE, 'Incomplete'),
+                (self.COMPLETE, 'Complete')),
+            'label': str(training)
         })
         super().__init__(self, *args, **kwargs)
 
     def filter(self, qs, value):
-        if value == 'incomplete':
-            return qs.filter(attendee__pk__in=pks(
-                Attendee.objects.training_incomplete(self.trips_year)))
-        elif value == 'complete':
-            return qs.filter(attendee__pk__in=pks(
-                Attendee.objects.training_complete(self.trips_year)))
+        if value == self.INCOMPLETE:
+            return qs.exclude(attendee__complete_sessions__training=self.training)
+        elif value == self.COMPLETE:
+            return qs.filter(attendee__complete_sessions__training=self.training)
         else:
             return qs
 
@@ -225,7 +226,13 @@ class ApplicationFilterSet(django_filters.FilterSet):
         self.filters[AVAILABLE_SECTIONS] = AvailableSectionFilter(trips_year)
         self.filters[AVAILABLE_TRIPTYPES] = AvailableTripTypeFilter(trips_year)
         self.filters[FIRST_AID] = FirstAidFilter(trips_year)
-        self.filters[TRAINING] = TrainingFilter(trips_year)
+
+        # Add filters for each training
+        training_fields = []
+        for training in Training.objects.filter(trips_year=trips_year):
+            name = str(training)
+            training_fields.append(name)
+            self.filters[name] = TrainingFilter(training)
 
         # Provide a better default to NullBooleanFields
         for field in [SAFETY_LEAD, KITCHEN_LEAD]:
@@ -238,23 +245,25 @@ class ApplicationFilterSet(django_filters.FilterSet):
         for field, label in SHORT_LABELS.items():
             self.filters[field].field.label = label
 
-        self.form.helper = FilterSetFormHelper(self.form)
+        self.form.helper = FilterSetFormHelper(training_fields, self.form)
 
 
 class FilterSetFormHelper(FormHelper):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, training_fields, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         def filter_row(filter):
             return Row(Div(filter, css_class='col-lg-12'))
+
+        training_layout = Layout(*(filter_row(t) for t in training_fields))
 
         self.form_method = 'GET'
         self.layout = Layout(
             filter_row(COMPLETE),
             filter_row(STATUS),
             filter_row(FIRST_AID),
-            filter_row(TRAINING),
+            training_layout,
             filter_row(CLASS_YEAR),
             filter_row('name'),
             filter_row('netid'),
