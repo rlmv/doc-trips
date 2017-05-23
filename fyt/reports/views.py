@@ -130,9 +130,13 @@ class TripLeadersCSV(GenericReportView):
             self.kwargs['trips_year']
         )
 
-    header = ['name', 'netid']
+    header = ['name', 'netid', 'trip', 'section']
     def get_row(self, leader):
-        return [leader.name, leader.applicant.netid.upper()]
+        return [
+            leader.name,
+            leader.applicant.netid,
+            leader.assigned_trip,
+            leader.assigned_trip.section.name]
 
 
 class CrooMembersCSV(TripLeadersCSV):
@@ -142,6 +146,13 @@ class CrooMembersCSV(TripLeadersCSV):
         return Application.objects.croo_members(
             self.kwargs['trips_year']
         )
+
+    header = ['name', 'netid']
+    def get_row(self, leader):
+        return [
+            leader.name,
+            leader.applicant.netid
+        ]
 
 
 class FinancialAidCSV(GenericReportView):

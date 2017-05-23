@@ -80,9 +80,11 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
     def test_trip_leader_csv(self):
         trips_year = self.init_trips_year()
+        trip = mommy.make(Trip, trips_year=trips_year)
         leader = self.make_application(
             trips_year=trips_year,
-            status=Volunteer.LEADER
+            status=Volunteer.LEADER,
+            assigned_trip=trip
         )
         not_leader = self.make_application(trips_year=trips_year)
 
@@ -90,7 +92,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
         target = [{
             'name': leader.name,
-            'netid': leader.applicant.netid.upper()
+            'netid': leader.applicant.netid,
+            'trip': str(trip),
+            'section': trip.section.name
         }]
 
         self.assertEqual(rows, target)
@@ -107,7 +111,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
         target = [{
             'name': croo.name,
-            'netid': croo.applicant.netid.upper()
+            'netid': croo.applicant.netid
         }]
         self.assertEqual(rows, target)
 
