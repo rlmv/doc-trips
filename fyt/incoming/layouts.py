@@ -159,7 +159,19 @@ class RegistrationFormLayout(Layout):
                 'Anything else?',
                 Field('anything_else', rows=3),
             ),
-
+            Fieldset(
+                'Gear',
+                HTML(
+                    "<p>We will use this information to fit gear for you on "
+                    "trips that require it (e.g. paddles and life jackets for "
+                    "canoeing and kayaking trips, harnesses for climbing "
+                    "trips, etc.)</p>"
+                ),
+                Row(
+                    Div('height', css_class='col-sm-3'),
+                    Div('weight', css_class='col-sm-3'),
+                ),
+            ),
             Fieldset(
                 'Bus Option',
                 HTML("<p> Students in " + local_sections + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast come on Sections " + local_sections_range + ". </p>"

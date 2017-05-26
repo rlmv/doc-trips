@@ -313,6 +313,8 @@ class RegistrationDetail(DatabaseDetailView):
         ('available trip types', 'new_available_triptypes'),
         'schedule_conflicts',
         'tshirt_size',
+        'height',
+        'weight',
         'food_allergies',
         'dietary_restrictions',
         'medical_conditions',

@@ -518,6 +518,9 @@ class Registration(MedicalMixin, DatabaseModel):
 
     tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES)
 
+    height = models.CharField(max_length=10, blank=True)
+    weight = models.CharField(max_length=10, blank=True)
+
     #  ----- physical condition and experience ------
 
     regular_exercise = YesNoField(
