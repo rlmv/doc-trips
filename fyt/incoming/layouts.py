@@ -23,6 +23,22 @@ class RegistrationFormLayout(Layout):
 
         super().__init__(
             Fieldset(
+                'Mission',
+                HTML(
+                    '<p>Trips, as the program is called, welcomes first-year students to '
+                    'life at Dartmouth through the beauty of the New Hampshire outdoors. '
+                    'It is a unique, five-day, outdoor experience designed to provide '
+                    'students with a support system from the time they arrive, both '
+                    'among incoming students and with upper-class student volunteers, '
+                    'and it encourages students to befriend people of all backgrounds '
+                    'and create an inclusive Dartmouth beyond Trips. Trips is proud '
+                    'to be student-run, and we aim to create a program in which all '
+                    'first-year students feel welcome during and after their trip '
+                    'through the mentorship of upperclass Dartmouth students and '
+                    'through quality programming.</p>'
+                ),
+            ),
+            Fieldset(
                 'General Information',
                 'name',
                 'gender',
@@ -50,7 +66,13 @@ class RegistrationFormLayout(Layout):
                      "<p> " + local_sections + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for as many of these sections as possible. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
                      "<p> " + not_local_sections + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students on sections " + not_local_sections_range + " can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
                      "<p> " + international_sections + " are the sections for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of International Student Orientation. </p> "
-                     "<p><strong>Pull out your calendar for this! Confirm the dates of other family activities, work schedules, and other commitments. Once your section has been assigned it is incredibly difficult for us to change it! </strong></p>"
+                     "<p>Pull out your calendar for this! Confirm the dates of "
+                     "family activities, work schedules, and other commitments. "
+                     "<strong> Please select all sections you "
+                     "would be available for unless you have a specific reason "
+                     "that you would not be available.</strong> Once your "
+                     "section has been assigned it is incredibly difficult for "
+                     "us to change it!</p>"
                 ),
                 Layout(*section_fields),
                 HTML("<p> If you have a particular, immovable scheduling conflict and need to come on a specific section, please elaborate below. Let us know which section(s) you can attend and which ones you cannot. </p>"),
@@ -60,7 +82,7 @@ class RegistrationFormLayout(Layout):
                 'Trip Type',
                 HTML("<p> Every trip spends two and a half of the five days exploring a specific location around New Hampshire while doing any number of outdoor activities - everything from hiking to yoga to kayaking to organic farming. No matter which trip you are assigned to, we promise you'll find the experience to be an exciting and comfortable one. </p>"
                      "<p> We offer a variety of different types of trips on each section. The trip type is determined by the activity featured on the trip. {% include 'incoming/_triptype_modal.html' %} </p>"
-                     "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choose increases if you: </p>"
+                     "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choice increases if you: </p>"
                      "<ul> <li>submit all your registration materials by the deadline, </li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections " + local_sections_range + ", Other regions: Sections " + not_local_sections_range + "), and </li> <li> are available for many sections. </li> </ul>"
                      "<p><strong> Registering early does not increase your chances of getting your desired trip. However, you must register by the deadline. </strong></p>"
                 ),
@@ -72,7 +94,7 @@ class RegistrationFormLayout(Layout):
                 'tshirt_size',
             ),
             Fieldset(
-                'Accomodations',
+                'Accommodations',
                 HTML("<p> We recognize that some students may need additional accommodations related (but not limited) to disabilities, religious practices, dietary restrictions, allergies, and other needs. We are committed to doing everything possible to help all students participate in the Trips program to the extent they feel comfortable. (e.g. electricity can be provided if you require a medical device). Please let us know of your needs on your registration form; all information is kept confidential. You may also contact the Student Accessibility Services Office by phone at (603) 646.9900. </p>"),
             ),
             Fieldset(
@@ -150,12 +172,20 @@ class RegistrationFormLayout(Layout):
                     Div('bus_stop_to_hanover', css_class="col-sm-6"),
                     Div('bus_stop_from_hanover', css_class="col-sm-6"),
                 ),
-                HTML('<p> If our bus option does not work for you, there other public transportation services such as the train (<a href="http://www.amtrak.com/home">Amtrak</a>) or bus (<a href="https://www.greyhound.com/">Greyhound</a>, <a href="http://www.dartmouthcoach.com/">Dartmouth Coach</a>). We consider these options the most environmentally friendly ways to get here, so check them out!</p>'),
+                HTML('<p> If our bus option does not work for you, there are other public transportation services such as the train (<a href="http://www.amtrak.com/home">Amtrak</a>) or bus (<a href="https://www.greyhound.com/">Greyhound</a>, <a href="http://www.dartmouthcoach.com/">Dartmouth Coach</a>). We consider these options the most environmentally friendly ways to get here, so check them out!</p>'),
             ),
             Fieldset(
                 'Financial Assistance',
                 HTML("<p> We are <i>very</i> committed to making Trips available to anyone, regardless of financial need. We offer <strong>generous financial assistance</strong>, which you can request below. Financial assistance is also available for bussing if you are taking a DOC Trips bus from one of our Northeast stops to Hanover. The cost for DOC Trips is $" + trips_cost + ". The cost is the same regardless of which trip you are assigned. </p>"
-                     "<p> Eligibility for financial assistance is determined in conjunction with the College's Financial Aid office. We will notify students receiving any financial assistance in July; the balance of the program cost will be charged to your tuition bill. <strong>If the cost of Trips may prevent you from participating, please contact us and we can help!</strong> </p>"),
+                     "<p> Eligibility for financial assistance is determined "
+                     "in conjunction with the College's Financial Aid office. "
+                     "If you are requesting financial assistance from Trips, "
+                     "please register now and we will notify students receiving "
+                     "any financial assistance in July; the balance of the "
+                     "program cost will be charged to your tuition bill. Please "
+                     "remember that we are committed to making Trips accessible "
+                     "to you; if the cost of Trips may prevent you from "
+                     "participating, please contact us and we can help!</p>"),
                 'financial_assistance',
             ),
             Fieldset(
