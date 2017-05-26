@@ -575,4 +575,4 @@ class EditSettings(DatabaseUpdateView):
         return Settings.objects.get(trips_year=self.get_trips_year())
 
     def get_success_url(self):
-        return reverse('settings')
+        return self.request.path
