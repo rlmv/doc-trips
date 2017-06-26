@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^incoming/trippees/$', TrippeesCSV.as_view(), name='trippees'),
     url(r'^incoming/charges/$', Charges.as_view(), name="charges"),
     url(r'^incoming/housing/$', Housing.as_view(), name="housing"),
+    url(r'^registrations/$', Registrations.as_view(), name="registrations"),
     url(r'^registrations/dietary/$', DietaryRestrictions.as_view(), name='dietary'),
     url(r'^registrations/medical/$', MedicalInfo.as_view(), name="medical"),
     url(r'^registrations/doc-members/$', DocMembers.as_view(), name="doc_members"),

@@ -3,22 +3,27 @@ from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, Avg, Count, Max
+from django.db.models import Q, Avg, Count, Max, Prefetch
 from django.http import HttpResponse
+from django.utils.functional import cached_property
 from vanilla import View
 
 from fyt.applications.models import Volunteer as Application
 from fyt.applications.views.application import preload_questions
 from fyt.db.views import DatabaseTemplateView, TripsYearMixin
-from fyt.incoming.models import IncomingStudent, Registration, Settings
+from fyt.incoming.models import IncomingStudent, Registration, Settings, RegistrationSectionChoice, RegistrationTripTypeChoice
 from fyt.permissions.views import DatabaseReadPermissionRequired
-from fyt.trips.models import Trip
+from fyt.trips.models import Trip, Section, TripType
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
 
 
 def yes_no(value):
     return 'yes' if value else 'no'
+
+
+def yes_if_true(value):
+    return 'yes' if value else ''
 
 
 def fmt_float(value):
@@ -216,6 +221,120 @@ class TrippeesCSV(GenericReportView):
     header = ['name', 'netid']
     def get_row(self, trippee):
         return [trippee.name, trippee.netid.upper()]
+
+
+class Registrations(GenericReportView):
+    """
+    Information for all registered trippees.
+    """
+    file_prefix = 'Registrations'
+
+    def get_queryset(self):
+        return Registration.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        ).select_related(
+            'user',
+        ).prefetch_related(
+            Prefetch('registrationsectionchoice_set',
+                     queryset=RegistrationSectionChoice.objects.order_by('section')),
+            Prefetch('registrationtriptypechoice_set',
+                     queryset=RegistrationTripTypeChoice.objects.order_by('triptype'))
+        )
+
+    def get_header(self):
+        header = [
+            'name',
+            'gender',
+            'netid',
+            'school',
+            'exchange',
+            'transfer',
+            'international',
+            'native',
+            'fysep',
+            'athlete?',
+            'tshirt size',
+            'height',
+            'weight']
+        header += [str(s) for s in self.sections]
+        header += [str(t) for t in self.triptypes]
+        header += [
+            'schedule conflicts',
+            'regular exercise?',
+            'physical activities',
+            'other activities',
+            'swimming ability',
+            'camping experience?',
+            'hiking experience?',
+            'hiking experience',
+            'boating experience?',
+            'boating experience',
+            'other boating experience',
+            'fishing experience',
+            'horseback riding experience',
+            'mountain biking experience',
+            'sailing experience',
+            'anything else?',
+            'bus round trip',
+            'bus to hanover',
+            'bus from hanover',
+        ]
+        return header
+
+    def get_row(self, r):
+        row = [
+            r.name,
+            r.gender,
+            r.user.netid,
+            r.previous_school,
+            yes_if_true(r.is_exchange),
+            yes_if_true(r.is_transfer),
+            yes_if_true(r.is_international),
+            yes_if_true(r.is_native),
+            yes_if_true(r.is_fysep),
+            r.is_athlete,
+            r.tshirt_size,
+            r.height,
+            r.weight,
+        ]
+        for pref, sxn in zip(r.registrationsectionchoice_set.all(), self.sections):
+            assert pref.section_id == sxn.pk
+            row += [pref.preference]
+
+        for pref, tt in zip(r.registrationtriptypechoice_set.all(), self.triptypes):
+            assert pref.triptype_id == tt.pk
+            row += [pref.preference]
+
+        row += [
+            r.schedule_conflicts,
+            yes_no(r.regular_exercise),
+            r.physical_activities,
+            r.other_activities,
+            r.swimming_ability,
+            yes_no(r.camping_experience),
+            yes_no(r.hiking_experience),
+            r.hiking_experience_description,
+            yes_no(r.has_boating_experience),
+            r.boating_experience,
+            r.other_boating_experience,
+            r.fishing_experience,
+            r.horseback_riding_experience,
+            r.mountain_biking_experience,
+            r.sailing_experience,
+            r.anything_else,
+            r.bus_stop_round_trip,
+            r.bus_stop_to_hanover,
+            r.bus_stop_from_hanover,
+        ]
+        return row
+
+    @cached_property
+    def sections(self):
+        return Section.objects.filter(trips_year=self.kwargs['trips_year'])
+
+    @cached_property
+    def triptypes(self):
+        return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
 
 
 class Charges(GenericReportView):

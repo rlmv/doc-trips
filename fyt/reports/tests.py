@@ -1,6 +1,7 @@
 import csv
 import tempfile
 from datetime import date
+from collections import OrderedDict
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
@@ -12,7 +13,7 @@ from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
 from fyt.transport.models import Stop
-from fyt.trips.models import Trip
+from fyt.trips.models import Trip, Section, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 
 
@@ -28,6 +29,8 @@ def save_and_open_csv(resp):
 
 
 class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
+
+    maxDiff = None
 
     def assertStopsIteration(self, iter):
         with self.assertRaises(StopIteration):
@@ -46,7 +49,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
         self.assertTrue(resp['Content-Disposition'].startswith(
             'attachment; filename="'))
-        self.assertEqual(list(save_and_open_csv(resp)), target)
+        self.assertEqual([dict(r) for r in save_and_open_csv(resp)], target)
 
     def test_volunteer_csv(self):
         trips_year = self.init_trips_year()
@@ -136,6 +139,57 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'netid': trippee.netid.upper()
         }]
         self.assertViewReturns('db:reports:trippees', target)
+
+    def test_registrations_csv(self):
+        trips_year = self.init_trips_year()
+        r = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            name='Bob',
+            gender='male',
+        )
+        section = mommy.make(Section, trips_year=trips_year, name='A')
+        r.set_section_preference(section, 'PREFER')
+        triptype = mommy.make(TripType, trips_year=trips_year, name='Hiking 3')
+        r.set_triptype_preference(triptype, 'AVAILABLE')
+
+        target = [{
+            'name': 'Bob',
+            'gender': 'male',
+            'netid': r.user.netid,
+            'school': r.previous_school,
+            'exchange': '',
+            'transfer': '',
+            'international': '',
+            'native': '',
+            'fysep': '',
+            'athlete?': '',
+            'tshirt size': r.tshirt_size,
+            'height': r.height,
+            'weight': r.weight,
+            'Section A': 'PREFER',
+            'Hiking 3': 'AVAILABLE',
+            'schedule conflicts': '',
+            'regular exercise?': 'no',
+            'physical activities': r.physical_activities,
+            'other activities': r.other_activities,
+            'swimming ability': r.swimming_ability,
+            'camping experience?': 'no',
+            'hiking experience?': 'no',
+            'hiking experience': r.hiking_experience_description,
+            'boating experience?': 'no',
+            'boating experience': '',
+            'other boating experience': '',
+            'fishing experience': '',
+            'horseback riding experience': '',
+            'mountain biking experience': '',
+            'sailing experience': '',
+            'anything else?': '',
+            'bus round trip': '',
+            'bus to hanover': '',
+            'bus from hanover': '',
+        }]
+        self.assertViewReturns('db:reports:registrations', target)
 
     def test_charges_report(self):
         trips_year = self.init_trips_year()

@@ -15,6 +15,10 @@
 <br><br><br><br><br>
 <ul class="list-group">
 
+  <a class="list-group-item" href="{% url 'db:reports:registrations' trips_year=trips_year %}">
+    <i class="fa fa-download"></i> All Registrations
+  </a>
+
   <a class="list-group-item" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Financial Aid Requests
   </a>
