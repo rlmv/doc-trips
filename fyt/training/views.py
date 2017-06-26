@@ -1,6 +1,6 @@
 import logging
 
-from braces.views import SetHeadlineMixin, FormMessagesMixin
+from braces.views import FormMessagesMixin, SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
@@ -25,8 +25,8 @@ from fyt.training.forms import (
     AttendeeUpdateForm,
     FirstAidFormset,
     SessionForm,
-    SignupForm,
     SessionRegistrationForm,
+    SignupForm,
 )
 from fyt.training.models import Attendee, Session
 from fyt.utils.forms import crispify

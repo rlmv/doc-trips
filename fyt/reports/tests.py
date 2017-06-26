@@ -1,7 +1,7 @@
 import csv
 import tempfile
-from datetime import date
 from collections import OrderedDict
+from datetime import date
 
 from django.core.urlresolvers import reverse
 from model_mommy import mommy
@@ -13,7 +13,7 @@ from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
 from fyt.transport.models import Stop
-from fyt.trips.models import Trip, Section, TripType
+from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 
 

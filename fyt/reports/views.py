@@ -11,9 +11,15 @@ from vanilla import View
 from fyt.applications.models import Volunteer as Application
 from fyt.applications.views.application import preload_questions
 from fyt.db.views import DatabaseTemplateView, TripsYearMixin
-from fyt.incoming.models import IncomingStudent, Registration, Settings, RegistrationSectionChoice, RegistrationTripTypeChoice
+from fyt.incoming.models import (
+    IncomingStudent,
+    Registration,
+    RegistrationSectionChoice,
+    RegistrationTripTypeChoice,
+    Settings,
+)
 from fyt.permissions.views import DatabaseReadPermissionRequired
-from fyt.trips.models import Trip, Section, TripType
+from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
 

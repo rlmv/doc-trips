@@ -11,7 +11,7 @@ from fyt.training.views import (
     SessionList,
     SessionUpdate,
     Signup,
-    UpdateRegistration
+    UpdateRegistration,
 )
 
 

@@ -1,6 +1,6 @@
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 
-from fyt.utils.fmt import section_range, join_with_and
+from fyt.utils.fmt import join_with_and, section_range
 
 
 """

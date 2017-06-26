@@ -4,7 +4,13 @@ from model_mommy import mommy
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
-from fyt.training.forms import AttendanceForm, AttendeeUpdateForm, FirstAidFormset, SignupForm, SessionRegistrationForm
+from fyt.training.forms import (
+    AttendanceForm,
+    AttendeeUpdateForm,
+    FirstAidFormset,
+    SessionRegistrationForm,
+    SignupForm,
+)
 from fyt.training.models import Attendee, Session, Training
 
 

@@ -8,11 +8,10 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from fyt.applications.models import Volunteer
-from fyt.training.models import Attendee, Session
 from fyt.db.templatetags.links import make_link
+from fyt.training.models import Attendee, Session
 from fyt.training.templatetags.training import capacity_label
 from fyt.utils.fmt import join_with_and
-
 
 
 DATE_OPTIONS = {
