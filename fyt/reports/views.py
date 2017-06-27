@@ -340,7 +340,7 @@ class Registrations(GenericReportView):
 
     @cached_property
     def triptypes(self):
-        return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
+        return TripType.objects.visible(self.kwargs['trips_year'])
 
 
 class Charges(GenericReportView):
