@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from fyt.utils.matrix import OrderedMatrix
 
@@ -114,6 +115,21 @@ class ExternalPassengerManager(models.Manager):
             matrix[bus.route][p.trip_assignment.section] += 1
 
         return matrix
+
+    def invalid_riders(self, trips_year):
+        """
+        Returns all IncomingStudents who are assigned to a local bus but who
+        are either not assigned to a trip or are assigned to a non-local
+        section.
+        """
+        from fyt.incoming.models import IncomingStudent
+        return IncomingStudent.objects.filter(
+            Q(bus_assignment_round_trip__isnull=False) |
+            Q(bus_assignment_to_hanover__isnull=False) |
+            Q(bus_assignment_from_hanover__isnull=False),
+            Q(trip_assignment=None) |
+            Q(trip_assignment__section__is_local=False))
+
 
 
 class StopOrderManager(models.Manager):

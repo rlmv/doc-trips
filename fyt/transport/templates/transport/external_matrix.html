@@ -28,7 +28,7 @@
     {% for section, transport in sections.items %}
     <td>
       <a href="{% url 'db:externalbus:checklist' trips_year=trips_year route_pk=route.pk section_pk=section.pk %}">
-	<kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd>
+    <kbd> {{ to_hanover|get:route|get:section }} &mdash; {{ from_hanover|get:route|get:section }}</kbd>
       </a>
       {% if transport %}
       {{ transport|delete_link:'<i class="fa fa-close text-bright-danger"></i>' }}
@@ -41,5 +41,26 @@
 
   {% endfor %}
 </table>
+
+
+{% if invalid_riders %}
+<div class="alert alert-danger">
+  <h4> Invalid Riders </h4>
+
+  <p>
+    The following students are currently assigned to an external bus but either do
+    not have a trip assignment or are assigned to a trip on a non-local section.
+  </p>
+
+  <p>
+    <ul>
+      {% for rider in invalid_riders %}
+      <li>{{ rider|detail_link }}</li>
+      {% endfor %}
+    </ul>
+  </p>
+
+</div>
+{% endif %}
 
 {% endblock content %}

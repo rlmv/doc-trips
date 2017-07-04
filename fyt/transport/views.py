@@ -280,6 +280,8 @@ class ExternalBusMatrix(DatabaseTemplateView):
             'to_hanover': ExternalBus.passengers.matrix_to_hanover(
                 self.kwargs['trips_year']),
             'from_hanover': ExternalBus.passengers.matrix_from_hanover(
+                self.kwargs['trips_year']),
+            'invalid_riders': ExternalBus.passengers.invalid_riders(
                 self.kwargs['trips_year'])
         }
 

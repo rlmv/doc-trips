@@ -669,6 +669,48 @@ class ExternalBusManager(FytTestCase):
         actual = ExternalBus.passengers.matrix_from_hanover(trips_year)
         self.assertEqual(target, actual)
 
+    def test_invalid_riders(self):
+        trips_year = self.init_trips_year()
+        route = mommy.make(Route, trips_year=trips_year, category=Route.EXTERNAL)
+        valid = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment__section__is_local=True,  # Local trip assignment
+            bus_assignment_round_trip__route=route)
+
+        no_trip_to_hanover = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            bus_assignment_to_hanover__route=route)
+
+        no_trip_from_hanover = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            bus_assignment_from_hanover__route=route)
+
+        no_trip_round_trip = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment=None,
+            bus_assignment_round_trip__route=route)
+
+        non_local_section = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            trip_assignment__section__is_local=False,
+            bus_assignment_round_trip__route=route)
+
+        actual = ExternalBus.passengers.invalid_riders(trips_year)
+        answer = [
+            no_trip_to_hanover,
+            no_trip_from_hanover,
+            no_trip_round_trip,
+            non_local_section]
+
+        self.assertQsEqual(actual, answer)
+
 
 class TransportViewsTestCase(FytTestCase):
 
