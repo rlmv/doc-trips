@@ -215,7 +215,7 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        trips_year = self.kwargs['trips_year']
+        trips_year = self.get_trips_year()
         context['matrix'] = matrix = get_internal_route_matrix(trips_year)
         context['riders'] = riders = get_internal_rider_matrix(trips_year)
         context['issues'] = get_internal_issues_matrix(matrix, riders)
@@ -259,7 +259,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
 
     def get_success_url(self):
         return reverse('db:externalbus:matrix',
-                       kwargs={'trips_year': self.kwargs['trips_year']})
+                       kwargs={'trips_year': self.get_trips_year()})
 
 
 class ExternalBusDelete(DatabaseDeleteView):
@@ -267,7 +267,7 @@ class ExternalBusDelete(DatabaseDeleteView):
 
     def get_success_url(self):
         return reverse('db:externalbus:matrix',
-                       kwargs={'trips_year': self.kwargs['trips_year']})
+                       kwargs={'trips_year': self.get_trips_year()})
 
 
 class ExternalBusMatrix(DatabaseTemplateView):
@@ -276,13 +276,13 @@ class ExternalBusMatrix(DatabaseTemplateView):
     def extra_context(self):
         return {
             'matrix': ExternalBus.objects.schedule_matrix(
-                self.kwargs['trips_year']),
+                self.get_trips_year()),
             'to_hanover': ExternalBus.passengers.matrix_to_hanover(
-                self.kwargs['trips_year']),
+                self.get_trips_year()),
             'from_hanover': ExternalBus.passengers.matrix_from_hanover(
-                self.kwargs['trips_year']),
+                self.get_trips_year()),
             'invalid_riders': ExternalBus.passengers.invalid_riders(
-                self.kwargs['trips_year'])
+                self.get_trips_year())
         }
 
 
@@ -462,7 +462,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     def get_bus(self):
         return get_object_or_404(
             ScheduledTransport, pk=self.kwargs['bus_pk'],
-            trips_year=self.kwargs['trips_year']
+            trips_year=self.get_trips_year()
         )
 
     def get_form(self, **kwargs):
