@@ -101,7 +101,8 @@ class ExternalPassengerManager(models.Manager):
         passengers = IncomingStudent.objects.filter(
             condition,
             trips_year=trips_year,
-            trip_assignment__isnull=False
+            trip_assignment__isnull=False,
+            trip_assignment__section__is_local=True
         ).select_related(
             'bus_assignment_round_trip__route',
             'bus_assignment_to_hanover__route',

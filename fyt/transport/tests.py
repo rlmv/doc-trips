@@ -621,6 +621,12 @@ class ExternalBusManager(FytTestCase):
             trip_assignment__section=sxn2,
             bus_assignment_from_hanover__route=rt1
         )
+        # Student on a non-local section
+        not_psgr4 = mommy.make(
+            IncomingStudent, trips_year=trips_year,
+            trip_assignment__section__is_local=False,
+            bus_assignment_to_hanover__route=rt1
+        )
         target = {rt1: {sxn1: 2, sxn2: 1}}
         actual = ExternalBus.passengers.matrix_to_hanover(trips_year)
         self.assertEqual(target, actual)

@@ -13,6 +13,8 @@ Upgrades
 
 Immediate
 ---------
+* Show incoming students assigned to external buses who are on non-local sections
+  and who are not assigned to a trip
 * Test filters
 * Rewrite display_view logic
 * Allow application extensions for specific users.
