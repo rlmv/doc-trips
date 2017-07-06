@@ -194,6 +194,12 @@ class IncomingStudent(DatabaseModel):
             gender = self.gender
         return gender.lower()
 
+    def get_phone_number(self):
+        if self.get_registration():
+            return self.get_registration().phone
+
+        return self.phone
+
     def get_bus_to_hanover(self):
         return (self.bus_assignment_round_trip or
                 self.bus_assignment_to_hanover)

@@ -87,6 +87,24 @@ class IncomingStudentModelTestCase(FytTestCase):
                               gender='MALE', registration=reg)
         self.assertEqual(incoming.get_gender(), 'female')
 
+    def test_get_phone_number(self):
+        trips_year = self.init_trips_year()
+
+        # No registration
+        incoming = mommy.make(
+            IncomingStudent,
+            trips_year=trips_year,
+            phone='919-384-3945')
+        self.assertEqual(incoming.get_phone_number(), '919-384-3945')
+
+        # Registration phone supersedes incoming
+        registration = mommy.make(
+            Registration,
+            trips_year=trips_year,
+            trippee=incoming,
+            phone='1-800-DANGER')
+        self.assertEqual(incoming.get_phone_number(), '1-800-DANGER')
+
     def test_financial_aid_in_range_0_to_100(self):
         trips_year = self.init_trips_year()
 
