@@ -128,8 +128,8 @@ class ExternalPassengerManager(models.Manager):
             Q(bus_assignment_to_hanover__isnull=False) |
             Q(bus_assignment_from_hanover__isnull=False),
             Q(trip_assignment=None) |
-            Q(trip_assignment__section__is_local=False))
-
+            Q(trip_assignment__section__is_local=False),
+            trips_year=trips_year)
 
 
 class StopOrderManager(models.Manager):
