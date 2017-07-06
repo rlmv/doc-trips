@@ -27,14 +27,14 @@
 {% regroup passengers_to_hanover by get_bus_to_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-{% person_checklist stop.list %}
+{% person_checklist stop.list phone_numbers=True %}
 {% endfor %}
 
 <h3> Passengers From Hanover</h3>
 {% regroup passengers_from_hanover by get_bus_from_hanover as grouping %}
 {% for stop in grouping %}
 <h5> {{ stop.grouper }} </h5>
-{% person_checklist stop.list %}
+{% person_checklist stop.list phone_numbers=True %}
 {% endfor %}
 
 {% endblock content %}

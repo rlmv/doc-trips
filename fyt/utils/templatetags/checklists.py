@@ -1,9 +1,9 @@
-from django import template
+from django.template import Library, loader
 
 from fyt.incoming.models import sort_by_lastname
 
 
-register = template.Library()
+register = Library()
 
 
 def split(a, n):
@@ -15,16 +15,26 @@ def split(a, n):
     return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
-@register.inclusion_tag('utils/checklists/people.html')
-def person_checklist(people):
+@register.simple_tag
+def person_checklist(people, phone_numbers=False):
     """
-    Three-column checklist of people. Can handle any
-    database model with a 'name' field or property.
+    A checklist of people.
+
+    Each person is a database model with a `name` field or property. If
+    including phone numbers, each person must also have a `get_phone_number`
+    method.
     """
     people = sort_by_lastname(people)
-    col1, col2, col3 = split(people, 3)
-    return {
-        'col1': col1,
-        'col2': col2,
-        'col3': col3,
-    }
+
+    if phone_numbers:
+        n_cols = 2
+        template_name = 'utils/checklists/people_and_phones.html'
+    else:
+        n_cols = 3
+        template_name = 'utils/checklists/people.html'
+
+    return loader.get_template(
+        template_name
+    ).render({
+        'columns': split(people, n_cols)
+    })
