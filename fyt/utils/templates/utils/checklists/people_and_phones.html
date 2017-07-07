@@ -1,0 +1,23 @@
+{% load links %}
+
+<div class="row">
+  {% for column in columns %}
+      <div class="col-xs-6">
+        <ul class="fa-ul">
+          {% for person in column %}
+          <li>
+            <div class="row">
+              <div class="col-xs-7 ">
+                <i class="fa-li fa fa-square-o"></i>
+                {{ person|detail_link }}
+              </div>
+              <div class="col-xs-5">
+                {{ person.get_phone_number }}
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+  {% endfor %}
+</div>
