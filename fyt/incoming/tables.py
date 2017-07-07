@@ -71,6 +71,9 @@ class IncomingStudentTable(tables.Table):
     trip_assignment = DetailLinkColumn(
         verbose_name='Trip'
     )
+    cancelled = tables.Column(
+        verbose_name='Cancelled?'
+    )
     incoming_status = tables.Column(
         verbose_name='Status'
     )
@@ -86,3 +89,8 @@ class IncomingStudentTable(tables.Table):
 
     def render_name(self, record):
         return detail_link(record)
+
+    def render_cancelled(self, value):
+        if not value:
+            return mark_safe('&mdash;')
+        return mark_safe('<i class="fa fa-check"></i>')
