@@ -13,7 +13,7 @@
 <h4> Current Trippees </h4>
 <ul>
   {% for trippee in trip.trippees.all %}
-  <li> {{ trippee|detail_link }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }} &mdash; {{ trippee.registration.previous_school }}) </li>
+  <li> {{ trippee|detail_link }} ({{ trippee.get_gender }} &mdash; {{ trippee.ethnic_code }} &mdash; {{ trippee.get_hometown }} &mdash; {{ trippee.registration.previous_school }}) </li>
   {% endfor %}
 </ul>
 
@@ -24,6 +24,7 @@
   <tr>
     <th/>
     <th> Gender </th>
+    <th> Ethnicity </th>
     <th> Address </th>
     <th> Trip Assignment </th>
     <th> {{ trip.template.triptype }} </th>
@@ -35,13 +36,14 @@
   <tr>
     <td> {{ trippee|detail_link }} </td>
     <td> {{ trippee.get_gender }} </td>
+    <td> {{ trippee.ethnic_code }} </td>
     <td> {{ trippee.get_hometown }} </td>
     <td>
       {% if trippee.trip_assignment %}
       {{ trippee.trip_assignment|detail_link }}
       {% else %}
       <a class="btn btn-xs btn-primary" href="{{ trippee.assignment_url }}">
-	Assign to {{ trip }}
+    Assign to {{ trip }}
       </a>
       {% endif %}
     </td>
