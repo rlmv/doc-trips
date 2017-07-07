@@ -425,6 +425,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
             ).only(
                 'name',
                 'address',
+                'ethnic_code',
                 'trips_year',
                 'trip_assignment__template__name',
                 'trip_assignment__section__name',
