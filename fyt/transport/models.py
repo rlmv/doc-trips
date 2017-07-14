@@ -26,6 +26,35 @@ def sort_by_distance(stops, reverse=False):
     return sorted(stops, key=lambda x: x.distance, reverse=reverse)
 
 
+class TransportConfig(DatabaseModel):
+    """
+    Configuration for each trips year, specifying which stops to use for
+    Hanover and the Lodge. This was added in 2017 because the new Lodge was not
+    complete in time for Trips.
+    """
+    class Meta:
+        unique_together = ['trips_year']
+
+    hanover = models.ForeignKey('Stop', related_name="+",
+                                on_delete=models.PROTECT)
+    lodge = models.ForeignKey('Stop', related_name="+",
+                              on_delete=models.PROTECT)
+
+
+def Hanover(trips_year):
+    """
+    Return the Hanover Stop for this year.
+    """
+    return TransportConfig.objects.get(trips_year=trips_year).hanover
+
+
+def Lodge(trips_year):
+    """
+    Return the Lodge Stop for this year.
+    """
+    return TransportConfig.objects.get(trips_year=trips_year).lodge
+
+
 class Stop(DatabaseModel):
     """
     A stop on a transportation route.
@@ -239,8 +268,6 @@ class ScheduledTransport(DatabaseModel):
         The properties contain the list of trips which are dropped
         off and picked up at this stop by this bus.
         """
-        from fyt.transport.constants import Hanover, Lodge
-
         DROPOFF_ATTR = 'trips_dropped_off'
         PICKUP_ATTR = 'trips_picked_up'
 
@@ -272,21 +299,22 @@ class ScheduledTransport(DatabaseModel):
                 set_trip_attr(stops[-1], order)
 
         # all buses start from Hanover
-        hanover = Hanover()
+        hanover = Hanover(self.trips_year)
         setattr(hanover, PICKUP_ATTR, list(self.dropping_off()))
         setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
         if self.picking_up() or self.returning():
             # otherwise we can bypass the lodge
-            lodge = Lodge()
+            lodge = Lodge(self.trips_year)
             setattr(lodge, DROPOFF_ATTR, list(self.picking_up()))
             setattr(lodge, PICKUP_ATTR, list(self.returning()))
             stops.append(lodge)
 
         if self.returning():
-            # take trips back to Hanover
-            hanover = Hanover()
+            # Take trips back to Hanover.
+            # Load attributes onto a fresh Stop object.
+            hanover = Hanover(self.trips_year)
             setattr(hanover, DROPOFF_ATTR, list(self.returning()))
             setattr(hanover, PICKUP_ATTR, [])
             stops.append(hanover)
@@ -499,8 +527,6 @@ class ExternalBus(DatabaseModel):
         The passengers who are picked up and dropped off
         at each stop are stored in DROPOFF_ATTR and PICKUP_ATTR.
         """
-        from fyt.transport.constants import Hanover
-
         d = defaultdict(list)
         for p in self.passengers_to_hanover():
             d[p.get_bus_to_hanover()].append(p)
@@ -508,7 +534,7 @@ class ExternalBus(DatabaseModel):
             setattr(stop, self.DROPOFF_ATTR, [])
             setattr(stop, self.PICKUP_ATTR, psngrs)
 
-        hanover = Hanover()
+        hanover = Hanover(self.trips_year)
         setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
         setattr(hanover, self.PICKUP_ATTR, [])
 
@@ -518,8 +544,6 @@ class ExternalBus(DatabaseModel):
         """
         All stops the bus makes as it drop trippees off after trips.
         """
-        from fyt.transport.constants import Hanover
-
         d = defaultdict(list)
         for p in self.passengers_from_hanover():
             d[p.get_bus_from_hanover()].append(p)
@@ -527,7 +551,7 @@ class ExternalBus(DatabaseModel):
             setattr(stop, self.DROPOFF_ATTR, psngrs)
             setattr(stop, self.PICKUP_ATTR, [])
 
-        hanover = Hanover()
+        hanover = Hanover(self.trips_year)
         setattr(hanover, self.DROPOFF_ATTR, [])
         setattr(hanover, self.PICKUP_ATTR, self.passengers_from_hanover())
 

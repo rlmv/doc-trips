@@ -18,7 +18,7 @@ from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.raids.models import RaidInfo
 from fyt.timetable.models import Timetable
 from fyt.training.models import Training
-from fyt.transport.models import Route, Stop, Vehicle
+from fyt.transport.models import Route, Stop, Vehicle, TransportConfig
 from fyt.trips.models import Campsite, Document, TripTemplate, TripType
 
 
@@ -53,6 +53,7 @@ class Forward:
         Stop,
         Route,
         Vehicle,
+        TransportConfig,
         TripTemplate,
         Document,
         TripType,
