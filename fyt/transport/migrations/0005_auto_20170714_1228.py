@@ -28,7 +28,7 @@ def init_transport_config(apps, schema_editor):
            lat_lng='43.977253,-71.8154831',
            distance=10000)
 
-       config = TransportConfig(
+       config = TransportConfig.objects.create(
            trips_year=trips_year,
            hanover=hanover,
            lodge=lodge)
