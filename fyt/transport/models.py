@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from fyt.db.models import DatabaseModel
+from fyt.incoming.models import IncomingStudent
 from fyt.transport.managers import (
     ExternalBusManager,
     ExternalPassengerManager,
@@ -14,6 +15,7 @@ from fyt.transport.managers import (
     StopOrderManager,
 )
 from fyt.transport.maps import get_directions
+from fyt.trips.models import Trip
 from fyt.utils.cache import cache_as
 from fyt.utils.lat_lng import validate_lat_lng
 
@@ -226,7 +228,6 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport drops off (on the trip's day 2)
         """
-        from fyt.trips.models import Trip
         return (
             Trip.objects
             .dropoffs(self.route, self.date, self.trips_year_id)
@@ -238,7 +239,6 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport picks up (on trip's day 4)
         """
-        from fyt.trips.models import Trip
         return (
             Trip.objects
             .pickups(self.route, self.date, self.trips_year_id)
@@ -250,7 +250,6 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport returns to Hanover (on day 5)
         """
-        from fyt.trips.models import Trip
         return (
             Trip.objects
             .returns(self.route, self.date, self.trips_year_id)
@@ -440,7 +439,7 @@ class StopOrder(DatabaseModel):
     """
     bus = models.ForeignKey(ScheduledTransport)
     order = models.PositiveSmallIntegerField()
-    trip = models.ForeignKey('trips.Trip')
+    trip = models.ForeignKey(Trip)
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(
@@ -507,14 +506,12 @@ class ExternalBus(DatabaseModel):
 
     @cache_as('_psngrs_to_hanover')
     def passengers_to_hanover(self):
-        from fyt.incoming.models import IncomingStudent
         return IncomingStudent.objects.passengers_to_hanover(
             self.trips_year_id, self.route, self.section
         )
 
     @cache_as('_psngrs_from_hanover')
     def passengers_from_hanover(self):
-        from fyt.incoming.models import IncomingStudent
         return IncomingStudent.objects.passengers_from_hanover(
             self.trips_year_id, self.route, self.section
         )

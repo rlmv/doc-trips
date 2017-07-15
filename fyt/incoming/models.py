@@ -11,7 +11,6 @@ from django.dispatch import receiver
 from .managers import IncomingStudentManager, RegistrationManager
 
 from fyt.db.models import DatabaseModel
-from fyt.transport.models import Stop
 from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import NetIdField
 from fyt.utils.choices import (
@@ -72,17 +71,17 @@ class IncomingStudent(DatabaseModel):
         related_name='trippees', null=True, blank=True
     )
     bus_assignment_round_trip = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_round_trip',
         verbose_name="bus assignment (round-trip)"
     )
     bus_assignment_to_hanover = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_to_hanover',
         verbose_name="bus assignment TO Hanover (one-way)"
     )
     bus_assignment_from_hanover = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
         related_name='riders_from_hanover',
         verbose_name="bus assignment FROM Hanover (one-way)"
     )
@@ -626,16 +625,16 @@ class Registration(MedicalMixin, DatabaseModel):
     # ----- other deets ----
 
     bus_stop_round_trip = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
         verbose_name="Where would you like to be bussed from/to?",
         related_name='requests_round_trip',
     )
     bus_stop_to_hanover = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
         related_name='requests_to_hanover',
     )
     bus_stop_from_hanover = models.ForeignKey(
-        Stop, on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
         related_name='requests_from_hanover',
     )
     financial_assistance = YesNoField(

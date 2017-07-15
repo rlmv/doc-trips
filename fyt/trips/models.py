@@ -14,7 +14,6 @@ from .managers import (
 )
 
 from fyt.db.models import DatabaseModel
-from fyt.transport.models import Route, Stop
 from fyt.utils.cache import cache_as
 
 
@@ -53,13 +52,13 @@ class Trip(DatabaseModel):
     # Is there a way to easily tell when a route is way off for a stop?
     ROUTE_HELP_TEXT = 'leave blank to use default route from template'
     dropoff_route = models.ForeignKey(
-        Route, blank=True, null=True, on_delete=models.PROTECT,
+        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overridden_dropped_off_trips', help_text=ROUTE_HELP_TEXT)
     pickup_route = models.ForeignKey(
-        Route, blank=True, null=True, on_delete=models.PROTECT,
+        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overridden_picked_up_trips', help_text=ROUTE_HELP_TEXT)
     return_route =  models.ForeignKey(
-        Route, blank=True, null=True, on_delete=models.PROTECT,
+        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
 
     dropoff_time = models.TimeField(blank=True, null=True)
@@ -295,12 +294,15 @@ class TripTemplate(DatabaseModel):
         )
     )
     dropoff_stop = models.ForeignKey(
-        Stop, related_name='dropped_off_trips', on_delete=models.PROTECT)
+        'transport.Stop', related_name='dropped_off_trips',
+        on_delete=models.PROTECT)
     pickup_stop = models.ForeignKey(
-        Stop, related_name='picked_up_trips', on_delete=models.PROTECT)
+        'transport.Stop', related_name='picked_up_trips',
+        on_delete=models.PROTECT)
     # TODO: remove null=True. All templates need a return route.
     return_route = models.ForeignKey(
-        Route, related_name='returning_trips', null=True, on_delete=models.PROTECT)
+        'transport.Route', related_name='returning_trips',
+        null=True, on_delete=models.PROTECT)
 
     # TODO: better related names
     campsite1 = models.ForeignKey(
