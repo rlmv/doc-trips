@@ -139,6 +139,9 @@ class TripLeadersCSV(GenericReportView):
     def get_queryset(self):
         return Application.objects.leaders(
             self.get_trips_year()
+        ).select_related(
+            'assigned_trip__section',
+            'assigned_trip__template'
         )
 
     header = ['name', 'netid', 'email', 'trip', 'section', 'gear requests']
