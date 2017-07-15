@@ -265,9 +265,7 @@ class ScheduledTransport(DatabaseModel):
         distance from Hanover.
 
         Each stop has a trips_dropped_off and trips_picked_up
-        property added to it (TODO: change these names; they
-        conflict with the triptemplate related_names.)
-        The properties contain the list of trips which are dropped
+        property added to it which contain the list of trips which are dropped
         off and picked up at this stop by this bus.
         """
         DROPOFF_ATTR = 'trips_dropped_off'
