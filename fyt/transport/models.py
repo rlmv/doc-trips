@@ -39,10 +39,15 @@ class TransportConfig(DatabaseModel):
         unique_together = ['trips_year']
 
     hanover = models.ForeignKey(
-        'Stop', related_name="+", on_delete=models.PROTECT,
+        'Stop',
+        related_name="+",
+        on_delete=models.PROTECT,
         help_text='The address at which bus routes start and stop in Hanover.')
+
     lodge = models.ForeignKey(
-        'Stop', related_name="+", on_delete=models.PROTECT,
+        'Stop',
+        related_name="+",
+        on_delete=models.PROTECT,
         help_text='The address of the Lodge.')
 
 
@@ -75,44 +80,53 @@ class Stop(DatabaseModel):
 
     name = models.CharField(max_length=255)
     address = models.CharField(
-        max_length=255, blank=True, default='', help_text=(
+        max_length=255,
+        blank=True,
+        default='',
+        help_text=(
             "Plain text address, eg. Hanover, NH 03755. This must "
-            "take you to the location in Google maps."
-        )
-    )
+            "take you to the location in Google maps."))
+
     lat_lng = models.CharField(
-        'coordinates', max_length=255, blank=True, default='',
-        validators=[validate_lat_lng], help_text=(
-            "Latitude & longitude coordinates, eg. 43.7030,-72.2895"
-        )
-    )
+        'coordinates',
+        max_length=255,
+        blank=True,
+        default='',
+        validators=[validate_lat_lng],
+        help_text="Latitude & longitude coordinates, eg. 43.7030,-72.2895")
 
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
 
     route = models.ForeignKey(
-        'Route', null=True, blank=True,
-        on_delete=models.PROTECT, related_name='stops',
-        help_text="default bus route",
-    )
+        'Route',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name='stops',
+        help_text="default bus route")
 
     # costs are required for EXTERNAL stops
     cost_round_trip = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True,
-        help_text="for external buses"
-    )
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="for external buses")
+
     cost_one_way = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True,
-        help_text="for external buses"
-    )
+        max_digits=5,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        help_text="for external buses")
 
     # mostly used for external routes
     dropoff_time = models.TimeField(blank=True, null=True)
     pickup_time = models.TimeField(blank=True, null=True)
 
     distance = models.PositiveIntegerField(help_text=(
-        "this rough distance from Hanover is used for bus routing"
-    ))
+        "this rough distance from Hanover is used for bus routing"))
 
     def clean(self):
         if not self.lat_lng and not self.address:
@@ -167,11 +181,11 @@ class Route(DatabaseModel):
     INTERNAL = INTERNAL
     EXTERNAL = EXTERNAL
     category = models.CharField(
-        max_length=20, choices=(
+        max_length=20,
+        choices=(
             (INTERNAL, 'Internal'),
-            (EXTERNAL, 'External'),
-        )
-    )
+            (EXTERNAL, 'External')))
+
     vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
 
     objects = RouteManager()
@@ -229,32 +243,27 @@ class ScheduledTransport(DatabaseModel):
         """
         All trips which this transport drops off (on the trip's day 2)
         """
-        return (
-            Trip.objects
-            .dropoffs(self.route, self.date, self.trips_year_id)
-            .select_related('template__dropoff_stop')
-        )
+        return Trip.objects.dropoffs(
+            self.route, self.date, self.trips_year_id
+        ).select_related(
+            'template__dropoff_stop')
 
     @cache_as(PICKUP_CACHE_NAME)
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
         """
-        return (
-            Trip.objects
-            .pickups(self.route, self.date, self.trips_year_id)
-            .select_related('template__pickup_stop')
-        )
+        return Trip.objects.pickups(
+            self.route, self.date, self.trips_year_id
+        ).select_related(
+            'template__pickup_stop')
 
     @cache_as(RETURN_CACHE_NAME)
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
         """
-        return (
-            Trip.objects
-            .returns(self.route, self.date, self.trips_year_id)
-        )
+        return Trip.objects.returns(self.route, self.date, self.trips_year_id)
 
     @cache_as('_get_stops')
     def get_stops(self):
@@ -442,11 +451,10 @@ class StopOrder(DatabaseModel):
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(
-        max_length=10, choices=(
+        max_length=10,
+        choices=(
             (PICKUP, PICKUP),
-            (DROPOFF, DROPOFF),
-        )
-    )
+            (DROPOFF, DROPOFF)))
 
     objects = StopOrderManager()
 
@@ -506,14 +514,12 @@ class ExternalBus(DatabaseModel):
     @cache_as('_psngrs_to_hanover')
     def passengers_to_hanover(self):
         return IncomingStudent.objects.passengers_to_hanover(
-            self.trips_year_id, self.route, self.section
-        )
+            self.trips_year_id, self.route, self.section)
 
     @cache_as('_psngrs_from_hanover')
     def passengers_from_hanover(self):
         return IncomingStudent.objects.passengers_from_hanover(
-            self.trips_year_id, self.route, self.section
-        )
+            self.trips_year_id, self.route, self.section)
 
     DROPOFF_ATTR = 'dropoff'
     PICKUP_ATTR = 'pickup'
