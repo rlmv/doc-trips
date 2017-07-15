@@ -6,6 +6,7 @@ from django.db import models
 
 from fyt.db.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
+from fyt.transport.category import INTERNAL, EXTERNAL
 from fyt.transport.managers import (
     ExternalBusManager,
     ExternalPassengerManager,
@@ -163,8 +164,8 @@ class Route(DatabaseModel):
     students to and from campus before and after their trips.)
     """
     name = models.CharField(max_length=255)
-    INTERNAL = 'INTERNAL'
-    EXTERNAL = 'EXTERNAL'
+    INTERNAL = INTERNAL
+    EXTERNAL = EXTERNAL
     category = models.CharField(
         max_length=20, choices=(
             (INTERNAL, 'Internal'),

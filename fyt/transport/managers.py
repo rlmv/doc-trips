@@ -2,25 +2,22 @@ from django.db import models
 from django.db.models import Q
 
 from fyt.utils.matrix import OrderedMatrix
+from fyt.transport.category import EXTERNAL, INTERNAL
 
 
 class StopManager(models.Manager):
 
     def external(self, trips_year):
-        from fyt.transport.models import Route
-        EXTERNAL = Route.EXTERNAL
         return self.filter(trips_year=trips_year, route__category=EXTERNAL)
 
 
 class RouteManager(models.Manager):
 
     def internal(self, trips_year):
-        from fyt.transport.models import Route
-        return self.filter(trips_year=trips_year, category=Route.INTERNAL)
+        return self.filter(trips_year=trips_year, category=INTERNAL)
 
     def external(self, trips_year):
-        from fyt.transport.models import Route
-        return self.filter(trips_year=trips_year, category=Route.EXTERNAL)
+        return self.filter(trips_year=trips_year, category=EXTERNAL)
 
 
 class ScheduledTransportManager(models.Manager):
@@ -30,8 +27,7 @@ class ScheduledTransportManager(models.Manager):
         return qs.select_related('route')
 
     def internal(self, trips_year):
-        from fyt.transport.models import Route
-        return self.filter(trips_year=trips_year, route__category=Route.INTERNAL)
+        return self.filter(trips_year=trips_year, route__category=INTERNAL)
 
 
 def external_route_matrix(trips_year, default=None):
