@@ -36,7 +36,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         with self.assertRaises(StopIteration):
             next(iter)
 
-    def assertViewReturns(self, urlpattern, target):
+    def assertCsvReturns(self, urlpattern, target):
         """
         Test a view by visiting it with director priveleges and
         comparing returned csv to ``target``.
@@ -51,10 +51,12 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'attachment; filename="'))
         self.assertEqual([dict(r) for r in save_and_open_csv(resp)], target)
 
+    def setUp(self):
+        self.init_trips_year()
+
     def test_volunteer_csv(self):
-        trips_year = self.init_trips_year()
-        question = mommy.make(Question, trips_year=trips_year)
-        app = self.make_application(trips_year=trips_year)
+        question = mommy.make(Question, trips_year=self.trips_year)
+        app = self.make_application(trips_year=self.trips_year)
         app.croo_willing = False
         app.save()
         app.answer_question(question, 'An answer')
@@ -62,7 +64,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         app.add_score(self.make_directorate(), 5)
         app.add_score(self.make_tlt(), 4)
 
-        target = [{
+        self.assertCsvReturns('db:reports:all_apps', [{
             'name': app.name,
             'netid': app.applicant.netid,
             'status': app.status,
@@ -78,97 +80,88 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'score 1': '4',
             'score 2': '5',
             'score 3': '4',
-        }]
-
-        self.assertViewReturns('db:reports:all_apps', target)
+        }])
 
     def test_trip_leader_csv(self):
-        trips_year = self.init_trips_year()
-        trip = mommy.make(Trip, trips_year=trips_year)
+        trip = mommy.make(Trip, trips_year=self.trips_year)
         leader = self.make_application(
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             status=Volunteer.LEADER,
             assigned_trip=trip,
+            applicant__name='Alice',
             gear='pogo stick')
 
         leader_without_trip = self.make_application(
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=None,)
+            assigned_trip=None,
+            applicant__name='Bob')
 
-        not_leader = self.make_application(trips_year=trips_year)
+        not_leader = self.make_application(trips_year=self.trips_year)
 
-        url = reverse('db:reports:leaders', kwargs={'trips_year': trips_year})
-        rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
-        target = [{
-            'name': leader.name,
+        self.assertCsvReturns('db:reports:leaders', [{
+            'name': 'Alice',
             'netid': leader.applicant.netid,
             'email': leader.applicant.email,
             'trip': str(trip),
             'section': trip.section.name,
             'gear requests': 'pogo stick'
         }, {
-            'name': leader_without_trip.name,
+            'name': 'Bob',
             'netid': leader_without_trip.applicant.netid,
             'email': leader_without_trip.applicant.email,
             'trip': '',
             'section': '',
             'gear requests': ''
-        }]
-
-        self.assertEqual(rows, target)
+        }])
 
     def test_croo_members_csv(self):
-        trips_year = self.init_trips_year()
-        croo = mommy.make(Croo, trips_year=trips_year)
+        croo = mommy.make(Croo, trips_year=self.trips_year)
         crooling = self.make_application(
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             status=Volunteer.CROO,
             assigned_croo=croo
         )
-        not_croo = self.make_application(trips_year=trips_year)
+        not_croo = self.make_application(trips_year=self.trips_year)
 
-        url = reverse('db:reports:croo_members', kwargs={'trips_year': trips_year})
-        rows = list(save_and_open_csv(self.app.get(url, user=self.make_director())))
-        target = [{
+        self.assertCsvReturns('db:reports:croo_members', [{
             'name': crooling.name,
             'netid': crooling.applicant.netid,
             'croo': str(crooling.assigned_croo)
-        }]
-        self.assertEqual(rows, target)
+        }])
 
     def test_trippees_csv(self):
-        trips_year = self.init_trips_year()
         trippee = mommy.make(
             IncomingStudent,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip)
         )
         not_trippee = mommy.make(
             IncomingStudent,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=None
         )
-        target = [{
+        self.assertCsvReturns('db:reports:trippees', [{
             'name': trippee.name,
             'netid': trippee.netid.upper()
-        }]
-        self.assertViewReturns('db:reports:trippees', target)
+        }])
 
     def test_registrations_csv(self):
-        trips_year = self.init_trips_year()
         r = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             name='Bob',
             gender='male',
         )
-        section = mommy.make(Section, trips_year=trips_year, name='A')
+        section = mommy.make(Section, trips_year=self.trips_year, name='A')
         r.set_section_preference(section, 'PREFER')
-        triptype = mommy.make(TripType, trips_year=trips_year, name='Hiking 3')
+        triptype = mommy.make(
+            TripType,
+            trips_year=self.trips_year,
+            name='Hiking 3')
         r.set_triptype_preference(triptype, 'AVAILABLE')
 
-        target = [{
+        self.assertCsvReturns('db:reports:registrations', [{
             'name': 'Bob',
             'gender': 'male',
             'netid': r.user.netid,
@@ -203,69 +196,67 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'bus round trip': '',
             'bus to hanover': '',
             'bus from hanover': '',
-        }]
-        self.assertViewReturns('db:reports:registrations', target)
+        }])
 
     def test_charges_report(self):
-        trips_year = self.init_trips_year()
-        mommy.make(Settings, trips_year=trips_year, doc_membership_cost=91, trips_cost=250)
+        mommy.make(
+            Settings,
+            trips_year=self.trips_year,
+            doc_membership_cost=91,
+            trips_cost=250)
+
         # incoming student to be charged:
         incoming1 = mommy.make(
             IncomingStudent,
             name='1',
-            trips_year=trips_year,
-            trip_assignment__trips_year=trips_year,  # force trip to exist
+            trips_year=self.trips_year,
+            trip_assignment__trips_year=self.trips_year,  # force trip to exist
             bus_assignment_round_trip__cost_round_trip=100,
             financial_aid=10,
             registration__doc_membership=True,
-            registration__green_fund_donation=20
-        )
+            registration__green_fund_donation=20)
+
         # another, without a registration
         incoming2 = mommy.make(
             IncomingStudent,
             name='2',
-            trips_year=trips_year,
-            trip_assignment__trips_year=trips_year,  # ditto
-            financial_aid=0
-        )
+            trips_year=self.trips_year,
+            trip_assignment__trips_year=self.trips_year,  # ditto
+            financial_aid=0)
+
         # another with no trip but with doc membership
         incoming3 = mommy.make(
             IncomingStudent,
             name='3',
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=None,
             financial_aid=0,
-            registration__doc_membership=True
-        )
+            registration__doc_membership=True)
+
         # another with no trip, no membership, but green fund donation
         incoming4 = mommy.make(
             IncomingStudent,
             name='4',
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=None,
             financial_aid=0,
             registration__doc_membership=False,
-            registration__green_fund_donation=12
-        )
+            registration__green_fund_donation=12)
+
         # last-minute cancellation
         incoming5 = mommy.make(
             IncomingStudent,
             name='5',
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=None,
             cancelled=True,
             financial_aid=0,
-            registration__doc_membership=False,
-        )
+            registration__doc_membership=False,)
 
         # not charged because no trip assignment AND no DOC membership
-        mommy.make(IncomingStudent, trips_year=trips_year)
+        mommy.make(IncomingStudent, trips_year=self.trips_year)
 
-        url = reverse('db:reports:charges', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
-
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:charges', [{
             'name': incoming1.name,
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
@@ -315,32 +306,26 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'doc membership': '',
             'green fund': '',
             'cancellation': '250.00'
-        }]
-        self.assertEqual(rows, target)
+        }])
 
     def test_housing_report(self):
-        trips_year = self.init_trips_year()
         t1 = mommy.make(
             IncomingStudent,
             name='1',
-            trips_year=trips_year,
-            trip_assignment__trips_year=trips_year,
+            trips_year=self.trips_year,
+            trip_assignment__trips_year=self.trips_year,
             trip_assignment__section__leaders_arrive=date(2015, 1, 1),
             registration__is_fysep=True,
             registration__is_native=True,
-            registration__is_international=False
-        )
+            registration__is_international=False)
+
         t2 = mommy.make(
             IncomingStudent,
             name='2',
-            trips_year=trips_year,
-            trip_assignment=None
-        )
-        url = reverse('db:reports:housing', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
+            trips_year=self.trips_year,
+            trip_assignment=None)
 
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:housing', [{
             'name': t1.name,
             'netid': t1.netid,
             'trip': str(t1.trip_assignment),
@@ -360,34 +345,26 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'native': '',
             'fysep': '',
             'international': '',
-        }]
-        self.assertEqual(rows, target)
-
+        }])
 
     def test_dietary_restrictions(self):
-        trips_year = self.init_trips_year()
         trip = mommy.make(
-            Trip,
-            trips_year=trips_year
-        )
+            Trip, trips_year=self.trips_year)
+
         reg = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
-            epipen=True,
-        )
+            epipen=True)
+
         inc = mommy.make(
             IncomingStudent,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=trip,
-            registration=reg,
-        )
-        url = reverse('db:reports:dietary', kwargs={'trips_year': trips_year})
-        resp  = self.app.get(url, user=self.make_director())
+            registration=reg)
 
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:dietary', [{
             'name': reg.name,
             'netid': reg.user.netid,
             'section': trip.section.name,
@@ -395,35 +372,29 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
             'epipen': 'Yes',
-        }]
-        self.assertEqual(rows, target)
+        }])
 
     def test_medical_info(self):
-        trips_year = self.init_trips_year()
         trip = mommy.make(
             Trip,
-            trips_year=trips_year
-        )
+            trips_year=self.trips_year)
+
         reg = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             medical_conditions='none',
             epipen=True,
-            needs='many',
-        )
+            needs='many')
+
         inc = mommy.make(
             IncomingStudent,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             trip_assignment=trip,
-            registration=reg,
-        )
-        url = reverse('db:reports:medical', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
+            registration=reg)
 
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:medical', [{
             'name': reg.name,
             'netid': reg.user.netid,
             'section': trip.section.name,
@@ -433,58 +404,49 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
             'epipen': 'Yes',
-        }]
-        self.assertEqual(rows, target)
+        }])
 
     def test_doc_memberships(self):
-        trips_year = self.init_trips_year()
         reg = mommy.make(
             Registration,
-            trips_year=trips_year,
-            doc_membership=True
-        )
+            trips_year=self.trips_year,
+            doc_membership=True)
+
         other_reg = mommy.make(
             Registration,
-            trips_year=trips_year,
-            doc_membership=False
-        )
-        url = reverse('db:reports:doc_members', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
+            trips_year=self.trips_year,
+            doc_membership=False)
 
-        target = [{
+        self.assertCsvReturns('db:reports:doc_members', [{
             'name': reg.user.name,
             'netid': reg.user.netid,
             'email': reg.user.email
-        }]
-        self.assertEqual(list(save_and_open_csv(resp)), target)
-
+        }])
 
     def test_volunteer_dietary_restrictions(self):
-        trips_year = self.init_trips_year()
-
         leader = mommy.make(
-            Volunteer, trips_year=trips_year,
+            Volunteer,
+            trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=mommy.make(Trip, trips_year=trips_year),
+            assigned_trip=mommy.make(Trip, trips_year=self.trips_year),
             food_allergies='peaches',
             dietary_restrictions='gluten free',
-            epipen=True,
-        )
+            epipen=True)
+
         croo = mommy.make(
-            Volunteer, trips_year=trips_year,
+            Volunteer,
+            trips_year=self.trips_year,
             status=Volunteer.CROO,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
-            epipen=False
-        )
+            epipen=False)
+
         neither = mommy.make(
-            Volunteer, trips_year=trips_year,
-            status=Volunteer.PENDING
-        )
-        url = reverse('db:reports:volunteer_dietary', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
-        rows = list(save_and_open_csv(resp))
-        target = [{
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.PENDING)
+
+        self.assertCsvReturns('db:reports:volunteer_dietary', [{
             'name': croo.applicant.name,
             'netid': croo.applicant.netid,
             'role': Volunteer.CROO,
@@ -500,25 +462,18 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'food allergies': leader.food_allergies,
             'dietary restrictions': leader.dietary_restrictions,
             'epipen': 'Yes'
-        }]
-        self.assertEqual(rows, target)
-
+        }])
 
     def test_foodboxes(self):
-        trips_year = self.init_trips_year()
         trip = mommy.make(
             Trip,
-            trips_year=trips_year,
-        )
+            trips_year=self.trips_year)
+
         mommy.make(
             IncomingStudent, 3,
-            trips_year=trips_year
-        )
-        url = reverse('db:reports:foodboxes', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
+            trips_year=self.trips_year)
 
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:foodboxes', [{
             'trip': str(trip),
             'section': trip.section.name,
             'size': str(trip.size()),
@@ -526,35 +481,27 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'half box': '1' if trip.half_foodbox else '',
             'supplement': '1' if trip.supp_foodbox else '',
             'bagels': str(trip.bagels),
-        }]
-        self.assertEqual(rows, target)
-
+        }])
 
     def test_external_bus(self):
-        trips_year = self.init_trips_year()
         reg1 = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             name='a',
-            bus_stop_round_trip=mommy.make(Stop, trips_year=trips_year)
-        )
+            bus_stop_round_trip__trips_year=self.trips_year)
+
         reg2 = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             name='b',
-            bus_stop_to_hanover=mommy.make(Stop, trips_year=trips_year),
-            bus_stop_from_hanover=mommy.make(Stop, trips_year=trips_year)
-        )
+            bus_stop_to_hanover__trips_year=self.trips_year,
+            bus_stop_from_hanover__trips_year=self.trips_year)
+
         no_bus_request = mommy.make(
             Registration,
-            trips_year=trips_year
-        )
+            trips_year=self.trips_year)
 
-        url = reverse('db:reports:bus_stops', kwargs={'trips_year': trips_year})
-        resp = self.app.get(url, user=self.make_director())
-
-        rows = list(save_and_open_csv(resp))
-        target = [{
+        self.assertCsvReturns('db:reports:bus_stops', [{
             'name': reg1.user.name,
             'preferred name': reg1.name,
             'netid': reg1.user.netid,
@@ -568,47 +515,44 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'requested bus round trip': '',
             'requested bus to hanover': reg2.bus_stop_to_hanover.name,
             'requested bus from hanover': reg2.bus_stop_from_hanover.name,
-        }]
-        self.assertEqual(rows, target)
+        }])
 
 
 class TShirtCountTestCase(FytTestCase):
 
+    def setUp(self):
+        self.init_trips_year()
+
     def test_tshirt_count_leaders(self):
-        trips_year = self.init_trips_year()
         mommy.make(
             Volunteer,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip__trips_year=trips_year,
-            tshirt_size=S
-        )
+            assigned_trip__trips_year=self.trips_year,
+            tshirt_size=S)
         target = {
             XS: 0, S: 1, M: 0, L: 0, XL: 0, XXL: 0
         }
-        self.assertEqual(target, leader_tshirts(trips_year))
+        self.assertEqual(target, leader_tshirts(self.trips_year))
 
     def test_tshirt_count_croos(self):
-        trips_year = self.init_trips_year()
         mommy.make(
             Volunteer,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             status=Volunteer.CROO,
-            tshirt_size=M
-        )
+            tshirt_size=M)
+
         target = {
             XS: 0, S: 0, M: 1, L: 0, XL: 0, XXL: 0
         }
-        self.assertEqual(target, croo_tshirts(trips_year))
+        self.assertEqual(target, croo_tshirts(self.trips_year))
 
     def test_tshirt_count_trippees(self):
-        trips_year = self.init_trips_year()
         mommy.make(
             Registration,
-            trips_year=trips_year,
-            tshirt_size=L
-        )
+            trips_year=self.trips_year,
+            tshirt_size=L)
         target = {
             XS:0, S: 0, M: 0, L: 1, XL: 0, XXL: 0
         }
-        self.assertEqual(target, trippee_tshirts(trips_year))
+        self.assertEqual(target, trippee_tshirts(self.trips_year))
