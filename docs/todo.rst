@@ -64,6 +64,8 @@ Cosmetic
 
 Long term
 ---------
+* Move setting views for each app to views which take a trips_year as a kwarg;
+  disable views for past years.
 * Expose raid blog instructions edit field
 * Add PDF uploads of maps and documents for trip templates
 * Validate ``trips_year`` consistancy between related objects

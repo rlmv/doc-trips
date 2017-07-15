@@ -19,6 +19,7 @@ from fyt.transport.urls import (
     scheduledtransport_urlpatterns,
     stop_urlpatterns,
     vehicle_urlpatterns,
+    transportconfig_urlpatterns,
 )
 from fyt.trips.urls import (
     campsite_urlpatterns,
@@ -79,6 +80,8 @@ database_urlpatterns = [
         include(template_urlpatterns, namespace='triptemplate')),
     url(r'^training/',
         include(attendee_urlpatterns, namespace='attendee')),
+    url(r'^transport/',
+        include(transportconfig_urlpatterns, namespace='transportconfig')),
     url(r'^transport/external/',
         include(externalbus_urlpatterns, namespace='externalbus')),
     url(r'^transport/internal/',

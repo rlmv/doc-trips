@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load urlencode %}
 
@@ -11,34 +10,35 @@
       <a href="#"> <i class="fa fa-fw fa-fire"></i> Trips <i class="fa arrow"></i> </a>
 
       <ul class="nav nav-stacked">
-	<li> <a href="{% url 'db:trip:index' trips_year=trips_year %}"> Scheduled Trips </a> </li>
-	<li> <a href="{% url 'db:leader_index' trips_year=trips_year %}"> Leaders & Trippees </a> </li>
-	<li> <a href="{% url 'db:trip:people_counts' trips_year=trips_year %}"> Leader & Tripee Counts </a> </li>
-	<li> <a href="{% url 'db:section:index' trips_year=trips_year %}"> Sections </a> </li>
-	<li> <a href="{% url 'db:triptemplate:index' trips_year=trips_year %}"> Trip Templates </a> </li>
-	<li> <a href="{% url 'db:triptype:index' trips_year=trips_year %}"> Trip Types </a></li>
-	<li> <a href="{% url 'db:campsite:index' trips_year=trips_year %}"> Campsites </a> </li>
+    <li> <a href="{% url 'db:trip:index' trips_year=trips_year %}"> Scheduled Trips </a> </li>
+    <li> <a href="{% url 'db:leader_index' trips_year=trips_year %}"> Leaders & Trippees </a> </li>
+    <li> <a href="{% url 'db:trip:people_counts' trips_year=trips_year %}"> Leader & Tripee Counts </a> </li>
+    <li> <a href="{% url 'db:section:index' trips_year=trips_year %}"> Sections </a> </li>
+    <li> <a href="{% url 'db:triptemplate:index' trips_year=trips_year %}"> Trip Templates </a> </li>
+    <li> <a href="{% url 'db:triptype:index' trips_year=trips_year %}"> Trip Types </a></li>
+    <li> <a href="{% url 'db:campsite:index' trips_year=trips_year %}"> Campsites </a> </li>
       </ul>
     </li>
 
     <li>
       <a href="#"> <i class="fa fa-fw fa-bus"></i> Transport <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-	<li> <a href="{% url 'db:scheduledtransport:index' trips_year=trips_year %}"> Internal Buses </a> </li>
-	<li> <a href="{% url 'db:externalbus:matrix' trips_year=trips_year %}"> External Buses</a> </li>
+    <li> <a href="{% url 'db:scheduledtransport:index' trips_year=trips_year %}"> Internal Buses </a> </li>
+    <li> <a href="{% url 'db:externalbus:matrix' trips_year=trips_year %}"> External Buses</a> </li>
 
-	<li> <a href="{% url 'db:stop:index' trips_year=trips_year %}"> Stops </a></li>
-	<li> <a href="{% url 'db:route:index' trips_year=trips_year %}"> Routes </a> </li>
-	<li> <a href="{% url 'db:vehicle:index' trips_year=trips_year %}"> Vehicles </a> </li>
+    <li> <a href="{% url 'db:stop:index' trips_year=trips_year %}"> Stops </a></li>
+    <li> <a href="{% url 'db:route:index' trips_year=trips_year %}"> Routes </a> </li>
+    <li> <a href="{% url 'db:vehicle:index' trips_year=trips_year %}"> Vehicles </a> </li>
+    <li> <a href="{% url 'db:transportconfig:settings' trips_year=trips_year %}"> Hanover & Lodge </a> </li>
       </ul>
     </li>
 
     <li>
       <a href="#"> <i class="fa fa-fw fa-heart"></i> Volunteers <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-	<li> <a href="{% url 'db:volunteer:index' trips_year=trips_year %}?{% urlencode complete='either' %}"> Applications </a> </li>
-	<li> <a href="{% url 'db:croo:index' trips_year=trips_year %}"> Croos </a> </li>
-	<li> <a href="{% url 'db:graders_index' trips_year=trips_year %}"> Graders </a> </li>
+    <li> <a href="{% url 'db:volunteer:index' trips_year=trips_year %}?{% urlencode complete='either' %}"> Applications </a> </li>
+    <li> <a href="{% url 'db:croo:index' trips_year=trips_year %}"> Croos </a> </li>
+    <li> <a href="{% url 'db:graders_index' trips_year=trips_year %}"> Graders </a> </li>
       </ul>
     </li>
 
@@ -53,19 +53,19 @@
     <li>
       <a href="#"> <i class="fa fa-fw fa-child"></i> Trippees <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-	<li> <a  href="{% url 'db:incomingstudent:index' trips_year=trips_year %}"> Incoming Students </a> </li>
-	<li> <a  href="{% url 'db:registration:index' trips_year=trips_year %}"> Registrations </a> </li>
+    <li> <a  href="{% url 'db:incomingstudent:index' trips_year=trips_year %}"> Incoming Students </a> </li>
+    <li> <a  href="{% url 'db:registration:index' trips_year=trips_year %}"> Registrations </a> </li>
       </ul>
     </li>
 
     <li>
       <a href="#"> <i class="fa fa-fw fa-envelope"></i> Email Lists <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-	<li> <a href="{% url 'db:emails:applicants' trips_year=trips_year %}"> Applicants </a> </li>
-	<li> <a href="{% url 'db:emails:leaders_by_triptype' trips_year=trips_year %}"> Leaders By Triptype</a> </li>
-	<li> <a href="{% url 'db:emails:leaders_by_section' trips_year=trips_year %}"> Leaders By Section</a> </li>
-	<li> <a href="{% url 'db:emails:incoming' trips_year=trips_year %}"> Incoming Students </a> </li>
-	<li> <a href="{% url 'db:emails:trippees' trips_year=trips_year %}"> Trippees  </a> </li>
+    <li> <a href="{% url 'db:emails:applicants' trips_year=trips_year %}"> Applicants </a> </li>
+    <li> <a href="{% url 'db:emails:leaders_by_triptype' trips_year=trips_year %}"> Leaders By Triptype</a> </li>
+    <li> <a href="{% url 'db:emails:leaders_by_section' trips_year=trips_year %}"> Leaders By Section</a> </li>
+    <li> <a href="{% url 'db:emails:incoming' trips_year=trips_year %}"> Incoming Students </a> </li>
+    <li> <a href="{% url 'db:emails:trippees' trips_year=trips_year %}"> Trippees  </a> </li>
       </ul>
     </li>
 

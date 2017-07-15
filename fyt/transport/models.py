@@ -35,10 +35,12 @@ class TransportConfig(DatabaseModel):
     class Meta:
         unique_together = ['trips_year']
 
-    hanover = models.ForeignKey('Stop', related_name="+",
-                                on_delete=models.PROTECT)
-    lodge = models.ForeignKey('Stop', related_name="+",
-                              on_delete=models.PROTECT)
+    hanover = models.ForeignKey(
+        'Stop', related_name="+", on_delete=models.PROTECT,
+        help_text='The address at which bus routes start and stop in Hanover.')
+    lodge = models.ForeignKey(
+        'Stop', related_name="+", on_delete=models.PROTECT,
+        help_text='The address of the Lodge.')
 
 
 def Hanover(trips_year):

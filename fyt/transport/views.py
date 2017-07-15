@@ -29,6 +29,7 @@ from fyt.transport.models import (
     Stop,
     StopOrder,
     Vehicle,
+    TransportConfig,
 )
 from fyt.trips.models import Section, Trip
 from fyt.utils.cache import cache_as, preload
@@ -38,6 +39,20 @@ from fyt.utils.views import PopulateMixin
 
 NOT_SCHEDULED = 'NOT_SCHEDULED'
 EXCEEDS_CAPACITY = 'EXCEEDS_CAPACITY'
+
+
+class UpdateTransportConfig(DatabaseUpdateView):
+    model = TransportConfig
+    delete_button = False
+
+    def get_headline(self):
+        return 'Edit Transport Settings'
+
+    def get_object(self):
+        return TransportConfig.objects.get(trips_year=self.get_trips_year())
+
+    def get_success_url(self):
+        return self.request.path
 
 
 def get_internal_route_matrix(trips_year):
