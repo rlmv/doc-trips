@@ -89,8 +89,13 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=trips_year,
             status=Volunteer.LEADER,
             assigned_trip=trip,
-            gear='pogo stick'
-        )
+            gear='pogo stick')
+
+        leader_without_trip = self.make_application(
+            trips_year=trips_year,
+            status=Volunteer.LEADER,
+            assigned_trip=None,)
+
         not_leader = self.make_application(trips_year=trips_year)
 
         url = reverse('db:reports:leaders', kwargs={'trips_year': trips_year})
@@ -102,6 +107,13 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'trip': str(trip),
             'section': trip.section.name,
             'gear requests': 'pogo stick'
+        }, {
+            'name': leader_without_trip.name,
+            'netid': leader_without_trip.applicant.netid,
+            'email': leader_without_trip.applicant.email,
+            'trip': '',
+            'section': '',
+            'gear requests': ''
         }]
 
         self.assertEqual(rows, target)

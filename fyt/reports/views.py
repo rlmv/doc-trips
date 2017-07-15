@@ -143,12 +143,13 @@ class TripLeadersCSV(GenericReportView):
 
     header = ['name', 'netid', 'email', 'trip', 'section', 'gear requests']
     def get_row(self, leader):
+        trip = leader.assigned_trip
         return [
             leader.name,
             leader.applicant.netid,
             leader.applicant.email,
-            leader.assigned_trip,
-            leader.assigned_trip.section.name,
+            trip,
+            trip.section.name if trip else '',
             leader.gear]
 
 
