@@ -24,7 +24,7 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
                      assigned_trip=None, assigned_croo=None,
-                     leader_willing=True, croo_willing=True):
+                     leader_willing=True, croo_willing=True, **kwargs):
 
     application = mommy.make(
         Volunteer,
@@ -33,7 +33,8 @@ def make_application(status=Volunteer.PENDING, trips_year=None,
         assigned_trip=assigned_trip,
         assigned_croo=assigned_croo,
         leader_willing=leader_willing,
-        croo_willing=croo_willing)
+        croo_willing=croo_willing,
+        **kwargs)
 
     leader_app = mommy.make(
         LeaderSupplement,

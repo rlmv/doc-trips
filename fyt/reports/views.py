@@ -141,13 +141,15 @@ class TripLeadersCSV(GenericReportView):
             self.get_trips_year()
         )
 
-    header = ['name', 'netid', 'trip', 'section']
+    header = ['name', 'netid', 'email', 'trip', 'section', 'gear requests']
     def get_row(self, leader):
         return [
             leader.name,
             leader.applicant.netid,
+            leader.applicant.email,
             leader.assigned_trip,
-            leader.assigned_trip.section.name]
+            leader.assigned_trip.section.name,
+            leader.gear]
 
 
 class CrooMembersCSV(TripLeadersCSV):

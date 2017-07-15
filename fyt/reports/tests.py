@@ -88,7 +88,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         leader = self.make_application(
             trips_year=trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=trip
+            assigned_trip=trip,
+            gear='pogo stick'
         )
         not_leader = self.make_application(trips_year=trips_year)
 
@@ -97,8 +98,10 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         target = [{
             'name': leader.name,
             'netid': leader.applicant.netid,
+            'email': leader.applicant.email,
             'trip': str(trip),
-            'section': trip.section.name
+            'section': trip.section.name,
+            'gear requests': 'pogo stick'
         }]
 
         self.assertEqual(rows, target)
