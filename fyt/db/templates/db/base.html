@@ -23,7 +23,8 @@
     <li>
       <a href="#"> <i class="fa fa-fw fa-bus"></i> Transport <i class="fa arrow"></i> </a>
       <ul class="nav nav-stacked">
-    <li> <a href="{% url 'db:internalbus:index' trips_year=trips_year %}"> Internal Buses </a> </li>
+        <li> <a href="{% url 'db:internalbus:index' trips_year=trips_year %}"> Internal Buses </a> </li>
+        <li> <a href="{% url 'db:internalbus:by_date' trips_year=trips_year %}"> Internal Buses By Date </a> </li>
     <li> <a href="{% url 'db:externalbus:matrix' trips_year=trips_year %}"> External Buses</a> </li>
 
     <li> <a href="{% url 'db:stop:index' trips_year=trips_year %}"> Stops </a></li>

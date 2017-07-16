@@ -1,0 +1,24 @@
+{% load links %}
+
+<table class="table table-condensed table-bordered">
+  <tr>
+    <th> Trip Template </th>
+    {% for date in matrix.cols %}
+    <th> {{ date|date:"n/d" }} </th>
+    {% endfor %}
+  </tr>
+
+  {% for triptemplate, dates in matrix.items %}
+  <tr>
+    <td>
+      <span data-toggle="tooltip" data-placement="top" title="{{ triptemplate }}">
+        {{ triptemplate|detail_link:triptemplate.name }}
+      </span>
+    </td>
+
+    {% for date, trip in dates.items %}
+    <td class="text-center" style="background-color:pink"> {{ trip|detail_link|default:"" }} </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>

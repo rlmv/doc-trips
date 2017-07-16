@@ -34,6 +34,7 @@ from fyt.transport.views import (
     get_internal_rider_matrix,
     get_internal_route_matrix,
     preload_transported_trips,
+    trip_transport_matrix
 )
 from fyt.trips.models import Section, Trip
 
@@ -318,6 +319,45 @@ class InternalBusMatrixTestCase(FytTestCase):
             self.assertQsEqual(dropoff_bus.dropping_off(), [trip])
             self.assertQsEqual(pickup_bus.picking_up(), [trip])
             self.assertQsEqual(return_bus.returning(), [trip])
+
+    def test_trip_dropoff_matrix(self):
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__trips_year=self.trips_year,
+            section__trips_year=self.trips_year,
+            section__leaders_arrive=date(2015, 1, 1))
+
+        dropoff_matrix, pickup_matrix, return_matrix = trip_transport_matrix(
+            self.trips_year)
+
+        self.assertEqual(dropoff_matrix, {
+            trip.template: {
+                date(2015,1,2): None,
+                date(2015,1,3): trip,
+                date(2015,1,4): None,
+                date(2015,1,5): None,
+                date(2015,1,6): None
+            }
+        })
+        self.assertEqual(pickup_matrix, {
+            trip.template: {
+                date(2015,1,2): None,
+                date(2015,1,3): None,
+                date(2015,1,4): None,
+                date(2015,1,5): trip,
+                date(2015,1,6): None
+            }
+        })
+        self.assertEqual(return_matrix, {
+            trip.template: {
+                date(2015,1,2): None,
+                date(2015,1,3): None,
+                date(2015,1,4): None,
+                date(2015,1,5): None,
+                date(2015,1,6): trip
+            }
+        })
 
 
 class RidersMatrixTestCase(FytTestCase):

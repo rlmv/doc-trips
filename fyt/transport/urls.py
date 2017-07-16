@@ -10,6 +10,8 @@ transportconfig_urlpatterns = [
 internalbus_urlpatterns = [
     url(DB_REGEX['LIST'], InternalBusMatrix.as_view(),
         name='index'),
+    url(r'^by-date/$', InternalTransportByDate.as_view(),
+        name='by_date'),
     url(DB_REGEX['CREATE'], InternalBusCreateView.as_view(),
         name='create'),
     url(DB_REGEX['UPDATE'], InternalBusUpdateView.as_view(),

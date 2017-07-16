@@ -9,6 +9,8 @@ Upgrades
 
 Immediate
 ---------
+* Rename triptemplate `name` to `number`.
+* Hide grant croo and trailwork trips from Trip matrix
 * Escape registration names in HTML
 * Format phone number fields properly
 * Test filters

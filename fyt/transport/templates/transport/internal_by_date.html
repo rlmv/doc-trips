@@ -1,0 +1,49 @@
+{% extends "db/base.html" %}
+
+{% block header %}
+<h2> Internal Buses by Date </h2>
+{% endblock %}
+
+{% block content %}
+
+<div>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#dropoffs" aria-controls="dropoffs" role="tab" data-toggle="tab">Dropoffs</a></li>
+    <li role="presentation"><a href="#pickups" aria-controls="pickups" role="tab" data-toggle="tab">Pickups</a></li>
+    <li role="presentation"><a href="#returns" aria-controls="returns" role="tab" data-toggle="tab">Returns</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="dropoffs">
+      {% with matrix=dropoff_matrix %}
+      {% include "transport/_trips_by_date.html" %}
+      {% endwith %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="pickups">
+      {% with matrix=pickup_matrix %}
+      {% include "transport/_trips_by_date.html" %}
+      {% endwith %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="returns">
+      {% with matrix=return_matrix %}
+      {% include "transport/_trips_by_date.html" %}
+      {% endwith %}
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Enable tooltips -->
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}

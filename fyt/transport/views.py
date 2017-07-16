@@ -31,7 +31,7 @@ from fyt.transport.models import (
     Vehicle,
     TransportConfig,
 )
-from fyt.trips.models import Section, Trip
+from fyt.trips.models import Section, Trip, TripTemplate
 from fyt.utils.cache import cache_as, preload
 from fyt.utils.matrix import OrderedMatrix
 from fyt.utils.views import PopulateMixin
@@ -73,6 +73,39 @@ def get_internal_route_matrix(trips_year):
         matrix[transport.route][transport.date] = transport
 
     return matrix
+
+
+def trip_transport_matrix(trips_year):
+    """
+    Return the matrices of TripTemplates and dates, with each entry
+    containing the trip that is (dropped off, picked up, return to Hanover)
+    on the given date.
+    """
+
+    # TODO: only show visible triptypes
+    templates = TripTemplate.objects.filter(trips_year=trips_year)
+    dates = Section.dates.trip_dates(trips_year)
+
+    dropoff_matrix = OrderedMatrix(templates, dates)
+    pickup_matrix = OrderedMatrix(templates, dates)
+    return_matrix = OrderedMatrix(templates, dates)
+
+    trips = Trip.objects.with_counts(
+        trips_year=trips_year
+    ).select_related(
+        'dropoff_route',
+        'pickup_route',
+        'return_route',
+        'template__pickup_stop__route',
+        'template__dropoff_stop__route',
+        'template__return_route',
+    )
+    for trip in trips:
+        dropoff_matrix[trip.template][trip.dropoff_date] = trip
+        pickup_matrix[trip.template][trip.pickup_date] = trip
+        return_matrix[trip.template][trip.return_date] = trip
+
+    return dropoff_matrix, pickup_matrix, return_matrix
 
 
 def preload_transported_trips(buses, trips_year):
@@ -507,6 +540,18 @@ class InternalBusPacket(DatabaseListView):
     model = InternalBus
     template_name = 'transport/internal_packet.html'
     context_object_name = 'bus_list'
+
+
+class InternalTransportByDate(DatabaseTemplateView):
+    template_name = 'transport/internal_by_date.html'
+
+    def extra_context(self):
+        d, p, r = trip_transport_matrix(self.get_trips_year())
+        return {
+            'dropoff_matrix': d,
+            'pickup_matrix': p,
+            'return_matrix': r,
+        }
 
 
 class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
