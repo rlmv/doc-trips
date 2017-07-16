@@ -20,7 +20,7 @@ class RouteManager(models.Manager):
         return self.filter(trips_year=trips_year, category=EXTERNAL)
 
 
-class ScheduledTransportManager(models.Manager):
+class InternalBusManager(models.Manager):
 
     def get_queryset(self):
         qs = super().get_queryset()

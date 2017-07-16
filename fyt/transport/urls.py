@@ -7,14 +7,14 @@ transportconfig_urlpatterns = [
     url(r'^settings/$', UpdateTransportConfig.as_view(), name='settings')
 ]
 
-scheduledtransport_urlpatterns = [
-    url(DB_REGEX['LIST'], ScheduledTransportMatrix.as_view(),
+internalbus_urlpatterns = [
+    url(DB_REGEX['LIST'], InternalBusMatrix.as_view(),
         name='index'),
-    url(DB_REGEX['CREATE'], ScheduledTransportCreateView.as_view(),
+    url(DB_REGEX['CREATE'], InternalBusCreateView.as_view(),
         name='create'),
-    url(DB_REGEX['UPDATE'], ScheduledTransportUpdateView.as_view(),
+    url(DB_REGEX['UPDATE'], InternalBusUpdateView.as_view(),
         name='update'),
-    url(DB_REGEX['DELETE'], ScheduledTransportDeleteView.as_view(),
+    url(DB_REGEX['DELETE'], InternalBusDeleteView.as_view(),
         name='delete'),
     url(r'^ordering/(?P<bus_pk>[0-9]+)/$', OrderStops.as_view(),
         name='order'),

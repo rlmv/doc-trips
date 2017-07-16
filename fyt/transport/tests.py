@@ -16,7 +16,7 @@ from fyt.transport import maps
 from fyt.transport.models import (
     ExternalBus,
     Route,
-    ScheduledTransport,
+    InternalBus,
     Stop,
     StopOrder,
     TransportConfig,
@@ -168,21 +168,21 @@ class RouteManagerTestCase(FytTestCase):
         self.assertQsEqual(Route.objects.internal(self.trips_year), [internal_route])
 
 
-class ScheduledTransportManagerTestCase(FytTestCase):
+class InternalBusManagerTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
 
     def test_internal(self):
         external = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.EXTERNAL)
         internal = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.INTERNAL)
-        self.assertQsEqual(ScheduledTransport.objects.internal(self.trips_year), [internal])
+        self.assertQsEqual(InternalBus.objects.internal(self.trips_year), [internal])
 
 
 class TestViews(FytTestCase):
@@ -200,7 +200,7 @@ class TestViews(FytTestCase):
             self.app.get(url, user=director)
 
 
-class ScheduledTransportMatrixTestCase(FytTestCase):
+class InternalBusMatrixTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -217,7 +217,7 @@ class ScheduledTransportMatrixTestCase(FytTestCase):
             leaders_arrive=date(2015, 1, 1))
 
         transport = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route=route, date=date(2015, 1, 2))
 
@@ -255,13 +255,13 @@ class ScheduledTransportMatrixTestCase(FytTestCase):
             leaders_arrive=date(2015, 1, 2))
 
         transport1 = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route=route1,
             date=date(2015, 1, 2))
 
         transport2 = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route=route2,
             date=date(2015, 1, 4))
@@ -296,19 +296,19 @@ class ScheduledTransportMatrixTestCase(FytTestCase):
             return_route=route)
 
         dropoff_bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             date=trip.dropoff_date,
             route=route)
 
         pickup_bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             date=trip.pickup_date,
             route=route)
 
         return_bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             date=trip.return_date,
             route=route)
@@ -553,11 +553,11 @@ class IssuesMatrixTestCase(FytTestCase):
             template__max_trippees=route.vehicle.capacity + 1000 # exceeds capacity
         )
         mommy.make(
-            ScheduledTransport, trips_year=ty,
+            InternalBus, trips_year=ty,
             route=route, date=date(2015, 1, 3)
         )
         mommy.make(
-            ScheduledTransport, trips_year=ty,
+            InternalBus, trips_year=ty,
             route=route, date=date(2015, 1, 5)
         )
         target = {
@@ -856,13 +856,13 @@ class TransportViewsTestCase(TransportTestCase):
             trips_year=self.trips_year,
             leaders_arrive=date(2015, 1, 1))
         # visit matrix
-        url = reverse('db:scheduledtransport:index',
+        url = reverse('db:internalbus:index',
                       kwargs={'trips_year': self.trips_year})
         resp = self.app.get(url, user=self.make_director())
         # click add
         resp = resp.click(linkid="1-2-2015-create-1")
         resp.form.submit()
-        ScheduledTransport.objects.get(date=date(2015, 1, 2), route=route)
+        InternalBus.objects.get(date=date(2015, 1, 2), route=route)
 
 
 class InternalTransportModelTestCase(TransportTestCase):
@@ -873,7 +873,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_INTERNAL_validation(self):
         transport = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.EXTERNAL)
 
@@ -882,20 +882,20 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_unique_validation(self):
         transport = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.INTERNAL)
 
         with self.assertRaises(IntegrityError):
             mommy.make(
-                ScheduledTransport,
+                InternalBus,
                 trips_year=self.trips_year,
                 route=transport.route,
                 date=transport.date)
 
     def test_get_stops_with_intermediate(self):
         bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.INTERNAL)
 
@@ -931,7 +931,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_trips_are_added_to_stops(self):
         bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.INTERNAL)
 
@@ -963,7 +963,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_dont_go_to_lodge_if_no_pickups_or_returns(self):
         bus = mommy.make(
-            ScheduledTransport, trips_year=self.trips_year,
+            InternalBus, trips_year=self.trips_year,
             route__category=Route.INTERNAL
         )
         stop = mommy.make(Stop, trips_year=self.trips_year, route=bus.route)
@@ -976,7 +976,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_go_to_lodge_if_returns(self):
         bus = mommy.make(
-            ScheduledTransport, trips_year=self.trips_year,
+            InternalBus, trips_year=self.trips_year,
             route__category=Route.INTERNAL
         )
         trip1 = mommy.make(  # returning to campus
@@ -993,7 +993,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_capacity_still_has_space(self):
         bus = mommy.make(
-            ScheduledTransport, trips_year=self.trips_year,
+            InternalBus, trips_year=self.trips_year,
             route__category=Route.INTERNAL,
             route__vehicle__capacity=2
         )
@@ -1008,7 +1008,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_capacity_over(self):
         bus = mommy.make(
-            ScheduledTransport, trips_year=self.trips_year,
+            InternalBus, trips_year=self.trips_year,
             route__category=Route.INTERNAL,
             route__vehicle__capacity=1)
         trip = mommy.make(
@@ -1024,7 +1024,7 @@ class InternalTransportModelTestCase(TransportTestCase):
 
     def test_capacity_complex(self):
         bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route__category=Route.INTERNAL,
             route__vehicle__capacity=2)
@@ -1067,7 +1067,7 @@ class InternalTransportModelTestCase(TransportTestCase):
         self.assertTrue(bus.over_capacity())
 
     def test_get_stops_with_explicit_stoporders(self):
-        bus = mommy.make(ScheduledTransport, trips_year=self.trips_year)
+        bus = mommy.make(InternalBus, trips_year=self.trips_year)
         trip1 = mommy.make(
             Trip,
             trips_year=self.trips_year,
@@ -1097,7 +1097,7 @@ class InternalTransportModelTestCase(TransportTestCase):
                                            trip1.template.dropoff_stop])
 
     def test_get_stops_with_missing_ordering(self):
-        bus = mommy.make(ScheduledTransport, trips_year=self.trips_year)
+        bus = mommy.make(InternalBus, trips_year=self.trips_year)
         trip1 = mommy.make(
             Trip,
             trips_year=self.trips_year,
@@ -1121,7 +1121,7 @@ class InternalTransportModelTestCase(TransportTestCase):
         self.assertEqual(bus.get_stops(), target)
 
     def test_get_stops_deletes_extra_ordering(self):
-        bus = mommy.make(ScheduledTransport, trips_year=self.trips_year)
+        bus = mommy.make(InternalBus, trips_year=self.trips_year)
         order = mommy.make(StopOrder, trips_year=self.trips_year, bus=bus)
         self.assertEqual(bus.get_stops(), [Hanover(self.trips_year)])
         self.assertQsEqual(StopOrder.objects.all(), [])
@@ -1149,7 +1149,7 @@ class StopOrderingTestCase(FytTestCase):
         order = StopOrder(
             trips_year=self.trips_year,
             bus=mommy.make(
-                ScheduledTransport,
+                InternalBus,
                 trips_year=self.trips_year),
             trip=mommy.make(
                 Trip,
@@ -1161,14 +1161,14 @@ class StopOrderingTestCase(FytTestCase):
         self.assertEqual(order.order, 3)
 
     def test_stoporder_view_creates_missing_objects(self):
-        bus = mommy.make(ScheduledTransport, trips_year=self.trips_year)
+        bus = mommy.make(InternalBus, trips_year=self.trips_year)
         trip = mommy.make(
             Trip,
             trips_year=self.trips_year,
             dropoff_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2))
 
-        url = reverse('db:scheduledtransport:order',
+        url = reverse('db:internalbus:order',
                       kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk})
         self.app.get(url, user=self.make_director())
         so = StopOrder.objects.get(
@@ -1193,7 +1193,7 @@ class StopOrderingTestCase(FytTestCase):
             trips_year=self.trips_year,
             dropoff_route__trips_year=self.trips_year)
         bus = mommy.make(
-            ScheduledTransport,
+            InternalBus,
             trips_year=self.trips_year,
             route=trip.get_dropoff_route(),
             date=trip.dropoff_date)
@@ -1204,7 +1204,7 @@ class StopOrderingTestCase(FytTestCase):
             stop_type=StopOrder.DROPOFF, bus=bus)
         other_trip = mommy.make(Trip, trips_year=self.trips_year)
 
-        url = reverse('db:scheduledtransport:order',
+        url = reverse('db:internalbus:order',
                       kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk})
         form = self.app.get(url, user=self.make_director()).form
         form['form-0-trip'] = other_trip.pk

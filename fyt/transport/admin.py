@@ -3,7 +3,7 @@ from django.contrib import admin
 from fyt.transport.models import (
     ExternalBus,
     Route,
-    ScheduledTransport,
+    InternalBus,
     StopOrder,
     Vehicle,
 )
@@ -11,6 +11,6 @@ from fyt.transport.models import (
 
 admin.site.register(Vehicle)
 admin.site.register(Route)
-admin.site.register(ScheduledTransport)
+admin.site.register(InternalBus)
 admin.site.register(ExternalBus)
 admin.site.register(StopOrder)

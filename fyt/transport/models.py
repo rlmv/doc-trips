@@ -11,7 +11,7 @@ from fyt.transport.managers import (
     ExternalBusManager,
     ExternalPassengerManager,
     RouteManager,
-    ScheduledTransportManager,
+    InternalBusManager,
     StopManager,
     StopOrderManager,
 )
@@ -212,11 +212,11 @@ class Vehicle(DatabaseModel):
         return self.name
 
 
-class ScheduledTransport(DatabaseModel):
+class InternalBus(DatabaseModel):
     """
     Represents a scheduled internal transport.
     """
-    objects = ScheduledTransportManager()
+    objects = InternalBusManager()
 
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     date = models.DateField()
@@ -421,7 +421,7 @@ class ScheduledTransport(DatabaseModel):
         return get_directions(stops)
 
     def update_url(self):
-        return reverse('db:scheduledtransport:update', kwargs=self.obj_kwargs())
+        return reverse('db:internalbus:update', kwargs=self.obj_kwargs())
 
     def detail_url(self):
         kwargs = {
@@ -429,7 +429,7 @@ class ScheduledTransport(DatabaseModel):
             'route_pk': self.route_id,
             'date': self.date
         }
-        return reverse('db:scheduledtransport:checklist', kwargs=kwargs)
+        return reverse('db:internalbus:checklist', kwargs=kwargs)
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))
@@ -439,13 +439,13 @@ class StopOrder(DatabaseModel):
     """
     Ordering of stops on an internal bus.
 
-    StopOrder objects are created by ScheduledTransport.update_stop_ordering.
+    StopOrder objects are created by InternalBus.update_stop_ordering.
     One such object exists for each stop that the bus makes to dropoff
     and pickup trips in between Hanover and the Lodge.
 
     This is basically the through model of an M2M relationship.
     """
-    bus = models.ForeignKey(ScheduledTransport)
+    bus = models.ForeignKey(InternalBus)
     order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey(Trip)
     PICKUP = 'PICKUP'

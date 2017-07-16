@@ -54,7 +54,7 @@ from fyt.permissions.views import (
     DatabaseEditPermissionRequired,
     TripInfoEditPermissionRequired,
 )
-from fyt.transport.models import ExternalBus, ScheduledTransport
+from fyt.transport.models import ExternalBus, InternalBus
 from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
 from fyt.utils.views import PopulateMixin
@@ -881,11 +881,11 @@ class Checklists(DatabaseTemplateView):
                 'Section %s Medical Information' % sxn.name,
                 reverse('db:packets:medical', kwargs=kwargs)))
 
-        buses = ScheduledTransport.objects.filter(trips_year=trips_year)
+        buses = InternalBus.objects.filter(trips_year=trips_year)
         for date in set(map(lambda x: x.date, buses)):
             d[date].append((
                 'Internal Bus Directions for %s' % date.strftime('%m/%d'),
-                reverse('db:scheduledtransport:packet_for_date', kwargs={
+                reverse('db:internalbus:packet_for_date', kwargs={
                     'trips_year': trips_year, 'date': date
                 })
             ))

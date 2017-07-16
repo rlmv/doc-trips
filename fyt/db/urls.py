@@ -16,7 +16,7 @@ from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (
     externalbus_urlpatterns,
     route_urlpatterns,
-    scheduledtransport_urlpatterns,
+    internalbus_urlpatterns,
     stop_urlpatterns,
     vehicle_urlpatterns,
     transportconfig_urlpatterns,
@@ -85,7 +85,7 @@ database_urlpatterns = [
     url(r'^transport/external/',
         include(externalbus_urlpatterns, namespace='externalbus')),
     url(r'^transport/internal/',
-        include(scheduledtransport_urlpatterns, namespace='scheduledtransport')),
+        include(internalbus_urlpatterns, namespace='internalbus')),
     url(r'^trippees/',
         include(trippee_urlpatterns, namespace='incomingstudent')),
     url(r'^trips/',

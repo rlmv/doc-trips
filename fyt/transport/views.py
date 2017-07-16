@@ -25,7 +25,7 @@ from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
 from fyt.transport.models import (
     ExternalBus,
     Route,
-    ScheduledTransport,
+    InternalBus,
     Stop,
     StopOrder,
     Vehicle,
@@ -61,7 +61,7 @@ def get_internal_route_matrix(trips_year):
     dates = Section.dates.trip_dates(trips_year)
     matrix = OrderedMatrix(routes, dates)
     scheduled = preload_transported_trips(
-        ScheduledTransport.objects.internal(
+        InternalBus.objects.internal(
             trips_year
         ).select_related(
             'route__vehicle'
@@ -224,7 +224,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
     return matrix
 
 
-class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
+class InternalBusMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
     template_name = 'transport/internal_matrix.html'
 
@@ -246,16 +246,16 @@ class ScheduledTransportMatrix(DatabaseReadPermissionRequired,
         return context
 
 
-class ScheduledTransportCreateView(PopulateMixin, DatabaseCreateView):
-    model = ScheduledTransport
+class InternalBusCreateView(PopulateMixin, DatabaseCreateView):
+    model = InternalBus
     fields = ['route', 'date']
 
     def get_success_url(self):
-        return reverse('db:scheduledtransport:index', kwargs=self.kwargs)
+        return reverse('db:internalbus:index', kwargs=self.kwargs)
 
 
-class ScheduledTransportUpdateView(DatabaseUpdateView):
-    model = ScheduledTransport
+class InternalBusUpdateView(DatabaseUpdateView):
+    model = InternalBus
     fields = ['notes']
     delete_button = False
 
@@ -263,9 +263,9 @@ class ScheduledTransportUpdateView(DatabaseUpdateView):
         return "Add notes to %s" % self.object
 
 
-class ScheduledTransportDeleteView(DatabaseDeleteView):
-    model = ScheduledTransport
-    success_url_pattern = 'db:scheduledtransport:index'
+class InternalBusDeleteView(DatabaseDeleteView):
+    model = InternalBus
+    success_url_pattern = 'db:internalbus:index'
 
 
 class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
@@ -431,7 +431,7 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
         context['pickups'] = Trip.objects.pickups(*args)
         context['returns'] = Trip.objects.returns(*args)
 
-        context['scheduled'] = bus = ScheduledTransport.objects.filter(
+        context['scheduled'] = bus = InternalBus.objects.filter(
             trips_year=self.get_trips_year(),
             date=self.get_date(),
             route=self.get_route()
@@ -476,7 +476,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     @cache_as('_bus')
     def get_bus(self):
         return get_object_or_404(
-            ScheduledTransport, pk=self.kwargs['bus_pk'],
+            InternalBus, pk=self.kwargs['bus_pk'],
             trips_year=self.get_trips_year()
         )
 
@@ -504,7 +504,7 @@ class InternalBusPacket(DatabaseListView):
     """
     Directions and notes for all internal buses.
     """
-    model = ScheduledTransport
+    model = InternalBus
     template_name = 'transport/internal_packet.html'
     context_object_name = 'bus_list'
 
