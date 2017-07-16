@@ -188,6 +188,11 @@ class Route(DatabaseModel):
 
     vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
 
+    display_color = models.CharField(
+        max_length=20,
+        default="white",
+        help_text="The color to use when displaying this route in tables.")
+
     objects = RouteManager()
 
     class Meta:

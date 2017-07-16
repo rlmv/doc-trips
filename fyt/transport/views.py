@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from datetime import datetime
 
 from braces.views import FormValidMessageMixin
@@ -542,15 +542,41 @@ class InternalBusPacket(DatabaseListView):
     context_object_name = 'bus_list'
 
 
+class TripWrapper:
+
+    def __init__(self, trip, route_getter):
+        self.trip = trip
+        self.route = getattr(trip, route_getter)()
+
+    @property
+    def color(self):
+        if self.route:
+            return self.route.display_color
+
+    def detail_url(self):
+        return self.trip.detail_url()
+
+    def __str__(self):
+        return str(self.trip)
+
+
+def wrap_trip(trip, route_getter):
+    """
+    Wrap a Trip, adding `route` and `color` properties.
+    """
+    if trip:
+        return TripWrapper(trip, route_getter)
+
+
 class InternalTransportByDate(DatabaseTemplateView):
     template_name = 'transport/internal_by_date.html'
 
     def extra_context(self):
         d, p, r = trip_transport_matrix(self.get_trips_year())
         return {
-            'dropoff_matrix': d,
-            'pickup_matrix': p,
-            'return_matrix': r,
+            'dropoff_matrix': d.map(lambda t: wrap_trip(t, 'get_dropoff_route')),
+            'pickup_matrix': p.map(lambda t: wrap_trip(t, 'get_pickup_route')),
+            'return_matrix': r.map(lambda t: wrap_trip(t, 'get_return_route'))
         }
 
 

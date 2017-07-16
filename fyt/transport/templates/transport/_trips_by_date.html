@@ -10,14 +10,14 @@
 
   {% for triptemplate, dates in matrix.items %}
   <tr>
-    <td>
-      <span data-toggle="tooltip" data-placement="top" title="{{ triptemplate }}">
+    <td data-toggle="tooltip" data-placement="top" data-container="body" title="{{ triptemplate }}">
         {{ triptemplate|detail_link:triptemplate.name }}
-      </span>
     </td>
 
     {% for date, trip in dates.items %}
-    <td class="text-center" style="background-color:pink"> {{ trip|detail_link|default:"" }} </td>
+    <td class="text-center" style="background-color:{{ trip.color }}" data-toggle="tooltip" data-placement="top" data-container="body" title="Route: {{ trip.route }}">
+        {{ trip|detail_link|default:"" }}
+    </td>
     {% endfor %}
   </tr>
   {% endfor %}
