@@ -37,14 +37,18 @@ make_link = _make_link
 @pass_null
 def edit_link(db_object, text=None):
     """ Insert html link to edit db_object. """
-    return _make_link(db_object.update_url(), text or 'edit')
+    if text is None:
+        text = 'edit'
+    return _make_link(db_object.update_url(), text)
 
 
 @register.filter
 @pass_null
 def delete_link(db_object, text=None):
     """ Insert html link to delete db_object. """
-    return _make_link(db_object.delete_url(), text or 'delete')
+    if text is None:
+        text = 'delete'
+    return _make_link(db_object.delete_url(), text)
 
 
 @register.simple_tag
@@ -61,9 +65,15 @@ def create_url(model, trips_year_str):
 def detail_link(db_obj, text=None):
     """
     Html link to detailed view for object.
+
+    The object can also be an iterable of objects; if so, the tag returns a
+    comma separated list of links.
     """
-    to_link = lambda obj: _make_link(obj.detail_url(), text or str(obj))
-    return mark_safe(', '.join(map(to_link, as_list(db_obj))))
+    def build_link(obj):
+        name = str(obj) if text is None else text
+        return  _make_link(obj.detail_url(), name)
+
+    return mark_safe(', '.join(map(build_link, as_list(db_obj))))
 
 
 # Lifted from googlemaps.convert

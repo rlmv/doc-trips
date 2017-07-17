@@ -41,6 +41,18 @@ class LinkTagTestCase(FytTestCase):
         }))
         self.assertEqual(out, '*')
 
+    def test_detail_link_with_0_as_text(self):
+        trips_year = self.init_trips_year()
+        obj = mommy.make(Section, trips_year=trips_year)
+        out = Template(
+            "{% load links %}"
+            "{{ obj|detail_link:0 }}"
+        ).render(Context({
+            'obj': obj
+        }))
+        target = '<a href="%s">0</a>' % (obj.detail_url())
+        self.assertEqual(out, target)
+
     def test_detail_link_with_unary_iterable(self):
         trips_year = self.init_trips_year()
         # for example
