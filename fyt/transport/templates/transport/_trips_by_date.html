@@ -15,7 +15,8 @@
     </td>
 
     {% for date, trip in dates.items %}
-    <td class="text-center" style="background-color:{{ trip.color }}" data-toggle="tooltip" data-placement="top" data-container="body" title="Route: {{ trip.route }}">
+    <td class="text-center" style="background-color:{{ trip.color }}"
+        {% if trip.route %} data-toggle="tooltip" data-placement="top" data-container="body" title="Route: {{ trip.route }}" {% endif %}>
         {{ trip|detail_link|default:"" }}
     </td>
     {% endfor %}
