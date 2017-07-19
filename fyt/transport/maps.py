@@ -7,8 +7,8 @@ from googlemaps.exceptions import ApiError, TransportError
 Interface with the Google maps API
 """
 
-TIMEOUT = 10  # -> settings
-MAX_WAYPOINTS = 8  # imposed by Google Maps
+TIMEOUT = 10
+MAX_WAYPOINTS = 23  # imposed by Google Maps
 
 
 class MapError(Exception):
@@ -39,6 +39,8 @@ def get_directions(stops):
 
     orig, waypoints, dest = _split_stops(stops)
 
+    # TODO: now that MAX_WAYPOINTS is 23, can we remove this?
+    # Is there ever a route with 23 stops?
     if len(waypoints) > MAX_WAYPOINTS:
         d1 = get_directions(stops[:MAX_WAYPOINTS])
         d2 = get_directions(stops[MAX_WAYPOINTS - 1:])

@@ -1443,8 +1443,8 @@ class MapsTestCases(TransportTestCase):
         self.assertEqual(waypoints, [])
         self.assertEqual(dest, Lodge(self.trips_year).location)
 
-    def test_directions_handles_more_than_eight_waypoints(self):
-        """ Google maps restricts us to 8 waypoints per request """
+    def test_directions_handles_more_than_max_waypoints(self):
+        """ Google maps restricts the number of waypoints per request."""
         stops = [mommy.make(Stop, trips_year=self.trips_year, lat_lng=coord)
                  for coord in (
                          '43.705639,-72.297404',
@@ -1457,7 +1457,22 @@ class MapsTestCases(TransportTestCase):
                          '44.875039,-71.05471',
                          '43.736252,-72.2519',
                          '43.788074,-72.099655',
-                         '44.227489,-71.477737')]
+                         '44.227489,-71.477737',
+                         '43.705639,-72.297404',
+                         '43.680288,-72.527876',
+                         '43.779934,-72.042908',
+                         '43.753303,-72.124643',
+                         '43.703049,-72.289567',
+                         '43.705639,-72.297404',
+                         '44.831956,-71.075664',
+                         '44.875039,-71.05471',
+                         '43.736252,-72.2519',
+                         '43.788074,-72.099655',
+                         '44.227489,-71.477737',
+                         '43.705639,-72.297404',
+                         '44.831956,-71.075664',
+                         '43.753303,-72.124643',
+                         '43.703049,-72.289567')]
         directions = maps.get_directions(stops)
         self.assertEqual(len(stops), len(directions['legs']) + 1)
         for i, leg in enumerate(directions['legs']):
