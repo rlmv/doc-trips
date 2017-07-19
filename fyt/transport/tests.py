@@ -60,9 +60,9 @@ class TransportTestCase(FytTestCase):
 class StopModelTestCase(FytTestCase):
 
     def test_stop_is_protected_on_route_fk_deletion(self):
-        trips_year = self.trips_year()
-        route = mommy.make(Route, trips_year=trips_year)
-        stop = mommy.make(Stop, route=route, trips_year=trips_year)
+        self.init_trips_year()
+        route = mommy.make(Route, trips_year=self.trips_year)
+        stop = mommy.make(Stop, route=route, trips_year=self.trips_year)
         with self.assertRaises(ProtectedError):
             route.delete()
 
