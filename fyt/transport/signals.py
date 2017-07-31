@@ -27,32 +27,26 @@ def create_pickup(bus, trip):
 
 
 @receiver(post_save, sender=Trip)
-def add_new_trip_to_ordering(instance, created, **kwargs):
-    if created:
-        dropoff_bus = instance.get_dropoff_bus()
-        if dropoff_bus:
-            create_dropoff(dropoff_bus, instance)
+def update_ordering_for_trip_changes(instance, created, **kwargs):
+    """
+    Stop orderings need to be updated when a Trip is created or the dropoff
+    and return routes of the Trip are changed.
+    """
+    if created or instance.tracker.has_changed('dropoff_route'):
+        # Delete existing orderings (does nothing when created)
+        instance.stoporder_set.filter(stop_type=StopOrder.DROPOFF).delete()
 
-        pickup_bus = instance.get_pickup_bus()
-        if pickup_bus:
-            create_pickup(pickup_bus, instance)
+        new_bus = instance.get_dropoff_bus()
+        if new_bus:
+            create_dropoff(new_bus, instance)
 
-    else:
-        if instance.tracker.has_changed('dropoff_route'):
-            # Delete any existing orderings
-            instance.stoporder_set.filter(stop_type=StopOrder.DROPOFF).delete()
+    if created or instance.tracker.has_changed('pickup_route'):
+        # Delete existing (NoOp when created)
+        instance.stoporder_set.filter(stop_type=StopOrder.PICKUP).delete()
 
-            new_bus = instance.get_dropoff_bus()
-            if new_bus:
-                create_dropoff(new_bus, instance)
-
-        if instance.tracker.has_changed('pickup_route'):
-            # Delete existing
-            instance.stoporder_set.filter(stop_type=StopOrder.PICKUP).delete()
-
-            new_bus = instance.get_pickup_bus()
-            if new_bus:
-                create_pickup(new_bus, instance)
+        new_bus = instance.get_pickup_bus()
+        if new_bus:
+            create_pickup(new_bus, instance)
 
 
 # @receiver(post_save, sender=TripTemplate)
