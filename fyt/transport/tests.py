@@ -1232,6 +1232,34 @@ class InternalTransportModelTestCase(TransportTestCase):
         self.assertEqual(bus.get_stops(), [Hanover(self.trips_year)])
         self.assertQsEqual(StopOrder.objects.all(), [])
 
+    # Refactoring tests
+    # ------------------
+
+    def test_creating_bus_generates_ordering(self):
+        bus_date = date(2015, 1, 1)
+        route = mommy.make(Route, trips_year=self.trips_year)
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=route,
+            section__leaders_arrive=bus_date - timedelta(days=2))
+
+        bus = InternalBus.objects.create(
+            trips_year=self.trips_year,
+            route=route,
+            date=bus_date)
+
+        ordering = StopOrder.objects.all()
+        self.assertEqual(len(ordering), 1)
+        self.assertEqual(ordering[0].bus, bus)
+        self.assertEqual(ordering[0].trip, trip)
+        self.assertEqual(ordering[0].stop_type, StopOrder.DROPOFF)
+
+        bus.delete()
+
+        ordering = StopOrder.objects.all()
+        self.assertEqual(len(ordering), 0)
+
 
 class StopOrderingTestCase(FytTestCase):
 

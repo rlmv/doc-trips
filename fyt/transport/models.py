@@ -425,6 +425,11 @@ class InternalBus(DatabaseModel):
             stop.passenger_count = load
         return get_directions(stops)
 
+    def save(self, **kwargs):
+        r = super().save(**kwargs)
+        self.update_stop_ordering()
+        return r
+
     def update_url(self):
         return reverse('db:internalbus:update', kwargs=self.obj_kwargs())
 
@@ -448,9 +453,14 @@ class StopOrder(DatabaseModel):
     One such object exists for each stop that the bus makes to dropoff
     and pickup trips in between Hanover and the Lodge.
 
-    This is basically the through model of an M2M relationship.
+    The stop ordering of a bus is updated when:
+
+      * the bus is created (all orderings are created)
+      * the bus is deleted (all orderings are deleted)
+
+    This is essentially the through model of an M2M relationship.
     """
-    bus = models.ForeignKey(InternalBus)
+    bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey(Trip)
     PICKUP = 'PICKUP'
