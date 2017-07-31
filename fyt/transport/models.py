@@ -388,6 +388,17 @@ class InternalBus(DatabaseModel):
         # return a fresh qs in case stoporders are prefetched
         return StopOrder.objects.filter(bus=self)
 
+    def get_stop_ordering(self):
+        """
+        Get the StopOrder objects for this bus.
+
+        For now, this returns a fresh QuerySet in case the orderings are
+        prefetched.
+
+        TODO: use `stoporder_set.all()`
+        """
+        return StopOrder.objects.filter(bus=self)
+
     def over_capacity(self):
         """
         Returns True if the bus will be too full at
