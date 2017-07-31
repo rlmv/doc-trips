@@ -1250,15 +1250,15 @@ class InternalTransportModelTestCase(TransportTestCase):
             date=bus_date)
 
         ordering = StopOrder.objects.all()
-        self.assertEqual(len(ordering), 1)
-        self.assertEqual(ordering[0].bus, bus)
-        self.assertEqual(ordering[0].trip, trip)
-        self.assertEqual(ordering[0].stop_type, StopOrder.DROPOFF)
+        self.assertQsContains(ordering, [
+            {'bus': bus,
+             'trip': trip,
+             'stop_type': StopOrder.DROPOFF}])
 
         bus.delete()
 
         ordering = StopOrder.objects.all()
-        self.assertEqual(len(ordering), 0)
+        self.assertQsEqual(ordering, [])
 
 
 class StopOrderingTestCase(FytTestCase):

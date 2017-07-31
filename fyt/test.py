@@ -1,3 +1,4 @@
+import itertools
 import logging
 
 from django.conf import settings
@@ -138,3 +139,25 @@ class FytTestCase(WebTest):
         """
         return self.assertQuerysetEqual(qs, values, transform=transform,
                                         ordered=ordered, msg=msg)
+
+    def assertQsContains(self, qs, values, msg=None):
+        """
+        Compare a queryset to a list of dictionaries.
+
+        The queryset and the list are considered equal if each object in the
+        queryset contains all the values in the corresponding dict.
+
+        The queryset is always considered to by ordered.
+        """
+        transformed = []
+
+        for qs_obj, values_dict in itertools.zip_longest(qs, values):
+            if values_dict is None:
+                new = qs_obj
+            elif qs_obj is None:
+                break
+            else:
+                new = {key: getattr(qs_obj, key) for key in values_dict}
+            transformed.append(new)
+
+        return self.assertEqual(transformed, values)
