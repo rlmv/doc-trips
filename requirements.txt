@@ -9,6 +9,7 @@ django-crispy-forms==1.6.0
 django-extensions==1.7.8
 django-debug-toolbar==1.7
 django-filter==1.0.2
+django-model-utils==3.0.0
 django-pipeline==1.6.9
 django-storages==1.5.1
 django-tables2==1.6.0

@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
+from model_utils import FieldTracker
 
 from .managers import (
     CampsiteManager,
@@ -34,6 +35,8 @@ NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
 class Trip(DatabaseModel):
 
     objects = TripManager()
+
+    tracker = FieldTracker(fields=['dropoff_route', 'pickup_route'])
 
     template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
     section = models.ForeignKey(
@@ -99,6 +102,28 @@ class Trip(DatabaseModel):
         Override pickup time
         """
         return self.pickup_time or self.template.pickup_stop.pickup_time
+
+    def get_dropoff_bus(self):
+        """
+        Return the bus that is dropping off this Trip, or None if the bus is
+        not scheduled.
+        """
+        from fyt.transport.models import InternalBus
+        return InternalBus.objects.filter(
+            route=self.get_dropoff_route(),
+            date=self.dropoff_date
+        ).first()
+
+    def get_pickup_bus(self):
+        """
+        Return the bus that is picking up this Trip, or None if the bus is not
+        scheduled.
+        """
+        from fyt.transport.models import InternalBus
+        return InternalBus.objects.filter(
+            route=self.get_pickup_route(),
+            date=self.pickup_date
+        ).first()
 
     @cache_as('_size')
     def size(self):

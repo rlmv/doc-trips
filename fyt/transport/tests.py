@@ -1239,6 +1239,7 @@ class RefactorTestCase(TransportTestCase):
     def setUp(self):
         self.init_trips_year()
         self.init_transport_config()
+        self.maxDiff = None
 
     def test_creating_bus_generates_ordering(self):
         bus_date = date(2015, 1, 1)
@@ -1309,6 +1310,137 @@ class RefactorTestCase(TransportTestCase):
         trip2.delete()
 
         self.assertQsEqual(bus.get_stop_ordering(), [])
+
+    def test_changing_trip_route_changes_ordering(self):
+        bus1 = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date(2015, 1, 1),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        bus2 = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date(2015, 1, 1),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=bus1.route,
+            template__dropoff_stop__distance=1,
+            section__leaders_arrive=bus1.date - timedelta(days=2))
+
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop__route=bus1.route,
+            template__pickup_stop__distance=7,
+            section__leaders_arrive=bus1.date - timedelta(days=4))
+
+        # Move trip1 to a different route
+        trip1.dropoff_route = bus2.route
+        trip1.save()
+
+        self.assertQsContains(bus1.get_stop_ordering(), [
+            {'bus': bus1,
+             'trip': trip2,
+             'stop_type': StopOrder.PICKUP}])
+        self.assertQsContains(bus2.get_stop_ordering(), [
+            {'bus': bus2,
+             'trip': trip1,
+             'stop_type': StopOrder.DROPOFF,
+             'order': 1}])
+
+        # Then move trip2
+        trip2.pickup_route = bus2.route
+        trip2.save()
+
+        self.assertQsContains(bus1.get_stop_ordering(), [])
+        self.assertQsContains(bus2.get_stop_ordering(), [
+            {'bus': bus2,
+             'trip': trip1,
+             'stop_type': StopOrder.DROPOFF},
+            {'bus': bus2,
+             'trip': trip2,
+             'stop_type': StopOrder.PICKUP}])
+
+        # Move both trips to an unscheduled route
+        trip1.dropoff_route = mommy.make(Route, trips_year=self.trips_year)
+        trip1.save()
+        trip2.pickup_route = mommy.make(Route, trips_year=self.trips_year)
+        trip2.save()
+
+        self.assertQsEqual(bus1.get_stop_ordering(), [])
+        self.assertQsEqual(bus2.get_stop_ordering(), [])
+
+        # Now, move the trips back to a scheduled bus
+        trip1.dropoff_route = bus1.route
+        trip1.save()
+        trip2.pickup_route = bus1.route
+        trip2.save()
+
+        self.assertQsContains(bus1.get_stop_ordering(), [
+            {'bus': bus1,
+             'trip': trip1,
+             'stop_type': StopOrder.DROPOFF},
+            {'bus': bus1,
+             'trip': trip2,
+             'stop_type': StopOrder.PICKUP}])
+        self.assertQsEqual(bus2.get_stop_ordering(), [])
+
+
+    def test_changing_template_stops_changes_ordering(self):
+        bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date(2015, 1, 1),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=2))
+
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop__route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=4))
+
+        new_stop1 = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=bus.route,
+            distance=2)
+
+        new_stop2 = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=bus.route,
+            distance=1)
+
+        trip1.template.dropoff_stop = new_stop1
+        trip1.template.save()
+
+        trip2.template.pickup_stop = new_stop2
+        trip2.template.save()
+
+        # self.assertQsContains(bus.get_stop_ordering(), [
+        #     {'bus': bus,
+        #      'trip': trip2,
+        #      'stop': new_stop2,
+        #      'stop_type': StopOrder.PICKUP,
+        #      'order': 1},
+        #     {'bus': bus,
+        #      'trip': trip1,
+        #      'stop': new_stop1,
+        #      'stop_type': StopOrder.DROPOFF,
+        #      'order': 2}])
 
 
 class StopOrderingTestCase(FytTestCase):
