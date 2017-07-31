@@ -84,13 +84,13 @@ def update_ordering_for_stop_changes(instance, created, **kwargs):
             resolve_pickup(trip)
 
 
-# @receiver(post_save, sender=TripTemplate)
-# def update_ordering_for_changed_triptemplate_stops(instance, **kwargs):
+@receiver(post_save, sender=TripTemplate)
+def update_ordering_for_triptemplate_stop_changes(instance, created, **kwargs):
 
-#     # TODO: for efficiency, check if the stop actually changed:
-#     # if template.dropoff_stop.changed() or template.pickup_stop.changed():
-#     affected_buses = InternalBus.objects.filter(
-#         stoporder__trip__template=instance)
+    if not created and instance.tracker.has_changed('dropoff_stop'):
+        for trip in Trip.objects.filter(template=instance):
+            resolve_dropoff(trip)
 
-#     for bus in affected_buses:
-#         bus.update_stop_ordering()
+    if not created and instance.tracker.has_changed('pickup_stop'):
+        for trip in Trip.objects.filter(template=instance):
+            resolve_pickup(trip)

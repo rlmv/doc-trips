@@ -1448,6 +1448,73 @@ class RefactorTestCase(TransportTestCase):
              'trip': trip,
              'stop_type': StopOrder.PICKUP}])
 
+    def test_changing_template_stop_updates_ordering(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            template__pickup_stop__route=pickup_bus.route,
+            section__leaders_arrive=date_leaders_arrive)
+
+        self.assertQsContains(dropoff_bus.get_stop_ordering(), [
+            {'bus': dropoff_bus,
+             'trip': trip,
+             'stop_type': StopOrder.DROPOFF}])
+        self.assertQsContains(pickup_bus.get_stop_ordering(), [
+            {'bus': pickup_bus,
+             'trip': trip,
+             'stop_type': StopOrder.PICKUP}])
+
+        # Switch to a new stop on same route
+        new_dropoff_stop = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=dropoff_bus.route)
+        trip.template.dropoff_stop = new_dropoff_stop
+        trip.template.save()
+
+        new_pickup_stop = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=pickup_bus.route)
+        trip.template.pickup_stop = new_pickup_stop
+        trip.template.save()
+
+        self.assertQsContains(dropoff_bus.get_stop_ordering(), [
+            {'bus': dropoff_bus,
+             'trip': trip,
+             'stop': new_dropoff_stop,
+             'stop_type': StopOrder.DROPOFF}])
+        self.assertQsContains(pickup_bus.get_stop_ordering(), [
+            {'bus': pickup_bus,
+             'trip': trip,
+             'stop': new_pickup_stop,
+             'stop_type': StopOrder.PICKUP}])
+
+        # On a different route
+        trip.template.dropoff_stop = mommy.make(Stop)
+        trip.template.pickup_stop = mommy.make(Stop)
+        trip.template.save()
+
+        self.assertQsContains(dropoff_bus.get_stop_ordering(), [])
+        self.assertQsContains(pickup_bus.get_stop_ordering(), [])
+
 
 class StopOrderingTestCase(FytTestCase):
 

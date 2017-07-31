@@ -302,6 +302,7 @@ def validate_triptemplate_name(value):
 
 
 class TripTemplate(DatabaseModel):
+    tracker = FieldTracker(fields=['dropoff_stop', 'pickup_stop'])
 
     name = models.PositiveSmallIntegerField(
         db_index=True, validators=[validate_triptemplate_name]
