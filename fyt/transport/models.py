@@ -436,11 +436,6 @@ class InternalBus(DatabaseModel):
             stop.passenger_count = load
         return get_directions(stops)
 
-    def save(self, **kwargs):
-        r = super().save(**kwargs)
-        self.update_stop_ordering()
-        return r
-
     def update_url(self):
         return reverse('db:internalbus:update', kwargs=self.obj_kwargs())
 

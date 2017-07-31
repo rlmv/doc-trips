@@ -1232,8 +1232,13 @@ class InternalTransportModelTestCase(TransportTestCase):
         self.assertEqual(bus.get_stops(), [Hanover(self.trips_year)])
         self.assertQsEqual(StopOrder.objects.all(), [])
 
-    # Refactoring tests
-    # ------------------
+
+# TODO: move back to ^^
+class RefactorTestCase(TransportTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.init_transport_config()
 
     def test_creating_bus_generates_ordering(self):
         bus_date = date(2015, 1, 1)
