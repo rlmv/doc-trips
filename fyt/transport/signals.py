@@ -5,11 +5,6 @@ from fyt.transport.models import InternalBus, StopOrder, Stop
 from fyt.trips.models import Trip, TripTemplate
 
 
-@receiver(post_save, sender=InternalBus)
-def update_ordering_for_bus(instance, **kwargs):
-    instance.update_stop_ordering()
-
-
 def create_dropoff(bus, trip):
     return StopOrder.objects.create(
         trips_year=bus.trips_year,
@@ -42,6 +37,19 @@ def resolve_pickup(trip):
     new_bus = trip.get_pickup_bus()
     if new_bus:
         create_pickup(new_bus, trip)
+
+
+@receiver(post_save, sender=InternalBus)
+def create_ordering_for_new_bus(instance, created, **kwargs):
+    """
+    Generate ordering for a new bus.
+    """
+    if created:
+        for trip in instance.dropping_off():
+            create_dropoff(instance, trip)
+
+        for trip in instance.picking_up():
+            create_pickup(instance, trip)
 
 
 @receiver(post_save, sender=Trip)
@@ -86,7 +94,9 @@ def update_ordering_for_stop_changes(instance, created, **kwargs):
 
 @receiver(post_save, sender=TripTemplate)
 def update_ordering_for_triptemplate_stop_changes(instance, created, **kwargs):
-
+    """
+    Orderings are changed when the stops of a TripTemplate change.
+    """
     if not created and instance.tracker.has_changed('dropoff_stop'):
         for trip in Trip.objects.filter(template=instance):
             resolve_dropoff(trip)
