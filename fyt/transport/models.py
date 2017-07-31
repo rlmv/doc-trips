@@ -463,12 +463,16 @@ class StopOrder(DatabaseModel):
 
       * the bus is created (all orderings are created)
       * the bus is deleted (all orderings are deleted)
+      * a Trip on the bus is created
+      * a Trip on the bus is deleted
+
+    See `fyt.transport.signals` for the implementation of this logic.
 
     This is essentially the through model of an M2M relationship.
     """
     bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
-    trip = models.ForeignKey(Trip)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(

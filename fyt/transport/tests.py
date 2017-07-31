@@ -1263,6 +1263,53 @@ class RefactorTestCase(TransportTestCase):
 
         self.assertQsEqual(bus.get_stop_ordering(), [])
 
+    def test_scheduling_trip_adds_to_ordering(self):
+        bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date = date(2015, 1, 1),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        stop1 = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=bus.route,
+            distance=1)
+
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop=stop1,
+            section__leaders_arrive=bus.date - timedelta(days=2))
+
+        stop2 = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            route=bus.route,
+            distance=2)
+
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop=stop2,
+            section__leaders_arrive=bus.date - timedelta(days=4))
+
+        self.assertQsContains(bus.get_stop_ordering(), [
+            {'bus': bus,
+             'trip': trip1,
+             'stop_type': StopOrder.DROPOFF,
+             'order': 1},
+            {'bus': bus,
+             'trip': trip2,
+             'stop_type': StopOrder.PICKUP,
+             'order': 2}])
+
+        trip1.delete()
+        trip2.delete()
+
+        self.assertQsEqual(bus.get_stop_ordering(), [])
+
 
 class StopOrderingTestCase(FytTestCase):
 
