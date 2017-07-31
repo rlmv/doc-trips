@@ -3,6 +3,7 @@ from collections import defaultdict
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
+from model_utils import FieldTracker
 
 from fyt.db.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
@@ -77,6 +78,7 @@ class Stop(DatabaseModel):
         ordering = ['name']
 
     objects = StopManager()
+    tracker = FieldTracker(fields=['route'])
 
     name = models.CharField(max_length=255)
     address = models.CharField(
