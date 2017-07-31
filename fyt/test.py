@@ -1,5 +1,6 @@
 import itertools
 import logging
+import string
 
 from django.conf import settings
 from django_webtest import WebTest
@@ -20,8 +21,15 @@ from fyt.users.models import DartmouthUser
 def gen_class_year():
     return 2016
 
+
+def gen_short_string(max_length):
+    return random_gen.gen_string(min(max_length, 10))
+gen_short_string.required = ['max_length']
+
+
 mommy.generators.add('fyt.applications.models.ClassYearField', gen_class_year)
 mommy.generators.add('fyt.users.models.NetIdField', random_gen.gen_string)
+mommy.generators.add('django.db.models.CharField', gen_short_string)
 
 
 class FytTestCase(WebTest):

@@ -18,13 +18,15 @@ django-vanilla-views==1.0.3
 django-webtest==1.9.1
 importanize==0.4.1
 mammoth==0.3.11
-model-mommy==1.3.2
 raven==6.1.0
 requests==2.6.0
 sphinx==1.3.1
 tblib==1.3.0
 webtest==2.0.27
 whitenoise==3.3.0
+
+# Waiting for next release > 1.3.2
+-e git://github.com/vandersonmota/model_mommy.git#egg=model_mommy
 
 -e git://github.com/rlmv/django-bootstrap3-datetimepicker.git#egg=django_bootstrap3_datetimepicker-origin
 
