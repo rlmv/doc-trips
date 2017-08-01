@@ -203,7 +203,7 @@ def _rider_matrix(trips_year, size_key):
     Size key computes the number of riders on a transport leg
     """
 
-    routes = Route.objects.internal(trips_year)
+    routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     trips = (
         Trip.objects.with_counts(trips_year)
