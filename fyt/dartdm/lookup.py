@@ -1,5 +1,5 @@
-
 import logging
+from json import JSONDecodeError
 
 import requests
 
@@ -54,12 +54,19 @@ def lookup_email(netid):
     params = {'lookup': netid, 'fields': ['email', 'netid']}
     r = requests.get(DNDPROFILES_URL, params=params)
 
-    # netid not found
-    if not r.json():
+    try:
+        r_json = r.json()
+    except JSONDecodeError:
+        msg = 'Email lookup failed: invalid JSON'
+        logger.info(msg)
+        raise EmailLookupException(msg)
+
+    # Not found
+    if not r_json:
         msg = 'Email lookup failed: NetId %s not found' % netid
         logger.info(msg)
         raise EmailLookupException(msg)
 
-    assert r.json()['netid'] == netid
+    assert r_json['netid'] == netid
 
-    return r.json()['email']
+    return r_json['email']
