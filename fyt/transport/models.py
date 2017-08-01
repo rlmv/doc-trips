@@ -272,6 +272,38 @@ class InternalBus(DatabaseModel):
         """
         return Trip.objects.returns(self.route, self.date, self.trips_year_id)
 
+    @property
+    def trip_cache(self):
+        """
+        A cache of Trips with preloaded size attributes.
+        """
+        if hasattr(self, '_trip_cache'):
+            return self._trip_cache
+
+        return InternalBus.TripCache(None, self.dropping_off(), self.picking_up(),
+                         self.returning())
+
+    class TripCache:
+        """
+        Cache for various preloaded bus properties.
+        """
+        def __init__(self, trips, dropoffs, pickups, returns):
+            self.trip_dict = None if trips is None else {t: t for t in trips}
+            self.dropoffs = dropoffs
+            self.pickups = pickups
+            self.returns = returns
+
+        def get(self, value):
+            if self.trip_dict is None:
+                return value
+            return self.trip_dict[value]
+
+    def load_trip_cache(self, all_trips, dropoffs, pickups, returns):
+        """
+        Load the trip cache.
+        """
+        self._trip_cache = InternalBus.TripCache(all_trips, dropoffs, pickups, returns)
+
     @cache_as('_get_stops')
     def get_stops(self):
         """
@@ -287,25 +319,22 @@ class InternalBus(DatabaseModel):
         DROPOFF_ATTR = 'trips_dropped_off'
         PICKUP_ATTR = 'trips_picked_up'
 
-        # HACK HACK. These dicts let us attach trips which have preloaded
-        # attributes (such as size) to stops. This is basically so that
-        # the capacity matrix is efficient. Hopefully there is a better
-        # way to do this...
-        # _dropping_off_map = {trip: trip for trip in self.dropping_off()}
-        # _picking_up_map = {trip: trip for trip in self.picking_up()}
-
         def set_trip_attr(stop, order):
             for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
                 if not hasattr(stop, attr):
                     setattr(stop, attr, [])
 
             if order.stop_type == StopOrder.DROPOFF:
-                getattr(stop, DROPOFF_ATTR).append(order.trip)
+                getattr(stop, DROPOFF_ATTR).append(self.trip_cache.get(order.trip))
 
             if order.stop_type == StopOrder.PICKUP:
-                getattr(stop, PICKUP_ATTR).append(order.trip)
+                getattr(stop, PICKUP_ATTR).append(self.trip_cache.get(order.trip))
 
             return stop
+
+        picking_up = self.trip_cache.pickups
+        dropping_off = self.trip_cache.dropoffs
+        returning = self.trip_cache.returns
 
         stops = []
         for order in self.get_stop_ordering():
@@ -316,22 +345,22 @@ class InternalBus(DatabaseModel):
 
         # all buses start from Hanover
         hanover = Hanover(self.trips_year)
-        setattr(hanover, PICKUP_ATTR, list(self.dropping_off()))
+        setattr(hanover, PICKUP_ATTR, list(dropping_off))
         setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
-        if self.picking_up() or self.returning():
+        if picking_up or returning:
             # otherwise we can bypass the lodge
             lodge = Lodge(self.trips_year)
-            setattr(lodge, DROPOFF_ATTR, list(self.picking_up()))
-            setattr(lodge, PICKUP_ATTR, list(self.returning()))
+            setattr(lodge, DROPOFF_ATTR, list(picking_up))
+            setattr(lodge, PICKUP_ATTR, list(returning))
             stops.append(lodge)
 
-        if self.returning():
+        if returning:
             # Take trips back to Hanover.
             # Load attributes onto a fresh Stop object.
             hanover = Hanover(self.trips_year)
-            setattr(hanover, DROPOFF_ATTR, list(self.returning()))
+            setattr(hanover, DROPOFF_ATTR, list(returning))
             setattr(hanover, PICKUP_ATTR, [])
             stops.append(hanover)
 

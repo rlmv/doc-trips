@@ -284,8 +284,6 @@ class InternalBusMatrixTestCase(FytTestCase):
         matrix = get_internal_route_matrix(self.trips_year)
         self.assertEqual(target, matrix)
 
-    # TODO: fix
-    @unittest.expectedFailure
     def test_preload_trips(self):
         route = mommy.make(Route, trips_year=self.trips_year)
         trip = mommy.make(
