@@ -1033,17 +1033,23 @@ class InternalTransportModelTestCase(TransportTestCase):
         stop = mommy.make(Stop, trips_year=self.trips_year, route=bus.route)
 
         trip1 = mommy.make(  # dropping off
-            Trip, trips_year=self.trips_year, template__dropoff_stop=stop,
-            section__leaders_arrive=bus.date - timedelta(days=2)
-        )
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop=stop,
+            section__leaders_arrive=bus.date - timedelta(days=2))
+
         trip2 = mommy.make(  # picking up
-            Trip, trips_year=self.trips_year, template__pickup_stop=stop,
-            section__leaders_arrive=bus.date - timedelta(days=4)
-        )
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop=stop,
+            section__leaders_arrive=bus.date - timedelta(days=4))
+
         trip3 = mommy.make(  # returning
-            Trip, trips_year=self.trips_year, template__return_route=bus.route,
-            section__leaders_arrive=bus.date - timedelta(days=5)
-        )
+            Trip,
+            trips_year=self.trips_year,
+            template__return_route=bus.route,
+            section__leaders_arrive=bus.date - timedelta(days=5))
+
         # should compress the two StopOrders to a single stop
         (hanover, stop, lodge, hanover_again) = bus.get_stops()
         #  should set these fields:
