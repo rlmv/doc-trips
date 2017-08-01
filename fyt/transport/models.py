@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import copy
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -280,29 +281,53 @@ class InternalBus(DatabaseModel):
         if hasattr(self, '_trip_cache'):
             return self._trip_cache
 
-        return InternalBus.TripCache(None, self.dropping_off(), self.picking_up(),
-                         self.returning())
+        return InternalBus.TripCache(
+            None,
+            self.dropping_off(),
+            self.picking_up(),
+            self.returning(),
+            Hanover(self.trips_year),
+            Lodge(self.trips_year))
 
     class TripCache:
         """
         Cache for various preloaded bus properties.
         """
-        def __init__(self, trips, dropoffs, pickups, returns):
+        def __init__(self, trips, dropoffs, pickups, returns, hanover, lodge):
             self.trip_dict = None if trips is None else {t: t for t in trips}
             self.dropoffs = dropoffs
             self.pickups = pickups
             self.returns = returns
+            self._hanover = hanover
+            self._lodge = lodge
+
+        # Return copies so that each instance can have different pickup/dropoff
+        # attributes
+
+        @property
+        def hanover(self):
+            return copy(self._hanover)
+
+        @property
+        def lodge(self):
+            return copy(self._lodge)
 
         def get(self, value):
             if self.trip_dict is None:
                 return value
             return self.trip_dict[value]
 
-    def load_trip_cache(self, all_trips, dropoffs, pickups, returns):
+    def load_trip_cache(self, all_trips, dropoffs, pickups, returns, hanover, lodge):
         """
         Load the trip cache.
         """
-        self._trip_cache = InternalBus.TripCache(all_trips, dropoffs, pickups, returns)
+        self._trip_cache = InternalBus.TripCache(
+            all_trips,
+            dropoffs,
+            pickups,
+            returns,
+            hanover,
+            lodge)
 
     @cache_as('_get_stops')
     def get_stops(self):
@@ -337,21 +362,21 @@ class InternalBus(DatabaseModel):
         returning = self.trip_cache.returns
 
         stops = []
-        for order in self.get_stop_ordering():
+        for order in self.stoporder_set.all():
             if len(stops) == 0 or stops[-1] != order.stop:  # new stop
                 stops.append(set_trip_attr(order.stop, order))
             else:  # another trip for the same stop
                 set_trip_attr(stops[-1], order)
 
         # all buses start from Hanover
-        hanover = Hanover(self.trips_year)
+        hanover = self.trip_cache.hanover
         setattr(hanover, PICKUP_ATTR, list(dropping_off))
         setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
         if picking_up or returning:
             # otherwise we can bypass the lodge
-            lodge = Lodge(self.trips_year)
+            lodge = self.trip_cache.lodge
             setattr(lodge, DROPOFF_ATTR, list(picking_up))
             setattr(lodge, PICKUP_ATTR, list(returning))
             stops.append(lodge)
@@ -359,7 +384,7 @@ class InternalBus(DatabaseModel):
         if returning:
             # Take trips back to Hanover.
             # Load attributes onto a fresh Stop object.
-            hanover = Hanover(self.trips_year)
+            hanover = self.trip_cache.hanover
             setattr(hanover, DROPOFF_ATTR, list(returning))
             setattr(hanover, PICKUP_ATTR, [])
             stops.append(hanover)

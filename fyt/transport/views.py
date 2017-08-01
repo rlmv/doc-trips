@@ -30,6 +30,8 @@ from fyt.transport.models import (
     StopOrder,
     Vehicle,
     TransportConfig,
+    Hanover,
+    Lodge
 )
 from fyt.trips.models import Section, Trip, TripTemplate
 from fyt.utils.cache import cache_as, preload
@@ -99,12 +101,17 @@ def preload_transported_trips(buses, trips_year):
         pickups[trip.get_pickup_route()][trip.pickup_date].append(trip)
         returns[trip.get_return_route()][trip.return_date].append(trip)
 
+    hanover = Hanover(trips_year)
+    lodge = Lodge(trips_year)
+
     for bus in buses:
         bus.load_trip_cache(
             trips,
             dropoffs[bus.route][bus.date],
             pickups[bus.route][bus.date],
-            returns[bus.route][bus.date])
+            returns[bus.route][bus.date],
+            hanover,
+            lodge)
 
 
 def trip_transport_matrix(trips_year):
