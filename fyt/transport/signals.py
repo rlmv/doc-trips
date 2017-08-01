@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from fyt.transport.models import InternalBus, StopOrder, Stop
 from fyt.trips.models import Trip, TripTemplate
 
+# TODO: update ordering for Section.date changes
+# Ensure Trip.section and Trip.template cannot change
 
 def create_dropoff(bus, trip):
     return StopOrder.objects.create(
