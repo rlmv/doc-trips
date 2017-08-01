@@ -245,7 +245,7 @@ class InternalBus(DatabaseModel):
     PICKUP_CACHE_NAME = '_picking_up'
     RETURN_CACHE_NAME = '_returning'
 
-    @cache_as(DROPOFF_CACHE_NAME)
+    #@cache_as(DROPOFF_CACHE_NAME)
     def dropping_off(self):
         """
         All trips which this transport drops off (on the trip's day 2)
@@ -255,7 +255,7 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__dropoff_stop')
 
-    @cache_as(PICKUP_CACHE_NAME)
+    #@cache_as(PICKUP_CACHE_NAME)
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
@@ -265,7 +265,7 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__pickup_stop')
 
-    @cache_as(RETURN_CACHE_NAME)
+    #@cache_as(RETURN_CACHE_NAME)
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
@@ -291,8 +291,8 @@ class InternalBus(DatabaseModel):
         # attributes (such as size) to stops. This is basically so that
         # the capacity matrix is efficient. Hopefully there is a better
         # way to do this...
-        _dropping_off_map = {trip: trip for trip in self.dropping_off()}
-        _picking_up_map = {trip: trip for trip in self.picking_up()}
+        # _dropping_off_map = {trip: trip for trip in self.dropping_off()}
+        # _picking_up_map = {trip: trip for trip in self.picking_up()}
 
         def set_trip_attr(stop, order):
             for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
@@ -300,15 +300,15 @@ class InternalBus(DatabaseModel):
                     setattr(stop, attr, [])
 
             if order.stop_type == StopOrder.DROPOFF:
-                getattr(stop, DROPOFF_ATTR).append(_dropping_off_map[order.trip])
+                getattr(stop, DROPOFF_ATTR).append(order.trip)
 
             if order.stop_type == StopOrder.PICKUP:
-                getattr(stop, PICKUP_ATTR).append(_picking_up_map[order.trip])
+                getattr(stop, PICKUP_ATTR).append(order.trip)
 
             return stop
 
         stops = []
-        for order in self.update_stop_ordering():
+        for order in self.get_stop_ordering():
             if len(stops) == 0 or stops[-1] != order.stop:  # new stop
                 stops.append(set_trip_attr(order.stop, order))
             else:  # another trip for the same stop
