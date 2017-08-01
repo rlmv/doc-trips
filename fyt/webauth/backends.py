@@ -20,6 +20,11 @@ def parse_cas_success(tree):
 
     name = findtext('name')
     netid = findtext('netid')
+
+    # Invalid response
+    if not name or not netid:
+        return
+
     # CAS response does not contain email
     user, created = DartmouthUser.objects.get_or_create_by_netid(netid, name)
 
