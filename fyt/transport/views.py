@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from vanilla.views import FormView, TemplateView
+from raven.contrib.django.raven_compat.models import client as sentry
 
 from fyt.db.views import (
     DatabaseCreateView,
@@ -478,6 +479,13 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
         if bus:
             context['stops'] = bus.get_stops()
             context['over_capacity'] = bus.over_capacity()
+
+            # TODO: remove this?
+            # Sanity check that bus routes still look good
+            try:
+                bus.validate_stop_ordering()
+            except ValidationError:
+                sentry.capture_exception()
 
         return context
 

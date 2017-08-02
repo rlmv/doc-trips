@@ -444,6 +444,36 @@ class InternalBus(DatabaseModel):
         # return a fresh qs in case stoporders are prefetched
         return StopOrder.objects.filter(bus=self)
 
+    def validate_stop_ordering(self):
+        """
+        Sanity check the stop orderings for this bus are correct.
+        """
+        def stoporders_by_type(type):
+            return filter(lambda x: x.stop_type == type, self.stoporder_set.all())
+
+        opts = (
+            (StopOrder.PICKUP, self.picking_up(),
+             lambda x: x.template.pickup_stop),
+            (StopOrder.DROPOFF, self.dropping_off(),
+             lambda x: x.template.dropoff_stop)
+        )
+
+        for stop_type, trips, stop_getter in opts:
+            ordered_trips = set([x.trip for x in stoporders_by_type(stop_type)])
+            unordered_trips = set(trips) - ordered_trips
+            surplus_trips = ordered_trips - set(trips)
+
+            if unordered_trips:
+                raise ValidationError(
+                    f'Unordered {stop_type} trips for bus {self}: '
+                    f'{unordered_trips}')
+
+            if surplus_trips:
+                # a trip has been removed from the route
+                raise ValidationError(
+                    f'Surplus {stop_type} trips for bus {self}: '
+                    f'{surplus_trips}')
+
     def get_stop_ordering(self):
         """
         Get the StopOrder objects for this bus.
