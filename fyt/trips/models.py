@@ -227,6 +227,7 @@ class Section(DatabaseModel):
 
     objects = SectionManager()
     dates = SectionDatesManager()
+    tracker = FieldTracker(fields=['leaders_arrive'])
 
     @property
     def trippees_arrive(self):

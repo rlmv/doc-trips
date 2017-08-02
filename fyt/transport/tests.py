@@ -1464,6 +1464,64 @@ class RefactorTestCase(TransportTestCase):
         self.assertQsContains(dropoff_bus.get_stop_ordering(), [])
         self.assertQsContains(pickup_bus.get_stop_ordering(), [])
 
+    def test_changing_section_dates_updates_ordering(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section__leaders_arrive=date_leaders_arrive,
+            dropoff_route__trips_year=self.trips_year,
+            pickup_route__trips_year=self.trips_year)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route=trip.get_dropoff_route())
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route=trip.get_pickup_route())
+
+        new_dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=3),
+            route=trip.get_dropoff_route())
+
+        new_pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=5),
+            route=trip.get_pickup_route())
+
+        self.assertQsContains(dropoff_bus.get_stop_ordering(), [
+            {'bus': dropoff_bus,
+             'trip': trip,
+             'stop_type': StopOrder.DROPOFF}])
+        self.assertQsContains(pickup_bus.get_stop_ordering(), [
+            {'bus': pickup_bus,
+             'trip': trip,
+             'stop_type': StopOrder.PICKUP}])
+
+        trip.section.leaders_arrive = date(2015, 1, 2)
+        trip.section.save()
+
+        self.assertQsContains(dropoff_bus.get_stop_ordering(), [])
+        self.assertQsContains(pickup_bus.get_stop_ordering(), [])
+
+        self.assertQsContains(new_dropoff_bus.get_stop_ordering(), [
+            {'bus': new_dropoff_bus,
+             'trip': trip,
+             'stop_type': StopOrder.DROPOFF}])
+        self.assertQsContains(new_pickup_bus.get_stop_ordering(), [
+            {'bus': new_pickup_bus,
+             'trip': trip,
+             'stop_type': StopOrder.PICKUP}])
+
 
 class StopOrderingTestCase(FytTestCase):
 

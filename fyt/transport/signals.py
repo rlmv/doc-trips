@@ -2,9 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from fyt.transport.models import InternalBus, StopOrder, Stop
-from fyt.trips.models import Trip, TripTemplate
+from fyt.trips.models import Trip, TripTemplate, Section
 
-# TODO: update ordering for Section.date changes
 
 def create_dropoff(bus, trip):
     return StopOrder.objects.create(
@@ -104,4 +103,15 @@ def update_ordering_for_triptemplate_stop_changes(instance, created, **kwargs):
 
     if not created and instance.tracker.has_changed('pickup_stop'):
         for trip in Trip.objects.filter(template=instance):
+            resolve_pickup(trip)
+
+
+@receiver(post_save, sender=Section)
+def update_ordering_for_section_date_change(instance, created, **kwargs):
+    """
+    Orderings are changed when the date of a Section changes.
+    """
+    if not created and instance.tracker.has_changed('leaders_arrive'):
+        for trip in Trip.objects.filter(section=instance):
+            resolve_dropoff(trip)
             resolve_pickup(trip)
