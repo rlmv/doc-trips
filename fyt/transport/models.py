@@ -243,11 +243,6 @@ class InternalBus(DatabaseModel):
     # We could just instantiate a transport object without saving and
     # call the methods on it.
 
-    DROPOFF_CACHE_NAME = '_dropping_off'
-    PICKUP_CACHE_NAME = '_picking_up'
-    RETURN_CACHE_NAME = '_returning'
-
-    #@cache_as(DROPOFF_CACHE_NAME)
     def dropping_off(self):
         """
         All trips which this transport drops off (on the trip's day 2)
@@ -257,7 +252,6 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__dropoff_stop')
 
-    #@cache_as(PICKUP_CACHE_NAME)
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
@@ -267,7 +261,6 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__pickup_stop')
 
-    #@cache_as(RETURN_CACHE_NAME)
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
