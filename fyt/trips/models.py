@@ -33,17 +33,31 @@ NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
 
 
 class Trip(DatabaseModel):
+    """
+    The core object representing a scheduled trip.
 
+    Once a Trip has been instantiated in the database, it's section and
+    template cannot be changed.
+
+    The `leaders` attribute points to the `Applications` assigned to this
+    trip as leaders. The `trippees` attribute contains all the
+    `IncomingStudents` who are assigned to the trip.
+    """
     objects = TripManager()
+    tracker = FieldTracker(fields=[
+        'template',
+        'section',
+        'dropoff_route',
+        'pickup_route'])
 
-    tracker = FieldTracker(fields=['dropoff_route', 'pickup_route'])
+    template = models.ForeignKey(
+        'TripTemplate',
+        on_delete=models.PROTECT)
 
-    template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
     section = models.ForeignKey(
-        'Section', on_delete=models.PROTECT, related_name='trips'
-    )
-
-    # 'leaders' and 'trippees' point to Applications and IncomingStudents
+        'Section',
+        on_delete=models.PROTECT,
+        related_name='trips')
 
     notes = models.TextField(blank=True, help_text=(
         "Trip-specific details such as weird timing. "
@@ -72,6 +86,13 @@ class Trip(DatabaseModel):
         # combination; we don't want to schedule two identical trips
         unique_together = ('template', 'section', 'trips_year')
         ordering = ('section__name', 'template__name')
+
+    def clean(self):
+        if self.pk is not None:
+            if self.tracker.has_changed('section'):
+                raise ValidationError("Cannot change a Trip's section.")
+            if self.tracker.has_changed('template'):
+                raise ValidationError("Cannot change a Trip's template.")
 
     def get_dropoff_route(self):
         """
