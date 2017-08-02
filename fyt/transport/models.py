@@ -391,10 +391,6 @@ class InternalBus(DatabaseModel):
         Create any missing StopOrder objects, and delete
         extra objects.
 
-        (Yes, using this in GET requests is poor http semantics,
-        but there are more corner cases of when routes change than
-        I want to deal with using signals.)
-
         Returns a list of StopOrders for each stop that this bus is
         making (excluding Hanover and the Lodge).
         """
@@ -535,18 +531,11 @@ class StopOrder(DatabaseModel):
     """
     Ordering of stops on an internal bus.
 
-    StopOrder objects are created by InternalBus.update_stop_ordering.
     One such object exists for each stop that the bus makes to dropoff
     and pickup trips in between Hanover and the Lodge.
 
-    The stop ordering of a bus is updated when:
-
-      * the bus is created (all orderings are created)
-      * the bus is deleted (all orderings are deleted)
-      * a Trip on the bus is created
-      * a Trip on the bus is deleted
-
-    See `fyt.transport.signals` for the implementation of this logic.
+    StopOrderings are affected by many other objects. These changes are
+    managed by signals in `fyt.transport.signals.
 
     This is essentially the through model of an M2M relationship.
     """
