@@ -1,71 +1,61 @@
-
-{% load staticfiles %}
-{% load pipeline %}
+{% load staticfiles %} {% load pipeline %}
 
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{% static 'icons/favicon.ico' %}"/>
+  <head>
+    <link rel="shortcut icon" type="image/vnd.microsoft.icon" href="{%static 'icons/favicon.ico' %}"/>
 
-<title>DOC Trips</title>
+    <title>DOC Trips</title>
 
-{% block css %}
-{% stylesheet "base" %}
-{% endblock %}
+    {% block css %}
+    {% stylesheet "base" %}
+    {% endblock %}
 
-</head>
+  </head>
 
-<body>
+  <body>
 
-  {% block navbar %}
-  {% include "navigation.html" %}
-  {% endblock %}
+    {% block navbar %} {% include "navigation.html" %} {% endblock %}
 
-  {% block page %}
-  <div class="container" id="page-wrapper">
-    <div class="row">
-      <div class="col-sm-2" id="left-column">
-	{% block left_column %}
-	{% endblock %}
-      </div>
+    {% block page %}
+    <div class="container" id="page-wrapper">
+      <div class="row">
+        <div class="col-sm-2" id="left-column">
+          {% block left_column %} {% endblock %}
+        </div>
 
-      <div class="col-sm-8">
-	<div>
-	{% block messages %}
-	{% include "messages.html" %}
-	{% endblock %}
-	</div>
+        <div class="col-sm-8">
+          <div>
+            {% block messages %} {% include "messages.html" %} {% endblock %}
+          </div>
 
-	<div class="page-header">
-	{% block header %}
-	{% endblock header %}
-	</div>
+          <div class="page-header">
+            {% block header %} {% endblock header %}
+          </div>
 
-	<div>
-	{% block content %}
-	{% endblock %}
-	</div>
-      </div>
+          <div>
+            {% block content %} {% endblock %}
+          </div>
+        </div>
 
-      <div class="col-sm-2" id="right-column">
-	{% block right_column %}
-	{% endblock %}
+        <div class="col-sm-2" id="right-column">
+          {% block right_column %} {% endblock %}
+        </div>
       </div>
     </div>
-  </div>
-  {% endblock %}
+    {% endblock %}
 
-  {% block footer %}
-  {% endblock footer %}
+    {% block footer %}
+    {% endblock footer %}
 
-  {% block javascript %}
-  {% javascript "base" %}
-  {% endblock %}
+    {% block javascript %}
+    {% javascript "base" %}
+    {% endblock %}
 
-  {% block scripts %}
-  {# for sub-template added assets #}
-  {% endblock %}
+    {% block scripts %}
+    {# for sub-template added assets #}
+    {% endblock %}
 
-</body>
+  </body>
 </html>
