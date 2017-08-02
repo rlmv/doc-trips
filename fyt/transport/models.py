@@ -512,9 +512,6 @@ class InternalBus(DatabaseModel):
             stop.passenger_count = load
         return get_directions(stops)
 
-    def update_url(self):
-        return reverse('db:internalbus:update', kwargs=self.obj_kwargs())
-
     def detail_url(self):
         kwargs = {
             'trips_year': self.trips_year_id,
