@@ -4,6 +4,7 @@ from copy import copy
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.functional import cached_property
 from model_utils import FieldTracker
 
 from fyt.db.models import DatabaseModel
@@ -273,7 +274,7 @@ class InternalBus(DatabaseModel):
         """
         return Trip.objects.returns(self.route, self.date, self.trips_year_id)
 
-    @property
+    @cached_property
     def trip_cache(self):
         """
         A cache of Trips with preloaded size attributes.
