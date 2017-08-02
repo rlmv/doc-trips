@@ -120,6 +120,18 @@
         page-break-inside: avoid;
     }
 
+    /* fix page-break-inside */
+    div {
+        float: none !important;
+    }
+
+    /* expand the main content of the page */
+    #main-content {
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     /* dont insert (/link/url) after links */
     body a:link:after, body a:visited:after {
         content: "";

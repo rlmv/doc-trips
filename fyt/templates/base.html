@@ -21,11 +21,11 @@
     {% block page %}
     <div class="container" id="page-wrapper">
       <div class="row">
-        <div class="col-sm-2" id="left-column">
+        <div class="col-sm-2 no-print" id="left-column">
           {% block left_column %} {% endblock %}
         </div>
 
-        <div class="col-sm-8">
+        <div class="col-sm-8" id="main-content">
           <div>
             {% block messages %} {% include "messages.html" %} {% endblock %}
           </div>
@@ -39,7 +39,7 @@
           </div>
         </div>
 
-        <div class="col-sm-2" id="right-column">
+        <div class="col-sm-2 no-print" id="right-column">
           {% block right_column %} {% endblock %}
         </div>
       </div>
