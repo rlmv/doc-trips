@@ -12,7 +12,7 @@ from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
-from fyt.transport.models import Stop
+from fyt.transport.models import Stop, ExternalBus, Route
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 
@@ -36,7 +36,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         with self.assertRaises(StopIteration):
             next(iter)
 
-    def assertCsvReturns(self, urlpattern, target):
+    def assertCsvReturns(self, urlpattern, target, url_kwargs=None):
         """
         Test a view by visiting it with director priveleges and
         comparing returned csv to ``target``.
@@ -44,7 +44,12 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         ``urlpattern`` is a reversable pattern,
         ``target`` is a list of ``dicts``
         """
-        url = reverse(urlpattern, kwargs={'trips_year': self.trips_year})
+        kwargs = {'trips_year': self.trips_year}
+
+        if url_kwargs is not None:
+            kwargs.update(url_kwargs)
+
+        url = reverse(urlpattern, kwargs=kwargs)
         resp = self.app.get(url, user=self.make_director())
 
         self.assertTrue(resp['Content-Disposition'].startswith(
@@ -483,7 +488,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'bagels': str(trip.bagels),
         }])
 
-    def test_external_bus(self):
+    def test_external_bus_requests(self):
         reg1 = mommy.make(
             Registration,
             trips_year=self.trips_year,
@@ -517,6 +522,70 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'requested bus from hanover': reg2.bus_stop_from_hanover.name,
         }])
 
+    def test_external_bus_riders(self):
+        section = mommy.make(Section, trips_year=self.trips_year)
+
+        bus = mommy.make(
+            ExternalBus,
+            section=section,
+            route__category=Route.EXTERNAL,
+            trips_year=self.trips_year)
+
+        s1 = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment__section=section,
+            name='1',
+            bus_assignment_round_trip__route=bus.route)
+
+        s2 = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment__section=section,
+            name='2',
+            bus_assignment_to_hanover__route=bus.route)
+
+        s3 = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment__section=section,
+            name='3',
+            bus_assignment_from_hanover__route=bus.route)
+
+        no_bus = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            trip_assignment__section=section)
+
+        self.assertCsvReturns(
+            'db:reports:bus_riders',
+            url_kwargs={'bus_pk': bus.pk},
+            target=[{
+                'name': '1',
+                'netid': s1.netid,
+                'phone': s1.phone,
+                'email': s1.email,
+                'blitz': s1.blitz,
+                'to hanover': 'yes',
+                'from hanover': 'yes',
+            }, {
+                'name': '2',
+                'netid': s2.netid,
+                'phone': s2.phone,
+                'email': s2.email,
+                'blitz': s2.blitz,
+                'to hanover': 'yes',
+                'from hanover': ''
+
+            }, {
+                'name': '3',
+                'netid': s3.netid,
+                'phone': s3.get_phone_number(),
+                'email': s3.email,
+                'blitz': s3.blitz,
+                'to hanover': '',
+                'from hanover': 'yes'
+            }])
 
 class TShirtCountTestCase(FytTestCase):
 

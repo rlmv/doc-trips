@@ -16,6 +16,10 @@
 </div>
 
 {% if bus %}
+
+{% url 'db:reports:bus_riders' trips_year=trips_year bus_pk=bus.pk as url_ %}
+{{ url_|download_button:"Passenger Spreadsheet" }}
+
 <h3> Directions To Hanover </h3>
 {% directions_to_hanover bus %}
 

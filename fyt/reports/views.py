@@ -20,6 +20,7 @@ from fyt.incoming.models import (
 )
 from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.trips.models import Section, Trip, TripType
+from fyt.transport.models import ExternalBus
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
 
@@ -186,7 +187,7 @@ class FinancialAidCSV(GenericReportView):
         return [user.name, reg.name, user.netid, user.email, reg.email]
 
 
-class ExternalBusCSV(GenericReportView):
+class ExternalBusRequestsCSV(GenericReportView):
 
     file_prefix = 'External-Bus-Requests'
     header = [
@@ -216,6 +217,42 @@ class ExternalBusCSV(GenericReportView):
             reg.bus_stop_round_trip or '',
             reg.bus_stop_to_hanover or '',
             reg.bus_stop_from_hanover or ''
+        ]
+
+
+class ExternalBusRidersCSV(GenericReportView):
+    file_prefix = 'External-Bus-Riders'
+
+    def get_filename(self):
+        bus = self.get_bus()
+        return "External-Bus-Riders-Section-{}-{}.csv".format(
+            bus.section.name, bus.route.name)
+
+    def get_bus(self):
+        return ExternalBus.objects.get(pk=self.kwargs['bus_pk'])
+
+    def get_queryset(self):
+        return self.get_bus().all_passengers().select_related('registration')
+
+    header = [
+        'name',
+        'netid',
+        'phone',
+        'email',
+        'blitz',
+        'to hanover',
+        'from hanover',
+    ]
+
+    def get_row(self, incoming):
+        return [
+            incoming.name,
+            incoming.netid,
+            incoming.get_phone_number(),
+            incoming.get_email(),
+            incoming.blitz,
+            yes_if_true(incoming.get_bus_to_hanover()),
+            yes_if_true(incoming.get_bus_from_hanover())
         ]
 
 

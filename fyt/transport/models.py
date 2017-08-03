@@ -612,6 +612,14 @@ class ExternalBus(DatabaseModel):
         return IncomingStudent.objects.passengers_from_hanover(
             self.trips_year_id, self.route, self.section)
 
+    def all_passengers(self):
+        def pks(qs):
+            return [x.pk for x in qs]
+        return IncomingStudent.objects.filter(pk__in=(
+            pks(self.passengers_to_hanover()) +
+            pks(self.passengers_from_hanover()))
+        ).order_by('name')
+
     DROPOFF_ATTR = 'dropoff'
     PICKUP_ATTR = 'pickup'
 

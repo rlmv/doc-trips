@@ -199,6 +199,11 @@ class IncomingStudent(DatabaseModel):
 
         return self.phone
 
+    def get_email(self):
+        if self.get_registration():
+            return self.get_registration().email
+        return self.email
+
     def get_bus_to_hanover(self):
         return (self.bus_assignment_round_trip or
                 self.bus_assignment_to_hanover)
