@@ -186,8 +186,17 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertFalse(timetable.leader_assignment_available)
         self.assertFalse(timetable.trippee_assignment_available)
 
+    def test_complex_hierarchy_is_migrated(self):
+        trips_year = self.init_trips_year()
+        template = mommy.make(TripTemplate, trips_year=trips_year)
 
-class MigrateForwardFytTestCase(FytTestCase):
+        forward()
+
+        new_template = TripTemplate.objects.get(trips_year=trips_year.year + 1)
+        self.assertTrue(new_template.dropoff_stop.pk is not None)
+        self.assertNotEqual(template.dropoff_stop.pk, new_template.dropoff_stop.pk)
+        self.assertTrue(new_template.pickup_stop.pk is not None)
+        self.assertNotEqual(template.pickup_stop.pk, new_template.pickup_stop.pk)
 
     def test_triptemplate_documents_are_migrated(self):
         trips_year = self.init_trips_year()

@@ -1,8 +1,11 @@
 from collections import defaultdict
+from copy import copy
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils.functional import cached_property
+from model_utils import FieldTracker
 
 from fyt.db.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
@@ -77,6 +80,7 @@ class Stop(DatabaseModel):
         ordering = ['name']
 
     objects = StopManager()
+    tracker = FieldTracker(fields=['route'])
 
     name = models.CharField(max_length=255)
     address = models.CharField(
@@ -239,11 +243,6 @@ class InternalBus(DatabaseModel):
     # We could just instantiate a transport object without saving and
     # call the methods on it.
 
-    DROPOFF_CACHE_NAME = '_dropping_off'
-    PICKUP_CACHE_NAME = '_picking_up'
-    RETURN_CACHE_NAME = '_returning'
-
-    @cache_as(DROPOFF_CACHE_NAME)
     def dropping_off(self):
         """
         All trips which this transport drops off (on the trip's day 2)
@@ -253,7 +252,6 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__dropoff_stop')
 
-    @cache_as(PICKUP_CACHE_NAME)
     def picking_up(self):
         """
         All trips which this transport picks up (on trip's day 4)
@@ -263,12 +261,67 @@ class InternalBus(DatabaseModel):
         ).select_related(
             'template__pickup_stop')
 
-    @cache_as(RETURN_CACHE_NAME)
     def returning(self):
         """
         All trips which this transport returns to Hanover (on day 5)
         """
         return Trip.objects.returns(self.route, self.date, self.trips_year_id)
+
+    @cached_property
+    def trip_cache(self):
+        """
+        A cache of Trips with preloaded size attributes.
+        """
+        if hasattr(self, '_trip_cache'):
+            return self._trip_cache
+
+        return InternalBus.TripCache(
+            None,
+            self.dropping_off(),
+            self.picking_up(),
+            self.returning(),
+            Hanover(self.trips_year),
+            Lodge(self.trips_year))
+
+    class TripCache:
+        """
+        Cache for various preloaded bus properties.
+        """
+        def __init__(self, trips, dropoffs, pickups, returns, hanover, lodge):
+            self.trip_dict = None if trips is None else {t: t for t in trips}
+            self.dropoffs = dropoffs
+            self.pickups = pickups
+            self.returns = returns
+            self._hanover = hanover
+            self._lodge = lodge
+
+        # Return copies so that each instance can have different pickup/dropoff
+        # attributes
+
+        @property
+        def hanover(self):
+            return copy(self._hanover)
+
+        @property
+        def lodge(self):
+            return copy(self._lodge)
+
+        def get(self, value):
+            if self.trip_dict is None:
+                return value
+            return self.trip_dict[value]
+
+    def load_trip_cache(self, all_trips, dropoffs, pickups, returns, hanover, lodge):
+        """
+        Load the trip cache.
+        """
+        self._trip_cache = InternalBus.TripCache(
+            all_trips,
+            dropoffs,
+            pickups,
+            returns,
+            hanover,
+            lodge)
 
     @cache_as('_get_stops')
     def get_stops(self):
@@ -285,51 +338,48 @@ class InternalBus(DatabaseModel):
         DROPOFF_ATTR = 'trips_dropped_off'
         PICKUP_ATTR = 'trips_picked_up'
 
-        # HACK HACK. These dicts let us attach trips which have preloaded
-        # attributes (such as size) to stops. This is basically so that
-        # the capacity matrix is efficient. Hopefully there is a better
-        # way to do this...
-        _dropping_off_map = {trip: trip for trip in self.dropping_off()}
-        _picking_up_map = {trip: trip for trip in self.picking_up()}
-
         def set_trip_attr(stop, order):
             for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
                 if not hasattr(stop, attr):
                     setattr(stop, attr, [])
 
             if order.stop_type == StopOrder.DROPOFF:
-                getattr(stop, DROPOFF_ATTR).append(_dropping_off_map[order.trip])
+                getattr(stop, DROPOFF_ATTR).append(self.trip_cache.get(order.trip))
 
             if order.stop_type == StopOrder.PICKUP:
-                getattr(stop, PICKUP_ATTR).append(_picking_up_map[order.trip])
+                getattr(stop, PICKUP_ATTR).append(self.trip_cache.get(order.trip))
 
             return stop
 
+        picking_up = self.trip_cache.pickups
+        dropping_off = self.trip_cache.dropoffs
+        returning = self.trip_cache.returns
+
         stops = []
-        for order in self.update_stop_ordering():
+        for order in self.stoporder_set.all():
             if len(stops) == 0 or stops[-1] != order.stop:  # new stop
                 stops.append(set_trip_attr(order.stop, order))
             else:  # another trip for the same stop
                 set_trip_attr(stops[-1], order)
 
         # all buses start from Hanover
-        hanover = Hanover(self.trips_year)
-        setattr(hanover, PICKUP_ATTR, list(self.dropping_off()))
+        hanover = self.trip_cache.hanover
+        setattr(hanover, PICKUP_ATTR, list(dropping_off))
         setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
-        if self.picking_up() or self.returning():
+        if picking_up or returning:
             # otherwise we can bypass the lodge
-            lodge = Lodge(self.trips_year)
-            setattr(lodge, DROPOFF_ATTR, list(self.picking_up()))
-            setattr(lodge, PICKUP_ATTR, list(self.returning()))
+            lodge = self.trip_cache.lodge
+            setattr(lodge, DROPOFF_ATTR, list(picking_up))
+            setattr(lodge, PICKUP_ATTR, list(returning))
             stops.append(lodge)
 
-        if self.returning():
+        if returning:
             # Take trips back to Hanover.
             # Load attributes onto a fresh Stop object.
-            hanover = Hanover(self.trips_year)
-            setattr(hanover, DROPOFF_ATTR, list(self.returning()))
+            hanover = self.trip_cache.hanover
+            setattr(hanover, DROPOFF_ATTR, list(returning))
             setattr(hanover, PICKUP_ATTR, [])
             stops.append(hanover)
 
@@ -340,10 +390,6 @@ class InternalBus(DatabaseModel):
         Update the ordering of all stops this bus makes.
         Create any missing StopOrder objects, and delete
         extra objects.
-
-        (Yes, using this in GET requests is poor http semantics,
-        but there are more corner cases of when routes change than
-        I want to deal with using signals.)
 
         Returns a list of StopOrders for each stop that this bus is
         making (excluding Hanover and the Lodge).
@@ -388,6 +434,47 @@ class InternalBus(DatabaseModel):
         # return a fresh qs in case stoporders are prefetched
         return StopOrder.objects.filter(bus=self)
 
+    def validate_stop_ordering(self):
+        """
+        Sanity check the stop orderings for this bus are correct.
+        """
+        def stoporders_by_type(type):
+            return filter(lambda x: x.stop_type == type, self.stoporder_set.all())
+
+        opts = (
+            (StopOrder.PICKUP, self.picking_up(),
+             lambda x: x.template.pickup_stop),
+            (StopOrder.DROPOFF, self.dropping_off(),
+             lambda x: x.template.dropoff_stop)
+        )
+
+        for stop_type, trips, stop_getter in opts:
+            ordered_trips = set([x.trip for x in stoporders_by_type(stop_type)])
+            unordered_trips = set(trips) - ordered_trips
+            surplus_trips = ordered_trips - set(trips)
+
+            if unordered_trips:
+                raise ValidationError(
+                    f'Unordered {stop_type} trips for bus {self}: '
+                    f'{unordered_trips}')
+
+            if surplus_trips:
+                # a trip has been removed from the route
+                raise ValidationError(
+                    f'Surplus {stop_type} trips for bus {self}: '
+                    f'{surplus_trips}')
+
+    def get_stop_ordering(self):
+        """
+        Get the StopOrder objects for this bus.
+
+        For now, this returns a fresh QuerySet in case the orderings are
+        prefetched.
+
+        TODO: use `stoporder_set.all()`
+        """
+        return StopOrder.objects.filter(bus=self)
+
     def over_capacity(self):
         """
         Returns True if the bus will be too full at
@@ -425,9 +512,6 @@ class InternalBus(DatabaseModel):
             stop.passenger_count = load
         return get_directions(stops)
 
-    def update_url(self):
-        return reverse('db:internalbus:update', kwargs=self.obj_kwargs())
-
     def detail_url(self):
         kwargs = {
             'trips_year': self.trips_year_id,
@@ -444,15 +528,17 @@ class StopOrder(DatabaseModel):
     """
     Ordering of stops on an internal bus.
 
-    StopOrder objects are created by InternalBus.update_stop_ordering.
     One such object exists for each stop that the bus makes to dropoff
     and pickup trips in between Hanover and the Lodge.
 
-    This is basically the through model of an M2M relationship.
+    StopOrderings are affected by many other objects. These changes are
+    managed by signals in `fyt.transport.signals.
+
+    This is essentially the through model of an M2M relationship.
     """
-    bus = models.ForeignKey(InternalBus)
+    bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
-    trip = models.ForeignKey(Trip)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(

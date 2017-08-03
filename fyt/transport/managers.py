@@ -29,6 +29,11 @@ class InternalBusManager(models.Manager):
     def internal(self, trips_year):
         return self.filter(trips_year=trips_year, route__category=INTERNAL)
 
+    def validate(self):
+        for bus in self.order_by('trips_year'):
+            bus.validate_stop_ordering()
+            print(f'validated {bus}')
+
 
 def external_route_matrix(trips_year, default=None):
     """

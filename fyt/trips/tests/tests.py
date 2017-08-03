@@ -134,6 +134,19 @@ class TripModelTestCase(FytTestCase):
         mommy.make(IncomingStudent, 2, trips_year=trips_year, trip_assignment=trip)
         self.assertEqual(trip.bagels, math.ceil(2 * NUM_BAGELS_SUPPLEMENT))
 
+    def test_section_and_template_cannot_be_changed(self):
+        trip = mommy.make(Trip)
+
+        trip.section = mommy.make(Section)
+        with self.assertRaises(ValidationError):
+            trip.full_clean()
+
+        trip.refresh_from_db()
+
+        trip.template = mommy.make(TripTemplate)
+        with self.assertRaises(ValidationError):
+            trip.full_clean()
+
 
 class TripRouteOverridesTestCase(FytTestCase):
 

@@ -95,7 +95,14 @@ class Forward:
             pass
 
         logger.info('Copying %s' % obj)
-        new_obj = copy.copy(obj)
+
+        # Instantiate a new object.
+        # This queries the database instead of using copy() because
+        # model_utils.FieldTracker replaces the save() method of tracked
+        # models with a function that contains a bound instance of the
+        # original object - hence, any save calls to the new object save
+        # the original instead.
+        new_obj = obj._meta.model.objects.get(pk=obj.pk)
 
         # recursively copy foreign keys
         for field in obj._meta.get_fields():
@@ -107,7 +114,6 @@ class Forward:
                 else:
                     new_rel = self.copy_object_forward(rel)
                 setattr(new_obj, field.name, new_rel)
-
         new_obj.trips_year = self.next_year
         new_obj.pk = None
         new_obj.save()

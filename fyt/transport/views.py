@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from vanilla.views import FormView, TemplateView
+from raven.contrib.django.raven_compat.models import client as sentry
 
 from fyt.db.views import (
     DatabaseCreateView,
@@ -30,6 +31,8 @@ from fyt.transport.models import (
     StopOrder,
     Vehicle,
     TransportConfig,
+    Hanover,
+    Lodge
 )
 from fyt.trips.models import Section, Trip, TripTemplate
 from fyt.utils.cache import cache_as, preload
@@ -56,23 +59,60 @@ class UpdateTransportConfig(DatabaseUpdateView):
 
 
 def get_internal_route_matrix(trips_year):
-
+    """
+    A matrix of all the scheduled internal buses, categorized by date and by
+    route.
+    """
     routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     matrix = OrderedMatrix(routes, dates)
-    scheduled = preload_transported_trips(
-        InternalBus.objects.internal(
+    scheduled = InternalBus.objects.internal(
             trips_year
         ).select_related(
             'route__vehicle'
         ).prefetch_related(
             'stoporder_set'
-        ), trips_year
-    )
-    for transport in scheduled:
-        matrix[transport.route][transport.date] = transport
+        )
+
+    preload_transported_trips(scheduled, trips_year)
+
+    for bus in scheduled:
+        matrix[bus.route][bus.date] = bus
 
     return matrix
+
+
+def preload_transported_trips(buses, trips_year):
+    trips = Trip.objects.with_counts(
+        trips_year=trips_year
+    ).select_related(
+        'dropoff_route',
+        'pickup_route',
+        'return_route',
+        'template__pickup_stop__route',
+        'template__dropoff_stop__route',
+        'template__return_route')
+
+    dropoffs = defaultdict(lambda: defaultdict(list))
+    pickups = defaultdict(lambda: defaultdict(list))
+    returns = defaultdict(lambda: defaultdict(list))
+
+    for trip in trips:
+        dropoffs[trip.get_dropoff_route()][trip.dropoff_date].append(trip)
+        pickups[trip.get_pickup_route()][trip.pickup_date].append(trip)
+        returns[trip.get_return_route()][trip.return_date].append(trip)
+
+    hanover = Hanover(trips_year)
+    lodge = Lodge(trips_year)
+
+    for bus in buses:
+        bus.load_trip_cache(
+            trips,
+            dropoffs[bus.route][bus.date],
+            pickups[bus.route][bus.date],
+            returns[bus.route][bus.date],
+            hanover,
+            lodge)
 
 
 def trip_transport_matrix(trips_year):
@@ -106,40 +146,6 @@ def trip_transport_matrix(trips_year):
         return_matrix[trip.template][trip.return_date] = trip
 
     return dropoff_matrix, pickup_matrix, return_matrix
-
-
-def preload_transported_trips(buses, trips_year):
-    """
-    Given a qs of internal buses, preload all trips are
-    picked up, dropped off, and returned to hanover by
-    each bus.
-    """
-    trips = Trip.objects.with_counts(
-        trips_year=trips_year
-    ).select_related(
-        'dropoff_route',
-        'pickup_route',
-        'return_route',
-        'template__pickup_stop__route',
-        'template__dropoff_stop__route',
-        'template__return_route',
-    )
-
-    dropoffs = defaultdict(lambda: defaultdict(list))
-    pickups = defaultdict(lambda: defaultdict(list))
-    returns = defaultdict(lambda: defaultdict(list))
-
-    for trip in trips:
-        dropoffs[trip.get_dropoff_route()][trip.dropoff_date].append(trip)
-        pickups[trip.get_pickup_route()][trip.pickup_date].append(trip)
-        returns[trip.get_return_route()][trip.return_date].append(trip)
-
-    for bus in buses:
-        preload(bus, bus.DROPOFF_CACHE_NAME, dropoffs[bus.route][bus.date])
-        preload(bus, bus.PICKUP_CACHE_NAME, pickups[bus.route][bus.date])
-        preload(bus, bus.RETURN_CACHE_NAME, returns[bus.route][bus.date])
-
-    return buses
 
 
 class Riders:
@@ -205,7 +211,7 @@ def _rider_matrix(trips_year, size_key):
     Size key computes the number of riders on a transport leg
     """
 
-    routes = Route.objects.internal(trips_year)
+    routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     trips = (
         Trip.objects.with_counts(trips_year)
@@ -473,6 +479,13 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
         if bus:
             context['stops'] = bus.get_stops()
             context['over_capacity'] = bus.over_capacity()
+
+            # TODO: remove this?
+            # Sanity check that bus routes still look good
+            try:
+                bus.validate_stop_ordering()
+            except ValidationError:
+                sentry.capture_exception()
 
         return context
 
