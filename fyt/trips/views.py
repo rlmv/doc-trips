@@ -417,29 +417,13 @@ class AssignTrippee(_TripMixin, DatabaseListView):
             self.model.objects.available_for_trip(
                 self.get_trip()
             ).select_related(
+                'trip_assignment',
                 'trip_assignment__template',
                 'trip_assignment__section',
+                'registration',
                 'registration__bus_stop_round_trip',
                 'registration__bus_stop_to_hanover',
                 'registration__bus_stop_from_hanover'
-            ).only(
-                'name',
-                'address',
-                'ethnic_code',
-                'trips_year',
-                'trip_assignment__template__name',
-                'trip_assignment__section__name',
-                'trip_assignment__trips_year',
-                'registration__bus_stop_round_trip__route_id',
-                'registration__bus_stop_round_trip__trips_year_id',
-                'registration__bus_stop_round_trip__name',
-                'registration__bus_stop_to_hanover__route_id',
-                'registration__bus_stop_to_hanover__trips_year_id',
-                'registration__bus_stop_to_hanover__name',
-                'registration__bus_stop_from_hanover__route_id',
-                'registration__bus_stop_from_hanover__trips_year_id',
-                'registration__bus_stop_from_hanover__name',
-                'registration__gender',
             )
         )
 
@@ -578,14 +562,6 @@ class AssignLeader(_TripMixin, DatabaseListView):
                 'assigned_trip__section'
             ).prefetch_related(
                 'leader_supplement__grades'
-            ).only(
-                'trips_year',
-                'gender',
-                'applicant__name',
-                'assigned_trip__trips_year_id',
-                'assigned_trip__template__name',
-                'assigned_trip__section__name',
-                'status'
             )
         )
 
