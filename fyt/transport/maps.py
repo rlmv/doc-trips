@@ -55,17 +55,16 @@ def get_directions(stops):
 
     try:
         resp = client.directions(
-            origin=orig, destination=dest, waypoints=waypoints
-        )
-        if len(resp) != 1:
-            raise MapError('Expecting one route')
-        if resp[0]['waypoint_order'] != list(range(len(waypoints))):
-            raise MapError('Waypoints out of order')
-
-        return _integrate_stops(resp[0], stops)
-
+            origin=orig, destination=dest, waypoints=waypoints)
     except (TransportError, ApiError) as exc:
         raise MapError(exc)
+
+    if len(resp) != 1:
+        raise MapError('Expecting one route')
+    if resp[0]['waypoint_order'] != list(range(len(waypoints))):
+        raise MapError('Waypoints out of order')
+
+    return _integrate_stops(resp[0], stops)
 
 
 def _integrate_stops(directions, stops):
