@@ -9,6 +9,8 @@ Upgrades
 
 Immediate
 ---------
+* Add an IncomingStudent filter for cancelled students
+* Fix incoming CSV import - see Sentry errors.
 * Show proper routes in Trip detail view
 * Rename triptemplate `name` to `number`.
 * Hide grant croo and trailwork trips from Trip matrix
