@@ -1757,13 +1757,22 @@ class InternalBusTimingTestCase(TransportTestCase):
             template__dropoff_stop__distance=4,
             section__leaders_arrive=bus.date-timedelta(days=2))
 
-        bus.update_stop_times()
+        directions = bus.update_stop_times()
 
         self.assertEqual(picked_up.get_pickup_time(), time(8, 34, 7))
         self.assertEqual(dropped_off.get_dropoff_time(), time(11, 9, 10))
 
         self.assertEqual(picked_up.get_dropoff_time(), None)
         self.assertEqual(dropped_off.get_pickup_time(), None)
+
+        self.assertEqual(directions.legs[0].start_time, time(7, 30))
+        self.assertEqual(directions.legs[0].end_time, time(8, 34, 7))
+
+        self.assertEqual(directions.legs[1].start_time, time(8, 49, 7))
+        self.assertEqual(directions.legs[1].end_time, time(11, 9, 10))
+
+        self.assertEqual(directions.legs[2].start_time, time(11, 24, 10))
+        self.assertEqual(directions.legs[2].end_time, time(13, 26, 42))
 
     def test_stop_times_delayed_for_lodge(self):
         bus = mommy.make(

@@ -99,8 +99,8 @@ class Leg:
         self.raw = raw_json
         self.start_stop = start_stop
         self.end_stop = end_stop
-
-        self.departure_time = None
+        self.start_time = None
+        self.end_time = None
 
     @property
     def duration(self):

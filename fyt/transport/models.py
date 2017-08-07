@@ -435,13 +435,17 @@ class InternalBus(DatabaseModel):
 
                 progress += LOADING_TIME
 
+            leg.start_time = progress.time()
             progress += leg.duration
+            leg.end_time = progress.time()
 
             if leg.end_stop != self.trip_cache.lodge:
                 for trip in leg.end_stop.trips_dropped_off:
                     stoporder = trip.get_dropoff_stoporder()
                     stoporder.time = progress.time()
                     stoporder.save()
+
+        return directions
 
     def validate_stop_ordering(self):
         """
