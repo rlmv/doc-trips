@@ -117,7 +117,11 @@ class Trip(DatabaseModel):
         """
         if self.get_dropoff_stoporder() is None:
             return None
+
+        self.get_dropoff_stoporder().bus.update_stop_times()
         return self.get_dropoff_stoporder().time
+
+    # TODO: handle time calculations more efficiently
 
     def get_pickup_time(self):
         """
@@ -127,6 +131,7 @@ class Trip(DatabaseModel):
         """
         if self.get_pickup_stoporder() is None:
             return None
+        self.get_pickup_stoporder().bus.update_stop_times()
         return self.get_pickup_stoporder().time
 
     def get_dropoff_bus(self):
