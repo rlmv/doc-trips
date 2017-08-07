@@ -1765,7 +1765,6 @@ class InternalBusTimingTestCase(TransportTestCase):
         self.assertEqual(picked_up.get_dropoff_stoporder(), None)
         self.assertEqual(dropped_off.get_pickup_stoporder(), None)
 
-
     def test_stop_times_delayed_for_lodge(self):
         bus = mommy.make(
             InternalBus,
@@ -1841,10 +1840,10 @@ class MapsTestCases(TransportTestCase):
                          '43.753303,-72.124643',
                          '43.703049,-72.289567')]
         directions = maps.get_directions(stops)
-        self.assertEqual(len(stops), len(directions['legs']) + 1)
-        for i, leg in enumerate(directions['legs']):
-            self.assertEqual(leg['start_stop'], stops[i])
-            self.assertEqual(leg['end_stop'], stops[i + 1])
+        self.assertEqual(len(stops), len(directions.legs) + 1)
+        for i, leg in enumerate(directions.legs):
+            self.assertEqual(leg.start_stop, stops[i])
+            self.assertEqual(leg.end_stop, stops[i + 1])
 
     def test_directions_with_one_stop_raises_error(self):
         with self.assertRaisesRegexp(maps.MapError, 'Only one stop provided'):

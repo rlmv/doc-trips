@@ -1,10 +1,14 @@
 import googlemaps
 from django.conf import settings
 from googlemaps.exceptions import ApiError, TransportError
+from datetime import timedelta
 
 
 """
-Interface with the Google maps API
+Interface with the Google Maps Directions API
+
+See https://developers.google.com/maps/documentation/directions/intro
+for more information about the format of the response object.
 """
 
 TIMEOUT = 10
@@ -45,11 +49,11 @@ def get_directions(stops):
         d1 = get_directions(stops[:MAX_WAYPOINTS])
         d2 = get_directions(stops[MAX_WAYPOINTS - 1:])
 
-        # sanity check
-        if d1['legs'][-1]['end_stop'] != d2['legs'][0]['start_stop']:
+        # Sanity check
+        if d1.legs[-1].end_stop != d2.legs[0].start_stop:
             raise MapError('mismatched end and start stops on recursion')
 
-        return {'legs': d1['legs'] + d2['legs']}
+        return Directions({'legs': d1.legs + d2.legs}, stops)
 
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_KEY, timeout=TIMEOUT)
 
@@ -64,23 +68,44 @@ def get_directions(stops):
     if resp[0]['waypoint_order'] != list(range(len(waypoints))):
         raise MapError('Waypoints out of order')
 
-    return _integrate_stops(resp[0], stops)
+    return Directions(resp[0], stops)
 
 
-def _integrate_stops(directions, stops):
+class Directions:
     """
-    Given a google maps route, add a start_stop
-    and end_stop object to each leg.
+    Wrapper for the Google Maps direction response.
 
-    The passed stops must be the stops used to generate
-    the directions. This only works if waypoints are not
-    optimized.
+    The passed stops must be the stops used to generate the directions.
     """
-    if len(stops) != len(directions['legs']) + 1:
-        raise MapError('mismatched stops and legs')
+    def __init__(self, raw_json, stops):
+        self.raw = raw_json
+        self.stops = stops
 
-    for i, leg in enumerate(directions['legs']):
-        leg['start_stop'] = stops[i]
-        leg['end_stop'] = stops[i + 1]
+        if len(stops) != len(raw_json['legs']) + 1:
+            raise MapError('mismatched stops and legs')
 
-    return directions
+        self.legs = [Leg(leg, stops[i], stops[i+1])
+                     for i, leg in enumerate(raw_json['legs'])]
+
+
+class Leg:
+    """
+    Wrapper for a leg of a route.
+
+    Each leg has a `start_stop` and `end_stop` attribute, corresponding
+    to the Stop objects on either end of the leg.
+    """
+    def __init__(self, raw_json, start_stop, end_stop):
+        self.raw = raw_json
+        self.start_stop = start_stop
+        self.end_stop = end_stop
+
+        self.departure_time = None
+
+    @property
+    def duration(self):
+        return timedelta(seconds=self.raw['duration']['value'])
+
+    @property
+    def steps(self):
+        return self.raw['steps']
