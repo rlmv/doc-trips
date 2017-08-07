@@ -517,7 +517,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     form_valid_message = 'Route order has been updated'
 
     def get_queryset(self):
-        return self.get_bus().update_stop_ordering()
+        return self.get_bus().get_stop_ordering()
 
     @cache_as('_bus')
     def get_bus(self):

@@ -443,55 +443,6 @@ class InternalBus(DatabaseModel):
                     stoporder.time = progress.time()
                     stoporder.save()
 
-    def update_stop_ordering(self):
-        """
-        Update the ordering of all stops this bus makes.
-        Create any missing StopOrder objects, and delete
-        extra objects.
-
-        Returns a list of StopOrders for each stop that this bus is
-        making (excluding Hanover and the Lodge).
-        """
-        def stoporders_by_type(type):
-            """
-            Manual stoporder filtering saves us a query if
-            stoporder_set is already loaded by prefetch_related
-            """
-            return filter(lambda x: x.stop_type == type, self.stoporder_set.all())
-
-        opts = (
-            (StopOrder.PICKUP, self.picking_up(),
-             lambda x: x.template.pickup_stop),
-            (StopOrder.DROPOFF, self.dropping_off(),
-             lambda x: x.template.dropoff_stop)
-        )
-
-        for stop_type, trips, stop_getter in opts:
-            ordered_trips = set([x.trip for x in stoporders_by_type(stop_type)])
-            unordered_trips = set(trips) - ordered_trips
-            surplus_trips = ordered_trips - set(trips)
-
-            if unordered_trips:
-                # we are missing some ordering objects
-                for trip in unordered_trips:
-                    StopOrder.objects.create(
-                        order=stop_getter(trip).distance,
-                        bus=self, trip=trip,
-                        trips_year_id=self.trips_year_id,
-                        stop_type=stop_type
-                    )
-
-            if surplus_trips:
-                # a trip has been removed from the route
-                StopOrder.objects.filter(
-                    trips_year=self.trips_year_id,
-                    trip__in=surplus_trips, bus=self,
-                    stop_type=stop_type
-                ).delete()
-
-        # return a fresh qs in case stoporders are prefetched
-        return StopOrder.objects.filter(bus=self)
-
     def validate_stop_ordering(self):
         """
         Sanity check the stop orderings for this bus are correct.
