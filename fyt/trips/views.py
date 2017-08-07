@@ -132,8 +132,10 @@ class TripDetail(DatabaseDetailView):
         'trippees',
         'notes',
         ('dropoff route', 'get_dropoff_route'),
+        ('dropoff bus', 'get_dropoff_bus'),
         ('dropoff time', 'get_dropoff_time'),
         ('pickup route', 'get_pickup_route'),
+        ('pickup bus', 'get_pickup_bus'),
         ('pickup time', 'get_pickup_time'),
         ('return route', 'get_return_route')
     ]
