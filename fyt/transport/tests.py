@@ -1759,11 +1759,11 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         bus.update_stop_times()
 
-        self.assertEqual(picked_up.get_pickup_stoporder().time, time(8, 34, 7))
-        self.assertEqual(dropped_off.get_dropoff_stoporder().time, time(11, 9, 10))
+        self.assertEqual(picked_up.get_pickup_time(), time(8, 34, 7))
+        self.assertEqual(dropped_off.get_dropoff_time(), time(11, 9, 10))
 
-        self.assertEqual(picked_up.get_dropoff_stoporder(), None)
-        self.assertEqual(dropped_off.get_pickup_stoporder(), None)
+        self.assertEqual(picked_up.get_dropoff_time(), None)
+        self.assertEqual(dropped_off.get_pickup_time(), None)
 
     def test_stop_times_delayed_for_lodge(self):
         bus = mommy.make(
@@ -1789,11 +1789,11 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         bus.update_stop_times()
 
-        self.assertEqual(dropped_off.get_dropoff_stoporder().time, time(9, 24, 11))
-        self.assertEqual(picked_up.get_pickup_stoporder().time, time(9, 48, 37))
+        self.assertEqual(dropped_off.get_dropoff_time(), time(9, 24, 11))
+        self.assertEqual(picked_up.get_pickup_time(), time(9, 48, 37))
 
-        self.assertEqual(dropped_off.get_pickup_stoporder(), None)
-        self.assertEqual(picked_up.get_dropoff_stoporder(), None)
+        self.assertEqual(dropped_off.get_pickup_time(), None)
+        self.assertEqual(picked_up.get_dropoff_time(), None)
 
 
 class MapsTestCases(TransportTestCase):

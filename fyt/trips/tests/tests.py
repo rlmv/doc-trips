@@ -197,22 +197,6 @@ class TripRouteOverridesTestCase(FytTestCase):
         trip.save()
         self.assertEqual(trip.get_return_route(), trip.return_route)
 
-    def test_get_dropoff_time(self):
-        trip = mommy.make(Trip, template__dropoff_stop__dropoff_time=time(12))
-        self.assertEqual(trip.get_dropoff_time(), time(12))
-        # override
-        trip.dropoff_time = time(13)
-        trip.save()
-        self.assertEqual(trip.get_dropoff_time(), time(13))
-
-    def test_get_pickup_time(self):
-        trip = mommy.make(Trip, template__pickup_stop__pickup_time=time(12))
-        self.assertEqual(trip.get_pickup_time(), time(12))
-        # override
-        trip.pickup_time = time(13)
-        trip.save()
-        self.assertEqual(trip.get_pickup_time(), time(13))
-
     def test_size_method_with_noone(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)

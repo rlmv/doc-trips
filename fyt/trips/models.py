@@ -78,9 +78,6 @@ class Trip(DatabaseModel):
         'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
 
-    dropoff_time = models.TimeField(blank=True, null=True)
-    pickup_time = models.TimeField(blank=True, null=True)
-
     class Meta:
         # no two Trips can have the same template-section-trips_year
         # combination; we don't want to schedule two identical trips
@@ -114,15 +111,23 @@ class Trip(DatabaseModel):
 
     def get_dropoff_time(self):
         """
-        Return overridden dropoff time
+        Return the dropoff time, calculated from the Google Maps route.
+
+        Returns None if the bus is not scheduled.
         """
-        return self.dropoff_time or self.template.dropoff_stop.dropoff_time
+        if self.get_dropoff_stoporder() is None:
+            return None
+        return self.get_dropoff_stoporder().time
 
     def get_pickup_time(self):
         """
-        Override pickup time
+        Return the pickup time, calculated from the Google Maps route.
+
+        Returns None if the bus is not scheduled.
         """
-        return self.pickup_time or self.template.pickup_stop.pickup_time
+        if self.get_pickup_stoporder() is None:
+            return None
+        return self.get_pickup_stoporder().time
 
     def get_dropoff_bus(self):
         """

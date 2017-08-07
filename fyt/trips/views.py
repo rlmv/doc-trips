@@ -109,8 +109,6 @@ class TripList(DatabaseTemplateView):
 class TripUpdate(DatabaseUpdateView):
     model = Trip
     fields = [
-        'dropoff_time',
-        'pickup_time',
         'dropoff_route',
         'pickup_route',
         'return_route',
@@ -134,9 +132,9 @@ class TripDetail(DatabaseDetailView):
         'trippees',
         'notes',
         ('dropoff route', 'get_dropoff_route'),
-        'dropoff_time',
+        ('dropoff time', 'get_dropoff_time'),
         ('pickup route', 'get_pickup_route'),
-        'pickup_time',
+        ('pickup time', 'get_pickup_time'),
         ('return route', 'get_return_route')
     ]
 
