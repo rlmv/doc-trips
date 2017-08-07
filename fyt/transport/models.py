@@ -370,7 +370,7 @@ class InternalBus(DatabaseModel):
         setattr(hanover, DROPOFF_ATTR, [])
         stops = [hanover] + stops
 
-        if picking_up or returning:
+        if self.visits_lodge:
             # otherwise we can bypass the lodge
             lodge = self.trip_cache.lodge
             setattr(lodge, DROPOFF_ATTR, list(picking_up))
@@ -386,6 +386,10 @@ class InternalBus(DatabaseModel):
             stops.append(hanover)
 
         return stops
+
+    @property
+    def visits_lodge(self):
+        return self.trip_cache.pickups or self.trip_cache.returns
 
     def update_stop_times(self):
         """
@@ -420,7 +424,9 @@ class InternalBus(DatabaseModel):
         loading_time = (len(legs_to_lodge) - 1) * LOADING_TIME
         total_duration = travel_time + loading_time
 
-        if DEPARTURE_TIME + total_duration < MIN_LODGE_ARRIVAL_TIME:
+        # Don't arrive at the Lodge until 11am
+        if (self.visits_lodge and (
+                DEPARTURE_TIME + total_duration < MIN_LODGE_ARRIVAL_TIME)):
             progress = MIN_LODGE_ARRIVAL_TIME - total_duration
         else:
             progress = DEPARTURE_TIME
