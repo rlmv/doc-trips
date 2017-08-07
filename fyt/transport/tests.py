@@ -1,6 +1,6 @@
 import itertools
 import unittest
-from datetime import date, timedelta
+from datetime import date, timedelta, time
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -53,8 +53,21 @@ stoporder_recipe = Recipe(
 class TransportTestCase(FytTestCase):
 
     def init_transport_config(self):
+        hanover = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            address='6 N Main St, Hanover, NH 03755')
+
+        lodge = mommy.make(
+            Stop,
+            trips_year=self.trips_year,
+            lat_lng='43.977253,-71.8154831')
+
         self.transport_config = mommy.make(
-            TransportConfig, trips_year=self.trips_year)
+            TransportConfig,
+            trips_year=self.trips_year,
+            hanover=hanover,
+            lodge=lodge)
 
 
 class StopModelTestCase(FytTestCase):
@@ -1714,6 +1727,74 @@ class ExternalBusModelTestCase(TransportTestCase):
     def test_date_from_hanover(self):
         bus = mommy.make(ExternalBus, section__leaders_arrive=date(2015, 1, 1))
         self.assertEqual(bus.date_from_hanover, date(2015, 1, 6))
+
+
+class InternalBusTimingTestCase(TransportTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.init_transport_config()
+
+    def test_stop_times(self):
+        bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            route__category=Route.INTERNAL)
+
+        picked_up = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            pickup_route=bus.route,
+            template__pickup_stop__lat_lng='Plymouth, NH',
+            template__pickup_stop__distance=1,
+            section__leaders_arrive=bus.date-timedelta(days=4))
+
+        dropped_off = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            dropoff_route=bus.route,
+            template__dropoff_stop__address='Burlington, VT',
+            template__dropoff_stop__distance=4,
+            section__leaders_arrive=bus.date-timedelta(days=2))
+
+        bus.update_stop_times()
+
+        self.assertEqual(picked_up.get_pickup_stoporder().time, time(8, 34, 7))
+        self.assertEqual(dropped_off.get_dropoff_stoporder().time, time(11, 9, 10))
+
+        self.assertEqual(picked_up.get_dropoff_stoporder(), None)
+        self.assertEqual(dropped_off.get_pickup_stoporder(), None)
+
+
+    def test_stop_times_delayed_for_lodge(self):
+        bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            route__category=Route.INTERNAL)
+
+        dropped_off = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            dropoff_route=bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__dropoff_stop__distance=4,
+            section__leaders_arrive=bus.date-timedelta(days=2))
+
+        picked_up = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            pickup_route=bus.route,
+            template__pickup_stop__lat_lng='43.704312, -72.298208',
+            template__pickup_stop__distance=5,
+            section__leaders_arrive=bus.date-timedelta(days=4))
+
+        bus.update_stop_times()
+
+        self.assertEqual(dropped_off.get_dropoff_stoporder().time, time(9, 24, 11))
+        self.assertEqual(picked_up.get_pickup_stoporder().time, time(9, 48, 37))
+
+        self.assertEqual(dropped_off.get_pickup_stoporder(), None)
+        self.assertEqual(picked_up.get_dropoff_stoporder(), None)
 
 
 class MapsTestCases(TransportTestCase):

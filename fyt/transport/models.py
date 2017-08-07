@@ -1,5 +1,7 @@
 from collections import defaultdict
 from copy import copy
+from datetime import datetime, timedelta
+from itertools import takewhile
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -385,6 +387,68 @@ class InternalBus(DatabaseModel):
 
         return stops
 
+    def update_stop_times(self):
+        """
+        Go through the bus route and update the times at which trips are
+        picked up and dropped off.
+        """
+        directions = self.directions()
+
+        # Time it takes to load and unload trips
+        LOADING_TIME = timedelta(minutes=15)
+
+        # Leave at 7:30 AM
+        DEPARTURE_TIME = datetime(
+            year=self.date.year,
+            month=self.date.month,
+            day=self.date.day,
+            hour=7,
+            minute=30)
+
+        # Don't get to the Lodge before 11
+        MIN_LODGE_ARRIVAL = datetime(
+            year=self.date.year,
+            month=self.date.month,
+            day=self.date.day,
+            hour=11)
+
+        def duration(leg):
+            """Duration in minutes"""
+            return timedelta(seconds=leg['duration']['value'])
+
+        legs_to_lodge = list(takewhile(lambda leg: leg['start_stop'] != self.trip_cache.lodge,
+                                  directions['legs']))
+
+        total_duration = sum((duration(leg) for leg in legs_to_lodge), timedelta()) + (
+            (len(legs_to_lodge) - 1) * LOADING_TIME)
+
+        if DEPARTURE_TIME + total_duration < MIN_LODGE_ARRIVAL:
+            progress = MIN_LODGE_ARRIVAL - total_duration
+        else:
+            progress = DEPARTURE_TIME
+
+        for leg in legs_to_lodge:
+
+            if leg['start_stop'] != self.trip_cache.hanover:
+                for trip in leg['start_stop'].trips_picked_up:
+                    stoporder = trip.get_pickup_stoporder()
+                    stoporder.time = progress.time()
+                    stoporder.save()
+
+                progress += LOADING_TIME
+
+            progress += duration(leg)
+
+            if leg['end_stop'] != self.trip_cache.lodge:
+                for trip in leg['end_stop'].trips_dropped_off:
+                    stoporder = trip.get_dropoff_stoporder()
+                    stoporder.time = progress.time()
+                    stoporder.save()
+
+        if progress < MIN_LODGE_ARRIVAL:
+            # recalculate, leaving later.
+            assert False
+
     def update_stop_ordering(self):
         """
         Update the ordering of all stops this bus makes.
@@ -539,6 +603,7 @@ class StopOrder(DatabaseModel):
     bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    time = models.TimeField(null=True)
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(

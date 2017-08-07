@@ -146,6 +146,20 @@ class Trip(DatabaseModel):
             date=self.pickup_date
         ).first()
 
+    def get_dropoff_stoporder(self):
+        from fyt.transport.models import StopOrder
+        try:
+            return self.stoporder_set.get(stop_type=StopOrder.DROPOFF)
+        except StopOrder.DoesNotExist:
+            return None
+
+    def get_pickup_stoporder(self):
+        from fyt.transport.models import StopOrder
+        try:
+            return self.stoporder_set.get(stop_type=StopOrder.PICKUP)
+        except StopOrder.DoesNotExist:
+            return None
+
     @cache_as('_size')
     def size(self):
         """
