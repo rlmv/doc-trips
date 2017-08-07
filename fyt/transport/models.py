@@ -274,16 +274,16 @@ class InternalBus(DatabaseModel):
         """
         A cache of Trips with preloaded size attributes.
         """
-        if hasattr(self, '_trip_cache'):
-            return self._trip_cache
+        if not hasattr(self, '_trip_cache'):
+            self.load_trip_cache(
+                None,
+                self.dropping_off(),
+                self.picking_up(),
+                self.returning(),
+                Hanover(self.trips_year),
+                Lodge(self.trips_year))
 
-        return InternalBus.TripCache(
-            None,
-            self.dropping_off(),
-            self.picking_up(),
-            self.returning(),
-            Hanover(self.trips_year),
-            Lodge(self.trips_year))
+        return self._trip_cache
 
     class TripCache:
         """
