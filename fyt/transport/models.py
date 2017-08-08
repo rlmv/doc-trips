@@ -600,6 +600,9 @@ class StopOrder(DatabaseModel):
             self.order = self.stop.distance
         return super().save(**kwargs)
 
+    def __str__(self):
+        return f'{self.stop_type}: {self.trip} {self.bus.date}'
+
 
 class ExternalBus(DatabaseModel):
     """
