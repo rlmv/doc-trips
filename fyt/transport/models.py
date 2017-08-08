@@ -582,6 +582,7 @@ class StopOrder(DatabaseModel):
     @property
     def time(self):
         self.bus.update_stop_times()
+        self.refresh_from_db()
         return self.computed_time
 
     @property
