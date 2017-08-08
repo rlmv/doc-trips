@@ -436,7 +436,7 @@ class InternalBus(DatabaseModel):
             if leg.start_stop != self.trip_cache.hanover:
                 for trip in leg.start_stop.trips_picked_up:
                     stoporder = trip.get_pickup_stoporder()
-                    stoporder.time = progress.time()
+                    stoporder.computed_time = progress.time()
                     stoporder.save()
 
                 progress += LOADING_TIME
@@ -448,7 +448,7 @@ class InternalBus(DatabaseModel):
             if leg.end_stop != self.trip_cache.lodge:
                 for trip in leg.end_stop.trips_dropped_off:
                     stoporder = trip.get_dropoff_stoporder()
-                    stoporder.time = progress.time()
+                    stoporder.computed_time = progress.time()
                     stoporder.save()
 
         return directions
@@ -558,7 +558,11 @@ class StopOrder(DatabaseModel):
     bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    time = models.TimeField(null=True)
+
+    computed_time = models.TimeField(
+        'Pickup/dropoff time computed by Google Maps',
+        null=True, default=None, editable=False)
+
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(
@@ -572,6 +576,13 @@ class StopOrder(DatabaseModel):
     class Meta:
         unique_together = ['trips_year', 'bus', 'trip']
         ordering = ['order']
+
+    # TODO: handle time calculations more efficiently
+
+    @property
+    def time(self):
+        self.bus.update_stop_times()
+        return self.computed_time
 
     @property
     def stop(self):
