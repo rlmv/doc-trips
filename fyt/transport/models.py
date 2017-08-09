@@ -591,8 +591,9 @@ class StopOrder(DatabaseModel):
         """
         Re-compute pickup and dropoff times for this bus.
         """
-        self.bus.update_stop_times()
-        self.refresh_from_db()
+        if self.bus.dirty:
+            self.bus.update_stop_times()
+            self.refresh_from_db()
         return self.computed_time
 
     @property
