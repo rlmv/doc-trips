@@ -15,11 +15,11 @@ from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
 from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (
     externalbus_urlpatterns,
-    route_urlpatterns,
     internalbus_urlpatterns,
+    route_urlpatterns,
     stop_urlpatterns,
-    vehicle_urlpatterns,
     transportconfig_urlpatterns,
+    vehicle_urlpatterns,
 )
 from fyt.trips.urls import (
     campsite_urlpatterns,

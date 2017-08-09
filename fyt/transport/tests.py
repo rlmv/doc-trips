@@ -1,6 +1,6 @@
 import itertools
 import unittest
-from datetime import date, timedelta, time
+from datetime import date, time, timedelta
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -15,13 +15,13 @@ from fyt.test import FytTestCase
 from fyt.transport import maps
 from fyt.transport.models import (
     ExternalBus,
-    Route,
+    Hanover,
     InternalBus,
+    Lodge,
+    Route,
     Stop,
     StopOrder,
     TransportConfig,
-    Hanover,
-    Lodge,
     sort_by_distance,
 )
 from fyt.transport.signals import resolve_dropoff, resolve_pickup
@@ -35,7 +35,7 @@ from fyt.transport.views import (
     get_internal_rider_matrix,
     get_internal_route_matrix,
     preload_transported_trips,
-    trip_transport_matrix
+    trip_transport_matrix,
 )
 from fyt.trips.models import Section, Trip
 

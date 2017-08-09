@@ -3,6 +3,7 @@ from django.conf.urls import url
 from fyt.db.urlhelpers import DB_REGEX
 from fyt.transport.views import *
 
+
 transportconfig_urlpatterns = [
     url(r'^settings/$', UpdateTransportConfig.as_view(), name='settings')
 ]

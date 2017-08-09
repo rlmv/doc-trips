@@ -19,8 +19,8 @@ from fyt.incoming.models import (
     Settings,
 )
 from fyt.permissions.views import DatabaseReadPermissionRequired
-from fyt.trips.models import Section, Trip, TripType
 from fyt.transport.models import ExternalBus
+from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
 

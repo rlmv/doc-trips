@@ -1,7 +1,8 @@
+from datetime import timedelta
+
 import googlemaps
 from django.conf import settings
 from googlemaps.exceptions import ApiError, TransportError
-from datetime import timedelta
 
 
 """

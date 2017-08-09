@@ -12,7 +12,7 @@ from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
-from fyt.transport.models import Stop, ExternalBus, Route
+from fyt.transport.models import ExternalBus, Route, Stop
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 

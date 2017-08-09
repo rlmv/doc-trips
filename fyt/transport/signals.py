@@ -2,8 +2,8 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from fyt.transport.models import InternalBus, StopOrder, Stop
-from fyt.trips.models import Trip, TripTemplate, Section
+from fyt.transport.models import InternalBus, Stop, StopOrder
+from fyt.trips.models import Section, Trip, TripTemplate
 
 
 def create_dropoff(bus, trip):

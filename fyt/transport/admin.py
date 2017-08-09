@@ -2,8 +2,8 @@ from django.contrib import admin
 
 from fyt.transport.models import (
     ExternalBus,
-    Route,
     InternalBus,
+    Route,
     StopOrder,
     Vehicle,
 )

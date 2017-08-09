@@ -11,12 +11,12 @@ from model_utils import FieldTracker
 
 from fyt.db.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
-from fyt.transport.category import INTERNAL, EXTERNAL
+from fyt.transport.category import EXTERNAL, INTERNAL
 from fyt.transport.managers import (
     ExternalBusManager,
     ExternalPassengerManager,
-    RouteManager,
     InternalBusManager,
+    RouteManager,
     StopManager,
     StopOrderManager,
 )

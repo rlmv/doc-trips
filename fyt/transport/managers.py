@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import Q
 
-from fyt.utils.matrix import OrderedMatrix
 from fyt.transport.category import EXTERNAL, INTERNAL
+from fyt.utils.matrix import OrderedMatrix
 
 
 class StopManager(models.Manager):

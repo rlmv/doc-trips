@@ -5,8 +5,8 @@ from braces.views import FormValidMessageMixin
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from vanilla.views import FormView, TemplateView
 from raven.contrib.django.raven_compat.models import client as sentry
+from vanilla.views import FormView, TemplateView
 
 from fyt.db.views import (
     DatabaseCreateView,
@@ -25,14 +25,14 @@ from fyt.permissions.views import (
 from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
 from fyt.transport.models import (
     ExternalBus,
-    Route,
+    Hanover,
     InternalBus,
+    Lodge,
+    Route,
     Stop,
     StopOrder,
-    Vehicle,
     TransportConfig,
-    Hanover,
-    Lodge
+    Vehicle,
 )
 from fyt.trips.models import Section, Trip, TripTemplate
 from fyt.utils.cache import cache_as, preload
