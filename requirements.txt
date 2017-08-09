@@ -1,7 +1,7 @@
 bleach==1.4.3
 boto==2.36.0
 coverage==3.7.1
-googlemaps==2.2
+googlemaps==2.5.1
 dj-database-url==0.4.2
 django==1.11
 django-bulk-update==1.1.10
