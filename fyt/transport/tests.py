@@ -1804,6 +1804,28 @@ class InternalBusTimingTestCase(TransportTestCase):
         self.assertEqual(dropped_off.get_pickup_time(), None)
         self.assertEqual(picked_up.get_dropoff_time(), None)
 
+    def test_stoporder_time_is_up_to_date(self):
+        bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            route__category=Route.INTERNAL)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            dropoff_route=bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__dropoff_stop__distance=4,
+            section__leaders_arrive=bus.date-timedelta(days=2))
+
+        stoporder = trip.get_dropoff_stoporder()
+        self.assertIsNone(stoporder.computed_time)
+
+        # Accessing the `time` property computes times, and updates
+        # the `computed_time` field
+        self.assertEqual(stoporder.time, time(7, 38, 40))
+        self.assertEqual(stoporder.computed_time, time(7, 38, 40))
+
 
 class MapsTestCases(TransportTestCase):
 

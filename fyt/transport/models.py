@@ -578,9 +578,11 @@ class StopOrder(DatabaseModel):
         ordering = ['order']
 
     # TODO: handle time calculations more efficiently
-
     @property
     def time(self):
+        """
+        Re-compute pickup and dropoff times for this bus.
+        """
         self.bus.update_stop_times()
         self.refresh_from_db()
         return self.computed_time
