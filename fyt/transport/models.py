@@ -580,6 +580,7 @@ class StopOrder(DatabaseModel):
             (DROPOFF, DROPOFF)))
 
     objects = StopOrderManager()
+    tracker = FieldTracker(fields=['order'])
 
     class Meta:
         unique_together = ['trips_year', 'bus', 'trip']

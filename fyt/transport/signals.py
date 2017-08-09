@@ -122,6 +122,15 @@ def mark_buses_dirty_for_address_changes(instance, created, **kwargs):
         affected_buses.update(dirty=True)
 
 
+@receiver(post_save, sender=StopOrder)
+def mark_buses_dirty_for_order_changes(instance, created, **kwargs):
+    """
+    Bus directions and times change when the route is re-arranged.
+    """
+    if not created and instance.tracker.has_changed('order'):
+        mark_dirty(instance.bus)
+
+
 @receiver(post_save, sender=TripTemplate)
 def update_ordering_for_triptemplate_stop_changes(instance, created, **kwargs):
     """

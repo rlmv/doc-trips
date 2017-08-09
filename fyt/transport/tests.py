@@ -1915,6 +1915,34 @@ class InternalBusTimingTestCase(TransportTestCase):
         self.assertTrue(dropoff_bus.dirty)
         self.assertTrue(dropoff_bus.dirty)
 
+    def test_changing_ordering_marks_bus_as_dirty(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            section__leaders_arrive=date_leaders_arrive)
+
+        # Mark bus as having computed times
+        dropoff_bus.dirty = False
+        dropoff_bus.save()
+
+        # Update the StopOrder
+        ordering = trip.get_dropoff_stoporder()
+        ordering.order = 400
+        ordering.save()
+
+        dropoff_bus.refresh_from_db()
+        self.assertTrue(dropoff_bus.dirty)
+
 
 class MapsTestCases(TransportTestCase):
 
