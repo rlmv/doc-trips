@@ -24,6 +24,7 @@ from fyt.transport.models import (
     Lodge,
     sort_by_distance,
 )
+from fyt.transport.signals import resolve_dropoff, resolve_pickup
 from fyt.transport.views import (
     EXCEEDS_CAPACITY,
     NOT_SCHEDULED,
@@ -1825,6 +1826,50 @@ class InternalBusTimingTestCase(TransportTestCase):
         # the `computed_time` field
         self.assertEqual(stoporder.time, time(7, 38, 40))
         self.assertEqual(stoporder.computed_time, time(7, 38, 40))
+
+    def test_resolve_dropoff_or_pickup_sets_dirty_flag(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            section__leaders_arrive=date_leaders_arrive)
+
+        # Dropoffs:
+        self.assertTrue(dropoff_bus.dirty)
+        dropoff_bus.update_stop_times()
+        dropoff_bus.refresh_from_db()
+        self.assertFalse(dropoff_bus.dirty)
+        resolve_dropoff(trip)
+        dropoff_bus.refresh_from_db()
+        self.assertTrue(dropoff_bus.dirty)
+
+        # Same for pickups:
+        self.assertTrue(pickup_bus.dirty)
+        pickup_bus.update_stop_times()
+        pickup_bus.refresh_from_db()
+        self.assertFalse(pickup_bus.dirty)
+        resolve_pickup(trip)
+        pickup_bus.refresh_from_db()
+        self.assertTrue(pickup_bus.dirty)
 
 
 class MapsTestCases(TransportTestCase):

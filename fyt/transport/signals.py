@@ -22,8 +22,12 @@ def create_pickup(bus, trip):
 
 
 def resolve_dropoff(trip):
-    # Delete existing orderings (does nothing when created)
-    trip.stoporder_set.filter(stop_type=StopOrder.DROPOFF).delete()
+    # Mark the old bus as `dirty` and delete the old StopOrder
+    ordering = trip.get_dropoff_stoporder()
+    if ordering is not None:
+        ordering.bus.dirty = True
+        ordering.bus.save()
+        ordering.delete()
 
     new_bus = trip.get_dropoff_bus()
     if new_bus:
@@ -31,8 +35,12 @@ def resolve_dropoff(trip):
 
 
 def resolve_pickup(trip):
-    # Delete existing (NoOp when created)
-    trip.stoporder_set.filter(stop_type=StopOrder.PICKUP).delete()
+    # Mark the old bus as `dirty` and delete the old StopOrder
+    ordering = trip.get_pickup_stoporder()
+    if ordering is not None:
+        ordering.bus.dirty = True
+        ordering.bus.save()
+        ordering.delete()
 
     new_bus = trip.get_pickup_bus()
     if new_bus:

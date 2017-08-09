@@ -233,6 +233,10 @@ class InternalBus(DatabaseModel):
     date = models.DateField()
     notes = models.TextField(help_text='for the bus driver')
 
+    dirty = models.BooleanField(
+        'Do directions and times need to be updated?',
+        default=True, editable=False)
+
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
         ordering = ['date']
@@ -431,6 +435,7 @@ class InternalBus(DatabaseModel):
         else:
             progress = DEPARTURE_TIME
 
+        # TODO: wrap this whole update in a transaction?
         for leg in legs_to_lodge:
 
             if leg.start_stop != self.trip_cache.hanover:
@@ -450,6 +455,9 @@ class InternalBus(DatabaseModel):
                     stoporder = trip.get_dropoff_stoporder()
                     stoporder.computed_time = progress.time()
                     stoporder.save()
+
+        self.dirty = False
+        self.save()
 
         return directions
 
