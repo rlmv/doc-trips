@@ -82,7 +82,7 @@ class Stop(DatabaseModel):
         ordering = ['name']
 
     objects = StopManager()
-    tracker = FieldTracker(fields=['route'])
+    tracker = FieldTracker(fields=['route', 'address', 'lat_lng'])
 
     name = models.CharField(max_length=255)
     address = models.CharField(

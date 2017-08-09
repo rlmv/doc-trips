@@ -1871,6 +1871,50 @@ class InternalBusTimingTestCase(TransportTestCase):
         pickup_bus.refresh_from_db()
         self.assertTrue(pickup_bus.dirty)
 
+    def test_changing_stop_addresses_marks_bus_as_dirty(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            section__leaders_arrive=date_leaders_arrive)
+
+        # Mark buses as having computed times
+        dropoff_bus.dirty = False
+        dropoff_bus.save()
+        pickup_bus.dirty = False
+        pickup_bus.save()
+
+        # Change addresses of stops on the route
+        trip.template.pickup_stop.address = '12 Sargent St, Hanover, NH 03755'
+        trip.template.pickup_stop.save()
+        trip.template.dropoff_stop.lat_lng = '43.705639,-72.297404'
+        trip.template.dropoff_stop.save()
+
+        dropoff_bus.refresh_from_db()
+        pickup_bus.refresh_from_db()
+
+        self.assertTrue(dropoff_bus.dirty)
+        self.assertTrue(dropoff_bus.dirty)
+
 
 class MapsTestCases(TransportTestCase):
 

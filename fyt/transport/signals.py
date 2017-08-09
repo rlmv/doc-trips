@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -21,12 +22,16 @@ def create_pickup(bus, trip):
         stop_type=StopOrder.PICKUP)
 
 
+def mark_dirty(bus):
+    bus.dirty = True
+    bus.save()
+
+
 def resolve_dropoff(trip):
     # Mark the old bus as `dirty` and delete the old StopOrder
     ordering = trip.get_dropoff_stoporder()
     if ordering is not None:
-        ordering.bus.dirty = True
-        ordering.bus.save()
+        mark_dirty(ordering.bus)
         ordering.delete()
 
     new_bus = trip.get_dropoff_bus()
@@ -38,8 +43,7 @@ def resolve_pickup(trip):
     # Mark the old bus as `dirty` and delete the old StopOrder
     ordering = trip.get_pickup_stoporder()
     if ordering is not None:
-        ordering.bus.dirty = True
-        ordering.bus.save()
+        mark_dirty(ordering.bus)
         ordering.delete()
 
     new_bus = trip.get_pickup_bus()
@@ -98,6 +102,24 @@ def update_ordering_for_stop_changes(instance, created, **kwargs):
 
         for trip in affected_pickups:
             resolve_pickup(trip)
+
+
+@receiver(post_save, sender=Stop)
+def mark_buses_dirty_for_address_changes(instance, created, **kwargs):
+    """
+    If the address of a Stop changes, then times and directions for buses
+    with this stop on their route are no longer valid.
+    """
+    if (not created and instance.tracker.has_changed('address')
+            or instance.tracker.has_changed('lat_lng')):
+
+        affected_buses = InternalBus.objects.filter(
+            Q(stoporder__trip__template__dropoff_stop=instance) |
+            Q(stoporder__trip__template__pickup_stop=instance))
+
+        # TODO: iterate and save if we use a signal to generate directions
+        # based on the dirty flag
+        affected_buses.update(dirty=True)
 
 
 @receiver(post_save, sender=TripTemplate)
