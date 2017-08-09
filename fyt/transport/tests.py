@@ -57,6 +57,7 @@ class TransportTestCase(FytTestCase):
         hanover = mommy.make(
             Stop,
             trips_year=self.trips_year,
+            lat_lng='43.7031377,-72.2898190',
             address='6 N Main St, Hanover, NH 03755')
 
         lodge = mommy.make(
