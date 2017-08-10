@@ -19,7 +19,7 @@ all:
 
 install: venv
 	$(PIP) install --upgrade pip
-	$(PIP) install --upgrade -r requirements.txt
+	$(PIP) install --upgrade -r requirements/dev.txt
 
 venv:
 	$(INTERPRETER) -m venv $(VENV)

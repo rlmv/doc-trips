@@ -1,34 +1,3 @@
-bleach==1.4.3
-boto==2.36.0
-coverage==3.7.1
-googlemaps==2.5.1
-dj-database-url==0.4.2
-django==1.11
-django-bulk-update==1.1.10
-django-crispy-forms==1.6.0
-django-extensions==1.7.8
-django-debug-toolbar==1.7
-django-filter==1.0.2
-django-model-utils==3.0.0
-django-pipeline==1.6.9
-django-storages==1.5.1
-django-tables2==1.6.0
-django-test-without-migrations==0.6
-django-toolbelt==0.0.1
-django-vanilla-views==1.0.3
-django-webtest==1.9.1
-importanize==0.4.1
-mammoth==0.3.11
-raven==6.1.0
-requests==2.6.0
-sphinx==1.3.1
-tblib==1.3.0
-webtest==2.0.27
-whitenoise==3.3.0
+# Heroku requires a top-level requirements file
 
-# Waiting for next release > 1.3.2
--e git://github.com/vandersonmota/model_mommy.git#egg=model_mommy
-
--e git://github.com/rlmv/django-bootstrap3-datetimepicker.git#egg=django_bootstrap3_datetimepicker-origin
-
--e git://github.com/brack3t/django-braces.git@f8dcfca48c1b6f4a182bab6892068732e7b32072#egg=django_braces-origin
+-r requirements/prod.txt

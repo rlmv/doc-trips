@@ -21,7 +21,7 @@ env:
         - secure: "C3tkgiTYn+ANpHGKYlNxNJd0F1J0iXu6NMtt+1FikECrO44MZGta2weyNQsw+jSx5VgUGaNZlSPAIZG6l1UYxqxS+nbHax9LmU5oeD9Nvis2ElXaoYYxqL5qvVM9hj2xlwmki9eLL+zfw5UJAEpIPy42b3GFoVNA6SEeKMdpnGA6Gs1idzU4Y8cGCGLcbAJHsJ5GaVFxB1LBNuTfqaZ9KbBAwu0tV/H/smZidhgPkSY29sKEvdOT7RGtV0Hy6NsEjEkaSNp/09ojMxHfdjSjKmwb2+UGr6hl8R11doCsL2hOCeAJ9F/4ES/iSpl4Xy1xmmwB6ukGfpXp8EivQswkcnBoubGqlD3Jnk1qjqf/T7QZNV+Nl8rScbZo64aucFMFF/f+AZuOzi5JdKKmXMg9yAiZtcA39HSeuDuQQh790ErSYnmhx+ukj1ZBVkkdhBok2uvD3KgfMEBJcxBwjn9IfmUIB65tdPAJPdaoOnU+bkdITwqu3trzXyWmDguGdjz5VCedLPwOESe8dgSNvQ+l8p9BIKnlkjeHdQQpD9uNgJ6u9HMRJaN5crcwHaHSir4QGLgxGD2Oo61EOb6pMKZdCNyr6UShyuvXkVzVuz1SEr8ThKguaa/fBguOvYhRchBFmKG7L5DRlSddqEA3kWNYRZxPYjh/9NNOpCm35fiuKD8="
 
 install:
-    - pip install -r requirements.txt
+    - pip install -r requirements/test.txt
     - pip install psycopg2 --quiet
 
 before_script:
