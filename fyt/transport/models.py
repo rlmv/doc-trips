@@ -1,7 +1,7 @@
 from collections import defaultdict
 from copy import copy
 from datetime import datetime, timedelta
-from itertools import takewhile
+from itertools import takewhile, groupby
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -347,29 +347,26 @@ class InternalBus(DatabaseModel):
         DROPOFF_ATTR = 'trips_dropped_off'
         PICKUP_ATTR = 'trips_picked_up'
 
-        def set_trip_attr(stop, order):
-            for attr in [DROPOFF_ATTR, PICKUP_ATTR]:
-                if not hasattr(stop, attr):
-                    setattr(stop, attr, [])
-
-            if order.stop_type == StopOrder.DROPOFF:
-                getattr(stop, DROPOFF_ATTR).append(self.trip_cache.get(order.trip))
-
-            if order.stop_type == StopOrder.PICKUP:
-                getattr(stop, PICKUP_ATTR).append(self.trip_cache.get(order.trip))
-
-            return stop
-
         picking_up = self.trip_cache.pickups
         dropping_off = self.trip_cache.dropoffs
         returning = self.trip_cache.returns
 
         stops = []
-        for order in self.stoporder_set.all():
-            if len(stops) == 0 or stops[-1] != order.stop:  # new stop
-                stops.append(set_trip_attr(order.stop, order))
-            else:  # another trip for the same stop
-                set_trip_attr(stops[-1], order)
+        orders_by_stop = groupby(self.stoporder_set.all(), lambda so: so.stop)
+        for stop, stoporders in orders_by_stop:
+            stoporders = list(stoporders)
+
+            stop.trips_dropped_off = [
+                self.trip_cache.get(order.trip)
+                for order in stoporders
+                if order.is_dropoff]
+
+            stop.trips_picked_up = [
+                self.trip_cache.get(order.trip)
+                for order in stoporders
+                if order.is_pickup]
+
+            stops.append(stop)
 
         # all buses start from Hanover
         hanover = self.trip_cache.hanover
