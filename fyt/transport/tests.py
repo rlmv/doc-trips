@@ -1538,7 +1538,7 @@ class RefactorTestCase(TransportTestCase):
              'stop_type': StopOrder.PICKUP}])
 
 
-class StopOrderingTestCase(FytTestCase):
+class StopOrderTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -1619,6 +1619,18 @@ class StopOrderingTestCase(FytTestCase):
 
         order = StopOrder.objects.get(bus=bus)
         self.assertEqual(order.stop, trip.template.dropoff_stop)
+
+    def test_is_pickup(self):
+        pickup = mommy.make(StopOrder, stop_type=StopOrder.PICKUP)
+        dropoff = mommy.make(StopOrder, stop_type=StopOrder.DROPOFF)
+        self.assertTrue(pickup.is_pickup)
+        self.assertFalse(dropoff.is_pickup)
+
+    def test_is_dropoff(self):
+        pickup = mommy.make(StopOrder, stop_type=StopOrder.PICKUP)
+        dropoff = mommy.make(StopOrder, stop_type=StopOrder.DROPOFF)
+        self.assertFalse(pickup.is_dropoff)
+        self.assertTrue(dropoff.is_dropoff)
 
 
 class ExternalBusModelTestCase(TransportTestCase):

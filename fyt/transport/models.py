@@ -615,11 +615,19 @@ class StopOrder(DatabaseModel):
 
     @property
     def stop(self):
-        if self.stop_type == self.DROPOFF:
+        if self.is_dropoff:
             return self.trip.template.dropoff_stop
-        elif self.stop_type == self.PICKUP:
+        elif self.is_pickup:
             return self.trip.template.pickup_stop
         raise Exception('bad stop_type %s' % self.stop_type)
+
+    @property
+    def is_pickup(self):
+        return self.stop_type == self.PICKUP
+
+    @property
+    def is_dropoff(self):
+        return self.stop_type == self.DROPOFF
 
     def save(self, **kwargs):
         """
