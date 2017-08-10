@@ -1,0 +1,15 @@
+{% load maps %}
+
+<div class="row">
+  {% if stop.trips_dropped_off %}
+  <div class="col-sm-3">
+    <p class="h5"> Dropoff {% trips_with_counts stop.trips_dropped_off %} </p>
+  </div>
+  {% endif %}
+
+  {% if stop.trips_picked_up %}
+  <div class="col-sm-3">
+    <p class="h5"> Pickup {% trips_with_counts stop.trips_picked_up %} </p>
+  </div>
+  {% endif %}
+</div>

@@ -1,0 +1,12 @@
+{% load maps %}
+{% load checklists %}
+
+<div>
+  {% if stop.dropoff %}
+  <p class="h5"> Dropoff {% person_checklist stop.dropoff %} </p>
+  {% endif %}
+
+  {% if stop.pickup %}
+  <p class="h5"> Pickup {% person_checklist stop.pickup phone_numbers=True %} </p>
+  {% endif %}
+</div>

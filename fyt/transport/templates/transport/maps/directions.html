@@ -9,17 +9,14 @@
   <ul class="list-group">
     {% for leg in directions.legs %}
 
-    {% if forloop.first %}
     <li class="list-group-item {% if leg.start_stop.over_capacity %} list-group-item-danger {% endif %}">
-
-      <h3 class="list-group-item-heading"> From {{ leg.start_stop.location_str }} </h3>
+      <h3 class="list-group-item-heading"> {{ leg.start_stop.location_str }} </h3>
       <p> {{ leg.start_stop.directions }} </p>
 
-      {% include start_stop_template with start_stop=leg.start_stop %}
+      {% include stop_template with stop=leg.start_stop %}
 
       <p class="h5 text-muted"> You should have {{ leg.start_stop.passenger_count }} passengers. </p>
     </li>
-    {% endif %}
 
     {% for step in leg.steps %}
     <li class="list-group-item {% if leg.start_stop.over_capacity %} list-group-item-danger {% endif %}">
@@ -27,21 +24,17 @@
     </li>
     {% endfor %}
 
-    <li class="list-group-item {% if leg.end_stop.over_capacity %} list-group-item-danger {% endif %}">
+    {% if forloop.last %}
+    <li class="list-group-item">
       <h3 class="list-group-item-heading">
         {{ leg.end_stop.location_str }}
       </h3>
-      <p> {{ leg.end_stop.directions }} </p>
-
-      {% include end_stop_template with end_stop=leg.end_stop %}
-
-      {% if leg.end_stop.over_capacity %}
-      <p class="h5"> <i class="fa fa-warning"></i> Over capacity! There are <strong>{{ leg.end_stop.passenger_count }}</strong> passengers on this leg. </p>
-      {% endif %}
-
+      {% include stop_template with stop=leg.end_stop %}
       <p class="h5 text-muted"> You should have {{ leg.end_stop.passenger_count }} passengers. </p>
-
     </li>
+    {% endif %}
+
     {% endfor %}
   </ul>
-  {% endif %}
+</p>
+{% endif %}

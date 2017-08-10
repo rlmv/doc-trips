@@ -35,8 +35,7 @@ def directions(bus):
     try:
         return {
             'directions': bus.directions(),
-            'start_stop_template': 'transport/maps/_internal_start_stop.html',
-            'end_stop_template': 'transport/maps/_internal_end_stop.html'
+            'stop_template': 'transport/maps/_internal_stop.html'
         }
     except MapError as exc:
         return {'error': exc}
@@ -50,8 +49,7 @@ def directions_to_hanover(bus):
     try:
         return {
             'directions': bus.directions_to_hanover(),
-            'start_stop_template': 'transport/maps/_external_start_stop.html',
-            'end_stop_template': 'transport/maps/_external_end_stop.html'
+            'stop_template': 'transport/maps/_external_stop.html'
         }
     except MapError as exc:
         return {'error': exc}
@@ -65,8 +63,7 @@ def directions_from_hanover(bus):
     try:
         return {
             'directions': bus.directions_from_hanover(),
-            'start_stop_template': 'transport/maps/_external_start_stop.html',
-            'end_stop_template': 'transport/maps/_external_end_stop.html'
+            'stop_template': 'transport/maps/_external_stop.html',
         }
     except MapError as exc:
         return {'error': exc}
