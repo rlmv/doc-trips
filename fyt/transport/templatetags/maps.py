@@ -34,7 +34,8 @@ def directions(bus):
     """
     try:
         return {
-            'directions': bus.directions(),
+            # TODO: refactor to use bus.directions()
+            'directions': bus.update_stop_times(),
             'stop_template': 'transport/maps/_internal_stop.html'
         }
     except MapError as exc:
