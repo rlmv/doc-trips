@@ -227,6 +227,9 @@ class InternalBus(DatabaseModel):
     """
     Represents a scheduled internal transport.
     """
+    # Time it takes to load and unload trips
+    LOADING_TIME = timedelta(minutes=15)
+
     objects = InternalBusManager()
 
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
@@ -395,15 +398,14 @@ class InternalBus(DatabaseModel):
     def visits_lodge(self):
         return self.trip_cache.pickups or self.trip_cache.returns
 
-    def update_stop_times(self):
+    def get_departure_time(self):
         """
-        Go through the bus route and update the times at which trips are
-        picked up and dropped off.
+        Return the time that the bus leaves Hanover, back-calculated so
+        that the bus does not get to the Lodge before 11am.
+
+        Otherwise, the default departure time is 7:30am.
         """
         directions = self.directions()
-
-        # Time it takes to load and unload trips
-        LOADING_TIME = timedelta(minutes=15)
 
         # Leave at 7:30 AM
         DEPARTURE_TIME = datetime(
@@ -425,15 +427,28 @@ class InternalBus(DatabaseModel):
                       directions.legs))
 
         travel_time = sum((leg.duration for leg in legs_to_lodge), timedelta())
-        loading_time = (len(legs_to_lodge) - 1) * LOADING_TIME
+        loading_time = (len(legs_to_lodge) - 1) * self.LOADING_TIME
         total_duration = travel_time + loading_time
 
+        too_early = DEPARTURE_TIME + total_duration < MIN_LODGE_ARRIVAL_TIME
         # Don't arrive at the Lodge until 11am
-        if (self.visits_lodge and (
-                DEPARTURE_TIME + total_duration < MIN_LODGE_ARRIVAL_TIME)):
-            progress = MIN_LODGE_ARRIVAL_TIME - total_duration
-        else:
-            progress = DEPARTURE_TIME
+        if self.visits_lodge and too_early:
+            return MIN_LODGE_ARRIVAL_TIME - total_duration
+
+        return DEPARTURE_TIME
+
+    def update_stop_times(self):
+        """
+        Go through the bus route and update the times at which trips are
+        picked up and dropped off.
+        """
+        directions = self.directions()
+
+        progress = self.get_departure_time()
+
+        legs_to_lodge = list(
+            takewhile(lambda leg: leg.start_stop != self.trip_cache.lodge,
+                      directions.legs))
 
         # TODO: wrap this whole update in a transaction?
         for leg in legs_to_lodge:
@@ -444,7 +459,7 @@ class InternalBus(DatabaseModel):
                     stoporder.computed_time = progress.time()
                     stoporder.save()
 
-                progress += LOADING_TIME
+                progress += self.LOADING_TIME
 
             leg.start_time = progress.time()
             progress += leg.duration
@@ -518,6 +533,7 @@ class InternalBus(DatabaseModel):
                 return True
         return False
 
+    @cache_as('_directions')
     def directions(self):
         """
         Directions from Hanover to the Lodge, with information

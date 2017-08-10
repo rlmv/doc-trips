@@ -1,6 +1,6 @@
 import itertools
 import unittest
-from datetime import date, time, timedelta
+from datetime import date, datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -1741,7 +1741,8 @@ class InternalBusTimingTestCase(TransportTestCase):
         bus = mommy.make(
             InternalBus,
             trips_year=self.trips_year,
-            route__category=Route.INTERNAL)
+            route__category=Route.INTERNAL,
+            date=date(2015, 1, 1))
 
         picked_up = mommy.make(
             Trip,
@@ -1760,6 +1761,7 @@ class InternalBusTimingTestCase(TransportTestCase):
             section__leaders_arrive=bus.date-timedelta(days=2))
 
         directions = bus.update_stop_times()
+        self.assertEqual(bus.get_departure_time(), datetime(2015, 1, 1, 7, 30))
 
         self.assertEqual(picked_up.get_pickup_time(), time(8, 34, 7))
         self.assertEqual(dropped_off.get_dropoff_time(), time(11, 9, 10))
@@ -1780,7 +1782,8 @@ class InternalBusTimingTestCase(TransportTestCase):
         bus = mommy.make(
             InternalBus,
             trips_year=self.trips_year,
-            route__category=Route.INTERNAL)
+            route__category=Route.INTERNAL,
+            date=date(2015, 1, 1))
 
         dropped_off = mommy.make(
             Trip,
@@ -1799,6 +1802,8 @@ class InternalBusTimingTestCase(TransportTestCase):
             section__leaders_arrive=bus.date-timedelta(days=4))
 
         bus.update_stop_times()
+        self.assertEqual(bus.get_departure_time(),
+                         datetime(2015, 1, 1, 9, 15, 31))
 
         self.assertEqual(dropped_off.get_dropoff_time(), time(9, 24, 11))
         self.assertEqual(picked_up.get_pickup_time(), time(9, 48, 37))
