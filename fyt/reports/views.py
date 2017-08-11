@@ -565,10 +565,16 @@ class MedicalInfo(GenericReportView):
     def get_queryset(self):
         return Registration.objects.filter(
             trips_year=self.get_trips_year()
-        )
+        ).select_related(
+            'trippee',
+            'trippee__trip_assignment',
+            'trippee__trip_assignment__section',
+            'trippee__trip_assignment__template')
 
     header = [
-        'name', 'netid', 'section', 'trip',
+        'name',
+        'trip',
+        'netid',
         'medical conditions',
         'food allergies',
         'dietary restrictions',
@@ -579,9 +585,8 @@ class MedicalInfo(GenericReportView):
         trip = reg.get_trip_assignment()
         return [
             reg.name,
-            reg.user.netid,
-            trip.section.name if trip else '',
             trip,
+            reg.user.netid,
             reg.medical_conditions,
             reg.food_allergies,
             reg.dietary_restrictions,

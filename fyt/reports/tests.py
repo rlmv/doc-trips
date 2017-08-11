@@ -401,9 +401,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
         self.assertCsvReturns('db:reports:medical', [{
             'name': reg.name,
-            'netid': reg.user.netid,
-            'section': trip.section.name,
             'trip': str(trip),
+            'netid': reg.user.netid,
             'medical conditions': 'none',
             'needs': 'many',
             'food allergies': 'peaches',
