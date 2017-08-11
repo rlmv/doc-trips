@@ -69,7 +69,6 @@ INSTALLED_APPS = [
     'django_tables2',
     'pipeline',
     'raven.contrib.django.raven_compat',
-    'test_without_migrations',
 
     'fyt.applications',
     'fyt.croos',
@@ -90,7 +89,9 @@ INSTALLED_APPS = [
     'fyt.webauth',
 ]
 if DEBUG:
-    INSTALLED_APPS += ['debug_toolbar']
+    INSTALLED_APPS += [
+        'debug_toolbar',
+        'test_without_migrations']
     INTERNAL_IPS = ['127.0.0.1']
 
 MIDDLEWARE = [
