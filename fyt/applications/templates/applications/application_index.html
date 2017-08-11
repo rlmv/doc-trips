@@ -19,6 +19,9 @@
   {% url 'db:reports:dietary' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Dietary Restrictions" }}
 
+  {% url 'db:reports:medical' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Medical Info" }}
+
   {% url 'db:reports:leaders' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Trip Leaders" }}
 

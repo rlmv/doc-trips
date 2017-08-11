@@ -420,21 +420,63 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         reg = mommy.make(
             Registration,
             trips_year=self.trips_year,
+            trippee__trip_assignment=trip,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             medical_conditions='none',
             epipen=True,
             needs='many')
 
-        inc = mommy.make(
-            IncomingStudent,
+        leader = mommy.make(
+            Volunteer,
             trips_year=self.trips_year,
-            trip_assignment=trip,
-            registration=reg)
+            status=Volunteer.LEADER,
+            assigned_trip=trip,
+            food_allergies='peaches',
+            dietary_restrictions='gluten free',
+            epipen=True,
+            medical_conditions='none',
+            needs='nada')
+
+        croo = mommy.make(
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.CROO,
+            food_allergies='peaches',
+            dietary_restrictions='vegan',
+            epipen=False,
+            medical_conditions='',
+            needs='zilch')
+
+        neither = mommy.make(
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.PENDING)
 
         self.assertCsvReturns('db:reports:medical', [{
+            'name': croo.applicant.name,
+            'trip': '',
+            'role': 'CROO',
+            'netid': croo.applicant.netid,
+            'medical conditions': '',
+            'needs': 'zilch',
+            'food allergies': 'peaches',
+            'dietary restrictions': 'vegan',
+            'epipen': 'No'
+        }, {
+            'name': leader.applicant.name,
+            'trip': str(trip),
+            'role': 'LEADER',
+            'netid': leader.applicant.netid,
+            'medical conditions': 'none',
+            'needs': 'nada',
+            'food allergies': leader.food_allergies,
+            'dietary restrictions': leader.dietary_restrictions,
+            'epipen': 'Yes'
+        }, {
             'name': reg.name,
             'trip': str(trip),
+            'role': 'TRIPPEE',
             'netid': reg.user.netid,
             'medical conditions': 'none',
             'needs': 'many',

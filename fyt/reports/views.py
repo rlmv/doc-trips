@@ -589,41 +589,49 @@ class DietaryRestrictions(GenericReportView):
             ]
 
 
-class MedicalInfo(GenericReportView):
+class MedicalInfo(DietaryRestrictions):
+    """
+    All medical info for Trippees, Croos, and Leaders.
+    """
 
     file_prefix = 'Medical-Info'
-
-    def get_queryset(self):
-        return Registration.objects.filter(
-            trips_year=self.get_trips_year()
-        ).select_related(
-            'trippee',
-            'trippee__trip_assignment',
-            'trippee__trip_assignment__section',
-            'trippee__trip_assignment__template')
 
     header = [
         'name',
         'trip',
+        'role',
         'netid',
         'medical conditions',
         'food allergies',
         'dietary restrictions',
         'epipen',
-        'needs',
-    ]
-    def get_row(self, reg):
-        trip = reg.get_trip_assignment()
-        return [
-            reg.name,
-            trip,
-            reg.user.netid,
-            reg.medical_conditions,
-            reg.food_allergies,
-            reg.dietary_restrictions,
-            reg.get_epipen_display(),
-            reg.needs,
-        ]
+        'needs']
+
+    def get_row(self, obj):
+        if isinstance(obj, Registration):
+            return [
+                obj.name,
+                obj.get_trip_assignment(),
+                'TRIPPEE',
+                obj.user.netid,
+                obj.medical_conditions,
+                obj.food_allergies,
+                obj.dietary_restrictions,
+                obj.get_epipen_display(),
+                obj.needs
+            ]
+        else:  # Application
+            return [
+                obj.applicant.name,
+                obj.assigned_trip or '',
+                obj.status,
+                obj.applicant.netid,
+                obj.medical_conditions,
+                obj.food_allergies,
+                obj.dietary_restrictions,
+                obj.get_epipen_display(),
+                obj.needs
+            ]
 
 
 class Feelings(GenericReportView):
