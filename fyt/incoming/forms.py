@@ -209,7 +209,7 @@ class TrippeeInfoForm(forms.ModelForm):
             'cancelled',
             'cancelled_fee',
             'med_info',
-            'show_med_info',
+            'hide_med_info',
             'decline_reason',
             'name',
             'netid',
@@ -239,13 +239,7 @@ class TrippeeInfoForm(forms.ModelForm):
         ),
         Fieldset(
             'Medical Info',
-            HTML(
-                "<p> To protect trippee privacy, medical information provided "
-                "by trippees in their registration is, by default, NOT "
-                "exported to leader packets. Checking the box below will "
-                "export this information to leader packets.</p>"
-            ),
-            'show_med_info',
+            'hide_med_info',
             Field('med_info', rows=3),
         ),
         Fieldset(

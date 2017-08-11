@@ -6,24 +6,24 @@
 
     <h4> {{ leader }} ({{ leader.class_year }}) </h4>
 
-	<strong> Medical Conditions: </strong> {{ leader.medical_conditions }}
-	
-	{% if leader.needs %}
+    <strong> Medical Conditions: </strong> {{ leader.medical_conditions }}
+
+    {% if leader.needs %}
     <br> <strong> Other Needs and Conditions: </strong> {{ leader.needs }}
-	{% endif %}
+    {% endif %}
 
     {% if leader.food_allergies %}
     <br> <strong> Food Allergies: </strong> {{ leader.food_allergies }}
     {% endif %}
 
-	{% if leader.dietary_restrictions %}
+    {% if leader.dietary_restrictions %}
     <br> <strong> Dietary Restrictions: </strong> {{ leader.dietary_restrictions }}
     {% endif %}
 
-    {% if leader.epipen %} 
-    <br> <strong> Carries an EpiPen </strong> 
+    {% if leader.epipen %}
+    <br> <strong> Carries an EpiPen </strong>
     {% endif %}
-    
+
     <hr class="hr-sm">
   </div>
   {% endfor %}
@@ -38,32 +38,32 @@
     <h4>{{ trippee.name }} ({{ trippee.get_gender }} &mdash; {{ trippee.get_hometown }} &mdash; born {{ trippee.birthday }})</h4>
 
     {% with reg=trippee.get_registration %}
-	<strong> Medical Conditions: </strong>
-	{% if trippee.med_info %}
-	  {# extra or overridden med info added to IncomingStudent #}
-      {{ trippee.med_info }} 
-	{% endif %}
+    <strong> Medical Conditions: </strong>
+    {% if trippee.med_info %}
+      {# extra or overridden med info added to IncomingStudent #}
+      {{ trippee.med_info }}
+    {% endif %}
 
-    {% if trippee.show_med_info %}
+    {% if not trippee.hide_med_info %}
       {# med info from registration #}
       {{ reg.medical_conditions }}
-	  {% if reg.needs %}
+      {% if reg.needs %}
       <br> <strong> Other Needs and Conditions: </strong> {{ reg.needs }}
       {% endif %}
-	{% endif %}
+    {% endif %}
 
     {% if reg.food_allergies %}
     <br> <strong> Food Allergies: </strong> {{ reg.food_allergies }}
     {% endif %}
 
-    {% if reg.epipen %} 
-    <br> <strong> Carries an EpiPen </strong> 
+    {% if reg.epipen %}
+    <br> <strong> Carries an EpiPen </strong>
     {% endif %}
 
-	{% if reg.dietary_restrictions %}
+    {% if reg.dietary_restrictions %}
     <br> <strong> Dietary Restrictions: </strong> {{ reg.dietary_restrictions }}
-	{% endif %}
-    
+    {% endif %}
+
     {% endwith %}
     <hr class="hr-sm">
   </div>

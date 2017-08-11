@@ -606,7 +606,7 @@ class ViewsTestCase(FytTestCase):
         self.assertContains(resp, 'dinosaurs')
         self.assertContains(resp, 'Carries an EpiPen')
 
-    def test_packet_hides_trippee_med_info_by_default(self):
+    def test_packet_can_hide_trippee_med_info(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         trippee = mommy.make(
@@ -614,6 +614,7 @@ class ViewsTestCase(FytTestCase):
             trips_year=trips_year,
             trip_assignment=trip,
             med_info='sparkles',
+            hide_med_info=True,
             registration=mommy.make(
                 Registration, trips_year=trips_year,
                 medical_conditions='magic',
@@ -626,14 +627,14 @@ class ViewsTestCase(FytTestCase):
         self.assertNotContains(resp, 'dinosaurs')
         self.assertContains(resp, 'sparkles')
 
-    def test_packet_can_show_trippee_med_info(self):
+    def test_packet_shows_trippee_med_info_by_default(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         trippee = mommy.make(
             IncomingStudent,
             trips_year=trips_year,
             trip_assignment=trip,
-            show_med_info=True,
+            hide_med_info=False,
             med_info='sparkles',
             registration=mommy.make(
                 Registration, trips_year=trips_year,

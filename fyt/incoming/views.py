@@ -393,7 +393,7 @@ class IncomingStudentDetail(DatabaseDetailView):
         'cancelled',
         'cancelled_fee',
         ('total cost', 'compute_cost'),
-        'show_med_info',
+        'hide_med_info',
         'med_info',
         'decline_reason',
         'notes'
