@@ -356,24 +356,57 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         trip = mommy.make(
             Trip, trips_year=self.trips_year)
 
+        leader = mommy.make(
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.LEADER,
+            assigned_trip=trip,
+            food_allergies='peaches',
+            dietary_restrictions='gluten free',
+            epipen=True)
+
+        croo = mommy.make(
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.CROO,
+            food_allergies='peaches',
+            dietary_restrictions='gluten free',
+            epipen=False)
+
+        neither = mommy.make(
+            Volunteer,
+            trips_year=self.trips_year,
+            status=Volunteer.PENDING)
+
         reg = mommy.make(
             Registration,
             trips_year=self.trips_year,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
-            epipen=True)
-
-        inc = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            trip_assignment=trip,
-            registration=reg)
+            epipen=True,
+            trippee__trip_assignment=trip)
 
         self.assertCsvReturns('db:reports:dietary', [{
-            'name': reg.name,
-            'netid': reg.user.netid,
-            'section': trip.section.name,
+            'name': croo.applicant.name,
+            'trip': '',
+            'role': 'CROO',
+            'netid': croo.applicant.netid,
+            'food allergies': croo.food_allergies,
+            'dietary restrictions': croo.dietary_restrictions,
+            'epipen': 'No'
+        }, {
+            'name': leader.applicant.name,
             'trip': str(trip),
+            'role': 'LEADER',
+            'netid': leader.applicant.netid,
+            'food allergies': leader.food_allergies,
+            'dietary restrictions': leader.dietary_restrictions,
+            'epipen': 'Yes'
+        }, {
+            'name': reg.name,
+            'trip': str(trip),
+            'role': 'TRIPPEE',
+            'netid': reg.user.netid,
             'food allergies': 'peaches',
             'dietary restrictions': 'gluten free',
             'epipen': 'Yes',
@@ -425,47 +458,6 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'name': reg.user.name,
             'netid': reg.user.netid,
             'email': reg.user.email
-        }])
-
-    def test_volunteer_dietary_restrictions(self):
-        leader = mommy.make(
-            Volunteer,
-            trips_year=self.trips_year,
-            status=Volunteer.LEADER,
-            assigned_trip=mommy.make(Trip, trips_year=self.trips_year),
-            food_allergies='peaches',
-            dietary_restrictions='gluten free',
-            epipen=True)
-
-        croo = mommy.make(
-            Volunteer,
-            trips_year=self.trips_year,
-            status=Volunteer.CROO,
-            food_allergies='peaches',
-            dietary_restrictions='gluten free',
-            epipen=False)
-
-        neither = mommy.make(
-            Volunteer,
-            trips_year=self.trips_year,
-            status=Volunteer.PENDING)
-
-        self.assertCsvReturns('db:reports:volunteer_dietary', [{
-            'name': croo.applicant.name,
-            'netid': croo.applicant.netid,
-            'role': Volunteer.CROO,
-            'trip': '',
-            'food allergies': croo.food_allergies,
-            'dietary restrictions': croo.dietary_restrictions,
-            'epipen': 'No'
-        }, {
-            'name': leader.applicant.name,
-            'netid': leader.applicant.netid,
-            'role': Volunteer.LEADER,
-            'trip': str(leader.assigned_trip),
-            'food allergies': leader.food_allergies,
-            'dietary restrictions': leader.dietary_restrictions,
-            'epipen': 'Yes'
         }])
 
     def test_foodboxes(self):

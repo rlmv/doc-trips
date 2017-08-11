@@ -1,4 +1,5 @@
 import csv
+import itertools
 from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
@@ -528,34 +529,64 @@ class Housing(GenericReportView):
 
 
 class DietaryRestrictions(GenericReportView):
-
+    """
+    Dietary restrictions for Leaders, Croos, and Trippees.
+    """
     file_prefix = 'Dietary-Restrictions'
 
     def get_queryset(self):
-        return Registration.objects.filter(
+        applications = Application.objects.filter(
             trips_year=self.get_trips_year()
-        ).prefetch_related(
-            'trippee__trip_assignment',
-            'trippee__trip_assignment__section'
+        ).filter(
+            Q(status=Application.LEADER) | Q(status=Application.CROO)
+        ).select_related(
+            'assigned_trip',
+            'assigned_trip__section',
+            'assigned_trip__template'
+        ).order_by(
+            'status'
         )
 
+        registrations = Registration.objects.filter(
+            trips_year=self.get_trips_year()
+        ).select_related(
+            'trippee__trip_assignment',
+            'trippee__trip_assignment__section',
+            'trippee__trip_assignment__template'
+        )
+
+        return itertools.chain(applications, registrations)
+
     header = [
-        'name', 'netid', 'section', 'trip',
+        'name',
+        'trip',
+        'role',
+        'netid',
         'food allergies',
         'dietary restrictions',
-        'epipen'
-    ]
-    def get_row(self, reg):
-        trip = reg.get_trip_assignment()
-        return [
-            reg.name,
-            reg.user.netid,
-            trip.section.name if trip else '',
-            trip,
-            reg.food_allergies,
-            reg.dietary_restrictions,
-            reg.get_epipen_display()
-        ]
+        'epipen']
+
+    def get_row(self, obj):
+        if isinstance(obj, Registration):
+            return [
+                obj.name,
+                obj.get_trip_assignment(),
+                'TRIPPEE',
+                obj.user.netid,
+                obj.food_allergies,
+                obj.dietary_restrictions,
+                obj.get_epipen_display()
+            ]
+        else:  # Application
+            return [
+                obj.applicant.name,
+                obj.assigned_trip or '',
+                obj.status,
+                obj.applicant.netid,
+                obj.food_allergies,
+                obj.dietary_restrictions,
+                obj.get_epipen_display()
+            ]
 
 
 class MedicalInfo(GenericReportView):
@@ -592,39 +623,6 @@ class MedicalInfo(GenericReportView):
             reg.dietary_restrictions,
             reg.get_epipen_display(),
             reg.needs,
-        ]
-
-class VolunteerDietaryRestrictions(GenericReportView):
-
-    file_prefix = 'Volunteer-Dietary-Restrictions'
-
-    def get_queryset(self):
-        return Application.objects.filter(
-            trips_year=self.get_trips_year()
-        ).filter(
-            Q(status=Application.LEADER) | Q(status=Application.CROO)
-        ).order_by(
-            'status'
-        )
-
-    header = [
-        'name',
-        'netid',
-        'role',
-        'trip',
-        'food allergies',
-        'dietary restrictions',
-        'epipen'
-    ]
-    def get_row(self, app):
-        return [
-            app.applicant.name,
-            app.applicant.netid,
-            app.status,
-            app.assigned_trip or '',
-            app.food_allergies,
-            app.dietary_restrictions,
-            app.get_epipen_display()
         ]
 
 

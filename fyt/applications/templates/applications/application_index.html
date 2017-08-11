@@ -16,7 +16,7 @@
   {% url 'db:reports:all_apps' trips_year=trips_year as url_ %}
   {{ url_|download_button:"All Applications" }}
 
-  {% url 'db:reports:volunteer_dietary' trips_year=trips_year as url_ %}
+  {% url 'db:reports:dietary' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Dietary Restrictions" }}
 
   {% url 'db:reports:leaders' trips_year=trips_year as url_ %}
