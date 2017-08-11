@@ -4,14 +4,12 @@ Things TODO
 Upgrades
 --------
 * Upgrade packages
-* Split dependencies into dev/production files
 * Use subqueries for get_graders (Django 1.11).
 
 Immediate
 ---------
 * Add an IncomingStudent filter for cancelled students
 * Fix incoming CSV import - see Sentry errors.
-* Show proper routes in Trip detail view
 * Rename triptemplate `name` to `number`.
 * Hide grant croo and trailwork trips from Trip matrix
 * Escape registration names in HTML
@@ -23,10 +21,7 @@ Immediate
 * Fix application filters / Django bug
 * Move trip assignment text from model to HTML.
 * Prefix ``cache_as`` attribute name with something
-* Add a croo waitlist. Needs to support people simultaneously being on the croo
-  waitlist and trip leaders, or croo waitlist and leader waitlist, etc
 * Add a global page of all spreadsheets.
-* Add spreadsheets for various registration sub-categories
 * Remove Section-specific info from `availability` field
 * Remove `19s reference from `croo_willing` text
 * Fix the assignment text about Section J placement exams. Make arrival time an editable text box?
