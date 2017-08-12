@@ -366,10 +366,9 @@ class TripTemplate(DatabaseModel):
     pickup_stop = models.ForeignKey(
         'transport.Stop', related_name='picked_up_trips',
         on_delete=models.PROTECT)
-    # TODO: remove null=True. All templates need a return route.
     return_route = models.ForeignKey(
         'transport.Route', related_name='returning_trips',
-        null=True, on_delete=models.PROTECT)
+        on_delete=models.PROTECT)
 
     # TODO: better related names
     campsite1 = models.ForeignKey(
