@@ -559,6 +559,7 @@ class DietaryRestrictions(GenericReportView):
 
     header = [
         'name',
+        'section',
         'trip',
         'role',
         'netid',
@@ -568,9 +569,11 @@ class DietaryRestrictions(GenericReportView):
 
     def get_row(self, obj):
         if isinstance(obj, Registration):
+            trip = obj.get_trip_assignment()
             return [
                 obj.name,
-                obj.get_trip_assignment(),
+                trip.section.name if trip else '',
+                trip.template.name if trip else '',
                 'TRIPPEE',
                 obj.user.netid,
                 obj.food_allergies,
@@ -578,9 +581,11 @@ class DietaryRestrictions(GenericReportView):
                 obj.get_epipen_display()
             ]
         else:  # Application
+            trip = obj.assigned_trip
             return [
                 obj.applicant.name,
-                obj.assigned_trip or '',
+                trip.section.name if trip else '',
+                trip.template.name if trip else '',
                 obj.status,
                 obj.applicant.netid,
                 obj.food_allergies,
@@ -598,6 +603,7 @@ class MedicalInfo(DietaryRestrictions):
 
     header = [
         'name',
+        'section',
         'trip',
         'role',
         'netid',
@@ -609,9 +615,11 @@ class MedicalInfo(DietaryRestrictions):
 
     def get_row(self, obj):
         if isinstance(obj, Registration):
+            trip = obj.get_trip_assignment()
             return [
                 obj.name,
-                obj.get_trip_assignment(),
+                trip.section.name if trip else '',
+                trip.template.name if trip else '',
                 'TRIPPEE',
                 obj.user.netid,
                 obj.medical_conditions,
@@ -621,9 +629,11 @@ class MedicalInfo(DietaryRestrictions):
                 obj.needs
             ]
         else:  # Application
+            trip = obj.assigned_trip
             return [
                 obj.applicant.name,
-                obj.assigned_trip or '',
+                trip.section.name if trip else '',
+                trip.template.name if trip else '',
                 obj.status,
                 obj.applicant.netid,
                 obj.medical_conditions,

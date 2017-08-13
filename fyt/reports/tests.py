@@ -354,7 +354,10 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
     def test_dietary_restrictions(self):
         trip = mommy.make(
-            Trip, trips_year=self.trips_year)
+            Trip,
+            section__name='A',
+            template__name='131',
+            trips_year=self.trips_year)
 
         leader = mommy.make(
             Volunteer,
@@ -388,6 +391,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
         self.assertCsvReturns('db:reports:dietary', [{
             'name': croo.applicant.name,
+            'section': '',
             'trip': '',
             'role': 'CROO',
             'netid': croo.applicant.netid,
@@ -396,7 +400,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'epipen': 'No'
         }, {
             'name': leader.applicant.name,
-            'trip': str(trip),
+            'section': 'A',
+            'trip': '131',
             'role': 'LEADER',
             'netid': leader.applicant.netid,
             'food allergies': leader.food_allergies,
@@ -404,7 +409,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'epipen': 'Yes'
         }, {
             'name': reg.name,
-            'trip': str(trip),
+            'section': 'A',
+            'trip': '131',
             'role': 'TRIPPEE',
             'netid': reg.user.netid,
             'food allergies': 'peaches',
@@ -415,7 +421,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
     def test_medical_info(self):
         trip = mommy.make(
             Trip,
-            trips_year=self.trips_year)
+            trips_year=self.trips_year,
+            section__name='A',
+            template__name='131',)
 
         reg = mommy.make(
             Registration,
@@ -455,6 +463,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
         self.assertCsvReturns('db:reports:medical', [{
             'name': croo.applicant.name,
+            'section': '',
             'trip': '',
             'role': 'CROO',
             'netid': croo.applicant.netid,
@@ -465,7 +474,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'epipen': 'No'
         }, {
             'name': leader.applicant.name,
-            'trip': str(trip),
+            'section': 'A',
+            'trip': '131',
             'role': 'LEADER',
             'netid': leader.applicant.netid,
             'medical conditions': 'none',
@@ -475,7 +485,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'epipen': 'Yes'
         }, {
             'name': reg.name,
-            'trip': str(trip),
+            'section': 'A',
+            'trip': '131',
             'role': 'TRIPPEE',
             'netid': reg.user.netid,
             'medical conditions': 'none',
