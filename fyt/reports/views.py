@@ -546,7 +546,6 @@ class DietaryRestrictions(GenericReportView):
         ).order_by(
             'status'
         )
-
         registrations = Registration.objects.filter(
             trips_year=self.get_trips_year()
         ).select_related(
@@ -554,7 +553,6 @@ class DietaryRestrictions(GenericReportView):
             'trippee__trip_assignment__section',
             'trippee__trip_assignment__template'
         )
-
         return itertools.chain(applications, registrations)
 
     header = [
@@ -563,42 +561,55 @@ class DietaryRestrictions(GenericReportView):
         'trip',
         'role',
         'netid',
+        # The following have the same accesors on both models:
         'food allergies',
         'dietary restrictions',
         'epipen']
 
+    def registration_base_fields(self, obj):
+        """
+        Basic registration info.
+        """
+        trip = obj.get_trip_assignment()
+        return [
+            obj.name,
+            trip.section.name if trip else '',
+            trip.template.name if trip else '',
+            'TRIPPEE',
+            obj.user.netid]
+
+    def volunteer_base_fields(self, obj):
+        """
+        Basic volunteer info.
+        """
+        trip = obj.assigned_trip
+        return [
+            obj.applicant.name,
+            trip.section.name if trip else '',
+            trip.template.name if trip else '',
+            obj.status,
+            obj.applicant.netid]
+
+    def shared_fields(self, obj):
+        """
+        Fields shared between Volunteer and Registration models.
+        """
+        return [
+            obj.food_allergies,
+            obj.dietary_restrictions,
+            obj.get_epipen_display()]
+
     def get_row(self, obj):
         if isinstance(obj, Registration):
-            trip = obj.get_trip_assignment()
-            return [
-                obj.name,
-                trip.section.name if trip else '',
-                trip.template.name if trip else '',
-                'TRIPPEE',
-                obj.user.netid,
-                obj.food_allergies,
-                obj.dietary_restrictions,
-                obj.get_epipen_display()
-            ]
-        else:  # Application
-            trip = obj.assigned_trip
-            return [
-                obj.applicant.name,
-                trip.section.name if trip else '',
-                trip.template.name if trip else '',
-                obj.status,
-                obj.applicant.netid,
-                obj.food_allergies,
-                obj.dietary_restrictions,
-                obj.get_epipen_display()
-            ]
+            return self.registration_base_fields(obj) + self.shared_fields(obj)
+        else:  # Volunteer
+            return self.volunteer_base_fields(obj) + self.shared_fields(obj)
 
 
 class MedicalInfo(DietaryRestrictions):
     """
     All medical info for Trippees, Croos, and Leaders.
     """
-
     file_prefix = 'Medical-Info'
 
     header = [
@@ -613,35 +624,13 @@ class MedicalInfo(DietaryRestrictions):
         'epipen',
         'needs']
 
-    def get_row(self, obj):
-        if isinstance(obj, Registration):
-            trip = obj.get_trip_assignment()
-            return [
-                obj.name,
-                trip.section.name if trip else '',
-                trip.template.name if trip else '',
-                'TRIPPEE',
-                obj.user.netid,
-                obj.medical_conditions,
-                obj.food_allergies,
-                obj.dietary_restrictions,
-                obj.get_epipen_display(),
-                obj.needs
-            ]
-        else:  # Application
-            trip = obj.assigned_trip
-            return [
-                obj.applicant.name,
-                trip.section.name if trip else '',
-                trip.template.name if trip else '',
-                obj.status,
-                obj.applicant.netid,
-                obj.medical_conditions,
-                obj.food_allergies,
-                obj.dietary_restrictions,
-                obj.get_epipen_display(),
-                obj.needs
-            ]
+    def shared_fields(self, obj):
+        return [
+            obj.medical_conditions,
+            obj.food_allergies,
+            obj.dietary_restrictions,
+            obj.get_epipen_display(),
+            obj.needs]
 
 
 class Feelings(GenericReportView):
