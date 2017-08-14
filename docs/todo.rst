@@ -33,6 +33,7 @@ Immediate
 * Export foodboxes by section? (the spread sheet does have a section column, yes? so perhaps not necessary?)
 * Use global constants for transport attributes (eg. over_capacity) which are added to the ``Stops`` in GMaps directions for Internal and External stops.
 * Put bagel info constants onto a model.
+* Add a custom `Importer` class for CSVs
 
 Questions
 ---------

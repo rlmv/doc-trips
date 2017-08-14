@@ -524,11 +524,12 @@ class ImportIncomingStudentHinmanBoxes(FytTestCase):
             hinman_box=''
         )
         with open(self.FILE) as f:
-            imported = IncomingStudent.objects.update_hinman_boxes(f, self.trips_year)
+            imported, not_found = IncomingStudent.objects.update_hinman_boxes(f, self.trips_year)
 
         incoming.refresh_from_db()
         self.assertEqual(incoming.hinman_box, 'Hinman Box 2884')
         self.assertEqual(imported, [incoming])
+        self.assertEqual(not_found, ['d25623b'])
 
 
 class IncomingStudentsManagerTestCase(FytTestCase):

@@ -520,10 +520,14 @@ class UploadHinmanBoxes(DatabaseEditPermissionRequired,
         file = io.TextIOWrapper(
             form.files['csv_file'].file, encoding='utf-8', errors='replace'
         )
-        updated = IncomingStudent.objects.update_hinman_boxes(
+        updated, not_found = IncomingStudent.objects.update_hinman_boxes(
             file, self.kwargs['trips_year']
         )
-        msg = "Updated Hinman Boxes for: %s" % ",".join(map(str, updated))
+
+        msg = "Not found: %s" % ", ".join(not_found)
+        messages.error(self.request, msg)
+
+        msg = "Updated Hinman Boxes for: %s" % ", ".join(map(str, updated))
         messages.info(self.request, msg)
         return HttpResponseRedirect(self.request.path)
 

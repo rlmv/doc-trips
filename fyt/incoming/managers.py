@@ -1,4 +1,3 @@
-
 import csv
 
 from django.db import models
@@ -113,13 +112,18 @@ class IncomingStudentManager(models.Manager):
 
         reader = csv.DictReader(file)
         updated = []
+        not_found = []
         for row in reader:
-            inc = self.get(netid=row[NETID])
-            inc.hinman_box = row[HINMAN_BOX]
-            inc.save()
-            updated.append(inc)
+            try:
+                inc = self.get(netid=row[NETID], trips_year=trips_year)
+            except self.model.DoesNotExist:
+                not_found.append(row[NETID])
+            else:
+                inc.hinman_box = row[HINMAN_BOX]
+                inc.save()
+                updated.append(inc)
 
-        return updated
+        return updated, not_found
 
     def _passengers_base_qs(self, trips_year, route, section):
         """
