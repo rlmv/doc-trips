@@ -527,7 +527,7 @@ class ImportIncomingStudentHinmanBoxes(FytTestCase):
             imported = IncomingStudent.objects.update_hinman_boxes(f, self.trips_year)
 
         incoming.refresh_from_db()
-        self.assertEqual(incoming.hinman_box, '2884')
+        self.assertEqual(incoming.hinman_box, 'Hinman Box 2884')
         self.assertEqual(imported, [incoming])
 
 

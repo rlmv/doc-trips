@@ -149,12 +149,11 @@ class IncomingStudent(DatabaseModel):
     )
     incoming_status = models.CharField(
         max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True)
-
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
     phone = models.CharField(max_length=30)
     address = models.TextField()
-    hinman_box = models.CharField(max_length=10, blank=True)
+    hinman_box = models.CharField(max_length=50, blank=True)
 
     def get_registration(self):
         """
