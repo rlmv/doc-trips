@@ -1,44 +1,23 @@
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Row, Submit
 from django import forms
 
 from fyt.transport.models import StopOrder
+from fyt.utils.forms import ReadonlyFormsetMixin
 
 
-class StopOrderForm(forms.ModelForm):
+class StopOrderFormset(ReadonlyFormsetMixin, forms.models.modelformset_factory(
+        StopOrder, fields=['order'], extra=0)):
 
-    class Meta:
-        model = StopOrder
-        fields = ['order']
+    readonly_data = [
+        ('Stop', 'get_stop'),
+        ('Stop Type', 'get_stop_type'),
+        ('Trip', 'get_trip'),
+    ]
 
-    trip = forms.CharField()
-    stop_type = forms.CharField()
-    stop = forms.CharField()
+    def get_stop(self, instance):
+        return instance.stop
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['trip'].initial = self.instance.trip
-        self.fields['stop_type'].initial = self.instance.stop_type
-        self.fields['stop'].initial = self.instance.stop.name
+    def get_stop_type(self, instance):
+        return instance.stop_type
 
-
-StopOrderFormset = forms.models.modelformset_factory(
-    StopOrder, form=StopOrderForm, extra=0
-)
-
-
-class StopOrderFormHelper(FormHelper):
-    layout = Layout(
-        Row(
-            Field('stop', readonly=True),
-            Field('stop_type', readonly=True),
-            Field('trip', readonly=True),
-            'order',
-        )
-    )
-    form_class = 'form-inline'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.add_input(Submit('submit', 'Save'))
+    def get_trip(self, instance):
+        return instance.trip

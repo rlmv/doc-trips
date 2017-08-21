@@ -23,7 +23,7 @@ from fyt.permissions.views import (
     DatabaseEditPermissionRequired,
     DatabaseReadPermissionRequired,
 )
-from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
+from fyt.transport.forms import StopOrderFormset
 from fyt.transport.models import (
     ExternalBus,
     Hanover,
@@ -528,9 +528,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
         )
 
     def get_form(self, **kwargs):
-        formset = StopOrderFormset(queryset=self.get_queryset(), **kwargs)
-        formset.helper = StopOrderFormHelper()
-        return formset
+        return StopOrderFormset(queryset=self.get_queryset(), **kwargs)
 
     def form_valid(self, formset):
         formset.save()
