@@ -2,6 +2,7 @@ from collections import defaultdict, namedtuple
 from datetime import datetime
 
 from braces.views import FormValidMessageMixin
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
