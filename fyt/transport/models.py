@@ -234,7 +234,7 @@ class InternalBus(DatabaseModel):
 
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     date = models.DateField()
-    notes = models.TextField(help_text='for the bus driver')
+    notes = models.TextField(help_text='for the bus driver', blank=True)
 
     dirty = models.BooleanField(
         'Do directions and times need to be updated?',
