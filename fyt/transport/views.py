@@ -296,11 +296,8 @@ class InternalBusCreateView(PopulateMixin, DatabaseCreateView):
 
 class InternalBusUpdateView(DatabaseUpdateView):
     model = InternalBus
-    fields = ['notes']
+    fields = ['use_custom_times', 'notes']
     delete_button = False
-
-    def get_headline(self):
-        return "Add notes to %s" % self.object
 
 
 class InternalBusDeleteView(DatabaseDeleteView):

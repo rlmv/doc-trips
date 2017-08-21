@@ -5,7 +5,7 @@ from fyt.utils.forms import ReadonlyFormsetMixin
 
 
 class StopOrderFormset(ReadonlyFormsetMixin, forms.models.modelformset_factory(
-        StopOrder, fields=['order'], extra=0)):
+        StopOrder, fields=['order', 'custom_time'], extra=0)):
 
     readonly_data = [
         ('Stop', 'get_stop'),

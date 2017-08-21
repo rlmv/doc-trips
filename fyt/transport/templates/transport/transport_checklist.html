@@ -18,15 +18,21 @@
 
 {% if scheduled %}
 
+{% if scheduled.use_custom_times %}
+<div class="alert alert-warning">
+  <i class="fa fa-warning"></i> This bus uses custom times.
+</div>
+{% endif %}
+
 <div class="row">
   <div class="col-sm-6">
     <ol class="breadcrumb">
-      <li><a href="{% url 'db:internalbus:order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route </a></li>
+      <li><a href="{% url 'db:internalbus:order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route & Set Custom Times </a></li>
     </ol>
   </div>
   <div class="col-sm-6">
     <ol class="breadcrumb">
-      <li><a href="{{ scheduled.update_url }}"> <i class="fa fa-caret-right"></i> Add notes </a></li>
+      <li><a href="{{ scheduled.update_url }}"> <i class="fa fa-caret-right"></i> Enable Custom Times & Edit Notes</a></li>
     </ol>
   </div>
 </div>
