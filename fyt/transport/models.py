@@ -240,6 +240,10 @@ class InternalBus(DatabaseModel):
         'Do directions and times need to be updated?',
         default=True, editable=False)
 
+    use_custom_times = models.BooleanField(
+        'Are pickup and dropoff times for this bus input manually?',
+        default=False)
+
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
         ordering = ['date']
@@ -583,6 +587,11 @@ class StopOrder(DatabaseModel):
     computed_time = models.TimeField(
         'Pickup/dropoff time computed by Google Maps',
         null=True, default=None, editable=False)
+
+    custom_time = models.TimeField(
+        'Custom pickup/dropoff time',
+        null=True,
+        default=None)
 
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
