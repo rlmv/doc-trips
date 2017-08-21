@@ -1961,6 +1961,35 @@ class InternalBusTimingTestCase(TransportTestCase):
         dropoff_bus.refresh_from_db()
         self.assertTrue(dropoff_bus.dirty)
 
+    def test_use_custom_times(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year,
+            dirty=False)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop__route=pickup_bus.route,
+            section__leaders_arrive=date_leaders_arrive)
+
+        stoporder = pickup_bus.stoporder_set.get(trip=trip)
+        stoporder.computed_time = time(9, 00)
+        stoporder.custom_time = time(13, 00)
+        stoporder.save()
+
+        self.assertEqual(stoporder.time, time(9, 00))
+
+        pickup_bus.use_custom_times = True
+        pickup_bus.save()
+
+        self.assertEqual(stoporder.time, time(13, 00))
+
 
 class MapsTestCases(TransportTestCase):
 

@@ -614,6 +614,9 @@ class StopOrder(DatabaseModel):
         """
         Re-compute pickup and dropoff times for this bus.
         """
+        if self.bus.use_custom_times:
+            return self.custom_time
+
         if self.bus.dirty:
             self.bus.update_stop_times()
             self.refresh_from_db()
