@@ -1598,28 +1598,6 @@ class StopOrderTestCase(FytTestCase):
         with self.assertNumQueries(1):
             [so.stop for so in StopOrder.objects.all()]
 
-    def test_cannot_update_stop_field_in_form(self):
-        trip = mommy.make(
-            Trip,
-            trips_year=self.trips_year,
-            dropoff_route__trips_year=self.trips_year)
-        bus = mommy.make(
-            InternalBus,
-            trips_year=self.trips_year,
-            route=trip.get_dropoff_route(),
-            date=trip.dropoff_date)
-
-        other_trip = mommy.make(Trip, trips_year=self.trips_year)
-
-        url = reverse('db:internalbus:order',
-                      kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk})
-        form = self.app.get(url, user=self.make_director()).form
-        form['form-0-trip'] = other_trip.pk
-        form.submit()
-
-        order = StopOrder.objects.get(bus=bus)
-        self.assertEqual(order.stop, trip.template.dropoff_stop)
-
     def test_is_pickup(self):
         pickup = mommy.make(StopOrder, stop_type=StopOrder.PICKUP)
         dropoff = mommy.make(StopOrder, stop_type=StopOrder.DROPOFF)
@@ -1960,6 +1938,42 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         dropoff_bus.refresh_from_db()
         self.assertTrue(dropoff_bus.dirty)
+
+    def test_use_custom_times(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year,
+            dirty=False)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            section__leaders_arrive=date_leaders_arrive)
+
+        stoporder = pickup_bus.stoporder_set.get(trip=trip)
+        stoporder.computed_time = time(9, 00)
+        stoporder.custom_time = time(13, 00)
+        stoporder.save()
+
+        self.assertEqual(stoporder.time, time(9, 00))
+
+        pickup_bus.use_custom_times = True
+        pickup_bus.save()
+
+        self.assertEqual(stoporder.time, time(13, 00))
+
+        legs = pickup_bus.update_stop_times().legs
+        self.assertIsNone(legs[0].start_time)
+        self.assertIsNone(legs[0].end_time)
+        self.assertEqual(legs[1].start_time, time(13, 00))
+        self.assertIsNone(legs[1].end_time)
 
 
 class MapsTestCases(TransportTestCase):

@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Div, Layout, Row, Submit
@@ -11,6 +9,7 @@ from fyt.db.templatetags.links import make_link
 from fyt.training.models import Attendee, Session
 from fyt.training.templatetags.training import capacity_label
 from fyt.utils.fmt import join_with_and
+from fyt.utils.forms import ReadonlyFormsetMixin
 
 
 DATE_OPTIONS = {
@@ -174,7 +173,7 @@ class AttendeeUpdateForm(forms.ModelForm):
         return helper
 
 
-class FirstAidFormset(forms.modelformset_factory(
+class FirstAidFormset(ReadonlyFormsetMixin, forms.modelformset_factory(
         Attendee, fields=['fa_cert', 'fa_other'], extra=0)):
     """
     A formset for all leaders, croo members, and people on the leader waitlist.
@@ -188,7 +187,6 @@ class FirstAidFormset(forms.modelformset_factory(
     ]
 
     def __init__(self, trips_year, *args, **kwargs):
-
         qs = Attendee.objects.trainable(
             trips_year
         ).only(
@@ -199,22 +197,7 @@ class FirstAidFormset(forms.modelformset_factory(
             'fa_cert',
             'fa_other',
         )
-
         super().__init__(*args, queryset=qs, **kwargs)
-
-        for form in self.forms:
-            form.readonly_data = OrderedDict([
-                (name, getattr(self, method)(form.instance))
-                for name, method in self.readonly_data])
-
-    @property
-    def helper(self):
-        helper = FormHelper()
-        # This is an overridden template in fyt/templates
-        helper.template = 'bootstrap3/table_inline_formset.html'
-        helper.add_input(Submit('submit', 'Save'))
-
-        return helper
 
     def get_name(self, instance):
         return make_link(instance.detail_url(), instance)

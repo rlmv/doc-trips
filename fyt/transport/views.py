@@ -2,6 +2,7 @@ from collections import defaultdict, namedtuple
 from datetime import datetime
 
 from braces.views import FormValidMessageMixin
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -22,7 +23,7 @@ from fyt.permissions.views import (
     DatabaseEditPermissionRequired,
     DatabaseReadPermissionRequired,
 )
-from fyt.transport.forms import StopOrderFormHelper, StopOrderFormset
+from fyt.transport.forms import StopOrderFormset
 from fyt.transport.models import (
     ExternalBus,
     Hanover,
@@ -295,11 +296,8 @@ class InternalBusCreateView(PopulateMixin, DatabaseCreateView):
 
 class InternalBusUpdateView(DatabaseUpdateView):
     model = InternalBus
-    fields = ['notes']
+    fields = ['use_custom_times', 'notes']
     delete_button = False
-
-    def get_headline(self):
-        return "Add notes to %s" % self.object
 
 
 class InternalBusDeleteView(DatabaseDeleteView):
@@ -527,9 +525,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
         )
 
     def get_form(self, **kwargs):
-        formset = StopOrderFormset(queryset=self.get_queryset(), **kwargs)
-        formset.helper = StopOrderFormHelper()
-        return formset
+        return StopOrderFormset(queryset=self.get_queryset(), **kwargs)
 
     def form_valid(self, formset):
         formset.save()

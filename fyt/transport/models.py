@@ -234,11 +234,15 @@ class InternalBus(DatabaseModel):
 
     route = models.ForeignKey(Route, on_delete=models.PROTECT)
     date = models.DateField()
-    notes = models.TextField(help_text='for the bus driver')
+    notes = models.TextField(help_text='for the bus driver', blank=True)
 
     dirty = models.BooleanField(
         'Do directions and times need to be updated?',
         default=True, editable=False)
+
+    use_custom_times = models.BooleanField(
+        'Are pickup and dropoff times for this bus input manually?',
+        default=False)
 
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
@@ -458,9 +462,20 @@ class InternalBus(DatabaseModel):
 
                 progress += self.LOADING_TIME
 
-            leg.start_time = progress.time()
-            progress += leg.duration
-            leg.end_time = progress.time()
+            # HACK HACK: if using a custom time, ensure that all orderings
+            # have the same custom time
+            if self.use_custom_times:
+                if leg.start_stop != self.trip_cache.hanover:
+                    custom_times = set([t.get_pickup_stoporder().custom_time
+                                        for t in leg.start_stop.trips_picked_up])
+                    assert len(custom_times) <= 1
+                    if len(custom_times) == 1:
+                        leg.start_time = custom_times.pop()
+                progress += leg.duration
+            else:
+                leg.start_time = progress.time()
+                progress += leg.duration
+                leg.end_time = progress.time()
 
             if leg.end_stop != self.trip_cache.lodge:
                 for trip in leg.end_stop.trips_dropped_off:
@@ -584,6 +599,12 @@ class StopOrder(DatabaseModel):
         'Pickup/dropoff time computed by Google Maps',
         null=True, default=None, editable=False)
 
+    custom_time = models.TimeField(
+        'Custom pickup/dropoff time',
+        null=True,
+        blank=True,
+        default=None)
+
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(
@@ -605,6 +626,9 @@ class StopOrder(DatabaseModel):
         """
         Re-compute pickup and dropoff times for this bus.
         """
+        if self.bus.use_custom_times:
+            return self.custom_time
+
         if self.bus.dirty:
             self.bus.update_stop_times()
             self.refresh_from_db()
