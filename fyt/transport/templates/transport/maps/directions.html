@@ -39,6 +39,7 @@
     {% if forloop.last %}
     <li class="list-group-item">
       <h3 class="list-group-item-heading">{{ leg.end_stop.location_str }}</h3>
+      <p> {{ leg.start_stop.directions }} </p>
       {% include stop_template with stop=leg.end_stop %}
       <p class="h5 text-muted">
         You should have {{ leg.end_stop.passenger_count }} passengers.
