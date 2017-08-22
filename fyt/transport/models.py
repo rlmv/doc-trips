@@ -591,6 +591,7 @@ class StopOrder(DatabaseModel):
     custom_time = models.TimeField(
         'Custom pickup/dropoff time',
         null=True,
+        blank=True,
         default=None)
 
     PICKUP = 'PICKUP'
