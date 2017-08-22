@@ -1976,6 +1976,7 @@ class InternalBusTimingTestCase(TransportTestCase):
             Trip,
             trips_year=self.trips_year,
             template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
             section__leaders_arrive=date_leaders_arrive)
 
         stoporder = pickup_bus.stoporder_set.get(trip=trip)
@@ -1989,6 +1990,12 @@ class InternalBusTimingTestCase(TransportTestCase):
         pickup_bus.save()
 
         self.assertEqual(stoporder.time, time(13, 00))
+
+        legs = pickup_bus.update_stop_times().legs
+        self.assertIsNone(legs[0].start_time)
+        self.assertIsNone(legs[0].end_time)
+        self.assertEqual(legs[1].start_time, time(13, 00))
+        self.assertIsNone(legs[1].end_time)
 
 
 class MapsTestCases(TransportTestCase):

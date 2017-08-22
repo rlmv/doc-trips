@@ -462,9 +462,20 @@ class InternalBus(DatabaseModel):
 
                 progress += self.LOADING_TIME
 
-            leg.start_time = progress.time()
-            progress += leg.duration
-            leg.end_time = progress.time()
+            # HACK HACK: if using a custom time, ensure that all orderings
+            # have the same custom time
+            if self.use_custom_times:
+                if leg.start_stop != self.trip_cache.hanover:
+                    custom_times = set([t.get_pickup_stoporder().custom_time
+                                        for t in leg.start_stop.trips_picked_up])
+                    assert len(custom_times) <= 1
+                    if len(custom_times) == 1:
+                        leg.start_time = custom_times.pop()
+                progress += leg.duration
+            else:
+                leg.start_time = progress.time()
+                progress += leg.duration
+                leg.end_time = progress.time()
 
             if leg.end_stop != self.trip_cache.lodge:
                 for trip in leg.end_stop.trips_dropped_off:
