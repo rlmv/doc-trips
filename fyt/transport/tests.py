@@ -1598,28 +1598,6 @@ class StopOrderTestCase(FytTestCase):
         with self.assertNumQueries(1):
             [so.stop for so in StopOrder.objects.all()]
 
-    def test_cannot_update_stop_field_in_form(self):
-        trip = mommy.make(
-            Trip,
-            trips_year=self.trips_year,
-            dropoff_route__trips_year=self.trips_year)
-        bus = mommy.make(
-            InternalBus,
-            trips_year=self.trips_year,
-            route=trip.get_dropoff_route(),
-            date=trip.dropoff_date)
-
-        other_trip = mommy.make(Trip, trips_year=self.trips_year)
-
-        url = reverse('db:internalbus:order',
-                      kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk})
-        form = self.app.get(url, user=self.make_director()).form
-        form['form-0-trip'] = other_trip.pk
-        form.submit()
-
-        order = StopOrder.objects.get(bus=bus)
-        self.assertEqual(order.stop, trip.template.dropoff_stop)
-
     def test_is_pickup(self):
         pickup = mommy.make(StopOrder, stop_type=StopOrder.PICKUP)
         dropoff = mommy.make(StopOrder, stop_type=StopOrder.DROPOFF)
