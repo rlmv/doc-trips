@@ -79,8 +79,40 @@ def can_report_incidents():
     return get_permission('can_report_incidents',
                           'Can report incidents in the safety log')
 
-# TODO: should we implement a proxy Group class and move these
-# to the model manager? e.g. ProxyGroup.directors() or ProxyGroup.objects.directors()
+
+class GroupRegistry:
+    """
+    Core registry of all groups and permissions used by the site.
+    """
+    def __init__(self, group_perms):
+        self.group_perms = group_perms
+
+    def __getattr__(self, name):
+        """Dynamically lookup and return the group, creating it if needed.
+
+        E.g: ``groups.directors`` will return the Group object the permissions
+        specified in the passed dictionary of permissions.
+        """
+        if name in self.group_perms:
+            permissions = [perm() for perm in self.group_perms[name]]
+            return self.init_group(name, permissions)
+        return super().__getattr__(name)
+
+    def init_group(self, name, permissions):
+        """
+        Initialize a group, creating it if necessary, and give it the
+        specified permissions.
+        """
+        group, _ = Group.objects.get_or_create(name=name)
+        group.permissions.set(permissions)
+        return group
+
+    def bootstrap(self):
+        """Create all groups."""
+        for name in self.group_perms:
+            # Accessing the group triggers creation
+            getattr(self, name)
+
 
 def directors():
     directors, _ = Group.objects.get_or_create(name='directors')
