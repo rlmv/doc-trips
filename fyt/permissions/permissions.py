@@ -28,17 +28,6 @@ def get_permission(codename, name):
     return permission
 
 
-def initialize_groups_and_permissions():
-    """ Set up all permissions used by the site."""
-    trip_leader_trainers()
-    directors()
-    directorate()
-    croo_heads()
-    graders()
-    safety_leads()
-    olcs()
-
-
 def can_view_database():
     return get_permission('can_view_db',
                           'Can view the trips database')
@@ -82,7 +71,7 @@ def can_report_incidents():
 
 class GroupRegistry:
     """
-    Core registry of all groups and permissions used by the site.
+    Core registry of all groups and permissions for each group.
     """
     def __init__(self, group_perms):
         self.group_perms = group_perms
@@ -90,13 +79,16 @@ class GroupRegistry:
     def __getattr__(self, name):
         """Dynamically lookup and return the group, creating it if needed.
 
-        E.g: ``groups.directors`` will return the Group object the permissions
-        specified in the passed dictionary of permissions.
+        Accessors are mapped to group names, so that ``groups.croo_heads``
+        will return the Group object corresponding to the 'croo heads'
+        group passed in the permission mapping.
         """
+        # Map accessor to group name
+        name = name.replace('_', ' ')
+
         if name in self.group_perms:
             permissions = [perm() for perm in self.group_perms[name]]
             return self.init_group(name, permissions)
-        return super().__getattr__(name)
 
     def init_group(self, name, permissions):
         """
@@ -114,73 +106,41 @@ class GroupRegistry:
             getattr(self, name)
 
 
-def directors():
-    directors, _ = Group.objects.get_or_create(name='directors')
-    directors.permissions.set([
-        can_view_database(),
-        can_edit_database(),
-        can_edit_settings(),
-        can_score_applications(),
-        can_edit_applications_and_assign_trip_leaders(),
-        can_report_incidents(),
-        can_edit_trainings(),
-    ])
-    return directors
+#: Register all groups
+groups = GroupRegistry({
+    'directors': [
+        can_view_database,
+        can_edit_database,
+        can_edit_settings,
+        can_score_applications,
+        can_edit_applications_and_assign_trip_leaders,
+        can_report_incidents,
+        can_edit_trainings],
 
+    'directorate': [
+        can_view_database,
+        can_score_applications],
 
-def directorate():
-    directorate, _ = Group.objects.get_or_create(name='directorate')
-    directorate.permissions.set([
-        can_view_database(),
-        can_score_applications(),
-    ])
-    return directorate
+    'croo heads': [
+        can_view_database,
+        can_score_applications,
+        can_score_as_croo_head],
 
+    'trip leader trainers': [
+        can_view_database,
+        can_score_applications,
+        can_edit_applications_and_assign_trip_leaders,
+        can_edit_trainings],
 
-def croo_heads():
-    heads, _ = Group.objects.get_or_create(name='croo heads')
-    heads.permissions.set([
-        can_view_database(),
-        can_score_applications(),
-        can_score_as_croo_head(),
-    ])
-    return heads
+    'outdoor logistics coordinators': [
+        can_view_database,
+        can_score_applications,
+        can_edit_trip_info],
 
+    'safety leads': [
+        can_report_incidents,
+        can_edit_trainings],
 
-def trip_leader_trainers():
-    # trip leader trainers
-    tlts, _ = Group.objects.get_or_create(name='trip leader trainers')
-    tlts.permissions.set([
-        can_view_database(),
-        can_score_applications(),
-        can_edit_applications_and_assign_trip_leaders(),
-        can_edit_trainings(),
-    ])
-    return tlts
-
-
-def olcs():
-    olcs, _ = Group.objects.get_or_create(name='outdoor logistics coordinators')
-    olcs.permissions.set([
-        can_view_database(),
-        can_score_applications(),
-        can_edit_trip_info(),
-    ])
-    return olcs
-
-
-def safety_leads():
-    leads, _ = Group.objects.get_or_create(name='safety leads')
-    leads.permissions.set([
-        can_report_incidents(),
-        can_edit_trainings(),
-    ])
-    return leads
-
-
-def graders():
-    graders, _ = Group.objects.get_or_create(name='graders')
-    graders.permissions.set([
-        can_score_applications(),
-    ])
-    return graders
+    'graders': [
+        can_score_applications]
+    })

@@ -7,14 +7,7 @@ from django_webtest import WebTest
 from model_mommy import mommy, random_gen
 
 from fyt.db.models import TripsYear
-from fyt.permissions.permissions import (
-    croo_heads,
-    directorate,
-    directors,
-    graders,
-    safety_leads,
-    trip_leader_trainers,
-)
+from fyt.permissions.permissions import groups
 from fyt.users.models import DartmouthUser
 
 
@@ -103,42 +96,42 @@ class FytTestCase(WebTest):
         """
         Create a user with director permissions.
         """
-        self.director = self.make_person('director', directors())
+        self.director = self.make_person('director', groups.directors)
         return self.director
 
     def make_croo_head(self):
         """
         Create a user with croo head permissions.
         """
-        self.croo_head = self.make_person('croo head', croo_heads())
+        self.croo_head = self.make_person('croo head', groups.croo_heads)
         return self.croo_head
 
     def make_directorate(self):
         """
         Create a user with directorate permissions.
         """
-        self.directorate = self.make_person('directorate', directorate())
+        self.directorate = self.make_person('directorate', groups.directorate)
         return self.directorate
 
     def make_tlt(self):
         """
         Create a user with TLT permissions.
         """
-        self.tlt = self.make_person('tlt', trip_leader_trainers())
+        self.tlt = self.make_person('tlt', groups.trip_leader_trainers)
         return self.tlt
 
     def make_grader(self):
         """
         Create a user with grader permissions.
         """
-        self.grader = self.make_person('grader', graders())
+        self.grader = self.make_person('grader', groups.graders)
         return self.grader
 
     def make_safety_lead(self):
         """
         Create a user with grader permissions.
         """
-        self.safety_lead = self.make_person('safety', safety_leads())
+        self.safety_lead = self.make_person('safety', groups.safety_leads)
         return self.safety_lead
 
     def assertQsEqual(self, qs, values, transform=lambda x: x, ordered=False, msg=None):

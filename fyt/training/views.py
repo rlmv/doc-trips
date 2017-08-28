@@ -18,7 +18,7 @@ from fyt.db.views import (
     DatabaseListView,
     TripsYearMixin,
 )
-from fyt.permissions.permissions import directorate
+from fyt.permissions.permissions import groups
 from fyt.permissions.views import TrainingPermissionRequired
 from fyt.training.forms import (
     AttendanceForm,
@@ -97,7 +97,7 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
     def has_permission(self):
         """Directorate members can also update training attendance."""
         return super().has_permission() or (
-            directorate() in self.request.user.groups.all())
+            groups.directorate in self.request.user.groups.all())
 
 
 class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):

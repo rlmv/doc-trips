@@ -1,4 +1,3 @@
-
 import logging
 
 from crispy_forms.helper import FormHelper
@@ -16,15 +15,7 @@ from vanilla import FormView
 
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.permissions.permissions import (
-    croo_heads,
-    directorate,
-    directors,
-    graders,
-    olcs,
-    safety_leads,
-    trip_leader_trainers,
-)
+from fyt.permissions.permissions import groups
 
 
 logger = logging.getLogger(__name__)
@@ -200,13 +191,13 @@ class SetPermissions(SettingsPermissionRequired, FormView):
 
     def get_forms(self, *args, **kwargs):
         groups = [
-            directors(),
-            croo_heads(),
-            trip_leader_trainers(),
-            olcs(),
-            directorate(),
-            safety_leads(),
-            graders()]
+            groups.directors,
+            groups.croo_heads,
+            groups.trip_leader_trainers,
+            groups.olcs,
+            groups.directorate,
+            groups.safety_leads,
+            groups.graders]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs)
                 for group in groups]
 
