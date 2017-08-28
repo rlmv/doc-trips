@@ -92,6 +92,9 @@ class GroupRegistry:
 
         raise AttributeError(name)
 
+    def all(self):
+        return [getattr(self, name) for name in self.group_perms]
+
     def init_group(self, name, permissions):
         """
         Initialize a group, creating it if necessary, and give it the
@@ -119,10 +122,6 @@ groups = GroupRegistry({
         can_report_incidents,
         can_edit_trainings],
 
-    'directorate': [
-        can_view_database,
-        can_score_applications],
-
     'croo heads': [
         can_view_database,
         can_score_applications,
@@ -138,6 +137,10 @@ groups = GroupRegistry({
         can_view_database,
         can_score_applications,
         can_edit_trip_info],
+
+    'directorate': [
+        can_view_database,
+        can_score_applications],
 
     'safety leads': [
         can_report_incidents,

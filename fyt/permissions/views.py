@@ -190,16 +190,8 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     success_url = reverse_lazy('permissions:set_permissions')
 
     def get_forms(self, *args, **kwargs):
-        all_groups = [
-            groups.directors,
-            groups.croo_heads,
-            groups.trip_leader_trainers,
-            groups.outdoor_logistics_coordinators,
-            groups.directorate,
-            groups.safety_leads,
-            groups.graders]
         return [GenericGroupForm(group, *args, prefix=str(group), **kwargs)
-                for group in all_groups]
+                for group in groups.all()]
 
     def get(self, request, *args, **kwargs):
         forms = self.get_forms()

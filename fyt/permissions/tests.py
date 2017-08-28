@@ -13,6 +13,7 @@ class GroupRegistryTestCase(FytTestCase):
         self.assertEqual(groups.bus_drivers.name, 'bus drivers')
         self.assertQsEqual(groups.bus_drivers.permissions.all(),
                            [can_view_database()])
+        self.assertEqual([g.name for g in groups.all()], ['bus drivers'])
 
     def test_group_registry_attribute_error(self):
         groups = GroupRegistry({})
