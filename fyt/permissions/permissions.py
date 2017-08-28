@@ -90,6 +90,8 @@ class GroupRegistry:
             permissions = [perm() for perm in self.group_perms[name]]
             return self.init_group(name, permissions)
 
+        raise AttributeError(name)
+
     def init_group(self, name, permissions):
         """
         Initialize a group, creating it if necessary, and give it the
