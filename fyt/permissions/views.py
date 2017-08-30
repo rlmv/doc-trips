@@ -42,14 +42,12 @@ class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):
     This differs from `PermissionRequiredMixin` which requires *all* given
     permissions.
     """
-
     def has_permission(self):
         perms = self.get_permission_required()
         return any(self.request.user.has_perm(p) for p in perms)
 
 
 # TODO: can we set permission_required with an imported permission() call ?
-
 
 class DatabaseEditPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_edit_db'
@@ -163,7 +161,6 @@ class GenericGroupForm(forms.Form):
 
         Should only be called once the form is cleaned.
         """
-
         members_list = self.cleaned_data['members']
         new_member_data = self.cleaned_data['new_member']
 
