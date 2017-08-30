@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.db.models.signals import post_migrate
-from django.dispatch import receiver
 
 from fyt.incoming.urls import settings_urlpatterns
 from fyt.permissions.permissions import groups
@@ -11,15 +9,7 @@ from fyt.views import HomePage, RaiseError
 
 admin.autodiscover()
 
-
-# update the auth groups after each migration
-@receiver(post_migrate)
-def sync_auth(**kwargs):
-    groups.bootstrap()
-
-
 handler403 = 'fyt.views.permission_denied'
-
 
 urlpatterns = [
     url(r'^$', HomePage.as_view(), name='home'),
@@ -36,7 +26,6 @@ urlpatterns = [
     url(r'^users/', include('fyt.users.urls', namespace='users')),
     url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
 ]
-
 
 # Install django-debug-toolbar
 if settings.DEBUG:
