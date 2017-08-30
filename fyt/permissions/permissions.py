@@ -12,7 +12,7 @@ for any given user are tied to groups, not the specific
 SitePermission.
 
 TODO: should we consolidate the create_application, edit_timetable,
-and possibly even the set_access permissions into edit_db? This would
+and possibly even the set_acce  ujso 8ss permissions into edit_db? This would
 be simpler, but less flexible. However, only directors currently have
 the edit_db permission.
 
@@ -87,19 +87,19 @@ class GroupRegistry:
         name = name.replace('_', ' ')
 
         if name in self.group_perms:
-            permissions = [perm() for perm in self.group_perms[name]]
-            return self.init_group(name, permissions)
+            return self.init_group(name)
 
         raise AttributeError(name)
 
     def all(self):
-        return [getattr(self, name) for name in self.group_perms]
+        return [self.init_group(name) for name in self.group_perms]
 
-    def init_group(self, name, permissions):
+    def init_group(self, name):
         """
         Initialize a group, creating it if necessary, and give it the
-        specified permissions.
+        permissions specified.
         """
+        permissions = [perm() for perm in self.group_perms[name]]
         group, _ = Group.objects.get_or_create(name=name)
         group.permissions.set(permissions)
         return group
@@ -107,8 +107,7 @@ class GroupRegistry:
     def bootstrap(self):
         """Create all groups."""
         for name in self.group_perms:
-            # Accessing the group triggers creation
-            getattr(self, name)
+            self.init_group(name)
 
 
 #: Register all groups
