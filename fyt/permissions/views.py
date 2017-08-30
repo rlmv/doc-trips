@@ -15,7 +15,7 @@ from vanilla import FormView
 
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.permissions.permissions import groups
+from fyt.permissions.permissions import groups, Group
 
 
 logger = logging.getLogger(__name__)
@@ -111,13 +111,16 @@ class TrainingPermissionRequired(BasePermissionMixin,
     )
 
 
-class GenericGroupForm(forms.Form):
+class GroupForm(forms.ModelForm):
+
+    class Meta:
+        model = Group
+        fields = []
 
     members = forms.ModelMultipleChoiceField(
         queryset=None,
         widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
+        required=False)
     new_member = DartmouthDirectoryLookupField(required=False)
 
     def __init__(self, group, *args, **kwargs):
@@ -130,16 +133,42 @@ class GenericGroupForm(forms.Form):
         self.fields['members'].label = 'Current ' + group.name
         self.fields['new_member'].label = 'New ' + group.name
 
-        perms_text = ('The %s group has the following permissions: ' % group.name.capitalize() +
-                      '<ul>' +
-                      ''.join(['<li>{}</li>'.format(p.name) for p in group.permissions.all()]) +
-                      '</ul>')
+    def save(self):
+        """
+        Update the group with submitted form information.
 
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.layout = Layout(
+        Should only be called once the form is cleaned.
+        """
+        members = self.cleaned_data['members']
+        new_member_data = self.cleaned_data['new_member']
+
+        if new_member_data:
+            UserModel = get_user_model()
+            new_member, _ = UserModel.objects.get_or_create_by_netid(
+                new_member_data[lookup.NETID],
+                new_member_data[lookup.NAME_WITH_YEAR])
+
+            if new_member not in members:
+                members_list = list(members)
+                members_list.append(new_member)
+
+        self.group.user_set = members
+        self.group.save()
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+
+        perms_text = ('<p>The {} group has the following permissions: '
+                      '<ul>{}</ul></p>'.format(
+                          self.group.name.capitalize(),
+                          ''.join(['<li>{}</li>'.format(p.name)
+                                   for p in self.group.permissions.all()])))
+
+        helper.layout = Layout(
             Fieldset(
-                str(group).capitalize(),
+                str(self.group).capitalize(),
                 Row(
                     Column(
                         'members',
@@ -147,38 +176,14 @@ class GenericGroupForm(forms.Form):
                         css_class='col-sm-6',
                     ),
                     Column(
-                        HTML('<p>' + perms_text + '</p>'),
+                        HTML(perms_text),
                         css_class='col-sm-6'),
                 ),
                 Submit('submit', 'Update'),
                 style="padding-bottom: 2em;",
             )
         )
-
-    def update_group_with_form_data(self):
-        """
-        Update the group with submitted form information.
-
-        Should only be called once the form is cleaned.
-        """
-        members_list = self.cleaned_data['members']
-        new_member_data = self.cleaned_data['new_member']
-
-        if new_member_data:
-            UserModel = get_user_model()
-            new_member, _ = UserModel.objects.get_or_create_by_netid(
-                new_member_data[lookup.NETID],
-                new_member_data[lookup.NAME_WITH_YEAR]
-            )
-
-            if new_member not in members_list:
-                members_list = list(members_list)
-                members_list.append(new_member)
-
-        self.group.user_set = members_list
-        self.group.save()
-
-        logger.info('Updating group %s to be %r' % (self.group, members_list))
+        return helper
 
 
 class SetPermissions(SettingsPermissionRequired, FormView):
@@ -187,7 +192,7 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     success_url = reverse_lazy('permissions:set_permissions')
 
     def get_forms(self, *args, **kwargs):
-        return [GenericGroupForm(group, *args, prefix=str(group), **kwargs)
+        return [GroupForm(group, *args, prefix=str(group), **kwargs)
                 for group in groups.all()]
 
     def get(self, request, *args, **kwargs):
@@ -204,7 +209,7 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     def form_valid(self, forms):
         """ Save updated groups """
         for form in forms:
-            form.update_group_with_form_data()
+            form.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, forms):
