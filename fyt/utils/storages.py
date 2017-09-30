@@ -1,11 +1,10 @@
-
 from django.conf import settings
 from pipeline.storage import PipelineMixin
-from storages.backends.s3boto import S3BotoStorage
+from storages.backends.s3boto3 import S3Boto3Storage
 from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
-class S3FileStorage(S3BotoStorage):
+class S3FileStorage(S3Boto3Storage):
     """
     File storage which prefixes the key with FILE_STORAGE_PREFIX
     """
