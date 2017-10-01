@@ -20,10 +20,10 @@ looks like this:
      sudo -u postgres psql postgres
      Password: ...
 
-     =# CREATE DATABASE fyt;
-     =# CREATE ROLE fytuser WITH LOGIN PASSWORD 'password';
-     =# GRANT ALL PRIVILEGES ON DATABASE fyt TO fytuser;
-     =# ALTER USER fytuser CREATEDB;
+     CREATE DATABASE fyt;
+     CREATE ROLE fytuser WITH LOGIN PASSWORD 'password';
+     GRANT ALL PRIVILEGES ON DATABASE fyt TO fytuser;
+     ALTER USER fytuser CREATEDB;
 
 Run the following from the command line:
 
