@@ -1,6 +1,0 @@
-Trips
-=====
-
-
-.. toctree::
-   views
