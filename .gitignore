@@ -1,4 +1,3 @@
-
 # Dev configurations
 config.sh
 
@@ -23,6 +22,7 @@ latest.dump
 *#
 .#*
 .cask
+.projectile
 
 # Javascript package managers
 node_modules
