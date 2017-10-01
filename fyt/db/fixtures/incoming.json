@@ -1,0 +1,12 @@
+[
+{
+    "model": "incoming.settings",
+    "pk": 1,
+    "fields": {
+        "trips_year": 2017,
+        "trips_cost": 245,
+        "doc_membership_cost": 50,
+        "contact_url": "http://outdoors.dartmouth.edu/firstyear/contact.html"
+    }
+}
+]

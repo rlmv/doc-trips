@@ -1,0 +1,9 @@
+[
+{
+    "model": "db.tripsyear",
+    "pk": 2017,
+    "fields": {
+        "is_current": true
+    }
+}
+]

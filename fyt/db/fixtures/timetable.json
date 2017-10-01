@@ -1,0 +1,17 @@
+[
+{
+    "model": "timetable.timetable",
+    "pk": 1,
+    "fields": {
+        "applications_open": "2017-04-08T12:00:00Z",
+        "applications_close": "2017-04-08T13:30:00Z",
+        "scoring_available": false,
+        "hide_volunteer_page": false,
+        "application_status_available": false,
+        "leader_assignment_available": false,
+        "trippee_registrations_open": "2017-09-22T13:59:00Z",
+        "trippee_registrations_close": "2017-09-22T17:15:00Z",
+        "trippee_assignment_available": false
+    }
+}
+]

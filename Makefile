@@ -42,7 +42,6 @@ test:
 
 tidy:
 	$(VENV)/bin/importanize -v fyt
-
 coverage:
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations
 	$(COVERAGE) report -m
@@ -55,6 +54,9 @@ clean:
 
 flush:
 	$(MANAGE) sqlflush | $(MANAGE) dbshell
+
+bootstrap:
+	$(MANAGE) bootstrap
 
 docs:
 	cd docs && make html
