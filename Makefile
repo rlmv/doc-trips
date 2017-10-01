@@ -5,14 +5,11 @@ PIP = $(VENV)/bin/pip
 COVERAGE = $(VENV)/bin/coverage
 MANAGE = $(PYTHON) manage.py
 
-SQLITE = fyt/db.sqlite3
-SQLITE_BACKUP = fyt/db.sqlite3.bak
-
 POSTGRES = fyt
 POSTGRES_USER = fytuser
 POSTGRES_DUMP = latest.dump
 
-.PHONY: docs venv
+.PHONY: venv
 
 all:
 	$(MANAGE) runserver
@@ -57,21 +54,6 @@ flush:
 
 bootstrap:
 	$(MANAGE) bootstrap
-
-docs:
-	cd docs && make html
-
-sqlite_from_remote:
-	./scripts/load_remote_db.sh
-
-sqlite_fresh: migrate
-	$(MANAGE) init_db 2015
-
-sqlite_backup:
-	cp $(SQLITE) $(SQLITE_BACKUP)
-
-sqlite_restore:
-	cp $(SQLITE_BACKUP) $(SQLITE)
 
 postgres_from_remote:
 	heroku pg:backups:capture
