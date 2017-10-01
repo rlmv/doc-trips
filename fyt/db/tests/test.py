@@ -13,9 +13,9 @@ from fyt.trips.models import Campsite, TripTemplate
 class InitialDataTestCase(FytTestCase):
     '''Test that initial data is loaded into a fresh database.'''
 
-    def test_init_db(self):
+    def test_bootstrap(self):
         out = io.StringIO()  # Redirect command output
-        call_command('init_db', stdout=out)
+        call_command('bootstrap', stdout=out)
         self.assertEqual(TripsYear.objects.current().year, 2017)
 
 
