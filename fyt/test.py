@@ -1,15 +1,21 @@
+import inspect
 import itertools
 import logging
+import os
 import string
 
 from django.conf import settings
 from django_webtest import WebTest
 from model_mommy import mommy, random_gen
+from vcr import VCR
 
 from fyt.db.models import TripsYear
 from fyt.permissions.permissions import groups
 from fyt.users.models import DartmouthUser
 
+
+# Model Mommy generates fake model data
+# -----------------------------------------------------------------
 
 def gen_class_year():
     return 2016
@@ -23,6 +29,19 @@ gen_short_string.required = ['max_length']
 mommy.generators.add('fyt.applications.models.ClassYearField', gen_class_year)
 mommy.generators.add('fyt.users.models.NetIdField', random_gen.gen_string)
 mommy.generators.add('django.db.models.CharField', gen_short_string)
+
+
+# Use VCRpy to mock remote APIs
+# -----------------------------------------------------------------
+
+def path_generator(function):
+    return os.path.join(os.path.dirname(inspect.getfile(function)),
+                        'cassettes', function.__name__)
+
+vcr = VCR(
+    path_transformer=VCR.ensure_suffix('.yaml'),
+    func_path_generator=path_generator,
+    filter_query_parameters=['key'])  # Strip Google Maps API key
 
 
 class FytTestCase(WebTest):

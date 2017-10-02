@@ -1,21 +1,12 @@
 import os
 import unittest
 
-from vcr import VCR
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.dartdm.lookup import dartdm_lookup
-from fyt.test import FytTestCase
+from fyt.test import FytTestCase, vcr
 
-
-def path_generator(function):
-    return os.path.join(os.path.dirname(__file__), 'cassettes',
-                        function.__name__)
-
-vcr = VCR(
-    path_transformer=VCR.ensure_suffix('.yaml'),
-    func_path_generator=path_generator)
 
 
 class DartmouthDirectoryLookupFieldTestCase(FytTestCase):

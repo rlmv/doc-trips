@@ -11,7 +11,7 @@ from model_mommy.recipe import Recipe, foreign_key
 
 from fyt.db.mommy_recipes import trips_year
 from fyt.incoming.models import IncomingStudent
-from fyt.test import FytTestCase
+from fyt.test import FytTestCase, vcr
 from fyt.transport import maps
 from fyt.transport.models import (
     ExternalBus,
@@ -1727,6 +1727,7 @@ class InternalBusTimingTestCase(TransportTestCase):
         self.init_trips_year()
         self.init_transport_config()
 
+    @vcr.use_cassette
     def test_stop_times(self):
         bus = mommy.make(
             InternalBus,
@@ -1753,21 +1754,22 @@ class InternalBusTimingTestCase(TransportTestCase):
         directions = bus.update_stop_times()
         self.assertEqual(bus.get_departure_time(), datetime(2015, 1, 1, 7, 30))
 
-        self.assertEqual(picked_up.get_pickup_time(), time(8, 34, 7))
-        self.assertEqual(dropped_off.get_dropoff_time(), time(11, 9, 10))
+        self.assertEqual(picked_up.get_pickup_time(), time(8, 34, 2))
+        self.assertEqual(dropped_off.get_dropoff_time(), time(11, 9, 44))
 
         self.assertEqual(picked_up.get_dropoff_time(), None)
         self.assertEqual(dropped_off.get_pickup_time(), None)
 
         self.assertEqual(directions.legs[0].start_time, time(7, 30))
-        self.assertEqual(directions.legs[0].end_time, time(8, 34, 7))
+        self.assertEqual(directions.legs[0].end_time, time(8, 34, 2))
 
-        self.assertEqual(directions.legs[1].start_time, time(8, 49, 7))
-        self.assertEqual(directions.legs[1].end_time, time(11, 9, 10))
+        self.assertEqual(directions.legs[1].start_time, time(8, 49, 2))
+        self.assertEqual(directions.legs[1].end_time, time(11, 9, 44))
 
-        self.assertEqual(directions.legs[2].start_time, time(11, 24, 10))
-        self.assertEqual(directions.legs[2].end_time, time(13, 26, 42))
+        self.assertEqual(directions.legs[2].start_time, time(11, 24, 44))
+        self.assertEqual(directions.legs[2].end_time, time(13, 27, 35))
 
+    @vcr.use_cassette
     def test_stop_times_delayed_for_lodge(self):
         bus = mommy.make(
             InternalBus,
@@ -1793,14 +1795,15 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         bus.update_stop_times()
         self.assertEqual(bus.get_departure_time(),
-                         datetime(2015, 1, 1, 9, 15, 31))
+                         datetime(2015, 1, 1, 9, 15, 20))
 
-        self.assertEqual(dropped_off.get_dropoff_time(), time(9, 24, 11))
-        self.assertEqual(picked_up.get_pickup_time(), time(9, 48, 37))
+        self.assertEqual(dropped_off.get_dropoff_time(), time(9, 23, 57))
+        self.assertEqual(picked_up.get_pickup_time(), time(9, 48, 33))
 
         self.assertEqual(dropped_off.get_pickup_time(), None)
         self.assertEqual(picked_up.get_dropoff_time(), None)
 
+    @vcr.use_cassette
     def test_stoporder_time_is_up_to_date(self):
         bus = mommy.make(
             InternalBus,
@@ -1820,9 +1823,10 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         # Accessing the `time` property computes times, and updates
         # the `computed_time` field
-        self.assertEqual(stoporder.time, time(7, 38, 40))
-        self.assertEqual(stoporder.computed_time, time(7, 38, 40))
+        self.assertEqual(stoporder.time, time(7, 38, 37))
+        self.assertEqual(stoporder.computed_time, time(7, 38, 37))
 
+    @vcr.use_cassette
     def test_resolve_dropoff_or_pickup_sets_dirty_flag(self):
         date_leaders_arrive = date(2015, 1, 1)
 
@@ -1939,6 +1943,7 @@ class InternalBusTimingTestCase(TransportTestCase):
         dropoff_bus.refresh_from_db()
         self.assertTrue(dropoff_bus.dirty)
 
+    @vcr.use_cassette
     def test_use_custom_times(self):
         date_leaders_arrive = date(2015, 1, 1)
 
@@ -1976,7 +1981,7 @@ class InternalBusTimingTestCase(TransportTestCase):
         self.assertIsNone(legs[1].end_time)
 
 
-class MapsTestCases(TransportTestCase):
+class MapsTestCase(TransportTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -1989,6 +1994,7 @@ class MapsTestCases(TransportTestCase):
         self.assertEqual(waypoints, [])
         self.assertEqual(dest, Lodge(self.trips_year).location)
 
+    @vcr.use_cassette
     def test_directions_handles_more_than_max_waypoints(self):
         """ Google maps restricts the number of waypoints per request."""
         stops = [mommy.make(Stop, trips_year=self.trips_year, lat_lng=coord)

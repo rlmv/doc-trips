@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [GoogleGeoApiClientPython/2.5.1]
+    method: GET
+    uri: https://maps.googleapis.com/maps/api/directions/json?destination=92+Lyme+Rd%2C+Hanover%2C+NH+03755&origin=43.7031377%2C-72.2898190
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Alt-Svc: ['quic=":443"; ma=2592000; v="39,38,37,35"']
+      Cache-Control: ['public, max-age=86400']
+      Content-Encoding: [gzip]
+      Content-Length: ['1702']
+      Content-Type: [application/json; charset=UTF-8]
+      Date: ['Mon, 02 Oct 2017 21:51:47 GMT']
+      Expires: ['Tue, 03 Oct 2017 21:51:47 GMT']
+      Server: [mafe]
+      Vary: [Accept-Language]
+      X-Frame-Options: [SAMEORIGIN]
+      X-XSS-Protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1
