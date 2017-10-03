@@ -1,0 +1,118 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Authorization:
+      - !!binary |
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9aG9zdDt4LWFtei1jb250
+        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9ZTIzYzA4MzA1ZGIzNDQ1NTcyN2E0NWNm
+        ZDQ2NGQyMTAyZjVkZDJlZWIyNDU2NDBhZTlhZmExOWNkMTA3MGQ3Mw==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
+        c291cmNl
+      X-Amz-Content-SHA256:
+      - !!binary |
+        ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
+        ODUyYjg1NQ==
+      X-Amz-Date:
+      - !!binary |
+        MjAxNzEwMDNUMDE1NjI1Wg==
+    method: HEAD
+    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map.txt
+  response:
+    body: {string: ''}
+    headers:
+      Accept-Ranges: [bytes]
+      Content-Length: ['9']
+      Content-Type: [text/plain]
+      Date: ['Tue, 03 Oct 2017 01:56:26 GMT']
+      ETag: ['"eb733a00c0c9d336e65691a37ab54293"']
+      Last-Modified: ['Wed, 28 Oct 2015 19:13:59 GMT']
+      Server: [AmazonS3]
+      x-amz-id-2: [D5oeeF7dSEAensS8mKVAjJu8aCedriL/nFy+kvmOEajdG9KKTngsOAolwH9iZbBDuoPo+y/BNu8=]
+      x-amz-request-id: [C367DF6E111E0AB0]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Authorization:
+      - !!binary |
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9aG9zdDt4LWFtei1jb250
+        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9YjRlYjRhMmM1NGE3MDZjNGIzYWRjNmQz
+        NTM2MmFhODdjZWJlY2Q2ZGE1NTM1MGI2YmE1MjQ1MTI2ODc5NmI2Yg==
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
+        c291cmNl
+      X-Amz-Content-SHA256:
+      - !!binary |
+        ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
+        ODUyYjg1NQ==
+      X-Amz-Date:
+      - !!binary |
+        MjAxNzEwMDNUMDE1NjI1Wg==
+    method: HEAD
+    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map_h7dhlbK.txt
+  response:
+    body: {string: ''}
+    headers:
+      Content-Type: [application/xml]
+      Date: ['Tue, 03 Oct 2017 01:56:25 GMT']
+      Server: [AmazonS3]
+      x-amz-id-2: [qN6ej0ufif/7X1yl4MRkQAnNS7N9R18ohdwjIj1akgrKmgHa3Hun2Oui3A4h14UOfWN1Ue76Qcg=]
+      x-amz-request-id: [1EA3F8DA195113FA]
+    status: {code: 404, message: Not Found}
+- request:
+    body: !!python/object/new:_io.BytesIO
+      state: !!python/tuple
+      - !!binary |
+        dGVzdCBkYXRh
+      - 0
+      - null
+    headers:
+      Authorization:
+      - !!binary |
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9Y29udGVudC1tZDU7Y29u
+        dGVudC10eXBlO2hvc3Q7eC1hbXotYWNsO3gtYW16LWNvbnRlbnQtc2hhMjU2O3gtYW16LWRhdGUs
+        IFNpZ25hdHVyZT0xMGY2YjVhYmNjM2VjYzhiNGNmZjI2OGRmYTZkMTgxZTdkZDI2ODQ3MTE0NGVh
+        OGYyNDY3NDlhNmM5ZDI3MTE2
+      Content-Length: ['9']
+      Content-MD5:
+      - !!binary |
+        NjNNNkFNREowemJtVnBHamVyVkNrdz09
+      Content-Type:
+      - !!binary |
+        dGV4dC9wbGFpbg==
+      Expect:
+      - !!binary |
+        MTAwLWNvbnRpbnVl
+      User-Agent:
+      - !!binary |
+        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
+        c291cmNl
+      X-Amz-Content-SHA256:
+      - !!binary |
+        VU5TSUdORUQtUEFZTE9BRA==
+      X-Amz-Date:
+      - !!binary |
+        MjAxNzEwMDNUMDE1NjI1Wg==
+      x-amz-acl:
+      - !!binary |
+        cHVibGljLXJlYWQ=
+    method: PUT
+    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map_h7dhlbK.txt
+  response:
+    body: {string: ''}
+    headers:
+      Content-Length: ['0']
+      Date: ['Tue, 03 Oct 2017 01:56:26 GMT']
+      ETag: ['"eb733a00c0c9d336e65691a37ab54293"']
+      Server: [AmazonS3]
+      x-amz-id-2: [6U8K3psCzeJr/p82exMhJzLrRnDHR17GeTPuXZ2Bt0MSeul0vkOfEOXoZ5IKr3FvCRp9bDeYsl4=]
+      x-amz-request-id: [4E65EF6A7A09BA99]
+    status: {code: 200, message: OK}
+version: 1

@@ -197,17 +197,3 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertNotEqual(template.dropoff_stop.pk, new_template.dropoff_stop.pk)
         self.assertTrue(new_template.pickup_stop.pk is not None)
         self.assertNotEqual(template.pickup_stop.pk, new_template.pickup_stop.pk)
-
-    def test_triptemplate_documents_are_migrated(self):
-        trips_year = self.init_trips_year()
-        tt = mommy.make(TripTemplate, trips_year=trips_year)
-        resp = self.app.get(tt.file_upload_url(), user=self.make_director())
-        resp.form['name'] = 'Map'
-        resp.form['file'] = webtest.Upload('map.txt', b'test data')
-        resp.form.submit()
-
-        forward()
-        tt = TripTemplate.objects.get(trips_year=trips_year.year + 1)
-        files = tt.documents.all()
-        self.assertEqual(len(files), 1)
-        self.assertEqual(files[0].name, 'Map')

@@ -1,7 +1,9 @@
 import math
+import re
 import unittest
 from datetime import date, time, timedelta
 
+import boto3  # This is required to fix an issue with VCR
 import webtest
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -26,7 +28,8 @@ from fyt.incoming.models import (
     RegistrationSectionChoice,
     RegistrationTripTypeChoice,
 )
-from fyt.test import FytTestCase
+from fyt.db.forward import forward
+from fyt.test import FytTestCase, vcr
 from fyt.transport.models import Route
 from fyt.utils.choices import AVAILABLE, PREFER
 
@@ -655,8 +658,19 @@ class ViewsTestCase(FytTestCase):
         self.assertContains(resp, 'Carries an EpiPen')
 
 
+def s3_map_matcher(r1, r2):
+    """Match on the S3 url, excluding auto-generated parts of the filename."""
+    s3_re = re.compile(r'https://s3.amazonaws.com/doc-trips-development/uploads/map[_\d\w]*\.txt')
+    return (s3_re.match(r1.uri) and s3_re.match(r2.uri)
+            and len(r1.uri) == len(r2.uri)
+            and r1.method == r2.method)
+
+vcr.register_matcher('s3_map.txt', s3_map_matcher)
+
+
 class TripTemplateDocumentUploadTestCase(FytTestCase):
 
+    @vcr.use_cassette(match_on=['s3_map.txt'])
     def test_uploaded_document_is_attached_to_TripTemplate(self):
         trips_year = self.init_trips_year()
         tt = mommy.make(TripTemplate, trips_year=trips_year)
@@ -666,6 +680,21 @@ class TripTemplateDocumentUploadTestCase(FytTestCase):
         resp.form.submit()
 
         tt.refresh_from_db()
+        files = tt.documents.all()
+        self.assertEqual(len(files), 1)
+        self.assertEqual(files[0].name, 'Map')
+
+    @vcr.use_cassette(match_on=['s3_map.txt'])
+    def test_triptemplate_documents_are_migrated(self):
+        trips_year = self.init_trips_year()
+        tt = mommy.make(TripTemplate, trips_year=trips_year)
+        resp = self.app.get(tt.file_upload_url(), user=self.make_director())
+        resp.form['name'] = 'Map'
+        resp.form['file'] = webtest.Upload('map.txt', b'test data')
+        resp.form.submit()
+
+        forward()
+        tt = TripTemplate.objects.get(trips_year=trips_year.year + 1)
         files = tt.documents.all()
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].name, 'Map')

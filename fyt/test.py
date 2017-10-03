@@ -44,6 +44,7 @@ vcr = VCR(
     filter_query_parameters=['key'])  # Strip Google Maps API key
 
 
+
 class FytTestCase(WebTest):
     """
     WebTest allows us to make requests without having to mock CAS
