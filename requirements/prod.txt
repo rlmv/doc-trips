@@ -12,7 +12,7 @@ django-pipeline==1.6.13
 django-storages==1.6.5
 django-tables2==1.11.0
 django-toolbelt==0.0.1
-django-vanilla-views==1.0.3
+django-vanilla-views==1.0.4
 mammoth==0.3.11
 raven==6.1.0
 requests==2.6.0
