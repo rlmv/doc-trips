@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/rlmv/doc-trips.svg?branch=master)](https://travis-ci.org/rlmv/doc-trips)
 [![Coverage Status](https://coveralls.io/repos/github/rlmv/doc-trips/badge.svg?branch=master)](https://coveralls.io/github/rlmv/doc-trips?branch=master)
+[![Updates](https://pyup.io/repos/github/rlmv/doc-trips/shield.svg)](https://pyup.io/repos/github/rlmv/doc-trips/)
 
 # DOC First-Year Trips Database
 
