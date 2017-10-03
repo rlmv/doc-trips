@@ -660,10 +660,12 @@ class ViewsTestCase(FytTestCase):
 
 def s3_map_matcher(r1, r2):
     """Match on the S3 url, excluding auto-generated parts of the filename."""
-    s3_re = re.compile(r'https://s3.amazonaws.com/[-\w]*/uploads/map[_\d\w]*\.txt')
+    s3_re = re.compile(r'https://s3.amazonaws.com/[-\w]*/uploads/map(?P<added>[_\d\w]*)\.txt')
 
-    return (s3_re.match(r1.uri) and s3_re.match(r2.uri)
-            and len(r1.uri) == len(r2.uri)
+    r1_match = s3_re.match(r1.uri)
+    r2_match = s3_re.match(r2.uri)
+    return (r1_match and r2_match
+            and len(r1_match.group('added')) == len(r2_match.group('added'))
             and r1.method == r2.method)
 
 vcr.register_matcher('s3_map.txt', s3_map_matcher)
