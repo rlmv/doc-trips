@@ -2,5 +2,5 @@
 -r test.txt
 
 django-debug-toolbar==1.8
-importanize==0.4.1
+importanize==0.5.3
 sphinx==1.3.1
