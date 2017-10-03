@@ -1,21 +1,14 @@
-
-from unittest.mock import patch
-
 from django.core.urlresolvers import reverse
 from django.test.utils import override_settings
 from model_mommy import mommy
 
-from fyt.test import FytTestCase
+from fyt.test import FytTestCase, vcr
 from fyt.users.models import MAX_NETID_LENGTH, DartmouthUser
-
-
-def lookup_email(*args, **kwargs):
-    return 'email'
 
 
 class UserManagerTestCase(FytTestCase):
 
-    @patch('fyt.users.models.lookup_email', new=lookup_email)
+    @vcr.use_cassette
     def test_create_user(self):
         netid = 'd123456z'
         name = 'Igor'
@@ -31,6 +24,7 @@ class UserManagerTestCase(FytTestCase):
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
 
+    @vcr.use_cassette
     def test_email_lookup_error_sets_blank_email(self):
         user = DartmouthUser.objects.create_user('junk_netid', 'name')
         self.assertEqual(user.email, '')

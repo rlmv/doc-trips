@@ -1,0 +1,27 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.6.0 CPython/3.6.1 Darwin/16.7.0]
+    method: GET
+    uri: http://dndprofiles.dartmouth.edu/profile?fields=email&fields=netid&lookup=d123456z
+  response:
+    body: {string: '{}'}
+    headers:
+      Access-Control-Allow-Origin: [www.dartmouth.edu]
+      Connection: [Keep-Alive]
+      Content-Length: ['2']
+      Content-Type: [text/html;charset=utf-8]
+      Date: ['Tue, 03 Oct 2017 00:51:41 GMT']
+      Keep-Alive: ['timeout=15, max=100']
+      Server: [Apache/2.4.6 (Red Hat Enterprise Linux) OpenSSL/1.0.2k-fips PHP/5.4.16
+          mod_wsgi/3.4 Python/2.7.5 Phusion_Passenger/5.1.2 mod_perl/2.0.10 Perl/v5.16.3]
+      Set-Cookie: [BIGipServer~admin~ruby-apps-edc-80.app~ruby-apps-edc-80_pool=rd1o00000000000000000000ffff0a12a020o80;
+          path=/]
+      Status: [200 OK]
+      X-Powered-By: [Phusion Passenger 5.1.2]
+    status: {code: 200, message: OK}
+version: 1
