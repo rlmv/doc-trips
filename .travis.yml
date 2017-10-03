@@ -29,7 +29,7 @@ install:
 before_script:
     - psql -c "CREATE DATABASE testdb;" -U postgres
 
-script: coverage run --source=fyt manage.py test
+script: coverage run manage.py test
 
 after_success: coveralls
 

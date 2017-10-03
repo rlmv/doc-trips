@@ -1,0 +1,20 @@
+# Configuration for coverage.py
+
+[run]
+branch = True
+source = fyt
+omit = */migrations/*
+
+[report]
+exclude_lines =
+    # Ignore debug-only code
+    def __repr__
+
+    # Ignore defensive assertion code
+    raise AssertionError
+    raise NotImplementedError
+
+    # Ignore non-runnable code
+    if __name__ == .__main__.:
+
+ignore_errors = True
