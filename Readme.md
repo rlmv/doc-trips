@@ -73,6 +73,12 @@ in the `Makefile` already take care of this.
 
 Run `make` to start the Django development server, and visit `localhost:8000`.
 
+## Testing
+
+Run the test suite with `make test`. Calls to external APIs (Dartmouth, Amazon
+S3, Google Maps) are mocked out using [VCRpy](https://vcrpy.readthedocs.io) so
+you can run all tests without configuring credentials for those services.
+
 ## Deployment
 
 The application runs on Heroku. You will need to install the
