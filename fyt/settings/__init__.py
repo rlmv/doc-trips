@@ -8,34 +8,39 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
 import dj_database_url
 
+from .loader import EnvLoader
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
+
+# Untracked file used to store secrets for local development
+DEV_CONFIG = os.path.join(BASE_DIR, '..', 'config.yaml')
+
+env = EnvLoader(DEV_CONFIG)
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', '')
+SECRET_KEY = env.get('SECRET_KEY')
 
 # Is this the development environment?
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = env.get('DEBUG', False)
 
 # Are we testing on Travis?
-TESTING = os.environ.get('TRAVIS', False)
+TESTING = env.get('TRAVIS', False)
 
 # Or is this a production environment?
 PRODUCTION = not (DEBUG or TESTING)
 
 # AWS SECRET KEYS and CONFIG
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME', '')
+AWS_ACCESS_KEY_ID = env.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = env.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = env.get('AWS_STORAGE_BUCKET_NAME')
 
-GOOGLE_MAPS_KEY = os.environ.get('GOOGLE_MAPS_KEY', '')
-GOOGLE_MAPS_BROWSER_KEY = os.environ.get('GOOGLE_MAPS_BROWSER_KEY', '')
+GOOGLE_MAPS_KEY = env.get('GOOGLE_MAPS_KEY')
+GOOGLE_MAPS_BROWSER_KEY = env.get('GOOGLE_MAPS_BROWSER_KEY')
 
 # Don't overwrite identically named files
 AWS_S3_FILE_OVERWRITE = False
@@ -49,7 +54,7 @@ CANONICAL_HOST = 'www.doctrips.org'
 
 # Sentry monitoring
 RAVEN_CONFIG = {
-    'dsn': os.environ.get('SENTRY_DSN', ''),
+    'dsn': env.get('SENTRY_DSN'),
 }
 
 # For Heroku

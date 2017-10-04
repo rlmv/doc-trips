@@ -1,5 +1,6 @@
 # Dev configurations
 config.sh
+config.yaml
 
 # Python virtual environment
 venv/
