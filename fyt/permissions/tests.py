@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 
-from fyt.test import FytTestCase
 from fyt.permissions.permissions import Group, GroupRegistry, can_view_database
+from fyt.test import FytTestCase
 
 
 class GroupRegistryTestCase(FytTestCase):

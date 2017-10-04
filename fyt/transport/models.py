@@ -1,7 +1,7 @@
 from collections import defaultdict
 from copy import copy
 from datetime import datetime, timedelta
-from itertools import takewhile, groupby
+from itertools import groupby, takewhile
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse

@@ -14,6 +14,7 @@ import dj_database_url
 
 from .loader import EnvLoader
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
 
 # Untracked file used to store secrets for local development

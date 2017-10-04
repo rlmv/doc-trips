@@ -8,7 +8,6 @@ from fyt.dartdm.lookup import dartdm_lookup
 from fyt.test import FytTestCase, vcr
 
 
-
 class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
     @vcr.use_cassette

@@ -22,13 +22,13 @@ from ..models import (
 
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import make_application
+from fyt.db.forward import forward
 from fyt.incoming.models import (
     IncomingStudent,
     Registration,
     RegistrationSectionChoice,
     RegistrationTripTypeChoice,
 )
-from fyt.db.forward import forward
 from fyt.test import FytTestCase, vcr
 from fyt.transport.models import Route
 from fyt.utils.choices import AVAILABLE, PREFER
