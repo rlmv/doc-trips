@@ -62,9 +62,7 @@ class EditVolunteerPortalContent(SettingsPermissionRequired, UpdateView):
 
     def get_object(self):
         trips_year = TripsYear.objects.current()
-        # changing state in a GET is not semantically correct, but hey...
-        obj, ctd = self.model.objects.get_or_create(trips_year=trips_year)
-        return obj
+        return self.model.objects.get(trips_year=trips_year)
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
