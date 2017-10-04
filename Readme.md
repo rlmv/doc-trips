@@ -7,9 +7,14 @@
 ## Installation
 
 To get a local development version running, install [Python 3.6](https://www.python.org/downloads/)
-and [Git](https://git-scm.com/book/id/v2/Getting-Started-Installing-Git),
-clone this repository, and run `make install`. This will set up a virtual
-environment and install all Python dependencies.
+and [Git](https://git-scm.com/book/id/v2/Getting-Started-Installing-Git). Run
+the following to install the project:
+
+    git clone https://github.com/rlmv/doc-trips.git
+    cd doc-trips
+    make install
+
+This will set up a virtual environment and install all Python dependencies.
 
 ## Database
 
@@ -67,13 +72,21 @@ user with AmazonS3FullAccess permission, and add these keys to `config.yaml`:
 
 ## Development Server
 
-Run `make` to start the Django development server, and visit `localhost:8000`.
+To start the Django development server, run
+
+    make
+
+and visit [localhost:8000](localhost:8000).
 
 ## Testing
 
-Run the test suite with `make test`. Calls to external APIs (Dartmouth, Amazon
-S3, Google Maps) are mocked out using [VCRpy](https://vcrpy.readthedocs.io) so
-you can run all tests without configuring credentials for those services.
+Run the test suite with
+
+    make test
+
+Calls to external APIs (Dartmouth, Amazon S3, Google Maps) are mocked out using
+[VCRpy](https://vcrpy.readthedocs.io) so the tests can be run without
+configuring credentials for those services.
 
 ## Deployment
 
