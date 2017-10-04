@@ -53,27 +53,33 @@ class ApplicationTestMixin():
 
     """ Common utilities for testing applications """
 
+    def _timetable(self):
+        try:
+            return Timetable.objects.timetable()
+        except Timetable.DoesNotExist:
+            return Timetable()
+
     def open_application(self):
         """" open leader applications """
-        t = Timetable.objects.timetable()
+        t = self._timetable()
         t.applications_open += timedelta(-1)
         t.applications_close += timedelta(1)
         t.save()
 
     def close_application(self):
         """ close leader applications """
-        t = Timetable.objects.timetable()
+        t = self._timetable()
         t.applications_open += timedelta(-2)
         t.applications_close += timedelta(-1)
         t.save()
 
     def open_scoring(self):
-        t = Timetable.objects.timetable()
+        t = self._timetable()
         t.scoring_available = True
         t.save()
 
     def close_scoring(self):
-        t = Timetable.objects.timetable()
+        t = self._timetable()
         t.scoring_available = False
         t.save()
 
@@ -733,6 +739,7 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         res = self.app.get(url, user=self.make_tlt())
 
     def test_volunteer_index_only_shows_complete_applications(self):
+        mommy.make(Timetable)
         complete = self.make_application()
         incomplete = self.make_application(croo_willing=False, leader_willing=False)
 

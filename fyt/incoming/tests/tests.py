@@ -679,7 +679,7 @@ class RegistrationViewsTestCase(FytTestCase):
         self.app.get(reverse('incoming:register'))
 
     def test_registration_connects_to_incoming(self):
-        t = Timetable.objects.timetable()
+        t = mommy.make(Timetable)
         t.trippee_registrations_open += timedelta(-1)
         t.trippee_registrations_close += timedelta(1)
         t.save()

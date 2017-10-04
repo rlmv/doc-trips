@@ -30,6 +30,7 @@ from fyt.incoming.models import (
     RegistrationTripTypeChoice,
 )
 from fyt.test import FytTestCase, vcr
+from fyt.timetable.models import Timetable
 from fyt.transport.models import Route
 from fyt.utils.choices import AVAILABLE, PREFER
 
@@ -690,6 +691,7 @@ class TripTemplateDocumentUploadTestCase(FytTestCase):
     @vcr.use_cassette(match_on=['s3_map.txt'])
     def test_triptemplate_documents_are_migrated(self):
         trips_year = self.init_trips_year()
+        mommy.make(Timetable)
         tt = mommy.make(TripTemplate, trips_year=trips_year)
         resp = self.app.get(tt.file_upload_url(), user=self.make_director())
         resp.form['name'] = 'Map'

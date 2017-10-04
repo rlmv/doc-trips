@@ -1,4 +1,3 @@
-
 from datetime import timedelta
 
 from django.db import models
@@ -22,8 +21,7 @@ GRACE_PERIOD = timedelta(minutes=15)
 class TimetableManager(models.Manager):
 
     def timetable(self):
-        timetable, created = self.get_or_create(id=TIMETABLE_ID)
-        return timetable
+        return self.get(id=TIMETABLE_ID)
 
 
 class Timetable(models.Model):

@@ -1,7 +1,7 @@
-
 from datetime import timedelta
 
 from django.utils import timezone
+from model_mommy import mommy
 
 from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
@@ -11,7 +11,7 @@ class TimetableTestCase(FytTestCase):
 
     def test_application_grace_period(self):
         now = timezone.now()
-        timetable = Timetable.objects.timetable()
+        timetable = mommy.make(Timetable)
 
         # With a 15-minute grace period, applications should still be available
         # 10 minutes past the deadline

@@ -50,42 +50,42 @@ class MigrateForwardTestCase(FytTestCase):
             except models.fields.FieldDoesNotExist:  # reverse/related field
                 pass
 
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.timetable = mommy.make(Timetable)
+
     def test_make_next_year(self):
-        trips_year = self.init_trips_year()
-        next_year = trips_year.make_next_year()
-        self.assertFalse(trips_year.is_current)
+        next_year = self.trips_year.make_next_year()
+        self.assertFalse(self.trips_year.is_current)
         self.assertTrue(next_year.is_current)
-        self.assertEqual(next_year.year, trips_year.year + 1)
+        self.assertEqual(next_year.year, self.trips_year.year + 1)
 
     def test_make_next_year_fails_if_not_current(self):
         trips_year = mommy.make(TripsYear, is_current=False)
         self.assertRaises(AssertionError, trips_year.make_next_year)
 
     def test_forward_makes_new_trips_year(self):
-        trips_year = self.init_trips_year()
         forward()
-        prev_year = TripsYear.objects.get(year=trips_year.year)
-        new_year = TripsYear.objects.get(year=trips_year.year + 1)
+        prev_year = TripsYear.objects.get(year=self.trips_year.year)
+        new_year = TripsYear.objects.get(year=self.trips_year.year + 1)
         self.assertFalse(prev_year.is_current)
         self.assertTrue(new_year.is_current)
 
     def test_copy_object_with_no_relations_forward(self):
-        trips_year = self.init_trips_year()
-        next_year = trips_year.make_next_year()
+        next_year = self.trips_year.make_next_year()
         # using just as an example
-        vehicle = mommy.make(Vehicle, trips_year=trips_year)
+        vehicle = mommy.make(Vehicle, trips_year=self.trips_year)
         new_vehicle = Forward(
-            trips_year, next_year
+            self.trips_year, next_year
         ).copy_object_forward(vehicle)
 
         self.assertEqual(new_vehicle.trips_year, next_year)
         self.assertDataEqual(vehicle, new_vehicle)
 
     def test_copy_object_caches_new_instances(self):
-        trips_year = self.init_trips_year()
-        next_year = trips_year.make_next_year()
-        vehicle = mommy.make(Vehicle, trips_year=trips_year)
-        f = Forward(trips_year, next_year)
+        next_year = self.trips_year.make_next_year()
+        vehicle = mommy.make(Vehicle, trips_year=self.trips_year)
+        f = Forward(self.trips_year, next_year)
 
         new_vehicle = f.copy_object_forward(vehicle)
         # copy_object_forward should cache and return same vehicle
@@ -95,36 +95,33 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertEqual(1, Vehicle.objects.filter(trips_year=next_year).count())
 
     def test_copy_object_with_fkeys_forward(self):
-        trips_year = self.init_trips_year()
-        next_year = trips_year.make_next_year()
+        next_year = self.trips_year.make_next_year()
         # testing Route, for example
-        route = mommy.make(Route, trips_year=trips_year)
+        route = mommy.make(Route, trips_year=self.trips_year)
 
-        f = Forward(trips_year, next_year)
+        f = Forward(self.trips_year, next_year)
         new_route = f.copy_object_forward(route)
 
         self.assertDataEqual(route, new_route)
         self.assertNotEqual(route.vehicle, new_route.vehicle)
 
     def test_copy_object_with_null_foreign_key(self):
-        trips_year = self.init_trips_year()
-        next_year = trips_year.make_next_year()
+        next_year = self.trips_year.make_next_year()
         # testing Stop, with nullable Route
-        stop = mommy.make(Stop, trips_year=trips_year, route=None)
-        f = Forward(trips_year, next_year)
+        stop = mommy.make(Stop, trips_year=self.trips_year, route=None)
+        f = Forward(self.trips_year, next_year)
         new_stop = f.copy_object_forward(stop)
         self.assertIsNone(new_stop.route)
 
     def test_trippee_med_info_is_deleted(self):
-        trips_year = self.init_trips_year()
         trippee = mommy.make(
             IncomingStudent,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             med_info='sparkles',
         )
         registration = mommy.make(
             Registration,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             medical_conditions='magic',
             food_allergies='mangoes',
             dietary_restrictions='gluten free',
@@ -142,10 +139,9 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertIsNone(registration.epipen)
 
     def test_application_med_info_is_deleted(self):
-        trips_year = self.init_trips_year()
         app = mommy.make(
             Application,
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             medical_conditions='magic',
             food_allergies='mangoes',
             dietary_restrictions='gluten free',
@@ -161,17 +157,13 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertIsNone(app.epipen)
 
     def test_croo_is_migrated(self):
-        trips_year = self.init_trips_year()
-        croo = mommy.make(Croo, trips_year=trips_year)
+        croo = mommy.make(Croo, trips_year=self.trips_year)
         forward()
-
-        next_croo = Croo.objects.get(trips_year=(trips_year.year + 1))
+        next_croo = Croo.objects.get(trips_year=(self.trips_year.year + 1))
         self.assertDataEqual(next_croo, croo)
 
     def test_timetable_is_reset(self):
-        trips_year = self.init_trips_year()
-
-        timetable = Timetable.objects.timetable()
+        timetable = Timetable()
         timetable.hide_volunteer_page = True
         timetable.application_status_available = True
         timetable.leader_assignment_available = True
@@ -187,12 +179,10 @@ class MigrateForwardTestCase(FytTestCase):
         self.assertFalse(timetable.trippee_assignment_available)
 
     def test_complex_hierarchy_is_migrated(self):
-        trips_year = self.init_trips_year()
-        template = mommy.make(TripTemplate, trips_year=trips_year)
-
+        template = mommy.make(TripTemplate, trips_year=self.trips_year)
         forward()
-
-        new_template = TripTemplate.objects.get(trips_year=trips_year.year + 1)
+        new_template = TripTemplate.objects.get(
+            trips_year=self.trips_year.year + 1)
         self.assertTrue(new_template.dropoff_stop.pk is not None)
         self.assertNotEqual(template.dropoff_stop.pk, new_template.dropoff_stop.pk)
         self.assertTrue(new_template.pickup_stop.pk is not None)
