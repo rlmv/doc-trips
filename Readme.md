@@ -37,37 +37,33 @@ required to use the database.
 
 ## Environment Variables
 
-The `settings.py` file reads configuration values from the environment:
+The `settings` module reads required configuration values from the environment.
+During local development, it also reads values from a local `config.yaml` file
+which was created when you ran `make install`.  This file is never checked into
+the repository so you can use it to store API keys for development. It contains
+some required Django configuration values:
 
-    DEBUG="True"
-    SECRET_KEY="some secret key"
-    DATABASE_URL="postgres://fytuser:password@localhost/fyt"
+    DEBUG: "True"
+    SECRET_KEY: "some secret key"
+    DATABASE_URL: "postgres://fytuser:password@localhost/fyt"
 
 To use the Google Maps integration for the `transport` app,
 get API keys for the [Google Maps Directions API](https://developers.google.com/maps/documentation/directions/)
-and the [Google Maps Embed API](https://developers.google.com/maps/documentation/embed/).
+and the [Google Maps Embed API](https://developers.google.com/maps/documentation/embed/)
+and add them to `config.yaml`:
 
-    GOOGLE_MAPS_KEY="your google maps key"
-    GOOGLE_MAPS_BROWSER_KEY="your google maps browser key"
+    GOOGLE_MAPS_KEY: "your google maps key"
+    GOOGLE_MAPS_BROWSER_KEY: "your google maps browser key"
 
 In 2015 and 2016, Leader and Croo applications were submitted with an attached
 word document. Those files were uploaded to Amazon S3. The application was
 refactored in 2017 to use form-based questions, but those files are still in the
 database. To use this code you need to set up an Amazon S3 bucket and am IAM
-user with AmazonS3FullAccess permission.
+user with AmazonS3FullAccess permission, and add these keys to `config.yaml`:
 
-    AWS_ACCESS_KEY_ID="your key id"
-    AWS_SECRET_ACCESS_KEY="your secret key"
-    AWS_STORAGE_BUCKET_NAME="a bucket name"
-
-I put all these development credentials in a `config.sh` file that looks like
-
-    export DEBUG="True"
-    ...
-
-and run `source config.sh` before starting work. You also need to activate the
-virtual environment `source venv/bin/activate`; however, many of the commands
-in the `Makefile` already take care of this.
+    AWS_ACCESS_KEY_ID: "your key id"
+    AWS_SECRET_ACCESS_KEY: "your secret key"
+    AWS_STORAGE_BUCKET_NAME: "a bucket name"
 
 ## Development Server
 

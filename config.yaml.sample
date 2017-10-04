@@ -1,14 +1,14 @@
 # Configuration file for local dev credentials.
 # This does not get checked into the repository.
 
-AWS_ACCESS_KEY_ID: "AKIA-can-you-guess-me?"
-AWS_SECRET_ACCESS_KEY: "frobnozzle"
+AWS_ACCESS_KEY_ID: "aws-access-key-id"
+AWS_SECRET_ACCESS_KEY: "aws-access-key"
 AWS_STORAGE_BUCKET_NAME: "doc-trips-development"
 
 DEBUG: "True"
 SECRET_KEY: "super-secret"
 
-GOOGLE_MAPS_KEY: "AIza-fill-in-the-blank"
+GOOGLE_MAPS_KEY: "AIza-google-key"
 GOOGLE_MAPS_BROWSER_KEY: "AIza-a-different-key"
 
 DATABASE_URL: "postgres://fytuser:password@localhost/fyt"
