@@ -9,8 +9,6 @@ POSTGRES = fyt
 POSTGRES_USER = fytuser
 POSTGRES_DUMP = latest.dump
 
-.PHONY: venv
-
 all:
 	$(MANAGE) runserver
 
