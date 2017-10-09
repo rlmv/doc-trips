@@ -1,0 +1,7 @@
+# Config file for pyup.io bot
+
+# Update schedule
+schedule: "every week on monday"
+
+# PR branch prefix
+branch_prefix: "pyup/"
