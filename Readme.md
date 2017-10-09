@@ -83,7 +83,12 @@ To start the Django development server, run
 
     make
 
-and visit [localhost:8000](localhost:8000).
+and visit [localhost:8000](localhost:8000). Once you have logged in via
+Dartmouth WebAuth, run
+
+    ./manage.py setsuperuser <netid>
+
+with your NetId to give yourself superuser priveleges.
 
 ## Testing
 
