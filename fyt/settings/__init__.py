@@ -18,7 +18,7 @@ from .loader import EnvLoader
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
 
 # Untracked file used to store secrets for local development
-DEV_CONFIG = os.path.join(BASE_DIR, '..', 'config.yaml')
+DEV_CONFIG = os.path.join(BASE_DIR, '..', 'config.yml')
 
 env = EnvLoader(DEV_CONFIG)
 

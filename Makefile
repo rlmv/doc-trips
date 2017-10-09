@@ -12,15 +12,15 @@ POSTGRES_DUMP = latest.dump
 all:
 	$(MANAGE) runserver
 
-install: venv config.yaml
+install: venv config.yml
 	$(PIP) install --upgrade pip
 	$(PIP) install --upgrade -r requirements/dev.txt
 
 venv:
 	$(INTERPRETER) -m venv $(VENV)
 
-config.yaml:
-	cp -nv config.yaml.sample config.yaml
+config.yml:
+	cp -nv config.yml.example config.yml
 
 deploy:
 	git push production master

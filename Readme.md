@@ -43,7 +43,7 @@ required to use the database.
 ## Environment Variables
 
 The `settings` module reads required configuration values from the environment.
-During local development, it also reads values from a local `config.yaml` file
+During local development, it also reads values from a local `config.yml` file
 which was created when you ran `make install`.  This file is never checked into
 the repository so you can use it to store API keys for development. It contains
 some required Django configuration values:
@@ -55,7 +55,7 @@ some required Django configuration values:
 To use the Google Maps integration for the `transport` app,
 get API keys for the [Google Maps Directions API](https://developers.google.com/maps/documentation/directions/)
 and the [Google Maps Embed API](https://developers.google.com/maps/documentation/embed/)
-and add them to `config.yaml`:
+and add them to `config.yml`:
 
     GOOGLE_MAPS_KEY: "your google maps key"
     GOOGLE_MAPS_BROWSER_KEY: "your google maps browser key"
@@ -64,7 +64,7 @@ In 2015 and 2016, Leader and Croo applications were submitted with an attached
 word document. Those files were uploaded to Amazon S3. The application was
 refactored in 2017 to use form-based questions, but those files are still in the
 database. To use this code you need to set up an Amazon S3 bucket and am IAM
-user with AmazonS3FullAccess permission, and add these keys to `config.yaml`:
+user with AmazonS3FullAccess permission, and add these keys to `config.yml`:
 
     AWS_ACCESS_KEY_ID: "your key id"
     AWS_SECRET_ACCESS_KEY: "your secret key"
