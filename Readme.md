@@ -14,7 +14,14 @@ the following to install the project:
     cd doc-trips
     make install
 
-This will set up a virtual environment and install all Python dependencies.
+This will set up a virtual environment and install all Python
+dependencies. Many `Makefile` commands use the Python executable installed in
+the virtual environment; however, to use the virtual environment for other
+management commands you will need to run
+
+    source venv/bin/activate
+
+each time you begin development.
 
 ## Database
 
