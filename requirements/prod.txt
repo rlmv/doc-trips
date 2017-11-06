@@ -13,7 +13,7 @@ django-storages==1.6.5
 django-tables2==1.14.2
 django-toolbelt==0.0.1
 django-vanilla-views==1.0.4
-mammoth==1.4.2
+mammoth==1.4.3
 pyyaml==3.12
 raven==6.3.0
 requests==2.18.4
