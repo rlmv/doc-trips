@@ -1,21 +1,21 @@
-bleach==2.1.1
-boto3==1.4.8
+bleach==2.1.2
+boto3==1.5.1
 googlemaps==2.5.1
 dj-database-url==0.4.2
-django==1.11.7
+django==2.0
 django-bulk-update==2.2.0
 django-crispy-forms==1.7.0
-django-extensions==1.9.7
+django-extensions==1.9.8
 django-filter==1.1.0
 django-model-utils==3.0.0
 django-pipeline==1.6.13
 django-storages==1.6.5
-django-tables2==1.16.0
+django-tables2==1.17.1
 django-toolbelt==0.0.1
 django-vanilla-views==1.0.4
 mammoth==1.4.3
 pyyaml==3.12
-raven==6.3.0
+raven==6.4.0
 requests==2.18.4
 whitenoise==3.3.1
 
