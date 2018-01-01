@@ -15,7 +15,7 @@ django-toolbelt==0.0.1
 django-vanilla-views==1.0.4
 mammoth==1.4.3
 pyyaml==3.12
-raven==6.3.0
+raven==6.4.0
 requests==2.18.4
 whitenoise==3.3.1
 
