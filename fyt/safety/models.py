@@ -26,7 +26,11 @@ class _IncidentBase(DatabaseModel):
         abstract = True
 
     # inputing user
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        on_delete=models.PROTECT)
+
     created = models.DateTimeField(auto_now_add=True, editable=False)
 
     caller = models.CharField("Who called?", max_length=255)
@@ -50,6 +54,7 @@ class Incident(_IncidentBase):
 
     trip = models.ForeignKey(
         Trip, blank=True, null=True,
+        on_delete=models.PROTECT,
         verbose_name='On what trip did this incident occur?',
         help_text='leave blank if incident did not occur on a trip'
     )
@@ -89,7 +94,12 @@ class Incident(_IncidentBase):
 
 
 class IncidentUpdate(_IncidentBase):
-    incident = models.ForeignKey(Incident, editable=False)  # parent
+    # parent incident
+    incident = models.ForeignKey(
+        Incident,
+        editable=False,
+        on_delete=models.CASCADE)
+
     update = models.TextField()
 
     class Meta:

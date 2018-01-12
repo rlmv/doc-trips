@@ -11,9 +11,23 @@ class Raid(DatabaseModel):
     """
     A raid
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    trip = models.ForeignKey(Trip, null=True, blank=True)
-    campsite = models.ForeignKey(Campsite, null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        on_delete=models.PROTECT)
+
+    trip = models.ForeignKey(
+        Trip,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT)
+
+    campsite = models.ForeignKey(
+        Campsite,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT)
+
     date = models.DateField()
     plan = models.TextField(blank=True, help_text=(
         "Do you have a theme? Are you going to intercept "
@@ -49,8 +63,16 @@ class Comment(DatabaseModel):
     """
     A comment on a raid.
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-    raid = models.ForeignKey(Raid, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        on_delete=models.PROTECT)
+
+    raid = models.ForeignKey(
+        Raid,
+        editable=False,
+        on_delete=models.CASCADE)
+
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 

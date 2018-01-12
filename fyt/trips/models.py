@@ -419,7 +419,11 @@ class Document(DatabaseModel):
 
     Should this be restricted to PDFs? Allow images?
     """
-    template = models.ForeignKey('TripTemplate', related_name='documents')
+    template = models.ForeignKey(
+        'TripTemplate',
+        on_delete=models.PROTECT,
+        related_name='documents')
+
     name = models.CharField(max_length=255)
     file = models.FileField()
 

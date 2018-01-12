@@ -1,4 +1,3 @@
-
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -245,7 +244,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     # ---- administrative information. not seen by applicants ------
     applicant = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, related_name='applications'
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        related_name='applications',
+        on_delete=models.PROTECT
     )
     status = models.CharField(
         "Application status", max_length=15, choices=STATUS_CHOICES, default=PENDING
@@ -583,7 +585,10 @@ class LeaderSupplement(DatabaseModel):
     )
 
     application = models.OneToOneField(
-        Volunteer, editable=False, related_name='leader_supplement'
+        Volunteer,
+        editable=False,
+        related_name='leader_supplement',
+        on_delete=models.PROTECT
     )
 
     # Deprecated leader application
@@ -772,7 +777,10 @@ class CrooSupplement(DatabaseModel):
     """
 
     application = models.OneToOneField(
-        Volunteer, editable=False, related_name='croo_supplement'
+        Volunteer,
+        editable=False,
+        related_name='croo_supplement',
+        on_delete=models.PROTECT
     )
 
     # Deprecated croo application
@@ -853,10 +861,16 @@ class Score(DatabaseModel):
     )
 
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, related_name='scores'
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        related_name='scores',
+        on_delete=models.PROTECT
     )
     application = models.ForeignKey(
-        Volunteer, editable=False, related_name='scores'
+        Volunteer,
+        editable=False,
+        related_name='scores',
+        on_delete=models.PROTECT
     )
 
     created_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -907,10 +921,16 @@ class Skip(DatabaseModel):
         unique_together = ['grader', 'application']
         ordering = ['created_at']
 
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
-
+    grader = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        on_delete=models.CASCADE
+    )
     application = models.ForeignKey(
-        Volunteer, editable=False, related_name='skips'
+        Volunteer,
+        editable=False,
+        related_name='skips',
+        on_delete=models.CASCADE
     )
 
     created_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -947,7 +967,10 @@ class AbstractGrade(DatabaseModel):
 
     # related_name will be leaderapplicationgrades or crooapplicationgrades. Sweet.
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, related_name='%(class)ss'
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        related_name='%(class)ss',
+        on_delete=models.PROTECT
     )
     grade = models.PositiveSmallIntegerField('score', choices=SCORE_CHOICES)
     hard_skills = models.CharField(max_length=255, blank=True)
@@ -961,7 +984,10 @@ class AbstractGrade(DatabaseModel):
 class LeaderApplicationGrade(AbstractGrade):
     """ Grade for LeaderApplications """
     application = models.ForeignKey(
-        LeaderSupplement, related_name='grades', editable=False
+        LeaderSupplement,
+        related_name='grades',
+        editable=False,
+        on_delete=models.PROTECT
     )
 
 
@@ -970,7 +996,10 @@ class CrooApplicationGrade(AbstractGrade):
     Grade for CrooApplications
     """
     application = models.ForeignKey(
-        CrooSupplement, related_name='grades', editable=False
+        CrooSupplement,
+        related_name='grades',
+        editable=False,
+        on_delete=models.PROTECT
     )
     qualifications = models.ManyToManyField('QualificationTag', blank=True)
 
@@ -998,7 +1027,10 @@ class AbstractSkippedGrade(DatabaseModel):
     If a grader skips an application they will not be shown the
     application again.
     """
-    grader = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    grader = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        editable=False,
+        on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -1009,7 +1041,10 @@ class SkippedLeaderGrade(AbstractSkippedGrade):
     Skipped leader application
     """
     application = models.ForeignKey(
-        LeaderSupplement, editable=False, related_name='skips'
+        LeaderSupplement,
+        editable=False,
+        related_name='skips',
+        on_delete=models.CASCADE
     )
 
 
@@ -1018,10 +1053,16 @@ class SkippedCrooGrade(AbstractSkippedGrade):
     Skipped croo application
     """
     application = models.ForeignKey(
-        CrooSupplement, editable=False, related_name='skips'
+        CrooSupplement,
+        editable=False,
+        related_name='skips',
+        on_delete=models.CASCADE
     )
     # marks whether the grader was grading for a particular
     # qualification when they skipped the application
     for_qualification = models.ForeignKey(
-        QualificationTag, null=True, editable=False
+        QualificationTag,
+        null=True,
+        editable=False,
+        on_delete=models.SET_NULL
     )

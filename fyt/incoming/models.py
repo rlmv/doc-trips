@@ -64,7 +64,11 @@ class IncomingStudent(DatabaseModel):
         ordering = ['name']
 
     registration = models.OneToOneField(
-        'Registration', editable=False, related_name='trippee', null=True
+        'Registration',
+        editable=False,
+        related_name='trippee',
+        null=True,
+        on_delete=models.PROTECT
     )
     trip_assignment = models.ForeignKey(
         Trip, on_delete=models.PROTECT,
@@ -433,7 +437,8 @@ class Registration(MedicalMixin, DatabaseModel):
     class Meta:
         ordering = ['name']
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT)
 
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
@@ -509,6 +514,7 @@ class Registration(MedicalMixin, DatabaseModel):
     _old_firstchoice_triptype = models.ForeignKey(
         TripType, blank=True, null=True, related_name='firstchoice_triptype',
         verbose_name="first choice trip types",
+        on_delete=models.CASCADE
     )
     _old_preferred_triptypes = models.ManyToManyField(
         TripType, blank=True, related_name='preferring_trippees',

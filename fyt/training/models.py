@@ -76,7 +76,7 @@ class Attendee(DatabaseModel):
     class Meta:
         ordering = ['volunteer']
 
-    volunteer = models.OneToOneField(Volunteer)
+    volunteer = models.OneToOneField(Volunteer, on_delete=models.PROTECT)
     registered_sessions = models.ManyToManyField(
         Session, blank=True, related_name='registered')
     complete_sessions = models.ManyToManyField(
