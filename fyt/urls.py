@@ -1,9 +1,3 @@
-# Monkey patch django.core.urlresolvers
-# (until vanilla-views is updated)
-import sys               # isort:skip
-from django import urls  # isort:skip
-sys.modules['django.core.urlresolvers'] = urls
-
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin

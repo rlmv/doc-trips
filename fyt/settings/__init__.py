@@ -14,6 +14,11 @@ import dj_database_url
 
 from .loader import EnvLoader
 
+# Monkey patch django.core.urlresolvers
+# TODO: remove when vanilla-views is updated
+import sys               # isort:skip
+from django import urls  # isort:skip
+sys.modules['django.core.urlresolvers'] = urls
 
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
 
