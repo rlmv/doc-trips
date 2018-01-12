@@ -19,18 +19,18 @@ handler403 = 'fyt.views.permission_denied'
 
 urlpatterns = [
     url(r'^$', HomePage.as_view(), name='home'),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^dartdm/', include('fyt.dartdm.urls', namespace='dartdm')),
-    url(r'^db/', include('fyt.db.urls', namespace='db')),
-    url(r'^incoming/', include('fyt.incoming.urls', namespace='incoming')),
-    url(r'^permissions/', include('fyt.permissions.urls', namespace='permissions')),
+    url(r'^admin/', admin.site.urls),
+    url(r'^dartdm/', include(('fyt.dartdm.urls', 'dartdm'))),
+    url(r'^db/', include(('fyt.db.urls', 'db'))),
+    url(r'^incoming/', include(('fyt.incoming.urls', 'incoming'))),
+    url(r'^permissions/', include(('fyt.permissions.urls', 'permissions'))),
     # TODO: move this to a better namespace / general settings namespace
-    url(r'^settings/', include(settings_urlpatterns, namespace='settings')),
+    url(r'^settings/', include((settings_urlpatterns, 'settings'))),
     url(r'^test/error/', RaiseError.as_view(), name='raise_error'),
-    url(r'^timetable/', include('fyt.timetable.urls', namespace='timetable')),
-    url(r'^training/', include('fyt.training.urls', namespace='training')),
-    url(r'^users/', include('fyt.users.urls', namespace='users')),
-    url(r'^volunteers/', include('fyt.applications.urls', namespace='applications')),
+    url(r'^timetable/', include(('fyt.timetable.urls', 'timetable'))),
+    url(r'^training/', include(('fyt.training.urls', 'training'))),
+    url(r'^users/', include(('fyt.users.urls', 'users'))),
+    url(r'^volunteers/', include(('fyt.applications.urls', 'applications'))),
 ]
 
 # Install django-debug-toolbar

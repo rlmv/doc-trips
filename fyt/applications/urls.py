@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
-    url(r'^score/', include(score_urlpatterns, namespace='score')),
+    url(r'^score/', include((score_urlpatterns, 'score'))),
 ]
 
 # ----- protected database views ----------
