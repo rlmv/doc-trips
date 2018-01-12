@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('order', models.PositiveSmallIntegerField()),
                 ('stop_type', models.CharField(max_length=10, choices=[('PICKUP', 'PICKUP'), ('DROPOFF', 'DROPOFF')])),
-                ('bus', models.ForeignKey(to='transport.ScheduledTransport')),
+                ('bus', models.ForeignKey(to='transport.ScheduledTransport', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['order'],

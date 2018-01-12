@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='document',
             name='template',
-            field=models.ForeignKey(related_name='documents', to='trips.TripTemplate'),
+            field=models.ForeignKey(related_name='documents', to='trips.TripTemplate', on_delete=models.CASCADE),
         ),
     ]

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incomingstudent',
             name='registration',
-            field=models.OneToOneField(related_name='trippee', to='incoming.Registration', editable=False, null=True),
+            field=models.OneToOneField(related_name='trippee', to='incoming.Registration', editable=False, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

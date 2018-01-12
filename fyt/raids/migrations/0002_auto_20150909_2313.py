@@ -17,13 +17,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='raid',
             name='campsite',
-            field=models.ForeignKey(to='trips.Campsite', null=True, blank=True),
+            field=models.ForeignKey(to='trips.Campsite', null=True, blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='raid',
             name='trip',
-            field=models.ForeignKey(to='trips.Trip', null=True, blank=True),
+            field=models.ForeignKey(to='trips.Trip', null=True, blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
                 ('preference', models.CharField(choices=[('PREFER', 'prefer'), ('AVAILABLE', 'available'), ('NOT AVAILABLE', 'not available')], max_length=20)),
-                ('application', models.ForeignKey(to='applications.LeaderSupplement')),
-                ('section', models.ForeignKey(to='trips.Section')),
+                ('application', models.ForeignKey(to='applications.LeaderSupplement', on_delete=models.CASCADE)),
+                ('section', models.ForeignKey(to='trips.Section', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -26,8 +26,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
                 ('preference', models.CharField(choices=[('PREFER', 'prefer'), ('AVAILABLE', 'available'), ('NOT AVAILABLE', 'not available')], max_length=20)),
-                ('application', models.ForeignKey(to='applications.LeaderSupplement')),
-                ('triptype', models.ForeignKey(to='trips.TripType')),
+                ('application', models.ForeignKey(to='applications.LeaderSupplement', on_delete=models.CASCADE)),
+                ('triptype', models.ForeignKey(to='trips.TripType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(

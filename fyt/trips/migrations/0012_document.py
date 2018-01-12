@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, serialize=False, auto_created=True)),
                 ('name', models.CharField(max_length=255)),
                 ('file', models.FileField(upload_to='')),
-                ('template', models.ForeignKey(to='trips.TripTemplate')),
+                ('template', models.ForeignKey(to='trips.TripTemplate', on_delete=models.CASCADE)),
                 ('trips_year', models.ForeignKey(editable=False, to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT)),
             ],
             options={

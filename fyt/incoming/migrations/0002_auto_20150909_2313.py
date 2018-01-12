@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='firstchoice_triptype',
-            field=models.ForeignKey(related_name='firstchoice_triptype', blank=True, to='trips.TripType', null=True, verbose_name='first choice trip types'),
+            field=models.ForeignKey(related_name='firstchoice_triptype', blank=True, to='trips.TripType', null=True, verbose_name='first choice trip types', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

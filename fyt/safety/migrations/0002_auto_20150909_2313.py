@@ -19,13 +19,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incidentupdate',
             name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incident',
             name='trip',
-            field=models.ForeignKey(blank=True, to='trips.Trip', help_text='leave blank if incident did not occur on a trip', null=True, verbose_name='On what trip did this incident occur?'),
+            field=models.ForeignKey(blank=True, to='trips.Trip', help_text='leave blank if incident did not occur on a trip', null=True, verbose_name='On what trip did this incident occur?', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incident',
             name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

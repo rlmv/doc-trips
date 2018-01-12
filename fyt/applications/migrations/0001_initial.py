@@ -165,7 +165,7 @@ class Migration(migrations.Migration):
             name='SkippedLeaderGrade',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('application', models.ForeignKey(related_name='skips', to='applications.LeaderSupplement', editable=False)),
+                ('application', models.ForeignKey(related_name='skips', to='applications.LeaderSupplement', editable=False, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

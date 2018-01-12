@@ -18,8 +18,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
                 ('preference', models.CharField(max_length=20, choices=[('PREFER', 'prefer'), ('AVAILABLE', 'available'), ('NOT AVAILABLE', 'not available')])),
-                ('registration', models.ForeignKey(to='incoming.Registration')),
-                ('triptype', models.ForeignKey(to='trips.TripType')),
+                ('registration', models.ForeignKey(to='incoming.Registration', on_delete=models.CASCADE)),
+                ('triptype', models.ForeignKey(to='trips.TripType', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(

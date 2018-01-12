@@ -18,13 +18,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='raid',
             name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comment',
             name='raid',
-            field=models.ForeignKey(editable=False, to='raids.Raid'),
+            field=models.ForeignKey(editable=False, to='raids.Raid', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='user',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

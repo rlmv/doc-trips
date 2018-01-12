@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='skippedleadergrade',
             name='grader',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -32,19 +32,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='skippedcroograde',
             name='application',
-            field=models.ForeignKey(related_name='skips', to='applications.CrooSupplement', editable=False),
+            field=models.ForeignKey(related_name='skips', to='applications.CrooSupplement', editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='skippedcroograde',
             name='for_qualification',
-            field=models.ForeignKey(to='applications.QualificationTag', editable=False, null=True),
+            field=models.ForeignKey(to='applications.QualificationTag', editable=False, null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='skippedcroograde',
             name='grader',
-            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leadersupplement',
             name='application',
-            field=models.OneToOneField(related_name='leader_supplement', to='applications.GeneralApplication', editable=False),
+            field=models.OneToOneField(related_name='leader_supplement', to='applications.GeneralApplication', editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -108,13 +108,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leaderapplicationgrade',
             name='application',
-            field=models.ForeignKey(related_name='grades', to='applications.LeaderSupplement', editable=False),
+            field=models.ForeignKey(related_name='grades', to='applications.LeaderSupplement', editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='leaderapplicationgrade',
             name='grader',
-            field=models.ForeignKey(related_name='leaderapplicationgrades', to=settings.AUTH_USER_MODEL, editable=False),
+            field=models.ForeignKey(related_name='leaderapplicationgrades', to=settings.AUTH_USER_MODEL, editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='generalapplication',
             name='applicant',
-            field=models.ForeignKey(related_name='applications', to=settings.AUTH_USER_MODEL, editable=False),
+            field=models.ForeignKey(related_name='applications', to=settings.AUTH_USER_MODEL, editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='croosupplement',
             name='application',
-            field=models.OneToOneField(related_name='croo_supplement', to='applications.GeneralApplication', editable=False),
+            field=models.OneToOneField(related_name='croo_supplement', to='applications.GeneralApplication', editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -162,13 +162,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='crooapplicationgrade',
             name='application',
-            field=models.ForeignKey(related_name='grades', to='applications.CrooSupplement', editable=False),
+            field=models.ForeignKey(related_name='grades', to='applications.CrooSupplement', editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='crooapplicationgrade',
             name='grader',
-            field=models.ForeignKey(related_name='crooapplicationgrades', to=settings.AUTH_USER_MODEL, editable=False),
+            field=models.ForeignKey(related_name='crooapplicationgrades', to=settings.AUTH_USER_MODEL, editable=False, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

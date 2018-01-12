@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='stoporder',
             name='trip',
-            field=models.ForeignKey(to='trips.Trip'),
+            field=models.ForeignKey(to='trips.Trip', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('caller_role', models.CharField(max_length=20, choices=[('TRIP_LEADER', 'Trip Leader'), ('CROO_MEMBER', 'Croo Member'), ('TRIPPEE', 'Trippee'), ('OTHER', 'Other')])),
                 ('caller_number', models.CharField(max_length=20)),
                 ('update', models.TextField()),
-                ('incident', models.ForeignKey(editable=False, to='safety.Incident')),
+                ('incident', models.ForeignKey(editable=False, to='safety.Incident', on_delete=models.CASCADE)),
                 ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
             ],
             options={
