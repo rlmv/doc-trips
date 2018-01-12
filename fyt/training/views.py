@@ -2,7 +2,7 @@ import logging
 
 from braces.views import FormMessagesMixin, SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView
 

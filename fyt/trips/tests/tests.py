@@ -6,7 +6,7 @@ from datetime import date, time, timedelta
 import boto3  # This is required to fix an issue with VCR
 import webtest
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from model_mommy import mommy
 
 from ..models import (

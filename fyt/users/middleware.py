@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 from django.contrib import auth
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
 

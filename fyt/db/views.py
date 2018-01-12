@@ -7,7 +7,7 @@ from crispy_forms.layout import HTML, Submit
 from django import forms
 from django.contrib import messages
 from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.db import IntegrityError, models, transaction
 from django.http import Http404, HttpResponseRedirect
 from django.utils.safestring import mark_safe

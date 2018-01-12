@@ -3,7 +3,7 @@ import unittest
 from datetime import date, datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 from model_mommy import mommy

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 
 from fyt.db.models import DatabaseModel
@@ -9,7 +9,7 @@ from fyt.trips.models import Campsite, Trip
 
 class Raid(DatabaseModel):
     """
-    A raid 
+    A raid
     """
     user = models.ForeignKey(settings.AUTH_USER_MODEL, editable=False)
     trip = models.ForeignKey(Trip, null=True, blank=True)

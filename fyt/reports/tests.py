@@ -3,7 +3,7 @@ import tempfile
 from collections import OrderedDict
 from datetime import date
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.applications.models import Question, Volunteer

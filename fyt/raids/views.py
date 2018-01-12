@@ -1,6 +1,6 @@
 from braces.views import SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe

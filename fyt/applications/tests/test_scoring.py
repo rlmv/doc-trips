@@ -1,7 +1,6 @@
-
 import unittest
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from model_mommy import mommy
 
 from ..models import Score, Volunteer

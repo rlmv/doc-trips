@@ -3,7 +3,7 @@ from statistics import mean
 
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 from crispy_forms.layout import Submit
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import modelformset_factory
 from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView

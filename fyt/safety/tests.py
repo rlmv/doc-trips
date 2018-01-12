@@ -1,6 +1,6 @@
 import datetime
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 

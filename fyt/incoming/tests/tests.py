@@ -2,7 +2,7 @@ import os
 from datetime import date, timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import IntegrityError
 from model_mommy import mommy
 

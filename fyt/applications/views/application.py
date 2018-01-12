@@ -8,7 +8,7 @@ from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
