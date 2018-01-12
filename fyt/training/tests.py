@@ -15,11 +15,15 @@ from fyt.training.models import Attendee, Session, Training
 
 
 # Don't let model_mommy bung up the OneToOne creation
-def make_attendee(trips_year=None, **kwargs):
+def make_attendee(trips_year=None, registered_sessions=None, **kwargs):
     volunteer = mommy.make(Volunteer, trips_year=trips_year,
                            applicant__email='test@gmail.com')
     for k, v in kwargs.items():
         setattr(volunteer.attendee, k, v)
+
+    if registered_sessions:
+        volunteer.attendee.registered_sessions.add(registered_sessions)
+
     volunteer.attendee.save()
     return volunteer.attendee
 
@@ -29,9 +33,8 @@ class SessionModelTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.session = mommy.make(Session, trips_year=self.trips_year)
-        self.attendee = make_attendee(
-            trips_year=self.trips_year,
-            registered_sessions=[self.session])
+        self.attendee = make_attendee(trips_year=self.trips_year,
+                                      registered_sessions=self.session)
 
     def test_attendee_emails(self):
         self.assertQsEqual(self.session.registered_emails(), ['test@gmail.com'])
@@ -40,7 +43,7 @@ class SessionModelTestCase(FytTestCase):
         self.assertFalse(self.session.full())
         for i in range(Session.DEFAULT_CAPACITY):
             make_attendee(trips_year=self.trips_year,
-                          registered_sessions=[self.session])
+                          registered_sessions=self.session)
         self.assertTrue(self.session.full())
 
 
@@ -82,8 +85,8 @@ class AttendeeTrainingTestCase(FytTestCase):
         self.attendee1 = make_attendee(trips_year=self.trips_year)
         self.attendee2 = make_attendee(trips_year=self.trips_year)
         self.session = mommy.make(Session, trips_year=self.trips_year,
-                                  training=self.training,
-                                  completed=[self.attendee2])
+                                  training=self.training)
+        self.session.completed.add(self.attendee2)
 
     def test_trainings_to_sessions(self):
         self.assertEqual(self.attendee1.trainings_to_sessions(),
@@ -181,7 +184,7 @@ class AttendenceFormTestCase(FytTestCase):
         self.init_trips_year()
         self.session = mommy.make(Session, trips_year=self.trips_year)
         self.attendee = make_attendee(trips_year=self.trips_year,
-                                      registered_sessions=[self.session])
+                                      registered_sessions=self.session)
         self.not_attending = make_attendee(trips_year=self.trips_year)
 
     def test_queryset_is_all_registered_volunteers(self):
@@ -233,7 +236,7 @@ class SignupFormTestCase(FytTestCase):
         session = mommy.make(Session, trips_year=self.trips_year)
         for i in range(Session.DEFAULT_CAPACITY):
             make_attendee(trips_year=self.trips_year,
-                          registered_sessions=[session])
+                          registered_sessions=session)
 
         attendee = make_attendee(trips_year=self.trips_year)
         form = SignupForm({'registered_sessions': [session]}, instance=attendee)
@@ -249,12 +252,12 @@ class SignupFormTestCase(FytTestCase):
     def test_dont_check_capacity_when_previously_registered(self):
         session = mommy.make(Session, trips_year=self.trips_year)
         attendee = make_attendee(trips_year=self.trips_year,
-                                 registered_sessions=[session])
+                                 registered_sessions=session)
 
         # Then session fills up
         for i in range(Session.DEFAULT_CAPACITY):
             make_attendee(trips_year=self.trips_year,
-                          registered_sessions=[session])
+                          registered_sessions=session)
 
         form = SignupForm({'registered_sessions': [session]}, instance=attendee)
         self.assertTrue(form.is_valid())
