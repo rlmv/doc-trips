@@ -3,6 +3,7 @@ boto3==1.5.9
 googlemaps==2.5.1
 dj-database-url==0.4.2
 django==2.0.1
+django-braces==1.12.0
 django-bulk-update==2.2.0
 django-crispy-forms==1.7.0
 django-extensions==1.9.8
@@ -20,4 +21,3 @@ requests==2.18.4
 whitenoise==3.3.1
 
 git+git://github.com/rlmv/django-bootstrap3-datetimepicker.git
-git+git://github.com/brack3t/django-braces.git@f8dcfca48c1b6f4a182bab6892068732e7b32072
