@@ -5,7 +5,9 @@ branch = True
 source = fyt
 omit =
     */migrations/*
+    */commands/*
     */legacy/*
+    wsgi.py
 
 [report]
 exclude_lines =
