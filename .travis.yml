@@ -28,6 +28,7 @@ install:
 
 before_script:
     - psql -c "CREATE DATABASE testdb;" -U postgres
+    - python manage.py collectstatic --noinput
 
 script: coverage run manage.py test
 
