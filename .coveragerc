@@ -3,7 +3,9 @@
 [run]
 branch = True
 source = fyt
-omit = */migrations/*
+omit =
+    */migrations/*
+    */legacy/*
 
 [report]
 exclude_lines =
