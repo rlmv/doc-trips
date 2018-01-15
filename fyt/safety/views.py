@@ -11,7 +11,7 @@ from vanilla import (
     UpdateView,
 )
 
-from fyt.db.views import TripsYearMixin
+from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import SafetyLogPermissionRequired
 from fyt.safety.forms import IncidentForm, IncidentUpdateForm
 from fyt.safety.models import Incident
@@ -29,7 +29,7 @@ class IncidentList(_IncidentMixin, ListView):
 
 class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
     model = Incident
-    template_name = 'db/create.html'
+    template_name = 'core/create.html'
     headline = 'New Incident'
 
     def get_form(self, **kwargs):
@@ -81,14 +81,14 @@ class IncidentDetail(_IncidentMixin, FormView, DetailView):
 
 class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
     model = Incident
-    template_name = 'db/delete.html'
+    template_name = 'core/delete.html'
 
     def get_headline(self):
         return ("Are you sure you want to delete Incident %s? "
                 "You will not be able to undo this." % self.object)
 
     def get_success_url(self):
-        return reverse('db:safety:list', kwargs={
+        return reverse('core:safety:list', kwargs={
             'trips_year': self.kwargs['trips_year']
         })
 
@@ -100,7 +100,7 @@ class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
 
 class UpdateIncident(_IncidentMixin, UpdateView):
     model = Incident
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
     fields = ['status']
 
     def get_form(self, **kwargs):

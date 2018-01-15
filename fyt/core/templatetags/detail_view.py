@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 
-from fyt.db.templatetags.links import *
+from fyt.core.templatetags.links import *
 
 
 register = template.Library()
@@ -95,5 +95,5 @@ def detail(db_object, fields=None):
             label = field.verbose_name
         display_fields.append((label, value))
 
-    t = template.loader.get_template('db/_detail_view_tag.html')
+    t = template.loader.get_template('core/_detail_view_tag.html')
     return t.render({'fields': display_fields})

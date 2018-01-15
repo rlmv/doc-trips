@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from fyt.db.urlhelpers import DB_REGEX
+from fyt.core.urlhelpers import DB_REGEX
 from fyt.training.views import (
     AttendeeUpdate,
     NewSession,

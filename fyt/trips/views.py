@@ -31,7 +31,7 @@ from fyt.applications.models import (
     LeaderTripTypeChoice,
     Volunteer,
 )
-from fyt.db.views import (
+from fyt.core.views import (
     BaseUpdateView,
     DatabaseCreateView,
     DatabaseDeleteView,
@@ -163,7 +163,7 @@ class TripCreate(PopulateMixin, DatabaseCreateView):
 
 class TripDelete(DatabaseDeleteView):
     model = Trip
-    success_url_pattern = 'db:trip:index'
+    success_url_pattern = 'core:trip:index'
 
 
 class TripTemplateList(DatabaseListView):
@@ -216,7 +216,7 @@ class TripTemplateUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
 
 class TripTemplateDelete(DatabaseDeleteView):
     model = TripTemplate
-    success_url_pattern = 'db:triptemplate:index'
+    success_url_pattern = 'core:triptemplate:index'
 
 
 class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
@@ -248,7 +248,7 @@ class TripTemplateDocumentDelete(_TripTemplateMixin, DatabaseDeleteView):
     model = Document
 
     def get_success_url(self):
-        return reverse('db:triptemplate:document_list',
+        return reverse('core:triptemplate:document_list',
                        kwargs=self.get_triptemplate().obj_kwargs())
 
 
@@ -290,7 +290,7 @@ class TripTypeUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
 
 class TripTypeDelete(DatabaseDeleteView):
     model = TripType
-    success_url_pattern = 'db:triptype:index'
+    success_url_pattern = 'core:triptype:index'
 
 
 class CampsiteMatrix(DatabaseTemplateView):
@@ -327,7 +327,7 @@ class CampsiteUpdate(DatabaseUpdateView):
 
 class CampsiteDelete(DatabaseDeleteView):
     model = Campsite
-    success_url_pattern = 'db:campsite:index'
+    success_url_pattern = 'core:campsite:index'
 
 
 class SectionList(DatabaseListView):
@@ -364,7 +364,7 @@ class SectionUpdate(DatabaseUpdateView):
 
 class SectionDelete(DatabaseDeleteView):
     model = Section
-    success_url_pattern = 'db:section:index'
+    success_url_pattern = 'core:section:index'
 
 
 class LeaderTrippeeIndexView(DatabaseListView):
@@ -478,7 +478,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
 
         for trippee in self.object_list:
             reg = trippee.registration
-            url = reverse('db:assign_trippee_to_trip', kwargs={
+            url = reverse('core:assign_trippee_to_trip', kwargs={
                 'trips_year': trips_year,
                 'trippee_pk': trippee.pk
             })
@@ -504,7 +504,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     model = IncomingStudent
     lookup_url_kwarg = 'trippee_pk'
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
     form_class = TrippeeAssignmentForm
 
     def get(self, request, *args, **kwargs):
@@ -531,7 +531,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
-        return reverse('db:leader_index',
+        return reverse('core:leader_index',
                        kwargs={'trips_year': self.get_trips_year()})
 
 
@@ -586,7 +586,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
         """
         Return the url used to assign leader to trip
         """
-        url = reverse('db:assign_leader_to_trip', kwargs={
+        url = reverse('core:assign_leader_to_trip', kwargs={
             'trips_year': self.kwargs['trips_year'],
             'leader_pk': leader.pk
         })
@@ -640,7 +640,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
                          TripsYearMixin, UpdateView):
     model = Volunteer
     lookup_url_kwarg = 'leader_pk'
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
 
     def get_form(self, **kwargs):
         form = LeaderAssignmentForm(self.kwargs['trips_year'], **kwargs)
@@ -661,7 +661,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
         )
 
     def get_success_url(self):
-        return reverse('db:leader_index', kwargs={
+        return reverse('core:leader_index', kwargs={
             'trips_year': self.kwargs['trips_year']
         })
 
@@ -843,25 +843,25 @@ class Checklists(DatabaseTemplateView):
             }
             d[sxn.leaders_arrive].append((
                 'Section %s Leader Checkin' % sxn.name,
-                reverse('db:checklists:leaders', kwargs=kwargs)))
+                reverse('core:checklists:leaders', kwargs=kwargs)))
 
             d[sxn.trippees_arrive].append((
                 'Section %s Trippee Checkin' % sxn.name,
-                reverse('db:checklists:trippees', kwargs=kwargs)))
+                reverse('core:checklists:trippees', kwargs=kwargs)))
 
             d[sxn.trippees_arrive].append((
                 'Section %s Leader Packets' % sxn.name,
-                reverse('db:packets:section', kwargs=kwargs)))
+                reverse('core:packets:section', kwargs=kwargs)))
 
             d[sxn.trippees_arrive].append((
                 'Section %s Medical Information' % sxn.name,
-                reverse('db:packets:medical', kwargs=kwargs)))
+                reverse('core:packets:medical', kwargs=kwargs)))
 
         buses = InternalBus.objects.filter(trips_year=trips_year)
         for date in set(map(lambda x: x.date, buses)):
             d[date].append((
                 'Internal Bus Directions for %s' % date.strftime('%m/%d'),
-                reverse('db:internalbus:packet_for_date', kwargs={
+                reverse('core:internalbus:packet_for_date', kwargs={
                     'trips_year': trips_year, 'date': date
                 })
             ))
@@ -876,14 +876,14 @@ class Checklists(DatabaseTemplateView):
             for bus in buses:
                 d[date].append((
                     '%s Directions for %s' % (bus.route, date.strftime('%m/%d')),
-                    reverse('db:externalbus:packet_for_date_and_route', kwargs={
+                    reverse('core:externalbus:packet_for_date_and_route', kwargs={
                         'trips_year': trips_year,
                         'date': date,
                         'route_pk': bus.route.pk})))
 
                 d[date].append((
                     '%s Riders Spreadsheet' % bus.route,
-                    reverse('db:reports:bus_riders', kwargs={
+                    reverse('core:reports:bus_riders', kwargs={
                         'trips_year': trips_year,
                         'bus_pk': bus.pk})))
 

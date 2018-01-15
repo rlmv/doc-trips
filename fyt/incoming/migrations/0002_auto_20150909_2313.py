@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('incoming', '0001_initial'),
         ('transport', '0002_auto_20150909_2313'),
         ('trips', '0001_initial'),
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='registration',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(

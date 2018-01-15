@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('trips', '0011_auto_20151015_1230'),
     ]
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('file', models.FileField(upload_to='')),
                 ('template', models.ForeignKey(to='trips.TripTemplate', on_delete=models.CASCADE)),
-                ('trips_year', models.ForeignKey(editable=False, to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT)),
+                ('trips_year', models.ForeignKey(editable=False, to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT)),
             ],
             options={
                 'abstract': False,

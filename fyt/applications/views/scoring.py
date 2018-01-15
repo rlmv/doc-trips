@@ -13,8 +13,8 @@ from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
 from fyt.applications.models import Score, Volunteer
-from fyt.db.models import TripsYear
-from fyt.db.views import DatabaseDeleteView
+from fyt.core.models import TripsYear
+from fyt.core.views import DatabaseDeleteView
 from fyt.permissions.views import GraderPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin

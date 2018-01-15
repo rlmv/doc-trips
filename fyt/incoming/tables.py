@@ -1,7 +1,7 @@
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
 
-from fyt.db.templatetags.links import detail_link, edit_link
+from fyt.core.templatetags.links import detail_link, edit_link
 
 
 class DetailLinkColumn(tables.Column):

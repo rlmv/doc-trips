@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.utils.safestring import mark_safe
 from vanilla import CreateView, DetailView, FormView, ListView
 
-from fyt.db.views import DatabaseDeleteView, DatabaseUpdateView, TripsYearMixin
+from fyt.core.views import DatabaseDeleteView, DatabaseUpdateView, TripsYearMixin
 from fyt.raids.forms import CommentForm
 from fyt.raids.models import Raid, RaidInfo
 from fyt.trips.models import Trip
@@ -106,7 +106,7 @@ class RaidDelete(DatabaseDeleteView):
 
     def get_success_url(self):
         kwargs = {'trips_year': self.kwargs['trips_year']}
-        return reverse('db:raids:list', kwargs=kwargs)
+        return reverse('core:raids:list', kwargs=kwargs)
 
 
 class UpdateRaidInfo(DatabaseUpdateView):
@@ -117,4 +117,4 @@ class UpdateRaidInfo(DatabaseUpdateView):
         return self.model.objects.get(trips_year=self.kwargs['trips_year'])
 
     def get_success_url(self):
-        return reverse('db:raids:home', kwargs=self.kwargs)
+        return reverse('core:raids:home', kwargs=self.kwargs)

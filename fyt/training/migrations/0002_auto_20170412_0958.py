@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('applications', '0070_auto_20170408_1046'),
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('training', '0001_initial'),
     ]
 
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='attendee',
             name='trips_year',
-            field=models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear'),
+            field=models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='core.TripsYear'),
         ),
         migrations.AddField(
             model_name='attendee',

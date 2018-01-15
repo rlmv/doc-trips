@@ -2,7 +2,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.db import models
 
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 from fyt.trips.models import Trip
 from fyt.utils.model_fields import YesNoField
 
@@ -78,13 +78,13 @@ class Incident(_IncidentBase):
     )
 
     def detail_url(self):
-        return reverse('db:safety:detail', kwargs=self.obj_kwargs())
+        return reverse('core:safety:detail', kwargs=self.obj_kwargs())
 
     def update_url(self):
-        return reverse('db:safety:update', kwargs=self.obj_kwargs())
+        return reverse('core:safety:update', kwargs=self.obj_kwargs())
 
     def delete_url(self):
-        return reverse('db:safety:delete', kwargs=self.obj_kwargs())
+        return reverse('core:safety:delete', kwargs=self.obj_kwargs())
 
     def __str__(self):
         fmt = lambda x: x.strftime("%m/%d %H:%M")

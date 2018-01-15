@@ -13,7 +13,7 @@ from .models import (
 )
 
 from fyt.applications.forms import PreferenceHandler
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.incoming.models import Settings
 from fyt.transport.models import Stop
 from fyt.trips.fields import TripChoiceField

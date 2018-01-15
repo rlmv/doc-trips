@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load maps %}
 {% load checklists %}
@@ -12,12 +12,12 @@
 {% include "transport/_scheduled_alert.html" with scheduled=bus %}
 
 <div class="alert alert-success">
-  Go to the <a href="{% url 'db:checklists:all' trips_year=trips_year %}"> Packets </a> page for printable day-by-day External Bus packets.
+  Go to the <a href="{% url 'core:checklists:all' trips_year=trips_year %}"> Packets </a> page for printable day-by-day External Bus packets.
 </div>
 
 {% if bus %}
 
-{% url 'db:reports:bus_riders' trips_year=trips_year bus_pk=bus.pk as url_ %}
+{% url 'core:reports:bus_riders' trips_year=trips_year bus_pk=bus.pk as url_ %}
 {{ url_|download_button:"Passenger Spreadsheet" }}
 
 <h3> Directions To Hanover </h3>

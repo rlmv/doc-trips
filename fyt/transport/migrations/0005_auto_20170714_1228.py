@@ -12,7 +12,7 @@ def init_transport_config(apps, schema_editor):
     """
     TransportConfig = apps.get_model('transport', 'TransportConfig')
     Stop = apps.get_model('transport', 'Stop')
-    TripsYear = apps.get_model('db', 'TripsYear')
+    TripsYear = apps.get_model('core', 'TripsYear')
 
     for trips_year in TripsYear.objects.filter(year__in=[2015, 2016, 2017]):
 

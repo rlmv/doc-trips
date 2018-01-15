@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 
 {% block header %}
 <h1> Trippee and Leader Counts  </h1>
@@ -28,11 +28,11 @@
     {% if trip %}
     <td class="text-center">
       <span data-toggle="tooltip" data-placement="top" title="{{ trip.verbose_str }}">
-	<a class="no-color-link" href="{{ trip.get_absolute_url }}"> 
-	  <span {% if trip.num_trippees < trip.template.max_trippees %} class="text-bright-success" {% elif trip.num_trippees > trip.template.max_trippees %} class="text-bright-danger" {% endif %}> {{ trip.num_trippees }} </span>
-	  &ndash; 
-	  <span {% if trip.num_leaders > 2 %} class="text-bright-danger" {% endif %}> {{ trip.num_leaders }} </span>
-	</a>
+    <a class="no-color-link" href="{{ trip.get_absolute_url }}">
+      <span {% if trip.num_trippees < trip.template.max_trippees %} class="text-bright-success" {% elif trip.num_trippees > trip.template.max_trippees %} class="text-bright-danger" {% endif %}> {{ trip.num_trippees }} </span>
+      &ndash;
+      <span {% if trip.num_leaders > 2 %} class="text-bright-danger" {% endif %}> {{ trip.num_leaders }} </span>
+    </a>
       </span>
     </td>
     {% else %}

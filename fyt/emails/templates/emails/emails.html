@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 
 {% block header %}
 <h1> {{ headline }} </h1>
@@ -18,7 +18,7 @@
     </div>
     <div id="emails{{ forloop.counter }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
       <div class="panel-body">
-	{{ emails|join:"; " }}
+    {{ emails|join:"; " }}
       </div>
     </div>
   </div>

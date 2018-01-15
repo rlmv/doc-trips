@@ -82,9 +82,9 @@ INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
 
     'fyt.applications',
+    'fyt.core',
     'fyt.croos',
     'fyt.dartdm',
-    'fyt.db',
     'fyt.emails',
     'fyt.incoming',
     'fyt.permissions',

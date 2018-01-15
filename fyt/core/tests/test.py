@@ -4,8 +4,8 @@ from django.core.management import call_command
 from django.db import IntegrityError
 from model_mommy import mommy
 
-from fyt.db.forms import tripsyear_modelform_factory
-from fyt.db.models import TripsYear
+from fyt.core.forms import tripsyear_modelform_factory
+from fyt.core.models import TripsYear
 from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, TripTemplate
 

@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 
 {% block header %}
@@ -13,7 +13,7 @@
     <th> Description </th>
     <th> Croo members </th>
   </tr>
-  
+
   {% for croo in croos %}
   <tr>
     <td> {{ croo | detail_link }} </td>

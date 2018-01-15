@@ -3,7 +3,7 @@
 
 <span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %} RIDERS EXCEED CAPACITY: {% elif issue == NOT_SCHEDULED %} TRANSPORT NOT SCHEDULED: {% endif %}Dropping off {{ riders.dropping_off }}/{{ capacity }}, picking up {{ riders.picking_up }}/{{ capacity }}, returning {{ riders.returning }}/{{ capacity }}">
 
-  <a href="{% url 'db:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-bars"></i></a> <br>
+  <a href="{% url 'core:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-bars"></i></a> <br>
 
   {% if transport %}
   {{ transport|delete_link:'<i class="fa fa-close text-danger"></i>' }}
@@ -12,7 +12,7 @@
   {% endif %}
 
   {% else %}
-  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'db:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation text-bright-danger"></i>{% endif %}</a>
+  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'core:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation text-bright-danger"></i>{% endif %}</a>
   {% endif %}
 
 </span>

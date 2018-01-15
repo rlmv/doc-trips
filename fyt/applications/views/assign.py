@@ -3,7 +3,7 @@ from vanilla import UpdateView
 from ..forms import TripAssignmentForm
 from ..models import Volunteer
 
-from fyt.db.views import TripsYearMixin
+from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import ApplicationEditPermissionRequired
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
@@ -38,7 +38,7 @@ class AssignToCroo(ApplicationEditPermissionRequired,
     Assign volunteer to a croo
     """
     model = Volunteer
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
     fields = ['assigned_croo']
 
     def get_form(self, **kwargs):

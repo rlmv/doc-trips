@@ -1,5 +1,4 @@
-
-from fyt.db.legacy.migrate import migrate
+from fyt.legacy.migrate import migrate
 
 
 """

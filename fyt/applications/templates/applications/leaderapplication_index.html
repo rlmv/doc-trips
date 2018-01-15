@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 
 
@@ -12,7 +12,7 @@
 <table class="table table-condensed">
   <tr>
   <tr>
-    
+
   {% for application in applications %}
   <tr>
     <td> {{ application | detail_link }} </td>
@@ -21,4 +21,4 @@
 
 </table>
 
-{% endblock %}  
+{% endblock %}

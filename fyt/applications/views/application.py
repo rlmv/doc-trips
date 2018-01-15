@@ -26,8 +26,8 @@ from fyt.applications.forms import (
 from fyt.applications.models import ApplicationInformation, Question, Volunteer
 from fyt.applications.tables import ApplicationTable
 from fyt.croos.models import Croo
-from fyt.db.models import TripsYear
-from fyt.db.views import CrispyFormMixin, TripsYearMixin
+from fyt.core.models import TripsYear
+from fyt.core.views import CrispyFormMixin, TripsYearMixin
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
     DatabaseReadPermissionRequired,
@@ -499,9 +499,9 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
             'trainings_fields': self.trainings_fields,
             'crooapplication_fields': self.crooapplication_fields,
             'trip_assignment_url': reverse(
-                'db:volunteer:update_trip', kwargs=self.kwargs),
+                'core:volunteer:update_trip', kwargs=self.kwargs),
             'croo_assignment_url': reverse(
-                'db:volunteer:update_croo', kwargs=self.kwargs)
+                'core:volunteer:update_croo', kwargs=self.kwargs)
         }
 
 
@@ -554,7 +554,7 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     Update status, trip/croo assignment etc.
     """
     model = Volunteer
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
     fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
     form_class = ApplicationAdminForm
 

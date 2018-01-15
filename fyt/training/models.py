@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from fyt.applications.models import Volunteer
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 from fyt.training.managers import AttendeeManager
 
 
@@ -63,7 +63,7 @@ class Session(DatabaseModel):
             self.end_time.strftime('%l:%M %p'))
 
     def update_attendance_url(self):
-        return reverse('db:session:update_attendance',
+        return reverse('core:session:update_attendance',
                        kwargs=self.obj_kwargs())
 
 

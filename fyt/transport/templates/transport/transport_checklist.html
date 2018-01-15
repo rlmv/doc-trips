@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load maps %}
 
@@ -27,7 +27,7 @@
 <div class="row">
   <div class="col-sm-6">
     <ol class="breadcrumb">
-      <li><a href="{% url 'db:internalbus:order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route & Set Custom Times </a></li>
+      <li><a href="{% url 'core:internalbus:order' trips_year=trips_year bus_pk=scheduled.pk %}"> <i class="fa fa-caret-right"></i> Rearrange Route & Set Custom Times </a></li>
     </ol>
   </div>
   <div class="col-sm-6">

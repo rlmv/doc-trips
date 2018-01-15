@@ -1,4 +1,4 @@
-{% extends "db/detail.html" %}
+{% extends "core/detail.html" %}
 {% load detail_view %}
 {% load crispy_forms_tags %}
 {% load safety %}
@@ -10,14 +10,14 @@
 {% block content %}
 
 <p>
-  <a href="{% url 'db:safety:list' trips_year=trips_year %}" class="btn btn-info"> <i class="fa fa-arrow-left"></i> All Incidents </a>
+  <a href="{% url 'core:safety:list' trips_year=trips_year %}" class="btn btn-info"> <i class="fa fa-arrow-left"></i> All Incidents </a>
   <a href="{{ incident.update_url }}" class="btn btn-primary"> <i class="fa fa-wrench"></i> Update Incident Status </a>
   <a href="{{ incident.delete_url }}" class="btn btn-danger"> <i class="fa fa-trash"></i> Delete </a>
 </p>
 
 <ul class="list-group">
   <li class="list-group-item">
-    <h5 class="list-group-item-heading"> {{ incident.user }} 
+    <h5 class="list-group-item-heading"> {{ incident.user }}
       <span class="text-muted"> {{ incident.created }} </span>
     </h5>
     <p> {% detail incident view.fields %} </p>
@@ -31,7 +31,7 @@
     <p> {% detail update view.update_fields %} </p>
   </li>
   {% endfor %}
-  
+
   <li class="list-group-item">
     {% crispy form %}
   </li>

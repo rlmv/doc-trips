@@ -22,7 +22,7 @@ from ..models import (
 
 from fyt.applications.models import Volunteer
 from fyt.applications.tests import make_application
-from fyt.db.forward import forward
+from fyt.core.forward import forward
 from fyt.incoming.models import (
     IncomingStudent,
     Registration,
@@ -78,7 +78,7 @@ class TripTestCase(FytTestCase):
                    template=template2, trips_year=trips_year)
         user = self.make_director()
         with self.assertNumQueries(17):
-            self.app.get(reverse('db:trip:index', kwargs={'trips_year': self.trips_year}), user=user)
+            self.app.get(reverse('core:trip:index', kwargs={'trips_year': self.trips_year}), user=user)
 
 
 class TripModelTestCase(FytTestCase):
@@ -228,12 +228,12 @@ class QuickTestViews(FytTestCase):
         director = self.make_director()
 
         names = [
-            'db:trip:index',
-            'db:triptemplate:index',
-            'db:triptype:index',
-            'db:campsite:index',
-            'db:section:index',
-            'db:leader_index',
+            'core:trip:index',
+            'core:triptemplate:index',
+            'core:triptype:index',
+            'core:campsite:index',
+            'core:section:index',
+            'core:leader_index',
         ]
 
         for name in names:
@@ -361,7 +361,7 @@ class AssignLeaderTestCase(FytTestCase):
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
-        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
+        url = reverse('core:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.make_director())
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
@@ -375,7 +375,7 @@ class AssignLeaderTestCase(FytTestCase):
         volunteer = make_application(trips_year=trips_year)
         volunteer.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         volunteer.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
-        url = reverse('db:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
+        url = reverse('core:assign_leader', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.make_director())
         leader_list = list(res.context['leader_applications'])
         self.assertEqual(len(leader_list), 1)
@@ -397,7 +397,7 @@ class AssignTrippeeTestCase(FytTestCase):
             IncomingStudent, trips_year=trips_year,
             registration=registration)
 
-        url = reverse('db:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
+        url = reverse('core:assign_trippee', kwargs={'trips_year': trips_year.pk, 'trip_pk': trip.pk})
         res = self.app.get(url, user=self.make_director())
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
@@ -580,7 +580,7 @@ class ViewsTestCase(FytTestCase):
         trips_year = self.init_trips_year()
         section = mommy.make(Section, trips_year=trips_year)
         template = mommy.make(TripTemplate, trips_year=trips_year)
-        url = reverse('db:trip:index', kwargs={'trips_year': trips_year})
+        url = reverse('core:trip:index', kwargs={'trips_year': trips_year})
         # get matrix
         resp = self.app.get(url, user=self.make_director())
         # click add -> CreateView
@@ -602,7 +602,7 @@ class ViewsTestCase(FytTestCase):
             needs='dinosaurs',
             epipen=True
         )
-        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        url = reverse('core:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
         resp = self.app.get(url, user=self.make_director())
         self.assertContains(resp, 'magic')
         self.assertContains(resp, 'mangoes')
@@ -625,7 +625,7 @@ class ViewsTestCase(FytTestCase):
                 needs='dinosaurs',
             )
         )
-        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        url = reverse('core:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
         resp = self.app.get(url, user=self.make_director())
         self.assertNotContains(resp, 'magic')
         self.assertNotContains(resp, 'dinosaurs')
@@ -649,7 +649,7 @@ class ViewsTestCase(FytTestCase):
                 epipen=True
             )
         )
-        url = reverse('db:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
+        url = reverse('core:packets:trip', kwargs={'trips_year': trips_year, 'pk': trip.pk})
         resp = self.app.get(url, user=self.make_director())
         self.assertContains(resp, 'magic')
         self.assertContains(resp, 'mangoes')

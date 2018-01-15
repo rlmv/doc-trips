@@ -1,9 +1,9 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load safety %}
 
 {% block header %}
-<h2> Incident Reports <a href="{% url 'db:safety:create' trips_year=trips_year %}" class="btn btn-danger"> <i class="fa fa-plus"></i>  New Incident </a></h2>
+<h2> Incident Reports <a href="{% url 'core:safety:create' trips_year=trips_year %}" class="btn btn-danger"> <i class="fa fa-plus"></i>  New Incident </a></h2>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
     <th> Caller </th>
   </tr>
   {% for incident in incidents %}
-  <tr> 
+  <tr>
     <td> {{ incident|detail_link }} </td>
     <td> {{ incident|status_label }} </td>
     <td> {{ incident.trip|detail_link|default:"" }} </td>

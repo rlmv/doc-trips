@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from vanilla import TemplateView, UpdateView
 
 from fyt.applications.models import PortalContent, Volunteer
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.permissions.views import SettingsPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.forms import crispify

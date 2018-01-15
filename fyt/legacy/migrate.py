@@ -1,7 +1,6 @@
-
 from sqlalchemy import create_engine
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.transport.models import Route, Stop, Vehicle
 from fyt.trips.models import Campsite, TripTemplate, TripType
 
@@ -11,7 +10,7 @@ To build the new database from the old.
 
 Install: sqlalchemy, mysql-connector-python
 
-Login to mysql: 
+Login to mysql:
 mysql -uroot
 
 Load the database dump file into a new mysql database, called 'doc':

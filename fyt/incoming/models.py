@@ -10,7 +10,7 @@ from django.dispatch import receiver
 
 from .managers import IncomingStudentManager, RegistrationManager
 
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import NetIdField
 from fyt.utils.choices import (

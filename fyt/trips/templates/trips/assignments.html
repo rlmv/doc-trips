@@ -1,5 +1,4 @@
-
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 
 {% block header %}
@@ -19,25 +18,25 @@
     <th> Trippees </th>
   </tr>
   {% for trip in section.list %}
-  <tr> 
-    <td class="col-sm-5"> 
-      {{ trip|detail_link }}: {{ trip.template.description_summary }} 
+  <tr>
+    <td class="col-sm-5">
+      {{ trip|detail_link }}: {{ trip.template.description_summary }}
     </td>
 
-    <td class="col-sm-4"> 
-      {% for leader in trip.leaders.all %} 
+    <td class="col-sm-4">
+      {% for leader in trip.leaders.all %}
       {{ leader|detail_link }} <br>
       {% endfor %}
       <kbd>{{ trip.leaders.count }}/2</kbd>
-      <a href="{% url 'db:assign_leader' trips_year=trips_year trip_pk=trip.pk %}"> <i class="fa fa-plus"></i> </a>
+      <a href="{% url 'core:assign_leader' trips_year=trips_year trip_pk=trip.pk %}"> <i class="fa fa-plus"></i> </a>
     </td>
 
     <td class="col-sm-3">
-      {% for trippee in trip.trippees.all %} 
+      {% for trippee in trip.trippees.all %}
       {{ trippee|detail_link }} <br>
       {% endfor %}
       <kbd>{{ trip.trippees.count }}/{{ trip.template.max_trippees }}</kbd>
-      <a href="{% url 'db:assign_trippee' trips_year=trips_year trip_pk=trip.pk %}"> <i class="fa fa-plus"></i> </a> 
+      <a href="{% url 'core:assign_trippee' trips_year=trips_year trip_pk=trip.pk %}"> <i class="fa fa-plus"></i> </a>
     </td>
 
   </tr>

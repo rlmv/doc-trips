@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load get from dict %}
 {% load links %}
 
@@ -34,7 +34,7 @@
     {% for date, transport in dates.items %}
     <td class="text-center">
       {% if transport.over_capacity %}
-      <a href="{% url 'db:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
+      <a href="{% url 'core:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
       {% endif %}
     </td>
     {% endfor %}

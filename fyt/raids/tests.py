@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from model_mommy.recipe import Recipe, foreign_key
 
-from fyt.db.mommy_recipes import trips_year as trips_year_recipe
+from fyt.core.mommy_recipes import trips_year as trips_year_recipe
 from fyt.raids.models import Raid
 from fyt.test import FytTestCase
 

@@ -1,11 +1,10 @@
-
 import collections
 from datetime import datetime, timedelta
 
 from django.contrib import admin
 from django.db.models import Q
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.trips.models import Campsite, Section, Trip, TripTemplate, TripType
 
 

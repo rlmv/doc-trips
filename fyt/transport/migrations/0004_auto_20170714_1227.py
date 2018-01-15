@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('transport', '0003_auto_20170305_1606'),
     ]
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('hanover', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='transport.Stop')),
                 ('lodge', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='transport.Stop')),
-                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear')),
+                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='core.TripsYear')),
             ],
         ),
         migrations.AlterUniqueTogether(

@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('croos', '0001_initial'),
         ('trips', '0001_initial'),
         ('applications', '0001_initial'),
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='skippedleadergrade',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -50,19 +50,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='skippedcroograde',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='qualificationtag',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='portalcontent',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leadersupplement',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='leaderapplicationgrade',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='generalapplication',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -156,7 +156,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='croosupplement',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -180,13 +180,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='crooapplicationgrade',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='applicationinformation',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

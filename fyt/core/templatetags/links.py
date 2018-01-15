@@ -3,7 +3,7 @@ from functools import wraps
 from django import template
 from django.utils.safestring import mark_safe
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 
 
 register = template.Library()

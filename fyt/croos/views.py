@@ -1,6 +1,5 @@
-
 from fyt.croos.models import Croo
-from fyt.db.views import (
+from fyt.core.views import (
     DatabaseCreateView,
     DatabaseDeleteView,
     DatabaseDetailView,
@@ -30,4 +29,4 @@ class CrooUpdateView(DatabaseUpdateView):
 
 class CrooDeleteView(DatabaseDeleteView):
     model = Croo
-    success_url_pattern = 'db:croo:index'
+    success_url_pattern = 'core:croo:index'

@@ -9,7 +9,7 @@ from django.db.models import ProtectedError
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 
-from fyt.db.mommy_recipes import trips_year
+from fyt.core.mommy_recipes import trips_year
 from fyt.incoming.models import IncomingStudent
 from fyt.test import FytTestCase, vcr
 from fyt.transport import maps
@@ -205,9 +205,9 @@ class TestViews(FytTestCase):
         trips_year = self.init_trips_year()
         director = self.make_director()
         names = [
-            'db:stop:index',
-            'db:route:index',
-            'db:vehicle:index',
+            'core:stop:index',
+            'core:route:index',
+            'core:vehicle:index',
         ]
         for name in names:
             url = reverse(name, kwargs={'trips_year': trips_year})
@@ -951,7 +951,7 @@ class TransportViewsTestCase(TransportTestCase):
             is_local=True)
 
         # Visit matrix page
-        url = reverse('db:externalbus:matrix',
+        url = reverse('core:externalbus:matrix',
                       kwargs={'trips_year': self.trips_year})
         res = self.app.get(url, user=self.make_director())
         # click 'add' button for the single entry
@@ -971,7 +971,7 @@ class TransportViewsTestCase(TransportTestCase):
             trips_year=self.trips_year,
             leaders_arrive=date(2015, 1, 1))
         # visit matrix
-        url = reverse('db:internalbus:index',
+        url = reverse('core:internalbus:index',
                       kwargs={'trips_year': self.trips_year})
         resp = self.app.get(url, user=self.make_director())
         # click add
@@ -1579,7 +1579,7 @@ class StopOrderTestCase(FytTestCase):
             dropoff_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=2))
 
-        url = reverse('db:internalbus:order',
+        url = reverse('core:internalbus:order',
                       kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk})
         self.app.get(url, user=self.make_director())
         so = StopOrder.objects.get(

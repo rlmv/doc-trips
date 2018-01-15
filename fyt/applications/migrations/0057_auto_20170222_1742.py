@@ -20,7 +20,7 @@ def migrate_leadership_style(apps, schema_editor):
     Question = apps.get_model('applications', 'Question')
     Answer = apps.get_model('applications', 'Answer')
     GeneralApplication = apps.get_model('applications', 'GeneralApplication')
-    TripsYear = apps.get_model('db', 'TripsYear')
+    TripsYear = apps.get_model('core', 'TripsYear')
 
     text = (
         'Describe your leadership style and your role in a group. Please go to '
@@ -60,7 +60,7 @@ def migrate_leadership_style(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('applications', '0056_auto_20170221_1734'),
     ]
 

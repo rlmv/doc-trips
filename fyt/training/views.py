@@ -7,8 +7,8 @@ from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView
 
 from fyt.applications.models import Volunteer
-from fyt.db.models import TripsYear
-from fyt.db.views import (
+from fyt.core.models import TripsYear
+from fyt.core.views import (
     BaseCreateView,
     BaseDeleteView,
     BaseUpdateView,
@@ -65,10 +65,10 @@ class SessionDetail(DatabaseDetailView):
     def extra_context(self):
         return {
             'update_attendance_url': reverse(
-                'db:session:update_attendance',
+                'core:session:update_attendance',
                 kwargs=self.object.obj_kwargs()),
             'update_registration_url': reverse(
-                'db:session:update_registration',
+                'core:session:update_registration',
                 kwargs=self.object.obj_kwargs()),
         }
 
@@ -115,7 +115,7 @@ class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
     """
     Batch update first aid certifications.
     """
-    template_name = 'db/form.html'
+    template_name = 'core/form.html'
 
     def get_headline(self):
         return 'First Aid Certifications'

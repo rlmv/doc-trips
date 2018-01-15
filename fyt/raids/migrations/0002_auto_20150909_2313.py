@@ -8,7 +8,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('raids', '0001_initial'),
         ('trips', '0001_initial'),
     ]
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='raid',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
     ]

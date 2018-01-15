@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load crispy_forms_tags %}
 {% load render_table from django_tables2 %}
 {% load links %}
@@ -13,19 +13,19 @@
 
 {% block content %}
 <div>
-  {% url 'db:reports:all_apps' trips_year=trips_year as url_ %}
+  {% url 'core:reports:all_apps' trips_year=trips_year as url_ %}
   {{ url_|download_button:"All Applications" }}
 
-  {% url 'db:reports:dietary' trips_year=trips_year as url_ %}
+  {% url 'core:reports:dietary' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Dietary Restrictions" }}
 
-  {% url 'db:reports:medical' trips_year=trips_year as url_ %}
+  {% url 'core:reports:medical' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Medical Info" }}
 
-  {% url 'db:reports:leaders' trips_year=trips_year as url_ %}
+  {% url 'core:reports:leaders' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Trip Leaders" }}
 
-  {% url 'db:reports:croo_members' trips_year=trips_year as url_ %}
+  {% url 'core:reports:croo_members' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Croo Members" }}
 </div>
 

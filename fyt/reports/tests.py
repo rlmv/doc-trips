@@ -69,7 +69,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         app.add_score(self.make_directorate(), 5)
         app.add_score(self.make_tlt(), 4)
 
-        self.assertCsvReturns('db:reports:all_apps', [{
+        self.assertCsvReturns('core:reports:all_apps', [{
             'name': app.name,
             'netid': app.applicant.netid,
             'status': app.status,
@@ -104,7 +104,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
 
         not_leader = self.make_application(trips_year=self.trips_year)
 
-        self.assertCsvReturns('db:reports:leaders', [{
+        self.assertCsvReturns('core:reports:leaders', [{
             'name': 'Alice',
             'netid': leader.applicant.netid,
             'email': leader.applicant.email,
@@ -129,7 +129,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         )
         not_croo = self.make_application(trips_year=self.trips_year)
 
-        self.assertCsvReturns('db:reports:croo_members', [{
+        self.assertCsvReturns('core:reports:croo_members', [{
             'name': crooling.name,
             'netid': crooling.applicant.netid,
             'croo': str(crooling.assigned_croo)
@@ -146,7 +146,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=self.trips_year,
             trip_assignment=None
         )
-        self.assertCsvReturns('db:reports:trippees', [{
+        self.assertCsvReturns('core:reports:trippees', [{
             'name': trippee.name,
             'netid': trippee.netid.upper()
         }])
@@ -166,7 +166,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             name='Hiking 3')
         r.set_triptype_preference(triptype, 'AVAILABLE')
 
-        self.assertCsvReturns('db:reports:registrations', [{
+        self.assertCsvReturns('core:reports:registrations', [{
             'name': 'Bob',
             'gender': 'male',
             'netid': r.user.netid,
@@ -261,7 +261,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         # not charged because no trip assignment AND no DOC membership
         mommy.make(IncomingStudent, trips_year=self.trips_year)
 
-        self.assertCsvReturns('db:reports:charges', [{
+        self.assertCsvReturns('core:reports:charges', [{
             'name': incoming1.name,
             'netid': incoming1.netid,
             'total charge': str(incoming1.compute_cost()),
@@ -330,7 +330,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=self.trips_year,
             trip_assignment=None)
 
-        self.assertCsvReturns('db:reports:housing', [{
+        self.assertCsvReturns('core:reports:housing', [{
             'name': t1.name,
             'netid': t1.netid,
             'trip': str(t1.trip_assignment),
@@ -389,7 +389,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             epipen=True,
             trippee__trip_assignment=trip)
 
-        self.assertCsvReturns('db:reports:dietary', [{
+        self.assertCsvReturns('core:reports:dietary', [{
             'name': croo.applicant.name,
             'section': '',
             'trip': '',
@@ -461,7 +461,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=self.trips_year,
             status=Volunteer.PENDING)
 
-        self.assertCsvReturns('db:reports:medical', [{
+        self.assertCsvReturns('core:reports:medical', [{
             'name': croo.applicant.name,
             'section': '',
             'trip': '',
@@ -507,7 +507,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trips_year=self.trips_year,
             doc_membership=False)
 
-        self.assertCsvReturns('db:reports:doc_members', [{
+        self.assertCsvReturns('core:reports:doc_members', [{
             'name': reg.user.name,
             'netid': reg.user.netid,
             'email': reg.user.email
@@ -522,7 +522,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             IncomingStudent, 3,
             trips_year=self.trips_year)
 
-        self.assertCsvReturns('db:reports:foodboxes', [{
+        self.assertCsvReturns('core:reports:foodboxes', [{
             'trip': str(trip),
             'section': trip.section.name,
             'size': str(trip.size()),
@@ -550,7 +550,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             Registration,
             trips_year=self.trips_year)
 
-        self.assertCsvReturns('db:reports:bus_stops', [{
+        self.assertCsvReturns('core:reports:bus_stops', [{
             'name': reg1.user.name,
             'preferred name': reg1.name,
             'netid': reg1.user.netid,
@@ -602,7 +602,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             trip_assignment__section=section)
 
         self.assertCsvReturns(
-            'db:reports:bus_riders',
+            'core:reports:bus_riders',
             url_kwargs={'bus_pk': bus.pk},
             target=[{
                 'name': '1',

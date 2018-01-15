@@ -148,7 +148,7 @@ class BaseCreateView(ExtraContextMixin, FormInvalidMessageMixin,
                      CrispyFormMixin, CreateView):
 
     fields = '__all__'
-    template_name = 'db/create.html'
+    template_name = 'core/create.html'
     form_invalid_message = FORM_INVALID_MESSAGE
 
     def get_headline(self):
@@ -190,7 +190,7 @@ class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
     If 'delete_button' is True, a link to the delete view for
     this object will be added to the form's button holder.
     """
-    template_name = 'db/update.html'
+    template_name = 'core/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
     delete_button = True  # add a "Delete" button?
     fields = '__all__'
@@ -226,7 +226,7 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, BaseUpdateView):
 
 class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin,
                      DeleteView):
-    template_name = 'db/delete.html'
+    template_name = 'core/delete.html'
     success_url_pattern = None
 
     def get_headline(self):
@@ -277,7 +277,7 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, BaseDeleteView):
 
 class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
                          TripsYearMixin, DetailView):
-    template_name = 'db/detail.html'
+    template_name = 'core/detail.html'
     # Fields to display in the view. Passed in the template.
     fields = None
 
@@ -303,7 +303,7 @@ class DatabaseLandingPage(DatabaseTemplateView):
 
     TODO: should this display the Trips index?
     """
-    template_name = 'db/landing_page.html'
+    template_name = 'core/landing_page.html'
 
 
 class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
@@ -317,7 +317,7 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
 
         trips_year = TripsYear.objects.current()
-        return reverse('db:landing_page', kwargs={'trips_year': trips_year.pk})
+        return reverse('core:landing_page', kwargs={'trips_year': trips_year.pk})
 
 
 class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
@@ -325,8 +325,8 @@ class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
     """
     Migrate the database to the next ``trips_year`
     """
-    template_name = 'db/migrate.html'
-    success_url = reverse_lazy('db:current')
+    template_name = 'core/migrate.html'
+    success_url = reverse_lazy('core:current')
 
     def get_trips_year(self):
         return TripsYear.objects.current().year

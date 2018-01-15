@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.functional import cached_property
 from model_utils import FieldTracker
 
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
 from fyt.transport.category import EXTERNAL, INTERNAL
 from fyt.transport.managers import (
@@ -573,7 +573,7 @@ class InternalBus(DatabaseModel):
             'route_pk': self.route_id,
             'date': self.date
         }
-        return reverse('db:internalbus:checklist', kwargs=kwargs)
+        return reverse('core:internalbus:checklist', kwargs=kwargs)
 
     def __str__(self):
         return "%s: %s" % (self.route, self.date.strftime("%x"))

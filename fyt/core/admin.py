@@ -1,8 +1,6 @@
-
-
 from django.contrib import admin
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 
 
 # TODO: remove this

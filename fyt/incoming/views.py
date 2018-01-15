@@ -25,8 +25,8 @@ from .forms import (
 from .models import IncomingStudent, Registration, Settings
 from .tables import IncomingStudentTable, RegistrationTable
 
-from fyt.db.models import TripsYear
-from fyt.db.views import (
+from fyt.core.models import TripsYear
+from fyt.core.views import (
     DatabaseCreateView,
     DatabaseDeleteView,
     DatabaseDetailView,
@@ -359,7 +359,7 @@ class RegistrationDelete(DatabaseDeleteView):
     Delete a registration.
     """
     model = Registration
-    success_url_pattern = 'db:registration:index'
+    success_url_pattern = 'core:registration:index'
 
 
 class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
@@ -416,9 +416,9 @@ class IncomingStudentDetail(DatabaseDetailView):
     def extra_context(self):
         return {
             'edit_assignment_url': reverse(
-                'db:incomingstudent:update_assignment', kwargs=self.kwargs),
+                'core:incomingstudent:update_assignment', kwargs=self.kwargs),
             'edit_admin_url': reverse(
-                'db:incomingstudent:update', kwargs=self.kwargs)
+                'core:incomingstudent:update', kwargs=self.kwargs)
         }
 
 
@@ -429,7 +429,7 @@ class IncomingStudentDelete(DatabaseDeleteView):
     model = IncomingStudent
 
     def get_success_url(self):
-        return reverse('db:incomingstudent:index',
+        return reverse('core:incomingstudent:index',
                        kwargs={'trips_year': self.get_trips_year()})
 
 
@@ -560,7 +560,7 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('db:registration:match', kwargs=self.kwargs)
+        return reverse('core:registration:match', kwargs=self.kwargs)
 
 
 class EditSettings(DatabaseUpdateView):

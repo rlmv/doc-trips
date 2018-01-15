@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('transport', '0001_initial'),
     ]
 
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('directions', models.TextField()),
                 ('bugout', models.TextField()),
                 ('secret', models.TextField()),
-                ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
+                ('trips_year', models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
             ],
             options={
                 'ordering': ['name'],
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('is_international', models.BooleanField(default=False)),
                 ('is_fysep', models.BooleanField(default=False)),
                 ('is_native', models.BooleanField(default=False)),
-                ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
+                ('trips_year', models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
             ],
             options={
                 'ordering': ['name'],
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
                 ('dropoff_stop', models.ForeignKey(related_name='dropped_off_trips', on_delete=django.db.models.deletion.PROTECT, to='transport.Stop')),
                 ('pickup_stop', models.ForeignKey(related_name='picked_up_trips', on_delete=django.db.models.deletion.PROTECT, to='transport.Stop')),
                 ('return_route', models.ForeignKey(related_name='returning_trips', on_delete=django.db.models.deletion.PROTECT, to='transport.Route', null=True)),
-                ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
+                ('trips_year', models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
             ],
             options={
                 'ordering': ['name'],
@@ -102,7 +102,7 @@ class Migration(migrations.Migration):
                 ('packing_list', models.TextField(blank=True)),
                 ('half_kickin', models.PositiveSmallIntegerField(default=10, verbose_name='minimum # for a half foodbox')),
                 ('gets_supplemental', models.BooleanField(default=False, verbose_name='gets a supplemental foodbox?')),
-                ('trips_year', models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
+                ('trips_year', models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False)),
             ],
             options={
                 'ordering': ['name'],
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='trip',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('trips', '0001_initial'),
         ('safety', '0001_initial'),
     ]
@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incident',
             name='trips_year',
-            field=models.ForeignKey(to='db.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
+            field=models.ForeignKey(to='core.TripsYear', on_delete=django.db.models.deletion.PROTECT, editable=False),
             preserve_default=True,
         ),
         migrations.AddField(

@@ -2,7 +2,7 @@ import django_tables2 as tables
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from fyt.db.templatetags.links import detail_link, make_link
+from fyt.core.templatetags.links import detail_link, make_link
 from fyt.utils.templatetags.icons import ok_if_true
 
 
@@ -64,7 +64,7 @@ class _ApplicationTable(tables.Table):
 
     def render_status(self, record):
         kwargs = {'pk': record.pk, 'trips_year': record.trips_year_id}
-        url = reverse('db:volunteer:update_status', kwargs=kwargs)
+        url = reverse('core:volunteer:update_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
     def render_avg_score(self, value):

@@ -1,9 +1,9 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load icons %}
 
 {% block header %}
-<h1> Sections 
+<h1> Sections
   <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
     <i class="fa fa-plus"></i> New Section
   </a>
@@ -26,7 +26,7 @@
     <th/>
     <th/>
   </tr>
-  
+
   {% for section in sections %}
   <tr>
     <td {{ center }}>{{ section|detail_link:section.name }}</td>

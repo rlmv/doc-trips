@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load detail_view %}
 {% load icons %}
@@ -13,13 +13,13 @@
 {% block content %}
 
 {# administrative info #}
-<h4> Administrative Info <a href="{% url 'db:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
+<h4> Administrative Info <a href="{% url 'core:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
 <table class="table table-condensed table-striped">
 
     <tr>
         <td class="col-sm-3 text-right"><strong>Status</strong></td>
         <td> {{ application.status }} </td>
-        <td>  <a href="{% url 'db:volunteer:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
+        <td>  <a href="{% url 'core:volunteer:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
     </tr>
 
     <tr>
@@ -29,7 +29,7 @@
             {{ application.assigned_trip | detail_link }}
         </td>
         <td>
-            <a href="{% url 'db:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>
+            <a href="{% url 'core:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>
         </td>
         {% else %}
         <td> * </td> <td> <a href="{{ trip_assignment_url }}"> assign </a> </td>
@@ -50,7 +50,7 @@
 
 <h4>
     Trainings
-    <a href="{% url 'db:attendee:update' trips_year=trips_year pk=application.attendee.pk %}"> edit </a>
+    <a href="{% url 'core:attendee:update' trips_year=trips_year pk=application.attendee.pk %}"> edit </a>
     {{ application|training_label }}
  </h4>
 

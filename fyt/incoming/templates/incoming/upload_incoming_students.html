@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load crispy_forms_tags %}
 
 {% block header %}
@@ -32,7 +32,7 @@
   </ul>
 Yes, 'Pr Nation Name' has a lowercase 'r' for whatever reason. These column names were pulled from last year's incoming student data. Let me know if the headers have changed dramatically and I can tweak the expectations of the input. The order of the columns in the CSV file does not matter. Any extra columns will be ignored.
 </p>
-    
+
 <p> If an incoming student already exists in the database for this trips year (determined by comparing NetIds) the database skips importing that information. </p>
 
 {% endblock content %}

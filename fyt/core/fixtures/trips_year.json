@@ -1,6 +1,6 @@
 [
 {
-    "model": "db.tripsyear",
+    "model": "core.tripsyear",
     "pk": 2017,
     "fields": {
         "is_current": true

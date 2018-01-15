@@ -16,7 +16,7 @@ from django.db.models import (
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 from fyt.utils.query import pks
 

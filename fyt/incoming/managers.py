@@ -3,7 +3,7 @@ import csv
 from django.db import models
 from django.db.models import Q
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 
 
 def get_netids(incoming_students):

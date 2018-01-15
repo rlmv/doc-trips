@@ -6,7 +6,7 @@ from fyt.applications.urls import (
     score_urlpatterns,
 )
 from fyt.croos.urls import croo_urlpatterns
-from fyt.db.views import (
+from fyt.core.views import (
     DatabaseLandingPage,
     MigrateForward,
     RedirectToCurrentDatabase,

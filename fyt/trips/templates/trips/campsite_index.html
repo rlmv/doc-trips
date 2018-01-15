@@ -1,8 +1,8 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 
 {% block header %}
-<h1> Campsites 
+<h1> Campsites
   <a href="{% create_url view.model trips_year %}" class="btn btn-info" role="button">
     <i class="fa fa-plus"></i> New Campsite
   </a>
@@ -32,10 +32,10 @@
   <tr>
     <td> {{ campsite|detail_link}} </td>
     <td> {{ campsite.capacity|default:"&mdash;" }} </td>
-    
-	{% for date, trips in dates.items %}
+
+    {% for date, trips in dates.items %}
     <td>
-	  {{ trips|detail_link|default:"" }}
+      {{ trips|detail_link|default:"" }}
     </td>
     {% endfor %}
 

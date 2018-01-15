@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.forms.models import model_to_dict
 from model_mommy import mommy
 
-from fyt.db.views import TripsYearMixin
+from fyt.core.views import TripsYearMixin
 from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, Section, TripTemplate, TripType
 
@@ -67,7 +67,7 @@ class TripsYearMixinTestCase(FytTestCase):
         self.assertEquals(object, c1)
 
         # bad request
-        url = reverse('db:campsite:update', kwargs={
+        url = reverse('core:campsite:update', kwargs={
             'trips_year': c1.trips_year.year, 'pk': c2.pk})
 
         response = self.app.get(url, expect_errors=True, user=self.director)

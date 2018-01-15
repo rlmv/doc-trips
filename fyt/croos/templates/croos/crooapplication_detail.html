@@ -1,8 +1,8 @@
-{% extends "db/detail.html" %}
+{% extends "core/detail.html" %}
 {% load links %}
 {% load detail_view %}
 
-{# Special template for CrooApplication details.  apps cannot be 
+{# Special template for CrooApplication details.  apps cannot be
 deleted, so the delete_link cannot be generated. #}
 
 {% block links %}
@@ -35,4 +35,3 @@ deleted, so the delete_link cannot be generated. #}
 
 
 {% endblock content %}
-

@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load crispy_forms_tags %}
 {% load links %}
 {% load render_table from django_tables2 %}
@@ -15,35 +15,35 @@
 <br><br><br><br><br>
 <ul class="list-group">
 
-  <a class="list-group-item" href="{% url 'db:reports:registrations' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:registrations' trips_year=trips_year %}">
     <i class="fa fa-download"></i> All Registrations
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:financial_aid' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:financial_aid' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Financial Aid Requests
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:bus_stops' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:bus_stops' trips_year=trips_year %}">
     <i class="fa fa-download"></i> External Bus Requests
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:doc_members' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:doc_members' trips_year=trips_year %}">
     <i class="fa fa-download"></i> DOC Members
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:dietary' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:dietary' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Dietary Info
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:medical' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:medical' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Medical Info
   </a>
 
-  <a class="list-group-item" href="{% url 'db:reports:feelings' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:reports:feelings' trips_year=trips_year %}">
     <i class="fa fa-download"></i> Feelings
   </a>
 
-  <a class="list-group-item" href="{% url 'db:registration:nonstudent' trips_year=trips_year %}">
+  <a class="list-group-item" href="{% url 'core:registration:nonstudent' trips_year=trips_year %}">
     <i class="fa fa-plus"></i> Non-Student Registration
   </a>
 <ul>

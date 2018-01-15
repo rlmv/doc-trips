@@ -24,7 +24,7 @@ from fyt.applications.views.scoring import (
     ScoreApplication,
     Scoring,
 )
-from fyt.db.urlhelpers import DB_REGEX
+from fyt.core.urlhelpers import DB_REGEX
 
 
 score_urlpatterns = [

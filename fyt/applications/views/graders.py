@@ -1,4 +1,3 @@
-
 from collections import OrderedDict
 
 from django.db import models
@@ -6,7 +5,7 @@ from django.db.models import Q, Avg, Case, Count, Sum, When
 from vanilla import ListView
 
 from fyt.applications.models import Score, Volunteer
-from fyt.db.views import TripsYearMixin
+from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.users.models import DartmouthUser
 from fyt.utils.views import ExtraContextMixin

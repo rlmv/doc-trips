@@ -1,7 +1,6 @@
-
 from django.db import models
 
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 
 
 class Croo(DatabaseModel):

@@ -1,6 +1,6 @@
 from model_mommy.recipe import Recipe
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 
 
 trips_year = Recipe(

@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load render_table from django_tables2 %}
 
@@ -11,19 +11,19 @@
 {% block content %}
 
 <div>
-  {% url 'db:incomingstudent:upload' trips_year=trips_year as url_ %}
+  {% url 'core:incomingstudent:upload' trips_year=trips_year as url_ %}
   {{ url_|upload_button:"Upload Incoming" }}
 
-  {% url 'db:incomingstudent:upload_hb' trips_year=trips_year as url_ %}
+  {% url 'core:incomingstudent:upload_hb' trips_year=trips_year as url_ %}
   {{ url_|upload_button:"Upload Hinman Boxes" }}
 
-  {% url 'db:reports:charges' trips_year=trips_year as url_ %}
+  {% url 'core:reports:charges' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Charges" }}
 
-  {% url 'db:reports:housing' trips_year=trips_year as url_ %}
+  {% url 'core:reports:housing' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Housing" }}
 
-  {% url 'db:reports:trippees' trips_year=trips_year as url_ %}
+  {% url 'core:reports:trippees' trips_year=trips_year as url_ %}
   {{ url_|download_button:"Trippees" }}
 </div>
 

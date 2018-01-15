@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from raven.contrib.django.raven_compat.models import client as sentry
 from vanilla.views import FormView, TemplateView
 
-from fyt.db.views import (
+from fyt.core.views import (
     DatabaseCreateView,
     DatabaseDeleteView,
     DatabaseDetailView,
@@ -291,7 +291,7 @@ class InternalBusCreateView(PopulateMixin, DatabaseCreateView):
     fields = ['route', 'date']
 
     def get_success_url(self):
-        return reverse('db:internalbus:index', kwargs=self.kwargs)
+        return reverse('core:internalbus:index', kwargs=self.kwargs)
 
 
 class InternalBusUpdateView(DatabaseUpdateView):
@@ -302,7 +302,7 @@ class InternalBusUpdateView(DatabaseUpdateView):
 
 class InternalBusDeleteView(DatabaseDeleteView):
     model = InternalBus
-    success_url_pattern = 'db:internalbus:index'
+    success_url_pattern = 'core:internalbus:index'
 
 
 class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
@@ -310,7 +310,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
     fields = ['route', 'section']
 
     def get_success_url(self):
-        return reverse('db:externalbus:matrix',
+        return reverse('core:externalbus:matrix',
                        kwargs={'trips_year': self.get_trips_year()})
 
 
@@ -318,7 +318,7 @@ class ExternalBusDelete(DatabaseDeleteView):
     model = ExternalBus
 
     def get_success_url(self):
-        return reverse('db:externalbus:matrix',
+        return reverse('core:externalbus:matrix',
                        kwargs={'trips_year': self.get_trips_year()})
 
 
@@ -373,7 +373,7 @@ class StopUpdateView(DatabaseUpdateView):
 
 class StopDeleteView(DatabaseDeleteView):
     model = Stop
-    success_url_pattern = 'db:stop:index'
+    success_url_pattern = 'core:stop:index'
 
 
 class RouteListView(DatabaseListView):
@@ -397,7 +397,7 @@ class RouteUpdateView(DatabaseUpdateView):
 
 class RouteDeleteView(DatabaseDeleteView):
     model = Route
-    success_url_pattern = 'db:route:index'
+    success_url_pattern = 'core:route:index'
 
 
 class VehicleListView(DatabaseListView):
@@ -421,7 +421,7 @@ class VehicleUpdateView(DatabaseUpdateView):
 
 class VehicleDeleteView(DatabaseDeleteView):
     model = Vehicle
-    success_url_pattern = 'db:vehicle:index'
+    success_url_pattern = 'core:vehicle:index'
 
 
 class _DateMixin():

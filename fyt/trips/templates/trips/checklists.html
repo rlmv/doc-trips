@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 {% load dict %}
 
@@ -13,11 +13,11 @@
 </div>
 
 <ol class="breadcrumb">
-  <li><a href="{% url 'db:internalbus:packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
+  <li><a href="{% url 'core:internalbus:packet' trips_year=trips_year %}"> All Internal Bus Directions <i class="fa fa-caret-right"></i></a></li>
 </ol>
 
 <ol class="breadcrumb">
-  <li><a href="{% url 'db:externalbus:packet' trips_year=trips_year %}"> All External Bus Directions <i class="fa fa-caret-right"></i></a></li>
+  <li><a href="{% url 'core:externalbus:packet' trips_year=trips_year %}"> All External Bus Directions <i class="fa fa-caret-right"></i></a></li>
 </ol>
 
 

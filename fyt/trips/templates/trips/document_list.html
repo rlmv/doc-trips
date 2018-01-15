@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load links %}
 
 {% block header %}
@@ -16,8 +16,8 @@
 <table class="table">
   {% for doc in object.documents.all %}
   <tr>
-	<td> <strong> {{ doc }} </strong> </td>
-	<td> {{ doc.delete_url|delete_button }} </td>
+    <td> <strong> {{ doc }} </strong> </td>
+    <td> {{ doc.delete_url|delete_button }} </td>
   </tr>
   {% endfor %}
 </table>

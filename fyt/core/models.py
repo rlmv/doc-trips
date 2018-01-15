@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.db import models
 
-from fyt.db.managers import TripsYearManager
+from fyt.core.managers import TripsYearManager
 
 
 class TripsYear(models.Model):
@@ -54,24 +54,24 @@ class DatabaseModel(models.Model):
         return self.detail_url()
 
     def detail_url(self):
-        return reverse('db:{}:detail'.format(self.model_name_lower()),
+        return reverse('core:{}:detail'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def update_url(self):
-        return reverse('db:{}:update'.format(self.model_name_lower()),
+        return reverse('core:{}:update'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def delete_url(self):
-        return reverse('db:{}:delete'.format(self.model_name_lower()),
+        return reverse('core:{}:delete'.format(self.model_name_lower()),
                        kwargs=self.obj_kwargs())
 
     def index_url(self):
-        return reverse('db:{}:index'.format(self.model_name_lower()),
+        return reverse('core:{}:index'.format(self.model_name_lower()),
                        kwargs={'trips_year': self.trips_year_id})
 
     @classmethod
     def create_url(cls, trips_year):
-        return reverse('db:{}:create'.format(cls.model_name_lower()),
+        return reverse('core:{}:create'.format(cls.model_name_lower()),
                        kwargs={'trips_year': trips_year.pk})
 
     @classmethod

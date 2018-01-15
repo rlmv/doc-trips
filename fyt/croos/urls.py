@@ -1,4 +1,3 @@
-
 from django.conf.urls import url
 
 from fyt.croos.views import (
@@ -8,7 +7,7 @@ from fyt.croos.views import (
     CrooListView,
     CrooUpdateView,
 )
-from fyt.db.urlhelpers import DB_REGEX
+from fyt.core.urlhelpers import DB_REGEX
 
 
 croo_urlpatterns = [

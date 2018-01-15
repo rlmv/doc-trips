@@ -309,7 +309,7 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
             self.app.get(url, user=self.croo_head, status=403)
 
         # Directorate members can also update attendance
-        url = reverse('db:session:update_attendance', kwargs=session.obj_kwargs())
+        url = reverse('core:session:update_attendance', kwargs=session.obj_kwargs())
         self.app.get(url, user=self.tlt)
         self.app.get(url, user=self.director)
         self.app.get(url, user=self.directorate)
@@ -335,7 +335,7 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_num_queries(self):
         self.make_application(status=Volunteer.LEADER)
-        url = reverse('db:attendee:first_aid', kwargs={
+        url = reverse('core:attendee:first_aid', kwargs={
             'trips_year': self.trips_year})
 
         with self.assertNumQueries(15):

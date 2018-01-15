@@ -1,13 +1,13 @@
-{% extends "db/detail.html" %}
+{% extends "core/detail.html" %}
 {% load detail_view %}
 {% load links %}
 
 {% block content %}
 
-<p> 
+<p>
   <a href="{{ object.update_url }}" class="btn btn-primary"> Edit </a>
   <a href="{{ object.delete_url }}" class="btn btn-danger"> Delete </a>
-  <a href="{% url 'db:packets:trip' trips_year=trips_year pk=trip.pk %}" class="btn btn-info"> Leader Packet </a> 
+  <a href="{% url 'core:packets:trip' trips_year=trips_year pk=trip.pk %}" class="btn btn-info"> Leader Packet </a>
 </p>
 
 {% detail object view.fields %}

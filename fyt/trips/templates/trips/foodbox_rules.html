@@ -1,4 +1,4 @@
-{% extends "db/base.html" %}
+{% extends "core/base.html" %}
 {% load crispy_forms_tags %}
 
 {% block header %}
@@ -7,7 +7,7 @@
 
 {% block content %}
 <p>
-  <a href="{% url 'db:foodbox:counts' trips_year=trips_year %}"> Foodbox Counts </a>
+  <a href="{% url 'core:foodbox:counts' trips_year=trips_year %}"> Foodbox Counts </a>
 </p>
 
 <p> Every trip gets one full foodbox. This page lets you adjust which triptypes get additional half and supplemental foodboxes. (We can come up with more descriptive names for these if that's useful.) </p>

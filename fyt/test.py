@@ -9,7 +9,7 @@ from django_webtest import WebTest
 from model_mommy import mommy, random_gen
 from vcr import VCR
 
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.permissions.permissions import groups
 from fyt.users.models import DartmouthUser
 

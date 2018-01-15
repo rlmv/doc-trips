@@ -9,7 +9,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         ('applications', '0022_auto_20170125_1441'),
     ]
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('index', models.PositiveIntegerField(verbose_name='the order of the questions')),
                 ('question', models.TextField()),
-                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear')),
+                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='core.TripsYear')),
             ],
             options={
                 'abstract': False,

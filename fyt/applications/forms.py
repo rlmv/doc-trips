@@ -18,7 +18,7 @@ from fyt.applications.models import (
     Volunteer,
     validate_word_count,
 )
-from fyt.db.models import TripsYear
+from fyt.core.models import TripsYear
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import NOT_AVAILABLE

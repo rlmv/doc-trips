@@ -10,7 +10,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('db', '0001_initial'),
+        ('core', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('applications', '0060_auto_20170301_1719'),
     ]
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('score', models.PositiveSmallIntegerField(choices=[(1, "1 -- Bad application -- I really don't want this person to be a volunteer and I have serious concerns"), (2, '2 -- Poor application -- I have some concerns about this person being a Trips volunteer'), (3, '3 -- Fine application -- This person might work well as a volunteer but I have some questions'), (4, "4 -- Good application -- I would consider this person to be a volunteer but I wouldn't be heartbroken if they were not selected"), (5, '5 -- Great application -- I think this person would be a fantastic volunteer'), (6, '6 -- Incredible application -- I think this person should be one of the first to be selected to be a volunteer. I would be very frustrated/angry if this person is not selected')])),
                 ('application', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='scores', to='applications.Volunteer')),
                 ('grader', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='scores', to=settings.AUTH_USER_MODEL)),
-                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear')),
+                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='core.TripsYear')),
             ],
             options={
                 'abstract': False,
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('application', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, related_name='skips', to='applications.Volunteer')),
                 ('grader', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='db.TripsYear')),
+                ('trips_year', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.PROTECT, to='core.TripsYear')),
             ],
             options={
                 'abstract': False,

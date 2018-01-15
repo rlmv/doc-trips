@@ -5,7 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from vanilla import TemplateView
 
 from fyt.applications.models import Volunteer
-from fyt.db.views import TripsYearMixin
+from fyt.core.views import TripsYearMixin
 from fyt.incoming.models import IncomingStudent, Registration
 from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.trips.models import Section, TripType

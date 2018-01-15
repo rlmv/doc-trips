@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.db import models
 
-from fyt.db.models import DatabaseModel
+from fyt.core.models import DatabaseModel
 from fyt.trips.models import Campsite, Trip
 
 
@@ -43,10 +43,10 @@ class Raid(DatabaseModel):
             raise ValidationError('raid must have a campsite or trip')
 
     def detail_url(self):
-        return reverse('db:raids:detail', kwargs=self.obj_kwargs())
+        return reverse('core:raids:detail', kwargs=self.obj_kwargs())
 
     def delete_url(self):
-        return reverse('db:raids:delete', kwargs=self.obj_kwargs())
+        return reverse('core:raids:delete', kwargs=self.obj_kwargs())
 
     def __str__(self):
         return "%s %s" % (self.user, self.date.strftime('%m/%d'))
