@@ -9,10 +9,12 @@ POSTGRES = fyt
 POSTGRES_USER = fytuser
 POSTGRES_DUMP = latest.dump
 
+SCRIPTS = $(wildcard scripts/*)
+
 all:
 	$(MANAGE) runserver
 
-install: venv config.yml
+install: venv config.yml scripts
 	$(PIP) install --upgrade pip
 	$(PIP) install --upgrade -r requirements/dev.txt
 
@@ -21,6 +23,12 @@ venv:
 
 config.yml:
 	cp -nv config.yml.example config.yml
+
+.PHONY: scripts
+
+scripts:
+	chmod +x $(SCRIPTS)
+	ln -sfv $(SCRIPTS) .
 
 deploy:
 	git push production master
