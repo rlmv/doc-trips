@@ -9,15 +9,16 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 import os
+import sys  # isort:skip
 
 import dj_database_url
+from django import urls  # isort:skip
 
 from .loader import EnvLoader
 
+
 # Monkey patch django.core.urlresolvers
 # TODO: remove when vanilla-views is updated
-import sys               # isort:skip
-from django import urls  # isort:skip
 sys.modules['django.core.urlresolvers'] = urls
 
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))

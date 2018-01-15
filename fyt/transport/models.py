@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from itertools import groupby, takewhile
 
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.functional import cached_property
 from model_utils import FieldTracker
 

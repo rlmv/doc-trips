@@ -1,5 +1,6 @@
 from django.db import connection
 
+
 def run():
     '''
     manage.py runscript rename_db_to_core

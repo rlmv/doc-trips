@@ -2,8 +2,8 @@ import os
 from datetime import date, timedelta
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.urls import reverse
 from django.db import IntegrityError
+from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.incoming.forms import RegistrationForm

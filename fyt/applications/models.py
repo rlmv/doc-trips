@@ -6,8 +6,8 @@ from django.utils import timezone
 
 from .managers import QuestionManager, VolunteerManager
 
-from fyt.croos.models import Croo
 from fyt.core.models import DatabaseModel
+from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import (

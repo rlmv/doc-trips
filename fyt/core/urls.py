@@ -5,12 +5,12 @@ from fyt.applications.urls import (
     grader_urlpatterns,
     score_urlpatterns,
 )
-from fyt.croos.urls import croo_urlpatterns
 from fyt.core.views import (
     DatabaseLandingPage,
     MigrateForward,
     RedirectToCurrentDatabase,
 )
+from fyt.croos.urls import croo_urlpatterns
 from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
 from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (

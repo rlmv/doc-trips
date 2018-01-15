@@ -1,5 +1,5 @@
-from django.urls import reverse
 from django.test.utils import override_settings
+from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.test import FytTestCase, vcr

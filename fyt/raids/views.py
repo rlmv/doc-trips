@@ -1,12 +1,16 @@
 from braces.views import SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse
 from django.db.models import Count
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from vanilla import CreateView, DetailView, FormView, ListView
 
-from fyt.core.views import DatabaseDeleteView, DatabaseUpdateView, TripsYearMixin
+from fyt.core.views import (
+    DatabaseDeleteView,
+    DatabaseUpdateView,
+    TripsYearMixin,
+)
 from fyt.raids.forms import CommentForm
 from fyt.raids.models import Raid, RaidInfo
 from fyt.trips.models import Trip

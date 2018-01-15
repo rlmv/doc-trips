@@ -8,9 +8,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import MultipleObjectsReturned
-from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from vanilla import CreateView, FormView, TemplateView, UpdateView

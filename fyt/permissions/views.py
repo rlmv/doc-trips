@@ -9,8 +9,8 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
 )
-from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from vanilla import FormView
 
 from fyt.dartdm import lookup

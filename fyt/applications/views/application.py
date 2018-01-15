@@ -8,9 +8,9 @@ from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.urls import reverse, reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
@@ -25,9 +25,9 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import ApplicationInformation, Question, Volunteer
 from fyt.applications.tables import ApplicationTable
-from fyt.croos.models import Croo
 from fyt.core.models import TripsYear
 from fyt.core.views import CrispyFormMixin, TripsYearMixin
+from fyt.croos.models import Croo
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
     DatabaseReadPermissionRequired,

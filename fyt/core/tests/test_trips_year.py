@@ -1,5 +1,5 @@
-from django.urls import reverse
 from django.forms.models import model_to_dict
+from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.core.views import TripsYearMixin

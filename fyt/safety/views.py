@@ -1,7 +1,7 @@
 from braces.views import SetHeadlineMixin
 from django.contrib import messages
-from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from vanilla import (
     CreateView,
     DeleteView,

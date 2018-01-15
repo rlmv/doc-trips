@@ -3,9 +3,9 @@ from datetime import datetime
 
 from braces.views import FormValidMessageMixin
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from raven.contrib.django.raven_compat.models import client as sentry
 from vanilla.views import FormView, TemplateView
 

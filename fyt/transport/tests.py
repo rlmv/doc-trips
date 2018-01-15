@@ -3,9 +3,9 @@ import unittest
 from datetime import date, datetime, time, timedelta
 
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.db import IntegrityError
 from django.db.models import ProtectedError
+from django.urls import reverse
 from model_mommy import mommy
 from model_mommy.recipe import Recipe, foreign_key
 

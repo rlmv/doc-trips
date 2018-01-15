@@ -2,8 +2,8 @@ import math
 from datetime import timedelta
 
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from django.db import models
+from django.urls import reverse
 from model_utils import FieldTracker
 
 from .managers import (
