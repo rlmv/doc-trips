@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
 
 from fyt.incoming.urls import settings_urlpatterns
 from fyt.permissions.permissions import groups
@@ -25,6 +26,8 @@ urlpatterns = [
     url(r'^training/', include(('fyt.training.urls', 'training'))),
     url(r'^users/', include(('fyt.users.urls', 'users'))),
     url(r'^volunteers/', include(('fyt.applications.urls', 'applications'))),
+    url(r'^robots\.txt$', TemplateView.as_view(
+        template_name='robots.txt', content_type='text/plain'))
 ]
 
 # Install django-debug-toolbar
