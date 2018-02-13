@@ -22,7 +22,6 @@ env:
 
 install:
     - pip install -r requirements/test.txt
-    - pip install psycopg2
     - pip install coveralls
     - pip freeze
 
