@@ -1725,6 +1725,7 @@ class InternalBusTimingTestCase(TransportTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        self.init_old_trips_year()
         self.init_transport_config()
 
     @vcr.use_cassette
@@ -1914,6 +1915,104 @@ class InternalBusTimingTestCase(TransportTestCase):
 
         self.assertTrue(dropoff_bus.dirty)
         self.assertTrue(dropoff_bus.dirty)
+
+    def test_changing_hanover_marks_all_buses_dirty(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        other_year_bus = mommy.make(
+            InternalBus,
+            trips_year=self.old_trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            section__leaders_arrive=date_leaders_arrive)
+
+        # Mark buses as having computed times
+        dropoff_bus.dirty = False
+        dropoff_bus.save()
+        pickup_bus.dirty = False
+        pickup_bus.save()
+        other_year_bus.dirty = False
+        other_year_bus.save()
+
+        config = TransportConfig.objects.get(trips_year=self.trips_year)
+        config.hanover = mommy.make(Stop, trips_year=self.trips_year)
+        config.save()
+
+        dropoff_bus.refresh_from_db()
+        self.assertTrue(dropoff_bus.dirty)
+        pickup_bus.refresh_from_db()
+        self.assertTrue(pickup_bus.dirty)
+        other_year_bus.refresh_from_db()
+        self.assertFalse(other_year_bus.dirty)
+
+    def test_changing_lodge_marks_all_buses_dirty(self):
+        date_leaders_arrive = date(2015, 1, 1)
+
+        dropoff_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=2),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        pickup_bus = mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            date=date_leaders_arrive + timedelta(days=4),
+            route__category=Route.INTERNAL,
+            route__trips_year=self.trips_year)
+
+        other_year_bus = mommy.make(
+            InternalBus,
+            trips_year=self.old_trips_year)
+
+        trip = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            template__dropoff_stop__route=dropoff_bus.route,
+            template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__pickup_stop__route=pickup_bus.route,
+            template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            section__leaders_arrive=date_leaders_arrive)
+
+        # Mark buses as having computed times
+        dropoff_bus.dirty = False
+        dropoff_bus.save()
+        pickup_bus.dirty = False
+        pickup_bus.save()
+        other_year_bus.dirty = False
+        other_year_bus.save()
+
+        config = TransportConfig.objects.get(trips_year=self.trips_year)
+        config.lodge = mommy.make(Stop, trips_year=self.trips_year)
+        config.save()
+
+        dropoff_bus.refresh_from_db()
+        self.assertTrue(dropoff_bus.dirty)
+        pickup_bus.refresh_from_db()
+        self.assertTrue(pickup_bus.dirty)
+        other_year_bus.refresh_from_db()
+        self.assertFalse(other_year_bus.dirty)
 
     def test_changing_ordering_marks_bus_as_dirty(self):
         date_leaders_arrive = date(2015, 1, 1)

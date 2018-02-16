@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from fyt.transport.models import InternalBus, Stop, StopOrder
+from fyt.transport.models import InternalBus, Stop, StopOrder, TransportConfig
 from fyt.trips.models import Section, Trip, TripTemplate
 
 
@@ -154,3 +154,17 @@ def update_ordering_for_section_date_change(instance, created, **kwargs):
         for trip in Trip.objects.filter(section=instance):
             resolve_dropoff(trip)
             resolve_pickup(trip)
+
+
+@receiver(post_save, sender=TransportConfig)
+def update_all_buses_for_hanover_and_lodge_changes(instance, created, **kwargs):
+    """
+    If the Hanover or Lodge stop are changed, all buses need to be updated.
+    """
+    if (not created and instance.tracker.has_changed('hanover')
+            or instance.tracker.has_changed('lodge')):
+        for bus in InternalBus.objects.filter(trips_year=instance.trips_year):
+            mark_dirty(bus)
+
+
+# Mark *all* if address/lat-lng of Hanover/Lodge stop changes

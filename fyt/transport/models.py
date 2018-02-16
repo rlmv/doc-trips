@@ -43,6 +43,8 @@ class TransportConfig(DatabaseModel):
     class Meta:
         unique_together = ['trips_year']
 
+    tracker = FieldTracker(fields=['hanover', 'lodge'])
+
     hanover = models.ForeignKey(
         'Stop',
         related_name="+",
