@@ -1894,8 +1894,10 @@ class InternalBusTimingTestCase(TransportTestCase):
             trips_year=self.trips_year,
             template__dropoff_stop__route=dropoff_bus.route,
             template__dropoff_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__dropoff_stop__trips_year=self.trips_year,
             template__pickup_stop__route=pickup_bus.route,
             template__pickup_stop__address='92 Lyme Rd, Hanover, NH 03755',
+            template__pickup_stop__trips_year=self.trips_year,
             section__leaders_arrive=date_leaders_arrive)
 
         # Mark buses as having computed times

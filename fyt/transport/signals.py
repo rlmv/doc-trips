@@ -109,16 +109,24 @@ def mark_buses_dirty_for_address_changes(instance, created, **kwargs):
     """
     If the address of a Stop changes, then times and directions for buses
     with this stop on their route are no longer valid.
-    """
-    if (not created and instance.tracker.has_changed('address')
-            or instance.tracker.has_changed('lat_lng')):
 
-        affected_buses = InternalBus.objects.filter(
-            Q(stoporder__trip__template__dropoff_stop=instance) |
-            Q(stoporder__trip__template__pickup_stop=instance))
+    If the address of the Lodge or Hanover stop changes, then all buses
+    directions and times need to be updatedg.
+    """
+    if (not created and (instance.tracker.has_changed('address') or
+                         instance.tracker.has_changed('lat_lng'))):
+        # TODO: can the Lodge/Hanover check be done without a db query?
+        if (instance == Hanover(instance.trips_year) or
+                instance == Lodge(instance.trips_year)):
+            affected_buses = InternalBus.objects.filter(
+                trips_year=instance.trips_year)
+        else:
+            affected_buses = InternalBus.objects.filter(
+                Q(stoporder__trip__template__dropoff_stop=instance) |
+                Q(stoporder__trip__template__pickup_stop=instance))
 
         # TODO: iterate and save if we use a signal to generate directions
-        # based on the dirty flag
+        # based on the dirty flag, since `update` does not emit a signal.
         affected_buses.update(dirty=True)
 
 
@@ -163,23 +171,7 @@ def update_all_buses_for_hanover_and_lodge_changes(instance, created, **kwargs):
     """
     if (not created and instance.tracker.has_changed('hanover')
             or instance.tracker.has_changed('lodge')):
-        for bus in InternalBus.objects.filter(trips_year=instance.trips_year):
-            mark_dirty(bus)
 
-
-@receiver(post_save, sender=Stop)
-def update_all_buses_for_hanover_and_lodge_address_change(instance, created,
-                                                          **kwargs):
-    """
-    If the location of Hanover or the Lodge is changed, all buses need to be
-    updated.
-    """
-    # TODO: can the Lodge/Hanover check be done without a db query?
-    if (not created
-            and (instance.tracker.has_changed('address') or
-                 instance.tracker.has_changed('lat_lng'))
-            and (instance == Hanover(instance.trips_year) or
-                 instance == Lodge(instance.trips_year))):
-
-        for bus in InternalBus.objects.filter(trips_year=instance.trips_year):
-            mark_dirty(bus)
+        InternalBus.objects.filter(
+            trips_year=instance.trips_year
+        ).update(dirty=True)
