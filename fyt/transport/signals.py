@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from fyt.transport.models import InternalBus, Stop, StopOrder, TransportConfig
+from fyt.transport.models import (Hanover, Lodge, InternalBus, Stop, StopOrder, TransportConfig)
 from fyt.trips.models import Section, Trip, TripTemplate
 
 
@@ -167,4 +167,19 @@ def update_all_buses_for_hanover_and_lodge_changes(instance, created, **kwargs):
             mark_dirty(bus)
 
 
-# Mark *all* if address/lat-lng of Hanover/Lodge stop changes
+@receiver(post_save, sender=Stop)
+def update_all_buses_for_hanover_and_lodge_address_change(instance, created,
+                                                          **kwargs):
+    """
+    If the location of Hanover or the Lodge is changed, all buses need to be
+    updated.
+    """
+    # TODO: can the Lodge/Hanover check be done without a db query?
+    if (not created
+            and (instance.tracker.has_changed('address') or
+                 instance.tracker.has_changed('lat_lng'))
+            and (instance == Hanover(instance.trips_year) or
+                 instance == Lodge(instance.trips_year))):
+
+        for bus in InternalBus.objects.filter(trips_year=instance.trips_year):
+            mark_dirty(bus)
