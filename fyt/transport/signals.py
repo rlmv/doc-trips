@@ -2,7 +2,14 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from fyt.transport.models import (Hanover, Lodge, InternalBus, Stop, StopOrder, TransportConfig)
+from fyt.transport.models import (
+    Hanover,
+    InternalBus,
+    Lodge,
+    Stop,
+    StopOrder,
+    TransportConfig,
+)
 from fyt.trips.models import Section, Trip, TripTemplate
 
 
