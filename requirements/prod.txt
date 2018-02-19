@@ -1,5 +1,5 @@
 bleach==2.1.2
-boto3==1.5.26
+boto3==1.5.31
 googlemaps==2.5.1
 dj-database-url==0.4.2
 django==2.0.2
