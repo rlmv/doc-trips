@@ -21,7 +21,7 @@ env:
         - secure: "khGF7RAHmLKKlhxta8hnF8qtEYzPO676ZG2QJTZXyvc8BE1JIbucVd8iMPcjqoIse7MQHN1lqb+oKmwq8FYWzmPtF38G1FV8sCt2Sim14Jufxf4wUkObH2zBiLzDtmLlGoSYFVnBuRTdY/KYsY3ujIS6Hmjb0yqAbR2QIoHo4mYB4fauUn5TZm2K6DqItptW1j5oK/li7SBKC89pzroKoVAT5U6KRCb4Vn5bbsE3dNlp2MkA9u5Rcma7SNPI5laHkWr8STTtb9C5QFDaHeTuyDTu/nf+NM5fDhGOzkpbxY/2N+idXMBII0pKoxz28ZabmTQFw02PiNhVoTOEoNeqqRKq9Cyi829Vgftkgw/qFeomFSmSMrgJEDC8h4pQqMWFexhx8G00OBy1OMmxDuzMeaO2bJvaBWQdi07/ex+1q4kU5o3U0l0VgqgwqwSmQ/WD9XLG9hiDi+jym7ZUapdmtmmGdV0Fme26BDDuZmIfcTYJFjN/SgNeSPfyx64IoZsZ0NPeFKlK/8DadN0hNp+ZV0E4nXh+32ugmqfj3y+PBEX/6KacqYxrfgJmK7bOrjwWabpKKPYJkAaJ3j76QLDfSycUV/gmovEuABtfBMt81ETCbbhm9L2bJ3VX2BK/ttzCzYfWAmVUX3VBmhKw91cYO3JXg5yAOS6On8RAn6cFLkI="
 
 install:
-    - pip install -r requirements/test.txt
+    - pip install -r requirements/dev.txt
     - pip install coveralls
     - pip freeze
 
