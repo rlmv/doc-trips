@@ -387,10 +387,6 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             'gender',
             'leader_willing',
             'croo_willing',
-            'community_building',
-            'risk_management',
-            'wilderness_skills',
-            'croo_training',
         ).prefetch_related(
             'answer_set'
         )

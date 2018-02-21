@@ -263,7 +263,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
     safety_lead = models.BooleanField(default=False)  # TODO: remove?
 
     # ----- trainings -----
-
+    # TODO: these fields are no longer used. All training data lives
+    # in the `training` app, and the data held in these fields from
+    # past years should be migrated to the training models.
     community_building = models.DateField(null=True, blank=True)
     risk_management = models.DateField(null=True, blank=True)
     wilderness_skills = models.DateField(null=True, blank=True)
