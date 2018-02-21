@@ -272,7 +272,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
     croo_training = models.DateField(null=True, blank=True)
 
     # ----- general information, not shown to graders ------
-
     class_year = ClassYearField()
     gender = models.CharField(max_length=25)
     race_ethnicity = models.CharField(
@@ -703,20 +702,22 @@ class LeaderSupplement(DatabaseModel):
     def set_section_preference(self, section, preference):
         """Set the applicant's preference for a section."""
         LeaderSectionChoice.objects.create(
-            application=self, section=section, preference=preference
-        )
+            application=self,
+            section=section,
+            preference=preference)
 
     def set_triptype_preference(self, triptype, preference):
         """Set the applicant's preference for a triptype."""
         LeaderTripTypeChoice.objects.create(
-            application=self, triptype=triptype, preference=preference
-        )
+            application=self,
+            triptype=triptype,
+            preference=preference)
 
     def sections_by_preference(self, preference):
         qs = (self.leadersectionchoice_set
-                .filter(preference=preference)
-                .order_by('section')
-                .select_related('section'))
+              .filter(preference=preference)
+              .order_by('section')
+              .select_related('section'))
         return [x.section for x in qs]
 
     def new_preferred_sections(self):
@@ -727,9 +728,9 @@ class LeaderSupplement(DatabaseModel):
 
     def triptypes_by_preference(self, preference):
         qs = (self.leadertriptypechoice_set
-                .filter(preference=preference)
-                .order_by('triptype')
-                .select_related('triptype'))
+              .filter(preference=preference)
+              .order_by('triptype')
+              .select_related('triptype'))
         return [x.triptype for x in qs]
 
     def new_preferred_triptypes(self):
@@ -746,8 +747,7 @@ class LeaderSupplement(DatabaseModel):
             Trip.objects
             .filter(trips_year=self.trips_year)
             .filter(Q(section__in=self.new_preferred_sections()) &
-                    Q(template__triptype__in=self.new_preferred_triptypes()))
-        )
+                    Q(template__triptype__in=self.new_preferred_triptypes())))
 
     def get_available_trips(self):
         """
@@ -763,8 +763,7 @@ class LeaderSupplement(DatabaseModel):
                     Q(section__in=self.new_available_sections()),
                     Q(template__triptype__in=self.new_preferred_triptypes()) |
                     Q(template__triptype__in=self.new_available_triptypes()))
-            .exclude(id__in=self.get_preferred_trips().all())
-        )
+            .exclude(id__in=self.get_preferred_trips().all()))
 
     def get_absolute_url(self):
         return self.application.get_absolute_url()
