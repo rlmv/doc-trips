@@ -1,0 +1,21 @@
+[MESSAGES CONTROL]
+
+disable=all
+
+enable=
+    F,
+#    unused-argument,
+#    unused-variable,
+#    bad-indentation,
+#    deprecated-method,
+#    attribute-defined-outside-init,
+#    redefined-builtin,
+#    redefined-outer-name,
+#    arguments-differ,
+#    pointless-string-statement,
+#    protected-access,
+#    cell-var-from-loop,
+#    bad-super-call,
+#    wildcard-import,
+#    no-space-before-operator,
+#    deprecated-module,
