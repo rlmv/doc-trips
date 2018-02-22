@@ -24,8 +24,7 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
         answer = {
             'netid': 'a002bxd',
-            'name_with_affil': 'Robert L. Marchman IV',
-            'name_with_year': 'Robert L. Marchman IV'
+            'name': 'Robert L. Marchman IV'
         }
 
         # Entered before typeahead completed

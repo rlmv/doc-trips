@@ -25,9 +25,9 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
 
     def __init__(self, attrs=None):
         widgets = [
-            forms.TextInput(attrs={'class': 'dartdmLookup nameWithYearField'}),
+            forms.TextInput(attrs={'class': 'dartdmLookup nameField'}),
             forms.HiddenInput(attrs={'class': 'netIdField'}),
-            forms.HiddenInput(attrs={'class': 'nameWithAffilField'})]
+            forms.HiddenInput(attrs={'class': 'hiddenNameField'})]
         super().__init__(widgets, attrs)
 
     def decompress(self, value):
@@ -70,7 +70,7 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
             # Empty field
             return None
 
-        if len(data_list) == 1 or not data_list[2].startswith(data_list[0]):
+        if len(data_list) == 1 or not data_list[2] == data_list[0]:
             # User did not wait for the typeahead autocomplete,
             # or changed the autocompleted name after the lookup.
             # Try and lookup the given name.
@@ -83,7 +83,6 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
                 raise ValidationError("Ambiguous name %r" % data_list[0])
 
         return {
-            lookup.NAME_WITH_YEAR: data_list[0],
+            lookup.NAME: data_list[0],
             lookup.NETID: data_list[1],
-            lookup.NAME_WITH_AFFIL: data_list[2]
         }

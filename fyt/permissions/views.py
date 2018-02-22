@@ -146,7 +146,7 @@ class GroupForm(forms.ModelForm):
             UserModel = get_user_model()
             new_member, _ = UserModel.objects.get_or_create_by_netid(
                 new_member_data[lookup.NETID],
-                new_member_data[lookup.NAME_WITH_YEAR])
+                new_member_data[lookup.NAME])
 
             if new_member not in members:
                 members = list(members)
