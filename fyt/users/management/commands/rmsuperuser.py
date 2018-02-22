@@ -1,9 +1,7 @@
-
-from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
+from fyt.users.models import DartmouthUser
 
-UserModel = get_user_model()
 
 class Command(BaseCommand):
 
@@ -16,8 +14,8 @@ class Command(BaseCommand):
         netid = options['netid']
 
         try:
-            user = UserModel.objects.get(netid=netid)
-        except UserModel.DoesNotExist:
+            user = DartmouthUser.objects.get(netid=netid)
+        except DartmouthUser.DoesNotExist:
             err = ("User with netid '%s' does not exist in the database "
                    "Have them log in first, then retry this command")
             self.stderr.write(err % netid)

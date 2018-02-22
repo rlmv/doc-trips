@@ -1,9 +1,9 @@
 from django import template
-from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.fields import FieldDoesNotExist
 
 from fyt.core.templatetags.links import *
+from fyt.users.models import DartmouthUser
 
 
 register = template.Library()
@@ -67,7 +67,7 @@ def detail(db_object, fields=None):
             value = t.render(c)
 
         if field.many_to_one or field.one_to_one:
-            if field.related_model == get_user_model():
+            if field.related_model == DartmouthUser:
                 # no detail views for users.
                 value = str(value)
 

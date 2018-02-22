@@ -4,7 +4,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Column, Fieldset, Layout, Row, Submit
 from django import forms
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
@@ -15,6 +14,7 @@ from vanilla import FormView
 
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
+from fyt.users.models import DartmouthUser
 from fyt.permissions.permissions import Group, groups
 
 
@@ -143,8 +143,7 @@ class GroupForm(forms.ModelForm):
         new_member_data = self.cleaned_data['new_member']
 
         if new_member_data:
-            UserModel = get_user_model()
-            new_member, _ = UserModel.objects.get_or_create_by_netid(
+            new_member, _ = DartmouthUser.objects.get_or_create_by_netid(
                 new_member_data[lookup.NETID],
                 new_member_data[lookup.NAME])
 
