@@ -149,11 +149,10 @@ class GroupForm(forms.ModelForm):
                 new_member_data[lookup.NAME_WITH_YEAR])
 
             if new_member not in members:
-                members_list = list(members)
-                members_list.append(new_member)
+                members = list(members)
+                members.append(new_member)
 
-        self.group.user_set = members
-        self.group.save()
+        self.group.user_set.set(members)
 
     @property
     def helper(self):

@@ -6,8 +6,22 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# URL constants
-DARTDM_URL = 'http://dartdm.dartmouth.edu/NetIdLookup/Lookup'
+# URL constants. These endpoints have changed in the past,
+# so check the source of https://lookup.dartmouth.edu/ if
+# the lookup is broken.
+#
+# The following are valid query parameters:
+# q=Lucia
+# includeAlum=true
+# field=uid
+# field=displayName
+# field=eduPersonPrimaryAffiliation
+# field=mail&field=eduPersonNickname
+# field=dcDeptclass
+# field=dcAffiliation
+# field=telephoneNumber
+# field=dcHinmanaddr
+DARTDM_URL = 'https://api-lookup.dartmouth.edu/v1/lookup'
 DNDPROFILES_URL = 'http://dndprofiles.dartmouth.edu/profile'
 
 # Key constants
@@ -30,17 +44,14 @@ def dartdm_lookup(query_string):
     if len(query_string) < 2:
         return []
 
-    params = {'term': query_string}
+    params = {'q': query_string}
     r = requests.get(DARTDM_URL, params=params)
 
-    if isinstance(r.json(), dict):
-        raise DartDmLookupException(r.json())
-
     return [{
-        NETID: data['id'],
-        NAME_WITH_YEAR: data['value'],
-        NAME_WITH_AFFIL: data['label'],
-    } for data in r.json()]
+        NETID: data['uid'],
+        NAME_WITH_YEAR: data['displayName'],
+        NAME_WITH_AFFIL: data['displayName'],
+    } for data in r.json()['users']]
 
 
 class EmailLookupException(Exception):

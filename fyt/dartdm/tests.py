@@ -24,7 +24,7 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
         answer = {
             'netid': 'a002bxd',
-            'name_with_affil': 'Robert L. Marchman IV (Alum/76)',
+            'name_with_affil': 'Robert L. Marchman IV',
             'name_with_year': 'Robert L. Marchman IV'
         }
 
@@ -33,7 +33,7 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
         # Entered after typeahead completed
         data_list = ['Robert L. Marchman IV', 'a002bxd',
-                     'Robert L. Marchman IV (Alum/76)']
+                     'Robert L. Marchman IV']
         self.assertEqual(field.compress(data_list), answer)
 
 

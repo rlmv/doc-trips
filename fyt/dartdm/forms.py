@@ -66,7 +66,6 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
         `data_list` is of the form `[NAME_WITH_YEAR, NETID, NAME_WITH_AFFIL]`
         """
         logger.info('compress: %r' % data_list)
-
         if len(data_list) == 0:
             # Empty field
             return None
