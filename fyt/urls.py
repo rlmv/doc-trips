@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 from fyt.incoming.urls import settings_urlpatterns
-from fyt.permissions.permissions import groups
 from fyt.views import HomePage, RaiseError
 
 
