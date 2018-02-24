@@ -1,0 +1,59 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.18.4]
+    method: GET
+    uri: https://api-lookup.dartmouth.edu/v1/lookup?q=Robert+L.+Marchman
+  response:
+    body: {string: '{"truncated":false,"users":[{"uid":"a002bxd","eduPersonPrimaryAffiliation":"Alum","mail":"Robert.L.Marchman.IV.76@Dartmouth.edu","displayName":"Robert
+        L. Marchman IV"},{"uid":"d34898x","eduPersonPrimaryAffiliation":"Staff","mail":"Robert.L.Marchman@Dartmouth.edu","displayName":"Robert
+        L. Marchman"}]}'}
+    headers:
+      Access-Control-Allow-Headers: ['X-Requested-With, Content-Type']
+      Access-Control-Allow-Methods: [GET]
+      Access-Control-Allow-Origin: ['*']
+      Content-Type: [application/json]
+      Date: ['Thu, 22 Feb 2018 16:11:10 GMT']
+    status: {code: 200, message: ''}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.18.4]
+    method: GET
+    uri: https://api-lookup.dartmouth.edu/v1/lookup?q=Robert+L.+Marchmanxyzsgasdgasdf
+  response:
+    body: {string: '{"truncated":false,"users":[]}'}
+    headers:
+      Access-Control-Allow-Headers: ['X-Requested-With, Content-Type']
+      Access-Control-Allow-Methods: [GET]
+      Access-Control-Allow-Origin: ['*']
+      Content-Type: [application/json]
+      Date: ['Thu, 22 Feb 2018 16:11:11 GMT']
+    status: {code: 200, message: ''}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.18.4]
+    method: GET
+    uri: https://api-lookup.dartmouth.edu/v1/lookup?q=Robert+L.+Marchman+IV
+  response:
+    body: {string: '{"truncated":false,"users":[{"uid":"a002bxd","eduPersonPrimaryAffiliation":"Alum","mail":"Robert.L.Marchman.IV.76@Dartmouth.edu","displayName":"Robert
+        L. Marchman IV"}]}'}
+    headers:
+      Access-Control-Allow-Headers: ['X-Requested-With, Content-Type']
+      Access-Control-Allow-Methods: [GET]
+      Access-Control-Allow-Origin: ['*']
+      Content-Type: [application/json]
+      Date: ['Thu, 22 Feb 2018 16:11:11 GMT']
+    status: {code: 200, message: ''}
+version: 1
