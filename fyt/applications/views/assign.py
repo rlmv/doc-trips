@@ -2,6 +2,7 @@ from vanilla import UpdateView
 
 from ..forms import TripAssignmentForm
 from ..models import Volunteer
+from ..views.application import IfOldApplicationsVisible
 
 from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import ApplicationEditPermissionRequired
@@ -9,8 +10,8 @@ from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
 
 
-class AssignToTrip(ApplicationEditPermissionRequired, TripsYearMixin,
-                   ExtraContextMixin, UpdateView):
+class AssignToTrip(ApplicationEditPermissionRequired, IfOldApplicationsVisible,
+                   TripsYearMixin, ExtraContextMixin, UpdateView):
     """
     Assign LEADER to a Trip.
 
@@ -32,7 +33,7 @@ class AssignToTrip(ApplicationEditPermissionRequired, TripsYearMixin,
         }
 
 
-class AssignToCroo(ApplicationEditPermissionRequired,
+class AssignToCroo(ApplicationEditPermissionRequired, IfOldApplicationsVisible,
                    TripsYearMixin, UpdateView):
     """
     Assign volunteer to a croo

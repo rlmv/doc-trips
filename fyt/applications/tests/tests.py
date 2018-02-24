@@ -7,6 +7,7 @@ from model_mommy import mommy
 from ..forms import LeaderSupplementForm, QuestionForm
 from ..models import (
     Answer,
+    ApplicationInformation,
     CrooSupplement,
     LeaderSupplement,
     PortalContent,
@@ -721,6 +722,7 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        self.init_old_trips_year()
 
     def test_directorate_can_normally_see_volunteer_pages(self):
         mommy.make(Timetable, hide_volunteer_page=False)
@@ -750,6 +752,41 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         self.assertContains(res, str(complete))
         self.assertNotContains(res, str(incomplete))
+
+    def test_old_applications_are_hidden(self):
+        mommy.make(Timetable)
+        mommy.make(ApplicationInformation, trips_year=self.old_trips_year)
+        mommy.make(ApplicationInformation, trips_year=self.trips_year)
+
+        tlt = self.make_tlt()
+        director = self.make_director()
+
+        old_app = self.make_application(trips_year=self.old_trips_year)
+        new_app = self.make_application(trips_year=self.trips_year)
+
+        # year, user, should they be able to see the page?
+        cases = [
+            (old_app, tlt, 403),
+            (old_app, director, 200),
+            (new_app, tlt, 200),
+            (new_app, director, 200)]
+
+        for application, user, status in cases:
+            urls = [
+                application.index_url(),
+                application.detail_url(),
+                application.update_url(),
+                reverse('core:volunteer:update_status',
+                        kwargs=application.obj_kwargs()),
+                reverse('core:volunteer:update_admin',
+                        kwargs=application.obj_kwargs()),
+                reverse('core:volunteer:update_trip',
+                        kwargs=application.obj_kwargs()),
+                reverse('core:volunteer:update_croo',
+                        kwargs=application.obj_kwargs())]
+
+            for url in urls:
+                self.app.get(url, user=user, status=status)
 
 
 class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):

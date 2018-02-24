@@ -28,6 +28,7 @@ from fyt.applications.tables import ApplicationTable
 from fyt.core.models import TripsYear
 from fyt.core.views import CrispyFormMixin, TripsYearMixin
 from fyt.croos.models import Croo
+from fyt.permissions.permissions import groups
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
     DatabaseReadPermissionRequired,
@@ -371,8 +372,23 @@ def preload_questions(qs, trips_year):
     return qs
 
 
+class IfOldApplicationsVisible():
+    """
+    Only allow grading once applications are closed
+    """
+    not_available_template = 'applications/old_applications_not_available.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        # TODO: yuck, implement this as a utility method
+        if (TripsYear.objects.current().year != int(self.get_trips_year()) and
+                groups.directors not in request.user.groups.all()):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
-                       TripsYearMixin, ExtraContextMixin, ListView):
+                       IfOldApplicationsVisible, TripsYearMixin,
+                       ExtraContextMixin, ListView):
     model = Volunteer
     template_name = 'applications/application_index.html'
 
@@ -407,7 +423,8 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
 
 
 class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
-                        ExtraContextMixin, TripsYearMixin, DetailView):
+                        IfOldApplicationsVisible, ExtraContextMixin,
+                        TripsYearMixin, DetailView):
     model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
@@ -502,7 +519,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
 
 
 class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
-                        ApplicationFormsMixin, TripsYearMixin, UpdateView):
+                        IfOldApplicationsVisible, ApplicationFormsMixin,
+                        TripsYearMixin, UpdateView):
     template_name = 'applications/application_update.html'
 
     def get_form_valid_message(self):
@@ -534,7 +552,8 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
 
 
 class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
-                              BlockDirectorate, TripsYearMixin, UpdateView):
+                              BlockDirectorate, IfOldApplicationsVisible,
+                              TripsYearMixin, UpdateView):
     """
     Edit Application status
     """
@@ -544,8 +563,8 @@ class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
 
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, ExtraContextMixin,
-                             TripsYearMixin, UpdateView):
+                             BlockDirectorate, IfOldApplicationsVisible,
+                             ExtraContextMixin, TripsYearMixin, UpdateView):
     """
     Update status, trip/croo assignment etc.
     """
