@@ -382,7 +382,8 @@ class BlockOldApplications():
         # TODO: yuck, implement this as a utility method
         if (TripsYear.objects.current().year != int(self.get_trips_year()) and
                 groups.directors not in request.user.groups.all()):
-            raise PermissionDenied
+            raise PermissionDenied('Only Trip Directors can view applications '
+                                   'from previous years.')
         return super().dispatch(request, *args, **kwargs)
 
 
