@@ -372,7 +372,7 @@ def preload_questions(qs, trips_year):
     return qs
 
 
-class IfOldApplicationsVisible():
+class BlockOldApplications():
     """
     Only allow grading once applications are closed
     """
@@ -387,7 +387,7 @@ class IfOldApplicationsVisible():
 
 
 class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
-                       IfOldApplicationsVisible, TripsYearMixin,
+                       BlockOldApplications, TripsYearMixin,
                        ExtraContextMixin, ListView):
     model = Volunteer
     template_name = 'applications/application_index.html'
@@ -423,7 +423,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
 
 
 class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
-                        IfOldApplicationsVisible, ExtraContextMixin,
+                        BlockOldApplications, ExtraContextMixin,
                         TripsYearMixin, DetailView):
     model = Volunteer
     context_object_name = 'application'
@@ -519,7 +519,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
 
 
 class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
-                        IfOldApplicationsVisible, ApplicationFormsMixin,
+                        BlockOldApplications, ApplicationFormsMixin,
                         TripsYearMixin, UpdateView):
     template_name = 'applications/application_update.html'
 
@@ -552,7 +552,7 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
 
 
 class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
-                              BlockDirectorate, IfOldApplicationsVisible,
+                              BlockDirectorate, BlockOldApplications,
                               TripsYearMixin, UpdateView):
     """
     Edit Application status
@@ -563,7 +563,7 @@ class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
 
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, IfOldApplicationsVisible,
+                             BlockDirectorate, BlockOldApplications,
                              ExtraContextMixin, TripsYearMixin, UpdateView):
     """
     Update status, trip/croo assignment etc.
