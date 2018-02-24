@@ -1,4 +1,3 @@
-
 from braces.views import SuperuserRequiredMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
@@ -25,18 +24,15 @@ def permission_denied(request, exception):
 
     Show the db navigation if we are already in the db.
     """
-    default_context = {
+    context = {
         'base_template': 'base.html',
         'exception': force_text(exception)
     }
 
-    if request.path == '/db/':
-        # Does not have a trips_year kwarg. Use the base template.
-        context = default_context
-    elif request.resolver_match.namespace.startswith('db'):
-        context = {'base_template': 'db/base.html',
-                   'trips_year': request.resolver_match.kwargs['trips_year']}
-    else:
-        context = default_context
+    # Add trips_year variable to core templates that need it
+    if request.path != '/db/' and request.resolver_match.namespace.startswith('db'):
+        context.update({
+            'base_template': 'db/base.html',
+            'trips_year': request.resolver_match.kwargs['trips_year']})
 
     return render(request, 'permission_denied.html', context, status=403)
