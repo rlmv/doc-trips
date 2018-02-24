@@ -1,11 +1,13 @@
-
 {% extends base_template %}
 
-{% block content %}
-<div class="page-header">
-  <h1> Forbidden <small> 403 </small></h1>
-  <p> {{ exception }} </p>
-  <p> You don't have permission to view this page. If you think this message is in error, contact the site maintainers. </p>
-</div>
+{% block header %}
+<h1> Forbidden <small> 403 </small></h1>
+{% endblock %}
 
+{% block content %}
+<div>
+  <p class="lead"> You don't have permission to view this page. </p>
+  <p><strong> {{ exception }} </strong></p>
+  <p> If you think this message is an error, contact the site maintainers. </p>
+</div>
 {% endblock content %}
