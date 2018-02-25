@@ -284,3 +284,12 @@ LOGGING = {
         },
     },
 }
+
+# Disable poor performance caused by the templates panel.
+# See https://github.com/jazzband/django-debug-toolbar/issues/910
+DEBUG_TOOLBAR_CONFIG = {
+    'DISABLE_PANELS': {
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel'
+    },
+}
