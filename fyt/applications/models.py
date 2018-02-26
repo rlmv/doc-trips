@@ -287,9 +287,13 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
     tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES)
 
+    # TODO: migrate this data to the new gear app
     height = models.CharField(max_length=10, blank=True)
+
+    # TODO: migrate this data to the new gear app
     weight = models.CharField(max_length=10, blank=True)
 
+    # TODO: migrate this data to the new gear app
     gear = models.TextField(
         "Most trips require participants to have a frame pack, sleeping bag, "
         "and sleeping pad. What outdoor gear is available to you? Will you be "

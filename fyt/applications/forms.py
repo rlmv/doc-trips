@@ -58,9 +58,6 @@ class ApplicationForm(forms.ModelForm):
             'race_ethnicity',
             'summer_address',
             'tshirt_size',
-            'height',
-            'weight',
-            'gear',
             'hometown',
             'what_do_you_like_to_study',
             'personal_activities',
@@ -495,20 +492,6 @@ class ApplicationLayout(Layout):
                 'transfer_exchange',
                 Field('personal_activities', rows=4),
                 Field('feedback', rows=4),
-            ),
-            Fieldset(
-                'Gear',
-                HTML(
-                    "<p>We will use this information to fit gear for you on "
-                    "trips that require it (e.g. paddles and life jackets for "
-                    "canoeing and kayaking trips, harnesses for climbing "
-                    "trips, etc.)</p>"
-                ),
-                Row(
-                    Div('height', css_class='col-sm-3'),
-                    Div('weight', css_class='col-sm-3'),
-                ),
-                Field('gear', rows=3),
             ),
             Fieldset(
                 'Trainings',

@@ -440,9 +440,9 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'phone',
         'summer_address',
         'tshirt_size',
-        'height',
-        'weight',
-        'gear',
+        'height',  # TODO: gear app
+        'weight',  # TODO
+        'gear',    # TODO
         'hometown',
         'what_do_you_like_to_study',
         'personal_activities',
