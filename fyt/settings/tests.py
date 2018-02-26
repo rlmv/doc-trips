@@ -23,7 +23,7 @@ class EnvLoaderTestCase(unittest.TestCase):
         env = EnvLoader(f.name)
         self.assertEqual(env.get('ANOTHER_VALUE'), '789')
         # Environment variables take precedence
-        self.assertEqual(env.get('ENV_LOADER_VALUE'),'123')
+        self.assertEqual(env.get('ENV_LOADER_VALUE'), '123')
 
     def tearDown(self):
         del os.environ['ENV_LOADER_VALUE']
