@@ -1,11 +1,5 @@
 """
-Django settings for doc-trips project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
+Django settings for the DOC Trips project.
 """
 
 import os
@@ -17,8 +11,9 @@ from django import urls  # isort:skip
 from .loader import EnvLoader
 
 
-# Monkey patch django.core.urlresolvers
+# Monkey patch django.core.urlresolvers for Django 2.0
 # TODO: remove when vanilla-views is updated
+# Blocked by https://github.com/tomchristie/django-vanilla-views/pull/67
 sys.modules['django.core.urlresolvers'] = urls
 
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
@@ -143,14 +138,9 @@ ROOT_URLCONF = 'fyt.urls'
 
 WSGI_APPLICATION = 'fyt.wsgi.application'
 
-# Fallback on SQLite for local testing instead of Postgres
-# sqlite = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 DATABASES = {
     'default': dj_database_url.parse(env.get('DATABASE_URL'), conn_max_age=500)
-#    'default': dj_database_url.config(default=sqlite, conn_max_age=500)
 }
-# TODO: use PgBouncer for connection pooling?
-# https://devcenter.heroku.com/articles/python-concurrency-and-database-connection
 
 # Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
