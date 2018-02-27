@@ -1,4 +1,3 @@
-
 {% if trip %}
 {% with section=trip.section fmt="F jS"%}
 <p>
@@ -8,9 +7,9 @@
     <h3 class="list-group-item-heading"> Trip Assignment <small> {{ trip }}: {{ trip.template.description_summary }} </small></h3>
     <p> <strong>{{ trip.template.triptype.name }}</strong> {{ trip.template.triptype.trippee_description }} </p>
 
-	{% if trip.template.swimtest_required %}
-	<p> You will be required to pass a swim test upon arrival in Hanover. </p>
-	{% endif %}
+    {% if trip.template.swimtest_required %}
+    <p> You will be required to pass a swim test upon arrival in Hanover. </p>
+    {% endif %}
 
     <p><strong> Please read the following information carefully, and don't hesitate to <a href="{{ contact_url }}"> contact us </a> if you have any questions.</strong></p>
   </li>
@@ -18,11 +17,11 @@
   <li class="list-group-item">
     <strong> Section {{ section.name }} &mdash; {{ section.trippee_date_str }} </strong> <br>
     Plan to arrive in Hanover between <strong>2-4pm on {{ section.trippees_arrive|date:fmt }}</strong>. Your trip will return to Hanover between <strong>12-3pm on {{ section.return_to_campus|date:fmt }}</strong>&mdash;please don't make plans to leave Hanover before 3. <i>If you are on Section J you will return to Hanover between 9-11am&mdash;in time to take your placement exams</i>.
-	
+
   </li>
 
   <li class="list-group-item">
-    <strong> Bus </strong> <br> 
+    <strong> Bus </strong> <br>
     {% with bus=incoming_student.bus_assignment_round_trip bus_to_hanover=incoming_student.bus_assignment_to_hanover bus_from_hanover=incoming_student.bus_assignment_from_hanover %}
     {% if bus %}
     <div>
@@ -49,16 +48,16 @@
   {% if incoming_student.notes %}
   <li class="list-group-item">
     <strong> Notes </strong> <br>
-    {{ incoming_student.notes }} 
+    {{ incoming_student.notes }}
   </li>
   {% endif %}
 
   <li class="list-group-item">
     <strong> Cost </strong> <br>
     {% if incoming_student.financial_aid %}
-    With your financial aid award of {{ incoming_student.financial_aid }}%, the 
+    With your financial aid award of {{ incoming_student.financial_aid }}%, the
     {% else %}
-    The 
+    The
     {% endif %}
     total cost of Trips is ${{ incoming_student.compute_cost }} (this includes, if you selected any of these options: the cost of a local bus, DOC membership, and your Green Fund donation.) This total will be charged to your college account and appear on your first tuition bill.
   </li>
