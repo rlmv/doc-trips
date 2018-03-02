@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from fyt.core.templatetags.links import make_link
-from fyt.training.models import Attendee, Session
+from fyt.applications.models import Volunteer
+from fyt.training.models import Attendee, Session, FirstAidCertification
 from fyt.training.templatetags.training import capacity_label
 from fyt.utils.fmt import join_with_and
 from fyt.utils.forms import ReadonlyFormsetMixin
@@ -204,3 +205,49 @@ class FirstAidFormset(ReadonlyFormsetMixin, forms.modelformset_factory(
 
     def get_status(self, instance):
         return instance.volunteer.get_status_display()
+
+
+class FirstAidCertificationForm(forms.ModelForm):
+    class Meta:
+        model = FirstAidCertification
+        fields = [
+            'name',
+            'other',
+            'expiration_date'
+        ]
+
+
+class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
+
+    def __init__(self, trips_year, *args, **kwargs):
+        self.trips_year = trips_year
+        super().__init__(*args, **kwargs)
+
+    def save(self):
+        """
+        Attach trips_year to all instances.
+        """
+        instances = super().save(commit=False)
+        for instance in instances:
+            instance.trips_year = self.trips_year
+            instance.save()
+
+        return instances
+
+    @property
+    def helper(self):
+        helper = FormHelper()  # Don't pass formset instance
+        helper.form_tag = False
+        helper.template = 'bootstrap3/table_inline_formset.html'
+        helper.layout = Layout(
+            'name',
+            'other',
+            'expiration_date')
+        return helper
+
+
+FirstAidCertificationFormset = forms.inlineformset_factory(
+    Volunteer,
+    FirstAidCertification,
+    formset=BaseFirstAidCertificationFormset,
+    form=FirstAidCertificationForm)

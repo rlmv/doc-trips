@@ -35,6 +35,7 @@ from fyt.permissions.views import (
     SettingsPermissionRequired,
 )
 from fyt.timetable.models import Timetable
+from fyt.training.forms import FirstAidCertificationFormset
 from fyt.trips.models import TripType
 from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
@@ -77,8 +78,10 @@ LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
 QUESTION_FORM = 'question_form'
 AGREEMENT_FORM = 'agreement_form'
+FIRST_AID_FORM = 'first_aid_form'
 
 FORM_ORDERING = [
+    FIRST_AID_FORM,
     GENERAL_FORM,
     LEADER_FORM,
     CROO_FORM,
@@ -132,6 +135,7 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
             QUESTION_FORM: QuestionForm,
+            FIRST_AID_FORM: FirstAidCertificationFormset
         }
 
     def get_instances(self):
@@ -143,7 +147,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
             LEADER_FORM: None,
             CROO_FORM: None,
             QUESTION_FORM: None,
-            AGREEMENT_FORM: None
+            AGREEMENT_FORM: None,
+            FIRST_AID_FORM: None
         }
 
     def get_forms(self, instances,  **kwargs):
@@ -254,6 +259,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
             QUESTION_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
+            FIRST_AID_FORM: self.object
         }
 
 
