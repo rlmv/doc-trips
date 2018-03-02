@@ -212,6 +212,7 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         question1 = mommy.make(Question, trips_year=trips_year, type=Question.ALL)
         question2 = mommy.make(Question, trips_year=trips_year, type=Question.LEADER)
         question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
+        question4 = mommy.make(Question, trips_year=trips_year, type=Question.OPTIONAL)
 
         app = make_application(trips_year=trips_year)
         app.leader_willing = True
@@ -241,6 +242,8 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         question1 = mommy.make(Question, trips_year=trips_year, type=Question.ALL)
         question2 = mommy.make(Question, trips_year=trips_year, type=Question.LEADER)
         question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
+        question4 = mommy.make(Question, trips_year=trips_year, type=Question.OPTIONAL)
+
         app = make_application(trips_year=trips_year)
         app.croo_willing = True
 
@@ -338,6 +341,8 @@ class QuestionModelTestCase(FytTestCase):
             Question, trips_year=self.trips_year, type=Question.LEADER)
         self.q_croo = mommy.make(
             Question, trips_year=self.trips_year, type=Question.CROO)
+        self.q_optional = mommy.make(
+            Question, trips_year=self.trips_year, type=Question.OPTIONAL)
 
     def test_leader_only(self):
         self.assertFalse(self.q_general.leader_only)
@@ -349,13 +354,17 @@ class QuestionModelTestCase(FytTestCase):
         self.assertFalse(self.q_leader.croo_only)
         self.assertTrue(self.q_croo.croo_only)
 
-    def test_for_leaders(self):
-        qs = Question.objects.for_leaders(self.trips_year)
+    def test_required_for_leaders(self):
+        qs = Question.objects.required_for_leaders(self.trips_year)
         self.assertQsEqual(qs, [self.q_general, self.q_leader])
 
-    def test_for_croos(self):
-        qs = Question.objects.for_croos(self.trips_year)
+    def test_required_for_croos(self):
+        qs = Question.objects.required_for_croos(self.trips_year)
         self.assertQsEqual(qs, [self.q_general, self.q_croo])
+
+    def test_required_questions(self):
+        qs = Question.objects.required(self.trips_year)
+        self.assertQsEqual(qs, [self.q_general, self.q_leader, self.q_croo])
 
 
 class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytTestCase):

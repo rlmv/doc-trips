@@ -96,14 +96,16 @@ class Question(DatabaseModel):
     ALL = 'ALL'
     LEADER = 'LEADER'
     CROO = 'CROO'
+    OPTIONAL = 'OPTIONAL'
     TYPE_CHOICES = (
         (ALL, 'All applicants'),
         (LEADER, 'Leader applicants only'),
         (CROO, 'Croo applicants only'),
+        (OPTIONAL, 'Optional')
     )
     type = models.CharField(
-        'Is this a question for all applicants, leader applicants, or croo '
-        'applicants?',
+        'Is this a question for all applicants, leader applicants, croo '
+        'applicants, or is it optional?',
         max_length=10, choices=TYPE_CHOICES, default=ALL
     )
 
@@ -116,6 +118,10 @@ class Question(DatabaseModel):
         return self.type == self.CROO
 
     @property
+    def optional(self):
+        return self.type == self.OPTIONAL
+
+    @property
     def display_text(self):
         base_prefix = 'PLEASE ANSWER THIS IF YOU ARE APPLYING TO BE A {}. '
 
@@ -123,6 +129,8 @@ class Question(DatabaseModel):
             prefix = base_prefix.format('TRIP LEADER')
         elif self.croo_only:
             prefix = base_prefix.format('CROOLING')
+        elif self.optional:
+            prefix = 'THIS QUESTION IS OPTIONAL. '
         else:
             prefix = ''
 
@@ -429,14 +437,14 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def lastname(self):
         return self.name.split()[-1]
 
-    def all_questions_answered(self, type):
+    def required_questions_answered(self, type):
         """
-        Returns True if all the dynamic questions are answered, for the
-        given type of question.
+        Returns True if all the required dynamic questions are answered, for
+        the given type of question.
         """
         types = [Question.ALL, type]
 
-        q_ids = set(q.id for q in self.get_questions() if q.type in types)
+        q_ids = set(q.id for q in self.required_questions() if q.type in types)
 
         for answer in self.answer_set.all():
             if answer.answer:  # "" is not an answer
@@ -447,15 +455,15 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
         return len(q_ids) == 0
 
-    GET_QUESTIONS = '_get_questions'
+    REQUIRED_QUESTIONS = '_required_questions'
 
-    @cache_as(GET_QUESTIONS)
-    def get_questions(self):
+    @cache_as(REQUIRED_QUESTIONS)
+    def required_questions(self):
         """
         Used to cache this year's questions so that large querysets can be
         preloaded to improve efficiency.
         """
-        return Question.objects.filter(trips_year=self.trips_year)
+        return Question.objects.required(self.trips_year)
 
     @cache_as('_get_answers')
     def get_answers(self):
@@ -471,7 +479,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
         A leader application is complete if all questions are answered
         and the applicant has indicated that they want to be a leader.
         """
-        return self.leader_willing and self.all_questions_answered(Question.LEADER)
+        return self.leader_willing and self.required_questions_answered(
+            Question.LEADER)
 
     @property
     def croo_application_complete(self):
@@ -479,7 +488,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
         A croo application is complete if all questions are answered
         and the applicant has indicated that they want to be on a croo.
         """
-        return self.croo_willing and self.all_questions_answered(Question.CROO)
+        return self.croo_willing and self.required_questions_answered(
+            Question.CROO)
 
     def answer_question(self, question, text):
         """

@@ -360,14 +360,14 @@ class BlockDirectorate(GroupRequiredMixin):
 # TODO: move to queryset method
 def preload_questions(qs, trips_year):
     """
-    Preload the _get_questions cache on a queryset of applications so that
+    Preload the _required_questions cache on a queryset of applications so that
     `leader_application_complete` and `croo_application_complete` can be
     efficiently computed.
     """
     questions = Question.objects.filter(trips_year=trips_year)
 
     for app in qs:
-        preload(app, app.GET_QUESTIONS, questions)
+        preload(app, app.REQUIRED_QUESTIONS, questions)
 
     return qs
 

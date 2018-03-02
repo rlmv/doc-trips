@@ -70,7 +70,7 @@ class VolunteerManager(models.Manager):
 
     def leader_applications(self, trips_year):
         from .models import Question
-        questions = Question.objects.for_leaders(trips_year)
+        questions = Question.objects.required_for_leaders(trips_year)
 
         qs = self.filter(trips_year=trips_year, leader_willing=True)
 
@@ -81,7 +81,7 @@ class VolunteerManager(models.Manager):
 
     def croo_applications(self, trips_year):
         from .models import Question
-        questions = Question.objects.for_croos(trips_year)
+        questions = Question.objects.required_for_croos(trips_year)
 
         qs = self.filter(trips_year=trips_year, croo_willing=True)
 
@@ -283,10 +283,13 @@ def TrueIf(**kwargs):
 
 class QuestionManager(models.Manager):
 
-    def for_leaders(self, trips_year):
+    def required_for_leaders(self, trips_year):
         target_types = [self.model.LEADER, self.model.ALL]
-        return self.filter(trips_year=trips_year).filter(type__in=target_types)
+        return self.required(trips_year).filter(type__in=target_types)
 
-    def for_croos(self, trips_year):
+    def required_for_croos(self, trips_year):
         target_types = [self.model.CROO, self.model.ALL]
-        return self.filter(trips_year=trips_year).filter(type__in=target_types)
+        return self.required(trips_year).filter(type__in=target_types)
+
+    def required(self, trips_year):
+        return self.filter(trips_year=trips_year, type__ne=self.model.OPTIONAL)

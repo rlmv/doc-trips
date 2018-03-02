@@ -318,6 +318,11 @@ class QuestionHandler(PreferenceHandler):
             return base_text.format('crooling')
         elif question.croo_only:
             return base_text.format('trip leader')
+        elif question.optional:
+            return ('This question is optional. Your application will be '
+                    'considered complete even if you leave this question '
+                    'blank, and whether or not you choose to answer it will '
+                    'not affect the grading of your application.')
 
     def formfield(self, question, initial):
         return forms.CharField(
