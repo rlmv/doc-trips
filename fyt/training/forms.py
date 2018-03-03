@@ -215,6 +215,10 @@ class FirstAidCertificationForm(forms.ModelForm):
             'other',
             'expiration_date'
         ]
+        widgets = {
+            'expiration_date': DateTimePicker(options={
+                'format': 'MM/DD/YYYY'})
+        }
 
 
 class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
