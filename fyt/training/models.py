@@ -79,7 +79,6 @@ class FirstAidCertification(DatabaseModel):
         (None, '--'),
         ('FA', 'First Aid'),
         ('CPR', 'CPR'),
-        ('FA/CPR', 'First Aid/CPR'),
         ('WFA', 'WFA'),
         ('WFR', 'WFR'),
         ('W-EMT', 'W-EMT'),
