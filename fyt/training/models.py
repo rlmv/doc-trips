@@ -87,10 +87,14 @@ class FirstAidCertification(DatabaseModel):
         (OTHER, 'other'),
     )
     name = models.CharField(
-        max_length=10, blank=True, default="", choices=CERTIFICATION_CHOICES
+        'certification',
+        max_length=10,
+        blank=True,
+        default="",
+        choices=CERTIFICATION_CHOICES
     )
     other = models.CharField(
-        'other first aid cert', max_length=100, blank=True, default=""
+        max_length=100, blank=True, default=""
     )
     expiration_date = models.DateField()
 
