@@ -23,6 +23,7 @@
     <th {{ center }}>International</th>
     <th {{ center }}>Native American</th>
     <th {{ center }}>FYSEP</th>
+    <th {{ center }}>Sophomore Leaders</th>
     <th/>
     <th/>
   </tr>
@@ -37,6 +38,7 @@
     <td {{ center }}>{{ section.is_international | ok_if_true }}</td>
     <td {{ center }}>{{ section.is_native | ok_if_true }}</td>
     <td {{ center }}>{{ section.is_fysep | ok_if_true }}</td>
+    <td {{ center }}>{{ section.sophomore_leaders_ok | ok_if_true }}</td>
     <td {{ center }}>{{ section|edit_link }}</td>
     <td {{ center }}>{{ section|delete_link }}</td>
   </tr>
