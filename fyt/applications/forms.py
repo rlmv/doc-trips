@@ -628,7 +628,7 @@ class CrooSupplementLayout(Layout):
                     "evacuations at their respective location (Hanover, Grant, "
                     "Oak Hill, etc). Safety Leads are an integral part of each "
                     "croo and, in addition to their medical responsibilities, "
-                    "are included in all other croo activities.  If you have a "
+                    "are included in all other croo activities. If you have a "
                     "WFR, EMT, W-EMT, OEC, or equivalent medical certification, "
                     "you are qualified to be a Safety Lead. We will prioritize "
                     "people who have higher safety certifications (EMT, W-EMT) "
