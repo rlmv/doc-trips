@@ -22,6 +22,7 @@ from fyt.core.models import TripsYear
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import NOT_AVAILABLE
+from fyt.utils.fmt import join_with_and
 from fyt.utils.forms import crispify
 
 
@@ -411,6 +412,11 @@ class LeaderSupplementForm(forms.ModelForm):
         triptypes = TripType.objects.visible(trips_year)
         self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
         self.fields.update(self.triptype_handler.get_formfields())
+
+        self.fields['section_availability'].help_text = (
+            'Sophomores, if you are available for more than {} please use '
+            'the above space to explain how.'.format(
+                join_with_and(Section.objects.sophomore_leaders_ok(trips_year))))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False

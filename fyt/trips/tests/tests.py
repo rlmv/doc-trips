@@ -317,6 +317,15 @@ class SectionManagerTestCase(FytTestCase):
         self.assertEqual(Section.dates.leader_dates(trips_year),
                          sorted(list(set(section1.leader_dates + section2.leader_dates))))
 
+    def test_sophomore_leaders_ok(self):
+        trips_year = self.init_trips_year()
+        section1 = mommy.make(Section, trips_year=trips_year,
+                              sophomore_leaders_ok=True)
+        section2 = mommy.make(Section, trips_year=trips_year,
+                              sophomore_leaders_ok=False)
+        self.assertQsEqual(Section.objects.sophomore_leaders_ok(trips_year),
+                           [section1])
+
 
 class SectionModelTestCase(FytTestCase):
 

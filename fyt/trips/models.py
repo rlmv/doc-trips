@@ -228,7 +228,6 @@ class Section(DatabaseModel):
     """
     Model to represent a trips section.
     """
-
     class Meta:
         ordering = ['name']
 
@@ -243,6 +242,10 @@ class Section(DatabaseModel):
     is_international = models.BooleanField(default=False)
     is_fysep = models.BooleanField(default=False)
     is_native = models.BooleanField(default=False)
+
+    sophomore_leaders_ok = models.BooleanField(
+        'Will sophomores taking classes this summer be able to lead '
+        'trips during this section?', default=False)
 
     objects = SectionManager()
     dates = SectionDatesManager()

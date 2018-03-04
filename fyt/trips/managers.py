@@ -63,6 +63,9 @@ class SectionManager(models.Manager):
     def exchange(self, trips_year):
         return self.filter(trips_year=trips_year, is_exchange=True)
 
+    def sophomore_leaders_ok(self, trips_year):
+        return self.filter(trips_year=trips_year, sophomore_leaders_ok=True)
+
 
 class TripManager(models.Manager):
 

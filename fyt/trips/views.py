@@ -352,7 +352,8 @@ class SectionDetail(DatabaseDetailView):
         'is_transfer',
         'is_international',
         'is_native',
-        'is_fysep'
+        'is_fysep',
+        'sophomore_leaders_ok',
     ]
 
 

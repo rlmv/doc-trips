@@ -643,9 +643,7 @@ class LeaderSupplement(DatabaseModel):
     availability = models.TextField(
         "Looking at the Trips descriptions, please feel free to use this "
         "space to address any concerns or explain your availability. "
-        "(Attention '20s: If you are available for more than Sections H, I, "
-        "and J, please explain how.) If "
-        "applicable, please also elaborate on any particular trips or "
+        "If applicable, please also elaborate on any particular trips or "
         "activities that you absolutely CANNOT participate in. All "
         "information in this application will remain confidential.",
         blank=True
