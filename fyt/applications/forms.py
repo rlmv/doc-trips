@@ -219,7 +219,8 @@ class PreferenceHandler:
         setattr(through, self.data_field, data)
 
     def through_qs(self, instance):
-        return getattr(instance, self.through_qs_name).all()
+        return getattr(instance, self.through_qs_name).select_related(
+            self.target_field).all()
 
     def create_through(self, instance, target, data):
         return getattr(instance, self.through_creator)(target, data)
