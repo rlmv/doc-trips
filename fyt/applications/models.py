@@ -314,7 +314,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     hometown = models.CharField(max_length=255)
     what_do_you_like_to_study = models.CharField(
-        'What do you like to study?', max_length=255
+        'What do you like to study?', max_length=255, blank=True
     )
     personal_activities = models.TextField(
         "In order of importance to you, please list your activities, "
