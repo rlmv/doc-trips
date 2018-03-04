@@ -81,8 +81,8 @@ AGREEMENT_FORM = 'agreement_form'
 FIRST_AID_FORM = 'first_aid_form'
 
 FORM_ORDERING = [
-    FIRST_AID_FORM,
     GENERAL_FORM,
+    FIRST_AID_FORM,
     LEADER_FORM,
     CROO_FORM,
     QUESTION_FORM,

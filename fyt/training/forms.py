@@ -254,4 +254,5 @@ FirstAidCertificationFormset = forms.inlineformset_factory(
     Volunteer,
     FirstAidCertification,
     formset=BaseFirstAidCertificationFormset,
-    form=FirstAidCertificationForm)
+    form=FirstAidCertificationForm,
+    can_delete=False)
