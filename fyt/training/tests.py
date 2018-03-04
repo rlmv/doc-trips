@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.urls import reverse
 from model_mommy import mommy
 
@@ -8,10 +10,11 @@ from fyt.training.forms import (
     AttendanceForm,
     AttendeeUpdateForm,
     FirstAidFormset,
+    FirstAidCertificationFormset,
     SessionRegistrationForm,
     SignupForm,
 )
-from fyt.training.models import Attendee, Session, Training
+from fyt.training.models import Attendee, Session, Training, FirstAidCertification
 
 
 # Don't let model_mommy bung up the OneToOne creation
@@ -107,6 +110,7 @@ class AttendeeTrainingTestCase(FytTestCase):
                            [self.attendee1])
 
 
+# TODO: roll this over into the FirstAidCertification tests
 class AttendeeFirstAidTestCase(FytTestCase):
 
     def setUp(self):
@@ -143,6 +147,34 @@ class AttendeeFirstAidTestCase(FytTestCase):
             Attendee.objects.first_aid_incomplete(self.trips_year),
             [self.attendee4])
 
+
+class FirstAidCertificationModelTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.cert1 = mommy.make(
+            FirstAidCertification,
+            trips_year=self.trips_year,
+            name='WFR')
+        self.cert2 = mommy.make(
+            FirstAidCertification,
+            trips_year=self.trips_year,
+            name=FirstAidCertification.OTHER,
+            other='ABC')
+        self.cert3 = mommy.make(
+            FirstAidCertification,
+            trips_year=self.trips_year,
+            name='',
+            other='ABC')
+
+    def test_get_name(self):
+        self.assertEqual(self.cert1.get_name(), 'WFR')
+
+    def test_get_name_other(self):
+        self.assertEqual(self.cert2.get_name(), 'ABC')
+
+    def test_get_name_without_explicit_other(self):
+        self.assertEqual(self.cert3.get_name(), 'ABC')
 
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
@@ -280,6 +312,37 @@ class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
             [self.leader.attendee,
              self.crooling.attendee,
              self.leader_waitlist.attendee])
+
+
+class FirstAidCertificationFormsetTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.application = self.make_application()
+
+    def test_formset_save(self):
+        formset = FirstAidCertificationFormset(
+            prefix='formset',
+            trips_year=self.trips_year,
+            instance=self.application,
+            data={
+                'formset-INITIAL_FORMS': '0',
+                'formset-TOTAL_FORMS': '3',
+                'formset-MIN_NUM_FORMS': '',
+                'formset-MAX_NUM_FORMS': '',
+                'formset-0-name': 'FA',
+                'formset-0-other': '',
+                'formset-0-expiration_date': '2/24/2017'
+            })
+        self.assertTrue(formset.is_valid())
+        formset.save()
+        self.application.refresh_from_db()
+        self.assertQsContains(
+            self.application.firstaidcertification_set.all(),
+            [{
+                'name': 'FA',
+                'other': '',
+                'expiration_date': date(2017, 2, 24)}])
 
 
 class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):

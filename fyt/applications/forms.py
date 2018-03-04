@@ -67,8 +67,6 @@ class ApplicationForm(forms.ModelForm):
             'medical_conditions',
             'epipen',
             'needs',
-            'medical_certifications',
-            'medical_experience',
             'peer_training',
             'spring_training_ok',
             'summer_training_ok',
@@ -499,9 +497,15 @@ class ApplicationLayout(Layout):
                 Field('feedback', rows=4),
             ),
             Fieldset(
+                'Medical Information',
+                Field('food_allergies', rows=3),
+                Field('dietary_restrictions', rows=3),
+                Field('medical_conditions', rows=3),
+                'epipen',
+                Field('needs', rows=3),
+            ),
+            Fieldset(
                 'Trainings',
-                Field('medical_certifications', rows=4),
-                Field('medical_experience', rows=4),
                 Field('peer_training', rows=4),
                 HTML(
                     "<p>If selected to be a trip leader, you must complete training before Trips begins to ensure the safety and engagement of the first-years who you will be responsible for for five days and four nights. The position requires you to complete 9 hours of trip leader training in the spring OR summer term, 3 hours for a First Aid certification, and 3 hours for a CPR certification.</p>"
@@ -511,14 +515,12 @@ class ApplicationLayout(Layout):
                 ),
                 'spring_training_ok',
                 'summer_training_ok',
-            ),
-            Fieldset(
-                'Medical Information',
-                Field('food_allergies', rows=3),
-                Field('dietary_restrictions', rows=3),
-                Field('medical_conditions', rows=3),
-                'epipen',
-                Field('needs', rows=3),
+                Fieldset(
+                    'First Aid Certifications',
+                    HTML(
+                        "<p>Please list all of your current first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please put in in the 'other' field.</p>"
+                    )
+                )
             ),
         )
 

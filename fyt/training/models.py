@@ -67,6 +67,46 @@ class Session(DatabaseModel):
                        kwargs=self.obj_kwargs())
 
 
+class FirstAidCertification(DatabaseModel):
+    """
+    A first aid certification for a volunteer.
+    """
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.PROTECT)
+
+    # First aid
+    OTHER = 'other'
+    CERTIFICATION_CHOICES = (
+        (None, '--'),
+        ('FA', 'First Aid'),
+        ('CPR', 'CPR'),
+        ('WFA', 'WFA'),
+        ('WFR', 'WFR'),
+        ('W-EMT', 'W-EMT'),
+        ('EMT', 'EMT'),
+        ('OEC', 'OEC'),
+        (OTHER, 'other'),
+    )
+    name = models.CharField(
+        'certification',
+        max_length=10,
+        blank=True,
+        default="",
+        choices=CERTIFICATION_CHOICES
+    )
+    other = models.CharField(
+        max_length=100, blank=True, default=""
+    )
+    expiration_date = models.DateField()
+
+    class Meta:
+        ordering = ['volunteer']
+
+    def get_name(self):
+        if self.name == self.OTHER or not self.name:
+            return self.other
+        return self.name
+
+
 class Attendee(DatabaseModel):
     """
     A volunteer attending trainings.
@@ -82,6 +122,7 @@ class Attendee(DatabaseModel):
     complete_sessions = models.ManyToManyField(
         Session, blank=True, related_name='completed')
 
+    # TODO: migrate this data over to FirstAidCertification
     # First aid
     OTHER = 'other'
     FIRST_AID_CHOICES = (

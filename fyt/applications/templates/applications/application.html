@@ -10,3 +10,9 @@
 {% include "applications/application_header.html" %}
 {% include "applications/application_body.html" %}
 {% endblock %}
+
+{% block scripts %}
+{% for form in forms %}
+{{ form.media }}
+{% endfor %}
+{% endblock %}
