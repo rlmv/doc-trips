@@ -244,8 +244,8 @@ class Section(DatabaseModel):
     is_native = models.BooleanField(default=False)
 
     sophomore_leaders_ok = models.BooleanField(
-        'Will sophomores taking classes this summer be able to lead '
-        'trips during this section?', default=False)
+        'Sophomores taking classes this summer can lead trips during this '
+        'section', default=False)
 
     objects = SectionManager()
     dates = SectionDatesManager()
