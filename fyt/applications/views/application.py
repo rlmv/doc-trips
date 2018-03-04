@@ -227,6 +227,9 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         forms[CROO_FORM].instance.trips_year = trips_year
         forms[CROO_FORM].save()
 
+        forms[FIRST_AID_FORM].instance = application
+        forms[FIRST_AID_FORM].save()
+
         self.messages.success(self.get_form_valid_message())
         return HttpResponseRedirect(self.get_success_url())
 
