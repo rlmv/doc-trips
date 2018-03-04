@@ -518,7 +518,7 @@ class ApplicationLayout(Layout):
                 Fieldset(
                     'First Aid Certifications',
                     HTML(
-                        "<p>Please list all of your current first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please put in in the 'other' field.</p>"
+                        "<p>Please list all of your current first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please list it in the 'other' field.</p>"
                     )
                 )
             ),
