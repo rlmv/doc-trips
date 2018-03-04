@@ -313,7 +313,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
 
     hometown = models.CharField(max_length=255)
-    what_do_you_like_to_study = models.CharField(
+    academic_interests = models.CharField(
         'What do you like to study?', max_length=255, blank=True
     )
     personal_activities = models.TextField(

@@ -453,7 +453,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'weight',  # TODO
         'gear',    # TODO
         'hometown',
-        'what_do_you_like_to_study',
+        'academic_interests',
         'personal_activities',
         'feedback',
         'medical_certifications',
