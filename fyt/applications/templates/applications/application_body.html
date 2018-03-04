@@ -6,18 +6,21 @@
   <h4><i class="fa fa-warning"></i> Issues </h4>
   <p> Your application will not be saved until you resolve each of the following issues: </p>
   <p>
-    {% for form in forms %}
+    {% for form_or_formset in forms %}
+    {% if form_or_formset.management_form %} {# is a formset #}
+    {% with formset=form_or_formset %}
+    {{ formset.non_form_errors }}
+    {% for form in formset.forms %}
+    {% include "applications/_link_to_form_errors.html" %}
+    {% endfor %}
+    {% endwith %}
+
+    {% else %}
+    {% with form=form_or_formset %}
     {{ form.non_field_errors }}
-    <ul class="list-group">
-      {% for field in form %}
-      {% if field.errors %}
-      <a class="list-group-item list-group-item-danger" href="#{{ field.id_for_label }}">
-        <h5 class="list-group-item-heading alert-link">{{ field.errors.0 }}</h5>
-        <p class="list-group-item-text">{{ field.label }}</p>
-      </a>
-      {% endif %}
-      {% endfor %}
-    </ul>
+    {% include "applications/_link_to_form_errors.html" %}
+    {% endwith %}
+    {% endif %}
     {% endfor %}
   </p>
 </div>
@@ -32,7 +35,6 @@
     {% for form in forms %}
     {% crispy form %}
     {% endfor %}
-
     <input type="submit" name="submit" value="Save Application" class="btn btn-primary" id="submit-id-submit"/>
   </form>
 </div>
