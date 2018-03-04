@@ -74,7 +74,7 @@ class Trip(DatabaseModel):
     pickup_route = models.ForeignKey(
         'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overridden_picked_up_trips', help_text=ROUTE_HELP_TEXT)
-    return_route =  models.ForeignKey(
+    return_route = models.ForeignKey(
         'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
         related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
 
