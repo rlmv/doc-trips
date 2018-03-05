@@ -349,7 +349,7 @@ class FirstAidCertificationFormsetTestCase(ApplicationTestMixin, FytTestCase):
         formset.save()
         self.application.refresh_from_db()
         self.assertQsContains(
-            self.application.firstaidcertification_set.all(),
+            self.application.first_aid_certifications.all(),
             [{
                 'name': 'FA',
                 'other': '',
