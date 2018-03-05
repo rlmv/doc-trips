@@ -71,7 +71,10 @@ class FirstAidCertification(DatabaseModel):
     """
     A first aid certification for a volunteer.
     """
-    volunteer = models.ForeignKey(Volunteer, on_delete=models.PROTECT)
+    volunteer = models.ForeignKey(
+        Volunteer,
+        on_delete=models.PROTECT,
+        related_name='first_aid_certifications')
 
     # First aid
     OTHER = 'other'
