@@ -106,6 +106,10 @@ class FirstAidCertification(DatabaseModel):
             return self.other
         return self.name
 
+    def __str__(self):
+        return '{} (exp. {})'.format(self.get_name(),
+                                     self.expiration_date.strftime('%x'))
+
 
 class Attendee(DatabaseModel):
     """

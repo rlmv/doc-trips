@@ -155,12 +155,14 @@ class FirstAidCertificationModelTestCase(FytTestCase):
         self.cert1 = mommy.make(
             FirstAidCertification,
             trips_year=self.trips_year,
-            name='WFR')
+            name='WFR',
+            expiration_date=date(2019, 2, 25))
         self.cert2 = mommy.make(
             FirstAidCertification,
             trips_year=self.trips_year,
             name=FirstAidCertification.OTHER,
-            other='ABC')
+            other='ABC',
+            expiration_date=date(2020, 3, 23))
         self.cert3 = mommy.make(
             FirstAidCertification,
             trips_year=self.trips_year,
@@ -175,6 +177,10 @@ class FirstAidCertificationModelTestCase(FytTestCase):
 
     def test_get_name_without_explicit_other(self):
         self.assertEqual(self.cert3.get_name(), 'ABC')
+
+    def test_str(self):
+        self.assertEqual(str(self.cert1), 'WFR (exp. 02/25/19)')
+        self.assertEqual(str(self.cert2), 'ABC (exp. 03/23/20)')
 
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
