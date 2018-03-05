@@ -4,66 +4,66 @@ interactions:
     headers:
       Authorization:
       - !!binary |
-        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTgwMzA1
         L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9aG9zdDt4LWFtei1jb250
-        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9YWI2N2Q1MzBiOTAxNjQwZTMxOWQwMjE1
-        ZGFhMDIzNWNkNzBiM2MzNGQ5NjVmMjQ0MWYwZTBiMDZmMTk3ZmRkNA==
+        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9ZGM5MjM0MjI2NzE5ZDIyYmVkZDI5MTY1
+        MDNjMGJhMmEwZmU5MGU3MmFkZDhlMDg0YWI2YzllZmIxNDg4MmMyZA==
       User-Agent:
       - !!binary |
-        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
-        c291cmNl
+        Qm90bzMvMS42LjMgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS45LjMgUmVz
+        b3VyY2U=
       X-Amz-Content-SHA256:
       - !!binary |
         ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
         ODUyYjg1NQ==
       X-Amz-Date:
       - !!binary |
-        MjAxNzEwMDNUMDE1NjI3Wg==
+        MjAxODAzMDVUMTkyNDU3Wg==
     method: HEAD
-    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map.txt
+    uri: https://doc-trips-development.s3.amazonaws.com/uploads/map.txt
   response:
     body: {string: ''}
     headers:
       Accept-Ranges: [bytes]
       Content-Length: ['9']
       Content-Type: [text/plain]
-      Date: ['Tue, 03 Oct 2017 01:56:28 GMT']
+      Date: ['Mon, 05 Mar 2018 19:24:59 GMT']
       ETag: ['"eb733a00c0c9d336e65691a37ab54293"']
       Last-Modified: ['Wed, 28 Oct 2015 19:13:59 GMT']
       Server: [AmazonS3]
-      x-amz-id-2: [0HmNWZ8Pm9Nv8tWConm60gc6agbQJGjvAc4oleW+g2YQu1zED8/se50X/kV57Qw0nVzslqHyioE=]
-      x-amz-request-id: [DE5DDEF144DAB9C4]
+      x-amz-id-2: [aG/cYs3Loo6+JpeyRwz0uwIvezi9Nxba0VdJXoWVJdWe2nzqDLXD5TF8t9ZMVGxEbPzsqMqNLtk=]
+      x-amz-request-id: [3ADC00454E0F7C79]
     status: {code: 200, message: OK}
 - request:
     body: null
     headers:
       Authorization:
       - !!binary |
-        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTgwMzA1
         L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9aG9zdDt4LWFtei1jb250
-        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9Y2IzYjc5NzBjNzc4ZDM5ZjU2OWE2NDlj
-        NWI4MGFmZDJiOTg0MTEyYmQ1OWZjMjJjNzQ0ZWJhZWI0NWU5Y2JiMg==
+        ZW50LXNoYTI1Njt4LWFtei1kYXRlLCBTaWduYXR1cmU9MWVjN2NlNmUxMmI5MmU3YmJlZmFjNjI3
+        MTk5YzMyOGQ5ZWU2N2Q0OTYxYzMyMmRmZmM5ZWYwYmE0N2NjODJmYw==
       User-Agent:
       - !!binary |
-        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
-        c291cmNl
+        Qm90bzMvMS42LjMgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS45LjMgUmVz
+        b3VyY2U=
       X-Amz-Content-SHA256:
       - !!binary |
         ZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3
         ODUyYjg1NQ==
       X-Amz-Date:
       - !!binary |
-        MjAxNzEwMDNUMDE1NjI3Wg==
+        MjAxODAzMDVUMTkyNDU3Wg==
     method: HEAD
-    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map_S70yGbj.txt
+    uri: https://doc-trips-development.s3.amazonaws.com/uploads/map_suu7Wgg.txt
   response:
     body: {string: ''}
     headers:
       Content-Type: [application/xml]
-      Date: ['Tue, 03 Oct 2017 01:56:26 GMT']
+      Date: ['Mon, 05 Mar 2018 19:24:58 GMT']
       Server: [AmazonS3]
-      x-amz-id-2: [/0KdcWC4DmbPuYtZ+kpPioG7cTlOCK6/vT0M4SEsMUTqvkMJE7QTSaeES+pGzzGw12TewdLj19s=]
-      x-amz-request-id: [779FFCE3A6CC70BA]
+      x-amz-id-2: [mvuIxpIjJ6WuYpuWttnWy6c7RcBkOLBj+puIP4U/cmSo21wcZqetL3wrYcH/mMLtVAPFrBIklRQ=]
+      x-amz-request-id: [DF7A3045FA61A1DA]
     status: {code: 404, message: Not Found}
 - request:
     body: !!python/object/new:_io.BytesIO
@@ -75,11 +75,11 @@ interactions:
     headers:
       Authorization:
       - !!binary |
-        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTcxMDAz
+        QVdTNC1ITUFDLVNIQTI1NiBDcmVkZW50aWFsPUFLSUFKQklGU1JMVkRDWTdBUUZRLzIwMTgwMzA1
         L3VzLWVhc3QtMS9zMy9hd3M0X3JlcXVlc3QsIFNpZ25lZEhlYWRlcnM9Y29udGVudC1tZDU7Y29u
         dGVudC10eXBlO2hvc3Q7eC1hbXotYWNsO3gtYW16LWNvbnRlbnQtc2hhMjU2O3gtYW16LWRhdGUs
-        IFNpZ25hdHVyZT01NDBhMGJhZWExMDViMmZlNWRmYjM1ZDJmZDI3ZWZlY2FmNjdmOGYxNmUwNjc1
-        NDdhY2EyNzFjODE5NDViODll
+        IFNpZ25hdHVyZT00ZTI3N2M5NjVjNjQ2ODIzYjdhNzQ0MzM2N2NkMGMyMGU0M2IyNGRjNmUxZjVl
+        ZmUzNTk3M2FhODEyM2UwZTBk
       Content-Length: ['9']
       Content-MD5:
       - !!binary |
@@ -92,27 +92,27 @@ interactions:
         MTAwLWNvbnRpbnVl
       User-Agent:
       - !!binary |
-        Qm90bzMvMS40LjcgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS43LjIwIFJl
-        c291cmNl
+        Qm90bzMvMS42LjMgUHl0aG9uLzMuNi4xIERhcndpbi8xNi43LjAgQm90b2NvcmUvMS45LjMgUmVz
+        b3VyY2U=
       X-Amz-Content-SHA256:
       - !!binary |
         VU5TSUdORUQtUEFZTE9BRA==
       X-Amz-Date:
       - !!binary |
-        MjAxNzEwMDNUMDE1NjI3Wg==
+        MjAxODAzMDVUMTkyNDU3Wg==
       x-amz-acl:
       - !!binary |
         cHVibGljLXJlYWQ=
     method: PUT
-    uri: https://s3.amazonaws.com/doc-trips-development/uploads/map_S70yGbj.txt
+    uri: https://doc-trips-development.s3.amazonaws.com/uploads/map_suu7Wgg.txt
   response:
     body: {string: ''}
     headers:
       Content-Length: ['0']
-      Date: ['Tue, 03 Oct 2017 01:56:28 GMT']
+      Date: ['Mon, 05 Mar 2018 19:24:59 GMT']
       ETag: ['"eb733a00c0c9d336e65691a37ab54293"']
       Server: [AmazonS3]
-      x-amz-id-2: [OXH8x7oJkLhHnetUBt1hV/qQJMraw2iBaM/uvSS1rDUVa2SOaQdJP8rRpZ1nqvCpcbqtWZwyH9I=]
-      x-amz-request-id: [27FB22AAA7ECE73A]
+      x-amz-id-2: [SFpxQr/ypKFaWBsDa5MBLZ9UFDqJk7doSJN5aTOT6d/d94EvwJTj5Ev1+ACOFFAKg9DyXmu5B8U=]
+      x-amz-request-id: [D45123A47ED3FD03]
     status: {code: 200, message: OK}
 version: 1
