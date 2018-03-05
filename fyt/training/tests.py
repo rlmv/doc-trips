@@ -9,12 +9,17 @@ from fyt.test import FytTestCase
 from fyt.training.forms import (
     AttendanceForm,
     AttendeeUpdateForm,
-    FirstAidFormset,
     FirstAidCertificationFormset,
+    FirstAidFormset,
     SessionRegistrationForm,
     SignupForm,
 )
-from fyt.training.models import Attendee, Session, Training, FirstAidCertification
+from fyt.training.models import (
+    Attendee,
+    FirstAidCertification,
+    Session,
+    Training,
+)
 
 
 # Don't let model_mommy bung up the OneToOne creation

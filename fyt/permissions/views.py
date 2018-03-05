@@ -14,8 +14,8 @@ from vanilla import FormView
 
 from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.users.models import DartmouthUser
 from fyt.permissions.permissions import Group, groups
+from fyt.users.models import DartmouthUser
 
 
 logger = logging.getLogger(__name__)
