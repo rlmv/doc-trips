@@ -362,6 +362,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
 
     # ------ certs -------
+
+    # TODO: this is not used post-2018
     medical_certifications = models.TextField(
         "Please list any relevant medical "
         "certifications you hold (e.g. First Aid, CPR, Wilderness First Aid, "
@@ -372,12 +374,14 @@ class Volunteer(MedicalMixin, DatabaseModel):
             "eg. 'First Aid - American Red Cross, expires October 2013.'"
         )
     )
+    # TODO: this is not used post-2018
     medical_experience = models.TextField(
         "Briefly describe your experience using your medical certifications. "
         "How frequently do you use your certifications and in what "
         "circumstances?",
         blank=True
     )
+
     peer_training = models.TextField(
         "List and briefly describe any peer training program "
         "(e.g. DPP, IGD, DBI, MAV, EDPA, SAPA, DAPA, UGA, etc.) that you "
@@ -535,6 +539,20 @@ class Volunteer(MedicalMixin, DatabaseModel):
         Return the average score given to the application.
         """
         return self.scores.all().aggregate(models.Avg('score'))['score__avg']
+
+    def first_aid_certifications_str(self):
+        """Return a string of the volunteer's medical certifications.
+
+        This provides a common access point to the free-form text medical
+        certifications (prior to 2018), and the new foreign-key based info.
+        """
+        data = ['{}\n\n{}'.format(
+            self.medical_certifications,
+            self.medical_experience
+        ).strip()] + [
+            str(cert) for cert in self.first_aid_certifications.all()]
+
+        return '\n'.join(filter(None, data))
 
     def __str__(self):
         return self.name

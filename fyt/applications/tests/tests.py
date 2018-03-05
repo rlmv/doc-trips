@@ -19,6 +19,7 @@ from ..models import (
 from fyt.croos.models import Croo
 from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
+from fyt.training.models import FirstAidCertification
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import AVAILABLE, PREFER
 
@@ -306,6 +307,25 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
             validate_class_year(19)
         with self.assertRaises(ValidationError):
             validate_class_year(3200)
+
+    def test_first_aid_certification_str(self):
+        trips_year = self.init_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        cert1 = mommy.make(FirstAidCertification, trips_year=trips_year,
+                           volunteer=application)
+        cert2 = mommy.make(FirstAidCertification, trips_year=trips_year,
+                           volunteer=application)
+        application.refresh_from_db()
+        self.assertEqual(application.first_aid_certifications_str(),
+                         str(cert1) + '\n' + str(cert2))
+
+    def test_first_aid_certifications_str_with_legacy_fields(self):
+        trips_year = self.init_trips_year()
+        application = self.make_application(trips_year=trips_year)
+        application.medical_certifications = "a certification"
+        application.medical_experience = "some experience"
+        self.assertEqual(application.first_aid_certifications_str(),
+                         "a certification\n\nsome experience")
 
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):

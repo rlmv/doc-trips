@@ -102,7 +102,7 @@ class FirstAidCertification(DatabaseModel):
     expiration_date = models.DateField()
 
     class Meta:
-        ordering = ['volunteer']
+        ordering = ['volunteer', 'pk']
 
     def get_name(self):
         if self.name == self.OTHER or not self.name:
