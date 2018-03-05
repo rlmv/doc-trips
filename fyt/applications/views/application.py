@@ -543,7 +543,8 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
             AGREEMENT_FORM: self.object,
-            QUESTION_FORM: self.object
+            QUESTION_FORM: self.object,
+            FIRST_AID_FORM: self.object
         }
 
     def get_context_data(self, **kwargs):
