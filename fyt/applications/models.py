@@ -227,6 +227,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     """
     class Meta:
         ordering = ['applicant']
+        unique_together = ['trips_year', 'applicant']
 
     # Maximum number of scores for an application
     NUM_SCORES = 3
