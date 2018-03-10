@@ -436,6 +436,7 @@ class Registration(MedicalMixin, DatabaseModel):
 
     class Meta:
         ordering = ['name']
+        unique_together = ['trips_year', 'user']
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT)
