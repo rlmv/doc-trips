@@ -23,6 +23,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
 
         context['trips_year'] = trips_year
         context['content'] = content
+        context['timetable'] = timetable
         context['applications_available'] = (
             timetable.applications_available)
         context['application_status_available'] = (
