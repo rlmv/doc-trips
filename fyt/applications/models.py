@@ -928,7 +928,6 @@ class Score(DatabaseModel):
         """
         Set croo_head.
         """
-        # TODO: import/load this string from permissions module
         croo_head_perm = 'permissions.can_score_as_croo_head'
 
         if self.pk is None and self.grader.has_perm(croo_head_perm):
