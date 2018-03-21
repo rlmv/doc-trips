@@ -922,6 +922,8 @@ class Score(DatabaseModel):
     question5 = models.TextField('question 5', blank=True)
     question6 = models.TextField('question 6', blank=True)
 
+    comments = models.ManyToManyField(Answer, through='AnswerComment')
+
     general = models.TextField(
         "Given the notes you made above, please explain the holistic score "
         "that you assigned. If applicable, please note if the applicant is "
@@ -940,6 +942,23 @@ class Score(DatabaseModel):
             self.croo_head = True
 
         return super().save(**kwargs)
+
+
+class AnswerComment(models.Model):
+    """
+    A grader's comment on a specific answer.
+
+    This is a M2M through model between Score and Answer.
+    """
+    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    comment = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['answer']
+
+    def __str__(self):
+        return self.comment
 
 
 class Skip(DatabaseModel):
