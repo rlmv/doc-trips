@@ -1,5 +1,5 @@
 from bootstrap3_datetime.widgets import DateTimePicker
-from crispy_forms.bootstrap import Alert
+from crispy_forms.bootstrap import Alert, FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
@@ -15,6 +15,7 @@ from fyt.applications.models import (
     LeaderSupplement,
     QualificationTag,
     Question,
+    Score,
     Volunteer,
     validate_word_count,
 )
@@ -656,5 +657,35 @@ class CrooSupplementLayout(Layout):
                 ),
                 'kitchen_lead_willing',
                 Field('kitchen_lead_qualifications', rows=2),
+            )
+        )
+
+
+class ScoreForm(forms.ModelForm):
+    SKIP = 'skip'
+
+    class Meta:
+        model = Score
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper(self)
+        self.helper.layout = Layout(
+            Field('question1', rows=1),
+            Field('question2', rows=1),
+            Field('question3', rows=1),
+            Field('question4', rows=1),
+            Field('question5', rows=1),
+            Field('question6', rows=1),
+            'score',
+            Field('general', rows=3),
+            FormActions(
+                Submit('submit', 'Submit Score'),
+                Submit(self.SKIP, 'Skip this Application',
+                       css_class='btn-warning',
+                       formnovalidate=True  # Disable browser validation
+                ),
             )
         )

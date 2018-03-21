@@ -1,9 +1,6 @@
 import logging
 
 from braces.views import FormMessagesMixin, SetHeadlineMixin
-from crispy_forms.bootstrap import FormActions
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 from django.db import models
 from django.http import HttpResponseRedirect
@@ -13,6 +10,7 @@ from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
 from fyt.applications.models import Score, Volunteer
+from fyt.applications.forms import ScoreForm
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
 from fyt.permissions.views import GraderPermissionRequired
@@ -21,7 +19,6 @@ from fyt.utils.views import ExtraContextMixin
 
 
 SHOW_SCORE_AVG_INTERVAL = 10
-SKIP = 'skip'
 
 logger = logging.getLogger(__name__)
 
@@ -76,36 +73,6 @@ class RedirectToNextScorableApplication(GraderPermissionRequired,
         return reverse('applications:score:add', kwargs=kwargs)
 
 
-class ScoreForm(forms.ModelForm):
-
-    class Meta:
-        model = Score
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-        self.helper.layout = Layout(
-            Field('question1', rows=1),
-            Field('question2', rows=1),
-            Field('question3', rows=1),
-            Field('question4', rows=1),
-            Field('question5', rows=1),
-            Field('question6', rows=1),
-            'score',
-            Field('general', rows=3),
-            FormActions(
-                Submit('submit', 'Submit Score'),
-                Submit(
-                    'skip', 'Skip this Application',
-                    css_class='btn-warning',
-                    formnovalidate=True  # Disable browser validation
-                ),
-            )
-        )
-
-
 class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
                        ExtraContextMixin, SetHeadlineMixin, FormMessagesMixin,
                        CreateView):
@@ -156,7 +123,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         """
         Check if the grader is skipping this application.
         """
-        if SKIP in request.POST:
+        if ScoreForm.SKIP in request.POST:
             self.application.skip(self.request.user)
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())

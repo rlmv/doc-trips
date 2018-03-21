@@ -6,7 +6,8 @@ from model_mommy import mommy
 from ..models import Score, Volunteer
 from . import ApplicationTestMixin
 
-from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL, SKIP
+from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL
+from fyt.applications.forms import ScoreForm
 from fyt.test import FytTestCase
 
 
@@ -206,7 +207,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
-        resp.form.submit(SKIP)
+        resp.form.submit(ScoreForm.SKIP)
 
         self.assertEqual(len(app.skips.all()), 1)
         skip = app.skips.first()
