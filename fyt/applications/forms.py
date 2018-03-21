@@ -658,29 +658,3 @@ class CrooSupplementLayout(Layout):
                 Field('kitchen_lead_qualifications', rows=2),
             )
         )
-
-
-class CrooApplicationGradeForm(forms.ModelForm):
-    """
-    Form for scoring Croo applications
-    """
-    class Meta:
-        model = CrooApplicationGrade
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # CheckboxSelectMultiple in __init__ because
-        # https://github.com/maraujop/django-crispy-forms/issues/303
-        self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()
-        self.fields['qualifications'].queryset = QualificationTag.objects.filter(
-            trips_year=TripsYear.objects.current())
-
-
-class LeaderApplicationGradeForm(forms.ModelForm):
-    """
-    Form for scoring Leader applications
-    """
-    class Meta:
-        model = LeaderApplicationGrade
-        fields = '__all__'
