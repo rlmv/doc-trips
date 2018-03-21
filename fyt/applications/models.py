@@ -943,6 +943,13 @@ class Score(DatabaseModel):
 
         return super().save(**kwargs)
 
+    def add_comment(self, answer, comment):
+        """
+        Add a comment to a specific answer.
+        """
+        return AnswerComment.objects.create(
+            score=self, answer=answer, comment=comment)
+
 
 class AnswerComment(models.Model):
     """

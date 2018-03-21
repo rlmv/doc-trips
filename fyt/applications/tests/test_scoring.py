@@ -3,7 +3,7 @@ import unittest
 from django.urls import reverse
 from model_mommy import mommy
 
-from ..models import Score, Volunteer
+from ..models import Score, Volunteer, Question
 from . import ApplicationTestMixin
 
 from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL
@@ -30,6 +30,14 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
             grader=self.make_croo_head(),  # Croo head
             score=3)
         self.assertTrue(score.croo_head)
+
+
+class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
+
+    def test_score_form(self):
+        self.init_trips_year()
+        application = self.make_application()
+        ScoreForm(application=application)
 
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
@@ -188,11 +196,14 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_score_application(self):
         app = self.make_application(trips_year=self.trips_year)
+        question = mommy.make(Question, trips_year=self.trips_year, type=Question.ALL)
+        app.answer_question(question, "An answer")
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
         resp.form['score'] = 3
-        resp.form['general'] = 'A comment'
+        resp.form['answer_1'] = 'A comment'
+        resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit()
 
         self.assertEqual(len(app.scores.all()), 1)
@@ -201,6 +212,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(score.grader, self.grader)
         self.assertEqual(score.application, app)
         self.assertEqual(score.trips_year, self.trips_year)
+        self.assertEqual(len(score.answercomment_set.all()), 1)
+        self.assertEqual(score.answercomment_set.first().comment, 'A comment')
 
     def test_skip_application(self):
         app = self.make_application(trips_year=self.trips_year)

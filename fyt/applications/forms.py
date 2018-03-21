@@ -661,24 +661,48 @@ class CrooSupplementLayout(Layout):
         )
 
 
+class AnswerCommentHandler(PreferenceHandler):
+    """
+    Handler for comments on dynamic answers
+    """
+    through_qs_name = 'answercomment_set'
+    through_creator = 'add_comment'
+    data_field = 'comment'
+    target_field = 'answer'
+    default = ''
+
+    def formfield_label(self, answer):
+        return answer.answer
+
+    def formfield(self, answer, initial):
+        return forms.CharField(
+            initial=initial,
+            label=self.formfield_label(answer),
+            help_text='', # self.formfield_help_text(answer),
+            required=False,
+            widget=forms.Textarea(attrs={'rows': 2}),
+            validators=[validate_word_count]
+        )
+
+
 class ScoreForm(forms.ModelForm):
     SKIP = 'skip'
 
     class Meta:
         model = Score
-        fields = '__all__'
+        fields = ['score', 'general']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, application, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.application = application
+        self.answers = self.application.answer_set.all()
+        self.comment_handler = AnswerCommentHandler(self, self.answers)
+        self.fields.update(self.comment_handler.get_formfields())
 
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
-            Field('question1', rows=1),
-            Field('question2', rows=1),
-            Field('question3', rows=1),
-            Field('question4', rows=1),
-            Field('question5', rows=1),
-            Field('question6', rows=1),
+            *self.comment_handler.formfield_names(),
             'score',
             Field('general', rows=3),
             FormActions(
@@ -689,3 +713,8 @@ class ScoreForm(forms.ModelForm):
                 ),
             )
         )
+
+    def save(self, **kwargs):
+        score = super().save()
+        self.comment_handler.save()
+        return score

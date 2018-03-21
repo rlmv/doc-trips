@@ -130,6 +130,9 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
 
         return super().post(request, *args, **kwargs)
 
+    def get_form(self, **kwargs):
+        return ScoreForm(application=self.application, **kwargs)
+
     def form_valid(self, form):
         form.instance.grader = self.request.user
         form.instance.application = self.application
