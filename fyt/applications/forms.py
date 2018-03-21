@@ -677,11 +677,10 @@ class AnswerCommentHandler(PreferenceHandler):
     def formfield(self, answer, initial):
         return forms.CharField(
             initial=initial,
-            label=self.formfield_label(answer),
-            help_text='', # self.formfield_help_text(answer),
+            label='',  #self.formfield_label(answer),
+            help_text='',  # self.formfield_help_text(answer),
             required=False,
             widget=forms.Textarea(attrs={'rows': 2}),
-            validators=[validate_word_count]
         )
 
 
@@ -701,8 +700,17 @@ class ScoreForm(forms.ModelForm):
         self.fields.update(self.comment_handler.get_formfields())
 
         self.helper = FormHelper(self)
+
+        # Put the comment fields inline with applicant answers
+        answer_comments = []
+        for answer in self.comment_handler.targets:
+            answer_comments += [
+                HTML("<p><strong>{}</strong></p><p>{}</p>".format(
+                    answer.question.display_text, answer.answer)),
+                self.comment_handler.formfield_name(answer)]
+
         self.helper.layout = Layout(
-            *self.comment_handler.formfield_names(),
+            *answer_comments,
             'score',
             Field('general', rows=3),
             FormActions(
