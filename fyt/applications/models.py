@@ -955,6 +955,7 @@ class AnswerComment(models.Model):
 
     class Meta:
         ordering = ['answer']
+        unique_together = ['score', 'answer']
 
     def __str__(self):
         return self.comment
