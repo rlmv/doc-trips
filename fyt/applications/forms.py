@@ -699,7 +699,9 @@ class ScoreForm(forms.ModelForm):
         self.comment_handler = AnswerCommentHandler(self, self.answers)
         self.fields.update(self.comment_handler.get_formfields())
 
-        self.helper = FormHelper(self)
+    @property
+    def helper(self):
+        helper = FormHelper(self)
 
         # Put the comment fields inline with applicant answers
         answer_comments = []
@@ -709,7 +711,7 @@ class ScoreForm(forms.ModelForm):
                     answer.question.display_text, answer.answer)),
                 self.comment_handler.formfield_name(answer)]
 
-        self.helper.layout = Layout(
+        helper.layout = Layout(
             *answer_comments,
             'score',
             Field('general', rows=3),
@@ -721,6 +723,7 @@ class ScoreForm(forms.ModelForm):
                 ),
             )
         )
+        return helper
 
     def save(self, **kwargs):
         score = super().save()
