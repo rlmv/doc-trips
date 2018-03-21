@@ -89,12 +89,9 @@
             {% endif %}
 
             <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
-              <p><strong>Question 1:</strong> {{ score.question1 }}</p>
-              <p><strong>Question 2:</strong> {{ score.question2 }}</p>
-              <p><strong>Question 3:</strong> {{ score.question3 }}</p>
-              <p><strong>Question 4:</strong> {{ score.question4 }}</p>
-              <p><strong>Question 5:</strong> {{ score.question5 }}</p>
-              <p><strong>Question 6:</strong> {{ score.question6 }}</p>
+              {% for comment in score.answercomment_set.all %}
+              <p><strong>Question {{ forloop.counter }}:</strong> {{ comment.comment }}</p>
+              {% endfor %}
             </div>
 
             <p>{{ score.general }} </p>

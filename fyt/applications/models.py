@@ -915,13 +915,6 @@ class Score(DatabaseModel):
 
     score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
 
-    question1 = models.TextField('question 1', blank=True)
-    question2 = models.TextField('question 2', blank=True)
-    question3 = models.TextField('question 3', blank=True)
-    question4 = models.TextField('question 4', blank=True)
-    question5 = models.TextField('question 5', blank=True)
-    question6 = models.TextField('question 6', blank=True)
-
     comments = models.ManyToManyField(Answer, through='AnswerComment')
 
     general = models.TextField(
