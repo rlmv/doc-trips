@@ -11,11 +11,6 @@ from django import urls  # isort:skip
 from .loader import EnvLoader
 
 
-# Monkey patch django.core.urlresolvers for Django 2.0
-# TODO: remove when vanilla-views is updated
-# Blocked by https://github.com/tomchristie/django-vanilla-views/pull/67
-sys.modules['django.core.urlresolvers'] = urls
-
 BASE_DIR = os.path.dirname(os.path.abspath(os.path.join(__file__, '..')))
 
 # Untracked file used to store secrets for local development
