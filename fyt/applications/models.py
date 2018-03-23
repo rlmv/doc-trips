@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from .managers import QuestionManager, VolunteerManager
 
@@ -512,7 +513,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
-    def add_score(self, grader, score, **kwargs):
+    def add_score(self, grader, leader_score, croo_score, **kwargs):
         """
         Add a Score by `user` to the application.
         """
@@ -520,7 +521,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
             trips_year=self.trips_year,
             application=self,
             grader=grader,
-            score=score,
+            leader_score=leader_score,
+            croo_score=croo_score,
             **kwargs
         )
 
@@ -534,12 +536,18 @@ class Volunteer(MedicalMixin, DatabaseModel):
             grader=grader
         )
 
-    @cache_as('_average_score')
-    def average_score(self):
-        """
-        Return the average score given to the application.
-        """
-        return self.scores.all().aggregate(models.Avg('score'))['score__avg']
+    @cached_property
+    def _average_scores(self):
+        return self.scores.aggregate(models.Avg('leader_score'),
+                                     models.Avg('croo_score'))
+
+    def average_leader_score(self):
+        """Average leader score."""
+        return self._average_scores['leader_score__avg']
+
+    def average_croo_score(self):
+        """Average croo score."""
+        return self._average_scores['croo_score__avg']
 
     def first_aid_certifications_str(self):
         """Return a string of the volunteer's medical certifications.
@@ -913,7 +921,10 @@ class Score(DatabaseModel):
         'was the score created by a croo head?', default=False, editable=False
     )
 
-    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+    leader_score = models.PositiveSmallIntegerField(
+        choices=SCORE_CHOICES, blank=True, null=True)
+    croo_score = models.PositiveSmallIntegerField(
+        choices=SCORE_CHOICES, blank=True, null=True)
 
     comments = models.ManyToManyField(Answer, through='AnswerComment')
 

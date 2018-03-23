@@ -54,26 +54,34 @@ def get_graders(trips_year):
     for user in qs:
         scores = user.scores.filter(trips_year=trips_year)
         user.score_count = scores.count()
-        user.score_avg = scores.aggregate(Avg('score'))['score__avg']
+        user.leader_score_avg = scores.aggregate(Avg('leader_score'))['leader_score__avg']
+        user.croo_score_avg = scores.aggregate(Avg('croo_score'))['croo_score__avg']
 
-        # Attach a histogram of scores for each user
-        # score_histogram[1] is the number of `1`s granted, etc.
-        def box(x):
-            return 'score{}'.format(x)
-
-        histogram = scores.annotate(**dict(
-            [box(x), OneIfTrue(score=x)]
-            for x, _ in Score.SCORE_CHOICES)
-        ).aggregate(
-            *(Sum(box(x)) for x, _ in Score.SCORE_CHOICES)
-        )
-
-        user.score_histogram = OrderedDict(
-            (x, histogram[box(x) + '__sum'])
-            for x, _ in Score.SCORE_CHOICES
-        )
+        user.leader_score_histogram = histogram(scores, 'leader_score')
+        user.croo_score_histogram = histogram(scores, 'croo_score')
 
     return qs
+
+
+def histogram(scores, field_name):
+    """
+    Create a histogram of the given scores, where histogram[1] is the
+    number of `1`s granted, etc.
+    """
+    def box(x):
+        return '{}{}'.format(field_name, x)
+
+    histogram = scores.annotate(**dict(
+        [box(x), OneIfTrue(**{field_name: x})]
+        for x, _ in Score.SCORE_CHOICES)
+    ).aggregate(
+        *(Sum(box(x)) for x, _ in Score.SCORE_CHOICES)
+    )
+
+    return OrderedDict(
+        (x, histogram[box(x) + '__sum'])
+        for x, _ in Score.SCORE_CHOICES
+    )
 
 
 def OneIfTrue(**kwargs):

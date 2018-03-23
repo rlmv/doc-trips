@@ -689,7 +689,7 @@ class ScoreForm(forms.ModelForm):
 
     class Meta:
         model = Score
-        fields = ['score', 'general']
+        fields = ['leader_score', 'croo_score', 'general']
 
     def __init__(self, application, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -713,7 +713,8 @@ class ScoreForm(forms.ModelForm):
 
         helper.layout = Layout(
             *answer_comments,
-            'score',
+            'leader_score',
+            'croo_score',
             Field('general', rows=3),
             FormActions(
                 Submit('submit', 'Submit Score'),

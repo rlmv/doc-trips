@@ -21,14 +21,16 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
             trips_year=app.trips_year,
             application=app,
             grader=self.make_user(),  # Not a croo head
-            score=3)
+            leader_score=3,
+            croo_score=4)
         self.assertFalse(score.croo_head)
 
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
             grader=self.make_croo_head(),  # Croo head
-            score=3)
+            leader_score=3,
+            croo_score=4)
         self.assertTrue(score.croo_head)
 
 
@@ -67,7 +69,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_user_only_scores_application_once(self):
         app = self.make_application()
-        app.add_score(self.user, 4)
+        app.add_score(self.user, 4, 3)
         self.assertIsNone(Volunteer.objects.next_to_score(self.user))
 
     def test_only_score_pending_applications(self):
@@ -124,7 +126,8 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         # Scored croo app
         app1 = self.make_application()
         self.make_scores(app1, 1)
-        mommy.make(Score, application=app1, score=3, croo_head=True)
+        mommy.make(Score, application=app1, leader_score=3, croo_score=4,
+                   croo_head=True)
 
         # Unscored leader app - should be prefered because it has fewer
         # scores and no more croo apps required croo head scores.
@@ -201,14 +204,16 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
-        resp.form['score'] = 3
+        resp.form['leader_score'] = 3
+        resp.form['croo_score'] = 4
         resp.form['answer_1'] = 'A comment'
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit()
 
         self.assertEqual(len(app.scores.all()), 1)
         score = app.scores.first()
-        self.assertEqual(score.score, 3)
+        self.assertEqual(score.leader_score, 3)
+        self.assertEqual(score.croo_score, 4)
         self.assertEqual(score.grader, self.grader)
         self.assertEqual(score.application, app)
         self.assertEqual(score.trips_year, self.trips_year)
@@ -239,7 +244,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
                 Score,
                 trips_year=self.trips_year,
                 grader=self.grader,
-                score=3
+                leader_score=3,
+                croo_score=4
             )
 
         url = reverse('applications:score:next')
@@ -247,7 +253,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertIn('average awarded score is 3', messages[0].message)
+        self.assertIn('average awarded leader score is 3.0', messages[0].message)
+        self.assertIn('average awarded croo score is 4.0', messages[0].message)
 
     def test_delete_score_is_restricted_to_directors(self):
         score = mommy.make(Score, trips_year=self.trips_year)

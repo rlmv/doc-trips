@@ -42,8 +42,11 @@ class _ApplicationTable(tables.Table):
     gender = tables.Column(
         verbose_name='Gender'
     )
-    avg_score = tables.Column(
-        verbose_name='Score', order_by='-norm_avg_score'
+    avg_leader_score = tables.Column(
+        verbose_name='Leader Score', order_by='-norm_avg_leader_score'
+    )
+    avg_croo_score = tables.Column(
+        verbose_name='Croo Score', order_by='-norm_avg_croo_score'
     )
     leader_application = tables.Column(
         verbose_name='Leader app',
@@ -67,7 +70,10 @@ class _ApplicationTable(tables.Table):
         url = reverse('core:volunteer:update_status', kwargs=kwargs)
         return make_link(url, record.get_status_display())
 
-    def render_avg_score(self, value):
+    def render_avg_leader_score(self, value):
+        return "%.1f" % value
+
+    def render_avg_croo_score(self, value):
         return "%.1f" % value
 
     def render_leader_application(self, value):

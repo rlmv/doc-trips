@@ -149,8 +149,9 @@ class VolunteerManager(models.Manager):
 
     def with_scores(self, trips_year):
         """
-        Return all applications for this year annotated with an `avg_score`
-        and a `norm_avg_score`.
+        Return all applications for this year annotated with
+        `avg_leader_score`, `norm_avg_leader_score`, `avg_croo_score`,
+        `norm_avg_croo_score`.
 
         Scores are coalesced into the normalized attribute so that, when
         ordering on Postgres, null values come after the actual scores.
@@ -159,9 +160,11 @@ class VolunteerManager(models.Manager):
         return self.filter(
             trips_year=trips_year
         ).annotate(
-            avg_score=Avg('scores__score')
+            avg_leader_score=Avg('scores__leader_score'),
+            avg_croo_score=Avg('scores__croo_score')
         ).annotate(
-            norm_avg_score=Coalesce('avg_score', V(0.0))
+            norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
+            norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
         )
 
     def next_to_score(self, grader):
