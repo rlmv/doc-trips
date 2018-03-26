@@ -1,5 +1,6 @@
 import unittest
 
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from model_mommy import mommy
 
@@ -9,12 +10,15 @@ from . import ApplicationTestMixin
 from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL
 from fyt.applications.forms import ScoreForm
 from fyt.test import FytTestCase
+from fyt.users.models import DartmouthUser
 
 
 class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
-    def test_create_score_saves_croo_head_status(self):
+    def setUp(self):
         self.init_trips_year()
+
+    def test_create_score_saves_croo_head_status(self):
         app = self.make_application(trips_year=self.trips_year)
 
         score = Score.objects.create(
@@ -32,6 +36,30 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
             leader_score=3,
             croo_score=4)
         self.assertTrue(score.croo_head)
+
+    def test_leader_application_requires_leader_score(self):
+
+        for leader_willing, leader_score, ok in [
+                [True, 3, True],
+                [True, None, False],
+                [False, 3, True],
+                [False, None, True]]:
+
+            def _eval():
+                application = self.make_application(
+                    trips_year=self.trips_year,
+                    leader_willing=leader_willing)
+                score = application.add_score(
+                    grader=mommy.make(DartmouthUser),
+                    leader_score=leader_score,
+                    general="A comment")
+                score.full_clean()
+
+            if ok:
+                _eval()
+            else:
+                with self.assertRaises(ValidationError):
+                    _eval()
 
 
 class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):

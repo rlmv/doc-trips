@@ -513,7 +513,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
-    def add_score(self, grader, leader_score, croo_score, **kwargs):
+    def add_score(self, grader, leader_score=None, croo_score=None, **kwargs):
         """
         Add a Score by `user` to the application.
         """
@@ -934,6 +934,12 @@ class Score(DatabaseModel):
         "better qualified to be a trip leader or crooling, and please note "
         "any identities."
     )
+
+    def clean(self):
+        if (self.application.leader_application_complete and
+                self.leader_score is None):
+            raise ValidationError("Leader score most be set")
+
 
     def save(self, **kwargs):
         """
