@@ -10,7 +10,7 @@ from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
 from fyt.applications.models import Score, Volunteer
-from fyt.applications.forms import ScoreForm
+from fyt.applications.forms import ScoreForm, SKIP
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
 from fyt.permissions.views import GraderPermissionRequired
@@ -126,7 +126,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         """
         Check if the grader is skipping this application.
         """
-        if ScoreForm.SKIP in request.POST:
+        if SKIP in request.POST:
             self.application.skip(self.request.user)
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())

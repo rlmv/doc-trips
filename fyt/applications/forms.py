@@ -684,49 +684,66 @@ class AnswerCommentHandler(PreferenceHandler):
         )
 
 
-class ScoreForm(forms.ModelForm):
-    SKIP = 'skip'
+SKIP = 'skip'
 
-    class Meta:
-        model = Score
-        fields = ['leader_score', 'croo_score', 'general']
+def ScoreForm(application, *args, **kwargs):
+    """
+    Return a form to score this application.
 
-    def __init__(self, application, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    We only display leader_score/croo_score fields if the application is a
+    leader/croo application.
+    """
+    # Select appropriate score fields
+    score_fields = []
+    if application.leader_application_complete:
+        score_fields.append('leader_score')
+    if application.croo_application_complete:
+        score_fields.append('croo_score')
 
-        self.application = application
-        self.answers = self.application.answer_set.all()
-        self.comment_handler = AnswerCommentHandler(self, self.answers)
-        self.fields.update(self.comment_handler.get_formfields())
+    class _ScoreForm(forms.ModelForm):
+        """
+        The dynamically generated form class.
+        """
+        class Meta:
+            model = Score
+            fields = ['general'] + score_fields
 
-    @property
-    def helper(self):
-        helper = FormHelper(self)
+        def __init__(self):
+            super().__init__(*args, **kwargs)
+            self.application = self.instance.application = application
+            self.answers = self.application.answer_set.all()
+            self.comment_handler = AnswerCommentHandler(self, self.answers)
+            self.fields.update(self.comment_handler.get_formfields())
 
-        # Put the comment fields inline with applicant answers
-        answer_comments = []
-        for answer in self.comment_handler.targets:
-            answer_comments += [
-                HTML("<p><strong>{}</strong></p><p>{}</p>".format(
-                    answer.question.display_text, answer.answer)),
-                self.comment_handler.formfield_name(answer)]
+        @property
+        def helper(self):
+            helper = FormHelper(self)
 
-        helper.layout = Layout(
-            *answer_comments,
-            'leader_score',
-            'croo_score',
-            Field('general', rows=3),
-            FormActions(
-                Submit('submit', 'Submit Score'),
-                Submit(self.SKIP, 'Skip this Application',
-                       css_class='btn-warning',
-                       formnovalidate=True  # Disable browser validation
-                ),
+            # Put the comment fields inline with applicant answers
+            answer_comments = []
+            for answer in self.comment_handler.targets:
+                answer_comments += [
+                    HTML("<p><strong>{}</strong></p><p>{}</p>".format(
+                        answer.question.display_text, answer.answer)),
+                    self.comment_handler.formfield_name(answer)]
+
+            helper.layout = Layout(
+                *answer_comments,
+                *score_fields,
+                Field('general', rows=3),
+                FormActions(
+                    Submit('submit', 'Submit Score'),
+                    Submit(SKIP, 'Skip this Application',
+                           css_class='btn-warning',
+                           formnovalidate=True  # Disable browser validation
+                    ),
+                )
             )
-        )
-        return helper
+            return helper
 
-    def save(self, **kwargs):
-        score = super().save()
-        self.comment_handler.save()
-        return score
+        def save(self, **kwargs):
+            score = super().save()
+            self.comment_handler.save()
+            return score
+
+    return _ScoreForm()

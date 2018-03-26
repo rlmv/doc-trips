@@ -8,7 +8,7 @@ from ..models import Score, Volunteer, Question
 from . import ApplicationTestMixin
 
 from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL
-from fyt.applications.forms import ScoreForm
+from fyt.applications.forms import ScoreForm, SKIP
 from fyt.test import FytTestCase
 from fyt.users.models import DartmouthUser
 
@@ -88,10 +88,23 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
 class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
 
-    def test_score_form(self):
+    def setUp(self):
         self.init_trips_year()
+
+    def test_score_form(self):
         application = self.make_application()
-        ScoreForm(application=application)
+        form = ScoreForm(application=application)
+        self.assertEqual(form.instance.application, application)
+
+    def test_non_leader_application_does_not_have_leader_score_field(self):
+        application = self.make_application(leader_willing=False)
+        form = ScoreForm(application=application)
+        self.assertNotIn('leader_score', form.fields)
+
+    def test_non_croo_application_does_not_have_croo_score_field(self):
+        application = self.make_application(croo_willing=False)
+        form = ScoreForm(application=application)
+        self.assertNotIn('croo_score', form.fields)
 
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
@@ -277,7 +290,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
-        resp.form.submit(ScoreForm.SKIP)
+        resp.form.submit(SKIP)
 
         self.assertEqual(len(app.skips.all()), 1)
         skip = app.skips.first()
