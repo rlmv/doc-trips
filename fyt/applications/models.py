@@ -938,11 +938,13 @@ class Score(DatabaseModel):
     def clean(self):
         if (self.application.leader_application_complete and
                 self.leader_score is None):
-            raise ValidationError("Leader score most be set")
+            raise ValidationError(
+                {'leader_score': 'Score is required for leader applications'})
 
         if (self.application.croo_application_complete and
                 self.croo_score is None):
-            raise ValidationError("Croo score most be set")
+            raise ValidationError(
+                {'croo_score': 'Score is required for croo applications'})
 
     def save(self, **kwargs):
         """
