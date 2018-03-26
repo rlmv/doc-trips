@@ -38,17 +38,17 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertTrue(score.croo_head)
 
     def test_leader_application_requires_leader_score(self):
-
         for leader_willing, leader_score, ok in [
                 [True, 3, True],
                 [True, None, False],
                 [False, 3, True],
                 [False, None, True]]:
 
-            def _eval():
+            def _check():
                 application = self.make_application(
                     trips_year=self.trips_year,
-                    leader_willing=leader_willing)
+                    leader_willing=leader_willing,
+                    croo_willing=False)
                 score = application.add_score(
                     grader=mommy.make(DartmouthUser),
                     leader_score=leader_score,
@@ -56,10 +56,34 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
                 score.full_clean()
 
             if ok:
-                _eval()
+                _check()
             else:
                 with self.assertRaises(ValidationError):
-                    _eval()
+                    _check()
+
+    def test_croo_application_requires_croo_score(self):
+        for croo_willing, croo_score, ok in [
+                [True, 3, True],
+                [True, None, False],
+                [False, 3, True],
+                [False, None, True]]:
+
+            def _check():
+                application = self.make_application(
+                    trips_year=self.trips_year,
+                    leader_willing=False,
+                    croo_willing=croo_willing)
+                score = application.add_score(
+                    grader=mommy.make(DartmouthUser),
+                    croo_score=croo_score,
+                    general="A comment")
+                score.full_clean()
+
+            if ok:
+                _check()
+            else:
+                with self.assertRaises(ValidationError):
+                    _check()
 
 
 class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
