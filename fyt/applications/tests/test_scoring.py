@@ -107,12 +107,23 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         self.assertNotIn('croo_score', form.fields)
 
 
+def _get_grader(user):
+    return Grader.objects.from_user(user)
+
+
 class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_convert_grader_to_user(self):
         user = self.make_user()
         grader = Grader.objects.from_user(user)
         self.assertEqual(user.pk, grader.pk)
+
+    def test_is_croo_head(self):
+        user = _get_grader(self.make_grader())
+        self.assertFalse(user.is_croo_head)
+
+        croo_head = _get_grader(self.make_croo_head())
+        self.assertTrue(croo_head.is_croo_head)
 
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):

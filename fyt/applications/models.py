@@ -1022,6 +1022,10 @@ class Grader(DartmouthUser):
 
     objects = GraderManager()
 
+    @cached_property
+    def is_croo_head(self):
+        return self.has_perm('permissions.can_score_as_croo_head')
+
 
 # Deprecated models (contain historical data only)
 # ----------------------------------------
