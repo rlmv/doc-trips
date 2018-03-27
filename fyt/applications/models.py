@@ -902,7 +902,7 @@ class Score(DatabaseModel):
     )
 
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        'Grader',
         editable=False,
         related_name='scores',
         on_delete=models.PROTECT
@@ -996,7 +996,7 @@ class Skip(DatabaseModel):
         ordering = ['created_at']
 
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        'Grader',
         editable=False,
         on_delete=models.CASCADE
     )
