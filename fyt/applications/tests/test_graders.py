@@ -9,6 +9,13 @@ from fyt.applications.views.graders import _old_get_graders, get_graders
 from fyt.test import FytTestCase
 
 
+class GraderModelTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+
+
 class GraderViewsTestCase(FytTestCase):
 
     def setUp(self):

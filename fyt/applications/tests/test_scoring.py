@@ -4,11 +4,11 @@ from django.core.exceptions import ValidationError
 from django.urls import reverse
 from model_mommy import mommy
 
-from ..models import Score, Volunteer, Question
+from ..models import Grader, Score, Volunteer, Question
+from ..views.scoring import SHOW_SCORE_AVG_INTERVAL
+from ..forms import ScoreForm, SKIP
 from . import ApplicationTestMixin
 
-from fyt.applications.views.scoring import SHOW_SCORE_AVG_INTERVAL
-from fyt.applications.forms import ScoreForm, SKIP
 from fyt.test import FytTestCase
 from fyt.users.models import DartmouthUser
 
@@ -105,6 +105,14 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         application = self.make_application(croo_willing=False)
         form = ScoreForm(application=application)
         self.assertNotIn('croo_score', form.fields)
+
+
+class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
+
+    def test_convert_grader_to_user(self):
+        user = self.make_user()
+        grader = Grader.objects.from_user(user)
+        self.assertEqual(user.pk, grader.pk)
 
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):

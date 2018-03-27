@@ -5,11 +5,12 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from .managers import QuestionManager, VolunteerManager
+from .managers import QuestionManager, VolunteerManager, GraderManager
 
 from fyt.core.models import DatabaseModel
 from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
+from fyt.users.models import DartmouthUser
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import (
     AVAILABLE,
@@ -1007,6 +1008,19 @@ class Skip(DatabaseModel):
     )
 
     created_at = models.DateTimeField(default=timezone.now, editable=False)
+
+
+class Grader(DartmouthUser):
+    """
+    Proxy model for the basic user class.
+
+    This provides a convenient place to stick logic related to individual
+    graders.
+    """
+    class Meta:
+        proxy = True
+
+    objects = GraderManager()
 
 
 # Deprecated models (contain historical data only)

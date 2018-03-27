@@ -296,3 +296,10 @@ class QuestionManager(models.Manager):
 
     def required(self, trips_year):
         return self.filter(trips_year=trips_year, type__ne=self.model.OPTIONAL)
+
+
+class GraderManager(models.Manager):
+
+    def from_user(self, user):
+        """Return the Grader object proxying the given user."""
+        return self.get(pk=user.pk)
