@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import (
+    Avg,
     Q,
     Case,
     Min,
@@ -1065,6 +1066,20 @@ class Grader(DartmouthUser):
             grader=self,
             application=application,
             trips_year=application.trips_year)
+
+    def scores_for_year(self, trips_year):
+        return self.scores.filter(trips_year=trips_year)
+
+    def score_count(self, trips_year):
+        return self.scores_for_year(trips_year).count()
+
+    def avg_leader_score(self, trips_year):
+        return self.scores_for_year(trips_year).aggregate(
+            Avg('leader_score'))['leader_score__avg']
+
+    def avg_croo_score(self, trips_year):
+        return self.scores_for_year(trips_year).aggregate(
+            Avg('croo_score'))['croo_score__avg']
 
     def next_to_score(self):
         """

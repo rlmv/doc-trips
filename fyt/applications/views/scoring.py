@@ -96,41 +96,47 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
             self.application_name, self.application.applicant.netid)
 
     @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
+    @cached_property
     def application(self):
         return get_object_or_404(Volunteer, pk=self.kwargs['pk'])
+
+    @cached_property
+    def grader(self):
+        return Grader.objects.from_user(self.request.user)
 
     @property
     def application_name(self):
         return "Application #{}".format(self.kwargs['pk'])
 
-    def get(self, request, *args, **kwargs):
-        self.show_average_grade(request.grader)
-        return super().get(request, *args, **kwargs)
+    def get(self, *args, **kwargs):
+        self.show_average_grade()
+        return super().get(*args, **kwargs)
 
-    def show_average_grade(self, grader):
+    def show_average_grade(self):
         """
         Show the grader their average grade every SHOW_GRADE_AVG_INTERVAL in
         a message.
         """
-        scores = grader.scores.filter(trips_year=TripsYear.objects.current())
+        score_count = self.grader.score_count(self.trips_year)
 
-        if (scores.count() % SHOW_SCORE_AVG_INTERVAL == 0 and
-                scores.count() != 0):
-            avg_leader_score = scores.aggregate(models.Avg('leader_score'))['leader_score__avg']
-            avg_croo_score = scores.aggregate(models.Avg('croo_score'))['croo_score__avg']
-
+        if (score_count % SHOW_SCORE_AVG_INTERVAL == 0 and score_count != 0):
             msg = ("FYI, your average awarded leader score is {}. "
                    "Your average awarded croo score is {}. "
                    "You'll see your average score every {} grades.")
-            self.messages.info(msg.format(avg_leader_score, avg_croo_score,
-                                          SHOW_SCORE_AVG_INTERVAL))
+            self.messages.info(msg.format(
+                self.grader.avg_leader_score(self.trips_year),
+                self.grader.avg_croo_score(self.trips_year),
+                SHOW_SCORE_AVG_INTERVAL))
 
     def post(self, request, *args, **kwargs):
         """
         Check if the grader is skipping this application.
         """
         if SKIP in request.POST:
-            self.application.skip(self.request.user)
+            self.application.skip(self.grader)
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())
 
@@ -139,10 +145,11 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def get_form(self, **kwargs):
         return ScoreForm(application=self.application, **kwargs)
 
+    # TODO: move these to form
     def form_valid(self, form):
-        form.instance.grader = self.request.user
+        form.instance.grader = self.grader
         form.instance.application = self.application
-        form.instance.trips_year = TripsYear.objects.current()
+        form.instance.trips_year = self.trips_year
         return super().form_valid(form)
 
     def extra_context(self):

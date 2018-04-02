@@ -115,6 +115,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        self.init_old_trips_year()
         self.make_user()
         self.make_grader()
         self.make_director()
@@ -135,6 +136,33 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
         croo_head = _get_grader(self.croo_head)
         self.assertTrue(croo_head.is_croo_head)
+
+    def test_average_score_methods(self):
+        grader = _get_grader(self.grader)
+        mommy.make(
+            Score,
+            trips_year=self.trips_year,
+            grader=grader,
+            leader_score=1,
+            croo_score=2,
+        )
+        mommy.make(
+            Score,
+            trips_year=self.trips_year,
+            grader=grader,
+            leader_score=3,
+            croo_score=5,
+        )
+        mommy.make(
+            Score,
+            trips_year=self.old_trips_year,
+            grader=grader,
+            leader_score=3,
+            croo_score=4
+        )
+        self.assertEqual(grader.avg_leader_score(self.trips_year), 2)
+        self.assertEqual(grader.avg_croo_score(self.trips_year), 3.5)
+        self.assertEqual(grader.score_count(self.trips_year), 2)
 
     def test_claim_score(self):
         app = self.make_application()
