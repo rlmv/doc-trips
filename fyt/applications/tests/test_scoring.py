@@ -185,6 +185,28 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
         self.assertIsNone(grader.current_claim())
 
+    def test_current_claim_ignores_already_scored(self):
+        app = self.make_application()
+        grader = _get_grader(self.grader)
+        claim = grader.claim_score(app)
+        app.add_score(grader)
+        self.assertIsNone(grader.current_claim())
+
+    def test_claim_next_to_score_marks_a_claim(self):
+        app = self.make_application()
+        grader = _get_grader(self.grader)
+        self.assertEqual(grader.claim_next_to_score(), app)
+        self.assertEqual(grader.current_claim().application, app)
+
+    def test_claim_next_to_score_returns_previously_claimed_application(self):
+        app1 = self.make_application(trips_year=self.trips_year)
+        app2 = self.make_application(trips_year=self.trips_year)
+        grader = _get_grader(self.user)
+        grader.claim_score(app1)
+        self.assertEqual(app1, grader.claim_next_to_score())
+
+    # ------ next_to_score logic -------
+
     def test_only_score_apps_for_this_year(self):
         last_year = self.init_old_trips_year()
         app1 = self.make_application(trips_year=self.trips_year)

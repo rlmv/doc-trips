@@ -1075,11 +1075,17 @@ class Grader(DartmouthUser):
 
     def current_claim(self):
         """
+        The current claim is an application that has a claim, and which the
+        grader has not yet scored.
+
         Raise an error if there is more than one claim.
         """
         try:
-            return self.score_claims.filter(claimed_at__gt=(
-                timezone.now() - ScoreClaim.HOLD_DURATION)).get()
+            return self.score_claims.filter(
+                claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
+            ).exclude(
+                application__scores__grader=self
+            ).get()
         except ScoreClaim.DoesNotExist:
             return None
 
@@ -1096,6 +1102,17 @@ class Grader(DartmouthUser):
     def avg_croo_score(self, trips_year):
         return self.scores_for_year(trips_year).aggregate(
             Avg('croo_score'))['croo_score__avg']
+
+    def claim_next_to_score(self):
+        """
+        Find the next available application to score, and claim it.
+        """
+        if self.current_claim() is not None:
+            return self.current_claim().application
+
+        application = self.next_to_score()
+        self.claim_score(application)
+        return application
 
     def next_to_score(self):
         """
