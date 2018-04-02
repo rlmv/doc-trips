@@ -9,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
-from fyt.applications.models import Score, Volunteer
+from fyt.applications.models import Grader, Score, Volunteer
 from fyt.applications.forms import ScoreForm, SKIP
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
@@ -62,9 +62,12 @@ class RedirectToNextScorableApplication(GraderPermissionRequired,
     """
     permanent = False
 
-    def get_redirect_url(self, *args, **kwargs):
+    @property
+    def grader(self):
+        return Grader.objects.from_user(self.request.user)
 
-        application = Volunteer.objects.next_to_score(self.request.user)
+    def get_redirect_url(self, *args, **kwargs):
+        application = self.grader.next_to_score()
 
         if not application:
             return reverse('applications:score:no_applications_left')
@@ -101,7 +104,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         return "Application #{}".format(self.kwargs['pk'])
 
     def get(self, request, *args, **kwargs):
-        self.show_average_grade(request.user)
+        self.show_average_grade(request.grader)
         return super().get(request, *args, **kwargs)
 
     def show_average_grade(self, grader):

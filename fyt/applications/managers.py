@@ -1,22 +1,9 @@
-import random
-
 from django.db import models
-from django.db.models import (
-    F,
-    Q,
-    Avg,
-    Case,
-    Count,
-    Lookup,
-    Min,
-    Sum,
-    Value as V,
-    When,
-)
+from django.db.models import Lookup, Avg, Value as V, Count
+
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 
-from fyt.core.models import TripsYear
 from fyt.utils.choices import AVAILABLE, PREFER
 from fyt.utils.query import pks
 
@@ -167,86 +154,6 @@ class VolunteerManager(models.Manager):
             norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
         )
 
-    def next_to_score(self, grader):
-        """
-        Return the next application for ``grader`` to score.
-
-        This is an application which meets the following conditions:
-
-        * is for the current trips_year
-        * is complete
-        * is PENDING
-        * has not already been graded by this user
-        * has not been skipped by this user
-        * has been graded fewer than NUM_SCORES times
-
-        Furthermore:
-        * If the grader is a croo captain, prefer croo grades until each app
-          has at least one score from a croo head.
-        * Applications with fewer graders are prioritized.
-
-        TODO:
-        * If the grader is not a croo captain, don't add the last score to an
-          app which hasn't been scored by a croo captain; that is, every croo
-          application must be graded at least once by a croo captain. This is
-          currently not working because of what seems like a bug in the Django
-          ORM.
-        """
-        trips_year = TripsYear.objects.current()
-
-        croo_app_pks = pks(self.croo_applications(trips_year))
-
-        NUM_SCORES = self.model.NUM_SCORES
-
-        qs = self.leader_or_croo_applications(
-            trips_year=trips_year
-        ).filter(
-            status=self.model.PENDING
-        ).exclude(
-            scores__grader=grader
-        ).exclude(
-            skips__grader=grader
-        ).annotate(
-            models.Count('scores')
-        ).filter(
-            scores__count__lt=NUM_SCORES
-        )
-
-        # Croo head: try and pick a croo app which needs a croo head score
-        if grader.has_perm('permissions.can_score_as_croo_head'):
-            needs_croo_head_score = qs.filter(
-                Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True)
-            )
-
-            if needs_croo_head_score.first():
-                qs = needs_croo_head_score
-
-        # TODO: make this work
-        # Otherwise, reserve one score on each app for a croo head
-        # else:
-        #     qs = qs.filter(scores__count__lt=NUM_SCORES)
-        #     qs = qs.filter(
-        #         scores__count__lt=Case(
-        #             When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
-        #             When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
-        #             default=NUM_SCORES,
-        #             output_field=models.IntegerField()
-        #         )
-        #     )
-
-        # Pick an app with fewer scores
-        # TODO: use a subquery
-        qs = qs.filter(
-            scores__count=qs.aggregate(fewest=Min('scores__count'))['fewest']
-        )
-
-        # Manually choose random element because .order_by('?') is buggy
-        # See https://code.djangoproject.com/ticket/26390
-        if qs.count() > 0:
-            return random.choice(qs)
-
-        return None
-
     def score_progress(self, trips_year):
         """
         Return a tuple containing the number of scores given so far for each
@@ -270,18 +177,6 @@ class VolunteerManager(models.Manager):
             'total': total,
             'percentage': round(complete / total * 100) if total else 100
         }
-
-
-def TrueIf(**kwargs):
-    """
-    Return a case expression that evaluates to True if the query conditions
-    are met, else False
-    """
-    return Case(
-        When(then=True, **kwargs),
-        default=False,
-        output_field=models.BooleanField()
-    )
 
 
 class QuestionManager(models.Manager):

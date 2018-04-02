@@ -1,13 +1,20 @@
+import random
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import (
+    Q,
+    Case,
+    Min,
+    When,
+)
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from .managers import QuestionManager, VolunteerManager, GraderManager
 
-from fyt.core.models import DatabaseModel
+from fyt.core.models import DatabaseModel, TripsYear
 from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import DartmouthUser
@@ -20,6 +27,8 @@ from fyt.utils.choices import (
 )
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 from fyt.utils.models import MedicalMixin
+from fyt.utils.query import pks
+
 
 
 """
@@ -1056,6 +1065,98 @@ class Grader(DartmouthUser):
             grader=self,
             application=application,
             trips_year=application.trips_year)
+
+    def next_to_score(self):
+        """
+        Return the next application for ``grader`` to score.
+
+        This is an application which meets the following conditions:
+
+        * is for the current trips_year
+        * is complete
+        * is PENDING
+        * has not already been graded by this user
+        * has not been skipped by this user
+        * has been graded fewer than NUM_SCORES times
+
+        Furthermore:
+        * If the grader is a croo captain, prefer croo grades until each app
+          has at least one score from a croo head.
+        * Applications with fewer graders are prioritized.
+
+        TODO:
+        * If the grader is not a croo captain, don't add the last score to an
+          app which hasn't been scored by a croo captain; that is, every croo
+          application must be graded at least once by a croo captain. This is
+          currently not working because of what seems like a bug in the Django
+          ORM.
+        """
+        trips_year = TripsYear.objects.current()
+
+        croo_app_pks = pks(Volunteer.objects.croo_applications(trips_year))
+
+        NUM_SCORES = Volunteer.NUM_SCORES
+
+        qs = Volunteer.objects.leader_or_croo_applications(
+            trips_year=trips_year
+        ).filter(
+            status=Volunteer.PENDING
+        ).exclude(
+            scores__grader=self
+        ).exclude(
+            skips__grader=self
+        ).annotate(
+            models.Count('scores')
+        ).filter(
+            scores__count__lt=NUM_SCORES
+        )
+
+        # Croo head: try and pick a croo app which needs a croo head score
+        if self.is_croo_head:
+            needs_croo_head_score = qs.filter(
+                Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True)
+            )
+
+            if needs_croo_head_score.first():
+                qs = needs_croo_head_score
+
+        # TODO: make this work
+        # Otherwise, reserve one score on each app for a croo head
+        # else:
+        #     qs = qs.filter(scores__count__lt=NUM_SCORES)
+        #     qs = qs.filter(
+        #         scores__count__lt=Case(
+        #             When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
+        #             When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
+        #             default=NUM_SCORES,
+        #             output_field=models.IntegerField()
+        #         )
+        #     )
+
+        # Pick an app with fewer scores
+        # TODO: use a subquery
+        qs = qs.filter(
+            scores__count=qs.aggregate(fewest=Min('scores__count'))['fewest']
+        )
+
+        # Manually choose random element because .order_by('?') is buggy
+        # See https://code.djangoproject.com/ticket/26390
+        if qs.count() > 0:
+            return random.choice(qs)
+
+        return None
+
+
+def TrueIf(**kwargs):
+    """
+    Return a case expression that evaluates to True if the query conditions
+    are met, else False
+    """
+    return Case(
+        When(then=True, **kwargs),
+        default=False,
+        output_field=models.BooleanField()
+    )
 
 
 # Deprecated models (contain historical data only)
