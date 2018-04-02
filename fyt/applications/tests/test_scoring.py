@@ -125,6 +125,16 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         croo_head = _get_grader(self.make_croo_head())
         self.assertTrue(croo_head.is_croo_head)
 
+    def test_claim_score(self):
+        app = self.make_application()
+        self.grader.claim_score(app)
+        claim = ScoreClaim.objects.get()
+        self.assertEqual(claim.grader, self.grader)
+        self.assertEqual(claim.application, app)
+        self.assertEqual(claim.trips_year, self.trips_year)
+        self.assertIsNotNone(claim.claimed_at)
+
+
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
 

@@ -1010,6 +1010,31 @@ class Skip(DatabaseModel):
     created_at = models.DateTimeField(default=timezone.now, editable=False)
 
 
+class ScoreClaim(DatabaseModel):
+    """
+    Marks an application as claimed to score by a grader.
+
+    Once a claim exists on an application, the grader has X amount of time
+    to finish scoring it before another grader will be given a chance.
+    """
+    class Meta:
+        unique_together = ['grader', 'application']
+
+    grader = models.ForeignKey(
+        'Grader',
+        editable=False,
+        on_delete=models.CASCADE
+    )
+    application = models.ForeignKey(
+        Volunteer,
+        editable=False,
+        related_name='score_claims',
+        on_delete=models.CASCADE
+    )
+
+    claimed_at = models.DateTimeField(default=timezone.now, editable=False)
+
+
 class Grader(DartmouthUser):
     """
     Proxy model for the basic user class.
@@ -1025,6 +1050,12 @@ class Grader(DartmouthUser):
     @cached_property
     def is_croo_head(self):
         return self.has_perm('permissions.can_score_as_croo_head')
+
+    def claim_score(self, application):
+        return ScoreClaim.objects.create(
+            grader=self,
+            application=application,
+            trips_year=application.trips_year)
 
 
 # Deprecated models (contain historical data only)
