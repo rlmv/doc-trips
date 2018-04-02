@@ -173,12 +173,22 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(claim.trips_year, self.trips_year)
         self.assertIsNotNone(claim.claimed_at)
 
+    def test_current_claim(self):
+        app = self.make_application()
+        grader = _get_grader(self.grader)
+        claim = grader.claim_score(app)
+        self.assertEqual(grader.current_claim(), claim)
+
+        # Expired
+        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
+        claim.save()
+
+        self.assertIsNone(grader.current_claim())
+
     def test_only_score_apps_for_this_year(self):
         last_year = self.init_old_trips_year()
-
         app1 = self.make_application(trips_year=self.trips_year)
         app2 = self.make_application(trips_year=last_year)
-
         self.assertEqual(app1, _get_grader(self.user).next_to_score())
 
     def test_only_score_complete_apps(self):

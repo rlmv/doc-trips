@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -1027,12 +1028,17 @@ class ScoreClaim(DatabaseModel):
     Once a claim exists on an application, the grader has X amount of time
     to finish scoring it before another grader will be given a chance.
     """
+    #: The period of time to claim this score
+    HOLD_DURATION = timedelta(hours=2)
+
     class Meta:
         unique_together = ['grader', 'application']
+        ordering = ['claimed_at']
 
     grader = models.ForeignKey(
         'Grader',
         editable=False,
+        related_name='score_claims',
         on_delete=models.CASCADE
     )
     application = models.ForeignKey(
@@ -1066,6 +1072,16 @@ class Grader(DartmouthUser):
             grader=self,
             application=application,
             trips_year=application.trips_year)
+
+    def current_claim(self):
+        """
+        Raise an error if there is more than one claim.
+        """
+        try:
+            return self.score_claims.filter(claimed_at__gt=(
+                timezone.now() - ScoreClaim.HOLD_DURATION)).get()
+        except ScoreClaim.DoesNotExist:
+            return None
 
     def scores_for_year(self, trips_year):
         return self.scores.filter(trips_year=trips_year)
