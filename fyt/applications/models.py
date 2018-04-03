@@ -1032,7 +1032,6 @@ class ScoreClaim(DatabaseModel):
     HOLD_DURATION = timedelta(hours=2)
 
     class Meta:
-        unique_together = ['grader', 'application']
         ordering = ['claimed_at']
 
     grader = models.ForeignKey(
