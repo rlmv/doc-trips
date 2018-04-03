@@ -236,6 +236,23 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIsNone(self.director.next_to_score())
         self.assertIsNone(self.croo_head.next_to_score())
 
+    def test_active_claims_contribute_to_score_count(self):
+        app = self.make_application()
+        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+        claim = self.grader.claim_score(app)
+
+        self.assertIsNone(self.user.next_to_score())
+        self.assertIsNone(self.director.next_to_score())
+        self.assertIsNone(self.croo_head.next_to_score())
+
+        # Expired
+        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
+        claim.save()
+
+        self.assertEqual(self.user.next_to_score(), app)
+        self.assertEqual(self.director.next_to_score(), app)
+        self.assertEqual(self.croo_head.next_to_score(), app)
+
     def test_skip_application(self):
         app = self.make_application()
         app.skip(self.user)
@@ -267,7 +284,9 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_prefer_apps_with_fewer_scores(self):
         app1 = self.make_application()
         app2 = self.make_application()
+        app3 = self.make_application()
         self.make_scores(app2, 1)
+        self.grader.claim_score(app3)
         self.assertEqual(app1, self.director.next_to_score())
 
     def test_wtf_query(self):

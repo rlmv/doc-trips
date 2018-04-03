@@ -10,6 +10,11 @@ from django.db.models import (
     Case,
     Min,
     When,
+    Count,
+    OuterRef,
+    Subquery,
+    F,
+    Count
 )
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -1148,6 +1153,12 @@ class Grader(DartmouthUser):
 
         NUM_SCORES = Volunteer.NUM_SCORES
 
+        # Subquery for all active claims
+        active_claims = ScoreClaim.objects.filter(
+            application=OuterRef('pk'),
+            claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
+        ).values('pk')
+
         qs = Volunteer.objects.leader_or_croo_applications(
             trips_year=trips_year
         ).filter(
@@ -1157,9 +1168,15 @@ class Grader(DartmouthUser):
         ).exclude(
             skips__grader=self
         ).annotate(
-            models.Count('scores')
+            Count('scores')
+        ).annotate(
+            active_claims=Subquery(active_claims)
+        ).annotate(
+            Count('active_claims')
+        ).annotate(
+            scores_and_claims=F('scores__count') + F('active_claims__count')
         ).filter(
-            scores__count__lt=NUM_SCORES
+            scores_and_claims__lt=NUM_SCORES
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
@@ -1184,10 +1201,10 @@ class Grader(DartmouthUser):
         #         )
         #     )
 
-        # Pick an app with fewer scores
+        # Pick an app with least scores and claims
         # TODO: use a subquery
         qs = qs.filter(
-            scores__count=qs.aggregate(fewest=Min('scores__count'))['fewest']
+            scores_and_claims=qs.aggregate(fewest=Min('scores_and_claims'))['fewest']
         )
 
         # Manually choose random element because .order_by('?') is buggy
