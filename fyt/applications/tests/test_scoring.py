@@ -200,6 +200,9 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.grader.claim_score(app1)
         self.assertEqual(app1, self.grader.claim_next_to_score())
 
+    def test_claim_next_to_score_with_no_remaining_applications(self):
+        self.assertIsNone(self.grader.claim_next_to_score())
+
     # ------ next_to_score logic -------
 
     def test_only_score_apps_for_this_year(self):

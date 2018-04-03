@@ -1111,6 +1111,10 @@ class Grader(DartmouthUser):
             return self.current_claim().application
 
         application = self.next_to_score()
+
+        if application is None:
+            return None
+
         self.claim_score(application)
         return application
 
