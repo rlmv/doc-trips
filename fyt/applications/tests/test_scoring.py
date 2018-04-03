@@ -116,57 +116,56 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.init_old_trips_year()
-        self.make_user()
-        self.make_grader()
-        self.make_director()
-        self.make_directorate()
-        self.make_croo_head()
+        # Convert the normal users to Graders
+        self.user = _get_grader(self.make_user())
+        self.grader = _get_grader(self.make_grader())
+        self.director = _get_grader(self.make_director())
+        self.directorate = _get_grader(self.make_directorate())
+        self.croo_head = _get_grader(self.make_croo_head())
 
     def make_scores(self, app, n):
         for i in range(n):
-            mommy.make(Score, croo_head=False, trips_year=self.trips_year, application=app)
+            mommy.make(Score, croo_head=False, trips_year=self.trips_year,
+                       application=app)
 
     def test_convert_grader_to_user(self):
-        grader = Grader.objects.from_user(self.user)
-        self.assertEqual(self.user.pk, grader.pk)
+        _user = mommy.make(DartmouthUser)
+        _grader = Grader.objects.from_user(_user)
+        self.assertEqual(_user.pk, _grader.pk)
 
     def test_is_croo_head(self):
-        grader = _get_grader(self.grader)
-        self.assertFalse(grader.is_croo_head)
-
-        croo_head = _get_grader(self.croo_head)
-        self.assertTrue(croo_head.is_croo_head)
+        self.assertFalse(self.grader.is_croo_head)
+        self.assertTrue(self.croo_head.is_croo_head)
 
     def test_average_score_methods(self):
-        grader = _get_grader(self.grader)
         mommy.make(
             Score,
             trips_year=self.trips_year,
-            grader=grader,
+            grader=self.grader,
             leader_score=1,
             croo_score=2,
         )
         mommy.make(
             Score,
             trips_year=self.trips_year,
-            grader=grader,
+            grader=self.grader,
             leader_score=3,
             croo_score=5,
         )
         mommy.make(
             Score,
             trips_year=self.old_trips_year,
-            grader=grader,
+            grader=self.grader,
             leader_score=3,
             croo_score=4
         )
-        self.assertEqual(grader.avg_leader_score(self.trips_year), 2)
-        self.assertEqual(grader.avg_croo_score(self.trips_year), 3.5)
-        self.assertEqual(grader.score_count(self.trips_year), 2)
+        self.assertEqual(self.grader.avg_leader_score(self.trips_year), 2)
+        self.assertEqual(self.grader.avg_croo_score(self.trips_year), 3.5)
+        self.assertEqual(self.grader.score_count(self.trips_year), 2)
 
     def test_claim_score(self):
         app = self.make_application()
-        _get_grader(self.grader).claim_score(app)
+        self.grader.claim_score(app)
         claim = ScoreClaim.objects.get()
         self.assertEqual(claim.grader, self.grader)
         self.assertEqual(claim.application, app)
@@ -175,35 +174,31 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_current_claim(self):
         app = self.make_application()
-        grader = _get_grader(self.grader)
-        claim = grader.claim_score(app)
-        self.assertEqual(grader.current_claim(), claim)
+        claim = self.grader.claim_score(app)
+        self.assertEqual(self.grader.current_claim(), claim)
 
         # Expired
         claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
         claim.save()
 
-        self.assertIsNone(grader.current_claim())
+        self.assertIsNone(self.grader.current_claim())
 
     def test_current_claim_ignores_already_scored(self):
         app = self.make_application()
-        grader = _get_grader(self.grader)
-        claim = grader.claim_score(app)
-        app.add_score(grader)
-        self.assertIsNone(grader.current_claim())
+        claim = self.grader.claim_score(app)
+        app.add_score(self.grader)
+        self.assertIsNone(self.grader.current_claim())
 
     def test_claim_next_to_score_marks_a_claim(self):
         app = self.make_application()
-        grader = _get_grader(self.grader)
-        self.assertEqual(grader.claim_next_to_score(), app)
-        self.assertEqual(grader.current_claim().application, app)
+        self.assertEqual(self.grader.claim_next_to_score(), app)
+        self.assertEqual(self.grader.current_claim().application, app)
 
     def test_claim_next_to_score_returns_previously_claimed_application(self):
         app1 = self.make_application(trips_year=self.trips_year)
         app2 = self.make_application(trips_year=self.trips_year)
-        grader = _get_grader(self.user)
-        grader.claim_score(app1)
-        self.assertEqual(app1, grader.claim_next_to_score())
+        self.grader.claim_score(app1)
+        self.assertEqual(app1, self.grader.claim_next_to_score())
 
     # ------ next_to_score logic -------
 
@@ -211,16 +206,16 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         last_year = self.init_old_trips_year()
         app1 = self.make_application(trips_year=self.trips_year)
         app2 = self.make_application(trips_year=last_year)
-        self.assertEqual(app1, _get_grader(self.user).next_to_score())
+        self.assertEqual(app1, self.user.next_to_score())
 
     def test_only_score_complete_apps(self):
         self.make_application(leader_willing=False, croo_willing=False)
-        self.assertIsNone(_get_grader(self.user).next_to_score())
+        self.assertIsNone(self.user.next_to_score())
 
     def test_user_only_scores_application_once(self):
         app = self.make_application()
         app.add_score(self.user, 4, 3)
-        self.assertIsNone(_get_grader(self.user).next_to_score())
+        self.assertIsNone(self.user.next_to_score())
 
     def test_only_score_pending_applications(self):
         app = self.make_application()  # PENDING
@@ -228,49 +223,49 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
             if status != Volunteer.PENDING:
                 self.make_application(status=status)
 
-        self.assertEqual(app, _get_grader(self.user).next_to_score())
+        self.assertEqual(app, self.user.next_to_score())
 
     def test_only_score_3_times(self):
         app = self.make_application()
         self.make_scores(app, Volunteer.NUM_SCORES)
 
-        self.assertIsNone(_get_grader(self.user).next_to_score())
-        self.assertIsNone(_get_grader(self.director).next_to_score())
-        self.assertIsNone(_get_grader(self.croo_head).next_to_score())
+        self.assertIsNone(self.user.next_to_score())
+        self.assertIsNone(self.director.next_to_score())
+        self.assertIsNone(self.croo_head.next_to_score())
 
     def test_skip_application(self):
         app = self.make_application()
         app.skip(self.user)
-        self.assertIsNone(_get_grader(self.user).next_to_score())
+        self.assertIsNone(self.user.next_to_score())
 
     @unittest.expectedFailure
     def test_reserve_one_score_for_croo_heads(self):
         app = self.make_application()
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
 
-        self.assertIsNone(_get_grader(self.user).next_to_score())
-        self.assertEqual(app, _get_grader(self.croo_head).next_to_score())
+        self.assertIsNone(self.user.next_to_score())
+        self.assertEqual(app, self.croo_head.next_to_score())
 
     def test_dont_reserve_croo_head_scores_for_leader_applications(self):
         app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
 
-        self.assertEqual(app, _get_grader(self.user).next_to_score())
-        self.assertEqual(app, _get_grader(self.director).next_to_score())
-        self.assertEqual(app, _get_grader(self.directorate).next_to_score())
-        self.assertEqual(app, _get_grader(self.croo_head).next_to_score())
+        self.assertEqual(app, self.user.next_to_score())
+        self.assertEqual(app, self.director.next_to_score())
+        self.assertEqual(app, self.directorate.next_to_score())
+        self.assertEqual(app, self.croo_head.next_to_score())
 
     def test_croo_heads_prefer_croo_apps(self):
         app1 = self.make_application(croo_willing=False)  # Leader only
         app2 = self.make_application()
 
-        self.assertEqual(app2, _get_grader(self.croo_head).next_to_score())
+        self.assertEqual(app2, self.croo_head.next_to_score())
 
     def test_prefer_apps_with_fewer_scores(self):
         app1 = self.make_application()
         app2 = self.make_application()
         self.make_scores(app2, 1)
-        self.assertEqual(app1, _get_grader(self.director).next_to_score())
+        self.assertEqual(app1, self.director.next_to_score())
 
     def test_wtf_query(self):
         # Scored croo app
@@ -283,7 +278,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         # scores and no more croo apps required croo head scores.
         app2 = self.make_application(croo_willing=False)
 
-        self.assertEqual(app2, _get_grader(self.croo_head).next_to_score())
+        self.assertEqual(app2, self.croo_head.next_to_score())
 
     def test_score_progress(self):
         # 1/3 scores
