@@ -14,7 +14,8 @@ from django.db.models import (
     OuterRef,
     Subquery,
     F,
-    Count
+    Count,
+    Value as V
 )
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -1154,6 +1155,7 @@ class Grader(DartmouthUser):
         NUM_SCORES = Volunteer.NUM_SCORES
 
         # Subquery for all active claims
+        # TODO: use https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
         active_claims = ScoreClaim.objects.filter(
             application=OuterRef('pk'),
             claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
@@ -1175,31 +1177,35 @@ class Grader(DartmouthUser):
             Count('active_claims')
         ).annotate(
             scores_and_claims=F('scores__count') + F('active_claims__count')
+        ).annotate(
+            # TODO: this doesn't annotate correctly
+            needs_croo_score=TrueIf(
+                pk__in=croo_app_pks,
+                scores__croo_head__ne=True
+            )
         ).filter(
             scores_and_claims__lt=NUM_SCORES
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
         if self.is_croo_head:
+
             needs_croo_head_score = qs.filter(
                 Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True)
             )
-
+#            assert needs_croo_head_score == qs.filter(needs_croo_score=True)
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
 
-        # TODO: make this work
         # Otherwise, reserve one score on each app for a croo head
-        # else:
-        #     qs = qs.filter(scores__count__lt=NUM_SCORES)
-        #     qs = qs.filter(
-        #         scores__count__lt=Case(
-        #             When(~Q(pk__in=croo_app_pks), then=NUM_SCORES),
-        #             When(~Q(scores__croo_head=True), then=(NUM_SCORES - 1)),
-        #             default=NUM_SCORES,
-        #             output_field=models.IntegerField()
-        #         )
-        #     )
+        else:
+            qs = qs.filter(
+                scores_and_claims__lt=Case(
+                    When(needs_croo_score=True, then=V(NUM_SCORES-1)),
+                    default=V(NUM_SCORES),
+                    output_field=models.IntegerField()
+                )
+            )
 
         # Pick an app with least scores and claims
         # TODO: use a subquery

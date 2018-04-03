@@ -237,7 +237,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIsNone(self.croo_head.next_to_score())
 
     def test_active_claims_contribute_to_score_count(self):
-        app = self.make_application()
+        app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
         claim = self.grader.claim_score(app)
 
@@ -258,10 +258,10 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app.skip(self.user)
         self.assertIsNone(self.user.next_to_score())
 
-    @unittest.expectedFailure
     def test_reserve_one_score_for_croo_heads(self):
         app = self.make_application()
-        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+        self.make_scores(app, Volunteer.NUM_SCORES - 2)
+        self.grader.claim_score(app)
 
         self.assertIsNone(self.user.next_to_score())
         self.assertEqual(app, self.croo_head.next_to_score())
@@ -293,8 +293,11 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         # Scored croo app
         app1 = self.make_application()
         self.make_scores(app1, 1)
-        mommy.make(Score, application=app1, leader_score=3, croo_score=4,
-                   croo_head=True)
+
+        # Set croo_head - otherwise overriden in Score.save
+        score = mommy.make(Score, application=app1)
+        score.croo_head = True
+        score.save()
 
         # Unscored leader app - should be prefered because it has fewer
         # scores and no more croo apps required croo head scores.
