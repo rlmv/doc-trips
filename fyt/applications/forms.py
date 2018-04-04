@@ -449,13 +449,23 @@ class ApplicationAdminForm(forms.ModelForm):
 
     class Meta:
         model = Volunteer
-        fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
+        fields = [
+            'status',
+            'assigned_trip',
+            'assigned_croo',
+            'safety_lead',
+            'deadline_extension']
+        widgets = {
+            'deadline_extension': DateTimePicker(options={
+                'format': 'MM/DD/YYYY HH:mm'})
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.layout = Layout(
             'status',
+            'deadline_extension',
             HTML("{% include 'applications/_trip_preferences.html' %}"),
             'assigned_trip',
             HTML("{% include 'applications/_croo_members.html' %}"),

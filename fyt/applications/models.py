@@ -258,6 +258,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
         related_name='applications',
         on_delete=models.PROTECT
     )
+    deadline_extension = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Extension to the application deadline'
+    )
     status = models.CharField(
         "Application status", max_length=15, choices=STATUS_CHOICES, default=PENDING
     )

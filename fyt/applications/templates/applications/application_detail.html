@@ -23,6 +23,12 @@
     </tr>
 
     <tr>
+        <td class="col-sm-3 text-right"><strong>Extended deadline</strong></td>
+        <td> {{ application.deadline_extension|default:"*" }} </td>
+        <td> <a href="{% url 'core:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </td>
+    </tr>
+
+    <tr>
         <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
         {% if application.assigned_trip %}
         <td>
