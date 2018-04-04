@@ -69,8 +69,13 @@ dump_remote:
 	heroku pg:backups:capture
 	heroku pg:backups:download --output $(POSTGRES_DUMP)
 
-load_dump:
-	pg_restore -v --clean --no-acl --no-owner -n public -1 -h localhost \
-		-U $(POSTGRES_USER) -d $(POSTGRES) $(POSTGRES_DUMP)
+load_dump_clean:
+	pg_restore -v --clean --if-exists --no-acl --no-owner -n public -1 \
+		-h localhost -U $(POSTGRES_USER) -d $(POSTGRES) $(POSTGRES_DUMP)
 
-postgres_from_remote: dump_remote load_dump
+load_dump:
+	pg_restore -v --no-acl --no-owner -n public -1 \
+		-h localhost -U $(POSTGRES_USER) -d $(POSTGRES) $(POSTGRES_DUMP)
+
+
+postgres_from_remote: dump_remote load_dump_clean
