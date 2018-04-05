@@ -36,6 +36,8 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
                 trips_year=trips_year,
                 applicant=self.request.user)
 
+            context['within_deadline_extension'] = (
+                application.within_deadline_extension())
             status_description = content.get_status_description(
                 application.status)
             context['show_trip_assignment'] = (
