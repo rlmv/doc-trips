@@ -206,8 +206,16 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_claim_next_to_score_returns_previously_claimed_application(self):
         app1 = self.make_application(trips_year=self.trips_year)
         app2 = self.make_application(trips_year=self.trips_year)
-        self.grader.claim_score(app1)
+        claim = self.grader.claim_score(app1)
+        claim.claimed_at = orig_claim_time = (
+            claim.claimed_at - ScoreClaim.HOLD_DURATION / 2)
+        claim.save()
+
         self.assertEqual(app1, self.grader.claim_next_to_score())
+
+        # And updates the claimed_at time
+        claim.refresh_from_db()
+        self.assertNotEqual(claim.claimed_at, orig_claim_time)
 
     def test_claim_next_to_score_with_no_remaining_applications(self):
         self.assertIsNone(self.grader.claim_next_to_score())

@@ -1126,7 +1126,14 @@ class Grader(DartmouthUser):
         Find the next available application to score, and claim it.
         """
         if self.current_claim() is not None:
-            return self.current_claim().application
+            claim = self.current_claim()
+            # Update the claim time - this is for the case in which a grader
+            # leaves the page, waits a while, then returns to grading,
+            # receives the same application, but only has a few minutes
+            # left to finish grading.
+            claim.claimed_at = timezone.now()
+            claim.save()
+            return claim.application
 
         application = self.next_to_score()
 
