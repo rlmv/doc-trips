@@ -1229,6 +1229,16 @@ class Grader(DartmouthUser):
         # See https://code.djangoproject.com/ticket/26390
         return random.choice(qs)
 
+    # TODO: pass in claim directly? Validate current claim?
+    def delete_claim(self, application):
+        """
+        Delete a claim - after scoring or skipping.
+        """
+        ScoreClaim.objects.filter(
+            application=application,
+            grader=self
+        ).delete()
+
 
 def TrueIf(**kwargs):
     """

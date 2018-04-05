@@ -67,13 +67,12 @@ class RedirectToNextScorableApplication(GraderPermissionRequired,
         return Grader.objects.from_user(self.request.user)
 
     def get_redirect_url(self, *args, **kwargs):
-        application = self.grader.next_to_score()
+        application = self.grader.claim_next_to_score()
 
         if not application:
             return reverse('applications:score:no_applications_left')
 
-        kwargs = {'pk': application.pk}
-        return reverse('applications:score:add', kwargs=kwargs)
+        return reverse('applications:score:add', kwargs={'pk': application.pk})
 
 
 class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
@@ -138,9 +137,12 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         if SKIP in request.POST:
             self.application.skip(self.grader)
             self.messages.success('Skipped {}'.format(self.application_name))
+            self.grader.delete_claim(self.application)
             return HttpResponseRedirect(self.get_success_url())
 
-        return super().post(request, *args, **kwargs)
+        resp = super().post(request, *args, **kwargs)
+        self.grader.delete_claim(self.application)
+        return resp
 
     def get_form(self, **kwargs):
         return ScoreForm(application=self.application, **kwargs)
