@@ -2,6 +2,7 @@ import unittest
 
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.utils import timezone
 from model_mommy import mommy
 
 from ..models import Grader, Score, ScoreClaim, Volunteer, Question
@@ -304,7 +305,6 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.grader.claim_score(app3)
         self.assertEqual(app1, self.director.next_to_score())
 
-
     def test_wtf_query(self):
         # Scored croo app
         app1 = self.make_application()
@@ -316,7 +316,8 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         # Claimed croo app
         app2 = self.make_application()
         score_claim = mommy.make(ScoreClaim, application=app2)
-        score_claim.croo_head=True
+        score_claim.croo_head = True
+        score_claim.claimed_at = timezone.now()
         score_claim.save()
 
         # Unscored leader app - should be prefered because it has fewer
@@ -324,6 +325,20 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app3 = self.make_application(croo_willing=False)
 
         self.assertEqual(app3, self.croo_head.next_to_score())
+
+    def test_expired_croo_head_claim(self):
+        app = self.make_application()
+        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+
+        # Expired
+        claim = mommy.make(ScoreClaim, application=app)
+        claim.croo_head = True
+        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
+        claim.save()
+
+        # The remaining score is reserved for a croo head
+        self.assertIsNone(self.user.next_to_score())
+        self.assertEqual(app, self.croo_head.next_to_score())
 
     def test_score_progress(self):
         # 1/3 scores

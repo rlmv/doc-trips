@@ -1169,9 +1169,10 @@ class Grader(DartmouthUser):
 
         # Subquery for all active claims
         # TODO: use https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
+        active_claims_start = timezone.now() - ScoreClaim.HOLD_DURATION
         active_claims = ScoreClaim.objects.filter(
             application=OuterRef('pk'),
-            claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
+            claimed_at__gt=active_claims_start
         ).values('pk')
 
         qs = Volunteer.objects.leader_or_croo_applications(
@@ -1190,26 +1191,24 @@ class Grader(DartmouthUser):
             Count('active_claims')
         ).annotate(
             scores_and_claims=F('scores__count') + F('active_claims__count')
-        ).annotate(
-            croo_head_scores=Count('pk', filter=Q(scores__croo_head=True)),
-            croo_head_claims=Count('pk', filter=Q(score_claims__croo_head=True)),
-            needs_croo_score=Case(
-                When(pk__in=croo_app_pks,
-                     croo_head_scores=0,
-                     croo_head_claims=0,
-                     then=True),
-                default=False,
-                output_field=models.BooleanField()
-            )
         ).filter(
             scores_and_claims__lt=NUM_SCORES
+        ).annotate(
+            croo_head_scores=Count('pk', filter=Q(scores__croo_head=True)),
+            croo_head_claims=Count('pk', filter=Q(
+                score_claims__croo_head=True,
+                score_claims__claimed_at__gt=active_claims_start)),
+            needs_croo_score=TrueIf(
+                pk__in=croo_app_pks,
+                croo_head_scores=0,
+                croo_head_claims=0
+            )
         )
 
         # Croo head: try and pick a croo app which needs a croo head score
         if self.is_croo_head:
             needs_croo_head_score = qs.filter(needs_croo_score=True)
-
-            if needs_croo_head_score.first():
+            if needs_croo_head_score.exists():
                 qs = needs_croo_head_score
 
         # Otherwise, reserve one score on each app for a croo head
