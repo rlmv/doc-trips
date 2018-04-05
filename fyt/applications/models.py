@@ -1191,10 +1191,15 @@ class Grader(DartmouthUser):
         ).annotate(
             scores_and_claims=F('scores__count') + F('active_claims__count')
         ).annotate(
-            # TODO: this doesn't annotate correctly
-            needs_croo_score=TrueIf(
-                pk__in=croo_app_pks,
-                scores__croo_head__ne=True
+            croo_head_scores=Count('pk', filter=Q(scores__croo_head=True)),
+            croo_head_claims=Count('pk', filter=Q(score_claims__croo_head=True)),
+            needs_croo_score=Case(
+                When(pk__in=croo_app_pks,
+                     croo_head_scores=0,
+                     croo_head_claims=0,
+                     then=True),
+                default=False,
+                output_field=models.BooleanField()
             )
         ).filter(
             scores_and_claims__lt=NUM_SCORES
@@ -1202,11 +1207,8 @@ class Grader(DartmouthUser):
 
         # Croo head: try and pick a croo app which needs a croo head score
         if self.is_croo_head:
+            needs_croo_head_score = qs.filter(needs_croo_score=True)
 
-            needs_croo_head_score = qs.filter(
-                Q(pk__in=croo_app_pks) & ~Q(scores__croo_head=True)
-            )
-#            assert needs_croo_head_score == qs.filter(needs_croo_score=True)
             if needs_croo_head_score.first():
                 qs = needs_croo_head_score
 

@@ -274,6 +274,13 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIsNone(self.user.next_to_score())
         self.assertEqual(app, self.croo_head.next_to_score())
 
+    def test_croo_head_claim_is_as_good_as_a_score(self):
+        app = self.make_application()
+        self.make_scores(app, Volunteer.NUM_SCORES - 2)
+        self.croo_head.claim_score(app)
+
+        self.assertEqual(app, self.user.next_to_score())
+
     def test_dont_reserve_croo_head_scores_for_leader_applications(self):
         app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
@@ -297,21 +304,26 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.grader.claim_score(app3)
         self.assertEqual(app1, self.director.next_to_score())
 
+
     def test_wtf_query(self):
         # Scored croo app
         app1 = self.make_application()
         self.make_scores(app1, 1)
-
-        # Set croo_head - otherwise overriden in Score.save
         score = mommy.make(Score, application=app1)
         score.croo_head = True
         score.save()
 
-        # Unscored leader app - should be prefered because it has fewer
-        # scores and no more croo apps required croo head scores.
-        app2 = self.make_application(croo_willing=False)
+        # Claimed croo app
+        app2 = self.make_application()
+        score_claim = mommy.make(ScoreClaim, application=app2)
+        score_claim.croo_head=True
+        score_claim.save()
 
-        self.assertEqual(app2, self.croo_head.next_to_score())
+        # Unscored leader app - should be prefered because it has fewer
+        # scores and no more croo apps require croo head scores.
+        app3 = self.make_application(croo_willing=False)
+
+        self.assertEqual(app3, self.croo_head.next_to_score())
 
     def test_score_progress(self):
         # 1/3 scores
