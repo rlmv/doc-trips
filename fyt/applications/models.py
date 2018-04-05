@@ -1052,8 +1052,21 @@ class ScoreClaim(DatabaseModel):
         related_name='score_claims',
         on_delete=models.CASCADE
     )
-
+    croo_head = models.BooleanField(
+       'is the grader a croo head?',
+        default=False,
+        editable=False
+    )
     claimed_at = models.DateTimeField(default=timezone.now, editable=False)
+
+    def save(self, **kwargs):
+        """
+        Set croo_head.
+        """
+        if self.pk is None:
+            self.croo_head = self.grader.is_croo_head
+
+        return super().save(**kwargs)
 
 
 class Grader(DartmouthUser):
