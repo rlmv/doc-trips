@@ -1152,14 +1152,9 @@ class Grader(DartmouthUser):
         Furthermore:
         * If the grader is a croo captain, prefer croo grades until each app
           has at least one score from a croo head.
-        * Applications with fewer graders are prioritized.
-
-        TODO:
-        * If the grader is not a croo captain, don't add the last score to an
-          app which hasn't been scored by a croo captain; that is, every croo
-          application must be graded at least once by a croo captain. This is
-          currently not working because of what seems like a bug in the Django
-          ORM.
+        * Applications with fewer scores are prioritized.
+        * Applications claims are included when counting scores for the
+          application.
         """
         trips_year = TripsYear.objects.current()
 
