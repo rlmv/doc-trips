@@ -1224,15 +1224,15 @@ class Grader(DartmouthUser):
         # Pick an app with least scores and claims
         # TODO: use a subquery
         qs = qs.filter(
-            scores_and_claims=qs.aggregate(fewest=Min('scores_and_claims'))['fewest']
-        )
+            scores_and_claims=qs.aggregate(
+                fewest=Min('scores_and_claims'))['fewest'])
+
+        if not qs.exists():
+            return None
 
         # Manually choose random element because .order_by('?') is buggy
         # See https://code.djangoproject.com/ticket/26390
-        if qs.count() > 0:
-            return random.choice(qs)
-
-        return None
+        return random.choice(qs)
 
 
 def TrueIf(**kwargs):
