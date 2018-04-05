@@ -944,7 +944,7 @@ class Score(DatabaseModel):
     croo_score = models.PositiveSmallIntegerField(
         choices=SCORE_CHOICES, blank=True, null=True)
 
-    comments = models.ManyToManyField(Answer, through='AnswerComment')
+    comments = models.ManyToManyField('ScoreQuestion', through='AnswerComment')
 
     general = models.TextField(
         "Given the notes you made above, please explain the holistic score "
@@ -983,6 +983,20 @@ class Score(DatabaseModel):
             score=self, answer=answer, comment=comment)
 
 
+class ScoreQuestion(DatabaseModel):
+    """
+    A question for graders to answer while scoring.
+    """
+    class Meta:
+        ordering = ['order']
+
+    question = models.TextField()
+    order = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.question
+
+
 class AnswerComment(models.Model):
     """
     A grader's comment on a specific answer.
@@ -990,12 +1004,12 @@ class AnswerComment(models.Model):
     This is a M2M through model between Score and Answer.
     """
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
-    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    question = models.ForeignKey(ScoreQuestion, on_delete=models.PROTECT)
     comment = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['answer']
-        unique_together = ['score', 'answer']
+        ordering = ['question']
+        unique_together = ['score', 'question']
 
     def __str__(self):
         return self.comment
