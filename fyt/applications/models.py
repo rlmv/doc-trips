@@ -259,7 +259,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         on_delete=models.PROTECT
     )
     deadline_extension = models.DateTimeField(
-        null=True, blank=True,
+        null=True, blank=True, default=None,
         help_text='Extension to the application deadline'
     )
     status = models.CharField(
@@ -558,6 +558,14 @@ class Volunteer(MedicalMixin, DatabaseModel):
             str(cert) for cert in self.first_aid_certifications.all()]
 
         return '\n'.join(filter(None, data))
+
+
+    def within_deadline_extension(self):
+        """
+        Return True if the extended deadline has not passed.
+        """
+        return (self.deadline_extension is not None and
+                self.deadline_extension > timezone.now())
 
     def __str__(self):
         return self.name

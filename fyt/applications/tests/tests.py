@@ -2,6 +2,7 @@ from datetime import date, timedelta
 
 from django.core.exceptions import ValidationError
 from django.urls import reverse
+from django.utils import timezone
 from model_mommy import mommy
 
 from ..forms import LeaderSupplementForm, QuestionForm
@@ -64,15 +65,15 @@ class ApplicationTestMixin():
     def open_application(self):
         """" open leader applications """
         t = self._timetable()
-        t.applications_open += timedelta(-1)
-        t.applications_close += timedelta(1)
+        t.applications_open = timezone.now() + timedelta(-1)
+        t.applications_close = timezone.now() + timedelta(1)
         t.save()
 
     def close_application(self):
         """ close leader applications """
         t = self._timetable()
-        t.applications_open += timedelta(-2)
-        t.applications_close += timedelta(-1)
+        t.applications_open = timezone.now() + timedelta(-2)
+        t.applications_close = timezone.now() + timedelta(-1)
         t.save()
 
     def open_scoring(self):
@@ -836,3 +837,28 @@ class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
                 getattr(content, "%s_description" % choice),
                 content.get_status_description(choice)
             )
+
+class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_deadline_extension(self):
+        application = self.make_application()
+
+        # OK: Regular application, within regular application period
+        self.open_application()
+        url = reverse('applications:apply')
+        resp = self.app.get(url, user=application.applicant).maybe_follow()
+        self.assertTemplateUsed(resp, 'applications/application.html')
+
+        # NO: deadline passed, not available
+        self.close_application()
+        resp = self.app.get(url, user=application.applicant).maybe_follow()
+        self.assertTemplateUsed(resp, 'applications/not_available.html')
+
+        # OK: application extension
+        application.deadline_extension = timezone.now() + timedelta(1)
+        application.save()
+        resp = self.app.get(url, user=application.applicant).maybe_follow()
+        self.assertTemplateUsed(resp, 'applications/application.html')

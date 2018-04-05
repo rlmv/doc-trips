@@ -11,6 +11,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
@@ -49,6 +50,17 @@ class IfApplicationAvailable():
     def dispatch(self, request, *args, **kwargs):
         if Timetable.objects.timetable().applications_available():
             return super().dispatch(request, *args, **kwargs)
+
+        try:
+            existing_application = Volunteer.objects.get(
+                applicant=self.request.user,
+                trips_year=self.get_trips_year())
+        except Volunteer.DoesNotExist:
+            pass
+        finally:
+            if existing_application.within_deadline_extension():
+                return super().dispatch(request, *args, **kwargs)
+
         return render(request, 'applications/not_available.html')
 
 
