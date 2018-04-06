@@ -563,13 +563,13 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
         return '\n'.join(filter(None, data))
 
-
     def within_deadline_extension(self):
         """
         Return True if the extended deadline has not passed.
         """
-        return (self.deadline_extension is not None and
-                self.deadline_extension > timezone.now())
+        return Volunteer.objects.filter(
+            pk=self.pk
+        ).within_deadline_extension().exists()
 
     def __str__(self):
         return self.name
@@ -1191,6 +1191,7 @@ class Grader(DartmouthUser):
         * is for the current trips_year
         * is complete
         * is PENDING
+        * does not have an active deadline extension
         * has not already been graded by this user
         * has not been skipped by this user
         * has been graded fewer than NUM_SCORES times
@@ -1236,6 +1237,8 @@ class Grader(DartmouthUser):
 
         qs = Volunteer.objects.leader_or_croo_applications(
             trips_year=trips_year
+        ).exclude(
+            pk__in=pks(Volunteer.objects.within_deadline_extension())
         ).filter(
             status=Volunteer.PENDING
         ).exclude(

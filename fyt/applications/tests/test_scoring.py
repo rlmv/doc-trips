@@ -1,4 +1,5 @@
 import unittest
+from datetime import timedelta
 
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -237,6 +238,16 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_only_score_complete_apps(self):
         self.make_application(leader_willing=False, croo_willing=False)
         self.assertIsNone(self.user.next_to_score())
+
+    def test_dont_score_apps_that_still_have_a_deadline_extension(self):
+        app1 = self.make_application(
+            deadline_extension=(timezone.now() + timedelta(1)))
+        self.assertIsNone(self.user.next_to_score())
+
+        # Past the extension
+        app2 = self.make_application(
+            deadline_extension=(timezone.now() + timedelta(-1)))
+        self.assertEqual(app2, self.user.next_to_score())
 
     def test_user_only_scores_application_once(self):
         app = self.make_application()

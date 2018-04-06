@@ -3,6 +3,7 @@ from django.db.models import Lookup, Avg, Value as V, Count
 
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 
 from fyt.utils.choices import AVAILABLE, PREFER
 from fyt.utils.query import pks
@@ -25,7 +26,7 @@ class NotEqual(Lookup):
         return '%s <> %s' % (lhs, rhs), params
 
 
-class VolunteerManager(models.Manager):
+class BaseVolunteerManager(models.Manager):
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -177,6 +178,20 @@ class VolunteerManager(models.Manager):
             'total': total,
             'percentage': round(complete / total * 100) if total else 100
         }
+
+
+class VolunteerQuerySet(models.QuerySet):
+
+    def within_deadline_extension(self):
+        """
+        All applications that have a deadline extension and are within it.
+        """
+        return self.filter(
+            deadline_extension__isnull=False,
+            deadline_extension__gt=timezone.now())
+
+
+VolunteerManager = BaseVolunteerManager.from_queryset(VolunteerQuerySet)
 
 
 class QuestionManager(models.Manager):
