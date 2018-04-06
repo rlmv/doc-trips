@@ -944,7 +944,7 @@ class Score(DatabaseModel):
     croo_score = models.PositiveSmallIntegerField(
         choices=SCORE_CHOICES, blank=True, null=True)
 
-    comments = models.ManyToManyField('ScoreQuestion', through='AnswerComment')
+    comments = models.ManyToManyField('ScoreQuestion', through='ScoreComment')
 
     general = models.TextField(
         "Given the notes you made above, please explain the holistic score "
@@ -979,7 +979,7 @@ class Score(DatabaseModel):
         """
         Add a comment to a specific answer.
         """
-        return AnswerComment.objects.create(
+        return ScoreComment.objects.create(
             score=self, question=question, comment=comment)
 
 
@@ -997,7 +997,7 @@ class ScoreQuestion(DatabaseModel):
         return self.question
 
 
-class AnswerComment(models.Model):
+class ScoreComment(models.Model):
     """
     A grader's comment on a specific answer.
 

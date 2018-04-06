@@ -429,8 +429,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(score.grader, self.grader)
         self.assertEqual(score.application, app)
         self.assertEqual(score.trips_year, self.trips_year)
-        self.assertEqual(len(score.answercomment_set.all()), 1)
-        self.assertEqual(score.answercomment_set.first().comment, 'A comment')
+        self.assertEqual(len(score.scorecomment_set.all()), 1)
+        self.assertEqual(score.scorecomment_set.first().comment, 'A comment')
 
         resp = self.app.get(url, user=self.grader).follow()
         self.assertTemplateUsed(resp, self.no_applications)

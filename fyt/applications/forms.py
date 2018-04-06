@@ -666,7 +666,7 @@ class CommentHandler(PreferenceHandler):
     """
     Handler for comments on dynamic answers
     """
-    through_qs_name = 'answercomment_set'
+    through_qs_name = 'scorecomment_set'
     through_creator = 'add_comment'
     data_field = 'comment'
     target_field = 'question'
