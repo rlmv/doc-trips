@@ -33,8 +33,10 @@ class Timetable(models.Model):
 
     scoring_available = models.BooleanField(
         default=False, help_text=(
-            "Turn this on to begin the scoring process. Graders will have "
-            "access to the scoring page when this is enabled."
+            "Turn this on to begin the scoring process. Only do so once all "
+            "applications have been submitted. Applications with extensions "
+            "will not be scored until the extension deadline has passed. "
+            "Graders will have access to the scoring page when this is enabled."
         )
     )
     hide_volunteer_page = models.BooleanField(
