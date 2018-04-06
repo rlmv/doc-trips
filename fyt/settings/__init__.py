@@ -195,6 +195,7 @@ PIPELINE = {
                 'js/stupidtable.js',
                 'js/metisMenu.min.js',
                 'js/bootstrap-switch.js',
+                'js/timer.js'
             ),
             'output_filename': 'base.js'
         },

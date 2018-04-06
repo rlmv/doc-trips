@@ -9,7 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
-from fyt.applications.models import Grader, Score, Volunteer
+from fyt.applications.models import Grader, Score, Volunteer, ScoreClaim
 from fyt.applications.forms import ScoreForm, SKIP
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
@@ -19,6 +19,7 @@ from fyt.utils.views import ExtraContextMixin
 
 
 SHOW_SCORE_AVG_INTERVAL = 10
+HOLD_DURATION = ScoreClaim.HOLD_DURATION
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +107,10 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def grader(self):
         return Grader.objects.from_user(self.request.user)
 
+    @cached_property
+    def claim(self):
+        return self.grader.current_claim()
+
     @property
     def application_name(self):
         return "Application #{}".format(self.kwargs['pk'])
@@ -159,6 +164,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def extra_context(self):
         return {
             'application': self.application,
+            'time_left': self.claim.time_left()
         }
 
 

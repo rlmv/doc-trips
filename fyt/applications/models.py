@@ -1071,6 +1071,16 @@ class ScoreClaim(DatabaseModel):
     )
     claimed_at = models.DateTimeField(default=timezone.now, editable=False)
 
+    @property
+    def expires_at(self):
+        return self.claimed_at + self.HOLD_DURATION
+
+    def time_left(self):
+        """
+        How many seconds are left until this claim expires?
+        """
+        return (self.expires_at - timezone.now()).total_seconds()
+
     def save(self, **kwargs):
         """
         Set croo_head.

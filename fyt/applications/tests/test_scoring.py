@@ -113,6 +113,17 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         self.assertNotIn('croo_score', form.fields)
 
 
+class ScoreClaimTestCase(ApplicationTestMixin, FytTestCase):
+
+    @unittest.mock.patch('fyt.applications.models.timezone.now', return_value=timezone.now())
+    def test_time_left(self, patched_now):
+        now = patched_now()
+        claim = mommy.make(ScoreClaim)
+
+        claim.claimed_at = now - ScoreClaim.HOLD_DURATION + timedelta(minutes=10)
+        self.assertEqual(claim.time_left(), 10 * 60)
+
+
 class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):

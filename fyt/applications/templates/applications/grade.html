@@ -10,6 +10,8 @@
 
 <p> Read the application completely before assigning it a score. </p>
 
+<p> You have <strong><span id="timer"></span></strong> to finish scoring the application before it is returned to the queue for someone else to grade. </p>
+
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
 <div>
@@ -30,3 +32,20 @@
 </div>
 
 {% endblock content %}
+
+{% block scripts %}
+<script>
+
+var display = document.querySelector('#timer');
+var timer = new CountDownTimer({{ time_left }});
+
+timer.onTick(format).start();
+function format(hours, minutes, seconds) {
+    hours = hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    display.textContent = hours + ':' + minutes + ':' + seconds;
+};
+
+</script>
+{% endblock %}
