@@ -1146,6 +1146,13 @@ class Grader(DartmouthUser):
         except ScoreClaim.DoesNotExist:
             return None
 
+    def check_claim(self, application):
+        """
+        Check that the grader currently holds a claim on this application.
+        """
+        cc = self.current_claim()
+        return (cc is not None) and (cc.application == application)
+
     def scores_for_year(self, trips_year):
         return self.scores.filter(trips_year=trips_year)
 

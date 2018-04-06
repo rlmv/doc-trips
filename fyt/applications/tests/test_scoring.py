@@ -205,6 +205,17 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.grader.skip(app)
         self.assertIsNone(self.grader.current_claim())
 
+    def test_check_claim(self):
+        app = self.make_application()
+        self.assertFalse(self.grader.check_claim(app))
+        claim = self.grader.claim_score(app)
+        self.assertTrue(self.grader.check_claim(app))
+
+        # Expired
+        claim.claimed_at -= (ScoreClaim.HOLD_DURATION * 2)
+        claim.save()
+        self.assertFalse(self.grader.check_claim(app))
+
     def test_claim_next_to_score_marks_a_claim(self):
         app = self.make_application()
         self.assertEqual(self.grader.claim_next_to_score(), app)
@@ -467,6 +478,29 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         resp = self.app.get(url, user=self.grader).follow()
         self.assertTemplateUsed(resp, self.no_applications)
+
+    def test_cant_score_application_with_expired_claim(self):
+        app = self.make_application(trips_year=self.trips_year)
+        grader = _get_grader(self.grader)
+        url = reverse('applications:score:next')
+        resp = self.app.get(url, user=grader).follow()
+
+        # Expire the claim
+        claim = grader.current_claim()
+        claim.claimed_at -= 2 * ScoreClaim.HOLD_DURATION
+        claim.save()
+
+        resp.form['leader_score'] = 3
+        resp.form['croo_score'] = 4
+        resp.form['general'] = 'A comment about the whole'
+        resp = resp.form.submit().maybe_follow()
+
+        messages = list(resp.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('You took longer than the alloted time', messages[0].message)
+
+        # Score not recorded ??
+        self.assertEqual(Score.objects.filter(grader=grader).count(), 0)
 
     def test_skip_application(self):
         app = self.make_application(trips_year=self.trips_year)

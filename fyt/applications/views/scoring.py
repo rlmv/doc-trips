@@ -139,6 +139,11 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())
 
+        if not self.grader.check_claim(self.application):
+            self.messages.warning("You took longer than the alloted time "
+                                  "for scoring this application")
+            return HttpResponseRedirect(self.get_success_url())
+
         return super().post(request, *args, **kwargs)
 
     def get_form(self, **kwargs):
