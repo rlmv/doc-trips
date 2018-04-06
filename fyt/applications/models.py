@@ -1220,14 +1220,13 @@ class Grader(DartmouthUser):
         ).filter(
             scores_and_claims__lt=NUM_SCORES
         ).annotate(
-            croo_head_scores=Count('pk', filter=Q(scores__croo_head=True)),
-            croo_head_claims=Count('pk', filter=Q(
-                score_claims__croo_head=True,
-                score_claims__claimed_at__gt=active_claims_start)),
+            croo_head_scores_count=Count('pk', filter=Q(scores__croo_head=True)),
+            croo_head_claims=Subquery(active_claims.filter(croo_head=True)),
+            croo_head_claims_count=Count('croo_head_claims'),
             needs_croo_score=TrueIf(
                 pk__in=croo_app_pks,
-                croo_head_scores=0,
-                croo_head_claims=0
+                croo_head_scores_count=0,
+                croo_head_claims_count=0
             )
         )
 
