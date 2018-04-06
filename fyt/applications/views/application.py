@@ -57,7 +57,7 @@ class IfApplicationAvailable():
                 trips_year=self.get_trips_year())
         except Volunteer.DoesNotExist:
             pass
-        finally:
+        else:
             if existing_application.within_deadline_extension():
                 return super().dispatch(request, *args, **kwargs)
 

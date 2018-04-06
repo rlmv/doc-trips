@@ -22,6 +22,7 @@ from fyt.test import FytTestCase
 from fyt.timetable.models import Timetable
 from fyt.training.models import FirstAidCertification
 from fyt.trips.models import Section, Trip, TripType
+from fyt.users.models import DartmouthUser
 from fyt.utils.choices import AVAILABLE, PREFER
 
 
@@ -855,6 +856,10 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         # NO: deadline passed, not available
         self.close_application()
         resp = self.app.get(url, user=application.applicant).maybe_follow()
+        self.assertTemplateUsed(resp, 'applications/not_available.html')
+
+        # NO: no existing application
+        resp = self.app.get(url, user=mommy.make(DartmouthUser)).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/not_available.html')
 
         # OK: application extension
