@@ -6,7 +6,7 @@ function CountDownTimer(duration) {
     this.granularity = 1000;
     this.tickFtns = [];
     this.running = false;
-}
+};
 
 CountDownTimer.prototype.start = function() {
     if (this.running) {

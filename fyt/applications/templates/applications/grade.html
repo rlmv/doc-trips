@@ -35,25 +35,25 @@
 
 {% block scripts %}
 <script>
+(function($) {
+    var display = document.querySelector("#timer");
+    var timer = new CountDownTimer({{ time_left }});
 
-var display = document.querySelector("#timer");
-var timer = new CountDownTimer({{ time_left }});
+    timer.onTick(format).onTick(redirect).start();
 
-timer.onTick(format).onTick(redirect).start();
-
-function format(hours, minutes, seconds) {
-    hours = hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    seconds = seconds < 10 ? "0" + seconds : seconds;
-    display.textContent = hours + ':' + minutes + ':' + seconds;
-};
-
-// Redirect back to the main grading page if time runs out
-function redirect(hours, minutes, seconds) {
-    if (this.expired()) {
-        window.location.replace("{{ timeout_url }}");
+    function format(hours, minutes, seconds) {
+        hours = hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent = hours + ':' + minutes + ':' + seconds;
     };
-};
 
+    // Redirect back to the main grading page if time runs out
+    function redirect(hours, minutes, seconds) {
+        if (this.expired()) {
+            window.location.replace("{{ timeout_url }}");
+        };
+    };
+})(jQuery);
 </script>
 {% endblock %}
