@@ -15,7 +15,8 @@ from django.db.models import (
     Subquery,
     F,
     Count,
-    Value as V
+    Value as V,
+    Exists
 )
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -1127,6 +1128,8 @@ class Grader(DartmouthUser):
                 claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
             ).exclude(
                 application__scores__grader=self
+            ).exclude(
+                application__skips__grader=self
             ).get()
         except ScoreClaim.DoesNotExist:
             return None
@@ -1194,11 +1197,29 @@ class Grader(DartmouthUser):
         NUM_SCORES = Volunteer.NUM_SCORES
 
         # Subquery for all active claims
-        # TODO: use https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
         active_claims_start = timezone.now() - ScoreClaim.HOLD_DURATION
         active_claims = ScoreClaim.objects.filter(
             application=OuterRef('pk'),
             claimed_at__gt=active_claims_start
+        ).annotate(
+            # Has the grader already added a score for this claim?
+            already_scored=Exists(
+                Score.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            ),
+            # Has the grader already skipped this claim?
+            already_skipped=Exists(
+                Skip.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            )
+        ).exclude(
+            already_scored=True
+        ).exclude(
+            already_skipped=True
         ).values('pk')
 
         qs = Volunteer.objects.leader_or_croo_applications(
@@ -1258,16 +1279,6 @@ class Grader(DartmouthUser):
         # Manually choose random element because .order_by('?') is buggy
         # See https://code.djangoproject.com/ticket/26390
         return random.choice(qs)
-
-    # TODO: pass in claim directly? Validate current claim?
-    def delete_claim(self, application):
-        """
-        Delete a claim - after scoring or skipping.
-        """
-        ScoreClaim.objects.filter(
-            application=application,
-            grader=self
-        ).delete()
 
 
 def TrueIf(**kwargs):

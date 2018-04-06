@@ -198,6 +198,12 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app.add_score(self.grader)
         self.assertIsNone(self.grader.current_claim())
 
+    def test_current_claim_ignores_already_skipped(self):
+        app = self.make_application()
+        claim = self.grader.claim_score(app)
+        app.skip(self.grader)
+        self.assertIsNone(self.grader.current_claim())
+
     def test_claim_next_to_score_marks_a_claim(self):
         app = self.make_application()
         self.assertEqual(self.grader.claim_next_to_score(), app)
@@ -269,6 +275,22 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(self.user.next_to_score(), app)
         self.assertEqual(self.director.next_to_score(), app)
         self.assertEqual(self.croo_head.next_to_score(), app)
+
+    def test_dont_double_count_claim_and_subsequent_score(self):
+        app = self.make_application(croo_willing=False)
+        self.make_scores(app, Volunteer.NUM_SCORES - 2)
+        claim = self.grader.claim_score(app)
+        app.add_score(self.grader, 3, 4)
+
+        self.assertEqual(self.user.next_to_score(), app)
+
+    def test_dont_reserve_score_for_skipped_claim(self):
+        app = self.make_application(croo_willing=False)
+        self.make_scores(app, Volunteer.NUM_SCORES - 1)
+        claim = self.grader.claim_score(app)
+        app.skip(self.grader)
+
+        self.assertEqual(self.user.next_to_score(), app)
 
     def test_skip_application(self):
         app = self.make_application()

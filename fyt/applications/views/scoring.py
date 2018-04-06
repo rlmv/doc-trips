@@ -137,12 +137,9 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         if SKIP in request.POST:
             self.application.skip(self.grader)
             self.messages.success('Skipped {}'.format(self.application_name))
-            self.grader.delete_claim(self.application)
             return HttpResponseRedirect(self.get_success_url())
 
-        resp = super().post(request, *args, **kwargs)
-        self.grader.delete_claim(self.application)
-        return resp
+        return super().post(request, *args, **kwargs)
 
     def get_form(self, **kwargs):
         return ScoreForm(application=self.application, **kwargs)
