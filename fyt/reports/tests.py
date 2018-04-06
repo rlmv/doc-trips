@@ -82,13 +82,13 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'clubs/interests': app.personal_activities,
             'co-leader': app.leader_supplement.co_leader,
             'avg leader score': '4.3',
-            'leader score 1': '4',
-            'leader score 2': '5',
-            'leader score 3': '4',
+            'leader score 1': '4.0',
+            'leader score 2': '5.0',
+            'leader score 3': '4.0',
             'avg croo score': '2.0',
-            'croo score 1': '2',
-            'croo score 2': '1',
-            'croo score 3': '3',
+            'croo score 1': '2.0',
+            'croo score 2': '1.0',
+            'croo score 3': '3.0',
         }])
 
     def test_trip_leader_csv(self):
