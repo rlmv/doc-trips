@@ -6,7 +6,7 @@ from datetime import date
 from django.urls import reverse
 from model_mommy import mommy
 
-from fyt.applications.models import Question, Volunteer
+from fyt.applications.models import Question, Volunteer, Grader
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings
@@ -65,9 +65,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         app.croo_willing = False
         app.save()
         app.answer_question(question, 'An answer')
-        app.add_score(self.make_grader(), 4, 2)
-        app.add_score(self.make_directorate(), 5, 1)
-        app.add_score(self.make_tlt(), 4, 3)
+        mommy.make(Grader).add_score(app, 4, 2)
+        mommy.make(Grader).add_score(app, 5, 1)
+        mommy.make(Grader).add_score(app, 4, 3)
 
         self.assertCsvReturns('core:reports:all_apps', [{
             'name': app.name,

@@ -10,6 +10,7 @@ from ..models import (
     Answer,
     ApplicationInformation,
     CrooSupplement,
+    Grader,
     LeaderSupplement,
     PortalContent,
     Question,
@@ -286,13 +287,12 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_add_score(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
-        user = self.make_user()
-
-        app.add_score(user, 3, 1)  # TODO: test kwargs
+        grader = mommy.make(Grader)
+        grader.add_score(app, 3, 1)  # TODO: test kwargs
 
         score = app.scores.first()
         self.assertEqual(score.application, app)
-        self.assertEqual(score.grader, user)
+        self.assertEqual(score.grader, grader)
         self.assertEqual(score.leader_score, 3)
         self.assertEqual(score.croo_score, 1)
         self.assertEqual(score.trips_year, trips_year)
@@ -300,9 +300,9 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_average_scores(self):
         trips_year = self.init_trips_year()
         app = make_application(trips_year=trips_year)
-        app.add_score(self.make_user(), 3, 1)
-        app.add_score(self.make_grader(), 4, 2)
-        app.add_score(self.make_director(), None, None)
+        mommy.make(Grader).add_score(app, 3, 1)
+        mommy.make(Grader).add_score(app, 4, 2)
+        mommy.make(Grader).add_score(app, None, None)
         self.assertEqual(app.average_leader_score(), 3.5)
         self.assertEqual(app.average_croo_score(), 1.5)
 
@@ -562,7 +562,7 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
     def test_with_scores_ordering(self):
         app1 = self.make_application()
         app2 = self.make_application()
-        app2.add_score(self.make_grader(), 2, 1)
+        mommy.make(Grader).add_score(app1, 2, 1)
 
         qs = Volunteer.objects.with_scores(self.trips_year)
         qs = qs.order_by('-norm_avg_leader_score')

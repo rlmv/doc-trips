@@ -50,8 +50,8 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
                     trips_year=self.trips_year,
                     leader_willing=leader_willing,
                     croo_willing=False)
-                score = application.add_score(
-                    grader=mommy.make(DartmouthUser),
+                score = mommy.make(Grader).add_score(
+                    application=application,
                     leader_score=leader_score,
                     general="A comment")
                 score.full_clean()
@@ -74,8 +74,8 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
                     trips_year=self.trips_year,
                     leader_willing=False,
                     croo_willing=croo_willing)
-                score = application.add_score(
-                    grader=mommy.make(DartmouthUser),
+                score = mommy.make(Grader).add_score(
+                    application=application,
                     croo_score=croo_score,
                     general="A comment")
                 score.full_clean()
@@ -195,13 +195,13 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_current_claim_ignores_already_scored(self):
         app = self.make_application()
         claim = self.grader.claim_score(app)
-        app.add_score(self.grader)
+        self.grader.add_score(app)
         self.assertIsNone(self.grader.current_claim())
 
     def test_current_claim_ignores_already_skipped(self):
         app = self.make_application()
         claim = self.grader.claim_score(app)
-        app.skip(self.grader)
+        self.grader.skip(app)
         self.assertIsNone(self.grader.current_claim())
 
     def test_claim_next_to_score_marks_a_claim(self):
@@ -240,7 +240,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_user_only_scores_application_once(self):
         app = self.make_application()
-        app.add_score(self.user, 4, 3)
+        self.user.add_score(app, 4, 3)
         self.assertIsNone(self.user.next_to_score())
 
     def test_only_score_pending_applications(self):
@@ -280,7 +280,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 2)
         claim = self.grader.claim_score(app)
-        app.add_score(self.grader, 3, 4)
+        self.grader.add_score(app, 3, 4)
 
         self.assertEqual(self.user.next_to_score(), app)
 
@@ -288,13 +288,13 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 1)
         claim = self.grader.claim_score(app)
-        app.skip(self.grader)
+        self.grader.skip(app)
 
         self.assertEqual(self.user.next_to_score(), app)
 
     def test_skip_application(self):
         app = self.make_application()
-        app.skip(self.user)
+        self.user.skip(app)
         self.assertIsNone(self.user.next_to_score())
 
     def test_reserve_one_score_for_croo_heads(self):

@@ -536,29 +536,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
-    def add_score(self, grader, leader_score=None, croo_score=None, **kwargs):
-        """
-        Add a Score by `user` to the application.
-        """
-        return Score.objects.create(
-            trips_year=self.trips_year,
-            application=self,
-            grader=grader,
-            leader_score=leader_score,
-            croo_score=croo_score,
-            **kwargs
-        )
-
-    def skip(self, grader):
-        """
-        Skip this application in scoring.
-        """
-        return Skip.objects.create(
-            trips_year=self.trips_year,
-            application=self,
-            grader=grader
-        )
-
     @cached_property
     def _average_scores(self):
         return self.scores.aggregate(models.Avg('leader_score'),
@@ -1122,7 +1099,32 @@ class Grader(DartmouthUser):
     def is_croo_head(self):
         return self.has_perm('permissions.can_score_as_croo_head')
 
+    def add_score(self, application, leader_score=None, croo_score=None, **kwargs):
+        """
+        Add a Score by `user` to the application.
+        """
+        return Score.objects.create(
+            trips_year=application.trips_year,
+            application=application,
+            grader=self,
+            leader_score=leader_score,
+            croo_score=croo_score,
+            **kwargs)
+
+    def skip(self, application):
+        """
+        Skip this application in scoring.
+        """
+        return Skip.objects.create(
+            trips_year=application.trips_year,
+            application=application,
+            grader=self
+        )
+
     def claim_score(self, application):
+        """
+        Claim a score for scoring.
+        """
         return ScoreClaim.objects.create(
             grader=self,
             application=application,

@@ -135,7 +135,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         Check if the grader is skipping this application.
         """
         if SKIP in request.POST:
-            self.application.skip(self.grader)
+            self.grader.skip(self.application)
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())
 
