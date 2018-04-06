@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..models import Grader, Score, ScoreClaim, Volunteer, Question
+from ..models import Grader, Score, ScoreClaim, Volunteer, Question, ScoreQuestion
 from ..views.scoring import SHOW_SCORE_AVG_INTERVAL
 from ..forms import ScoreForm, SKIP
 from . import ApplicationTestMixin
@@ -412,14 +412,13 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_score_application(self):
         app = self.make_application(trips_year=self.trips_year)
-        question = mommy.make(Question, trips_year=self.trips_year, type=Question.ALL)
-        app.answer_question(question, "An answer")
+        score_question = mommy.make(ScoreQuestion, trips_year=self.trips_year)
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
         resp.form['leader_score'] = 3
         resp.form['croo_score'] = 4
-        resp.form['answer_1'] = 'A comment'
+        resp.form['question_1'] = 'A comment'
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit()
 

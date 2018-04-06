@@ -17,6 +17,7 @@ from fyt.applications.models import (
     Question,
     Score,
     Volunteer,
+    ScoreQuestion,
     validate_word_count,
 )
 from fyt.core.models import TripsYear
@@ -661,23 +662,23 @@ class CrooSupplementLayout(Layout):
         )
 
 
-class AnswerCommentHandler(PreferenceHandler):
+class CommentHandler(PreferenceHandler):
     """
     Handler for comments on dynamic answers
     """
     through_qs_name = 'answercomment_set'
     through_creator = 'add_comment'
     data_field = 'comment'
-    target_field = 'answer'
+    target_field = 'question'
     default = ''
 
-    def formfield_label(self, answer):
-        return answer.answer
+    def formfield_label(self, question):
+        return str(question)
 
     def formfield(self, answer, initial):
         return forms.CharField(
             initial=initial,
-            label='',  #self.formfield_label(answer),
+            label=self.formfield_label(answer),
             help_text='',  # self.formfield_help_text(answer),
             required=False,
             widget=forms.Textarea(attrs={'rows': 2}),
@@ -711,24 +712,17 @@ def ScoreForm(application, *args, **kwargs):
         def __init__(self):
             super().__init__(*args, **kwargs)
             self.application = self.instance.application = application
-            self.answers = self.application.answer_set.all()
-            self.comment_handler = AnswerCommentHandler(self, self.answers)
+            self.score_questions = ScoreQuestion.objects.filter(
+                trips_year=application.trips_year)
+            self.comment_handler = CommentHandler(self, self.score_questions)
             self.fields.update(self.comment_handler.get_formfields())
 
         @property
         def helper(self):
             helper = FormHelper(self)
 
-            # Put the comment fields inline with applicant answers
-            answer_comments = []
-            for answer in self.comment_handler.targets:
-                answer_comments += [
-                    HTML("<p><strong>{}</strong></p><p>{}</p>".format(
-                        answer.question.display_text, answer.answer)),
-                    self.comment_handler.formfield_name(answer)]
-
             helper.layout = Layout(
-                *answer_comments,
+                *self.comment_handler.formfield_names(),
                 *score_fields,
                 Field('general', rows=3),
                 FormActions(
