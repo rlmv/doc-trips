@@ -3,7 +3,8 @@ from model_mommy import mommy
 from fyt.applications.models import (
     CrooApplicationGrade,
     LeaderApplicationGrade,
-    Score
+    Score,
+    Grader
 )
 from fyt.applications.views.graders import _old_get_graders, get_graders
 from fyt.test import FytTestCase
@@ -15,7 +16,7 @@ class GraderViewsTestCase(FytTestCase):
         self.init_trips_year()
         self.init_old_trips_year()
         self.make_user()
-        self.make_grader()
+        self.grader = Grader.objects.from_user(self.make_grader())
 
     def test_get_graders_only_returns_graders(self):
         mommy.make(Score, trips_year=self.trips_year, grader=self.grader)

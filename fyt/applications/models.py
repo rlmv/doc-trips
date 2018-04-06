@@ -968,10 +968,8 @@ class Score(DatabaseModel):
         """
         Set croo_head.
         """
-        croo_head_perm = 'permissions.can_score_as_croo_head'
-
-        if self.pk is None and self.grader.has_perm(croo_head_perm):
-            self.croo_head = True
+        if self.pk is None:
+            self.croo_head = self.grader.is_croo_head
 
         return super().save(**kwargs)
 

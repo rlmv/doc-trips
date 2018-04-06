@@ -14,6 +14,10 @@ from fyt.test import FytTestCase
 from fyt.users.models import DartmouthUser
 
 
+def _get_grader(user):
+    return Grader.objects.from_user(user)
+
+
 class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
@@ -25,7 +29,7 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=self.make_user(),  # Not a croo head
+            grader=mommy.make(Grader),  # Not a croo head
             leader_score=3,
             croo_score=4)
         self.assertFalse(score.croo_head)
@@ -33,7 +37,7 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=self.make_croo_head(),  # Croo head
+            grader=_get_grader(self.make_croo_head()),  # Croo head
             leader_score=3,
             croo_score=4)
         self.assertTrue(score.croo_head)
@@ -106,10 +110,6 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         application = self.make_application(croo_willing=False)
         form = ScoreForm(application=application)
         self.assertNotIn('croo_score', form.fields)
-
-
-def _get_grader(user):
-    return Grader.objects.from_user(user)
 
 
 class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
@@ -475,18 +475,18 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_show_average_grade_in_messages(self):
         self.make_application(trips_year=self.trips_year)
-
+        grader = _get_grader(self.grader)
         for i in range(SHOW_SCORE_AVG_INTERVAL):
             mommy.make(
                 Score,
                 trips_year=self.trips_year,
-                grader=self.grader,
+                grader=grader,
                 leader_score=3,
                 croo_score=4
             )
 
         url = reverse('applications:score:next')
-        resp = self.app.get(url, user=self.grader).follow()
+        resp = self.app.get(url, user=grader).follow()
 
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
