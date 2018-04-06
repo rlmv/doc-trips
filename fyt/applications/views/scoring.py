@@ -164,7 +164,8 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def extra_context(self):
         return {
             'application': self.application,
-            'time_left': self.claim.time_left()
+            'time_left': self.claim.time_left(),
+            'timeout_url': reverse('applications:score:scoring')
         }
 
 
