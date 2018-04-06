@@ -904,18 +904,19 @@ class Score(DatabaseModel):
     SCORE_CHOICES = (
         (1, "1 -- Bad application -- I really don't want this person to be a "
             "volunteer and I have serious concerns"),
+        (1.5, "1.5"),
         (2, "2 -- Poor application -- I have some concerns about this person "
             "being a Trips volunteer"),
+        (2.5, "2.5"),
         (3, "3 -- Fine application -- This person might work well as a "
             "volunteer but I have some questions"),
+        (3.5, "3.5"),
         (4, "4 -- Good application -- I would consider this person to be a "
             "volunteer but I wouldn't be heartbroken if they were not "
             "selected"),
+        (4.5, "4.5"),
         (5, "5 -- Great application -- I think this person would be a "
             "fantastic volunteer"),
-        (6, "6 -- Incredible application -- I think this person should be one "
-            "of the first to be selected to be a volunteer. I would be very "
-            "frustrated/angry if this person is not selected"),
     )
 
     grader = models.ForeignKey(
@@ -939,10 +940,19 @@ class Score(DatabaseModel):
         'was the score created by a croo head?', default=False, editable=False
     )
 
-    leader_score = models.PositiveSmallIntegerField(
-        choices=SCORE_CHOICES, blank=True, null=True)
-    croo_score = models.PositiveSmallIntegerField(
-        choices=SCORE_CHOICES, blank=True, null=True)
+    leader_score = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        choices=SCORE_CHOICES,
+        blank=True,
+        null=True)
+
+    croo_score = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        choices=SCORE_CHOICES,
+        blank=True,
+        null=True)
 
     comments = models.ManyToManyField('ScoreQuestion', through='ScoreComment')
 

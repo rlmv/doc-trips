@@ -70,19 +70,25 @@ class GraderViewsTestCase(FytTestCase):
 
         self.assertEqual(graders[0].leader_score_histogram, {
             1: 1,
+            1.5: 0,
             2: 0,
+            2.5: 0,
             3: 0,
+            3.5: 0,
             4: 1,
+            4.5: 0,
             5: 0,
-            6: 0,
         })
         self.assertEqual(graders[0].croo_score_histogram, {
             1: 0,
+            1.5: 0,
             2: 1,
+            2.5: 0,
             3: 0,
+            3.5: 0,
             4: 1,
+            4.5: 0,
             5: 0,
-            6: 0,
         })
 
 
