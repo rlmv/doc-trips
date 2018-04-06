@@ -22,10 +22,15 @@
   <th> Average Croo Grade </th>
   {% else %}
   <th> Number of Scores </th>
-  <th> Average Score </th>
+  <th class="text-center"> Average Leader Score </th>
   {% for x in score_choices %}
   <th> {{ x }} </th>
   {% endfor %}
+  <th class="text-center"> Average Croo Score </th>
+  {% for x in score_choices %}
+  <th> {{ x }} </th>
+  {% endfor %}
+
   {% endif %}
 </tr>
 
@@ -39,9 +44,13 @@
   <td> {{ grader.avg_croo_grade|floatformat:1 }} </td>
   {% else %}
   <td> {{ grader.score_count }} </td>
-  <td> {{ grader.score_avg|floatformat:1 }} </td>
+  <td class="text-center"> {{ grader.leader_score_avg|floatformat:1 }} </td>
   {% for x in score_choices %}
-  <td> {{ grader.score_histogram|get:x|default:'-' }} </td>
+  <td> {{ grader.leader_score_histogram|get:x|default:'-' }} </td>
+  {% endfor %}
+  <td class="text-center"> {{ grader.croo_score_avg|floatformat:1 }} </td>
+  {% for x in score_choices %}
+  <td> {{ grader.croo_score_histogram|get:x|default:'-' }} </td>
   {% endfor %}
   {% endif %}
 </tr>

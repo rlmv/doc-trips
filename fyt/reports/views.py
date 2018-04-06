@@ -81,7 +81,8 @@ class VolunteerCSV(GenericReportView):
     header = [
         'name',
         'netid',
-        'avg score',
+        'avg leader score',
+        'avg croo score',
         'status',
         'leader app',
         'croo app',
@@ -102,25 +103,25 @@ class VolunteerCSV(GenericReportView):
             Max('scores__count')
         )['scores__count__max']
 
-        return self.header + ['score {}'.format(i)
-                              for i in range(1, score_count_max + 1)]
+        return self.header + [
+            'leader score {}'.format(i) for i in range(1, score_count_max + 1)
+        ] + [
+            'croo score {}'.format(i) for i in range(1, score_count_max + 1)
+        ]
 
     def get_queryset(self):
-        qs = Application.objects.leader_or_croo_applications(
-            trips_year=self.get_trips_year()
-        ).annotate(
-            avg_score=Avg('scores__score')
-        ).prefetch_related(
-            'scores'
-        )
-        return preload_questions(qs, self.get_trips_year())
+        trips_year = self.get_trips_year()
+        qs = (Application.objects.with_scores(trips_year) &
+              Application.objects.leader_or_croo_applications(trips_year))
+        return preload_questions(qs, trips_year)
 
     def get_row(self, application):
         user = application.applicant
         return [
             user.name,
             user.netid,
-            fmt_float(application.avg_score),
+            fmt_float(application.avg_leader_score),
+            fmt_float(application.avg_croo_score),
             application.status,
             yes_no(application.leader_application_complete),
             yes_no(application.croo_application_complete),
@@ -131,7 +132,9 @@ class VolunteerCSV(GenericReportView):
             application.personal_activities,
             application.leader_supplement.co_leader,
         ] + [
-            score.score for score in application.scores.all()
+            score.leader_score for score in application.scores.all()
+        ] + [
+            score.croo_score for score in application.scores.all()
         ]
 
 

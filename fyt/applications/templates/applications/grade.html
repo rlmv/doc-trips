@@ -8,17 +8,22 @@
 
 {% block content %}
 
-<p> Read the application completely before assigning it a score:
-  <ul class="list-unstyled">
-    {% for score in score_choices %}
-    <li> {{ score }} </li>
-    {% endfor %}
-  </ul>
-</p>
+<p> Read the application completely before assigning it a score. </p>
 
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
-{% display_answers application %}
+<div>
+  {% if application.leader_application_complete %}
+  <p>This is a <span class="label label-primary">LEADER APPLICATION</span></p>
+  {% endif %}
+  {% if application.croo_application_complete %}
+  <p>This is a <span class="label label-primary">CROO APPLICATION</span></p>
+  {% endif %}
+</div>
+
+<div>
+  {% display_answers application %}
+</div>
 
 <div>
   {% crispy form %}

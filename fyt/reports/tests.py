@@ -65,9 +65,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         app.croo_willing = False
         app.save()
         app.answer_question(question, 'An answer')
-        app.add_score(self.make_grader(), 4)
-        app.add_score(self.make_directorate(), 5)
-        app.add_score(self.make_tlt(), 4)
+        app.add_score(self.make_grader(), 4, 2)
+        app.add_score(self.make_directorate(), 5, 1)
+        app.add_score(self.make_tlt(), 4, 3)
 
         self.assertCsvReturns('core:reports:all_apps', [{
             'name': app.name,
@@ -81,10 +81,14 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'hometown': app.hometown,
             'clubs/interests': app.personal_activities,
             'co-leader': app.leader_supplement.co_leader,
-            'avg score': '4.3',
-            'score 1': '4',
-            'score 2': '5',
-            'score 3': '4',
+            'avg leader score': '4.3',
+            'leader score 1': '4',
+            'leader score 2': '5',
+            'leader score 3': '4',
+            'avg croo score': '2.0',
+            'croo score 1': '2',
+            'croo score 2': '1',
+            'croo score 3': '3',
         }])
 
     def test_trip_leader_csv(self):

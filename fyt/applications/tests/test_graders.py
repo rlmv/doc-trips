@@ -1,10 +1,9 @@
-
 from model_mommy import mommy
 
 from fyt.applications.models import (
     CrooApplicationGrade,
     LeaderApplicationGrade,
-    Score,
+    Score
 )
 from fyt.applications.views.graders import _old_get_graders, get_graders
 from fyt.test import FytTestCase
@@ -36,33 +35,62 @@ class GraderViewsTestCase(FytTestCase):
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            score=1
+            leader_score=1,
+            croo_score=2,
         )
         mommy.make(
             Score,
             trips_year=self.old_trips_year,
             grader=self.grader,
-            score=2
+            leader_score=3,
+            croo_score=4
         )
         graders = get_graders(self.trips_year)
         self.assertEqual(len(graders), 1)
         self.assertEqual(graders[0].score_count, 1)
-        self.assertEqual(graders[0].score_avg, 1)
+        self.assertEqual(graders[0].leader_score_avg, 1)
+        self.assertEqual(graders[0].croo_score_avg, 2)
 
     def test_get_graders_score_histogram(self):
-        mommy.make(Score, trips_year=self.trips_year, grader=self.grader, score=1)
-        mommy.make(Score, trips_year=self.trips_year, grader=self.grader, score=4)
+        mommy.make(
+            Score,
+            trips_year=self.trips_year,
+            grader=self.grader,
+            leader_score=1,
+            croo_score=2,
+        )
+        mommy.make(
+            Score,
+            trips_year=self.trips_year,
+            grader=self.grader,
+            leader_score=4,
+            croo_score=4
+        )
         graders = get_graders(self.trips_year)
 
-        histogram = graders[0].score_histogram
-        self.assertEqual(histogram, {
+        self.assertEqual(graders[0].leader_score_histogram, {
             1: 1,
+            1.5: 0,
             2: 0,
+            2.5: 0,
             3: 0,
+            3.5: 0,
             4: 1,
+            4.5: 0,
             5: 0,
-            6: 0,
         })
+        self.assertEqual(graders[0].croo_score_histogram, {
+            1: 0,
+            1.5: 0,
+            2: 1,
+            2.5: 0,
+            3: 0,
+            3.5: 0,
+            4: 1,
+            4.5: 0,
+            5: 0,
+        })
+
 
 # Tests for deprecated grade objects
 # Only apply in production to years 2015 & 2016

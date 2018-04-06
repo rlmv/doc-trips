@@ -1,5 +1,5 @@
 from bootstrap3_datetime.widgets import DateTimePicker
-from crispy_forms.bootstrap import Alert
+from crispy_forms.bootstrap import Alert, FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
@@ -15,7 +15,9 @@ from fyt.applications.models import (
     LeaderSupplement,
     QualificationTag,
     Question,
+    Score,
     Volunteer,
+    ScoreQuestion,
     validate_word_count,
 )
 from fyt.core.models import TripsYear
@@ -670,27 +672,82 @@ class CrooSupplementLayout(Layout):
         )
 
 
-class CrooApplicationGradeForm(forms.ModelForm):
+class CommentHandler(PreferenceHandler):
     """
-    Form for scoring Croo applications
+    Handler for comments on dynamic answers
     """
-    class Meta:
-        model = CrooApplicationGrade
-        fields = '__all__'
+    through_qs_name = 'scorecomment_set'
+    through_creator = 'add_comment'
+    data_field = 'comment'
+    target_field = 'question'
+    default = ''
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # CheckboxSelectMultiple in __init__ because
-        # https://github.com/maraujop/django-crispy-forms/issues/303
-        self.fields['qualifications'].widget = forms.CheckboxSelectMultiple()
-        self.fields['qualifications'].queryset = QualificationTag.objects.filter(
-            trips_year=TripsYear.objects.current())
+    def formfield_label(self, question):
+        return str(question)
+
+    def formfield(self, answer, initial):
+        return forms.CharField(
+            initial=initial,
+            label=self.formfield_label(answer),
+            help_text='',  # self.formfield_help_text(answer),
+            required=False,
+            widget=forms.Textarea(attrs={'rows': 2}),
+        )
 
 
-class LeaderApplicationGradeForm(forms.ModelForm):
+SKIP = 'skip'
+
+def ScoreForm(application, *args, **kwargs):
     """
-    Form for scoring Leader applications
+    Return a form to score this application.
+
+    We only display leader_score/croo_score fields if the application is a
+    leader/croo application.
     """
-    class Meta:
-        model = LeaderApplicationGrade
-        fields = '__all__'
+    # Select appropriate score fields
+    score_fields = []
+    if application.leader_application_complete:
+        score_fields.append('leader_score')
+    if application.croo_application_complete:
+        score_fields.append('croo_score')
+
+    class _ScoreForm(forms.ModelForm):
+        """
+        The dynamically generated form class.
+        """
+        class Meta:
+            model = Score
+            fields = ['general'] + score_fields
+
+        def __init__(self):
+            super().__init__(*args, **kwargs)
+            self.application = self.instance.application = application
+            self.score_questions = ScoreQuestion.objects.filter(
+                trips_year=application.trips_year)
+            self.comment_handler = CommentHandler(self, self.score_questions)
+            self.fields.update(self.comment_handler.get_formfields())
+
+        @property
+        def helper(self):
+            helper = FormHelper(self)
+
+            helper.layout = Layout(
+                *self.comment_handler.formfield_names(),
+                *score_fields,
+                Field('general', rows=3),
+                FormActions(
+                    Submit('submit', 'Submit Score'),
+                    Submit(SKIP, 'Skip this Application',
+                           css_class='btn-warning',
+                           formnovalidate=True  # Disable browser validation
+                    ),
+                )
+            )
+            return helper
+
+        def save(self, **kwargs):
+            score = super().save()
+            self.comment_handler.save()
+            return score
+
+    return _ScoreForm()

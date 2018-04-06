@@ -1,14 +1,32 @@
+import random
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import Q
+from django.db.models import (
+    Avg,
+    Q,
+    Case,
+    Min,
+    When,
+    Count,
+    OuterRef,
+    Subquery,
+    F,
+    Count,
+    Value as V,
+    Exists
+)
 from django.utils import timezone
+from django.utils.functional import cached_property
 
-from .managers import QuestionManager, VolunteerManager
+from .managers import QuestionManager, VolunteerManager, GraderManager
 
-from fyt.core.models import DatabaseModel
+from fyt.core.models import DatabaseModel, TripsYear
 from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
+from fyt.users.models import DartmouthUser
 from fyt.utils.cache import cache_as
 from fyt.utils.choices import (
     AVAILABLE,
@@ -18,6 +36,8 @@ from fyt.utils.choices import (
 )
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 from fyt.utils.models import MedicalMixin
+from fyt.utils.query import pks
+
 
 
 """
@@ -516,7 +536,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_available_trips(self):
         return self.leader_supplement.get_available_trips()
 
-    def add_score(self, grader, score, **kwargs):
+    def add_score(self, grader, leader_score=None, croo_score=None, **kwargs):
         """
         Add a Score by `user` to the application.
         """
@@ -524,7 +544,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
             trips_year=self.trips_year,
             application=self,
             grader=grader,
-            score=score,
+            leader_score=leader_score,
+            croo_score=croo_score,
             **kwargs
         )
 
@@ -538,12 +559,18 @@ class Volunteer(MedicalMixin, DatabaseModel):
             grader=grader
         )
 
-    @cache_as('_average_score')
-    def average_score(self):
-        """
-        Return the average score given to the application.
-        """
-        return self.scores.all().aggregate(models.Avg('score'))['score__avg']
+    @cached_property
+    def _average_scores(self):
+        return self.scores.aggregate(models.Avg('leader_score'),
+                                     models.Avg('croo_score'))
+
+    def average_leader_score(self):
+        """Average leader score."""
+        return self._average_scores['leader_score__avg']
+
+    def average_croo_score(self):
+        """Average croo score."""
+        return self._average_scores['croo_score__avg']
 
     def first_aid_certifications_str(self):
         """Return a string of the volunteer's medical certifications.
@@ -890,22 +917,23 @@ class Score(DatabaseModel):
     SCORE_CHOICES = (
         (1, "1 -- Bad application -- I really don't want this person to be a "
             "volunteer and I have serious concerns"),
+        (1.5, "1.5"),
         (2, "2 -- Poor application -- I have some concerns about this person "
             "being a Trips volunteer"),
+        (2.5, "2.5"),
         (3, "3 -- Fine application -- This person might work well as a "
             "volunteer but I have some questions"),
+        (3.5, "3.5"),
         (4, "4 -- Good application -- I would consider this person to be a "
             "volunteer but I wouldn't be heartbroken if they were not "
             "selected"),
+        (4.5, "4.5"),
         (5, "5 -- Great application -- I think this person would be a "
             "fantastic volunteer"),
-        (6, "6 -- Incredible application -- I think this person should be one "
-            "of the first to be selected to be a volunteer. I would be very "
-            "frustrated/angry if this person is not selected"),
     )
 
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        'Grader',
         editable=False,
         related_name='scores',
         on_delete=models.PROTECT
@@ -925,14 +953,21 @@ class Score(DatabaseModel):
         'was the score created by a croo head?', default=False, editable=False
     )
 
-    score = models.PositiveSmallIntegerField(choices=SCORE_CHOICES)
+    leader_score = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        choices=SCORE_CHOICES,
+        blank=True,
+        null=True)
 
-    question1 = models.TextField('question 1', blank=True)
-    question2 = models.TextField('question 2', blank=True)
-    question3 = models.TextField('question 3', blank=True)
-    question4 = models.TextField('question 4', blank=True)
-    question5 = models.TextField('question 5', blank=True)
-    question6 = models.TextField('question 6', blank=True)
+    croo_score = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        choices=SCORE_CHOICES,
+        blank=True,
+        null=True)
+
+    comments = models.ManyToManyField('ScoreQuestion', through='ScoreComment')
 
     general = models.TextField(
         "Given the notes you made above, please explain the holistic score "
@@ -941,17 +976,66 @@ class Score(DatabaseModel):
         "any identities."
     )
 
+    def clean(self):
+        if (self.application.leader_application_complete and
+                self.leader_score is None):
+            raise ValidationError(
+                {'leader_score': 'Score is required for leader applications'})
+
+        if (self.application.croo_application_complete and
+                self.croo_score is None):
+            raise ValidationError(
+                {'croo_score': 'Score is required for croo applications'})
+
     def save(self, **kwargs):
         """
         Set croo_head.
         """
-        # TODO: import/load this string from permissions module
         croo_head_perm = 'permissions.can_score_as_croo_head'
 
         if self.pk is None and self.grader.has_perm(croo_head_perm):
             self.croo_head = True
 
         return super().save(**kwargs)
+
+    def add_comment(self, question, comment):
+        """
+        Add a comment to a specific answer.
+        """
+        return ScoreComment.objects.create(
+            score=self, question=question, comment=comment)
+
+
+class ScoreQuestion(DatabaseModel):
+    """
+    A question for graders to answer while scoring.
+    """
+    class Meta:
+        ordering = ['order']
+
+    question = models.TextField()
+    order = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.question
+
+
+class ScoreComment(models.Model):
+    """
+    A grader's comment on a specific answer.
+
+    This is a M2M through model between Score and Answer.
+    """
+    score = models.ForeignKey(Score, on_delete=models.CASCADE)
+    question = models.ForeignKey(ScoreQuestion, on_delete=models.PROTECT)
+    comment = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['question']
+        unique_together = ['score', 'question']
+
+    def __str__(self):
+        return self.comment
 
 
 class Skip(DatabaseModel):
@@ -966,7 +1050,7 @@ class Skip(DatabaseModel):
         ordering = ['created_at']
 
     grader = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        'Grader',
         editable=False,
         on_delete=models.CASCADE
     )
@@ -978,6 +1062,247 @@ class Skip(DatabaseModel):
     )
 
     created_at = models.DateTimeField(default=timezone.now, editable=False)
+
+
+class ScoreClaim(DatabaseModel):
+    """
+    Marks an application as claimed to score by a grader.
+
+    Once a claim exists on an application, the grader has X amount of time
+    to finish scoring it before another grader will be given a chance.
+    """
+    #: The period of time to claim this score
+    HOLD_DURATION = timedelta(hours=2)
+
+    class Meta:
+        ordering = ['claimed_at']
+
+    grader = models.ForeignKey(
+        'Grader',
+        editable=False,
+        related_name='score_claims',
+        on_delete=models.CASCADE
+    )
+    application = models.ForeignKey(
+        Volunteer,
+        editable=False,
+        related_name='score_claims',
+        on_delete=models.CASCADE
+    )
+    croo_head = models.BooleanField(
+       'is the grader a croo head?',
+        default=False,
+        editable=False
+    )
+    claimed_at = models.DateTimeField(default=timezone.now, editable=False)
+
+    def save(self, **kwargs):
+        """
+        Set croo_head.
+        """
+        if self.pk is None:
+            self.croo_head = self.grader.is_croo_head
+
+        return super().save(**kwargs)
+
+
+class Grader(DartmouthUser):
+    """
+    Proxy model for the basic user class.
+
+    This provides a convenient place to stick logic related to individual
+    graders.
+    """
+    class Meta:
+        proxy = True
+
+    objects = GraderManager()
+
+    @cached_property
+    def is_croo_head(self):
+        return self.has_perm('permissions.can_score_as_croo_head')
+
+    def claim_score(self, application):
+        return ScoreClaim.objects.create(
+            grader=self,
+            application=application,
+            trips_year=application.trips_year)
+
+    def current_claim(self):
+        """
+        The current claim is an application that has a claim, and which the
+        grader has not yet scored.
+
+        Raise an error if there is more than one claim.
+        """
+        try:
+            return self.score_claims.filter(
+                claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
+            ).exclude(
+                application__scores__grader=self
+            ).exclude(
+                application__skips__grader=self
+            ).get()
+        except ScoreClaim.DoesNotExist:
+            return None
+
+    def scores_for_year(self, trips_year):
+        return self.scores.filter(trips_year=trips_year)
+
+    def score_count(self, trips_year):
+        return self.scores_for_year(trips_year).count()
+
+    def avg_leader_score(self, trips_year):
+        return self.scores_for_year(trips_year).aggregate(
+            Avg('leader_score'))['leader_score__avg']
+
+    def avg_croo_score(self, trips_year):
+        return self.scores_for_year(trips_year).aggregate(
+            Avg('croo_score'))['croo_score__avg']
+
+    def claim_next_to_score(self):
+        """
+        Find the next available application to score, and claim it.
+        """
+        if self.current_claim() is not None:
+            claim = self.current_claim()
+            # Update the claim time - this is for the case in which a grader
+            # leaves the page, waits a while, then returns to grading,
+            # receives the same application, but only has a few minutes
+            # left to finish grading.
+            claim.claimed_at = timezone.now()
+            claim.save()
+            return claim.application
+
+        application = self.next_to_score()
+
+        if application is None:
+            return None
+
+        self.claim_score(application)
+        return application
+
+    def next_to_score(self):
+        """
+        Return the next application for ``grader`` to score.
+
+        This is an application which meets the following conditions:
+
+        * is for the current trips_year
+        * is complete
+        * is PENDING
+        * has not already been graded by this user
+        * has not been skipped by this user
+        * has been graded fewer than NUM_SCORES times
+
+        Furthermore:
+        * If the grader is a croo captain, prefer croo grades until each app
+          has at least one score from a croo head.
+        * Applications with fewer scores are prioritized.
+        * Applications claims are included when counting scores for the
+          application.
+        """
+        trips_year = TripsYear.objects.current()
+
+        croo_app_pks = pks(Volunteer.objects.croo_applications(trips_year))
+
+        NUM_SCORES = Volunteer.NUM_SCORES
+
+        # Subquery for all active claims
+        active_claims_start = timezone.now() - ScoreClaim.HOLD_DURATION
+        active_claims = ScoreClaim.objects.filter(
+            application=OuterRef('pk'),
+            claimed_at__gt=active_claims_start
+        ).annotate(
+            # Has the grader already added a score for this claim?
+            already_scored=Exists(
+                Score.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            ),
+            # Has the grader already skipped this claim?
+            already_skipped=Exists(
+                Skip.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            )
+        ).exclude(
+            already_scored=True
+        ).exclude(
+            already_skipped=True
+        ).values('pk')
+
+        qs = Volunteer.objects.leader_or_croo_applications(
+            trips_year=trips_year
+        ).filter(
+            status=Volunteer.PENDING
+        ).exclude(
+            scores__grader=self
+        ).exclude(
+            skips__grader=self
+        ).annotate(
+            Count('scores')
+        ).annotate(
+            active_claims=Subquery(active_claims)
+        ).annotate(
+            Count('active_claims')
+        ).annotate(
+            scores_and_claims=F('scores__count') + F('active_claims__count')
+        ).filter(
+            scores_and_claims__lt=NUM_SCORES
+        ).annotate(
+            croo_head_scores_count=Count('pk', filter=Q(scores__croo_head=True)),
+            croo_head_claims=Subquery(active_claims.filter(croo_head=True)),
+            croo_head_claims_count=Count('croo_head_claims'),
+            needs_croo_score=TrueIf(
+                pk__in=croo_app_pks,
+                croo_head_scores_count=0,
+                croo_head_claims_count=0
+            )
+        )
+
+        # Croo head: try and pick a croo app which needs a croo head score
+        if self.is_croo_head:
+            needs_croo_head_score = qs.filter(needs_croo_score=True)
+            if needs_croo_head_score.exists():
+                qs = needs_croo_head_score
+
+        # Otherwise, reserve one score on each app for a croo head
+        else:
+            qs = qs.filter(
+                scores_and_claims__lt=Case(
+                    When(needs_croo_score=True, then=V(NUM_SCORES-1)),
+                    default=V(NUM_SCORES),
+                    output_field=models.IntegerField()
+                )
+            )
+
+        # Pick an app with least scores and claims
+        # TODO: use a subquery
+        qs = qs.filter(
+            scores_and_claims=qs.aggregate(
+                fewest=Min('scores_and_claims'))['fewest'])
+
+        if not qs.exists():
+            return None
+
+        # Manually choose random element because .order_by('?') is buggy
+        # See https://code.djangoproject.com/ticket/26390
+        return random.choice(qs)
+
+
+def TrueIf(**kwargs):
+    """
+    Return a case expression that evaluates to True if the query conditions
+    are met, else False
+    """
+    return Case(
+        When(then=True, **kwargs),
+        default=False,
+        output_field=models.BooleanField()
+    )
 
 
 # Deprecated models (contain historical data only)
