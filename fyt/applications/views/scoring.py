@@ -157,7 +157,6 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def extra_context(self):
         return {
             'application': self.application,
-            'score_choices': [desc for _, desc in Score.SCORE_CHOICES],
         }
 
 

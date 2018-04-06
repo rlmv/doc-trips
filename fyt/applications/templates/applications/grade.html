@@ -8,13 +8,7 @@
 
 {% block content %}
 
-<p> Read the application completely before assigning it a score:
-  <ul class="list-unstyled">
-    {% for score in score_choices %}
-    <li> {{ score }} </li>
-    {% endfor %}
-  </ul>
-</p>
+<p> Read the application completely before assigning it a score. </p>
 
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
@@ -27,7 +21,9 @@
   {% endif %}
 </div>
 
-{% display_answers application %}
+<div>
+  {% display_answers application %}
+</div>
 
 <div>
   {% crispy form %}
