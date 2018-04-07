@@ -19,6 +19,11 @@ def _get_grader(user):
     return Grader.objects.from_user(user)
 
 
+def _expire_claim(claim):
+    claim.claimed_at = timezone.now() - (1.1 * ScoreClaim.HOLD_DURATION)
+    claim.save()
+
+
 class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
@@ -198,10 +203,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         claim = self.grader.claim_score(app)
         self.assertEqual(self.grader.current_claim(), claim)
 
-        # Expired
-        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
-        claim.save()
-
+        _expire_claim(claim)
         self.assertIsNone(self.grader.current_claim())
 
     def test_current_claim_ignores_already_scored(self):
@@ -222,9 +224,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         claim = self.grader.claim_score(app)
         self.assertTrue(self.grader.check_claim(app))
 
-        # Expired
-        claim.claimed_at -= (ScoreClaim.HOLD_DURATION * 2)
-        claim.save()
+        _expire_claim(claim)
         self.assertFalse(self.grader.check_claim(app))
 
     def test_claim_next_to_score_marks_a_claim(self):
@@ -301,9 +301,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIsNone(self.director.next_to_score())
         self.assertIsNone(self.croo_head.next_to_score())
 
-        # Expired
-        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
-        claim.save()
+        _expire_claim(claim)
 
         self.assertEqual(self.user.next_to_score(), app)
         self.assertEqual(self.director.next_to_score(), app)
@@ -396,8 +394,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         # Expired
         claim = mommy.make(ScoreClaim, application=app)
         claim.croo_head = True
-        claim.claimed_at = claim.claimed_at - 1.1 * ScoreClaim.HOLD_DURATION
-        claim.save()
+        _expire_claim(claim)
 
         # The remaining score is reserved for a croo head
         self.assertIsNone(self.user.next_to_score())
@@ -490,28 +487,41 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=self.grader).follow()
         self.assertTemplateUsed(resp, self.no_applications)
 
-    def test_cant_score_application_with_expired_claim(self):
+    def test_cant_GET_score_application_with_expired_claim(self):
         app = self.make_application(trips_year=self.trips_year)
         grader = _get_grader(self.grader)
         url = reverse('applications:score:next')
+
         resp = self.app.get(url, user=grader).follow()
 
-        # Expire the claim
-        claim = grader.current_claim()
-        claim.claimed_at -= 2 * ScoreClaim.HOLD_DURATION
-        claim.save()
+        _expire_claim(grader.current_claim())
 
-        # GET
-        with self.assertRaises(AssertionError):
-            self.app.get(reverse('applications:score:add', kwargs={'pk': app.pk}), user=grader)
+        resp = self.app.get(
+            reverse('applications:score:add', kwargs={'pk': app.pk}),
+            user=grader)
+        self.assertEqual(resp.location, url)
+        resp = resp.maybe_follow()
+
+        # Shows message?
+        messages = list(resp.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertIn('You took longer than the alloted time', messages[0].message)
+
+    def test_cant_POST_score_application_with_expired_claim(self):
+        app = self.make_application(trips_year=self.trips_year)
+        grader = _get_grader(self.grader)
+        url = reverse('applications:score:next')
 
         # POST
+        resp = self.app.get(url, user=grader).follow()
+        _expire_claim(grader.current_claim())
+
         resp.form['leader_score'] = 3
         resp.form['croo_score'] = 4
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit().maybe_follow()
 
-        # Show message
+        # Shows message?
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertIn('You took longer than the alloted time', messages[0].message)

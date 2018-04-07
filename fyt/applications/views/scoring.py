@@ -115,9 +115,15 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def application_name(self):
         return "Application #{}".format(self.kwargs['pk'])
 
+    def dispatch(self, *args, **kwargs):
+        if not self.grader.check_claim(self.application):
+            self.messages.warning("You took longer than the alloted time "
+                                  "for scoring this application")
+            return HttpResponseRedirect(self.get_success_url())
+
+        return super().dispatch(*args, **kwargs)
+
     def get(self, *args, **kwargs):
-        # TODO: combine this with POST check in dispatch()?
-        assert self.grader.check_claim(self.application)
         self.show_average_grade()
         return super().get(*args, **kwargs)
 
@@ -144,11 +150,6 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         if SKIP in request.POST:
             self.grader.skip(self.application)
             self.messages.success('Skipped {}'.format(self.application_name))
-            return HttpResponseRedirect(self.get_success_url())
-
-        if not self.grader.check_claim(self.application):
-            self.messages.warning("You took longer than the alloted time "
-                                  "for scoring this application")
             return HttpResponseRedirect(self.get_success_url())
 
         return super().post(request, *args, **kwargs)
