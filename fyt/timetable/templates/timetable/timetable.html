@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 
@@ -11,22 +10,6 @@
 {% endblock content %}
 
 {% block scripts %}
-
 {# add DateTimePicker js #}
 {{ form.media }}
-
-<script type="text/javascript">
-$(function() {
-    $.fn.bootstrapSwitch.defaults.size = 'mini';
-    $.fn.bootstrapSwitch.defaults.onText = 'VISIBLE'
-    $.fn.bootstrapSwitch.defaults.offText = 'HIDDEN'
-//    $("input.checkbox").bootstrapSwitch()
-});
-</script>
-
 {% endblock %}
-
-
-
-
-

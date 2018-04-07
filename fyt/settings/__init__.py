@@ -178,7 +178,6 @@ PIPELINE = {
                 'css/bootstrap.min.css',
                 'css/bootstrap-theme.min.css',
                 'css/font-awesome.min.css',
-                'css/bootstrap-switch.css',
                 'css/summernote.css',
                 'css/metisMenu.css',
             ),
@@ -194,7 +193,6 @@ PIPELINE = {
                 'dartdm/lookup.js',  # must come after typeahead
                 'js/stupidtable.js',
                 'js/metisMenu.min.js',
-                'js/bootstrap-switch.js',
                 'js/timer.js'
             ),
             'output_filename': 'base.js'
