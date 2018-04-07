@@ -98,7 +98,7 @@
 
             <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
               {% for comment in score.scorecomment_set.all %}
-              <p><strong>{{ comment.question }}:</strong> {{ comment.comment }}</p>
+              <p><strong>{{ comment.score_question }}:</strong> {{ comment.comment }}</p>
               {% endfor %}
             </div>
 

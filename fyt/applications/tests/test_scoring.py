@@ -502,7 +502,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=self.grader).follow()
         resp.form['leader_score'] = 3
         resp.form['croo_score'] = 4
-        resp.form['question_1'] = 'A comment'
+        resp.form['score_question_1'] = 'A comment'
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit()
 

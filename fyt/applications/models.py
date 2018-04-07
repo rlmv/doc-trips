@@ -951,12 +951,12 @@ class Score(DatabaseModel):
 
         return super().save(**kwargs)
 
-    def add_comment(self, question, comment):
+    def add_comment(self, score_question, comment):
         """
         Add a comment to a specific answer.
         """
         return ScoreComment.objects.create(
-            score=self, question=question, comment=comment)
+            score=self, score_question=score_question, comment=comment)
 
 
 class ScoreQuestion(DatabaseModel):
@@ -977,15 +977,15 @@ class ScoreComment(models.Model):
     """
     A grader's comment on a specific answer.
 
-    This is a M2M through model between Score and Answer.
+    This is a M2M through model between Score and ScoreQuestion.
     """
     score = models.ForeignKey(Score, on_delete=models.CASCADE)
-    question = models.ForeignKey(ScoreQuestion, on_delete=models.PROTECT)
+    score_question = models.ForeignKey(ScoreQuestion, on_delete=models.PROTECT)
     comment = models.TextField(blank=True)
 
     class Meta:
-        ordering = ['question']
-        unique_together = ['score', 'question']
+        ordering = ['score_question']
+        unique_together = ['score', 'score_question']
 
     def __str__(self):
         return self.comment
