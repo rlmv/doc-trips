@@ -676,11 +676,11 @@ class CommentHandler(PreferenceHandler):
     through_qs_name = 'scorecomment_set'
     through_creator = 'add_comment'
     data_field = 'comment'
-    target_field = 'question'
+    target_field = 'score_question'
     default = ''
 
-    def formfield_label(self, question):
-        return str(question)
+    def formfield_label(self, score_question):
+        return str(score_question)
 
     def formfield(self, answer, initial):
         return forms.CharField(
