@@ -116,6 +116,8 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         return "Application #{}".format(self.kwargs['pk'])
 
     def get(self, *args, **kwargs):
+        # TODO: combine this with POST check in dispatch()?
+        assert self.grader.check_claim(self.application)
         self.show_average_grade()
         return super().get(*args, **kwargs)
 

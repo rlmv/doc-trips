@@ -501,16 +501,22 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         claim.claimed_at -= 2 * ScoreClaim.HOLD_DURATION
         claim.save()
 
+        # GET
+        with self.assertRaises(AssertionError):
+            self.app.get(reverse('applications:score:add', kwargs={'pk': app.pk}), user=grader)
+
+        # POST
         resp.form['leader_score'] = 3
         resp.form['croo_score'] = 4
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit().maybe_follow()
 
+        # Show message
         messages = list(resp.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertIn('You took longer than the alloted time', messages[0].message)
 
-        # Score not recorded ??
+        # Score not recorded
         self.assertEqual(Score.objects.filter(grader=grader).count(), 0)
 
     def test_skip_application(self):
