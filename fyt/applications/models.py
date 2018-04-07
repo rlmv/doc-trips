@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models import (
     Avg,
     Q,
@@ -1177,6 +1177,7 @@ class Grader(DartmouthUser):
         return self.scores_for_year(trips_year).aggregate(
             Avg('croo_score'))['croo_score__avg']
 
+    @transaction.atomic
     def claim_next_to_score(self):
         """
         Find the next available application to score, and claim it.
