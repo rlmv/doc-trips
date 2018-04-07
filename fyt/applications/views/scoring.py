@@ -88,8 +88,12 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     success_url = reverse_lazy('applications:score:next')
     form_invalid_message = 'Uh oh, looks like you forgot to fill out a field'
 
+    @property
+    def application_name(self):
+        return "Application #{}".format(self.kwargs['pk'])
+
     def get_form_valid_message(self):
-        return 'Score submitted for Application #{}'.format(self.kwargs['pk'])
+        return 'Score submitted for {}'.format(self.application_name)
 
     def get_headline(self):
         return 'Score {}: NetId {}'.format(
@@ -110,10 +114,6 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     @cached_property
     def claim(self):
         return self.grader.current_claim()
-
-    @property
-    def application_name(self):
-        return "Application #{}".format(self.kwargs['pk'])
 
     def dispatch(self, *args, **kwargs):
         if not self.grader.check_claim(self.application):
