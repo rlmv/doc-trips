@@ -361,13 +361,13 @@ class QuestionModelTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
         self.q_general = mommy.make(
-            Question, trips_year=self.trips_year, type=Question.ALL)
+            Question, trips_year=self.trips_year, index=0, type=Question.ALL)
         self.q_leader = mommy.make(
-            Question, trips_year=self.trips_year, type=Question.LEADER)
+            Question, trips_year=self.trips_year, index=1, type=Question.LEADER)
         self.q_croo = mommy.make(
-            Question, trips_year=self.trips_year, type=Question.CROO)
+            Question, trips_year=self.trips_year, index=2, type=Question.CROO)
         self.q_optional = mommy.make(
-            Question, trips_year=self.trips_year, type=Question.OPTIONAL)
+            Question, trips_year=self.trips_year, index=3, type=Question.OPTIONAL)
 
     def test_leader_only(self):
         self.assertFalse(self.q_general.leader_only)
