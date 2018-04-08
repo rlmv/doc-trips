@@ -115,15 +115,12 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
     def claim(self):
         return self.grader.current_claim()
 
-    def dispatch(self, *args, **kwargs):
+    def get(self, *args, **kwargs):
         if not self.grader.check_claim(self.application):
             self.messages.warning("You took longer than the alloted time "
                                   "for scoring this application")
             return HttpResponseRedirect(self.get_success_url())
 
-        return super().dispatch(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
         self.show_average_grade()
         return super().get(*args, **kwargs)
 
@@ -150,6 +147,11 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         if SKIP in request.POST:
             self.grader.skip(self.application)
             self.messages.success('Skipped {}'.format(self.application_name))
+            return HttpResponseRedirect(self.get_success_url())
+
+        if not self.grader.check_claim(self.application):
+            self.messages.warning("You took longer than the alloted time "
+                                  "for scoring this application")
             return HttpResponseRedirect(self.get_success_url())
 
         return super().post(request, *args, **kwargs)
