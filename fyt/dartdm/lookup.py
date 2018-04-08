@@ -43,8 +43,11 @@ def dartdm_lookup(query_string):
     if len(query_string) < 2:
         return []
 
-    params = {'q': query_string}
-    r = requests.get(DARTDM_URL, params=params)
+    r = requests.get(DARTDM_URL, params={'q': query_string})
+
+    if 'error' in r.json():
+        logger.info(r.json())
+        return []
 
     return [{
         NETID: data['uid'],

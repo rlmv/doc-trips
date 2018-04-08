@@ -1,0 +1,23 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.18.4]
+    method: GET
+    uri: https://api-lookup.dartmouth.edu/v1/lookup?q=a%2C
+  response:
+    body: {string: '{"status":503,"error":"edu.dartmouth.idm.api.UnavailableException:
+        javax.naming.NoPermissionException: [LDAP: error code 50 - You do not have
+        sufficient privileges to perform an unindexed search]; remaining name ''ou=Users,dc=dartmouth,dc=edu''"}'}
+    headers:
+      Access-Control-Allow-Headers: ['X-Requested-With, Content-Type']
+      Access-Control-Allow-Methods: [GET]
+      Access-Control-Allow-Origin: ['*']
+      Connection: [close]
+      Content-Type: [application/json]
+      Date: ['Sun, 08 Apr 2018 16:00:33 GMT']
+    status: {code: 503, message: ''}
+version: 1

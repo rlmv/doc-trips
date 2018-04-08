@@ -1,5 +1,6 @@
 import os
 import unittest
+import logging
 
 from django.core.exceptions import ValidationError
 
@@ -38,5 +39,15 @@ class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
 
 class DartdmLookupTestCase(unittest.TestCase):
 
+    def setUp(self):
+        logging.disable(logging.CRITICAL)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
     def test_too_short_query(self):
         self.assertEqual([], dartdm_lookup('A'))
+
+    @vcr.use_cassette
+    def test_query_with_comma(self):
+        self.assertEqual([], dartdm_lookup('a,'))
