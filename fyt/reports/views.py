@@ -111,8 +111,8 @@ class VolunteerCSV(GenericReportView):
 
     def get_queryset(self):
         trips_year = self.get_trips_year()
-        qs = (Application.objects.with_scores(trips_year) &
-              Application.objects.leader_or_croo_applications(trips_year))
+        qs = Application.objects.leader_or_croo_applications(
+            trips_year).with_avg_scores().prefetch_related('scores')
         return preload_questions(qs, trips_year)
 
     def get_row(self, application):

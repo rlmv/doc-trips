@@ -32,7 +32,7 @@
   {% for leader, assign_url, triptype_pref, section_pref in leader_applications %}
   <tr>
     <td> {{ leader|detail_link:leader }} </td>
-    <td> {{ leader.avg_grade|floatformat:1|default:"&mdash;" }} </td>
+    <td> {{ leader.avg_leader_score|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
     <td>
       {% if leader.assigned_trip %}

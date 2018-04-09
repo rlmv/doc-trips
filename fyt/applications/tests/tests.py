@@ -559,12 +559,12 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertQsEqual(Volunteer.objects.leader_waitlist(trips_year),
                            [waitlisted])
 
-    def test_with_scores_ordering(self):
+    def test_with_avg_scores_ordering(self):
         app1 = self.make_application()
         app2 = self.make_application()
         mommy.make(Grader).add_score(app1, 2, 1)
 
-        qs = Volunteer.objects.with_scores(self.trips_year)
+        qs = Volunteer.objects.with_avg_scores()
         qs = qs.order_by('-norm_avg_leader_score')
 
         self.assertEqual(qs[0].avg_leader_score, 2)
