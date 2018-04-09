@@ -52,8 +52,8 @@ class GraderViewsTestCase(FytTestCase):
         graders = Grader.objects.for_year(self.trips_year)
         self.assertEqual(len(graders), 1)
         self.assertEqual(graders[0].score_count, 1)
-        self.assertEqual(graders[0].leader_score_avg, 1)
-        self.assertEqual(graders[0].croo_score_avg, 2)
+        self.assertEqual(graders[0].avg_leader_score, 1)
+        self.assertEqual(graders[0].avg_croo_score, 2)
 
     def test_for_year_score_histogram(self):
         mommy.make(

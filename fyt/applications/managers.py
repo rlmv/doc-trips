@@ -1,7 +1,8 @@
 from collections import OrderedDict
 
 from django.db import models
-from django.db.models import Lookup, Avg, Value as V, Case, Count, Sum, When
+from django.db.models import (Lookup, Avg, Value as V, Case, Count, Sum, When,
+                              FilteredRelation, Q)
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -218,23 +219,43 @@ class BaseGraderManager(models.Manager):
 
 class GraderQuerySet(models.QuerySet):
 
-    # TODO: use subqueries in Django 1.11
     def for_year(self, trips_year):
         """
         Return all users who have scored applications this year.
         """
-        qs = self.filter(scores__trips_year=trips_year).distinct()
+        LEADER_SCORE_LOOKUP = 'scores_for_year__leader_score'
+        CROO_SCORE_LOOKUP = 'scores_for_year__croo_score'
 
-        for user in qs:
-            scores = user.scores.filter(trips_year=trips_year)
-            user.score_count = scores.count()
-            user.leader_score_avg = scores.aggregate(Avg('leader_score'))['leader_score__avg']
-            user.croo_score_avg = scores.aggregate(Avg('croo_score'))['croo_score__avg']
+        qs = self.annotate(
+            scores_for_year=FilteredRelation('scores', condition=Q(
+                scores__trips_year=trips_year))
+        ).filter(
+            scores_for_year__isnull=False
+        ).distinct().annotate(
+            score_count=Count('scores_for_year'),
+            avg_leader_score=Avg(LEADER_SCORE_LOOKUP),
+            avg_croo_score=Avg(CROO_SCORE_LOOKUP)
+        )
 
-            user.leader_score_histogram = histogram(scores, 'leader_score')
-            user.croo_score_histogram = histogram(scores, 'croo_score')
+        qs = qs._annotate_score_counts(LEADER_SCORE_LOOKUP)
+        qs = qs._annotate_score_counts(CROO_SCORE_LOOKUP)
+        qs = qs._attach_histogram('leader_score_histogram', LEADER_SCORE_LOOKUP)
+        qs = qs._attach_histogram('croo_score_histogram', CROO_SCORE_LOOKUP)
 
         return qs
+
+    def _annotate_score_counts(self, score_lookup):
+        return self.annotate(
+            **{_bin(score_lookup, i): Count('scores_for_year', filter=Q(
+                **{score_lookup: i}))
+               for i in SCORE_CHOICES()})
+
+    def _attach_histogram(self, histogram_name, score_lookup):
+        for grader in self:
+            setattr(grader, histogram_name, OrderedDict(
+                (i, getattr(grader, _bin(score_lookup, i)))
+                for i in SCORE_CHOICES()))
+        return self
 
 
 GraderManager = BaseGraderManager.from_queryset(GraderQuerySet)
@@ -242,33 +263,8 @@ GraderManager = BaseGraderManager.from_queryset(GraderQuerySet)
 
 def SCORE_CHOICES():
     from .models import Score
-    return Score.SCORE_CHOICES
+    return (i for i, _ in Score.SCORE_CHOICES)
 
 
-def histogram(scores, field_name):
-    """
-    Create a histogram of the given scores, where histogram[1] is the
-    number of `1`s granted, etc.
-    """
-    def box(x):
-        return '{}{}'.format(field_name, x)
-
-    histogram = scores.annotate(**dict(
-        [box(x), OneIfTrue(**{field_name: x})]
-        for x, _ in SCORE_CHOICES())
-    ).aggregate(
-        *(Sum(box(x)) for x, _ in SCORE_CHOICES())
-    )
-
-    return OrderedDict(
-        (x, histogram[box(x) + '__sum'])
-        for x, _ in SCORE_CHOICES()
-    )
-
-
-def OneIfTrue(**kwargs):
-    return Case(
-        When(then=1, **kwargs),
-        default=0,
-        output_field=models.IntegerField()
-    )
+def _bin(score_lookup, x):
+    return '{}_{}'.format(score_lookup, str(x).replace('.', '_'))

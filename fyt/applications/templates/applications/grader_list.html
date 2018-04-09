@@ -44,11 +44,11 @@
   <td> {{ grader.avg_croo_grade|floatformat:1 }} </td>
   {% else %}
   <td> {{ grader.score_count }} </td>
-  <td class="text-center"> {{ grader.leader_score_avg|floatformat:1 }} </td>
+  <td class="text-center"> {{ grader.avg_leader_score|floatformat:1 }} </td>
   {% for x in score_choices %}
   <td> {{ grader.leader_score_histogram|get:x|default:'-' }} </td>
   {% endfor %}
-  <td class="text-center"> {{ grader.croo_score_avg|floatformat:1 }} </td>
+  <td class="text-center"> {{ grader.avg_croo_score|floatformat:1 }} </td>
   {% for x in score_choices %}
   <td> {{ grader.croo_score_histogram|get:x|default:'-' }} </td>
   {% endfor %}
