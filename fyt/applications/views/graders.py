@@ -1,10 +1,8 @@
-from collections import OrderedDict
-
 from django.db import models
-from django.db.models import Q, Avg, Case, Count, Sum, When
+from django.db.models import Q, Avg
 from vanilla import ListView
 
-from fyt.applications.models import Score, Volunteer
+from fyt.applications.models import Score, Volunteer, Grader
 from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.users.models import DartmouthUser
@@ -44,54 +42,6 @@ def _old_get_graders(trips_year):
     return users
 
 
-# TODO: use subqueries in Django 1.11
-def get_graders(trips_year):
-    """
-    Return all users who have scored applications this year.
-    """
-    qs = DartmouthUser.objects.filter(scores__trips_year=trips_year).distinct()
-
-    for user in qs:
-        scores = user.scores.filter(trips_year=trips_year)
-        user.score_count = scores.count()
-        user.leader_score_avg = scores.aggregate(Avg('leader_score'))['leader_score__avg']
-        user.croo_score_avg = scores.aggregate(Avg('croo_score'))['croo_score__avg']
-
-        user.leader_score_histogram = histogram(scores, 'leader_score')
-        user.croo_score_histogram = histogram(scores, 'croo_score')
-
-    return qs
-
-
-def histogram(scores, field_name):
-    """
-    Create a histogram of the given scores, where histogram[1] is the
-    number of `1`s granted, etc.
-    """
-    def box(x):
-        return '{}{}'.format(field_name, x)
-
-    histogram = scores.annotate(**dict(
-        [box(x), OneIfTrue(**{field_name: x})]
-        for x, _ in Score.SCORE_CHOICES)
-    ).aggregate(
-        *(Sum(box(x)) for x, _ in Score.SCORE_CHOICES)
-    )
-
-    return OrderedDict(
-        (x, histogram[box(x) + '__sum'])
-        for x, _ in Score.SCORE_CHOICES
-    )
-
-
-def OneIfTrue(**kwargs):
-    return Case(
-        When(then=1, **kwargs),
-        default=0,
-        output_field=models.IntegerField()
-    )
-
-
 class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
                  TripsYearMixin, ListView):
     """
@@ -108,10 +58,10 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
         trips_year = self.get_trips_year()
 
         if users_with_old_grades(trips_year).exists():
-            assert not get_graders(trips_year).exists()
+            assert not Grader.objects.for_year(trips_year).exists()
             return _old_get_graders(trips_year)
 
-        return get_graders(trips_year)
+        return Grader.objects.for_year(trips_year)
 
     def extra_context(self):
         return {

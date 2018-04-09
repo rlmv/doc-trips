@@ -6,7 +6,7 @@ from fyt.applications.models import (
     Score,
     Grader
 )
-from fyt.applications.views.graders import _old_get_graders, get_graders
+from fyt.applications.views.graders import _old_get_graders
 from fyt.test import FytTestCase
 
 
@@ -18,20 +18,23 @@ class GraderViewsTestCase(FytTestCase):
         self.make_user()
         self.grader = Grader.objects.from_user(self.make_grader())
 
-    def test_get_graders_only_returns_graders(self):
+    def test_for_year_only_returns_graders(self):
         mommy.make(Score, trips_year=self.trips_year, grader=self.grader)
-        self.assertQsEqual(get_graders(self.trips_year), [self.grader])
+        self.assertQsEqual(Grader.objects.for_year(self.trips_year),
+                           [self.grader])
 
-    def test_get_graders_returns_distinct_queryset(self):
+    def test_for_year_returns_distinct_queryset(self):
         mommy.make(Score, 2, trips_year=self.trips_year, grader=self.grader)
-        self.assertQsEqual(get_graders(self.trips_year), [self.grader])
+        self.assertQsEqual(Grader.objects.for_year(self.trips_year),
+                           [self.grader])
 
-    def test_get_graders_filters_trips_year(self):
+    def test_for_year_filters_trips_year(self):
         new_score = mommy.make(Score, trips_year=self.trips_year)
         old_score = mommy.make(Score, trips_year=self.old_trips_year)
-        self.assertQsEqual(get_graders(self.trips_year), [new_score.grader])
+        self.assertQsEqual(Grader.objects.for_year(self.trips_year),
+                           [new_score.grader])
 
-    def test_get_graders_averages_only_include_scores_from_this_year(self):
+    def test_for_year_averages_only_include_scores_from_this_year(self):
         mommy.make(
             Score,
             trips_year=self.trips_year,
@@ -46,13 +49,13 @@ class GraderViewsTestCase(FytTestCase):
             leader_score=3,
             croo_score=4
         )
-        graders = get_graders(self.trips_year)
+        graders = Grader.objects.for_year(self.trips_year)
         self.assertEqual(len(graders), 1)
         self.assertEqual(graders[0].score_count, 1)
         self.assertEqual(graders[0].leader_score_avg, 1)
         self.assertEqual(graders[0].croo_score_avg, 2)
 
-    def test_get_graders_score_histogram(self):
+    def test_for_year_score_histogram(self):
         mommy.make(
             Score,
             trips_year=self.trips_year,
@@ -67,7 +70,7 @@ class GraderViewsTestCase(FytTestCase):
             leader_score=4,
             croo_score=4
         )
-        graders = get_graders(self.trips_year)
+        graders = Grader.objects.for_year(self.trips_year)
 
         self.assertEqual(graders[0].leader_score_histogram, {
             1: 1,

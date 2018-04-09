@@ -1,6 +1,7 @@
-from django.db import models
-from django.db.models import Lookup, Avg, Value as V, Count
+from collections import OrderedDict
 
+from django.db import models
+from django.db.models import Lookup, Avg, Value as V, Case, Count, Sum, When
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -213,3 +214,55 @@ class GraderManager(models.Manager):
     def from_user(self, user):
         """Return the Grader object proxying the given user."""
         return self.get(pk=user.pk)
+
+    # TODO: use subqueries in Django 1.11
+    def for_year(self, trips_year):
+        """
+        Return all users who have scored applications this year.
+        """
+        qs = self.filter(scores__trips_year=trips_year).distinct()
+
+        for user in qs:
+            scores = user.scores.filter(trips_year=trips_year)
+            user.score_count = scores.count()
+            user.leader_score_avg = scores.aggregate(Avg('leader_score'))['leader_score__avg']
+            user.croo_score_avg = scores.aggregate(Avg('croo_score'))['croo_score__avg']
+
+            user.leader_score_histogram = histogram(scores, 'leader_score')
+            user.croo_score_histogram = histogram(scores, 'croo_score')
+
+        return qs
+
+
+def SCORE_CHOICES():
+    from .models import Score
+    return Score.SCORE_CHOICES
+
+
+def histogram(scores, field_name):
+    """
+    Create a histogram of the given scores, where histogram[1] is the
+    number of `1`s granted, etc.
+    """
+    def box(x):
+        return '{}{}'.format(field_name, x)
+
+    histogram = scores.annotate(**dict(
+        [box(x), OneIfTrue(**{field_name: x})]
+        for x, _ in SCORE_CHOICES())
+    ).aggregate(
+        *(Sum(box(x)) for x, _ in SCORE_CHOICES())
+    )
+
+    return OrderedDict(
+        (x, histogram[box(x) + '__sum'])
+        for x, _ in SCORE_CHOICES()
+    )
+
+
+def OneIfTrue(**kwargs):
+    return Case(
+        When(then=1, **kwargs),
+        default=0,
+        output_field=models.IntegerField()
+    )
