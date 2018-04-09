@@ -554,34 +554,16 @@ class AssignLeader(_TripMixin, DatabaseListView):
     context_object_name = 'leader_applications'
 
     def get_queryset(self):
-        qs = (
-            self.model.objects.prospective_leaders_for_trip(self.get_trip())
-            .select_related(
-                'applicant',
-                'assigned_trip',
-                'assigned_trip__template',
-                'assigned_trip__section'
-            ).prefetch_related(
-                'leader_supplement__grades'
-            )
+        return Volunteer.objects.prospective_leaders_for_trip(
+            self.get_trip()
+        ).with_avg_scores().order_by(
+            '-avg_leader_score'
+        ).select_related(
+            'applicant',
+            'assigned_trip',
+            'assigned_trip__template',
+            'assigned_trip__section'
         )
-
-        # For some reason, annotating grades using Avg adds an
-        # expensive GROUP BY clause to the query, killing the site.
-        # See https://code.djangoproject.com/ticket/17144.
-        # Does this need to be reopened?
-        # TODO: check with 1.8
-        # This is a hackish workaround to explicitly compute the
-        # average for all applications with reasonable performance:
-        for app in qs:
-            if app.leader_supplement.grades.exists():
-                app.avg_grade = mean(
-                    map(lambda g: g.grade, app.leader_supplement.grades.all())
-                )
-            else:
-                app.avg_grade = None
-        # return 0 in case someone has no grades
-        return sorted(qs, key=lambda x: x.avg_grade or 0, reverse=True)
 
     def get_assign_url(self, leader, trip):
         """
