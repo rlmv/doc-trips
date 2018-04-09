@@ -137,26 +137,6 @@ class BaseVolunteerManager(models.Manager):
         return self.filter(trips_year=trips_year,
                            status=self.model.LEADER_WAITLIST)
 
-    def with_scores(self, trips_year):
-        """
-        Return all applications for this year annotated with
-        `avg_leader_score`, `norm_avg_leader_score`, `avg_croo_score`,
-        `norm_avg_croo_score`.
-
-        Scores are coalesced into the normalized attribute so that, when
-        ordering on Postgres, null values come after the actual scores.
-        Note that this issue won't appear on a dev sqlite database.
-        """
-        return self.filter(
-            trips_year=trips_year
-        ).annotate(
-            avg_leader_score=Avg('scores__leader_score'),
-            avg_croo_score=Avg('scores__croo_score')
-        ).annotate(
-            norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
-            norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
-        )
-
     def score_progress(self, trips_year):
         """
         Return a tuple containing the number of scores given so far for each
@@ -191,6 +171,22 @@ class VolunteerQuerySet(models.QuerySet):
         return self.filter(
             deadline_extension__isnull=False,
             deadline_extension__gt=timezone.now())
+
+    def with_avg_scores(self):
+        """
+        Annotate the queryset with average scores.
+
+        Scores are coalesced into the normalized attribute so that, when
+        ordering on Postgres, null values come after the actual scores.
+        Note that this issue won't appear on a dev sqlite database.
+        """
+        return self.annotate(
+            avg_leader_score=Avg('scores__leader_score'),
+            avg_croo_score=Avg('scores__croo_score')
+        ).annotate(
+            norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
+            norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
+        )
 
 
 VolunteerManager = BaseVolunteerManager.from_queryset(VolunteerQuerySet)

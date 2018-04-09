@@ -417,9 +417,9 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
-        return Volunteer.objects.with_scores(
-            self.kwargs['trips_year']
-        ).only(
+        return Volunteer.objects.filter(
+            trips_year=self.kwargs['trips_year']
+        ).with_avg_scores().only(
             'applicant__netid',
             'applicant__name',
             'trips_year_id',
