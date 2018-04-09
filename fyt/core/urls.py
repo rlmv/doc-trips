@@ -53,7 +53,7 @@ database_urlpatterns = [
     url(r'^foodbox/',
         include((foodbox_urlpatterns, 'foodbox'))),
     url(r'^grades/',
-        include((grader_urlpatterns))),
+        include((grader_urlpatterns, 'graders'))),
     url(r'^incidents/',
         include(('fyt.safety.urls', 'safety'))),
     url(r'^leaders/',

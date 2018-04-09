@@ -30,11 +30,14 @@ class Scoring(GraderPermissionRequired, ExtraContextMixin, TemplateView):
     """
     template_name = 'applications/scoring.html'
 
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
     def extra_context(self):
         return {
-            'progress': Volunteer.objects.score_progress(
-                TripsYear.objects.current()
-            )
+            'trips_year': self.trips_year,
+            'progress': Volunteer.objects.score_progress(self.trips_year)
         }
 
 

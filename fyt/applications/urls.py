@@ -69,5 +69,5 @@ score_urlpatterns = [
 ]
 
 grader_urlpatterns = [
-    url(r'^graders/$', GraderList.as_view(), name='graders_index'),
+    url(r'^graders/$', GraderList.as_view(), name='index'),
 ]
