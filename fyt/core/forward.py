@@ -11,6 +11,7 @@ from fyt.applications.models import (
     ApplicationInformation,
     PortalContent,
     Question,
+    ScoreQuestion,
     Volunteer as Application,
 )
 from fyt.croos.models import Croo
@@ -47,6 +48,7 @@ class Forward:
     MODELS_FORWARD = [
         ApplicationInformation,
         Question,
+        ScoreQuestion,
         PortalContent,
         Settings,
         RaidInfo,
