@@ -209,11 +209,14 @@ class QuestionManager(models.Manager):
         return self.filter(trips_year=trips_year, type__ne=self.model.OPTIONAL)
 
 
-class GraderManager(models.Manager):
+class BaseGraderManager(models.Manager):
 
     def from_user(self, user):
         """Return the Grader object proxying the given user."""
         return self.get(pk=user.pk)
+
+
+class GraderQuerySet(models.QuerySet):
 
     # TODO: use subqueries in Django 1.11
     def for_year(self, trips_year):
@@ -232,6 +235,9 @@ class GraderManager(models.Manager):
             user.croo_score_histogram = histogram(scores, 'croo_score')
 
         return qs
+
+
+GraderManager = BaseGraderManager.from_queryset(GraderQuerySet)
 
 
 def SCORE_CHOICES():
