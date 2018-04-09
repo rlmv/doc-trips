@@ -88,8 +88,8 @@
     </tr>
     {% for score in application.get_scores %}
     <tr>
-        <td> {{ score.leader_score }} </td>
-        <td> {{ score.croo_score }} </td>
+        <td class="text-center"> {{ score.leader_score|default:'&mdash;' }} </td>
+        <td class="text-center"> {{ score.croo_score|default:'&mdash;' }} </td>
         <td>
             <strong>{{ score.grader }}</strong>
             {% if score.croo_head %}
@@ -115,8 +115,8 @@
 
     {% if application.average_leader_score or application.average_croo_score %}
     <tr class="info">
-        <td> {{ application.average_leader_score|floatformat:1 }} </td>
-        <td> {{ application.average_croo_score|floatformat:1 }} </td>
+        <td class="text-center"> {{ application.average_leader_score|floatformat:1 }} </td>
+        <td class="text-center"> {{ application.average_croo_score|floatformat:1 }} </td>
         <td> AVERAGE </td> <td/> <td/>
     </tr>
     {% endif %}
