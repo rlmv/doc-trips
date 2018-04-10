@@ -101,20 +101,21 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        self.grader = _get_grader(self.make_grader())
 
     def test_score_form(self):
         application = self.make_application()
-        form = ScoreForm(application=application)
+        form = ScoreForm(application=application, grader=self.grader)
         self.assertEqual(form.instance.application, application)
 
     def test_non_leader_application_does_not_have_leader_score_field(self):
         application = self.make_application(leader_willing=False)
-        form = ScoreForm(application=application)
+        form = ScoreForm(application=application, grader=self.grader)
         self.assertNotIn('leader_score', form.fields)
 
     def test_non_croo_application_does_not_have_croo_score_field(self):
         application = self.make_application(croo_willing=False)
-        form = ScoreForm(application=application)
+        form = ScoreForm(application=application, grader=self.grader)
         self.assertNotIn('croo_score', form.fields)
 
 

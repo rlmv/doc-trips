@@ -694,7 +694,7 @@ class CommentHandler(PreferenceHandler):
 
 SKIP = 'skip'
 
-def ScoreForm(application, *args, **kwargs):
+def ScoreForm(application, grader, *args, **kwargs):
     """
     Return a form to score this application.
 
@@ -718,6 +718,7 @@ def ScoreForm(application, *args, **kwargs):
 
         def __init__(self):
             super().__init__(*args, **kwargs)
+            self.grader = grader
             self.application = self.instance.application = application
             self.score_questions = ScoreQuestion.objects.filter(
                 trips_year=application.trips_year)
@@ -743,6 +744,9 @@ def ScoreForm(application, *args, **kwargs):
             return helper
 
         def save(self, **kwargs):
+            self.instance.grader = self.grader
+            self.instance.application = self.application
+            self.instance.trips_year = self.application.trips_year
             score = super().save()
             self.comment_handler.save()
             return score

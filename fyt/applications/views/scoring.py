@@ -160,14 +160,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         return super().post(request, *args, **kwargs)
 
     def get_form(self, **kwargs):
-        return ScoreForm(application=self.application, **kwargs)
-
-    # TODO: move these to form
-    def form_valid(self, form):
-        form.instance.grader = self.grader
-        form.instance.application = self.application
-        form.instance.trips_year = self.trips_year
-        return super().form_valid(form)
+        return ScoreForm(self.application, self.grader, **kwargs)
 
     def extra_context(self):
         return {
