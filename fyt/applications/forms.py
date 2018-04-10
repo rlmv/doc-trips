@@ -752,3 +752,29 @@ def ScoreForm(application, grader, *args, **kwargs):
             return score
 
     return _ScoreForm()
+
+
+class ScoreQuestionFormset(forms.models.modelformset_factory(
+        ScoreQuestion,
+        extra=2,
+        fields=['question', 'order'],
+        can_delete=True,
+        widgets={'question': forms.Textarea(attrs={'rows': 2})})):
+    """
+    Formset used to setup scoring for the year.
+    """
+    def __init__(self, trips_year, *args, **kwargs):
+        self.trips_year = trips_year
+        super().__init__(*args, **kwargs)
+
+    @property
+    def helper(self):
+        helper = FormHelper()
+        helper.add_input(Submit('submit', 'Save'))
+        return helper
+
+    def save(self):
+        for form in self.extra_forms:
+            if form.has_changed():
+                form.instance.trips_year = self.trips_year
+        return super().save()

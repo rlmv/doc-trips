@@ -23,6 +23,7 @@ from fyt.applications.views.scoring import (
     ClaimNextApplication,
     ScoreApplication,
     Scoring,
+    EditScoreQuestions
 )
 from fyt.core.urlhelpers import DB_REGEX
 
@@ -45,6 +46,8 @@ urlpatterns = [
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
+    url(r'^setup/scoring$', EditScoreQuestions.as_view(),
+        name='setup_scoring'),
     url(r'^score/', include((score_urlpatterns, 'score'))),
 ]
 

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Score Questions </h2>
+{% endblock %}
+
+{% block content %}
+<p> Add additional scoring questions. Graders will answer these when they score applications. </p>
+<div>
+  {% crispy form %}
+</div>
+{% endblock %}

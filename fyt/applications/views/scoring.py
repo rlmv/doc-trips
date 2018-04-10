@@ -7,13 +7,13 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
-from vanilla import CreateView, RedirectView, TemplateView
+from vanilla import CreateView, RedirectView, TemplateView, FormView
 
-from fyt.applications.forms import SKIP, ScoreForm
-from fyt.applications.models import Grader, Score, ScoreClaim, Volunteer
+from fyt.applications.forms import SKIP, ScoreForm, ScoreQuestionFormset
+from fyt.applications.models import Grader, Score, ScoreClaim, Volunteer, ScoreQuestion
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
-from fyt.permissions.views import GraderPermissionRequired
+from fyt.permissions.views import GraderPermissionRequired, SettingsPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 
@@ -175,3 +175,26 @@ class DeleteScore(DatabaseDeleteView):
 
     def get_success_url(self):
         return self.object.application.detail_url()
+
+
+class EditScoreQuestions(SettingsPermissionRequired, FormMessagesMixin,
+                         FormView):
+    template_name = 'applications/score_questions.html'
+    success_url = reverse_lazy('applications:setup_scoring')
+    form_valid_message = "Score questions successfully updated"
+    form_invalid_message = "There is an issue with the form"
+
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
+    def get_queryset(self):
+        return ScoreQuestion.objects.filter(trips_year=self.trips_year)
+
+    def get_form(self, **kwargs):
+        return ScoreQuestionFormset(trips_year=self.trips_year,
+                                    queryset=self.get_queryset(), **kwargs)
+
+    def form_valid(self, formset):
+        formset.save()
+        return super().form_valid(formset)

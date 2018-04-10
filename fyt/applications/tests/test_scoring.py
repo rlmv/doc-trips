@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import SKIP, ScoreForm
+from ..forms import SKIP, ScoreForm, ScoreQuestionFormset
 from ..models import (
     Grader,
     Question,
@@ -483,7 +483,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_score_application(self):
         app = self.make_application(trips_year=self.trips_year)
-        score_question = mommy.make(ScoreQuestion, trips_year=self.trips_year)
+        score_question = mommy.make(ScoreQuestion, trips_year=self.trips_year, pk=1)
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
@@ -600,3 +600,28 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=self.director)
         resp = resp.form.submit()
         self.assertRedirects(resp, application.detail_url())
+
+
+class ScoreQuestionFormsetTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_formset_save(self):
+        formset = ScoreQuestionFormset(
+            prefix='formset',
+            trips_year=self.trips_year,
+            data={
+                'formset-INITIAL_FORMS': '0',
+                'formset-TOTAL_FORMS': '3',
+                'formset-MIN_NUM_FORMS': '',
+                'formset-MAX_NUM_FORMS': '',
+                'formset-0-question': 'What is your name?',
+                'formset-0-order': '3',
+            })
+        self.assertTrue(formset.is_valid())
+        formset.save()
+        question = ScoreQuestion.objects.get()
+        self.assertEqual(question.question, 'What is your name?')
+        self.assertEqual(question.order, 3)
+        self.assertEqual(question.trips_year, self.trips_year)
