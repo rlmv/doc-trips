@@ -172,8 +172,7 @@ class TripTemplateList(DatabaseListView):
     template_name = 'trips/template_index.html'
 
     def get_queryset(self):
-        qs = super(TripTemplateList, self).get_queryset()
-        return qs.select_related(
+        return super().get_queryset().select_related(
             'triptype',
             'campsite1',
             'campsite2',
@@ -233,7 +232,7 @@ class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
 
     def form_valid(self, form):
         form.instance.template = self.get_triptemplate()
-        return super(UploadTripTemplateDocument, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.get_triptemplate().detail_url()
@@ -379,9 +378,10 @@ class LeaderTrippeeIndexView(DatabaseListView):
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return (
-            super(LeaderTrippeeIndexView, self).get_queryset()
-            .prefetch_related('leaders', 'leaders__applicant', 'trippees')
+        return super().get_queryset().prefetch_related(
+            'leaders',
+            'leaders__applicant',
+            'trippees'
         )
 
 
@@ -414,18 +414,16 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         Only pull in required fields because a whole application
         queryset is big enough to slow down performance.
         """
-        return (
-            self.model.objects.available_for_trip(
-                self.get_trip()
-            ).select_related(
-                'trip_assignment',
-                'trip_assignment__template',
-                'trip_assignment__section',
-                'registration',
-                'registration__bus_stop_round_trip',
-                'registration__bus_stop_to_hanover',
-                'registration__bus_stop_from_hanover'
-            )
+        return self.model.objects.available_for_trip(
+            self.get_trip()
+        ).select_related(
+            'trip_assignment',
+            'trip_assignment__template',
+            'trip_assignment__section',
+            'registration',
+            'registration__bus_stop_round_trip',
+            'registration__bus_stop_to_hanover',
+            'registration__bus_stop_from_hanover'
         )
 
     # TODO: refactor this with the new M2M setup
@@ -450,7 +448,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         This technique is ``O(1)`` for queries and ``O(n)`` for in-memory
         processing, which is quite acceptable. See http://goo.gl/QbK99D
         """
-        context = super(AssignTrippee, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
         section = trip.section
         triptype = trip.template.triptype
@@ -586,7 +584,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
         See :class:`~fyt.trips.views.AssignTrippee` for a similar situation
         and more explanation.
         """
-        context = super(AssignLeader, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trip'] = trip = self.get_trip()
 
         triptype_pref = {
@@ -732,7 +730,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
     def form_valid(self, formset):
         formset.save()
-        return super(FoodboxRules, self).form_valid(formset)
+        return super().form_valid(formset)
 
     def get_success_url(self):
         return self.request.path
@@ -756,7 +754,7 @@ class PacketsForSection(_SectionMixin, DatabaseListView):
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return super(PacketsForSection, self).get_queryset().filter(
+        return super().get_queryset().filter(
             section=self.get_section()
         ).select_related(
             'template__campsite1',
@@ -789,8 +787,8 @@ class TrippeeChecklist(_SectionMixin, DatabaseListView):
     header_text = 'Trippee'
 
     def get_queryset(self):
-        qs = super(TrippeeChecklist, self).get_queryset()
-        return qs.filter(trip_assignment__section=self.get_section())
+        return super().get_queryset().filter(
+            trip_assignment__section=self.get_section())
 
 
 class LeaderChecklist(_SectionMixin, DatabaseListView):
@@ -802,8 +800,8 @@ class LeaderChecklist(_SectionMixin, DatabaseListView):
     header_text = 'Leader'
 
     def get_queryset(self):
-        qs = super(LeaderChecklist, self).get_queryset()
-        return qs.filter(assigned_trip__section=self.get_section())
+        return super().get_queryset().filter(
+            assigned_trip__section=self.get_section())
 
 
 class Checklists(DatabaseTemplateView):
