@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from model_mommy import mommy
 
@@ -24,3 +25,14 @@ class TimetableTestCase(FytTestCase):
         timetable.applications_close = now - timedelta(minutes=20)
         timetable.save()
         self.assertFalse(timetable.applications_available())
+
+    def test_applications_and_scoring_cannot_both_be_open(self):
+        now = timezone.now()
+        timetable = mommy.make(Timetable)
+
+        timetable.applications_open = now - timedelta(weeks=1)
+        timetable.applications_close = now + timedelta(minutes=10)
+        timetable.scoring_available = True
+
+        with self.assertRaises(ValidationError):
+            timetable.full_clean()

@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
@@ -75,6 +76,11 @@ class Timetable(models.Model):
 
     def delete(self, *args, **kwargs):
         pass
+
+    def clean(self):
+        if self.applications_available() and self.scoring_available:
+            raise ValidationError('Scoring is not available while '
+                                  'applications are still open')
 
     def applications_available(self):
         """
