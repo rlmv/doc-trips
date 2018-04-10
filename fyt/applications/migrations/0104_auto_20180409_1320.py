@@ -9,6 +9,20 @@ YEARS = [2015, 2016]
 
 log = logging.getLogger(__name__)
 
+"""
+Big messy migration.
+
+This converts the legacy Leader/Croo application grades and skips
+to the new Score format.
+
+This converts the QualificationTag M2M to text fields, along with hard/soft
+skills.
+
+There are some grades that violate the unique constraints of score, and
+so an extra grader object is created to hold onto those scores -most of them
+are duplicates anyway.
+"""
+
 def merge_legacy_scores(apps, schema_editor):
     LeaderApplicationGrade = apps.get_model('applications', 'LeaderApplicationGrade')
     CrooApplicationGrade = apps.get_model('applications', 'CrooApplicationGrade')
@@ -20,6 +34,7 @@ def merge_legacy_scores(apps, schema_editor):
     SkippedCrooGrade = apps.get_model('applications', 'SkippedCrooGrade')
     Skip = apps.get_model('applications', 'Skip')
     Grader = apps.get_model('applications', 'Grader')
+    TripsYear = apps.get_model('core', 'TripsYear')
 
     # Catch-all user on which to stash duplicate grades that
     # would otherwise break uniqueness constraints
@@ -30,6 +45,9 @@ def merge_legacy_scores(apps, schema_editor):
         netid="The Sneaky Sidekick", name='The Sneaky Sidekick', email="")
 
     for trips_year in YEARS:
+        if not TripsYear.objects.filter(year=trips_year).exists():
+            continue
+
         log.info('Starting on {}'.format(trips_year))
 
         hard_question = ScoreQuestion.objects.create(
@@ -144,6 +162,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('applications', '0103_merge_20180406_0945'),
+        ('core', '0001_initial')
     ]
 
     operations = [
