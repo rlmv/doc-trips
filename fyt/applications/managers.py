@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from django.db import models
 from django.db.models import (Lookup, Avg, Value as V, Case, Count, Sum, When,
-                              FilteredRelation, Q)
+                              FilteredRelation, Q, OuterRef, Exists)
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 from django.utils import timezone
@@ -264,3 +264,37 @@ def SCORE_CHOICES():
 
 def _bin(score_lookup, x):
     return '{}_{}'.format(score_lookup, str(x).replace('.', '_'))
+
+
+class ScoreClaimQuerySet(models.QuerySet):
+
+    def active(self):
+        """
+        Filter claims that are currently active - that is, within the
+        deadline and for which the user has not already scored or skipped
+        the application.
+        """
+        from .models import Score, Skip
+
+        return self.filter(
+            claimed_at__gt=(timezone.now() - self.model.HOLD_DURATION)
+        ).annotate(
+            # Has the grader already added a score for this claim?
+            already_scored=Exists(
+                Score.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            ),
+            # Has the grader already skipped this claim?
+            already_skipped=Exists(
+                Skip.objects.filter(
+                    application=OuterRef('application'),
+                    grader=OuterRef('grader')
+                )
+            )
+        ).exclude(
+            already_scored=True
+        ).exclude(
+            already_skipped=True
+        )

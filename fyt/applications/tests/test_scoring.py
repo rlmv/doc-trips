@@ -22,6 +22,7 @@ def _get_grader(user):
 def _expire_claim(claim):
     claim.claimed_at = timezone.now() - (1.1 * ScoreClaim.HOLD_DURATION)
     claim.save()
+    return claim
 
 
 class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
@@ -31,7 +32,6 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_create_score_saves_croo_head_status(self):
         app = self.make_application(trips_year=self.trips_year)
-
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
@@ -119,7 +119,7 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         self.assertNotIn('croo_score', form.fields)
 
 
-class ScoreClaimTestCase(ApplicationTestMixin, FytTestCase):
+class ScoreClaimModelTestCase(ApplicationTestMixin, FytTestCase):
 
     @unittest.mock.patch('fyt.applications.models.timezone.now', return_value=timezone.now())
     def test_time_left(self, patched_now):
@@ -128,6 +128,17 @@ class ScoreClaimTestCase(ApplicationTestMixin, FytTestCase):
 
         claim.claimed_at = now - ScoreClaim.HOLD_DURATION + timedelta(minutes=10)
         self.assertEqual(claim.time_left(), 10 * 60)
+
+    def test_active_claims(self):
+        grader = _get_grader(self.make_grader())
+        active = mommy.make(ScoreClaim)
+        expired = _expire_claim(mommy.make(ScoreClaim))
+        scored = mommy.make(ScoreClaim, grader=grader)
+        grader.add_score(scored.application)
+        skipped = mommy.make(ScoreClaim, grader=grader)
+        grader.skip(skipped.application)
+
+        self.assertQsEqual(ScoreClaim.objects.active(), [active])
 
 
 class GraderModelTestCase(ApplicationTestMixin, FytTestCase):

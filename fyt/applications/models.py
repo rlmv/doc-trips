@@ -21,7 +21,7 @@ from django.db.models import (
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from .managers import QuestionManager, VolunteerManager, GraderManager
+from .managers import QuestionManager, VolunteerManager, GraderManager, ScoreClaimQuerySet
 
 from fyt.core.models import DatabaseModel, TripsYear
 from fyt.croos.models import Croo
@@ -1070,6 +1070,8 @@ class ScoreClaim(DatabaseModel):
         editable=False
     )
     claimed_at = models.DateTimeField(default=timezone.now, editable=False)
+
+    objects = ScoreClaimQuerySet.as_manager()
 
     @property
     def expires_at(self):
