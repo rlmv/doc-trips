@@ -36,7 +36,7 @@ from fyt.utils.choices import (
 )
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 from fyt.utils.models import MedicalMixin
-from fyt.utils.query import pks
+from fyt.utils.query import pks, TrueIf
 
 
 
@@ -1312,15 +1312,3 @@ class Grader(DartmouthUser):
         # Manually choose random element because .order_by('?') is buggy
         # See https://code.djangoproject.com/ticket/26390
         return random.choice(qs)
-
-
-def TrueIf(**kwargs):
-    """
-    Return a case expression that evaluates to True if the query conditions
-    are met, else False
-    """
-    return Case(
-        When(then=True, **kwargs),
-        default=False,
-        output_field=models.BooleanField()
-    )
