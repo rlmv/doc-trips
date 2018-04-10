@@ -6,9 +6,16 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..models import Grader, Score, ScoreClaim, Volunteer, Question, ScoreQuestion
+from ..forms import SKIP, ScoreForm
+from ..models import (
+    Grader,
+    Question,
+    Score,
+    ScoreClaim,
+    ScoreQuestion,
+    Volunteer,
+)
 from ..views.scoring import SHOW_SCORE_AVG_INTERVAL
-from ..forms import ScoreForm, SKIP
 from . import ApplicationTestMixin
 
 from fyt.test import FytTestCase

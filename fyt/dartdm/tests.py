@@ -1,6 +1,6 @@
+import logging
 import os
 import unittest
-import logging
 
 from django.core.exceptions import ValidationError
 

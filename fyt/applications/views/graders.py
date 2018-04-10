@@ -1,6 +1,6 @@
 from vanilla import ListView
 
-from fyt.applications.models import Score, Volunteer, Grader
+from fyt.applications.models import Grader, Score, Volunteer
 from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.utils.views import ExtraContextMixin

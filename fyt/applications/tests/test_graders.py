@@ -1,9 +1,6 @@
 from model_mommy import mommy
 
-from fyt.applications.models import (
-    Score,
-    Grader
-)
+from fyt.applications.models import Grader, Score
 from fyt.test import FytTestCase
 
 

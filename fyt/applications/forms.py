@@ -13,8 +13,8 @@ from fyt.applications.models import (
     LeaderSupplement,
     Question,
     Score,
-    Volunteer,
     ScoreQuestion,
+    Volunteer,
     validate_word_count,
 )
 from fyt.core.models import TripsYear

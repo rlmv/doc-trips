@@ -5,23 +5,27 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import (
-    Avg,
+    F,
     Q,
+    Avg,
     Case,
-    Min,
-    When,
     Count,
+    Exists,
+    Min,
     OuterRef,
     Subquery,
-    F,
-    Count,
     Value as V,
-    Exists
+    When,
 )
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from .managers import QuestionManager, VolunteerManager, GraderManager, ScoreClaimQuerySet
+from .managers import (
+    GraderManager,
+    QuestionManager,
+    ScoreClaimQuerySet,
+    VolunteerManager,
+)
 
 from fyt.core.models import DatabaseModel, TripsYear
 from fyt.croos.models import Croo
@@ -36,8 +40,7 @@ from fyt.utils.choices import (
 )
 from fyt.utils.model_fields import NullYesNoField, YesNoField
 from fyt.utils.models import MedicalMixin
-from fyt.utils.query import pks, TrueIf
-
+from fyt.utils.query import TrueIf, pks
 
 
 """

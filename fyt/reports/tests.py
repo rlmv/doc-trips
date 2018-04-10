@@ -6,7 +6,7 @@ from datetime import date
 from django.urls import reverse
 from model_mommy import mommy
 
-from fyt.applications.models import Question, Volunteer, Grader
+from fyt.applications.models import Grader, Question, Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.croos.models import Croo
 from fyt.incoming.models import IncomingStudent, Registration, Settings

@@ -1,8 +1,19 @@
 from collections import OrderedDict
 
 from django.db import models
-from django.db.models import (Lookup, Avg, Value as V, Case, Count, Sum, When,
-                              FilteredRelation, Q, OuterRef, Exists)
+from django.db.models import (
+    Q,
+    Avg,
+    Case,
+    Count,
+    Exists,
+    FilteredRelation,
+    Lookup,
+    OuterRef,
+    Sum,
+    Value as V,
+    When,
+)
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
 from django.utils import timezone

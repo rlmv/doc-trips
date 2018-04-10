@@ -9,8 +9,8 @@ from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
 from vanilla import CreateView, RedirectView, TemplateView
 
-from fyt.applications.models import Grader, Score, Volunteer, ScoreClaim
-from fyt.applications.forms import ScoreForm, SKIP
+from fyt.applications.forms import SKIP, ScoreForm
+from fyt.applications.models import Grader, Score, ScoreClaim, Volunteer
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
 from fyt.permissions.views import GraderPermissionRequired
