@@ -18,16 +18,6 @@ from fyt.core.models import DatabaseModel
 from fyt.utils.cache import cache_as
 
 
-"""
-TODO: use these in place of magic numbers?
-INTVL_LEADERS = timedelta(days=0)
-INTVL_TRIPPEES = timedelta(days=1)
-INTVL_CAMPSITE_1
-INTVL_CAMPSITE_2
-INTVL_LODGE
-INTVL_CAMPUS
-"""
-
 NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
 NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
 
