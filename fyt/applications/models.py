@@ -1277,7 +1277,6 @@ class Grader(DartmouthUser):
             )
 
         # Pick an app with least scores and claims
-        # TODO: use a subquery
         qs = qs.filter(
             scores_and_claims=qs.aggregate(
                 fewest=Min('scores_and_claims'))['fewest'])
