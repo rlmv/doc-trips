@@ -20,7 +20,7 @@ from fyt.applications.views.portal import (
 from fyt.applications.views.scoring import (
     DeleteScore,
     NoApplicationsLeftToScore,
-    RedirectToNextScorableApplication,
+    ClaimNextApplication,
     ScoreApplication,
     Scoring,
 )
@@ -31,7 +31,7 @@ score_urlpatterns = [
     url(r'^$', Scoring.as_view(), name='scoring'),
     url(r'^none/$', NoApplicationsLeftToScore.as_view(),
         name='no_applications_left'),
-    url(r'^next/$', RedirectToNextScorableApplication.as_view(),
+    url(r'^next/$', ClaimNextApplication.as_view(),
         name='next'),
     url(r'^(?P<pk>[0-9]+)/$', ScoreApplication.as_view(),
         name='add'),

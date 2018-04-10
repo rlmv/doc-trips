@@ -59,8 +59,8 @@ class NoApplicationsLeftToScore(GraderPermissionRequired,
     template_name = 'applications/no_applications.html'
 
 
-class RedirectToNextScorableApplication(GraderPermissionRequired,
-                                        IfScoringAvailable, RedirectView):
+class ClaimNextApplication(GraderPermissionRequired, IfScoringAvailable,
+                           RedirectView):
     """
     Redirect to the next Volunteer application that needs to be scored.
     """
