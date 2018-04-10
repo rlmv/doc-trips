@@ -1148,13 +1148,7 @@ class Grader(DartmouthUser):
         Raise an error if there is more than one claim.
         """
         try:
-            return self.score_claims.filter(
-                claimed_at__gt=(timezone.now() - ScoreClaim.HOLD_DURATION)
-            ).exclude(
-                application__scores__grader=self
-            ).exclude(
-                application__skips__grader=self
-            ).get()
+            return self.score_claims.active().get()
         except ScoreClaim.DoesNotExist:
             return None
 
@@ -1229,31 +1223,11 @@ class Grader(DartmouthUser):
 
         NUM_SCORES = Volunteer.NUM_SCORES
 
-        # Subquery for all active claims
-        active_claims_start = timezone.now() - ScoreClaim.HOLD_DURATION
-        active_claims = ScoreClaim.objects.filter(
+        active_claims = ScoreClaim.objects.active().filter(
             application=OuterRef('pk'),
-            claimed_at__gt=active_claims_start
-        ).annotate(
-            # Has the grader already added a score for this claim?
-            already_scored=Exists(
-                Score.objects.filter(
-                    application=OuterRef('application'),
-                    grader=OuterRef('grader')
-                )
-            ),
-            # Has the grader already skipped this claim?
-            already_skipped=Exists(
-                Skip.objects.filter(
-                    application=OuterRef('application'),
-                    grader=OuterRef('grader')
-                )
-            )
-        ).exclude(
-            already_scored=True
-        ).exclude(
-            already_skipped=True
         ).values('pk')
+
+        active_croo_head_claims = active_claims.filter(croo_head=True)
 
         qs = Volunteer.objects.leader_or_croo_applications(
             trips_year=trips_year
@@ -1268,17 +1242,14 @@ class Grader(DartmouthUser):
         ).annotate(
             Count('scores')
         ).annotate(
-            active_claims=Subquery(active_claims)
+            active_claims_count=Count(Subquery(active_claims))
         ).annotate(
-            Count('active_claims')
-        ).annotate(
-            scores_and_claims=F('scores__count') + F('active_claims__count')
+            scores_and_claims=F('scores__count') + F('active_claims_count')
         ).filter(
             scores_and_claims__lt=NUM_SCORES
         ).annotate(
             croo_head_scores_count=Count('pk', filter=Q(scores__croo_head=True)),
-            croo_head_claims=Subquery(active_claims.filter(croo_head=True)),
-            croo_head_claims_count=Count('croo_head_claims'),
+            croo_head_claims_count=Count(Subquery(active_croo_head_claims)),
             needs_croo_score=TrueIf(
                 pk__in=croo_app_pks,
                 croo_head_scores_count=0,
