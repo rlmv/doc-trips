@@ -18,7 +18,7 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
     context_object_name = 'graders'
 
     def get_queryset(self):
-        return Grader.objects.for_year(self.get_trips_year())
+        return Grader.objects.with_statistics(self.get_trips_year())
 
     def extra_context(self):
         return {

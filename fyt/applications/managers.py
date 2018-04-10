@@ -226,7 +226,7 @@ class BaseGraderManager(models.Manager):
 
 class GraderQuerySet(models.QuerySet):
 
-    def for_year(self, trips_year):
+    def with_statistics(self, trips_year):
         """
         Return all users who have scored applications this year.
         """
