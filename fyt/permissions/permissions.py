@@ -62,6 +62,10 @@ def can_report_incidents():
     return get_permission('can_report_incidents',
                           'Can report incidents in the safety log')
 
+def can_view_old_applications():
+    return get_permission('can_view_old_applications',
+                          'Can view applications from previous years')
+
 
 class GroupRegistry:
     """
@@ -113,7 +117,8 @@ groups = GroupRegistry({
         can_score_applications,
         can_edit_applications_and_assign_trip_leaders,
         can_report_incidents,
-        can_edit_trainings],
+        can_edit_trainings,
+        can_view_old_applications],
 
     'croo heads': [
         can_view_database,

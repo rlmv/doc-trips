@@ -31,7 +31,6 @@ from fyt.applications.tables import ApplicationTable
 from fyt.core.models import TripsYear
 from fyt.core.views import CrispyFormMixin, TripsYearMixin
 from fyt.croos.models import Croo
-from fyt.permissions.permissions import groups
 from fyt.permissions.views import (
     ApplicationEditPermissionRequired,
     DatabaseReadPermissionRequired,
@@ -385,13 +384,11 @@ def preload_questions(qs, trips_year):
 
 class BlockOldApplications():
     """
-    Only allow grading once applications are closed
+    Only directors can see applications from previous years.
     """
-    not_available_template = 'applications/old_applications_not_available.html'
-
     def dispatch(self, request, *args, **kwargs):
         if (not self.trips_year.is_current and
-                groups.directors not in request.user.groups.all()):
+                not request.user.has_perm('permissions.can_view_old_applications')):
             raise PermissionDenied('Only Trip Directors can view applications '
                                    'from previous years.')
         return super().dispatch(request, *args, **kwargs)
