@@ -82,7 +82,6 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     """
     model = Registration
     template_name = 'incoming/register.html'
-    form_class = RegistrationForm
     success_url = reverse_lazy('incoming:portal')
     form_valid_message = "Your registration has been saved"
     form_invalid_message = (
@@ -93,6 +92,9 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
+
+    def get_form(self, *args, **kwargs):
+        return RegistrationForm(self.trips_year, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -265,24 +267,25 @@ class NonStudentRegistration(DatabaseCreateView):
     to this user.
     """
     model = Registration
-    form_class = RegistrationForm
     explanation = (
         "<p> Upload a registration for a non-student. Use this only "
         "if, for some reason, the trippee does not have a NetId. "
         "An Incoming Student object will be automatically created "
         "and filled in with information from the registration. </p>")
 
+    def get_form(self, *args, **kwargs):
+        return RegistrationForm(self.trips_year, *args, **kwargs)
+
     def form_valid(self, form):
         user = DartmouthUser.objects.create_user_without_netid(
             form.cleaned_data['name'], form.cleaned_data['email']
         )
-
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year = self.trips_year
         form.instance.user = user
         self.object = form.save()
 
         IncomingStudent.objects.create(
-            trips_year_id=self.kwargs['trips_year'],
+            trips_year=self.trips_year,
             name=self.object.name,
             netid=user.netid,
             email=self.object.email,
@@ -359,8 +362,10 @@ class RegistrationUpdate(DatabaseUpdateView):
     """
     Edit a registration.
     """
-    form_class = RegistrationForm
     model = Registration
+
+    def get_form(self, *args, **kwargs):
+        return RegistrationForm(self.trips_year, *args, **kwargs)
 
 
 class RegistrationDelete(DatabaseDeleteView):

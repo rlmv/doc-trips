@@ -81,14 +81,8 @@ class RegistrationForm(forms.ModelForm):
             '_old_unavailable_triptypes'
         ]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        instance = kwargs.get('instance')
-        if instance:
-            trips_year = instance.trips_year
-        else:
-            trips_year = TripsYear.objects.current()
 
         self.trips_year = trips_year
 
