@@ -148,6 +148,10 @@ class BaseVolunteerManager(models.Manager):
         return self.filter(trips_year=trips_year,
                            status=self.model.LEADER_WAITLIST)
 
+    def rejected(self, trips_year):
+        return self.filter(trips_year=trips_year,
+                           status=self.model.REJECTED)
+
     def score_progress(self, trips_year):
         """
         Return a tuple containing the number of scores given so far for each

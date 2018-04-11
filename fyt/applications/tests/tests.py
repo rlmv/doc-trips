@@ -559,6 +559,12 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertQsEqual(Volunteer.objects.leader_waitlist(trips_year),
                            [waitlisted])
 
+    def test_rejected(self):
+        rejected = self.make_application(status=Volunteer.REJECTED)
+        other = self.make_application(status=Volunteer.PENDING)
+        self.assertQsEqual(Volunteer.objects.rejected(self.trips_year),
+                           [rejected])
+
     def test_with_avg_scores_ordering(self):
         app1 = self.make_application()
         app2 = self.make_application()
