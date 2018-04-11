@@ -184,15 +184,12 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         """
         Lots o' goodies for the template
         """
-        # just in case AppInfo hasn't been setup yet
-        information, _ = ApplicationInformation.objects.get_or_create(
-            trips_year=self.trips_year
-        )
         return super().get_context_data(
             forms=order_forms(kwargs),
             trips_year=self.trips_year,
             timetable=Timetable.objects.timetable(),
-            information=information,
+            information=ApplicationInformation.objects.get(
+                trips_year=self.trips_year),
             triptypes=TripType.objects.visible(self.trips_year),
             **kwargs
         )
@@ -289,17 +286,15 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     ]
     form_valid_message = "Application successfully updated"
 
-    @property
+    @cached_property
     def trips_year(self):
-        return self.current_trips_year
+        return TripsYear.objects.current()
 
     def get_object(self):
         """
         There is only one configuration object for each trips year.
         """
-        obj, created = self.model.objects.get_or_create(
-            trips_year=self.trips_year)
-        return obj
+        return ApplicationInformation.objects.get(trips_year=self.trips_year)
 
     def get_form(self, **kwargs):
         return crispify(super().get_form(**kwargs), submit_text='Save')
@@ -307,8 +302,7 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     def extra_context(self):
         return {
             'trips_year': self.trips_year,
-            'questions': Question.objects.filter(
-                trips_year=self.trips_year)
+            'questions': Question.objects.filter(trips_year=self.trips_year)
         }
 
 

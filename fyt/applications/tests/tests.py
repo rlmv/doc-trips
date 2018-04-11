@@ -856,6 +856,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        mommy.make(ApplicationInformation, trips_year=self.trips_year)
 
     def test_deadline_extension(self):
         application = self.make_application()
