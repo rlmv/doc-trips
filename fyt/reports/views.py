@@ -48,9 +48,7 @@ class GenericReportView(DatabaseReadPermissionRequired,
     header = None
 
     def get_filename(self):
-        return "{}-{}.csv".format(
-            self.file_prefix, self.get_trips_year()
-        )
+        return "{}-{}.csv".format(self.file_prefix, self.trips_year)
 
     def get_header(self):
         if self.header is not None:
@@ -96,7 +94,7 @@ class VolunteerCSV(GenericReportView):
 
     def get_header(self):
         score_count_max = Application.objects.leader_or_croo_applications(
-            trips_year=self.get_trips_year()
+            self.trips_year
         ).annotate(
             Count('scores')
         ).aggregate(
@@ -110,10 +108,9 @@ class VolunteerCSV(GenericReportView):
         ]
 
     def get_queryset(self):
-        trips_year = self.get_trips_year()
         qs = Application.objects.leader_or_croo_applications(
-            trips_year).with_avg_scores().prefetch_related('scores')
-        return preload_questions(qs, trips_year)
+            self.trips_year).with_avg_scores().prefetch_related('scores')
+        return preload_questions(qs, self.trips_year)
 
     def get_row(self, application):
         user = application.applicant
@@ -143,7 +140,7 @@ class TripLeadersCSV(GenericReportView):
 
     def get_queryset(self):
         return Application.objects.leaders(
-            self.get_trips_year()
+            self.trips_year
         ).select_related(
             'assigned_trip__section',
             'assigned_trip__template'
@@ -165,7 +162,7 @@ class CrooMembersCSV(TripLeadersCSV):
     file_prefix = 'Croo-Members'
 
     def get_queryset(self):
-        return Application.objects.croo_members(self.get_trips_year())
+        return Application.objects.croo_members(self.trips_year)
 
     header = ['name', 'netid', 'croo']
     def get_row(self, croo_member):
@@ -182,9 +179,7 @@ class FinancialAidCSV(GenericReportView):
     header = ['name', 'preferred name', 'netid', 'blitz', 'email']
 
     def get_queryset(self):
-        return Registration.objects.want_financial_aid(
-            self.get_trips_year()
-        )
+        return Registration.objects.want_financial_aid(self.trips_year)
 
     def get_row(self, reg):
         user = reg.user
@@ -205,7 +200,7 @@ class ExternalBusRequestsCSV(GenericReportView):
 
     def get_queryset(self):
         return Registration.objects.want_bus(
-            self.get_trips_year()
+            self.trips_year
         ).select_related(
             'bus_stop_round_trip',
             'bus_stop_to_hanover',
@@ -267,7 +262,7 @@ class TrippeesCSV(GenericReportView):
     file_prefix = 'Trippees'
 
     def get_queryset(self):
-        return IncomingStudent.objects.with_trip(self.get_trips_year())
+        return IncomingStudent.objects.with_trip(self.trips_year)
 
     header = ['name', 'netid']
     def get_row(self, trippee):
@@ -282,7 +277,7 @@ class Registrations(GenericReportView):
 
     def get_queryset(self):
         return Registration.objects.filter(
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         ).select_related(
             'user',
         ).prefetch_related(
@@ -381,11 +376,11 @@ class Registrations(GenericReportView):
 
     @cached_property
     def sections(self):
-        return Section.objects.filter(trips_year=self.get_trips_year())
+        return Section.objects.filter(trips_year=self.trips_year)
 
     @cached_property
     def triptypes(self):
-        return TripType.objects.visible(self.get_trips_year())
+        return TripType.objects.visible(self.trips_year)
 
 
 class Charges(GenericReportView):
@@ -402,7 +397,7 @@ class Charges(GenericReportView):
              Q(cancelled=True) |
              Q(registration__doc_membership=True) |
              Q(registration__green_fund_donation__gt=0)),
-            trips_year=self.get_trips_year(),
+            trips_year=self.trips_year,
         ).prefetch_related(
             'registration'
         )
@@ -435,7 +430,7 @@ class Charges(GenericReportView):
     @property
     @cache_as('_costs')
     def costs(self):
-        return Settings.objects.get(trips_year=self.get_trips_year())
+        return Settings.objects.get(trips_year=self.trips_year)
 
 
 class DocMembers(GenericReportView):
@@ -446,7 +441,7 @@ class DocMembers(GenericReportView):
 
     def get_queryset(self):
         return Registration.objects.filter(
-            trips_year=self.get_trips_year(), doc_membership=True
+            trips_year=self.trips_year, doc_membership=True
         )
 
     header = ['name', 'netid', 'email']
@@ -492,11 +487,10 @@ class TShirts(DatabaseTemplateView):
     template_name = "reports/tshirts.html"
 
     def extra_context(self):
-        trips_year = self.get_trips_year()
         return {
-            'leaders': leader_tshirts(trips_year),
-            'croos': croo_tshirts(trips_year),
-            'trippees': trippee_tshirts(trips_year)
+            'leaders': leader_tshirts(self.trips_year),
+            'croos': croo_tshirts(self.trips_year),
+            'trippees': trippee_tshirts(self.trips_year)
         }
 
 
@@ -506,7 +500,7 @@ class Housing(GenericReportView):
 
     def get_queryset(self):
         return IncomingStudent.objects.filter(
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         ).prefetch_related(
             'registration'
         )
@@ -539,7 +533,7 @@ class DietaryRestrictions(GenericReportView):
 
     def get_queryset(self):
         applications = Application.objects.filter(
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         ).filter(
             Q(status=Application.LEADER) | Q(status=Application.CROO)
         ).select_related(
@@ -550,7 +544,7 @@ class DietaryRestrictions(GenericReportView):
             'status'
         )
         registrations = Registration.objects.filter(
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         ).select_related(
             'trippee__trip_assignment',
             'trippee__trip_assignment__section',
@@ -641,7 +635,7 @@ class Feelings(GenericReportView):
     file_prefix = 'Feelings'
 
     def get_queryset(self):
-        return Registration.objects.filter(trips_year=self.get_trips_year())
+        return Registration.objects.filter(trips_year=self.trips_year)
 
     header = ['']
     def get_row(self, reg):
@@ -653,7 +647,7 @@ class Foodboxes(GenericReportView):
     file_prefix = 'Foodboxes'
 
     def get_queryset(self):
-        return Trip.objects.filter(trips_year=self.get_trips_year())
+        return Trip.objects.filter(trips_year=self.trips_year)
 
     header = [
         'trip',
@@ -694,6 +688,6 @@ class Statistics(DatabaseTemplateView):
         }
 
         return {
-            'with_trip': counts(IS.objects.with_trip(self.get_trips_year())),
-            'cancelled': counts(IS.objects.cancelled(self.get_trips_year()))
+            'with_trip': counts(IS.objects.with_trip(self.trips_year)),
+            'cancelled': counts(IS.objects.cancelled(self.trips_year))
         }

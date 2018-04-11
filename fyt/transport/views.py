@@ -53,7 +53,7 @@ class UpdateTransportConfig(DatabaseUpdateView):
         return 'Edit Transport Settings'
 
     def get_object(self):
-        return TransportConfig.objects.get(trips_year=self.get_trips_year())
+        return TransportConfig.objects.get(trips_year=self.trips_year)
 
     def get_success_url(self):
         return self.request.path
@@ -270,15 +270,14 @@ class InternalBusMatrix(DatabaseReadPermissionRequired,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        trips_year = self.get_trips_year()
-        context['matrix'] = matrix = get_internal_route_matrix(trips_year)
-        context['riders'] = riders = get_internal_rider_matrix(trips_year)
+        context['matrix'] = matrix = get_internal_route_matrix(self.trips_year)
+        context['riders'] = riders = get_internal_rider_matrix(self.trips_year)
         context['issues'] = get_internal_issues_matrix(matrix, riders)
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
 
         # transport count info
-        m = get_actual_rider_matrix(trips_year)
+        m = get_actual_rider_matrix(self.trips_year)
         context['dropoff_matrix'] = m.map(lambda x: x.dropping_off).truncate()
         context['pickup_matrix'] = m.map(lambda x: x.picking_up).truncate()
         context['return_matrix'] = m.map(lambda x: x.returning).truncate()
@@ -311,7 +310,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
 
     def get_success_url(self):
         return reverse('core:externalbus:matrix',
-                       kwargs={'trips_year': self.get_trips_year()})
+                       kwargs={'trips_year': self.trips_year})
 
 
 class ExternalBusDelete(DatabaseDeleteView):
@@ -319,7 +318,7 @@ class ExternalBusDelete(DatabaseDeleteView):
 
     def get_success_url(self):
         return reverse('core:externalbus:matrix',
-                       kwargs={'trips_year': self.get_trips_year()})
+                       kwargs={'trips_year': self.trips_year})
 
 
 class ExternalBusMatrix(DatabaseTemplateView):
@@ -328,13 +327,13 @@ class ExternalBusMatrix(DatabaseTemplateView):
     def extra_context(self):
         return {
             'matrix': ExternalBus.objects.schedule_matrix(
-                self.get_trips_year()),
+                self.trips_year),
             'to_hanover': ExternalBus.passengers.matrix_to_hanover(
-                self.get_trips_year()),
+                self.trips_year),
             'from_hanover': ExternalBus.passengers.matrix_from_hanover(
-                self.get_trips_year()),
+                self.trips_year),
             'invalid_riders': ExternalBus.passengers.invalid_riders(
-                self.get_trips_year())
+                self.trips_year)
         }
 
 
@@ -463,13 +462,13 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        args = (self.get_route(), self.get_date(), self.get_trips_year())
+        args = (self.get_route(), self.get_date(), self.trips_year)
         context['dropoffs'] = Trip.objects.dropoffs(*args)
         context['pickups'] = Trip.objects.pickups(*args)
         context['returns'] = Trip.objects.returns(*args)
 
         context['scheduled'] = bus = InternalBus.objects.filter(
-            trips_year=self.get_trips_year(),
+            trips_year=self.trips_year,
             date=self.get_date(),
             route=self.get_route()
         ).first()
@@ -499,13 +498,13 @@ class ExternalBusChecklist(_RouteMixin, DatabaseTemplateView):
         return {
             'section': self.get_section(),
             'bus': ExternalBus.objects.filter(
-                trips_year=self.get_trips_year(),
+                trips_year=self.trips_year,
                 route=self.get_route(), section=self.get_section()
             ).first(),
             'passengers_to_hanover': IncomingStudent.objects.passengers_to_hanover(
-                self.get_trips_year(), self.get_route(), self.get_section()),
+                self.trips_year, self.get_route(), self.get_section()),
             'passengers_from_hanover': IncomingStudent.objects.passengers_from_hanover(
-                self.get_trips_year(), self.get_route(), self.get_section()),
+                self.trips_year, self.get_route(), self.get_section()),
         }
 
 
@@ -521,7 +520,7 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     def get_bus(self):
         return get_object_or_404(
             InternalBus, pk=self.kwargs['bus_pk'],
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         )
 
     def get_form(self, **kwargs):
@@ -581,7 +580,7 @@ class InternalTransportByDate(DatabaseTemplateView):
     template_name = 'transport/internal_by_date.html'
 
     def extra_context(self):
-        d, p, r = trip_transport_matrix(self.get_trips_year())
+        d, p, r = trip_transport_matrix(self.trips_year)
         return {
             'dropoff_matrix': d.map(lambda t: wrap_trip(t, 'get_dropoff_route')),
             'pickup_matrix': p.map(lambda t: wrap_trip(t, 'get_pickup_route')),

@@ -13,6 +13,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.functional import cached_property
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
@@ -55,7 +56,7 @@ class IfApplicationAvailable():
         try:
             existing_application = Volunteer.objects.get(
                 applicant=self.request.user,
-                trips_year=self.get_trips_year())
+                trips_year=self.trips_year)
         except Volunteer.DoesNotExist:
             pass
         else:
@@ -122,7 +123,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         "Uh oh, it looks like there's a problem with your application"
     )
 
-    def get_trips_year(self):
+    @property
+    def trips_year(self):
         """
         Override this if the url does not specify a trips year.
         """
@@ -168,10 +170,8 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         """
         Return a dict mapping form names to form objects.
         """
-        trips_year = self.get_trips_year()
-
         return {name: form_class(instance=instances.get(name), prefix=name,
-                                 trips_year=trips_year, **kwargs)
+                                 trips_year=self.trips_year, **kwargs)
                 for name, form_class in self.get_form_classes().items()}
 
     def form_valid(self, forms):
@@ -192,17 +192,16 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         """
         Lots o' goodies for the template
         """
-        trips_year = self.get_trips_year()
         # just in case AppInfo hasn't been setup yet
         information, _ = ApplicationInformation.objects.get_or_create(
-            trips_year=trips_year
+            trips_year=self.trips_year
         )
         return super().get_context_data(
             forms=order_forms(kwargs),
-            trips_year=trips_year,
+            trips_year=self.trips_year,
             timetable=Timetable.objects.timetable(),
             information=information,
-            triptypes=TripType.objects.visible(trips_year),
+            triptypes=TripType.objects.visible(self.trips_year),
             **kwargs
         )
 
@@ -215,30 +214,29 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
     """
     success_url = reverse_lazy('applications:continue')
 
-    def get_trips_year(self):
+    @cached_property
+    def trips_year(self):
         return TripsYear.objects.current()
 
     def form_valid(self, forms):
         """
         Connect the application instances
         """
-        trips_year = self.get_trips_year()
-
         with transaction.atomic():
             forms[GENERAL_FORM].update_agreements(forms[AGREEMENT_FORM])
             forms[GENERAL_FORM].instance.applicant = self.request.user
-            forms[GENERAL_FORM].instance.trips_year = trips_year
+            forms[GENERAL_FORM].instance.trips_year = self.trips_year
             application = forms[GENERAL_FORM].save()
 
             forms[QUESTION_FORM].instance = application
             forms[QUESTION_FORM].save()
 
             forms[LEADER_FORM].instance.application = application
-            forms[LEADER_FORM].instance.trips_year = trips_year
+            forms[LEADER_FORM].instance.trips_year = self.trips_year
             forms[LEADER_FORM].save()
 
             forms[CROO_FORM].instance.application = application
-            forms[CROO_FORM].instance.trips_year = trips_year
+            forms[CROO_FORM].instance.trips_year = self.trips_year
             forms[CROO_FORM].save()
 
             forms[FIRST_AID_FORM].instance = application
@@ -255,7 +253,8 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
     """
     success_url = reverse_lazy('applications:continue')
 
-    def get_trips_year(self):
+    @cached_property
+    def trips_year(self):
         return TripsYear.objects.current()
 
     def get_object(self):
@@ -265,7 +264,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         return get_object_or_404(
             self.model,
             applicant=self.request.user,
-            trips_year=self.get_trips_year()
+            trips_year=self.trips_year
         )
 
     def get_instances(self):
@@ -327,12 +326,12 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
     success_url = reverse_lazy('applications:setup')
     form_valid_message = "Application successfully updated"
 
-    def get_trips_year(self):
+    @cached_property
+    def trips_year(self):
         return TripsYear.objects.current()
 
     def get_queryset(self):
-        trips_year = self.get_trips_year()
-        return Question.objects.filter(trips_year=trips_year)
+        return Question.objects.filter(trips_year=self.trips_year)
 
     def get_form(self, **kwargs):
         formset = QuestionFormset(queryset=self.get_queryset(), **kwargs)
@@ -342,10 +341,9 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
 
     def form_valid(self, formset):
         # Add trips_year to new questions
-        trips_year = self.get_trips_year()
         for form in formset.extra_forms:
             if form.has_changed():
-                form.instance.trips_year = trips_year
+                form.instance.trips_year = self.trips_year
 
         formset.save()
         return super().form_valid(formset)
@@ -403,7 +401,7 @@ class BlockOldApplications():
 
     def dispatch(self, request, *args, **kwargs):
         # TODO: yuck, implement this as a utility method
-        if (TripsYear.objects.current().year != int(self.get_trips_year()) and
+        if (TripsYear.objects.current().year != int(self.trips_year) and
                 groups.directors not in request.user.groups.all()):
             raise PermissionDenied('Only Trip Directors can view applications '
                                    'from previous years.')

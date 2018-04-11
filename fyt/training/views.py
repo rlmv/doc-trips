@@ -121,7 +121,7 @@ class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
         return 'First Aid Certifications'
 
     def get_form(self, **kwargs):
-        return FirstAidFormset(trips_year=self.get_trips_year(), **kwargs)
+        return FirstAidFormset(trips_year=self.trips_year, **kwargs)
 
     def form_valid(self, formset):
         formset.save()
@@ -150,7 +150,6 @@ class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
     form_valid_message = "Your training sessions have been updated"
     form_invalid_message = "There's an issue with the sessions you've choosen"
 
-
     def test_func(self):
         """Check whether the user can register for trainings."""
         try:
@@ -162,10 +161,11 @@ class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
 
     def get_object(self):
        return Attendee.objects.get(
-            trips_year=self.get_trips_year(),
+            trips_year=self.trips_year,
             volunteer__applicant=self.request.user)
 
-    def get_trips_year(self):
+    @property
+    def trips_year(self):
         return TripsYear.objects.current()
 
     def get_form(self, *args, **kwargs):

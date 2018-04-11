@@ -18,11 +18,10 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
     context_object_name = 'graders'
 
     def get_queryset(self):
-        return Grader.objects.with_statistics(self.get_trips_year())
+        return Grader.objects.with_statistics(self.trips_year)
 
     def extra_context(self):
         return {
             'score_choices': [x for x, _ in Score.SCORE_CHOICES],
-            'progress': Volunteer.objects.score_progress(
-                self.get_trips_year())
+            'progress': Volunteer.objects.score_progress(self.trips_year)
         }

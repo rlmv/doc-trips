@@ -60,16 +60,17 @@ class TripsYearMixin():
         Requesting a ``trips_year`` that don't exist in the db will
         cause problems. Block 'em here.
         """
-        trips_year = self.get_trips_year()
-        if not TripsYear.objects.filter(year=trips_year).exists():
-            msg = 'Trips %s does not exist in the database'
-            raise Http404(msg % trips_year)
+        if not TripsYear.objects.filter(year=self.trips_year).exists():
+            raise Http404(f'Trips {self.trips_year} does not exist in the database')
 
         return super().dispatch(request, *args, **kwargs)
 
-    def get_trips_year(self):
+    @property
+    def trips_year(self):
         """
         Pull trips_year out of url kwargs.
+
+        Note that this is a int, not a TripsYear instance.
         """
         return self.kwargs['trips_year']
 
@@ -77,8 +78,7 @@ class TripsYearMixin():
         """
         Filter objects for the trips_year of the request.
         """
-        qs = super().get_queryset()
-        return qs.filter(trips_year=self.get_trips_year())
+        return super().get_queryset().filter(trips_year=self.trips_year)
 
     def get_form_class(self):
         """
@@ -98,7 +98,7 @@ class TripsYearMixin():
 
         if hasattr(self, 'model') and self.model is not None:
             return tripsyear_modelform_factory(
-                self.model, self.get_trips_year(), fields=self.fields
+                self.model, self.trips_year, fields=self.fields
             )
         msg = (
             "'%s' must either define 'form_class' or 'model' "
@@ -132,7 +132,7 @@ class TripsYearMixin():
         Add the trips_year for this request to the context.
         """
         context = super().get_context_data(**kwargs)
-        context['trips_year'] = self.get_trips_year()
+        context['trips_year'] = self.trips_year
         context['current_trips_year'] = TripsYear.objects.current()
         context['all_trips_years'] = TripsYear.objects.all().order_by('-year')
         return context
@@ -162,7 +162,7 @@ class BaseCreateView(ExtraContextMixin, FormInvalidMessageMixin,
         of the trips_year.
         """
         form = self.get_form(data=request.POST, files=request.FILES)
-        form.instance.trips_year_id = self.get_trips_year()
+        form.instance.trips_year_id = self.trips_year
         if form.is_valid():
             return self.form_valid(form)
         return self.form_invalid(form)
@@ -244,7 +244,7 @@ class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin,
         target object hsa been deleted.
         """
         if self.success_url_pattern:
-            kwargs = {'trips_year': self.get_trips_year()}
+            kwargs = {'trips_year': self.trips_year}
             return reverse(self.success_url_pattern, kwargs=kwargs)
         return super().get_success_url()
 
@@ -328,8 +328,13 @@ class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
     template_name = 'core/migrate.html'
     success_url = reverse_lazy('core:current')
 
-    def get_trips_year(self):
+    @property
+    def trips_year(self):
         return TripsYear.objects.current().year
+
+    @property
+    def next_year(self):
+        return self.trips_year + 1
 
     def get_form(self, **kwargs):
         form = forms.Form(**kwargs)
@@ -341,12 +346,13 @@ class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
 
     def extra_context(self):
         return {
-            'next_year': self.get_trips_year() + 1
+            'next_year': self.next_year
         }
 
     def form_valid(self, form):
         forward.forward()
         messages.success(self.request,
             "Succesfully migrated the database to Trips {}".format(
-                self.get_trips_year()))  # new current trips_year
+                self.next_year))
+
         return super().form_valid(form)

@@ -91,4 +91,4 @@ class TripsYearMixinTestCase(FytTestCase):
     def test_get_trips_year(self):
         view = TripsYearMixin()
         view.kwargs = {'trips_year': self.trips_year}
-        self.assertEqual(view.get_trips_year(), self.trips_year)
+        self.assertEqual(view.trips_year, self.trips_year)

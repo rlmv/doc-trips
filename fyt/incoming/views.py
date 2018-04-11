@@ -238,7 +238,7 @@ class RegistrationIndex(DatabaseListView):
             'table': table,
             'filter': filter,
             'registration_count': len(filter.qs),
-            'unmatched': Registration.objects.unmatched(self.get_trips_year())
+            'unmatched': Registration.objects.unmatched(self.trips_year)
         }
 
 
@@ -430,7 +430,7 @@ class IncomingStudentDelete(DatabaseDeleteView):
 
     def get_success_url(self):
         return reverse('core:incomingstudent:index',
-                       kwargs={'trips_year': self.get_trips_year()})
+                       kwargs={'trips_year': self.trips_year})
 
 
 class UpdateTripAssignment(DatabaseUpdateView):
@@ -551,7 +551,7 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
         """
         Try and match all unmatched registrations.
         """
-        regs = Registration.objects.filter(trips_year=self.get_trips_year())
+        regs = Registration.objects.filter(trips_year=self.trips_year)
         matches = []
         for reg in regs:
             if not hasattr(reg, 'trippee'):
@@ -574,11 +574,12 @@ class EditSettings(DatabaseUpdateView):
     def get_headline(self):
         return "Registration Settings"
 
-    def get_trips_year(self):
+    @property
+    def trips_year(self):
         return TripsYear.objects.current().year
 
     def get_object(self):
-        return Settings.objects.get(trips_year=self.get_trips_year())
+        return Settings.objects.get(trips_year=self.trips_year)
 
     def get_success_url(self):
         return self.request.path

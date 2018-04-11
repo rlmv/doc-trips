@@ -516,7 +516,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
         return self.render_to_response(context)
 
     def get_form(self, **kwargs):
-        return self.get_form_class()(self.get_trips_year(), **kwargs)
+        return self.get_form_class()(self.trips_year, **kwargs)
 
     def get_form_valid_message(self):
         """ Flash success message """
@@ -531,7 +531,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
         return reverse('core:leader_index',
-                       kwargs={'trips_year': self.get_trips_year()})
+                       kwargs={'trips_year': self.trips_year})
 
 
 class AssignLeader(_TripMixin, DatabaseListView):

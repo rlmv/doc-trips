@@ -58,20 +58,18 @@ class Applicants(BaseEmailList):
     headline = "Applicant Emails"
 
     def get_email_lists(self):
-
-        trips_year = self.get_trips_year()
-        qs = Volunteer.objects.filter(trips_year=trips_year)
+        qs = Volunteer.objects.filter(trips_year=self.trips_year)
 
         email_list = [
             ('all applicants', emails(qs)),
             ('complete leader applications', emails(
-                Volunteer.objects.leader_applications(trips_year))),
+                Volunteer.objects.leader_applications(self.trips_year))),
             ('complete croo applications', emails(
-                Volunteer.objects.croo_applications(trips_year))),
+                Volunteer.objects.croo_applications(self.trips_year))),
             ('incomplete leader applications', emails(
-                Volunteer.objects.incomplete_leader_applications(trips_year))),
+                Volunteer.objects.incomplete_leader_applications(self.trips_year))),
             ('incomplete croo applications', emails(
-                Volunteer.objects.incomplete_croo_applications(trips_year))),
+                Volunteer.objects.incomplete_croo_applications(self.trips_year))),
             ('leaders', emails(qs.filter(
                 status=Volunteer.LEADER))),
             ('leader waitlist', emails(
@@ -90,12 +88,10 @@ class LeadersByTripType(BaseEmailList):
     headline = "Leader Emails by TripType"
 
     def get_email_lists(self):
-
-        trips_year = self.get_trips_year()
         leaders = Volunteer.objects.filter(
-            trips_year=trips_year, status=Volunteer.LEADER)
+            trips_year=self.trips_year, status=Volunteer.LEADER)
         email_list = []
-        triptypes = TripType.objects.filter(trips_year=trips_year)
+        triptypes = TripType.objects.filter(trips_year=self.trips_year)
         for triptype in triptypes:
             email_list.append(
                 ('%s leaders' % triptype,
@@ -108,12 +104,11 @@ class LeadersBySection(BaseEmailList):
     headline = "Leader Emails by Section"
 
     def get_email_lists(self):
-        trips_year = self.get_trips_year()
         leaders = Volunteer.objects.filter(
-            trips_year=trips_year, status=Volunteer.LEADER)
+            trips_year=self.trips_year, status=Volunteer.LEADER)
         email_list = []
 
-        sections = Section.objects.filter(trips_year=trips_year)
+        sections = Section.objects.filter(trips_year=self.trips_year)
         for section in sections:
             email_list.append(
                 ('%s leaders' % section,
@@ -127,12 +122,9 @@ class IncomingStudents(BaseEmailList):
     headline = "Incoming Student Emails"
 
     def get_email_lists(self):
-        unregistered = IncomingStudent.objects.unregistered(
-            trips_year=self.get_trips_year()
-        )
-        registered = Registration.objects.filter(
-            trips_year=self.get_trips_year()
-        )
+        unregistered = IncomingStudent.objects.unregistered(self.trips_year)
+        registered = Registration.objects.filter(trips_year=self.trips_year)
+
         email_list = [
             ('unregistered personal emails', personal_emails(unregistered)),
             ('unregistered blitz', blitz(unregistered)),
@@ -147,10 +139,9 @@ class Trippees(BaseEmailList):
     headline = "Trippees"
 
     def get_email_lists(self):
-        trips_year = self.get_trips_year()
-        sections = Section.objects.filter(trips_year=trips_year)
+        sections = Section.objects.filter(trips_year=self.trips_year)
         trippees = IncomingStudent.objects.filter(
-            trips_year=trips_year, trip_assignment__isnull=False
+            trips_year=self.trips_year, trip_assignment__isnull=False
         )
         email_list = [
             ("All Trippees (Incoming Students with a trip assignment)",
