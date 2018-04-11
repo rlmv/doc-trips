@@ -78,6 +78,13 @@ class TripsYearMixin():
         """
         return TripsYear.objects.get(year=self.kwargs['trips_year'])
 
+    @cached_property
+    def current_trips_year(self):
+        """
+        The current (most-recent) trips_year.
+        """
+        return TripsYear.objects.current()
+
     def get_queryset(self):
         """
         Filter objects for the trips_year of the request.
@@ -137,7 +144,7 @@ class TripsYearMixin():
         """
         context = super().get_context_data(**kwargs)
         context['trips_year'] = self.trips_year
-        context['current_trips_year'] = TripsYear.objects.current()
+        context['current_trips_year'] = self.current_trips_year
         context['all_trips_years'] = TripsYear.objects.all().order_by('-year')
         return context
 
@@ -319,9 +326,8 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-
-        trips_year = TripsYear.objects.current()
-        return reverse('core:landing_page', kwargs={'trips_year': trips_year.pk})
+        return reverse('core:landing_page', kwargs={
+            'trips_year': TripsYear.objects.current()})
 
 
 class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
@@ -334,11 +340,11 @@ class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
 
     @property
     def trips_year(self):
-        return TripsYear.objects.current().year
+        return self.current_trips_year
 
     @property
     def next_year(self):
-        return self.trips_year + 1
+        return self.trips_year.year + 1
 
     def get_form(self, **kwargs):
         form = forms.Form(**kwargs)

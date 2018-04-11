@@ -75,10 +75,9 @@ class ContinueIfAlreadyApplied():
     query to throw an error.
     """
     def dispatch(self, request, *args, **kwargs):
-
-        exists = self.model.objects.filter(
+        exists = Volunteer.objects.filter(
             applicant=self.request.user,
-            trips_year=TripsYear.objects.current().year
+            trips_year=self.trips_year
         ).exists()
         if exists:
             return HttpResponseRedirect(reverse('applications:continue'))
@@ -290,22 +289,26 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     ]
     form_valid_message = "Application successfully updated"
 
+    @property
+    def trips_year(self):
+        return self.current_trips_year
+
     def get_object(self):
         """
         There is only one configuration object for each trips year.
         """
-        trips_year = TripsYear.objects.current()
-        obj, created = self.model.objects.get_or_create(trips_year=trips_year)
+        obj, created = self.model.objects.get_or_create(
+            trips_year=self.trips_year)
         return obj
 
     def get_form(self, **kwargs):
         return crispify(super().get_form(**kwargs), submit_text='Save')
 
     def extra_context(self):
-        trips_year = TripsYear.objects.current()
         return {
-            'trips_year': trips_year,
-            'questions': Question.objects.filter(trips_year=trips_year)
+            'trips_year': self.trips_year,
+            'questions': Question.objects.filter(
+                trips_year=self.trips_year)
         }
 
 
@@ -321,7 +324,7 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
 
     @cached_property
     def trips_year(self):
-        return TripsYear.objects.current()
+        return self.current_trips_year
 
     def get_queryset(self):
         return Question.objects.filter(trips_year=self.trips_year)

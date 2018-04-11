@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from vanilla import CreateView, FormView, TemplateView, UpdateView
 
 from .filters import RegistrationFilterSet
@@ -89,13 +90,18 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
         "registration. Please fix the error and submit the form again."
     )
 
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['trips_year'] = trips_year = TripsYear.objects.current()
-        context['triptypes'] = TripType.objects.visible(trips_year)
+        context['trips_year'] = self.trips_year
+        context['triptypes'] = TripType.objects.visible(self.trips_year)
         context['registration_deadline'] = (
             Timetable.objects.timetable().trippee_registrations_close)
-        context['contact_url'] = Settings.objects.get(trips_year=trips_year).contact_url
+        context['contact_url'] = Settings.objects.get(
+            trips_year=self.trips_year).contact_url
         return context
 
 
@@ -116,7 +122,7 @@ class Register(BaseRegistrationView, CreateView):
         order *then* passed to the LoginRequiredMixin, which doesn't work.
         """
         reg = Registration.objects.filter(
-            trips_year=TripsYear.objects.current(),
+            trips_year=self.trips_year,
             user=request.user).first()
         if reg:
             return HttpResponseRedirect(reverse('incoming:edit_registration'))
@@ -130,7 +136,7 @@ class Register(BaseRegistrationView, CreateView):
         The registration will be automagically matched with a
         corresponding IncomingStudent model if it exists.
         """
-        form.instance.trips_year = TripsYear.objects.current()
+        form.instance.trips_year = self.trips_year
         form.instance.user = self.request.user
 
         self.object = form.save()
@@ -149,7 +155,7 @@ class EditRegistration(BaseRegistrationView, UpdateView):
         """
         return get_object_or_404(
             self.model, user=self.request.user,
-            trips_year=TripsYear.objects.current()
+            trips_year=self.trips_year
         )
 
 
@@ -162,6 +168,10 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
     """
     template_name = 'incoming/portal.html'
 
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
     def get_registration(self):
         """
         Return current user's registration, or None if DNE.
@@ -169,7 +179,7 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
         try:
             return Registration.objects.get(
                 user=self.request.user,
-                trips_year=TripsYear.objects.current()
+                trips_year=self.trips_year
             )
         except Registration.DoesNotExist:
             return None
@@ -181,7 +191,7 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
         try:
             return IncomingStudent.objects.get(
                 netid=self.request.user.netid,
-                trips_year=TripsYear.objects.current()
+                trips_year=self.trips_year
             )
         except IncomingStudent.DoesNotExist:
             return None
@@ -193,7 +203,6 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
         timetable = Timetable.objects.timetable()
         reg = self.get_registration()
         inc = self.get_incoming_student()
-        trips_year = TripsYear.objects.current()
 
         return {
             'registration': reg,
@@ -204,9 +213,9 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
             'after_deadline': (
                 timetable.trippee_registrations_close > timezone.now()),
             'assignment_available': timetable.trippee_assignment_available,
-            'trips_year': trips_year,
+            'trips_year': self.trips_year,
             'contact_url': (
-                Settings.objects.get(trips_year=trips_year).contact_url),
+                Settings.objects.get(trips_year=self.trips_year).contact_url),
         }
 
 # ----- database internal views --------
@@ -573,7 +582,7 @@ class EditSettings(DatabaseUpdateView):
 
     @property
     def trips_year(self):
-        return TripsYear.objects.current().year
+        return self.current_trips_year
 
     def get_object(self):
         return Settings.objects.get(trips_year=self.trips_year)

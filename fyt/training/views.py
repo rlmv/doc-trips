@@ -3,6 +3,7 @@ import logging
 from braces.views import FormMessagesMixin, SetHeadlineMixin
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView
 
@@ -164,7 +165,7 @@ class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
             trips_year=self.trips_year,
             volunteer__applicant=self.request.user)
 
-    @property
+    @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
 

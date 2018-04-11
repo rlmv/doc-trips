@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.utils.functional import cached_property
 from vanilla import TemplateView, UpdateView
 
 from fyt.applications.models import PortalContent, Volunteer
@@ -13,15 +14,18 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
 
     template_name = 'applications/portal.html'
 
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
 
         timetable = Timetable.objects.timetable()
-        trips_year = TripsYear.objects.current()
-        content = PortalContent.objects.get(trips_year=trips_year)
+        content = PortalContent.objects.get(trips_year=self.trips_year)
 
-        context['trips_year'] = trips_year
+        context['trips_year'] = self.trips_year
         context['content'] = content
         context['timetable'] = timetable
         context['applications_available'] = (
@@ -33,7 +37,7 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
 
         try:
             application = Volunteer.objects.get(
-                trips_year=trips_year,
+                trips_year=self.trips_year,
                 applicant=self.request.user)
 
             context['within_deadline_extension'] = (
@@ -63,9 +67,12 @@ class EditVolunteerPortalContent(SettingsPermissionRequired, UpdateView):
     template_name = 'applications/setup_portal.html'
     success_url = reverse_lazy('applications:setup_portal')
 
+    @property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
     def get_object(self):
-        trips_year = TripsYear.objects.current()
-        return self.model.objects.get(trips_year=trips_year)
+        return self.model.objects.get(trips_year=self.trips_year)
 
     def get_form(self, *args, **kwargs):
         form = super().get_form(*args, **kwargs)
