@@ -103,14 +103,11 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
 
 class RaidDelete(DatabaseDeleteView):
     model = Raid
+    success_url_pattern = 'core:raids:list'
 
     def get_headline(self):
         return "Delete %s's raid of %s?" % (
             self.object.user, self.object.verbose_str())
-
-    def get_success_url(self):
-        kwargs = {'trips_year': self.kwargs['trips_year']}
-        return reverse('core:raids:list', kwargs=kwargs)
 
 
 class UpdateRaidInfo(DatabaseUpdateView):

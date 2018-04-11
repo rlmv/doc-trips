@@ -427,10 +427,7 @@ class IncomingStudentDelete(DatabaseDeleteView):
     Delete an incoming student.
     """
     model = IncomingStudent
-
-    def get_success_url(self):
-        return reverse('core:incomingstudent:index',
-                       kwargs={'trips_year': self.trips_year})
+    success_url_pattern = 'core:incomingstudent:index'
 
 
 class UpdateTripAssignment(DatabaseUpdateView):

@@ -315,10 +315,7 @@ class ExternalBusCreate(PopulateMixin, DatabaseCreateView):
 
 class ExternalBusDelete(DatabaseDeleteView):
     model = ExternalBus
-
-    def get_success_url(self):
-        return reverse('core:externalbus:matrix',
-                       kwargs={'trips_year': self.trips_year})
+    success_url_pattern = 'core:externalbus:matrix'
 
 
 class ExternalBusMatrix(DatabaseTemplateView):
