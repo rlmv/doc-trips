@@ -52,11 +52,8 @@ def delete_link(db_object, text=None):
 
 
 @register.simple_tag
-def create_url(model, trips_year_str):
+def create_url(model, trips_year):
     """ Give the create url for the given model and trips_year """
-
-    trips_year = TripsYear.objects.get(pk=trips_year_str)
-
     return model.create_url(trips_year)
 
 

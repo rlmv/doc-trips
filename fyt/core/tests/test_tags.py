@@ -81,3 +81,15 @@ class LinkTagTestCase(FytTestCase):
             obj2.detail_url(), str(obj2)
         )
         self.assertEqual(out, target)
+
+    def test_create_url(self):
+        trips_year = self.init_trips_year()
+        obj = mommy.make(Section, trips_year=trips_year)
+        out = Template(
+            "{% load links %}"
+            "{% create_url model trips_year %}"
+        ).render(Context({
+            'model': Section,
+            'trips_year': trips_year
+        }))
+        self.assertEqual(out, obj.create_url(trips_year))

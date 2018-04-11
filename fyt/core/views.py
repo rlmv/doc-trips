@@ -10,6 +10,7 @@ from django.core.exceptions import NON_FIELD_ERRORS, ImproperlyConfigured
 from django.db import IntegrityError, models, transaction
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from vanilla import (
     CreateView,
@@ -60,19 +61,22 @@ class TripsYearMixin():
         Requesting a ``trips_year`` that don't exist in the db will
         cause problems. Block 'em here.
         """
-        if not TripsYear.objects.filter(year=self.trips_year).exists():
-            raise Http404(f'Trips {self.trips_year} does not exist in the database')
+        try:
+            self.trips_year
+        except TripsYear.DoesNotExist:
+            raise Http404('Trips {} does not exist in the database'.format(
+                self.kwargs["trips_year"]))
 
         return super().dispatch(request, *args, **kwargs)
 
-    @property
+    @cached_property
     def trips_year(self):
         """
         Pull trips_year out of url kwargs.
 
         Note that this is a int, not a TripsYear instance.
         """
-        return self.kwargs['trips_year']
+        return TripsYear.objects.get(year=self.kwargs['trips_year'])
 
     def get_queryset(self):
         """
@@ -162,7 +166,7 @@ class BaseCreateView(ExtraContextMixin, FormInvalidMessageMixin,
         of the trips_year.
         """
         form = self.get_form(data=request.POST, files=request.FILES)
-        form.instance.trips_year_id = self.trips_year
+        form.instance.trips_year = self.trips_year
         if form.is_valid():
             return self.form_valid(form)
         return self.form_invalid(form)

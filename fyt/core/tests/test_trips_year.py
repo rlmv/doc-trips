@@ -18,7 +18,7 @@ class TripsYearMixinTestCase(FytTestCase):
 
     def test_dispatch_for_trips_year(self):
         year = self.init_trips_year()
-        response = self.app.get('/db/'+str(year.year)+'/',
+        response = self.app.get('/db/{}/'.format(year.year),
                                 user=self.make_director())
         self.assertEquals(response.status_code, 200)
 
@@ -90,5 +90,5 @@ class TripsYearMixinTestCase(FytTestCase):
 
     def test_get_trips_year(self):
         view = TripsYearMixin()
-        view.kwargs = {'trips_year': self.trips_year}
+        view.kwargs = {'trips_year': self.trips_year.year}
         self.assertEqual(view.trips_year, self.trips_year)

@@ -123,13 +123,6 @@ class ApplicationFormsMixin(FormMessagesMixin, CrispyFormMixin):
         "Uh oh, it looks like there's a problem with your application"
     )
 
-    @property
-    def trips_year(self):
-        """
-        Override this if the url does not specify a trips year.
-        """
-        return self.kwargs['trips_year']
-
     def get(self, request, *args, **kwargs):
         forms = self.get_forms(instances=self.get_instances())
         context = self.get_context_data(**forms)
@@ -400,8 +393,7 @@ class BlockOldApplications():
     not_available_template = 'applications/old_applications_not_available.html'
 
     def dispatch(self, request, *args, **kwargs):
-        # TODO: yuck, implement this as a utility method
-        if (TripsYear.objects.current().year != int(self.trips_year) and
+        if (not self.trips_year.is_current and
                 groups.directors not in request.user.groups.all()):
             raise PermissionDenied('Only Trip Directors can view applications '
                                    'from previous years.')
@@ -416,7 +408,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
 
     def get_queryset(self):
         return Volunteer.objects.filter(
-            trips_year=self.kwargs['trips_year']
+            trips_year=self.trips_year
         ).with_avg_scores().only(
             'applicant__netid',
             'applicant__name',
@@ -432,10 +424,10 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
     def extra_context(self):
         # TODO: use/make a generic FilterView mixin?
         filter = ApplicationFilterSet(
-            self.kwargs['trips_year'], self.request.GET,
+            self.trips_year, self.request.GET,
             queryset=self.object_list
         )
-        filter_qs = preload_questions(filter.qs, self.kwargs['trips_year'])
+        filter_qs = preload_questions(filter.qs, self.trips_year)
         table = ApplicationTable(filter_qs, self.request)
         return {
             'table': table,
