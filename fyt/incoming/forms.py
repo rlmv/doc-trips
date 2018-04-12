@@ -72,13 +72,6 @@ class RegistrationForm(forms.ModelForm):
         exclude = [
             'section_choice',
             'triptype_choice',
-            '_old_preferred_sections',
-            '_old_available_sections',
-            '_old_unavailable_sections',
-            '_old_firstchoice_triptype',
-            '_old_preferred_triptypes',
-            '_old_available_triptypes',
-            '_old_unavailable_triptypes'
         ]
 
     def __init__(self, trips_year, *args, **kwargs):

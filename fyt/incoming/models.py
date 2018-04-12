@@ -501,34 +501,6 @@ class Registration(MedicalMixin, DatabaseModel):
         )
     )
 
-    # ----- Deprecated section and triptype preferences -----
-
-    _old_preferred_sections = models.ManyToManyField(
-        Section, blank=True, related_name='prefering_trippees'
-    )
-    _old_available_sections = models.ManyToManyField(
-        Section, blank=True, related_name='available_trippees'
-    )
-    _old_unavailable_sections = models.ManyToManyField(
-        Section, blank=True, related_name='unavailable_trippees'
-    )
-    _old_firstchoice_triptype = models.ForeignKey(
-        TripType, blank=True, null=True, related_name='firstchoice_triptype',
-        verbose_name="first choice trip types",
-        on_delete=models.CASCADE
-    )
-    _old_preferred_triptypes = models.ManyToManyField(
-        TripType, blank=True, related_name='preferring_trippees',
-        verbose_name="preferred types of trips"
-    )
-    _old_available_triptypes = models.ManyToManyField(
-        TripType, blank=True, related_name='available_trippees',
-        verbose_name="available types of trips"
-    )
-    _old_unavailable_triptypes = models.ManyToManyField(
-        TripType, blank=True, related_name='unavailable_trippees',
-        verbose_name="unavailable trip types"
-    )
     # ------------------------------------------------------
 
     schedule_conflicts = models.TextField(blank=True)
