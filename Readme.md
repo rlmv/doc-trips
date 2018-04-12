@@ -28,19 +28,10 @@ each time you begin development.
 The site uses PostgreSQL as a database backend in production. You *can* use
 SQLite for development, but it's not recommended: some unit tests will fail,
 and other features won't work quite the same. Instead, [install Postgres](https://www.postgresql.org).
-You will need to set up a database and a user for the application. For me, this
-looks like this:
-
-     sudo -u postgres psql postgres
-     Password: ...
-
-     CREATE DATABASE fyt;
-     CREATE ROLE fytuser WITH LOGIN PASSWORD 'password';
-     GRANT ALL PRIVILEGES ON DATABASE fyt TO fytuser;
-     ALTER USER fytuser CREATEDB;
 
 Run the following from the command line:
 
+    make reset_db
     make migrate
     make bootstrap
 
