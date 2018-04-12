@@ -242,7 +242,7 @@ class RegistrationIndex(DatabaseListView):
     def extra_context(self):
         filter = RegistrationFilterSet(
             self.request.GET, queryset=self.get_queryset(),
-            trips_year=self.kwargs['trips_year']
+            trips_year=self.trips_year
         )
         table = RegistrationTable(filter.qs, self.request)
         return {
@@ -496,7 +496,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
         )
         try:
             (ctd, skipped) = IncomingStudent.objects.create_from_csv_file(
-                file, self.kwargs['trips_year'])
+                file, self.trips_year)
 
             if ctd:
                 msg = 'Created incoming students with NetIds %s'
@@ -532,7 +532,7 @@ class UploadHinmanBoxes(DatabaseEditPermissionRequired,
             form.files['csv_file'].file, encoding='utf-8', errors='replace'
         )
         updated, not_found = IncomingStudent.objects.update_hinman_boxes(
-            file, self.kwargs['trips_year']
+            file, self.trips_year
         )
 
         msg = "Not found: %s" % ", ".join(not_found)

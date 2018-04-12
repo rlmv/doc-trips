@@ -572,6 +572,5 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
         return {
             'preferred_trips': self.object.get_preferred_trips(),
             'available_trips': self.object.get_available_trips(),
-            'croos': Croo.objects.filter(
-                trips_year=self.kwargs['trips_year']).all(),
+            'croos': Croo.objects.filter(trips_year=self.trips_year).all()
         }

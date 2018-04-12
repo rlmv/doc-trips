@@ -103,7 +103,7 @@ class TripList(DatabaseTemplateView):
     template_name = 'trips/trip_index.html'
 
     def extra_context(self):
-        return {'matrix': Trip.objects.matrix(self.kwargs['trips_year'])}
+        return {'matrix': Trip.objects.matrix(self.trips_year)}
 
 
 class TripUpdate(DatabaseUpdateView):
@@ -298,7 +298,7 @@ class CampsiteMatrix(DatabaseTemplateView):
 
     def extra_context(self):
         return {
-            'matrix': Campsite.objects.matrix(self.kwargs['trips_year'])
+            'matrix': Campsite.objects.matrix(self.trips_year)
         }
 
 
@@ -452,7 +452,6 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         context['trip'] = trip = self.get_trip()
         section = trip.section
         triptype = trip.template.triptype
-        trips_year = self.kwargs['trips_year']
 
         triptype_pref = {
             pref.registration_id: pref.preference
@@ -471,14 +470,14 @@ class AssignTrippee(_TripMixin, DatabaseListView):
 
         # all external buses for this section
         buses = ExternalBus.objects.filter(
-            trips_year=trips_year, section=section)
+            trips_year=self.trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
 
         for trippee in self.object_list:
             reg = trippee.registration
             url = reverse('core:assign_trippee_to_trip', kwargs={
-                'trips_year': trips_year,
+                'trips_year': self.trips_year,
                 'trippee_pk': trippee.pk
             })
             trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
@@ -568,7 +567,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
         Return the url used to assign leader to trip
         """
         url = reverse('core:assign_leader_to_trip', kwargs={
-            'trips_year': self.kwargs['trips_year'],
+            'trips_year': self.trips_year,
             'leader_pk': leader.pk
         })
         return '%s?assigned_trip=%s' % (url, trip.pk)
@@ -624,7 +623,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
     template_name = 'core/update.html'
 
     def get_form(self, **kwargs):
-        form = LeaderAssignmentForm(self.kwargs['trips_year'], **kwargs)
+        form = LeaderAssignmentForm(self.trips_year, **kwargs)
         label = 'Assign to %s' % (
             Trip.objects.get(pk=self.request.GET['assigned_trip'])
         )
@@ -643,7 +642,7 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
 
     def get_success_url(self):
         return reverse('core:leader_index', kwargs={
-            'trips_year': self.kwargs['trips_year']
+            'trips_year': self.trips_year
         })
 
 
@@ -660,7 +659,7 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
         # save old assignment so we can show it after deletion
         self._assigned_trip = kwargs['instance'].assigned_trip
         form = LeaderAssignmentForm(
-            self.kwargs['trips_year'], initial={'assigned_trip': None}, **kwargs
+            self.trips_year, initial={'assigned_trip': None}, **kwargs
         )
         return crispify(form, 'Remove', 'btn-danger')
 
@@ -681,7 +680,7 @@ class TrippeeLeaderCounts(DatabaseTemplateView):
 
     def extra_context(self):
         return {
-            'matrix': Trip.objects.matrix(self.kwargs['trips_year'])
+            'matrix': Trip.objects.matrix(self.trips_year)
         }
 
 
@@ -693,7 +692,7 @@ class FoodboxCounts(DatabaseListView):
 
     def get_queryset(self):
         return Trip.objects.filter(
-            trips_year=self.kwargs['trips_year']
+            trips_year=self.trips_year
         ).select_related(
             'template__triptype'
         )
@@ -715,7 +714,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     template_name = 'trips/foodbox_rules.html'
 
     def get_queryset(self):
-        return TripType.objects.filter(trips_year=self.kwargs['trips_year'])
+        return TripType.objects.filter(trips_year=self.trips_year)
 
     def get_form(self, **kwargs):
         FoodRulesFormset = modelformset_factory(
@@ -811,15 +810,12 @@ class Checklists(DatabaseTemplateView):
     template_name = 'trips/checklists.html'
 
     def extra_context(self):
-
-        trips_year = self.kwargs['trips_year']
-
-        dates = Section.dates.leader_dates(trips_year)
+        dates = Section.dates.leader_dates(self.trips_year)
         d = OrderedDict([date, []] for date in dates)
 
-        for sxn in Section.objects.filter(trips_year=trips_year):
+        for sxn in Section.objects.filter(trips_year=self.trips_year):
             kwargs = {
-                'trips_year': trips_year,
+                'trips_year': self.trips_year,
                 'section_pk': sxn.pk
             }
             d[sxn.leaders_arrive].append((
@@ -838,16 +834,16 @@ class Checklists(DatabaseTemplateView):
                 'Section %s Medical Information' % sxn.name,
                 reverse('core:packets:medical', kwargs=kwargs)))
 
-        buses = InternalBus.objects.filter(trips_year=trips_year)
+        buses = InternalBus.objects.filter(trips_year=self.trips_year)
         for date in set(map(lambda x: x.date, buses)):
             d[date].append((
                 'Internal Bus Directions for %s' % date.strftime('%m/%d'),
                 reverse('core:internalbus:packet_for_date', kwargs={
-                    'trips_year': trips_year, 'date': date
+                    'trips_year': self.trips_year, 'date': date
                 })
             ))
 
-        buses = ExternalBus.objects.filter(trips_year=trips_year)
+        buses = ExternalBus.objects.filter(trips_year=self.trips_year)
         bus_dict = defaultdict(set)
         for bus in buses:
             bus_dict[bus.date_to_hanover].add(bus)
@@ -858,14 +854,14 @@ class Checklists(DatabaseTemplateView):
                 d[date].append((
                     '%s Directions for %s' % (bus.route, date.strftime('%m/%d')),
                     reverse('core:externalbus:packet_for_date_and_route', kwargs={
-                        'trips_year': trips_year,
+                        'trips_year': self.trips_year,
                         'date': date,
                         'route_pk': bus.route.pk})))
 
                 d[date].append((
                     '%s Riders Spreadsheet' % bus.route,
                     reverse('core:reports:bus_riders', kwargs={
-                        'trips_year': trips_year,
+                        'trips_year': self.trips_year,
                         'bus_pk': bus.pk})))
 
         return {'date_dict': d}

@@ -27,7 +27,7 @@ class RaidHome(TripsYearMixin, DetailView):
     template_name = 'raids/home.html'
 
     def get_object(self):
-        return self.model.objects.get(trips_year=self.kwargs['trips_year'])
+        return self.model.objects.get(trips_year=self.trips_year)
 
 
 class RaidList(_RaidMixin, ListView):
@@ -75,7 +75,7 @@ class RaidTrip(_RaidMixin, PopulateMixin, SetHeadlineMixin, CreateView):
         return crispify(super().get_form(**kwargs))
 
     def form_valid(self, form):
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year = self.trips_year
         form.instance.user = self.request.user
         return super().form_valid(form)
 
@@ -94,7 +94,7 @@ class RaidDetail(_RaidMixin, FormView, DetailView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year = self.trips_year
         form.instance.user = self.request.user
         form.instance.raid = self.get_object()
         form.save()
@@ -115,7 +115,7 @@ class UpdateRaidInfo(DatabaseUpdateView):
     delete_button = False
 
     def get_object(self):
-        return self.model.objects.get(trips_year=self.kwargs['trips_year'])
+        return self.model.objects.get(trips_year=self.trips_year)
 
     def get_success_url(self):
         return reverse('core:raids:home', kwargs=self.kwargs)

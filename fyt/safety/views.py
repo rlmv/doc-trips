@@ -33,11 +33,11 @@ class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
     headline = 'New Incident'
 
     def get_form(self, **kwargs):
-        return IncidentForm(self.kwargs['trips_year'], **kwargs)
+        return IncidentForm(self.trips_year, **kwargs)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year = self.trips_year
         return super().form_valid(form)
 
 
@@ -72,7 +72,7 @@ class IncidentDetail(_IncidentMixin, FormView, DetailView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        form.instance.trips_year_id = self.kwargs['trips_year']
+        form.instance.trips_year = self.trips_year
         form.instance.user = self.request.user
         form.instance.incident = self.get_object()
         form.save()
@@ -89,7 +89,7 @@ class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('core:safety:list', kwargs={
-            'trips_year': self.kwargs['trips_year']
+            'trips_year': self.trips_year
         })
 
     def post(self, request, *args, **kwargs):
