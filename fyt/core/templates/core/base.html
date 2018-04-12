@@ -116,7 +116,7 @@
 
 {% block messages %}
 {# Warn if looking at a previous year #}
-{% if trips_year != current_trips_year.year|lower %}
+{% if trips_year != current_trips_year %}
 <div class="alert alert-warning">
   This page is for Trips {{ trips_year }}.
   <a href="{% url 'core:current' %}"> Return to {{ current_trips_year }} </a>

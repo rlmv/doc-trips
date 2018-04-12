@@ -2,6 +2,7 @@ import io
 
 from django.core.management import call_command
 from django.db import IntegrityError
+from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.core.forms import tripsyear_modelform_factory
@@ -58,3 +59,25 @@ class FormFieldCallbackTestCase(FytTestCase):
     def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
         trips_year = self.init_trips_year()
         tripsyear_modelform_factory(Campsite, trips_year, fields='__all__')
+
+
+class TemplateTestCase(FytTestCase):
+
+    def test_previous_years_link_to_current(self):
+        self.init_trips_year()
+        self.init_old_trips_year()
+        self.make_director()
+
+        # Last year
+        url = reverse('core:landing_page', kwargs={
+            'trips_year': self.old_trips_year})
+        resp = self.app.get(url, user=self.director)
+        self.assertContains(resp, "This page is for Trips 2013")
+        self.assertContains(resp, "Return to 2014")
+
+        # This year
+        url = reverse('core:landing_page', kwargs={
+            'trips_year': self.trips_year})
+        resp = self.app.get(url, user=self.director)
+        self.assertNotContains(resp, "This page is for Trips 2014")
+        self.assertNotContains(resp, "Return to 2014")
