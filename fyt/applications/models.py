@@ -1129,7 +1129,8 @@ class Grader(DartmouthUser):
         """
         Skip this application in scoring.
         """
-        return Skip.objects.create(
+        # Use get_or_create to handle the occasional double-post
+        return Skip.objects.get_or_create(
             trips_year=application.trips_year,
             application=application,
             grader=self
