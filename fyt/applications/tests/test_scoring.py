@@ -128,7 +128,8 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
 
 class ScoreClaimModelTestCase(ApplicationTestMixin, FytTestCase):
 
-    @unittest.mock.patch('fyt.applications.models.timezone.now', return_value=timezone.now())
+    @unittest.mock.patch('fyt.applications.models.timezone.now',
+                         return_value=timezone.now())
     def test_time_left(self, patched_now):
         now = patched_now()
         claim = mommy.make(ScoreClaim)
@@ -208,6 +209,18 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(claim.application, app)
         self.assertEqual(claim.trips_year, self.trips_year)
         self.assertIsNotNone(claim.claimed_at)
+
+    @unittest.mock.patch('fyt.applications.models.timezone.now',
+                         return_value=timezone.now())
+    def test_claim_score_updates_timestamp(self, patched_now):
+        now = patched_now()
+        app = self.make_application()
+        claim = _expire_claim(self.grader.claim_score(app))
+
+        # Claim it again
+        self.grader.claim_score(claim.application)
+        claim.refresh_from_db()
+        self.assertEqual(claim.claimed_at, now)
 
     def test_claim_adds_croo_head_status(self):
         app = self.make_application()

@@ -1054,6 +1054,7 @@ class ScoreClaim(DatabaseModel):
 
     class Meta:
         ordering = ['claimed_at']
+        unique_together = ['grader', 'application']
 
     grader = models.ForeignKey(
         'Grader',
@@ -1136,19 +1137,20 @@ class Grader(DartmouthUser):
 
     def claim_score(self, application):
         """
-        Claim a score for scoring.
+        Claim a score for scoring, updating the timestamp of the claim if
+        it already exists.
         """
-        return ScoreClaim.objects.create(
+        claim, _ = ScoreClaim.objects.update_or_create(
             grader=self,
             application=application,
-            trips_year=application.trips_year)
+            trips_year=application.trips_year,
+            defaults={'claimed_at': timezone.now()})
+        return claim
 
     def current_claim(self):
         """
         The current claim is an application that has a claim, and which the
         grader has not yet scored.
-
-        Raise an error if there is more than one claim.
         """
         try:
             return self.score_claims.active().get()
@@ -1181,14 +1183,13 @@ class Grader(DartmouthUser):
         """
         Find the next available application to score, and claim it.
         """
-        if self.current_claim() is not None:
-            claim = self.current_claim()
+        claim = self.current_claim()
+        if claim is not None:
             # Update the claim time - this is for the case in which a grader
             # leaves the page, waits a while, then returns to grading,
             # receives the same application, but only has a few minutes
             # left to finish grading.
-            claim.claimed_at = timezone.now()
-            claim.save()
+            self.claim_score(claim.application)
             return claim.application
 
         application = self.next_to_score()
