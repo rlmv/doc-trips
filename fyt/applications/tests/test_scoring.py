@@ -13,6 +13,7 @@ from ..models import (
     Score,
     ScoreClaim,
     ScoreQuestion,
+    ScoreValue,
     Volunteer,
 )
 from ..views.scoring import SHOW_SCORE_AVG_INTERVAL
@@ -36,30 +37,27 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
+        self.make_score_values()
 
     def test_create_score_saves_croo_head_status(self):
         app = self.make_application(trips_year=self.trips_year)
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=mommy.make(Grader),  # Not a croo head
-            leader_score=3,
-            croo_score=4)
+            grader=mommy.make(Grader))  # Not a croo head
         self.assertFalse(score.croo_head)
 
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=_get_grader(self.make_croo_head()),  # Croo head
-            leader_score=3,
-            croo_score=4)
+            grader=_get_grader(self.make_croo_head()))  # Croo head
         self.assertTrue(score.croo_head)
 
     def test_leader_application_requires_leader_score(self):
         for leader_willing, leader_score, ok in [
-                [True, 3, True],
+                [True, self.V3, True],
                 [True, None, False],
-                [False, 3, True],
+                [False, self.V3, True],
                 [False, None, True]]:
 
             def _check():
@@ -81,9 +79,9 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_croo_application_requires_croo_score(self):
         for croo_willing, croo_score, ok in [
-                [True, 3, True],
+                [True, self.V3, True],
                 [True, None, False],
-                [False, 3, True],
+                [False, self.V3, True],
                 [False, None, True]]:
 
             def _check():
@@ -124,6 +122,17 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         application = self.make_application(croo_willing=False)
         form = ScoreForm(application=application, grader=self.grader)
         self.assertNotIn('croo_score', form.fields)
+
+    def test_score_querysets(self):
+        self.init_old_trips_year()
+        self.make_score_values(self.old_trips_year)
+        self.make_score_values()
+        application = self.make_application()
+        form = ScoreForm(application=application, grader=self.grader)
+        self.assertQsEqual(form.fields['leader_score'].queryset,
+                           ScoreValue.objects.filter(trips_year=self.trips_year))
+        self.assertQsEqual(form.fields['croo_score'].queryset,
+                           ScoreValue.objects.filter(trips_year=self.trips_year))
 
 
 class ScoreClaimModelTestCase(ApplicationTestMixin, FytTestCase):
@@ -176,26 +185,27 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertTrue(self.croo_head.is_croo_head)
 
     def test_average_score_methods(self):
+        self.make_score_values()
         mommy.make(
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            leader_score=1,
-            croo_score=2,
+            leader_score=self.V1,
+            croo_score=self.V2,
         )
         mommy.make(
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            leader_score=3,
-            croo_score=5,
+            leader_score=self.V3,
+            croo_score=self.V5,
         )
         mommy.make(
             Score,
             trips_year=self.old_trips_year,
             grader=self.grader,
-            leader_score=3,
-            croo_score=4
+            leader_score=self.V3,
+            croo_score=self.V4
         )
         self.assertEqual(self.grader.avg_leader_score(self.trips_year), 2)
         self.assertEqual(self.grader.avg_croo_score(self.trips_year), 3.5)
@@ -305,7 +315,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_user_only_scores_application_once(self):
         app = self.make_application()
-        self.user.add_score(app, 4, 3)
+        self.user.add_score(app)
         self.assertIsNone(self.user.next_to_score())
 
     def test_only_score_pending_applications(self):
@@ -343,7 +353,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app = self.make_application(croo_willing=False)
         self.make_scores(app, Volunteer.NUM_SCORES - 2)
         claim = self.grader.claim_score(app)
-        self.grader.add_score(app, 3, 4)
+        self.grader.add_score(app)
 
         self.assertEqual(self.user.next_to_score(), app)
 
@@ -496,20 +506,21 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_score_application(self):
         app = self.make_application(trips_year=self.trips_year)
+        self.make_score_values()
         score_question = mommy.make(ScoreQuestion, trips_year=self.trips_year, pk=1)
 
         url = reverse('applications:score:next')
         resp = self.app.get(url, user=self.grader).follow()
-        resp.form['leader_score'] = 3
-        resp.form['croo_score'] = 4
+        resp.form['leader_score'] = self.V3.pk
+        resp.form['croo_score'] = self.V4.pk
         resp.form['score_question_1'] = 'A comment'
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit()
 
         self.assertEqual(len(app.scores.all()), 1)
         score = app.scores.first()
-        self.assertEqual(score.leader_score, 3)
-        self.assertEqual(score.croo_score, 4)
+        self.assertEqual(score.leader_score, self.V3)
+        self.assertEqual(score.croo_score, self.V4)
         self.assertEqual(score.grader, self.grader)
         self.assertEqual(score.application, app)
         self.assertEqual(score.trips_year, self.trips_year)
@@ -540,6 +551,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIn('You took longer than the alloted time', messages[0].message)
 
     def test_cant_POST_score_application_with_expired_claim(self):
+        self.make_score_values()
         app = self.make_application(trips_year=self.trips_year)
         grader = _get_grader(self.grader)
         url = reverse('applications:score:next')
@@ -548,8 +560,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=grader).follow()
         _expire_claim(grader.current_claim())
 
-        resp.form['leader_score'] = 3
-        resp.form['croo_score'] = 4
+        resp.form['leader_score'] = self.V3.pk
+        resp.form['croo_score'] = self.V4.pk
         resp.form['general'] = 'A comment about the whole'
         resp = resp.form.submit().maybe_follow()
 
@@ -578,6 +590,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertTemplateUsed(resp, self.no_applications)
 
     def test_show_average_grade_in_messages(self):
+        self.make_score_values()
         self.make_application(trips_year=self.trips_year)
         grader = _get_grader(self.grader)
         for i in range(SHOW_SCORE_AVG_INTERVAL):
@@ -585,8 +598,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
                 Score,
                 trips_year=self.trips_year,
                 grader=grader,
-                leader_score=3,
-                croo_score=4
+                leader_score=self.V3,
+                croo_score=self.V4
             )
 
         url = reverse('applications:score:next')
@@ -613,6 +626,16 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=self.director)
         resp = resp.form.submit()
         self.assertRedirects(resp, application.detail_url())
+
+
+class ScoreValueModelTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_score_value_str(self):
+        value = ScoreValue.objects.create(value=1.5, trips_year=self.trips_year)
+        self.assertEqual(str(value), "1.5")
 
 
 class ScoreQuestionFormsetTestCase(ApplicationTestMixin, FytTestCase):

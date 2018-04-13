@@ -1,6 +1,6 @@
 from vanilla import ListView
 
-from fyt.applications.models import Grader, Score, Volunteer
+from fyt.applications.models import Grader, Score, Volunteer, ScoreValue
 from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import GraderTablePermissionRequired
 from fyt.utils.views import ExtraContextMixin
@@ -22,6 +22,6 @@ class GraderList(GraderTablePermissionRequired, ExtraContextMixin,
 
     def extra_context(self):
         return {
-            'score_choices': [x for x, _ in Score.SCORE_CHOICES],
+            'score_values': ScoreValue.objects.filter(trips_year=self.trips_year),
             'progress': Volunteer.objects.score_progress(self.trips_year)
         }

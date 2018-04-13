@@ -17,11 +17,11 @@
   <th> Grader </th>
   <th class="text-center"> Number of Scores </th>
   <th class="text-center"> Average Leader Score </th>
-  {% for x in score_choices %}
+  {% for x in score_values %}
   <th class="text-center"> {{ x }} </th>
   {% endfor %}
   <th class="text-center"> Average Croo Score </th>
-  {% for x in score_choices %}
+  {% for x in score_values %}
   <th class="text-center"> {{ x }} </th>
   {% endfor %}
 </tr>
@@ -31,11 +31,11 @@
   <td> {{ grader }} </td>
   <td class="text-center"> {{ grader.score_count }} </td>
   <td class="text-center"> {{ grader.avg_leader_score|floatformat:1 }} </td>
-  {% for x in score_choices %}
+  {% for x in score_values %}
   <td class="text-center text-muted"> {{ grader.leader_score_histogram|get:x|default:'-' }} </td>
   {% endfor %}
   <td class="text-center"> {{ grader.avg_croo_score|floatformat:1 }} </td>
-  {% for x in score_choices %}
+  {% for x in score_values %}
   <td class="text-center text-muted"> {{ grader.croo_score_histogram|get:x|default:'-' }} </td>
   {% endfor %}
 </tr>

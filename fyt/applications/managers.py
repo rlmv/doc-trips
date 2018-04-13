@@ -196,8 +196,8 @@ class VolunteerQuerySet(models.QuerySet):
         Note that this issue won't appear on a dev sqlite database.
         """
         return self.annotate(
-            avg_leader_score=Avg('scores__leader_score'),
-            avg_croo_score=Avg('scores__croo_score')
+            avg_leader_score=Avg('scores__leader_score__value'),
+            avg_croo_score=Avg('scores__croo_score__value')
         ).annotate(
             norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
             norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
@@ -244,37 +244,39 @@ class GraderQuerySet(models.QuerySet):
             scores_for_year__isnull=False
         ).distinct().annotate(
             score_count=Count('scores_for_year'),
-            avg_leader_score=Avg(LEADER_SCORE_LOOKUP),
-            avg_croo_score=Avg(CROO_SCORE_LOOKUP)
+            avg_leader_score=Avg(LEADER_SCORE_LOOKUP + '__value'),
+            avg_croo_score=Avg(CROO_SCORE_LOOKUP + '__value')
         )
 
-        qs = qs._annotate_score_counts(LEADER_SCORE_LOOKUP)
-        qs = qs._annotate_score_counts(CROO_SCORE_LOOKUP)
-        qs = qs._attach_histogram('leader_score_histogram', LEADER_SCORE_LOOKUP)
-        qs = qs._attach_histogram('croo_score_histogram', CROO_SCORE_LOOKUP)
+        qs = qs._annotate_score_counts(LEADER_SCORE_LOOKUP, trips_year)
+        qs = qs._annotate_score_counts(CROO_SCORE_LOOKUP, trips_year)
+        qs = qs._attach_histogram('leader_score_histogram', LEADER_SCORE_LOOKUP,
+                                  trips_year)
+        qs = qs._attach_histogram('croo_score_histogram', CROO_SCORE_LOOKUP,
+                                  trips_year)
 
         return qs
 
-    def _annotate_score_counts(self, score_lookup):
+    def _annotate_score_counts(self, score_lookup, trips_year):
         return self.annotate(
-            **{_bin(score_lookup, i): Count('scores_for_year', filter=Q(
-                **{score_lookup: i}))
-               for i in SCORE_CHOICES()})
+            **{_bin(score_lookup, value): Count('scores_for_year', filter=Q(
+                **{score_lookup: value}))
+               for value in score_values(trips_year)})
 
-    def _attach_histogram(self, histogram_name, score_lookup):
+    def _attach_histogram(self, histogram_name, score_lookup, trips_year):
         for grader in self:
             setattr(grader, histogram_name, OrderedDict(
-                (i, getattr(grader, _bin(score_lookup, i)))
-                for i in SCORE_CHOICES()))
+                (value, getattr(grader, _bin(score_lookup, value.value)))
+                for value in score_values(trips_year)))
         return self
 
 
 GraderManager = BaseGraderManager.from_queryset(GraderQuerySet)
 
 
-def SCORE_CHOICES():
-    from .models import Score
-    return (i for i, _ in Score.SCORE_CHOICES)
+def score_values(trips_year):
+    from .models import ScoreValue
+    return ScoreValue.objects.filter(trips_year=trips_year)
 
 
 def _bin(score_lookup, x):

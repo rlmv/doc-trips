@@ -532,16 +532,16 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     @cached_property
     def _average_scores(self):
-        return self.scores.aggregate(models.Avg('leader_score'),
-                                     models.Avg('croo_score'))
+        return self.scores.aggregate(models.Avg('leader_score__value'),
+                                     models.Avg('croo_score__value'))
 
     def average_leader_score(self):
         """Average leader score."""
-        return self._average_scores['leader_score__avg']
+        return self._average_scores['leader_score__value__avg']
 
     def average_croo_score(self):
         """Average croo score."""
-        return self._average_scores['croo_score__avg']
+        return self._average_scores['croo_score__value__avg']
 
     def first_aid_certifications_str(self):
         """Return a string of the volunteer's medical certifications.
@@ -908,19 +908,19 @@ class Score(DatabaseModel):
         'was the score created by a croo head?', default=False, editable=False
     )
 
-    leader_score = models.DecimalField(
-        max_digits=2,
-        decimal_places=1,
-        choices=SCORE_CHOICES,
+    leader_score = models.ForeignKey(
+        'ScoreValue',
         blank=True,
-        null=True)
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='leader_scores')
 
-    croo_score = models.DecimalField(
-        max_digits=2,
-        decimal_places=1,
-        choices=SCORE_CHOICES,
+    croo_score = models.ForeignKey(
+        'ScoreValue',
         blank=True,
-        null=True)
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='croo_scores')
 
     comments = models.ManyToManyField('ScoreQuestion', through='ScoreComment')
 
@@ -957,6 +957,29 @@ class Score(DatabaseModel):
         """
         return ScoreComment.objects.create(
             score=self, score_question=score_question, comment=comment)
+
+
+class ScoreValue(DatabaseModel):
+    """
+    The value assigned to leader and croo scores.
+
+    These have changed over the years, hence the FK instead of static
+    choices.
+    """
+    class Meta:
+        ordering = ['value']
+        unique_together = ['value', 'trips_year']
+
+    value = models.DecimalField(max_digits=2, decimal_places=1)
+    description = models.CharField(max_length=512, blank=True)
+
+    def __str__(self):
+        return str(self.value)
+
+    def verbose_str(self):
+        if self.description:
+            return "{} -- {}".format(self.value, self.description)
+        return str(self)
 
 
 class ScoreQuestion(DatabaseModel):
@@ -1149,11 +1172,11 @@ class Grader(DartmouthUser):
 
     def avg_leader_score(self, trips_year):
         return self.scores_for_year(trips_year).aggregate(
-            Avg('leader_score'))['leader_score__avg']
+            Avg('leader_score__value'))['leader_score__value__avg']
 
     def avg_croo_score(self, trips_year):
         return self.scores_for_year(trips_year).aggregate(
-            Avg('croo_score'))['croo_score__avg']
+            Avg('croo_score__value'))['croo_score__value__avg']
 
     def claim_next_to_score(self):
         """

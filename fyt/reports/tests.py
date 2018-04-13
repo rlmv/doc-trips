@@ -60,14 +60,15 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         self.init_trips_year()
 
     def test_volunteer_csv(self):
+        self.make_score_values()
         question = mommy.make(Question, trips_year=self.trips_year)
         app = self.make_application(trips_year=self.trips_year)
         app.croo_willing = False
         app.save()
         app.answer_question(question, 'An answer')
-        mommy.make(Grader).add_score(app, 4, 2)
-        mommy.make(Grader).add_score(app, 5, 1)
-        mommy.make(Grader).add_score(app, 4, 3)
+        mommy.make(Grader).add_score(app, self.V4, self.V2)
+        mommy.make(Grader).add_score(app, self.V5, self.V1)
+        mommy.make(Grader).add_score(app, self.V4, self.V3)
 
         self.assertCsvReturns('core:reports:all_apps', [{
             'name': app.name,

@@ -2,9 +2,10 @@ from model_mommy import mommy
 
 from fyt.applications.models import Grader, Score
 from fyt.test import FytTestCase
+from .tests import ApplicationTestMixin
 
 
-class GraderViewsTestCase(FytTestCase):
+class GraderViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -33,15 +34,15 @@ class GraderViewsTestCase(FytTestCase):
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            leader_score=1,
-            croo_score=2,
+            leader_score__value=1,
+            croo_score__value=2,
         )
         mommy.make(
             Score,
             trips_year=self.old_trips_year,
             grader=self.grader,
-            leader_score=3,
-            croo_score=4
+            leader_score__value=3,
+            croo_score__value=4
         )
         graders = Grader.objects.with_statistics(self.trips_year)
         self.assertEqual(len(graders), 1)
@@ -50,41 +51,42 @@ class GraderViewsTestCase(FytTestCase):
         self.assertEqual(graders[0].avg_croo_score, 2)
 
     def test_with_statistics_score_histogram(self):
+        self.make_score_values()
         mommy.make(
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            leader_score=1,
-            croo_score=2,
+            leader_score=self.V1,
+            croo_score=self.V2
         )
         mommy.make(
             Score,
             trips_year=self.trips_year,
             grader=self.grader,
-            leader_score=4,
-            croo_score=4
+            leader_score=self.V4,
+            croo_score=self.V4
         )
         graders = Grader.objects.with_statistics(self.trips_year)
 
         self.assertEqual(graders[0].leader_score_histogram, {
-            1: 1,
-            1.5: 0,
-            2: 0,
-            2.5: 0,
-            3: 0,
-            3.5: 0,
-            4: 1,
-            4.5: 0,
-            5: 0,
+            self.V1: 1,
+            self.V1_5: 0,
+            self.V2: 0,
+            self.V2_5: 0,
+            self.V3: 0,
+            self.V3_5: 0,
+            self.V4: 1,
+            self.V4_5: 0,
+            self.V5: 0,
         })
         self.assertEqual(graders[0].croo_score_histogram, {
-            1: 0,
-            1.5: 0,
-            2: 1,
-            2.5: 0,
-            3: 0,
-            3.5: 0,
-            4: 1,
-            4.5: 0,
-            5: 0,
+            self.V1: 0,
+            self.V1_5: 0,
+            self.V2: 1,
+            self.V2_5: 0,
+            self.V3: 0,
+            self.V3_5: 0,
+            self.V4: 1,
+            self.V4_5: 0,
+            self.V5: 0,
         })

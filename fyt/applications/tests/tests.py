@@ -15,6 +15,7 @@ from ..models import (
     PortalContent,
     Question,
     Volunteer,
+    ScoreValue,
     validate_class_year,
 )
 
@@ -92,6 +93,17 @@ class ApplicationTestMixin():
         if trips_year is None:
             trips_year = self.trips_year
         return make_application(trips_year=trips_year, **kwargs)
+
+    def make_score_values(self, trips_year=None):
+        if trips_year is None:
+            trips_year = self.trips_year
+
+        # TODO: use bulk_create
+        for i in [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]:
+            name = "V{}".format(str(i).replace('.', '_'))
+            value = ScoreValue.objects.create(
+                trips_year=trips_year, value=i, description="")
+            setattr(self, name, value)
 
 
 class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
@@ -286,22 +298,24 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_add_score(self):
         trips_year = self.init_trips_year()
+        self.make_score_values()
         app = make_application(trips_year=trips_year)
         grader = mommy.make(Grader)
-        grader.add_score(app, 3, 1)  # TODO: test kwargs
+        grader.add_score(app, self.V3, self.V1)
 
         score = app.scores.first()
         self.assertEqual(score.application, app)
         self.assertEqual(score.grader, grader)
-        self.assertEqual(score.leader_score, 3)
-        self.assertEqual(score.croo_score, 1)
+        self.assertEqual(score.leader_score, self.V3)
+        self.assertEqual(score.croo_score, self.V1)
         self.assertEqual(score.trips_year, trips_year)
 
     def test_average_scores(self):
         trips_year = self.init_trips_year()
+        self.make_score_values()
         app = make_application(trips_year=trips_year)
-        mommy.make(Grader).add_score(app, 3, 1)
-        mommy.make(Grader).add_score(app, 4, 2)
+        mommy.make(Grader).add_score(app, self.V3, self.V1)
+        mommy.make(Grader).add_score(app, self.V4, self.V2)
         mommy.make(Grader).add_score(app, None, None)
         self.assertEqual(app.average_leader_score(), 3.5)
         self.assertEqual(app.average_croo_score(), 1.5)
@@ -566,9 +580,10 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
                            [rejected])
 
     def test_with_avg_scores_ordering(self):
+        self.make_score_values()
         app1 = self.make_application()
         app2 = self.make_application()
-        mommy.make(Grader).add_score(app1, 2, 1)
+        mommy.make(Grader).add_score(app1, self.V2, self.V1)
 
         qs = Volunteer.objects.with_avg_scores()
         qs = qs.order_by('-norm_avg_leader_score')

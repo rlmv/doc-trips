@@ -14,6 +14,7 @@ from fyt.applications.models import (
     Question,
     Score,
     ScoreQuestion,
+    ScoreValue,
     Volunteer,
     validate_word_count,
 )
@@ -692,7 +693,13 @@ class CommentHandler(PreferenceHandler):
         )
 
 
+class ScoreValueChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.verbose_str()
+
+
 SKIP = 'skip'
+
 
 def ScoreForm(application, grader, *args, **kwargs):
     """
@@ -724,6 +731,13 @@ def ScoreForm(application, grader, *args, **kwargs):
                 trips_year=application.trips_year)
             self.comment_handler = CommentHandler(self, self.score_questions)
             self.fields.update(self.comment_handler.get_formfields())
+
+            # Setup up score fields
+            score_values = ScoreValue.objects.filter(
+                trips_year=application.trips_year)
+            for field_name in score_fields:
+                self.fields[field_name] = ScoreValueChoiceField(
+                    queryset=score_values, required=True)
 
         @property
         def helper(self):
