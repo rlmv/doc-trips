@@ -1044,7 +1044,7 @@ class ScoreClaim(DatabaseModel):
         on_delete=models.CASCADE
     )
     croo_head = models.BooleanField(
-       'is the grader a croo head?',
+        'is the grader a croo head?',
         default=False,
         editable=False
     )
