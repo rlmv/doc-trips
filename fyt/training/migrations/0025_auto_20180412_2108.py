@@ -11,15 +11,16 @@ def move_legacy_training_data(apps, schema_editor):
     Attendee = apps.get_model('training', 'Attendee')
     Training = apps.get_model('training', 'Training')
     Session = apps.get_model('training', 'Session')
+    TripsYear = apps.get_model('core', 'TripsYear')
 
     noon = time(12)
 
-    for trips_year in YEARS:
-        cb = Training.objects.create(trips_year_id=trips_year,
+    for trips_year in TripsYear.objects.filter(year__in=YEARS):
+        cb = Training.objects.create(trips_year=trips_year,
                                      name='Community building')
-        rm = Training.objects.create(trips_year_id=trips_year,
+        rm = Training.objects.create(trips_year=trips_year,
                                      name='Risk management')
-        ws = Training.objects.create(trips_year_id=trips_year,
+        ws = Training.objects.create(trips_year=trips_year,
                                      name='Wilderness skills')
 
         for a in Attendee.objects.filter(trips_year=trips_year):
@@ -28,7 +29,7 @@ def move_legacy_training_data(apps, schema_editor):
                 if not date:
                     return None
                 return Session.objects.get_or_create(
-                    trips_year_id=trips_year,
+                    trips_year=trips_year,
                     training=training,
                     date=date,
                     start_time=noon,
