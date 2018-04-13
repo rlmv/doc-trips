@@ -493,13 +493,6 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'co_leader',
         '_old_document'  # Deprecated field - include conditionally?
     ]
-    trainings_fields = [
-        'community_building',
-        'risk_management',
-        'wilderness_skills',
-        'croo_training',
-        ('first aid cert', 'get_first_aid_cert')
-    ]
     crooapplication_fields = [
         'licensed',
         'college_certified',
@@ -516,7 +509,6 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         return {
             'volunteer_fields': self.volunteer_fields,
             'leaderapplication_fields': self.leaderapplication_fields,
-            'trainings_fields': self.trainings_fields,
             'crooapplication_fields': self.crooapplication_fields,
             'trip_assignment_url': reverse(
                 'core:volunteer:update_trip', kwargs=self.kwargs),
