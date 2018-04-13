@@ -250,14 +250,14 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.grader.skip(app)
         self.assertIsNone(self.grader.current_claim())
 
-    def test_check_claim(self):
+    def test_active_claim(self):
         app = self.make_application()
-        self.assertFalse(self.grader.check_claim(app))
+        self.assertIsNone(self.grader.active_claim(app))
         claim = self.grader.claim_score(app)
-        self.assertTrue(self.grader.check_claim(app))
+        self.assertEqual(self.grader.active_claim(app), claim)
 
         _expire_claim(claim)
-        self.assertFalse(self.grader.check_claim(app))
+        self.assertIsNone(self.grader.active_claim(app))
 
     def test_claim_next_to_score_marks_a_claim(self):
         app = self.make_application()

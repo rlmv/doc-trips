@@ -116,10 +116,10 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
 
     @cached_property
     def claim(self):
-        return self.grader.current_claim()
+        return self.grader.active_claim(self.application)
 
     def get(self, *args, **kwargs):
-        if not self.grader.check_claim(self.application):
+        if not self.claim:
             self.messages.warning("You took longer than the alloted time "
                                   "for scoring this application")
             return HttpResponseRedirect(self.get_success_url())
@@ -152,7 +152,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
             self.messages.success('Skipped {}'.format(self.application_name))
             return HttpResponseRedirect(self.get_success_url())
 
-        if not self.grader.check_claim(self.application):
+        if not self.claim:
             self.messages.warning("You took longer than the alloted time "
                                   "for scoring this application")
             return HttpResponseRedirect(self.get_success_url())

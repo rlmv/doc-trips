@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db import models, transaction
+from django.db import models
 from django.db.models import (
     F,
     Q,
@@ -1127,18 +1127,19 @@ class Grader(DartmouthUser):
         """
         The current claim is an application that has a claim, and which the
         grader has not yet scored.
-        """
-        try:
-            return self.score_claims.active().get()
-        except ScoreClaim.DoesNotExist:
-            return None
 
-    def check_claim(self, application):
+        Note, because of the behavior of claim_next_to_score it is possibe
+        for a grader to have more than one active claim at a time.
         """
-        Check that the grader currently holds a claim on this application.
+        return self.score_claims.active().first()
+
+    def active_claim(self, application):
         """
-        cc = self.current_claim()
-        return (cc is not None) and (cc.application == application)
+        Return the active claim that the grader currently holds for this
+        application, if it exists; otherwise return None.
+        """
+        return self.score_claims.active().filter(
+            application=application).first()
 
     def scores_for_year(self, trips_year):
         return self.scores.filter(trips_year=trips_year)
@@ -1154,10 +1155,13 @@ class Grader(DartmouthUser):
         return self.scores_for_year(trips_year).aggregate(
             Avg('croo_score'))['croo_score__avg']
 
-    @transaction.atomic
     def claim_next_to_score(self):
         """
         Find the next available application to score, and claim it.
+
+        Note that there is a race condition here. In the case of duplicated
+        POST requests, it is possible for a grader to get two active claims
+        for different applications.
         """
         claim = self.current_claim()
         if claim is not None:
