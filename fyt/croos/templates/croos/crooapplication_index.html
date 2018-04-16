@@ -33,8 +33,8 @@
     <td> {{ application.safety_dork_qualified | checkmark_if_true }} </td>
 
     <td>
-      {% if application.assigned_croo %}
-      {{ application.assigned_croo | detail_link }}
+      {% if application.croo_assignment %}
+      {{ application.croo_assignment | detail_link }}
       {% endif %}
     </td>
 

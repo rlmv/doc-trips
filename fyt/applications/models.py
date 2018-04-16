@@ -293,7 +293,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         Trip, blank=True, null=True,
         related_name='leaders', on_delete=models.PROTECT
     )
-    assigned_croo = models.ForeignKey(
+    croo_assignment = models.ForeignKey(
         Croo, blank=True, null=True,
         related_name='croo_members', on_delete=models.PROTECT
     )
@@ -448,7 +448,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
                    "Change status to %s or remove Trip assignment")
             raise ValidationError(msg % (self, self.status, self.LEADER))
 
-        if self.assigned_croo and self.status != self.CROO:
+        if self.croo_assignment and self.status != self.CROO:
             msg = ("Volunteer %s with status %s cannot also be on a Croo. "
                    "Change status to %s or remove Croo assignment")
             raise ValidationError(msg % (self, self.status, self.CROO))

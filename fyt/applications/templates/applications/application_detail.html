@@ -43,8 +43,8 @@
 
     <tr>
         <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
-        {% if application.assigned_croo %}
-        <td> {{ application.assigned_croo | detail_link }} </td>
+        {% if application.croo_assignment %}
+        <td> {{ application.croo_assignment | detail_link }} </td>
         <td>
           <a href="{% url 'core:volunteer:remove_croo' trips_year=application.trips_year pk=application.pk %}"> remove </a>
         </td>

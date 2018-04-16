@@ -130,14 +130,14 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         crooling = self.make_application(
             trips_year=self.trips_year,
             status=Volunteer.CROO,
-            assigned_croo=croo
+            croo_assignment=croo
         )
         not_croo = self.make_application(trips_year=self.trips_year)
 
         self.assertCsvReturns('core:reports:croo_members', [{
             'name': crooling.name,
             'netid': crooling.applicant.netid,
-            'croo': str(crooling.assigned_croo)
+            'croo': str(crooling.croo_assignment)
         }])
 
     def test_trippees_csv(self):

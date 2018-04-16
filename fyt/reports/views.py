@@ -169,7 +169,7 @@ class CrooMembersCSV(TripLeadersCSV):
         return [
             croo_member.name,
             croo_member.applicant.netid,
-            croo_member.assigned_croo
+            croo_member.croo_assignment
         ]
 
 

@@ -29,7 +29,7 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
-                     trip_assignment=None, assigned_croo=None,
+                     trip_assignment=None, croo_assignment=None,
                      leader_willing=True, croo_willing=True, **kwargs):
 
     application = mommy.make(
@@ -37,7 +37,7 @@ def make_application(status=Volunteer.PENDING, trips_year=None,
         status=status,
         trips_year=trips_year,
         trip_assignment=trip_assignment,
-        assigned_croo=assigned_croo,
+        croo_assignment=croo_assignment,
         leader_willing=leader_willing,
         croo_willing=croo_willing,
         **kwargs)
@@ -126,7 +126,7 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         application.status = Volunteer.LEADER
         application.full_clean()
 
-    def test_must_be_CROO_to_be_assigned_croo(self):
+    def test_must_be_CROO_to_be_croo_assignment(self):
         trips_year = self.init_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'LEADER', 'REJECTED', 'CANCELED']:
             application = mommy.make(
@@ -137,7 +137,7 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
                 in_goodstanding_with_college=True,
                 trainings=True
             )
-            application.assigned_croo = mommy.make(Croo, trips_year=trips_year)
+            application.croo_assignment = mommy.make(Croo, trips_year=trips_year)
             with self.assertRaises(ValidationError):
                     application.full_clean()
 
@@ -881,4 +881,4 @@ class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):
         form = ApplicationAdminForm(instance=self.application)
         c1 = mommy.make(Croo, trips_year=self.trips_year)
         c2 = mommy.make(Croo, trips_year=self.old_trips_year)
-        self.assertQsEqual(form.fields['assigned_croo'].queryset, [c1])
+        self.assertQsEqual(form.fields['croo_assignment'].queryset, [c1])

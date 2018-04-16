@@ -452,7 +452,7 @@ class ApplicationAdminForm(forms.ModelForm):
         fields = [
             'status',
             'trip_assignment',
-            'assigned_croo',
+            'croo_assignment',
             'safety_lead',
             'deadline_extension']
         widgets = {
@@ -469,10 +469,8 @@ class ApplicationAdminForm(forms.ModelForm):
         ).select_related(
             'section', 'template', 'template__triptype')
 
-        self.fields['assigned_croo'].queryset = Croo.objects.filter(
+        self.fields['croo_assignment'].queryset = Croo.objects.filter(
             trips_year=self.trips_year)
-
-        self.fields['assigned_croo'].label = 'Croo Assignment'
 
     @property
     def helper(self):
@@ -483,7 +481,7 @@ class ApplicationAdminForm(forms.ModelForm):
             HTML("{% include 'applications/_trip_preferences.html' %}"),
             'trip_assignment',
             HTML("{% include 'applications/_croo_members.html' %}"),
-            'assigned_croo',
+            'croo_assignment',
             'safety_lead',
             Submit('submit', 'Update'),
         )

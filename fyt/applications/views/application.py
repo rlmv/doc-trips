@@ -593,5 +593,5 @@ class RemoveCrooAssignment(ApplicationEditPermissionRequired,
         return crispify(form, 'Remove', 'btn-danger')
 
     def form_valid(self, form):
-        self.object.assigned_croo = None
+        self.object.croo_assignment = None
         return super().form_valid(form)
