@@ -1,0 +1,12 @@
+{% extends "core/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h3> Remove Croo Assignment? </h3>
+{% endblock %}
+
+{% block content %}
+<p><strong> Volunteer: </strong> {{ object.applicant }} </p>
+<p><strong> Croo: </strong> {{ object.assigned_croo }} </p>
+{% crispy form %}
+{% endblock content %}

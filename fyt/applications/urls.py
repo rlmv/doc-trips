@@ -10,8 +10,8 @@ from fyt.applications.views.application import (
     EditQuestions,
     NewApplication,
     SetupApplication,
+    RemoveCrooAssignment
 )
-from fyt.applications.views.assign import AssignToCroo, AssignToTrip
 from fyt.applications.views.graders import GraderList
 from fyt.applications.views.portal import (
     EditVolunteerPortalContent,
@@ -61,10 +61,8 @@ application_urlpatterns = [
         name='update_status'),
     url(r'^(?P<pk>[0-9]+)/update/admin/$', ApplicationAdminUpdate.as_view(),
         name='update_admin'),
-    url(r'^(?P<pk>[0-9]+)/update/trip/$', AssignToTrip.as_view(),
-        name='update_trip'),
-    url(r'^(?P<pk>[0-9]+)/update/croo/$', AssignToCroo.as_view(),
-        name='update_croo'),
+    url(r'^(?P<pk>[0-9]+)/remove/croo/$', RemoveCrooAssignment.as_view(),
+        name='remove_croo')
 ]
 
 score_urlpatterns = [

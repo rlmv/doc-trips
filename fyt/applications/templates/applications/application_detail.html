@@ -13,19 +13,18 @@
 {% block content %}
 
 {# administrative info #}
-<h4> Administrative Info <a href="{% url 'core:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </h4>
+<h4> Administrative Info <a href="{{ admin_update_url }}">edit</a></h4>
 <table class="table table-condensed table-striped">
-
     <tr>
         <td class="col-sm-3 text-right"><strong>Status</strong></td>
         <td> {{ application.status }} </td>
-        <td>  <a href="{% url 'core:volunteer:update_status' trips_year=application.trips_year pk=application.pk %}">edit</a> </td>
+        <td>  <a href="{{ admin_update_url }}">edit</a> </td>
     </tr>
 
     <tr>
         <td class="col-sm-3 text-right"><strong>Extended deadline</strong></td>
         <td> {{ application.deadline_extension|default:"*" }} </td>
-        <td> <a href="{% url 'core:volunteer:update_admin' trips_year=application.trips_year pk=application.pk %}"> edit </a> </td>
+        <td> <a href="{{ admin_update_url }}#div_id_deadline_extension"> edit </a></td>
     </tr>
 
     <tr>
@@ -38,7 +37,7 @@
             <a href="{% url 'core:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>
         </td>
         {% else %}
-        <td> * </td> <td> <a href="{{ trip_assignment_url }}"> assign </a> </td>
+        <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_trip_preferences"> assign </a> </td>
         {% endif %}
     </tr>
 
@@ -46,9 +45,11 @@
         <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
         {% if application.assigned_croo %}
         <td> {{ application.assigned_croo | detail_link }} </td>
-        <td> TODO: remove link </td>
+        <td>
+          <a href="{% url 'core:volunteer:remove_croo' trips_year=application.trips_year pk=application.pk %}"> remove </a>
+        </td>
         {% else %}
-        <td> * </td> <td> <a href="{{ croo_assignment_url }}"> assign </a> </td>
+        <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_croo_members"> assign </a> </td>
         {% endif %}
     </tr>
 

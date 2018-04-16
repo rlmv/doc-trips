@@ -512,10 +512,8 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
             'volunteer_fields': self.volunteer_fields,
             'leaderapplication_fields': self.leaderapplication_fields,
             'crooapplication_fields': self.crooapplication_fields,
-            'trip_assignment_url': reverse(
-                'core:volunteer:update_trip', kwargs=self.kwargs),
-            'croo_assignment_url': reverse(
-                'core:volunteer:update_croo', kwargs=self.kwargs)
+            'admin_update_url': reverse(
+                'core:volunteer:update_admin', kwargs=self.kwargs)
         }
 
 
@@ -563,7 +561,10 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     form_class = ApplicationAdminForm
 
     def get_headline(self):
-        return "Edit volunteer {}".format(self.object)
+        return "Edit Volunteer {}".format(self.object)
+
+    def get_success_url(self):
+        return self.object.detail_url()
 
     def extra_context(self):
         order = lambda qs: qs.order_by(
@@ -576,5 +577,21 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
         return {
             'preferred_trips': order(self.object.get_preferred_trips()),
             'available_trips': order(self.object.get_available_trips()),
-            'croos': Croo.objects.filter(trips_year=self.trips_year).all()
+            'croos': Croo.objects.filter(trips_year=self.trips_year)
         }
+
+
+class RemoveCrooAssignment(ApplicationEditPermissionRequired,
+                           BlockDirectorate, BlockOldApplications,
+                           TripsYearMixin, UpdateView):
+    model = Volunteer
+    fields = []
+    template_name = 'applications/remove_croo_assignment.html'
+
+    def get_form(self, **kwargs):
+        form = super().get_form(**kwargs)
+        return crispify(form, 'Remove', 'btn-danger')
+
+    def form_valid(self, form):
+        self.object.assigned_croo = None
+        return super().form_valid(form)

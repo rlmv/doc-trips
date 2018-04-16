@@ -746,37 +746,6 @@ class LeaderSupplementFormTestCase(FytTestCase):
         self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
 
 
-class AssignLeaderToTripViewsTestCase(ApplicationTestMixin, FytTestCase):
-
-    def test_assignment_view(self):
-        trips_year = self.init_trips_year()
-        application = self.make_application(
-            trips_year=trips_year, status=Volunteer.LEADER
-        )
-        url = reverse('core:volunteer:update_trip',
-                      kwargs={'trips_year': trips_year, 'pk': application.pk})
-        res = self.app.get(url, user=self.make_director())
-
-
-class AssignToCrooTestCase(ApplicationTestMixin, FytTestCase):
-
-    def test_assignment_view(self):
-        trips_year = self.init_trips_year()
-        application = self.make_application(
-            trips_year=trips_year, status=Volunteer.CROO
-        )
-        croo = mommy.make(Croo, trips_year=trips_year)
-        url = reverse(
-            'core:volunteer:update_croo',
-            kwargs={'trips_year': trips_year, 'pk': application.pk}
-        )
-        form = self.app.get(url, user=self.make_director()).form
-        form['assigned_croo'] = croo.pk
-        res = form.submit()
-        croo = Croo.objects.get(pk=croo.pk)
-        self.assertEqual(list(croo.croo_members.all()), [application])
-
-
 class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
@@ -838,10 +807,6 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
                 reverse('core:volunteer:update_status',
                         kwargs=application.obj_kwargs()),
                 reverse('core:volunteer:update_admin',
-                        kwargs=application.obj_kwargs()),
-                reverse('core:volunteer:update_trip',
-                        kwargs=application.obj_kwargs()),
-                reverse('core:volunteer:update_croo',
                         kwargs=application.obj_kwargs())]
 
             for url in urls:
@@ -866,6 +831,7 @@ class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
                 getattr(content, "%s_description" % choice),
                 content.get_status_description(choice)
             )
+
 
 class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 

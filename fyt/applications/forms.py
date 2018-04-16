@@ -475,6 +475,8 @@ class ApplicationAdminForm(forms.ModelForm):
         self.fields['assigned_croo'].queryset = Croo.objects.filter(
             trips_year=self.trips_year)
 
+        self.fields['assigned_croo'].label = 'Croo Assignment'
+
     @property
     def helper(self):
         helper = FormHelper(self)
