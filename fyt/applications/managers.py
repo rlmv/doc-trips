@@ -258,16 +258,18 @@ class GraderQuerySet(models.QuerySet):
         return qs
 
     def _annotate_score_counts(self, score_lookup, trips_year):
+        values = score_values(trips_year)
         return self.annotate(
             **{_bin(score_lookup, value): Count('scores_for_year', filter=Q(
                 **{score_lookup: value}))
-               for value in score_values(trips_year)})
+               for value in values})
 
     def _attach_histogram(self, histogram_name, score_lookup, trips_year):
+        values = score_values(trips_year)
         for grader in self:
             setattr(grader, histogram_name, OrderedDict(
                 (value, getattr(grader, _bin(score_lookup, value.value)))
-                for value in score_values(trips_year)))
+                for value in values))
         return self
 
 
