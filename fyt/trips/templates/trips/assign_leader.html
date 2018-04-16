@@ -35,8 +35,8 @@
     <td> {{ leader.avg_leader_score|floatformat:1|default:"&mdash;" }} </td>
     <td> {{ leader.gender|lower }} </td>
     <td>
-      {% if leader.assigned_trip %}
-      {{ leader.assigned_trip|detail_link }}
+      {% if leader.trip_assignment %}
+      {{ leader.trip_assignment|detail_link }}
       {% else %}
       <a class="btn btn-xs btn-primary" href="{{ assign_url }}"> Assign to {{ trip }} </a>
       {% endif %}

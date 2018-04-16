@@ -29,9 +29,9 @@
 
     <tr>
         <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
-        {% if application.assigned_trip %}
+        {% if application.trip_assignment %}
         <td>
-            {{ application.assigned_trip | detail_link }}
+            {{ application.trip_assignment | detail_link }}
         </td>
         <td>
             <a href="{% url 'core:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>

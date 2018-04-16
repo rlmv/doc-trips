@@ -1,4 +1,3 @@
-
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.bootstrap import InlineField
 from crispy_forms.helper import FormHelper
@@ -33,14 +32,14 @@ class LeaderAssignmentForm(forms.ModelForm):
 
     class Meta:
         model = Volunteer
-        fields = ['assigned_trip']
+        fields = ['trip_assignment']
         widgets = {
-            'assigned_trip': forms.HiddenInput()
+            'trip_assignment': forms.HiddenInput()
         }
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['assigned_trip'].queryset = (
+        self.fields['trip_assignment'].queryset = (
             Trip.objects.filter(trips_year=trips_year)
         )
 
@@ -48,7 +47,7 @@ class LeaderAssignmentForm(forms.ModelForm):
         """
         Change status to leader if trip assignment is successful
         """
-        if self.cleaned_data.get('assigned_trip'):
+        if self.cleaned_data.get('trip_assignment'):
             self.instance.status = Volunteer.LEADER
         return super().clean()
 

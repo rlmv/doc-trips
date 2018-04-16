@@ -29,14 +29,14 @@ from fyt.utils.choices import AVAILABLE, PREFER
 
 
 def make_application(status=Volunteer.PENDING, trips_year=None,
-                     assigned_trip=None, assigned_croo=None,
+                     trip_assignment=None, assigned_croo=None,
                      leader_willing=True, croo_willing=True, **kwargs):
 
     application = mommy.make(
         Volunteer,
         status=status,
         trips_year=trips_year,
-        assigned_trip=assigned_trip,
+        trip_assignment=trip_assignment,
         assigned_croo=assigned_croo,
         leader_willing=leader_willing,
         croo_willing=croo_willing,
@@ -108,7 +108,7 @@ class ApplicationTestMixin():
 
 class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
 
-    def test_must_be_LEADER_to_be_assigned_trip(self):
+    def test_must_be_LEADER_to_be_trip_assignment(self):
         trips_year = self.init_trips_year()
         for status in ['PENDING', 'LEADER_WAITLIST', 'CROO', 'REJECTED', 'CANCELED']:
             application = mommy.make(
@@ -119,7 +119,7 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
                 in_goodstanding_with_college=True,
                 trainings=True
             )
-            application.assigned_trip = mommy.make(Trip, trips_year=trips_year)
+            application.trip_assignment = mommy.make(Trip, trips_year=trips_year)
             with self.assertRaises(ValidationError):
                     application.full_clean()
 
@@ -549,11 +549,11 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         leader = make_application(
                 trips_year=trips_year,
                 status=Volunteer.LEADER,
-                assigned_trip=mommy.make(Trip)
+                trip_assignment=mommy.make(Trip)
         )
         not_leader = make_application(
                 trips_year=trips_year,
-                assigned_trip=None
+                trip_assignment=None
         )
         self.assertQsEqual(Volunteer.objects.leaders(trips_year), [leader])
 
@@ -875,7 +875,7 @@ class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):
         form = ApplicationAdminForm(instance=self.application)
         t1 = mommy.make(Trip, trips_year=self.trips_year)
         t2 = mommy.make(Trip, trips_year=self.old_trips_year)
-        self.assertQsEqual(form.fields['assigned_trip'].queryset, [t1])
+        self.assertQsEqual(form.fields['trip_assignment'].queryset, [t1])
 
     def test_croo_queryset_is_only_for_current_year(self):
         form = ApplicationAdminForm(instance=self.application)

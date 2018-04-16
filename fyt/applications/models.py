@@ -289,7 +289,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     status = models.CharField(
         "Application status", max_length=15, choices=STATUS_CHOICES, default=PENDING
     )
-    assigned_trip = models.ForeignKey(
+    trip_assignment = models.ForeignKey(
         Trip, blank=True, null=True,
         related_name='leaders', on_delete=models.PROTECT
     )
@@ -443,7 +443,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         """
         Only allow Croo/Trip assignments if status == LEADER,CROO
         """
-        if self.assigned_trip and self.status != self.LEADER:
+        if self.trip_assignment and self.status != self.LEADER:
             msg = ("Volunteer %s with status %s cannot also lead a trip. "
                    "Change status to %s or remove Trip assignment")
             raise ValidationError(msg % (self, self.status, self.LEADER))

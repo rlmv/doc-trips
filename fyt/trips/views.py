@@ -557,9 +557,9 @@ class AssignLeader(_TripMixin, DatabaseListView):
             '-avg_leader_score'
         ).select_related(
             'applicant',
-            'assigned_trip',
-            'assigned_trip__template',
-            'assigned_trip__section'
+            'trip_assignment',
+            'trip_assignment__template',
+            'trip_assignment__section'
         )
 
     def get_assign_url(self, leader, trip):
@@ -570,7 +570,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
             'trips_year': self.trips_year,
             'leader_pk': leader.pk
         })
-        return '%s?assigned_trip=%s' % (url, trip.pk)
+        return '%s?trip_assignment=%s' % (url, trip.pk)
 
     def get_context_data(self, **kwargs):
         """
@@ -625,13 +625,13 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
     def get_form(self, **kwargs):
         form = LeaderAssignmentForm(self.trips_year, **kwargs)
         label = 'Assign to %s' % (
-            Trip.objects.get(pk=self.request.GET['assigned_trip'])
+            Trip.objects.get(pk=self.request.GET['trip_assignment'])
         )
         return crispify(form, label)
 
     def get_form_valid_message(self):
         return '{} assigned to lead {}'.format(
-            self.object.applicant, self.object.assigned_trip
+            self.object.applicant, self.object.trip_assignment
         )
 
     def get_headline(self):
@@ -657,15 +657,15 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
 
     def get_form(self, **kwargs):
         # save old assignment so we can show it after deletion
-        self._assigned_trip = kwargs['instance'].assigned_trip
+        self._trip_assignment = kwargs['instance'].trip_assignment
         form = LeaderAssignmentForm(
-            self.trips_year, initial={'assigned_trip': None}, **kwargs
+            self.trips_year, initial={'trip_assignment': None}, **kwargs
         )
         return crispify(form, 'Remove', 'btn-danger')
 
     def get_form_valid_message(self):
         return 'Leader {} removed from Trip {}'.format(
-            self.object.applicant, self._assigned_trip
+            self.object.applicant, self._trip_assignment
         )
 
     def get_success_url(self):
@@ -800,7 +800,7 @@ class LeaderChecklist(_SectionMixin, DatabaseListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            assigned_trip__section=self.get_section())
+            trip_assignment__section=self.get_section())
 
 
 class Checklists(DatabaseTemplateView):

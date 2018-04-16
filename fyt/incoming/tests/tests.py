@@ -357,7 +357,7 @@ class RegistrationModelTestCase(FytTestCase):
         trippee = mommy.make(IncomingStudent, trips_year=self.trips_year, trip_assignment=trip, registration=reg)
         self.assertEqual(trip, reg.get_trip_assignment())
 
-    def test_get_trip_assignment_with_no_assigned_trip_returns_None(self):
+    def test_get_trip_assignment_with_no_trip_assignment_returns_None(self):
         reg = mommy.make(Registration, trips_year=self.trips_year)
         trippee = mommy.make(IncomingStudent, trips_year=self.trips_year, trip_assignment=None, registration=reg)
         self.assertIsNone(reg.get_trip_assignment())

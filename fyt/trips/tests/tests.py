@@ -88,7 +88,7 @@ class TripModelTestCase(FytTestCase):
             Trip, trips_year=trips_year,
             template__triptype__half_kickin=3
         )
-        make_application(trips_year=trips_year, assigned_trip=trip)
+        make_application(trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         self.assertTrue(trip.half_foodbox)
@@ -99,7 +99,7 @@ class TripModelTestCase(FytTestCase):
             Trip, trips_year=trips_year,
             template__triptype__half_kickin=3
         )
-        make_application(trips_year=trips_year, assigned_trip=trip)
+        make_application(trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         self.assertFalse(trip.half_foodbox)
 
@@ -208,13 +208,13 @@ class TripRouteOverridesTestCase(FytTestCase):
     def test_size_method_with_1_leader(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
-        make_application(trips_year=trips_year, assigned_trip=trip)
+        make_application(trips_year=trips_year, trip_assignment=trip)
         self.assertEqual(trip.size(), 1)
 
     def test_size_method_with_1_leader_and_2_trippees(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
-        make_application(trips_year=trips_year, assigned_trip=trip)
+        make_application(trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         self.assertEqual(trip.size(), 3)
@@ -374,7 +374,7 @@ class AssignLeaderTestCase(FytTestCase):
         res = res.click(description="Assign to")
         res.form.submit()  # assign to trip - first (and only) form on page
         volunteer = Volunteer.objects.get(pk=volunteer.pk)  # refresh
-        self.assertEqual(volunteer.assigned_trip, trip)
+        self.assertEqual(volunteer.trip_assignment, trip)
         self.assertEqual(volunteer.status, Volunteer.LEADER)
 
     def test_assign_trip_computes_section_and_type_preferences(self):
@@ -460,8 +460,8 @@ class TripManagerTestCase(FytTestCase):
         trip = mommy.make(Trip, section=section,
                           template=template, trips_year=trips_year)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
-        mommy.make(Volunteer, trips_year=trips_year, assigned_trip=trip)
-        mommy.make(Volunteer, trips_year=trips_year, assigned_trip=trip)
+        mommy.make(Volunteer, trips_year=trips_year, trip_assignment=trip)
+        mommy.make(Volunteer, trips_year=trips_year, trip_assignment=trip)
         matrix = Trip.objects.matrix(trips_year)
         self.assertEqual(matrix[template][section].num_trippees, 1)
         self.assertEqual(matrix[template][section].num_trippees, matrix[template][section].trippees.count())
@@ -603,7 +603,7 @@ class ViewsTestCase(FytTestCase):
         trippee = mommy.make(
             Volunteer,
             trips_year=trips_year,
-            assigned_trip=trip,
+            trip_assignment=trip,
             medical_conditions='magic',
             food_allergies='mangoes',
             dietary_restrictions='gluten free',

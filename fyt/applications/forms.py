@@ -33,18 +33,17 @@ class TripAssignmentForm(forms.ModelForm):
     """
     class Meta:
         model = Volunteer
-        fields = ['assigned_trip']
+        fields = ['trip_assignment']
 
-    assigned_trip = TripChoiceField(queryset=None)
+    trip_assignment = TripChoiceField(queryset=None)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['assigned_trip'].queryset = (
+        self.fields['trip_assignment'].queryset = (
             Trip.objects
             .filter(trips_year=kwargs['instance'].trips_year)
             .select_related('section', 'template', 'template__triptype')
         )
-        self.fields['assigned_trip'].label = 'Trip Assignment'
         crispify(self, submit_text='Update Assignment')
 
 
@@ -452,7 +451,7 @@ class ApplicationAdminForm(forms.ModelForm):
         model = Volunteer
         fields = [
             'status',
-            'assigned_trip',
+            'trip_assignment',
             'assigned_croo',
             'safety_lead',
             'deadline_extension']
@@ -465,12 +464,10 @@ class ApplicationAdminForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.trips_year = self.instance.trips_year
 
-        self.fields['assigned_trip'].queryset = Trip.objects.filter(
+        self.fields['trip_assignment'].queryset = Trip.objects.filter(
             trips_year=self.trips_year
         ).select_related(
             'section', 'template', 'template__triptype')
-
-        self.fields['assigned_trip'].label = 'Trip Assignment'
 
         self.fields['assigned_croo'].queryset = Croo.objects.filter(
             trips_year=self.trips_year)
@@ -484,7 +481,7 @@ class ApplicationAdminForm(forms.ModelForm):
             'status',
             'deadline_extension',
             HTML("{% include 'applications/_trip_preferences.html' %}"),
-            'assigned_trip',
+            'trip_assignment',
             HTML("{% include 'applications/_croo_members.html' %}"),
             'assigned_croo',
             'safety_lead',

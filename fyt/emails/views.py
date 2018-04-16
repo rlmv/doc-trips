@@ -92,7 +92,7 @@ class LeadersByTripType(BaseEmailList):
         for triptype in triptypes:
             email_list.append(
                 ('%s leaders' % triptype,
-                 emails(leaders.filter(assigned_trip__template__triptype=triptype))))
+                 emails(leaders.filter(trip_assignment__template__triptype=triptype))))
         return email_list
 
 
@@ -108,7 +108,7 @@ class LeadersBySection(BaseEmailList):
         for section in sections:
             email_list.append(
                 ('%s leaders' % section,
-                 emails(leaders.filter(assigned_trip__section=section)))
+                 emails(leaders.filter(trip_assignment__section=section)))
             )
         return email_list
 

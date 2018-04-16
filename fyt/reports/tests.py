@@ -97,14 +97,14 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         leader = self.make_application(
             trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=trip,
+            trip_assignment=trip,
             applicant__name='Alice',
             gear='pogo stick')
 
         leader_without_trip = self.make_application(
             trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=None,
+            trip_assignment=None,
             applicant__name='Bob')
 
         not_leader = self.make_application(trips_year=self.trips_year)
@@ -368,7 +368,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             Volunteer,
             trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=trip,
+            trip_assignment=trip,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             epipen=True)
@@ -444,7 +444,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             Volunteer,
             trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip=trip,
+            trip_assignment=trip,
             food_allergies='peaches',
             dietary_restrictions='gluten free',
             epipen=True,
@@ -646,7 +646,7 @@ class TShirtCountTestCase(FytTestCase):
             Volunteer,
             trips_year=self.trips_year,
             status=Volunteer.LEADER,
-            assigned_trip__trips_year=self.trips_year,
+            trip_assignment__trips_year=self.trips_year,
             tshirt_size=S)
         target = {
             XS: 0, S: 1, M: 0, L: 0, XL: 0, XXL: 0

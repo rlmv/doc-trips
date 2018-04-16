@@ -142,13 +142,13 @@ class TripLeadersCSV(GenericReportView):
         return Application.objects.leaders(
             self.trips_year
         ).select_related(
-            'assigned_trip__section',
-            'assigned_trip__template'
+            'trip_assignment__section',
+            'trip_assignment__template'
         )
 
     header = ['name', 'netid', 'email', 'trip', 'section', 'gear requests']
     def get_row(self, leader):
-        trip = leader.assigned_trip
+        trip = leader.trip_assignment
         return [
             leader.name,
             leader.applicant.netid,
@@ -537,9 +537,9 @@ class DietaryRestrictions(GenericReportView):
         ).filter(
             Q(status=Application.LEADER) | Q(status=Application.CROO)
         ).select_related(
-            'assigned_trip',
-            'assigned_trip__section',
-            'assigned_trip__template'
+            'trip_assignment',
+            'trip_assignment__section',
+            'trip_assignment__template'
         ).order_by(
             'status'
         )
@@ -579,7 +579,7 @@ class DietaryRestrictions(GenericReportView):
         """
         Basic volunteer info.
         """
-        trip = obj.assigned_trip
+        trip = obj.trip_assignment
         return [
             obj.applicant.name,
             trip.section.name if trip else '',
