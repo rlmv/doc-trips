@@ -19,6 +19,7 @@ from fyt.applications.models import (
     validate_word_count,
 )
 from fyt.core.models import TripsYear
+from fyt.croos.models import Croo
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import NOT_AVAILABLE
@@ -462,8 +463,22 @@ class ApplicationAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.layout = Layout(
+        self.trips_year = self.instance.trips_year
+
+        self.fields['assigned_trip'].queryset = Trip.objects.filter(
+            trips_year=self.trips_year
+        ).select_related(
+            'section', 'template', 'template__triptype')
+
+        self.fields['assigned_trip'].label = 'Trip Assignment'
+
+        self.fields['assigned_croo'].queryset = Croo.objects.filter(
+            trips_year=self.trips_year)
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = Layout(
             'status',
             'deadline_extension',
             HTML("{% include 'applications/_trip_preferences.html' %}"),
@@ -473,6 +488,7 @@ class ApplicationAdminForm(forms.ModelForm):
             'safety_lead',
             Submit('submit', 'Update'),
         )
+        return helper
 
 
 class ApplicationLayout(Layout):

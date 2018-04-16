@@ -39,7 +39,7 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.training.forms import FirstAidCertificationFormset
-from fyt.trips.models import TripType
+from fyt.trips.models import TripType, Trip
 from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
@@ -562,8 +562,13 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
     form_class = ApplicationAdminForm
 
     def extra_context(self):
+        order = lambda qs: qs.order_by(
+            'template__triptype',
+            'section',
+            'template'
+        )
         return {
-            'preferred_trips': self.object.get_preferred_trips(),
-            'available_trips': self.object.get_available_trips(),
+            'preferred_trips': order(self.object.get_preferred_trips()),
+            'available_trips': order(self.object.get_available_trips()),
             'croos': Croo.objects.filter(trips_year=self.trips_year).all()
         }

@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import LeaderSupplementForm, QuestionForm
+from ..forms import LeaderSupplementForm, QuestionForm, ApplicationAdminForm
 from ..models import (
     Answer,
     ApplicationInformation,
@@ -896,3 +896,23 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         application.save()
         resp = self.app.get(url, user=application.applicant).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/application.html')
+
+
+class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.init_old_trips_year()
+        self.application = self.make_application()
+
+    def test_trip_queryset_is_only_for_current_year(self):
+        form = ApplicationAdminForm(instance=self.application)
+        t1 = mommy.make(Trip, trips_year=self.trips_year)
+        t2 = mommy.make(Trip, trips_year=self.old_trips_year)
+        self.assertQsEqual(form.fields['assigned_trip'].queryset, [t1])
+
+    def test_croo_queryset_is_only_for_current_year(self):
+        form = ApplicationAdminForm(instance=self.application)
+        c1 = mommy.make(Croo, trips_year=self.trips_year)
+        c2 = mommy.make(Croo, trips_year=self.old_trips_year)
+        self.assertQsEqual(form.fields['assigned_croo'].queryset, [c1])
