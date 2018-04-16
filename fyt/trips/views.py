@@ -5,6 +5,7 @@ from braces.views import FormValidMessageMixin, SetHeadlineMixin
 from crispy_forms.layout import Submit
 from django.forms.models import modelformset_factory
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from vanilla import FormView, UpdateView
 
@@ -55,7 +56,6 @@ from fyt.permissions.views import (
     TripInfoEditPermissionRequired,
 )
 from fyt.transport.models import ExternalBus, InternalBus
-from fyt.utils.cache import cache_as
 from fyt.utils.forms import crispify
 from fyt.utils.views import PopulateMixin
 
@@ -64,7 +64,7 @@ class _SectionMixin():
     """
     Utility mixin for CBVs which have a section_pk url kwarg.
     """
-    @cache_as('_section')
+    @cached_property
     def get_section(self):
         return Section.objects.get(pk=self.kwargs['section_pk'])
 
@@ -77,12 +77,12 @@ class _TripMixin():
     """
     Mixin to pull a trip object from a trip_pk url kwarg
     """
-    @cache_as('_trip')
-    def get_trip(self):
+    @cached_property
+    def trip(self):
         return Trip.objects.get(pk=self.kwargs['trip_pk'])
 
     def get_context_data(self, **kwargs):
-        kwargs['trip'] = self.get_trip()
+        kwargs['trip'] = self.trip
         return super().get_context_data(**kwargs)
 
 
@@ -90,12 +90,12 @@ class _TripTemplateMixin():
     """
     Mixin to pull a TripTemplate object from a triptemplate_pk url kwarg
     """
-    @cache_as('_triptemplate')
-    def get_triptemplate(self):
+    @cached_property
+    def triptemplate(self):
         return TripTemplate.objects.get(pk=self.kwargs['triptemplate_pk'])
 
     def get_context_data(self, **kwargs):
-        kwargs['triptemplate'] = self.get_triptemplate()
+        kwargs['triptemplate'] = self.triptemplate
         return super().get_context_data(**kwargs)
 
 
@@ -227,15 +227,15 @@ class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
 
     def get_headline(self):
         return mark_safe(
-            "Upload File <small>%s</small>" % self.get_triptemplate()
+            "Upload File <small>%s</small>" % self.triptemplate
         )
 
     def form_valid(self, form):
-        form.instance.template = self.get_triptemplate()
+        form.instance.template = self.triptemplate
         return super().form_valid(form)
 
     def get_success_url(self):
-        return self.get_triptemplate().detail_url()
+        return self.triptemplate.detail_url()
 
 
 class TripTemplateDocumentList(DatabaseDetailView):
@@ -248,7 +248,7 @@ class TripTemplateDocumentDelete(_TripTemplateMixin, DatabaseDeleteView):
 
     def get_success_url(self):
         return reverse('core:triptemplate:document_list',
-                       kwargs=self.get_triptemplate().obj_kwargs())
+                       kwargs=self.triptemplate.obj_kwargs())
 
 
 class TripTypeList(DatabaseListView):
@@ -415,7 +415,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         queryset is big enough to slow down performance.
         """
         return self.model.objects.available_for_trip(
-            self.get_trip()
+            self.trip
         ).select_related(
             'trip_assignment',
             'trip_assignment__template',
@@ -449,9 +449,9 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         processing, which is quite acceptable. See http://goo.gl/QbK99D
         """
         context = super().get_context_data(**kwargs)
-        context['trip'] = trip = self.get_trip()
-        section = trip.section
-        triptype = trip.template.triptype
+        context['trip'] = self.trip
+        section = self.trip.section
+        triptype = self.trip.template.triptype
 
         triptype_pref = {
             pref.registration_id: pref.preference
@@ -480,7 +480,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
                 'trips_year': self.trips_year,
                 'trippee_pk': trippee.pk
             })
-            trippee.assignment_url = '%s?assign_to=%s' % (url, trip.pk)
+            trippee.assignment_url = '%s?assign_to=%s' % (url, self.trip.pk)
             trippee.triptype_pref = triptype_pref[reg.id]
             trippee.section_pref = section_pref[reg.id]
 
@@ -552,7 +552,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
 
     def get_queryset(self):
         return Volunteer.objects.prospective_leaders_for_trip(
-            self.get_trip()
+            self.trip
         ).with_avg_scores().order_by(
             '-avg_leader_score'
         ).select_related(
@@ -584,12 +584,12 @@ class AssignLeader(_TripMixin, DatabaseListView):
         and more explanation.
         """
         context = super().get_context_data(**kwargs)
-        context['trip'] = trip = self.get_trip()
+        context['trip'] = self.trip
 
         triptype_pref = {
             pref.application.application_id: pref.preference
             for pref in LeaderTripTypeChoice.objects.filter(
-                triptype=trip.template.triptype,
+                triptype=self.trip.template.triptype,
                 preference__in=[PREFER, AVAILABLE]
             ).select_related('application')
         }
@@ -597,7 +597,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
         section_pref = {
             pref.application.application_id: pref.preference
             for pref in LeaderSectionChoice.objects.filter(
-                section=trip.section,
+                section=self.trip.section,
                 preference__in=[PREFER, AVAILABLE]
             ).select_related('application')
         }
@@ -605,7 +605,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
         def process_leader(leader):
             return (
                 leader,
-                self.get_assign_url(leader, trip),
+                self.get_assign_url(leader, self.trip),
                 triptype_pref[leader.id],
                 section_pref[leader.id]
             )
