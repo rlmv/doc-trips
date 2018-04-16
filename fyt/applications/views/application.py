@@ -566,6 +566,8 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
             'template__triptype',
             'section',
             'template'
+        ).select_related(
+            'template__triptype'
         )
         return {
             'preferred_trips': order(self.object.get_preferred_trips()),
