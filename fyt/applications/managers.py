@@ -13,6 +13,7 @@ from django.db.models import (
     Sum,
     Value as V,
     When,
+    Prefetch
 )
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce
@@ -283,6 +284,21 @@ def score_values(trips_year):
 
 def _bin(score_lookup, x):
     return '{}_{}'.format(score_lookup, str(x).replace('.', '_'))
+
+
+class ScoreQuerySet(models.QuerySet):
+
+    def prefetch_display_data(self):
+        from .models import ScoreComment
+        return self.select_related(
+            'grader',
+            'leader_score',
+            'croo_score'
+        ).prefetch_related(
+            Prefetch(
+                'scorecomment_set',
+                queryset=ScoreComment.objects.select_related(
+                    'score_question')))
 
 
 class ScoreClaimQuerySet(models.QuerySet):

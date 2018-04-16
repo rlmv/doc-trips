@@ -9,6 +9,7 @@ from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
+from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
@@ -26,7 +27,7 @@ from fyt.applications.forms import (
     LeaderSupplementForm,
     QuestionForm,
 )
-from fyt.applications.models import ApplicationInformation, Question, Volunteer
+from fyt.applications.models import ApplicationInformation, Question, Volunteer, ScoreComment
 from fyt.applications.tables import ApplicationTable
 from fyt.core.models import TripsYear
 from fyt.core.views import CrispyFormMixin, TripsYearMixin

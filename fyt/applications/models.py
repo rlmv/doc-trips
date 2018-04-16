@@ -24,6 +24,7 @@ from .managers import (
     GraderManager,
     QuestionManager,
     ScoreClaimQuerySet,
+    ScoreQuerySet,
     VolunteerManager,
 )
 
@@ -492,10 +493,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
     def get_answers(self):
         return self.answer_set.all().select_related('question')
 
-    @cache_as('_get_scores')
-    def get_scores(self):
-        return self.scores.all().select_related('grader')
-
     @property
     def leader_application_complete(self):
         """
@@ -930,6 +927,8 @@ class Score(DatabaseModel):
         "better qualified to be a trip leader or crooling, and please note "
         "any identities."
     )
+
+    objects = ScoreQuerySet.as_manager()
 
     def clean(self):
         if (self.application.leader_application_complete and

@@ -86,7 +86,7 @@
         <th> </th>
         <th> </th>
     </tr>
-    {% for score in application.get_scores %}
+    {% for score in application.scores.prefetch_display_data %}
     <tr>
         <td class="text-center"> {{ score.leader_score|default:'&mdash;' }} </td>
         <td class="text-center"> {{ score.croo_score|default:'&mdash;' }} </td>
