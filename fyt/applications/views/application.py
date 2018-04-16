@@ -2,6 +2,7 @@ from braces.views import (
     FormMessagesMixin,
     FormValidMessageMixin,
     GroupRequiredMixin,
+    SetHeadlineMixin
 )
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -552,14 +553,17 @@ class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
 
 class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
                              BlockDirectorate, BlockOldApplications,
-                             ExtraContextMixin, TripsYearMixin, UpdateView):
+                             ExtraContextMixin, SetHeadlineMixin,
+                             TripsYearMixin, UpdateView):
     """
     Update status, trip/croo assignment etc.
     """
     model = Volunteer
     template_name = 'core/update.html'
-    fields = ['status', 'assigned_trip', 'assigned_croo', 'safety_lead']
     form_class = ApplicationAdminForm
+
+    def get_headline(self):
+        return "Edit volunteer {}".format(self.object)
 
     def extra_context(self):
         order = lambda qs: qs.order_by(
