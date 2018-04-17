@@ -260,7 +260,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'sentry'],
-            'level': 'WARNING',
+            'level': 'INFO',
         },
         'fyt': {  # project namespace
             'handlers': ['console', 'sentry'],
