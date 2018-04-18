@@ -158,10 +158,10 @@ class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
         except Attendee.DoesNotExist:
             return False
 
-        return attendee.can_register
+        return attendee.can_register or self.request.user.is_superuser
 
     def get_object(self):
-       return Attendee.objects.get(
+        return Attendee.objects.get(
             trips_year=self.trips_year,
             volunteer__applicant=self.request.user)
 

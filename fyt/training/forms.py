@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from fyt.applications.models import Volunteer
+from fyt.core.forms import TripsYearModelForm
 from fyt.core.templatetags.links import make_link
 from fyt.training.models import Attendee, FirstAidCertification, Session
 from fyt.training.templatetags.training import capacity_label
@@ -23,7 +24,7 @@ TIME_OPTIONS = {
 }
 
 
-class SessionForm(forms.ModelForm):
+class SessionForm(TripsYearModelForm):
 
     class Meta:
         model = Session
@@ -53,7 +54,7 @@ class SessionForm(forms.ModelForm):
         return helper
 
 
-class SessionRegistrationForm(forms.ModelForm):
+class SessionRegistrationForm(TripsYearModelForm):
     """
     Form used to update registered attendees on the backend.
     """
@@ -77,7 +78,7 @@ class SessionRegistrationForm(forms.ModelForm):
         return instance
 
 
-class AttendanceForm(forms.ModelForm):
+class AttendanceForm(TripsYearModelForm):
     """
     Form for updating attendance for a training session.
 
@@ -109,7 +110,7 @@ class RegisteredSessionsField(forms.ModelMultipleChoiceField):
         return mark_safe('{} {}'.format(capacity_label(instance), instance))
 
 
-class SignupForm(forms.ModelForm):
+class SignupForm(TripsYearModelForm):
 
     class Meta:
         model = Attendee
@@ -141,7 +142,7 @@ class SignupForm(forms.ModelForm):
         return self.cleaned_data['registered_sessions']
 
 
-class AttendeeUpdateForm(forms.ModelForm):
+class AttendeeUpdateForm(TripsYearModelForm):
 
     class Meta:
         model = Attendee
@@ -153,12 +154,6 @@ class AttendeeUpdateForm(forms.ModelForm):
         widgets = {
             'complete_sessions': forms.CheckboxSelectMultiple()
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['complete_sessions'].queryset = (
-            self.fields['complete_sessions'].queryset.filter(
-                trips_year=self.instance.trips_year))
 
     @property
     def helper(self):
