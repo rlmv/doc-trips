@@ -18,6 +18,7 @@ from fyt.applications.models import (
     Volunteer,
     validate_word_count,
 )
+from fyt.core.forms import TripsYearModelForm
 from fyt.core.models import TripsYear
 from fyt.croos.models import Croo
 from fyt.trips.fields import TripChoiceField
@@ -27,7 +28,7 @@ from fyt.utils.fmt import join_with_and
 from fyt.utils.forms import crispify
 
 
-class ApplicationForm(forms.ModelForm):
+class ApplicationForm(TripsYearModelForm):
 
     class Meta:
         model = Volunteer
@@ -58,12 +59,12 @@ class ApplicationForm(forms.ModelForm):
             'croo_willing'
         )
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.layout = ApplicationLayout()
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+        helper.layout = ApplicationLayout()
+        return helper
 
     # TODO: get rid of the need for this
     def update_agreements(self, agreement_form):
@@ -73,31 +74,32 @@ class ApplicationForm(forms.ModelForm):
             setattr(self.instance, f, value)
 
 
-class QuestionForm(forms.Form):
+class QuestionForm(TripsYearModelForm):
     """
     A form for answering dynamic application questions.
     """
+    class Meta:
+        model = Volunteer
+        fields = []
 
-    def __init__(self, trips_year, *args, instance=None, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.instance = instance
-
-        questions = Question.objects.filter(trips_year=trips_year)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        questions = Question.objects.filter(trips_year=self.trips_year)
         self.question_handler = QuestionHandler(self, questions)
         self.fields.update(self.question_handler.get_formfields())
 
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.layout = QuestionLayout(
-            self.question_handler.formfield_names()
-        )
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+        helper.layout = QuestionLayout(self.question_handler.formfield_names())
+        return helper
 
     def save(self, **kwargs):
         self.question_handler.save()
 
 
-class AgreementForm(forms.ModelForm):
+class AgreementForm(TripsYearModelForm):
     """
     An extra form that allows us to separate the agreements section from the
     rest of the general application form.
@@ -114,11 +116,12 @@ class AgreementForm(forms.ModelForm):
             'trainings',
         ]
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.layout = AgreementLayout()
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+        helper.layout = AgreementLayout()
+        return helper
 
 
 class AgreementLayout(Layout):
@@ -139,7 +142,7 @@ class AgreementLayout(Layout):
         )
 
 
-class CrooSupplementForm(forms.ModelForm):
+class CrooSupplementForm(TripsYearModelForm):
 
     class Meta:
         model = CrooSupplement
@@ -154,11 +157,12 @@ class CrooSupplementForm(forms.ModelForm):
             'kitchen_lead_qualifications',
         )
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.form_tag = False
-        self.helper.layout = CrooSupplementLayout()
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+        helper.layout = CrooSupplementLayout()
+        return helper
 
 
 class PreferenceHandler:
@@ -358,7 +362,7 @@ class TripTypePreferenceHandler(PreferenceHandler):
         return triptype.name
 
 
-class LeaderSupplementForm(forms.ModelForm):
+class LeaderSupplementForm(TripsYearModelForm):
 
     class Meta:
         model = LeaderSupplement
@@ -382,22 +386,22 @@ class LeaderSupplementForm(forms.ModelForm):
             'section_availability',
         )
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        sections = Section.objects.filter(trips_year=trips_year)
+        sections = Section.objects.filter(trips_year=self.trips_year)
         self.section_handler = SectionPreferenceHandler(self, sections)
         self.fields.update(self.section_handler.get_formfields())
 
-        triptypes = TripType.objects.visible(trips_year)
+        triptypes = TripType.objects.visible(self.trips_year)
         self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
         self.fields.update(self.triptype_handler.get_formfields())
 
         self.fields['section_availability'].help_text = (
             'Sophomores, if you are available for more than {} please use '
             'the above space to explain how.'.format(
-                join_with_and(Section.objects.sophomore_leaders_ok(trips_year))))
+                join_with_and(Section.objects.sophomore_leaders_ok(
+                    self.trips_year))))
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
@@ -414,18 +418,18 @@ class LeaderSupplementForm(forms.ModelForm):
         return application
 
 
-class ApplicationStatusForm(forms.ModelForm):
+class ApplicationStatusForm(TripsYearModelForm):
 
     class Meta:
         model = Volunteer
         fields = ('status',)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         crispify(self, submit_text='Update')
 
 
-class ApplicationAdminForm(forms.ModelForm):
+class ApplicationAdminForm(TripsYearModelForm):
 
     class Meta:
         model = Volunteer
@@ -440,17 +444,12 @@ class ApplicationAdminForm(forms.ModelForm):
                 'format': 'MM/DD/YYYY HH:mm'})
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.trips_year = self.instance.trips_year
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.fields['trip_assignment'].queryset = Trip.objects.filter(
-            trips_year=self.trips_year
-        ).select_related(
-            'section', 'template', 'template__triptype')
-
-        self.fields['croo_assignment'].queryset = Croo.objects.filter(
-            trips_year=self.trips_year)
+        self.fields['trip_assignment'].queryset = (
+            self.fields['trip_assignment'].queryset.select_related(
+                'section', 'template', 'template__triptype'))
 
     @property
     def helper(self):
@@ -694,7 +693,7 @@ class ScoreValueChoiceField(forms.ModelChoiceField):
 SKIP = 'skip'
 
 
-def ScoreForm(application, grader, *args, **kwargs):
+def ScoreForm(application, grader, **kwargs):
     """
     Return a form to score this application.
 
@@ -708,29 +707,23 @@ def ScoreForm(application, grader, *args, **kwargs):
     if application.croo_application_complete:
         score_fields.append('croo_score')
 
-    class _ScoreForm(forms.ModelForm):
+    class _ScoreForm(TripsYearModelForm):
         """
         The dynamically generated form class.
         """
         class Meta:
             model = Score
             fields = ['general'] + score_fields
+            field_classes = {f: ScoreValueChoiceField for f in score_fields}
 
-        def __init__(self):
-            super().__init__(*args, **kwargs)
+        def __init__(self, application, grader, **kwargs):
+            super().__init__(trips_year=application.trips_year, **kwargs)
             self.grader = grader
             self.application = self.instance.application = application
             self.score_questions = ScoreQuestion.objects.filter(
-                trips_year=application.trips_year)
+                trips_year=self.trips_year)
             self.comment_handler = CommentHandler(self, self.score_questions)
             self.fields.update(self.comment_handler.get_formfields())
-
-            # Setup up score fields
-            score_values = ScoreValue.objects.filter(
-                trips_year=application.trips_year)
-            for field_name in score_fields:
-                self.fields[field_name] = ScoreValueChoiceField(
-                    queryset=score_values, required=True)
 
         @property
         def helper(self):
@@ -753,12 +746,12 @@ def ScoreForm(application, grader, *args, **kwargs):
         def save(self, **kwargs):
             self.instance.grader = self.grader
             self.instance.application = self.application
-            self.instance.trips_year = self.application.trips_year
+            self.instance.trips_year = self.trips_year
             score = super().save()
             self.comment_handler.save()
             return score
 
-    return _ScoreForm()
+    return _ScoreForm(application, grader, **kwargs)
 
 
 class ScoreQuestionFormset(forms.models.modelformset_factory(
