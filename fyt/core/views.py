@@ -1,3 +1,4 @@
+import inspect
 import logging
 
 from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
@@ -109,13 +110,27 @@ class TripsYearMixin():
 
         if hasattr(self, 'model') and self.model is not None:
             return tripsyear_modelform_factory(
-                self.model, self.trips_year, fields=self.fields
+                self.model, fields=self.fields
             )
         msg = (
             "'%s' must either define 'form_class' or 'model' "
             "Or CAREFULLY override 'get_form_class()'"
         )
         raise ImproperlyConfigured(msg % self.__class__.__name__)
+
+    def get_form(self, data=None, files=None, **kwargs):
+        """
+        Returns a form instance.
+        """
+        cls = self.get_form_class()
+
+        # Pass trips_year to the form, if it expects it
+        # TODO: trips_year should be passed to all forms
+        if 'trips_year' in inspect.signature(cls).parameters:
+            return cls(trips_year=self.trips_year, data=data, files=files,
+                       **kwargs)
+
+        return cls(data=data, files=files, **kwargs)
 
     def form_valid(self, form):
         """
