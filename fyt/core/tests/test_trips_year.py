@@ -3,6 +3,8 @@ from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.core.views import TripsYearMixin
+from fyt.core.forms import TripsYearModelForm
+from fyt.incoming.models import Registration
 from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, Section, TripTemplate, TripType
 
@@ -92,6 +94,39 @@ class TripsYearMixinTestCase(FytTestCase):
         view = TripsYearMixin()
         view.kwargs = {'trips_year': self.trips_year.year}
         self.assertEqual(view.trips_year, self.trips_year)
+
+
+class TripsYearModelFormTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.init_old_trips_year()
+
+    def test_form_filters_related_trips_year(self):
+        campsite = mommy.make(Campsite, trips_year=self.trips_year)
+        campsite_old = mommy.make(Campsite, trips_year=self.old_trips_year)
+        triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
+
+        class TripTemplateForm(TripsYearModelForm):
+            class Meta:
+                model = TripTemplate
+                fields = ['campsite1', 'campsite2']
+
+        form = TripTemplateForm(trips_year=self.trips_year)
+        self.assertQsEqual(form.fields['campsite1'].queryset, [campsite])
+        self.assertQsEqual(form.fields['campsite2'].queryset, [campsite])
+
+    def test_form_filters_related_trips_year_for_m2m(self):
+        section = mommy.make(Section, trips_year=self.trips_year)
+        section_old = mommy.make(Section, trips_year=self.old_trips_year)
+
+        class RegistrationSectionPreferenceForm(TripsYearModelForm):
+            class Meta:
+                model = Registration
+                fields = ['section_choice']
+
+        form = RegistrationSectionPreferenceForm(self.trips_year)
+        self.assertQsEqual(form.fields['section_choice'].queryset, [section])
 
 
 class DetailViewTestCase(FytTestCase):

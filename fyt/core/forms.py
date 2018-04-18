@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms.models import modelform_factory
+from django import forms
 
 from fyt.core.models import DatabaseModel
 
@@ -45,3 +46,18 @@ def tripsyear_modelform_factory(model, trips_year, *args, **kwargs):
     """
     callback = make_tripsyear_formfield_callback(trips_year)
     return modelform_factory(model, formfield_callback=callback, *args, **kwargs)
+
+
+class TripsYearModelForm(forms.ModelForm):
+
+    def __init__(self, trips_year, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, form_field in self.fields.items():
+            model_field = self._meta.model._meta.get_field(field_name)
+
+            # Since DatabaseModel manages the trips_year field, all
+            # related instances are filterable
+            if model_field.is_relation and issubclass(
+                    model_field.related_model, DatabaseModel):
+                form_field.queryset = form_field.queryset.filter(
+                    trips_year=trips_year)
