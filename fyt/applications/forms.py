@@ -27,26 +27,6 @@ from fyt.utils.fmt import join_with_and
 from fyt.utils.forms import crispify
 
 
-class TripAssignmentForm(forms.ModelForm):
-    """
-    Update a leader's assigned trip
-    """
-    class Meta:
-        model = Volunteer
-        fields = ['trip_assignment']
-
-    trip_assignment = TripChoiceField(queryset=None)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['trip_assignment'].queryset = (
-            Trip.objects
-            .filter(trips_year=kwargs['instance'].trips_year)
-            .select_related('section', 'template', 'template__triptype')
-        )
-        crispify(self, submit_text='Update Assignment')
-
-
 class ApplicationForm(forms.ModelForm):
 
     class Meta:
