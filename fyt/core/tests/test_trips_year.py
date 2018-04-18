@@ -125,8 +125,31 @@ class TripsYearModelFormTestCase(FytTestCase):
                 model = Registration
                 fields = ['section_choice']
 
-        form = RegistrationSectionPreferenceForm(self.trips_year)
+        form = RegistrationSectionPreferenceForm(trips_year=self.trips_year)
         self.assertQsEqual(form.fields['section_choice'].queryset, [section])
+
+    def test_pull_trips_year_from_instance_if_provided(self):
+        triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
+
+        class TripTemplateForm(TripsYearModelForm):
+            class Meta:
+                model = TripTemplate
+                fields = '__all__'
+
+        form = TripTemplateForm(instance=triptemplate)
+        self.assertEqual(form.trips_year, self.trips_year)
+
+    def test_explicit_and_instance_trips_years_match(self):
+        triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
+
+        class TripTemplateForm(TripsYearModelForm):
+            class Meta:
+                model = TripTemplate
+                fields = '__all__'
+
+        with self.assertRaises(ValueError):
+            TripTemplateForm(trips_year=self.old_trips_year,
+                             instance=triptemplate)
 
 
 class DetailViewTestCase(FytTestCase):

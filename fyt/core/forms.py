@@ -20,10 +20,22 @@ class TripsYearModelForm(forms.ModelForm):
     is a subclass of DatabaseModel, then we only display choices from the
     specified ``trips_year``.
     """
-    def __init__(self, trips_year, *args, **kwargs):
-        self.trips_year = trips_year
+    def __init__(self, data=None, files=None, trips_year=None, **kwargs):
+        super().__init__(data=data, files=files, **kwargs)
 
-        super().__init__(*args, **kwargs)
+        if (trips_year is not None and self.instance.pk is not None and
+                trips_year != self.instance.trips_year):
+            raise ValueError('Mis-matched trips_year values')
+
+        if trips_year is not None:
+            self.trips_year = trips_year
+        elif self.instance.pk is not None:
+            self.trips_year = self.instance.trips_year
+        else:
+            raise ValueError('Missing trips_year for {}. Either provide an '
+                             'explicit argument, or a model instance that '
+                             'has a trips_year value.'.format(
+                                 self.__class__.__name__))
 
         for field_name, form_field in self.fields.items():
             model_field = self._meta.model._meta.get_field(field_name)
@@ -33,4 +45,4 @@ class TripsYearModelForm(forms.ModelForm):
             if model_field.is_relation and issubclass(
                     model_field.related_model, DatabaseModel):
                 form_field.queryset = form_field.queryset.filter(
-                    trips_year=trips_year)
+                    trips_year=self.trips_year)
