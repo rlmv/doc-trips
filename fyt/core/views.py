@@ -124,12 +124,8 @@ class TripsYearMixin():
         cls = self.get_form_class()
 
         # Pass trips_year to the form, if it expects it
-        # TODO: trips_year should be passed to all forms?
-        if issubclass(cls, TripsYearModelForm):
-            return cls(trips_year=self.trips_year, data=data, files=files,
-                       **kwargs)
-
-        return cls(data=data, files=files, **kwargs)
+        return cls(trips_year=self.trips_year, data=data, files=files,
+                   **kwargs)
 
     def form_valid(self, form):
         """
