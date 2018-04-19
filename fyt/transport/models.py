@@ -696,12 +696,12 @@ class ExternalBus(DatabaseModel):
         """
         return self.section.return_to_campus
 
-    @cache_as('_psngrs_to_hanover')
+    @cached_property
     def passengers_to_hanover(self):
         return IncomingStudent.objects.passengers_to_hanover(
             self.trips_year_id, self.route, self.section)
 
-    @cache_as('_psngrs_from_hanover')
+    @cached_property
     def passengers_from_hanover(self):
         return IncomingStudent.objects.passengers_from_hanover(
             self.trips_year_id, self.route, self.section)
@@ -710,8 +710,8 @@ class ExternalBus(DatabaseModel):
         def pks(qs):
             return [x.pk for x in qs]
         return IncomingStudent.objects.filter(pk__in=(
-            pks(self.passengers_to_hanover()) +
-            pks(self.passengers_from_hanover()))
+            pks(self.passengers_to_hanover) +
+            pks(self.passengers_from_hanover))
         ).order_by('name')
 
     DROPOFF_ATTR = 'dropoff'
@@ -725,14 +725,14 @@ class ExternalBus(DatabaseModel):
         at each stop are stored in DROPOFF_ATTR and PICKUP_ATTR.
         """
         d = defaultdict(list)
-        for p in self.passengers_to_hanover():
+        for p in self.passengers_to_hanover:
             d[p.get_bus_to_hanover()].append(p)
         for stop, psngrs in d.items():
             setattr(stop, self.DROPOFF_ATTR, [])
             setattr(stop, self.PICKUP_ATTR, psngrs)
 
         hanover = Hanover(self.trips_year)
-        setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover())
+        setattr(hanover, self.DROPOFF_ATTR, self.passengers_to_hanover)
         setattr(hanover, self.PICKUP_ATTR, [])
 
         return sort_by_distance(d.keys(), reverse=True) + [hanover]
@@ -742,7 +742,7 @@ class ExternalBus(DatabaseModel):
         All stops the bus makes as it drop trippees off after trips.
         """
         d = defaultdict(list)
-        for p in self.passengers_from_hanover():
+        for p in self.passengers_from_hanover:
             d[p.get_bus_from_hanover()].append(p)
         for stop, psngrs in d.items():
             setattr(stop, self.DROPOFF_ATTR, psngrs)
@@ -750,7 +750,7 @@ class ExternalBus(DatabaseModel):
 
         hanover = Hanover(self.trips_year)
         setattr(hanover, self.DROPOFF_ATTR, [])
-        setattr(hanover, self.PICKUP_ATTR, self.passengers_from_hanover())
+        setattr(hanover, self.PICKUP_ATTR, self.passengers_from_hanover)
 
         return [hanover] + sort_by_distance(d.keys())
 

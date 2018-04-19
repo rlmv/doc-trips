@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.functional import cached_property
 from raven.contrib.django.raven_compat.models import client as sentry
 from vanilla.views import FormView, TemplateView
 
@@ -37,7 +38,6 @@ from fyt.transport.models import (
 )
 from fyt.trips.models import Section, Trip, TripTemplate
 from fyt.trips.views import _SectionMixin
-from fyt.utils.cache import cache_as, preload
 from fyt.utils.matrix import OrderedMatrix
 from fyt.utils.views import PopulateMixin
 
@@ -425,14 +425,15 @@ class _DateMixin():
     """
     Mixin to get a date object from url kwargs.
     """
-    def get_date(self):
+    @cached_property
+    def date(self):
         """
         Convert from ISO date format
         """
         return datetime.strptime(self.kwargs['date'], "%Y-%m-%d").date()
 
     def get_context_data(self, **kwargs):
-        kwargs['date'] = self.get_date()
+        kwargs['date'] = self.date
         return super().get_context_data(**kwargs)
 
 
@@ -440,12 +441,12 @@ class _RouteMixin():
     """
     Mixin to get a route object from url kwargs.
     """
-    @cache_as('_route')
-    def get_route(self):
+    @cached_property
+    def route(self):
         return Route.objects.get(pk=self.kwargs['route_pk'])
 
     def get_context_data(self, **kwargs):
-        kwargs['route'] = self.get_route()
+        kwargs['route'] = self.route
         return super().get_context_data(**kwargs)
 
 
@@ -460,15 +461,15 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        args = (self.get_route(), self.get_date(), self.trips_year)
+        args = (self.route, self.date, self.trips_year)
         context['dropoffs'] = Trip.objects.dropoffs(*args)
         context['pickups'] = Trip.objects.pickups(*args)
         context['returns'] = Trip.objects.returns(*args)
 
         context['scheduled'] = bus = InternalBus.objects.filter(
             trips_year=self.trips_year,
-            date=self.get_date(),
-            route=self.get_route()
+            date=self.date,
+            route=self.route
         ).first()
 
         if bus:
@@ -494,12 +495,12 @@ class ExternalBusChecklist(_RouteMixin, _SectionMixin, DatabaseTemplateView):
             'section': self.section,
             'bus': ExternalBus.objects.filter(
                 trips_year=self.trips_year,
-                route=self.get_route(), section=self.section
+                route=self.route, section=self.section
             ).first(),
             'passengers_to_hanover': IncomingStudent.objects.passengers_to_hanover(
-                self.trips_year, self.get_route(), self.section),
+                self.trips_year, self.route, self.section),
             'passengers_from_hanover': IncomingStudent.objects.passengers_from_hanover(
-                self.trips_year, self.get_route(), self.section),
+                self.trips_year, self.route, self.section),
         }
 
 
@@ -509,10 +510,10 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
     form_valid_message = 'Route order has been updated'
 
     def get_queryset(self):
-        return self.get_bus().get_stop_ordering()
+        return self.bus.get_stop_ordering()
 
-    @cache_as('_bus')
-    def get_bus(self):
+    @cached_property
+    def bus(self):
         return get_object_or_404(
             InternalBus, pk=self.kwargs['bus_pk'],
             trips_year=self.trips_year
@@ -530,8 +531,8 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
 
     def get_context_data(self, **kwargs):
         kwargs.update({
-            'bus': self.get_bus(),
-            'checklist_url': self.get_bus().detail_url()
+            'bus': self.bus,
+            'checklist_url': self.bus.detail_url()
         })
         return super().get_context_data(**kwargs)
 
@@ -589,7 +590,7 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
     """
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(date=self.get_date())
+        return qs.filter(date=self.date)
 
 
 class ExternalBusPacket(DatabaseListView):
@@ -642,9 +643,9 @@ class ExternalBusPacketForDate(_DateMixin, ExternalBusPacket):
     def get_bus_list(self):
         bus_list = []
         for bus in self.get_queryset():
-            if self.get_date() == bus.date_to_hanover:
+            if self.date == bus.date_to_hanover:
                 bus_list.append(self.to_hanover_tuple(bus))
-            elif self.get_date() == bus.date_from_hanover:
+            elif self.date == bus.date_from_hanover:
                 bus_list.append(self.from_hanover_tuple(bus))
         return bus_list
 
@@ -655,4 +656,4 @@ class ExternalBusPacketForDateAndRoute(_RouteMixin, ExternalBusPacketForDate):
     """
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(route=self.get_route())
+        return qs.filter(route=self.route)

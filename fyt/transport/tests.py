@@ -720,7 +720,7 @@ class TransportChecklistTest(FytTestCase):
         view = TransportChecklist()
         d = date(2015, 1, 1)
         view.kwargs = {'date': str(d)}
-        self.assertEqual(view.get_date(), d)
+        self.assertEqual(view.date, d)
 
 
 class ExternalBusManager(FytTestCase):
