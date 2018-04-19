@@ -36,6 +36,7 @@ from fyt.transport.models import (
     Vehicle,
 )
 from fyt.trips.models import Section, Trip, TripTemplate
+from fyt.trips.views import _SectionMixin
 from fyt.utils.cache import cache_as, preload
 from fyt.utils.matrix import OrderedMatrix
 from fyt.utils.views import PopulateMixin
@@ -484,24 +485,21 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
         return context
 
 
-class ExternalBusChecklist(_RouteMixin, DatabaseTemplateView):
+class ExternalBusChecklist(_RouteMixin, _SectionMixin, DatabaseTemplateView):
 
     template_name = 'transport/externalbus_checklist.html'
 
-    def get_section(self):
-        return Section.objects.get(pk=self.kwargs['section_pk'])
-
     def extra_context(self):
         return {
-            'section': self.get_section(),
+            'section': self.section,
             'bus': ExternalBus.objects.filter(
                 trips_year=self.trips_year,
-                route=self.get_route(), section=self.get_section()
+                route=self.get_route(), section=self.section
             ).first(),
             'passengers_to_hanover': IncomingStudent.objects.passengers_to_hanover(
-                self.trips_year, self.get_route(), self.get_section()),
+                self.trips_year, self.get_route(), self.section),
             'passengers_from_hanover': IncomingStudent.objects.passengers_from_hanover(
-                self.trips_year, self.get_route(), self.get_section()),
+                self.trips_year, self.get_route(), self.section),
         }
 
 

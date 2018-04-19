@@ -65,11 +65,11 @@ class _SectionMixin():
     Utility mixin for CBVs which have a section_pk url kwarg.
     """
     @cached_property
-    def get_section(self):
+    def section(self):
         return Section.objects.get(pk=self.kwargs['section_pk'])
 
     def get_context_data(self, **kwargs):
-        kwargs['section'] = self.get_section()
+        kwargs['section'] = self.section
         return super().get_context_data(**kwargs)
 
 
@@ -754,7 +754,7 @@ class PacketsForSection(_SectionMixin, DatabaseListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            section=self.get_section()
+            section=self.section
         ).select_related(
             'template__campsite1',
             'template__campsite2',
@@ -787,7 +787,7 @@ class TrippeeChecklist(_SectionMixin, DatabaseListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            trip_assignment__section=self.get_section())
+            trip_assignment__section=self.section)
 
 
 class LeaderChecklist(_SectionMixin, DatabaseListView):
@@ -800,7 +800,7 @@ class LeaderChecklist(_SectionMixin, DatabaseListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(
-            trip_assignment__section=self.get_section())
+            trip_assignment__section=self.section)
 
 
 class Checklists(DatabaseTemplateView):
