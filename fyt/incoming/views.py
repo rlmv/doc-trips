@@ -76,11 +76,12 @@ class RegistrationNotAvailable(TemplateView):
 
 
 class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
-                           FormMessagesMixin):
+                           FormMessagesMixin, TripsYearMixin):
     """
     CBV base for registration form with all contextual information
     """
     model = Registration
+    form_class = RegistrationForm
     template_name = 'incoming/register.html'
     success_url = reverse_lazy('incoming:portal')
     form_valid_message = "Your registration has been saved"
@@ -93,12 +94,8 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     def trips_year(self):
         return TripsYear.objects.current()
 
-    def get_form(self, **kwargs):
-        return RegistrationForm(trips_year=self.trips_year, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['trips_year'] = self.trips_year
         context['triptypes'] = TripType.objects.visible(self.trips_year)
         context['registration_deadline'] = (
             Timetable.objects.timetable().trippee_registrations_close)
