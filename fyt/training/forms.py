@@ -148,8 +148,6 @@ class AttendeeUpdateForm(TripsYearModelForm):
         model = Attendee
         fields = [
             'complete_sessions',
-            'fa_cert',
-            'fa_other'
         ]
         widgets = {
             'complete_sessions': forms.CheckboxSelectMultiple()
@@ -159,10 +157,6 @@ class AttendeeUpdateForm(TripsYearModelForm):
     def helper(self):
         helper = FormHelper(self)
         helper.layout = Layout(
-            Row(
-                Div('fa_cert', css_class="col-sm-3"),
-                Div('fa_other', css_class="col-sm-3")
-            ),
             'complete_sessions',
             Submit('submit', 'Save')
         )
@@ -250,3 +244,43 @@ FirstAidCertificationFormset = forms.inlineformset_factory(
     formset=BaseFirstAidCertificationFormset,
     form=FirstAidCertificationForm,
     can_delete=False)
+
+
+class BaseFirstAidVerificationFormset(forms.BaseInlineFormSet):
+
+    def __init__(self, trips_year, **kwargs):
+        super().__init__(**kwargs)
+        self.trips_year = trips_year
+
+    def save(self):
+        """
+        Attach trips_year to new instances.
+        """
+        instances = super().save(commit=False)
+        for instance in instances:
+            if instance.pk is None:
+                instance.trips_year = self.trips_year
+                instance.save()
+
+        return instances
+
+    @property
+    def helper(self):
+        helper = FormHelper()  # Don't pass formset instance
+        helper.template = 'bootstrap3/table_inline_formset.html'
+        helper.layout = Layout(
+            'name',
+            'other',
+            'expiration_date',
+            'verified')
+        helper.add_input(Submit('submit', 'Save'))
+        return helper
+
+
+FirstAidVerificationFormset = forms.inlineformset_factory(
+    Volunteer,
+    FirstAidCertification,
+    formset=BaseFirstAidVerificationFormset,
+    fields=['name', 'other', 'expiration_date', 'verified'],
+    widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
+    can_delete=True)

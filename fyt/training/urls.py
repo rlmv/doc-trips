@@ -12,6 +12,7 @@ from fyt.training.views import (
     SessionUpdate,
     Signup,
     UpdateRegistration,
+    VolunteerFirstAidUpdate
 )
 
 
@@ -30,6 +31,7 @@ session_urlpatterns = [
 
 attendee_urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/update/$', AttendeeUpdate.as_view(), name='update'),
+    url(r'^(?P<pk>[0-9]+)/verify/$', VolunteerFirstAidUpdate.as_view(), name='verify'),
     url(r'^update/first-aid/$', RecordFirstAid.as_view(), name='first_aid'),
 ]
 

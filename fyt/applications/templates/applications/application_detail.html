@@ -62,16 +62,27 @@
  </h4>
 
 <table class="table table-condensed table-striped">
-    <tr>
-        <td class="col-sm-3 text-right"><strong>First Aid</strong></td>
-        <td>{{ application.attendee.get_first_aid_cert|default:"*" }}</td>
-    </tr>
 {% for training, session in application.attendee.trainings_to_sessions.items %}
     <tr>
         <td class="col-sm-3 text-right"><strong>{{ training }}</strong></td>
         <td>{{ session.date|date:"n/j/Y"|default:"*" }}</td>
     </tr>
 {% endfor %}
+</table>
+
+<h4>
+    First Aid Certifications
+    <a href="{% url 'core:attendee:verify' trips_year=trips_year pk=application.pk %}"> edit </a>
+</h4>
+
+<table class="table table-condensed table-striped">
+  {% for certification in application.first_aid_certifications.all %}
+    <tr>
+      <td class="col-sm-3 text-right"><strong>{{ certification.get_name }}</strong></td>
+      <td> exp. {{ certification.expiration_date|date:"n/j/Y" }}</td>
+      <td> {% if certification.verified %} VERIFIED {% else %} UNVERIFIED {% endif %} </td>
+    </tr>
+    {% endfor %}
 </table>
 
 

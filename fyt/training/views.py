@@ -25,6 +25,7 @@ from fyt.training.forms import (
     AttendanceForm,
     AttendeeUpdateForm,
     FirstAidFormset,
+    FirstAidVerificationFormset,
     SessionForm,
     SessionRegistrationForm,
     SignupForm,
@@ -136,6 +137,24 @@ class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
     model = Attendee
     delete_button = False
     form_class = AttendeeUpdateForm
+
+    def get_headline(self):
+        return mark_safe(
+            'Update trainings <small>{}</small>'.format(self.object))
+
+
+class VolunteerFirstAidUpdate(TrainingPermissionRequired, BaseUpdateView):
+    model = Volunteer
+    delete_button = False
+    form_class = FirstAidVerificationFormset
+
+    def get_headline(self):
+        return mark_safe(
+            'Edit First Aid Certifications <small>{}</small>'.format(
+                self.object))
+
+    def get_success_url(self):
+        return self.get_object().detail_url()
 
 
 # Volunteer-facing views
