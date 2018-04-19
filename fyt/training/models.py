@@ -101,6 +101,8 @@ class FirstAidCertification(DatabaseModel):
     )
     expiration_date = models.DateField()
 
+    verified = models.BooleanField('verified?', default=False)
+
     class Meta:
         ordering = ['volunteer', 'pk']
 
