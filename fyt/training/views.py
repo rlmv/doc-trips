@@ -23,7 +23,7 @@ from fyt.permissions.permissions import groups
 from fyt.permissions.views import TrainingPermissionRequired
 from fyt.training.forms import (
     AttendanceForm,
-    AttendeeUpdateForm,
+    CompletedSessionsForm,
     FirstAidFormset,
     FirstAidVerificationFormset,
     SessionForm,
@@ -133,10 +133,10 @@ class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
         return self.request.path
 
 
-class AttendeeUpdate(TrainingPermissionRequired, BaseUpdateView):
+class AttendeeSessionsUpdate(TrainingPermissionRequired, BaseUpdateView):
     model = Attendee
     delete_button = False
-    form_class = AttendeeUpdateForm
+    form_class = CompletedSessionsForm
 
     def get_headline(self):
         return mark_safe(

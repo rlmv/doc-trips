@@ -8,7 +8,7 @@ from fyt.applications.tests import ApplicationTestMixin
 from fyt.test import FytTestCase
 from fyt.training.forms import (
     AttendanceForm,
-    AttendeeUpdateForm,
+    CompletedSessionsForm,
     FirstAidCertificationFormset,
     FirstAidFormset,
     SessionRegistrationForm,
@@ -256,7 +256,7 @@ class AttendenceFormTestCase(FytTestCase):
         self.assertQsEqual(self.session.completed.all(), [])
 
 
-class AttendeeUpdateFormTestCase(FytTestCase):
+class CompletedSessionsFormTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -266,7 +266,7 @@ class AttendeeUpdateFormTestCase(FytTestCase):
         session = mommy.make(Session, trips_year=self.trips_year)
         old_session = mommy.make(Session, trips_year=self.old_trips_year)
         attendee = make_attendee(trips_year=self.trips_year)
-        form = AttendeeUpdateForm(instance=attendee)
+        form = CompletedSessionsForm(instance=attendee)
         self.assertQsEqual(form.fields['complete_sessions'].queryset, [session])
 
 

@@ -142,7 +142,7 @@ class SignupForm(TripsYearModelForm):
         return self.cleaned_data['registered_sessions']
 
 
-class AttendeeUpdateForm(TripsYearModelForm):
+class CompletedSessionsForm(TripsYearModelForm):
 
     class Meta:
         model = Attendee
