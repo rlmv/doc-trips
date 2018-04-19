@@ -93,8 +93,8 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     def trips_year(self):
         return TripsYear.objects.current()
 
-    def get_form(self, *args, **kwargs):
-        return RegistrationForm(self.trips_year, *args, **kwargs)
+    def get_form(self, **kwargs):
+        return RegistrationForm(trips_year=self.trips_year, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -267,14 +267,12 @@ class NonStudentRegistration(DatabaseCreateView):
     to this user.
     """
     model = Registration
+    form_class = RegistrationForm
     explanation = (
         "<p> Upload a registration for a non-student. Use this only "
         "if, for some reason, the trippee does not have a NetId. "
         "An Incoming Student object will be automatically created "
         "and filled in with information from the registration. </p>")
-
-    def get_form(self, *args, **kwargs):
-        return RegistrationForm(self.trips_year, *args, **kwargs)
 
     def form_valid(self, form):
         user = DartmouthUser.objects.create_user_without_netid(
@@ -305,7 +303,6 @@ class RegistrationDetail(DatabaseDetailView):
     template_name = 'incoming/registration_detail.html'
 
     fields = [
-
         'name',
         'gender',
         'previous_school',
@@ -363,9 +360,7 @@ class RegistrationUpdate(DatabaseUpdateView):
     Edit a registration.
     """
     model = Registration
-
-    def get_form(self, *args, **kwargs):
-        return RegistrationForm(self.trips_year, *args, **kwargs)
+    form_class = RegistrationForm
 
 
 class RegistrationDelete(DatabaseDeleteView):

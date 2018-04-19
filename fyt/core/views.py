@@ -1,4 +1,3 @@
-import inspect
 import logging
 
 from braces.views import FormInvalidMessageMixin, SetHeadlineMixin
@@ -25,7 +24,7 @@ from vanilla import (
 )
 
 from . import forward
-from .forms import tripsyear_modelform_factory
+from .forms import tripsyear_modelform_factory, TripsYearModelForm
 from .models import TripsYear
 
 from fyt.permissions.views import (
@@ -125,8 +124,8 @@ class TripsYearMixin():
         cls = self.get_form_class()
 
         # Pass trips_year to the form, if it expects it
-        # TODO: trips_year should be passed to all forms
-        if 'trips_year' in inspect.signature(cls).parameters:
+        # TODO: trips_year should be passed to all forms?
+        if issubclass(cls, TripsYearModelForm):
             return cls(trips_year=self.trips_year, data=data, files=files,
                        **kwargs)
 
