@@ -53,6 +53,8 @@ class TripsYearMixin():
     Plugs into ModelViews. The url is a database url of the form
     /something/{{trips_year}}/something. The ListView will only display
     objects for the specified trips_year.
+
+    Form classes for the view are passed a trips_year keyword argument.
     """
     def dispatch(self, request, *args, **kwargs):
         """
@@ -72,9 +74,7 @@ class TripsYearMixin():
     @cached_property
     def trips_year(self):
         """
-        Pull trips_year out of url kwargs.
-
-        Note that this is a int, not a TripsYear instance.
+        Return the trips_year specified by the url kwargs.
         """
         return TripsYear.objects.get(year=self.kwargs['trips_year'])
 
@@ -93,16 +93,8 @@ class TripsYearMixin():
 
     def get_form_class(self):
         """
-        Restricts the choices in foreignkey form fields to objects with the
-        same trips year.
-
-        This would be straightforward if ``F()`` objects were supported
-        in ``limit_choices_to``, but they're not.
-
-        Specifying form_class on means that ForeignKey
-        querysets will contain objects for ALL trips_years.
-        You must explicitly restrict the querysets for these
-        fields, or bad things will happen
+        Returns a subclass of TripsYearModelForm that restricts related
+        object choices to those from the trips_year of the view.
         """
         if self.form_class is not None:
             return self.form_class
@@ -119,7 +111,7 @@ class TripsYearMixin():
 
     def get_form(self, data=None, files=None, **kwargs):
         """
-        Returns a form instance.
+        Return a form instance, passing trips_year as a keyword argument.
         """
         cls = self.get_form_class()
 
