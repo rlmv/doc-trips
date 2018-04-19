@@ -1,47 +1,48 @@
-from django.db import models
 from django.forms.models import modelform_factory
+from django import forms
 
 from fyt.core.models import DatabaseModel
 
 
-def make_tripsyear_formfield_callback(trips_year):
+def tripsyear_modelform_factory(model, *args, **kwargs):
     """
-    Return a function responsible for making formfields.
-
-    Used to restrict field choices to matching trips_year.
+    ModelForm factory which restricts related object choices to a certain
+    trips_year.
     """
-    def restrict_related_choices_by_year(model_field, **kwargs):
-        """
-        Formfield callback.
-
-        If the field is a relational field, and the related object
-        is a subclass of DatabaseModel, then we only display choices
-        from the specified ``trips_year``.
-
-        This fixes an issue where the Section dropdown for
-        /db/2014/trips/create was showing Sections objects from 2013.
-        """
-        formfield = model_field.formfield(**kwargs)
-        if ((isinstance(model_field, models.ForeignKey) or
-             isinstance(model_field, models.ManyToManyField) or
-             isinstance(model_field, models.OneToOneField)) and
-            issubclass(model_field.related_model, DatabaseModel)):
-
-            formfield.queryset = formfield.queryset.filter(trips_year=trips_year)
-
-        return formfield
-
-    return restrict_related_choices_by_year
+    return modelform_factory(model, form=TripsYearModelForm, *args, **kwargs)
 
 
-def tripsyear_modelform_factory(model, trips_year, *args, **kwargs):
+class TripsYearModelForm(forms.ModelForm):
     """
-    Model form factory which restricts related object choices to
-    those for trips_year.
+    ModelForm that restricts related object choices to the provided trips_year.
 
-    ``formfield_callback`` is responsible for constructing a ``FormField``
-    from a passed ``ModelField``. Our callback intercepts the usual ForeignKey
-    implementation and restricts the queryset to objects of this ``trips_year``
+    For all fields, If the field is a relational field, and the related object
+    is a subclass of DatabaseModel, then we only display choices from the
+    specified ``trips_year``.
     """
-    callback = make_tripsyear_formfield_callback(trips_year)
-    return modelform_factory(model, formfield_callback=callback, *args, **kwargs)
+    def __init__(self, data=None, files=None, trips_year=None, **kwargs):
+        super().__init__(data=data, files=files, **kwargs)
+
+        if (trips_year is not None and self.instance.pk is not None and
+                trips_year != self.instance.trips_year):
+            raise ValueError('Mis-matched trips_year values')
+
+        if trips_year is not None:
+            self.trips_year = trips_year
+        elif self.instance.pk is not None:
+            self.trips_year = self.instance.trips_year
+        else:
+            raise ValueError('Missing trips_year for {}. Either provide an '
+                             'explicit argument, or a model instance that '
+                             'has a trips_year value.'.format(
+                                 self.__class__.__name__))
+
+        for field_name, form_field in self.fields.items():
+            model_field = self._meta.model._meta.get_field(field_name)
+
+            # Since DatabaseModel manages the trips_year field, all
+            # related instances are filterable
+            if model_field.is_relation and issubclass(
+                    model_field.related_model, DatabaseModel):
+                form_field.queryset = form_field.queryset.filter(
+                    trips_year=self.trips_year)

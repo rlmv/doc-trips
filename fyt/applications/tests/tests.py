@@ -615,7 +615,6 @@ class ApplicationFormTestCase(FytTestCase):
 
     def test_question_fields(self):
         form = QuestionForm(
-            self.trips_year,
             instance=self.app,
             data={'question_1': 'Blueberries'}
         )
@@ -634,7 +633,6 @@ class ApplicationFormTestCase(FytTestCase):
 
     def test_question_field_word_count(self):
         form = QuestionForm(
-            self.trips_year,
             instance=self.app,
             data={'question_1': 'word ' * 301}
         )
@@ -665,27 +663,27 @@ class LeaderSupplementFormTestCase(FytTestCase):
         return d
 
     def test_adds_section_fields(self):
-        form = LeaderSupplementForm(self.trips_year)
+        form = LeaderSupplementForm(trips_year=self.trips_year)
         self.assertIn('section_1', form.fields)
 
     def test_section_field_label(self):
-        form = LeaderSupplementForm(self.trips_year)
+        form = LeaderSupplementForm(trips_year=self.trips_year)
         self.assertEqual(form.fields['section_1'].label,
                          'A &mdash; Jan 01 to Jan 06')
 
     def test_default_section_choice(self):
-        form = LeaderSupplementForm(self.trips_year, instance=self.leader_app,
+        form = LeaderSupplementForm(instance=self.leader_app,
                                     data=self.data({}))
         self.assertEqual(form.fields['section_1'].initial, 'NOT AVAILABLE')
 
     def test_initial_section_choice_is_populated(self):
         self.leader_app.set_section_preference(self.section, 'PREFER')
-        form = LeaderSupplementForm(self.trips_year, instance=self.leader_app)
+        form = LeaderSupplementForm(instance=self.leader_app)
         self.assertEqual(form.fields['section_1'].initial, 'PREFER')
 
     def test_new_section_choice_is_saved(self):
         form = LeaderSupplementForm(
-            self.trips_year, instance=self.leader_app,
+            instance=self.leader_app,
             data=self.data({'section_1': 'AVAILABLE'})
         )
         form.save()
@@ -700,7 +698,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
         self.leader_app.set_section_preference(self.section, 'PREFER')
 
         form = LeaderSupplementForm(
-            self.trips_year, instance=self.leader_app,
+            instance=self.leader_app,
             data=self.data({'section_1': 'AVAILABLE'}))
         form.save()
 
@@ -716,7 +714,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
             pk=3,
             name='C'
         )
-        form = LeaderSupplementForm(self.trips_year)
+        form = LeaderSupplementForm(trips_year=self.trips_year)
 
         self.assertEqual(form.section_handler.formfield_names(),
                          ['section_1', 'section_3'])
@@ -730,7 +728,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
         )
 
         form = LeaderSupplementForm(
-            self.trips_year, instance=self.leader_app,
+            instance=self.leader_app,
             data=self.data({
                 'triptype_1': 'NOT AVAILABLE',
                 'section_1': 'PREFER'

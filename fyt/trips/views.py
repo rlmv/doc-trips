@@ -514,9 +514,6 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
         context = self.get_context_data(form=form)
         return self.render_to_response(context)
 
-    def get_form(self, **kwargs):
-        return self.get_form_class()(self.trips_year, **kwargs)
-
     def get_form_valid_message(self):
         """ Flash success message """
         return '{} assigned to {}'.format(
@@ -621,9 +618,10 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
     model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'core/update.html'
+    form_class = LeaderAssignmentForm
 
     def get_form(self, **kwargs):
-        form = LeaderAssignmentForm(self.trips_year, **kwargs)
+        form = super().get_form(**kwargs)
         label = 'Assign to %s' % (
             Trip.objects.get(pk=self.request.GET['trip_assignment'])
         )

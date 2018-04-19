@@ -31,9 +31,7 @@ class NewIncident(_IncidentMixin, SetHeadlineMixin, CreateView):
     model = Incident
     template_name = 'core/create.html'
     headline = 'New Incident'
-
-    def get_form(self, **kwargs):
-        return IncidentForm(self.trips_year, **kwargs)
+    form_class = IncidentForm
 
     def form_valid(self, form):
         form.instance.user = self.request.user

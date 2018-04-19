@@ -18,6 +18,7 @@ ROLE_CHOICES = (
     ('OTHER', 'Other')
 )
 
+
 class _IncidentBase(DatabaseModel):
     """
     Base fields for Incident and IncidentUpdate

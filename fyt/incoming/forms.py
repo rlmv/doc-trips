@@ -13,6 +13,7 @@ from .models import (
 )
 
 from fyt.applications.forms import PreferenceHandler
+from fyt.core.forms import TripsYearModelForm
 from fyt.core.models import TripsYear
 from fyt.incoming.models import Settings
 from fyt.transport.models import Stop
@@ -62,7 +63,7 @@ class TripTypePreferenceHandler(PreferenceHandler):
         return triptype.name
 
 
-class RegistrationForm(forms.ModelForm):
+class RegistrationForm(TripsYearModelForm):
     """
     Form for Trippee registration
     """
@@ -74,20 +75,18 @@ class RegistrationForm(forms.ModelForm):
             'triptype_choice',
         ]
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
-        self.trips_year = trips_year
-
-        sections = Section.objects.filter(trips_year=trips_year)
+        sections = Section.objects.filter(trips_year=self.trips_year)
         self.section_handler = SectionPreferenceHandler(self, sections)
         self.fields.update(self.section_handler.get_formfields())
 
-        triptypes = TripType.objects.visible(trips_year)
+        triptypes = TripType.objects.visible(self.trips_year)
         self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
         self.fields.update(self.triptype_handler.get_formfields())
 
-        external_stops = Stop.objects.external(trips_year)
+        external_stops = Stop.objects.external(self.trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
             label="Bus stop (round-trip)",
             queryset=external_stops, required=False
@@ -103,36 +102,40 @@ class RegistrationForm(forms.ModelForm):
 
         # Show which sections are available for these choices
         self.fields['is_exchange'].help_text = join_with_and(
-            Section.objects.exchange(trips_year)
+            Section.objects.exchange(self.trips_year)
         )
         self.fields['is_international'].help_text = join_with_and(
-            Section.objects.international(trips_year)
+            Section.objects.international(self.trips_year)
         )
         self.fields['is_transfer'].help_text = join_with_and(
-            Section.objects.transfer(trips_year)
+            Section.objects.transfer(self.trips_year)
         )
         self.fields['is_native'].help_text = join_with_and(
-            Section.objects.native(trips_year)
+            Section.objects.native(self.trips_year)
         )
         self.fields['is_fysep'].help_text = join_with_and(
-            Section.objects.fysep(trips_year)
+            Section.objects.fysep(self.trips_year)
         )
 
-        self.helper = FormHelper(self)
+    @property
+    def helper(self):
+        helper = FormHelper(self)
 
-        settings = Settings.objects.get(trips_year=trips_year)
+        settings = Settings.objects.get(trips_year=self.trips_year)
         kwargs = {
-            'local_sections': Section.objects.local(trips_year),
-            'not_local_sections': Section.objects.not_local(trips_year),
-            'international_sections': Section.objects.international(trips_year),
+            'local_sections': Section.objects.local(self.trips_year),
+            'not_local_sections': Section.objects.not_local(self.trips_year),
+            'international_sections': Section.objects.international(self.trips_year),
             'trips_cost': settings.trips_cost,
             'doc_membership_cost': settings.doc_membership_cost,
             'contact_url': settings.contact_url,
         }
-        self.helper.layout = RegistrationFormLayout(
+        helper.layout = RegistrationFormLayout(
             self.section_handler.formfield_names(),
             self.triptype_handler.formfield_names(),
             **kwargs)
+
+        return helper
 
     def save(self):
         registration = super().save()
@@ -143,7 +146,7 @@ class RegistrationForm(forms.ModelForm):
         return registration
 
 
-class AssignmentForm(forms.ModelForm):
+class AssignmentForm(TripsYearModelForm):
     """
     Form to assign an IncomingStudent to a trip and bus
     """
@@ -157,24 +160,25 @@ class AssignmentForm(forms.ModelForm):
             'bus_assignment_from_hanover'
         ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        trips_year = kwargs['instance'].trips_year
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.fields['trip_assignment'] = TripChoiceField(
             required=False,
             queryset=(
                 Trip.objects
-                .filter(trips_year=trips_year)
+                .filter(trips_year=self.trips_year)
                 .select_related('template', 'template__triptype', 'section')
             )
         )
-        ext_stops = Stop.objects.external(trips_year)
+        ext_stops = Stop.objects.external(self.trips_year)
         self.fields['bus_assignment_round_trip'].queryset = ext_stops
         self.fields['bus_assignment_to_hanover'].queryset = ext_stops
         self.fields['bus_assignment_from_hanover'].queryset = ext_stops
 
-        self.helper = FormHelper(self)
-        self.helper.layout = Layout(
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = Layout(
             'trip_assignment',
             'cancelled',
             'bus_assignment_round_trip',
@@ -182,9 +186,10 @@ class AssignmentForm(forms.ModelForm):
             'bus_assignment_from_hanover',
             Submit('submit', 'Update'),
         )
+        return helper
 
 
-class TrippeeInfoForm(forms.ModelForm):
+class TrippeeInfoForm(TripsYearModelForm):
     """
     Form for editing administrative trippee info
     """

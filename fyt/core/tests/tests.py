@@ -54,13 +54,6 @@ class RedirectToCurrentDatabaseTestCase(FytTestCase):
         self.app.get('/db/', user=self.make_user(), status=403)
 
 
-class FormFieldCallbackTestCase(FytTestCase):
-
-    def test_formfield_callback_for_non_DatabaseModel_fields_does_not_raise_error(self):
-        trips_year = self.init_trips_year()
-        tripsyear_modelform_factory(Campsite, trips_year, fields='__all__')
-
-
 class TemplateTestCase(FytTestCase):
 
     def test_previous_years_link_to_current(self):

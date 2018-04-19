@@ -753,7 +753,7 @@ class RegistrationFormTestCase(FytTestCase):
         mommy.make(Settings, trips_year=self.trips_year)  # must exist
 
     def test_registration_form_requires_trips_year(self):
-        form = RegistrationForm(self.trips_year)
+        form = RegistrationForm(trips_year=self.trips_year)
         self.assertEqual(form.trips_year, self.trips_year)
 
     def test_section_and_triptype_preferences(self):
@@ -762,7 +762,7 @@ class RegistrationFormTestCase(FytTestCase):
         section = mommy.make(Section, pk=1, trips_year=self.trips_year,
                              leaders_arrive=date(2015, 1, 1), name='A')
 
-        form = RegistrationForm(self.trips_year, instance=reg, data={
+        form = RegistrationForm(trips_year=self.trips_year, instance=reg, data={
             'name': 'test',
             'gender': 'hi',
             'previous_school': 'nah',

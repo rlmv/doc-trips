@@ -1,13 +1,12 @@
 from bootstrap3_datetime.widgets import DateTimePicker
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
-from django import forms
 
+from fyt.core.forms import TripsYearModelForm
 from fyt.safety.models import Incident, IncidentUpdate
-from fyt.trips.models import Trip
 
 
-class IncidentForm(forms.ModelForm):
+class IncidentForm(TripsYearModelForm):
 
     class Meta:
         model = Incident
@@ -30,12 +29,11 @@ class IncidentForm(forms.ModelForm):
             'when': DateTimePicker(options={'format': 'MM/DD/YYYY HH:mm'})
         }
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['trip'].queryset = Trip.objects.filter(trips_year=trips_year)
-
-        self.helper = FormHelper()
-        self.helper.layout = IncidentFormLayout()
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = IncidentFormLayout()
+        return helper
 
 
 IncidentFormLayout = lambda: Layout(
@@ -79,11 +77,14 @@ IncidentUpdateFormLayout = lambda: Layout(
 )
 
 
-class IncidentUpdateForm(forms.ModelForm):
+class IncidentUpdateForm(TripsYearModelForm):
 
     class Meta:
         model = IncidentUpdate
         fields = '__all__'
 
-    helper = FormHelper()
-    helper.layout = IncidentUpdateFormLayout()
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.layout = IncidentUpdateFormLayout()
+        return helper

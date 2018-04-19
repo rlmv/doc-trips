@@ -306,6 +306,16 @@ class SignupFormTestCase(FytTestCase):
         self.assertTrue(form.is_valid())
         self.assertQsEqual(form.cleaned_data['registered_sessions'], [session])
 
+    def test_registered_sessions_are_filtered_for_trips_year(self):
+        self.init_old_trips_year()
+        session = mommy.make(Session, trips_year=self.trips_year)
+        old_session = mommy.make(Session, trips_year=self.old_trips_year)
+        attendee = make_attendee(trips_year=self.trips_year)
+
+        form = SignupForm(instance=attendee)
+        self.assertQsEqual(form.fields['registered_sessions'].queryset,
+                           [session])
+
 
 class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
 
