@@ -5,11 +5,12 @@ from crispy_forms.layout import Field, Layout, Submit
 from django import forms
 
 from fyt.applications.models import Volunteer
+from fyt.core.forms import TripsYearModelForm
 from fyt.incoming.models import IncomingStudent
 from fyt.trips.models import Section, Trip
 
 
-class SectionForm(forms.ModelForm):
+class SectionForm(TripsYearModelForm):
     """
     Form for Section Create and Update views.
     """
@@ -22,13 +23,14 @@ class SectionForm(forms.ModelForm):
             })
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Submit'))
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.add_input(Submit('submit', 'Submit'))
+        return helper
 
 
-class LeaderAssignmentForm(forms.ModelForm):
+class LeaderAssignmentForm(TripsYearModelForm):
 
     class Meta:
         model = Volunteer
@@ -36,12 +38,6 @@ class LeaderAssignmentForm(forms.ModelForm):
         widgets = {
             'trip_assignment': forms.HiddenInput()
         }
-
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['trip_assignment'].queryset = (
-            Trip.objects.filter(trips_year=trips_year)
-        )
 
     def clean(self):
         """
@@ -52,7 +48,7 @@ class LeaderAssignmentForm(forms.ModelForm):
         return super().clean()
 
 
-class TrippeeAssignmentForm(forms.ModelForm):
+class TrippeeAssignmentForm(TripsYearModelForm):
 
     class Meta:
         model = IncomingStudent
@@ -61,16 +57,14 @@ class TrippeeAssignmentForm(forms.ModelForm):
             'trip_assignment': forms.HiddenInput()
         }
 
-    def __init__(self, trips_year, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['trip_assignment'].queryset = (
-            Trip.objects.filter(trips_year=trips_year)
-        )
-        self.helper = FormHelper(self)
+    @property
+    def helper(self):
+        helper = FormHelper(self)
         label = 'Assign to %s' % (
             Trip.objects.get(pk=self.data['trip_assignment'])
         )
-        self.helper.add_input(Submit('submit', label))
+        helper.add_input(Submit('submit', label))
+        return helper
 
 
 class FoodboxFormsetHelper(FormHelper):
