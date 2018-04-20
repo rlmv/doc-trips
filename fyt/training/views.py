@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from vanilla import FormView, UpdateView
+from vanilla import UpdateView, ListView
 
 from fyt.applications.models import Volunteer
 from fyt.core.models import TripsYear
@@ -24,7 +24,6 @@ from fyt.permissions.views import TrainingPermissionRequired
 from fyt.training.forms import (
     AttendanceForm,
     CompletedSessionsForm,
-    FirstAidFormset,
     FirstAidVerificationFormset,
     SessionForm,
     SessionRegistrationForm,
@@ -112,25 +111,21 @@ class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):
             "Update Registrations <small>{}</small>".format(self.object))
 
 
-class RecordFirstAid(TrainingPermissionRequired, SetHeadlineMixin,
-                     TripsYearMixin, FormView):
+class RecordFirstAid(TrainingPermissionRequired, TripsYearMixin, ListView):
     """
     Batch update first aid certifications.
     """
-    template_name = 'core/form.html'
+    template_name = 'training/first_aid_certification_list.html'
+    model = Volunteer
 
-    def get_headline(self):
-        return 'First Aid Certifications'
-
-    def get_form(self, **kwargs):
-        return FirstAidFormset(trips_year=self.trips_year, **kwargs)
-
-    def form_valid(self, formset):
-        formset.save()
-        return super().form_valid(formset)
-
-    def get_success_url(self):
-        return self.request.path
+    def get_queryset(self):
+        return Attendee.objects.trainable(
+            self.trips_year
+        ).select_related(
+            'volunteer',
+        ).prefetch_related(
+            'volunteer__first_aid_certifications'
+        )
 
 
 class AttendeeSessionsUpdate(TrainingPermissionRequired, BaseUpdateView):
@@ -143,7 +138,8 @@ class AttendeeSessionsUpdate(TrainingPermissionRequired, BaseUpdateView):
             'Update trainings <small>{}</small>'.format(self.object))
 
 
-class VolunteerFirstAidUpdate(TrainingPermissionRequired, BaseUpdateView):
+class VolunteerFirstAidUpdate(TrainingPermissionRequired, FormMessagesMixin,
+                              BaseUpdateView):
     model = Volunteer
     delete_button = False
     form_class = FirstAidVerificationFormset
@@ -154,7 +150,12 @@ class VolunteerFirstAidUpdate(TrainingPermissionRequired, BaseUpdateView):
                 self.object))
 
     def get_success_url(self):
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
         return self.get_object().detail_url()
+
+    def get_form_valid_message(self):
+        return "Saved first aid certifications for {}".format(self.get_object())
 
 
 # Volunteer-facing views

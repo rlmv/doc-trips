@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+{% load links %}
+
+{% block header %}
+<h2> First Aid Certifications <small> {{ trips_year }} </small></h2>
+{% endblock %}
+
+{% block content %}
+
+<table class="table table-condensed">
+{% for attendee in object_list %}
+
+  <tr class="active">
+    <td>{{ attendee|detail_link }}</td>
+    <td><span class="label label-info">{{ attendee.volunteer.status }}</span></td>
+    <td><a role="button" class="btn btn-xs btn-primary" href="{% url 'core:attendee:verify' trips_year=trips_year pk=attendee.volunteer.pk %}?next={{request.get_full_path|urlencode}}"><i class="fa fa-wrench"></i> Edit</a></td>
+
+  </tr>
+
+  {% for certification in attendee.volunteer.first_aid_certifications.all %}
+  {% include "applications/_first_aid_certification_tr.html" with certification=certification tr_class="text-muted"%}
+  {% empty %}
+  <tr>
+    <td></td>
+    <td>*</td>
+    <td></td>
+  </tr>
+  {% endfor %}
+
+{% endfor %}
+</table>
+
+{% endblock %}

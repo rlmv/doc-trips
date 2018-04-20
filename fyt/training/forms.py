@@ -163,39 +163,6 @@ class CompletedSessionsForm(TripsYearModelForm):
         return helper
 
 
-class FirstAidFormset(ReadonlyFormsetMixin, forms.modelformset_factory(
-        Attendee, fields=['fa_cert', 'fa_other'], extra=0)):
-    """
-    A formset for all leaders, croo members, and people on the leader waitlist.
-
-    This is rendered by crispy forms as a table. `readonly_data` specifies
-    readonly values to inject into the table for each form instance.
-    """
-    readonly_data = [
-        ('Name', 'get_name'),
-        ('Status', 'get_status'),
-    ]
-
-    def __init__(self, trips_year, *args, **kwargs):
-        qs = Attendee.objects.trainable(
-            trips_year
-        ).only(
-            'volunteer__applicant__name',
-            'volunteer__status',
-            'volunteer__trips_year_id',
-            'volunteer__id',
-            'fa_cert',
-            'fa_other',
-        )
-        super().__init__(*args, queryset=qs, **kwargs)
-
-    def get_name(self, instance):
-        return make_link(instance.detail_url(), instance)
-
-    def get_status(self, instance):
-        return instance.volunteer.get_status_display()
-
-
 class FirstAidCertificationForm(forms.ModelForm):
     class Meta:
         model = FirstAidCertification
@@ -221,7 +188,8 @@ class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
         """
         instances = super().save(commit=False)
         for instance in instances:
-            instance.trips_year = self.trips_year
+            if instance.pk is None:
+                instance.trips_year = self.trips_year
             instance.save()
 
         return instances
@@ -260,7 +228,7 @@ class BaseFirstAidVerificationFormset(forms.BaseInlineFormSet):
         for instance in instances:
             if instance.pk is None:
                 instance.trips_year = self.trips_year
-                instance.save()
+            instance.save()
 
         return instances
 

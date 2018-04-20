@@ -10,7 +10,6 @@ from fyt.training.forms import (
     AttendanceForm,
     CompletedSessionsForm,
     FirstAidCertificationFormset,
-    FirstAidFormset,
     SessionRegistrationForm,
     SignupForm,
 )
@@ -317,24 +316,6 @@ class SignupFormTestCase(FytTestCase):
                            [session])
 
 
-class FirstAidFormsetTestCase(ApplicationTestMixin, FytTestCase):
-
-    def setUp(self):
-        self.init_trips_year()
-        self.leader = self.make_application(status=Volunteer.LEADER)
-        self.crooling = self.make_application(status=Volunteer.CROO)
-        self.leader_waitlist = self.make_application(
-            status=Volunteer.LEADER_WAITLIST)
-        self.pending = self.make_application(status=Volunteer.PENDING)
-
-    def test_queryset(self):
-        formset = FirstAidFormset(self.trips_year)
-        self.assertQsEqual(formset.queryset,
-            [self.leader.attendee,
-             self.crooling.attendee,
-             self.leader_waitlist.attendee])
-
-
 class FirstAidCertificationFormsetTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
@@ -417,10 +398,27 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
             app = mommy.make(Volunteer, trips_year=self.trips_year, status=status)
             self.app.get(url, user=app.applicant, status=code)
 
-    def test_num_queries(self):
+
+class FirstAidViewsTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self._timetable().save()
+        self.make_director()
         self.make_application(status=Volunteer.LEADER)
-        url = reverse('core:attendee:first_aid', kwargs={
+        self.url = reverse('core:attendee:first_aid', kwargs={
             'trips_year': self.trips_year})
 
-        with self.assertNumQueries(15):
-            self.app.get(url, user=self.director)
+    def test_num_queries(self):
+        with self.assertNumQueries(16):
+            self.app.get(self.url, user=self.director)
+
+    def test_first_aid_update_redirect(self):
+        # Visit first aid list page
+        resp1 = self.app.get(self.url, user=self.director)
+        # Edit the volunteer's certifications
+        resp2 = resp1.click(description="Edit")
+        # Submit form
+        resp3 = resp2.form.submit()
+        # Redirects back to first aid list
+        self.assertRedirects(resp3, self.url)

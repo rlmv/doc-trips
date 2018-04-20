@@ -1,0 +1,11 @@
+<tr class="{{ tr_class }}">
+  <td class="col-sm-3 text-right"><strong>{{ certification.get_name }}</strong></td>
+  <td > exp. {{ certification.expiration_date|date:"n/j/Y" }}</td>
+  <td >
+    {% if certification.verified %}
+    <span class="label label-success"><i class="fa fa-check"></i> VERIFIED</span>
+    {% else %}
+    <span class="label label-info">UNVERIFIED</span>
+    {% endif %}
+  </td>
+</tr>

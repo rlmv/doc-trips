@@ -77,12 +77,8 @@
 
 <table class="table table-condensed table-striped">
   {% for certification in application.first_aid_certifications.all %}
-    <tr>
-      <td class="col-sm-3 text-right"><strong>{{ certification.get_name }}</strong></td>
-      <td> exp. {{ certification.expiration_date|date:"n/j/Y" }}</td>
-      <td> {% if certification.verified %} VERIFIED {% else %} UNVERIFIED {% endif %} </td>
-    </tr>
-    {% endfor %}
+  {% include "applications/_first_aid_certification_tr.html" with certification=certification %}
+  {% endfor %}
 </table>
 
 
