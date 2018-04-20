@@ -163,19 +163,6 @@ class CompletedSessionsForm(TripsYearModelForm):
         return helper
 
 
-class FirstAidCertificationForm(forms.ModelForm):
-    class Meta:
-        model = FirstAidCertification
-        fields = [
-            'name',
-            'other',
-            'expiration_date'
-        ]
-        widgets = {
-            'expiration_date': DateTimePicker(options=DATE_OPTIONS)
-        }
-
-
 class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
 
     def __init__(self, trips_year, *args, **kwargs):
@@ -192,63 +179,39 @@ class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
                 instance.trips_year = self.trips_year
             instance.save()
 
+        for instance in self.deleted_objects:
+            instance.delete()
+
         return instances
+
+
+class FirstAidCertificationFormset(forms.inlineformset_factory(
+        Volunteer,
+        FirstAidCertification,
+        formset=BaseFirstAidCertificationFormset,
+        fields=['name', 'other', 'expiration_date'],
+        widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
+        can_delete=True)):
 
     @property
     def helper(self):
         helper = FormHelper()  # Don't pass formset instance
-        helper.form_tag = False
         helper.template = 'bootstrap3/table_inline_formset.html'
-        helper.layout = Layout(
-            'name',
-            'other',
-            'expiration_date')
+        helper.form_tag = False
         return helper
 
 
-FirstAidCertificationFormset = forms.inlineformset_factory(
-    Volunteer,
-    FirstAidCertification,
-    formset=BaseFirstAidCertificationFormset,
-    form=FirstAidCertificationForm,
-    can_delete=False)
-
-
-class BaseFirstAidVerificationFormset(forms.BaseInlineFormSet):
-
-    def __init__(self, trips_year, **kwargs):
-        super().__init__(**kwargs)
-        self.trips_year = trips_year
-
-    def save(self):
-        """
-        Attach trips_year to new instances.
-        """
-        instances = super().save(commit=False)
-        for instance in instances:
-            if instance.pk is None:
-                instance.trips_year = self.trips_year
-            instance.save()
-
-        return instances
+class FirstAidVerificationFormset(forms.inlineformset_factory(
+        Volunteer,
+        FirstAidCertification,
+        formset=BaseFirstAidCertificationFormset,
+        fields=['name', 'other', 'expiration_date', 'verified'],
+        widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
+        can_delete=True)):
 
     @property
     def helper(self):
         helper = FormHelper()  # Don't pass formset instance
         helper.template = 'bootstrap3/table_inline_formset.html'
-        helper.layout = Layout(
-            'name',
-            'other',
-            'expiration_date',
-            'verified')
         helper.add_input(Submit('submit', 'Save'))
         return helper
-
-
-FirstAidVerificationFormset = forms.inlineformset_factory(
-    Volunteer,
-    FirstAidCertification,
-    formset=BaseFirstAidVerificationFormset,
-    fields=['name', 'other', 'expiration_date', 'verified'],
-    widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
-    can_delete=True)
