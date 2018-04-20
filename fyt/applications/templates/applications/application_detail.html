@@ -15,64 +15,64 @@
 {# administrative info #}
 <h4> Administrative Info <a href="{{ admin_update_url }}">edit</a></h4>
 <table class="table table-condensed table-striped">
-    <tr>
-        <td class="col-sm-3 text-right"><strong>Status</strong></td>
-        <td> {{ application.status }} </td>
-        <td>  <a href="{{ admin_update_url }}">edit</a> </td>
-    </tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong>Status</strong></td>
+    <td> {{ application.status }} </td>
+    <td>  <a href="{{ admin_update_url }}">edit</a> </td>
+  </tr>
 
-    <tr>
-        <td class="col-sm-3 text-right"><strong>Extended deadline</strong></td>
-        <td> {{ application.deadline_extension|default:"*" }} </td>
-        <td> <a href="{{ admin_update_url }}#div_id_deadline_extension"> edit </a></td>
-    </tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong>Extended deadline</strong></td>
+    <td> {{ application.deadline_extension|default:"*" }} </td>
+    <td> <a href="{{ admin_update_url }}#div_id_deadline_extension"> edit </a></td>
+  </tr>
 
-    <tr>
-        <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
-        {% if application.trip_assignment %}
-        <td>
-            {{ application.trip_assignment | detail_link }}
-        </td>
-        <td>
-            <a href="{% url 'core:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>
-        </td>
-        {% else %}
-        <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_trip_preferences"> assign </a> </td>
-        {% endif %}
-    </tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong> Trip Assignment </strong></td>
+    {% if application.trip_assignment %}
+    <td>
+      {{ application.trip_assignment | detail_link }}
+    </td>
+    <td>
+      <a href="{% url 'core:remove_leader_from_trip' trips_year=application.trips_year leader_pk=application.pk %}">remove </a>
+    </td>
+    {% else %}
+    <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_trip_preferences"> assign </a> </td>
+    {% endif %}
+  </tr>
 
-    <tr>
-        <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
-        {% if application.croo_assignment %}
-        <td> {{ application.croo_assignment | detail_link }} </td>
-        <td>
-          <a href="{% url 'core:volunteer:remove_croo' trips_year=application.trips_year pk=application.pk %}"> remove </a>
-        </td>
-        {% else %}
-        <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_croo_members"> assign </a> </td>
-        {% endif %}
-    </tr>
+  <tr>
+    <td class="col-sm-3 text-right"><strong> Croo Assignment </strong></td>
+    {% if application.croo_assignment %}
+    <td> {{ application.croo_assignment | detail_link }} </td>
+    <td>
+      <a href="{% url 'core:volunteer:remove_croo' trips_year=application.trips_year pk=application.pk %}"> remove </a>
+    </td>
+    {% else %}
+    <td> * </td> <td> <a href="{{ admin_update_url }}#div_id_croo_members"> assign </a> </td>
+    {% endif %}
+  </tr>
 
 </table>
 
 <h4>
-    Trainings
-    <a href="{% url 'core:attendee:update' trips_year=trips_year pk=application.attendee.pk %}"> edit </a>
-    {{ application|training_label }}
- </h4>
+  Trainings
+  <a href="{% url 'core:attendee:update' trips_year=trips_year pk=application.attendee.pk %}"> edit </a>
+  {{ application|training_label }}
+</h4>
 
 <table class="table table-condensed table-striped">
-{% for training, session in application.attendee.trainings_to_sessions.items %}
-    <tr>
-        <td class="col-sm-3 text-right"><strong>{{ training }}</strong></td>
-        <td>{{ session.date|date:"n/j/Y"|default:"*" }}</td>
-    </tr>
-{% endfor %}
+  {% for training, session in application.attendee.trainings_to_sessions.items %}
+  <tr>
+    <td class="col-sm-3 text-right"><strong>{{ training }}</strong></td>
+    <td>{{ session.date|date:"n/j/Y"|default:"*" }}</td>
+  </tr>
+  {% endfor %}
 </table>
 
 <h4>
-    First Aid Certifications
-    <a href="{% url 'core:attendee:verify' trips_year=trips_year pk=application.pk %}"> edit </a>
+  First Aid Certifications
+  <a href="{% url 'core:attendee:verify' trips_year=trips_year pk=application.pk %}"> edit </a>
 </h4>
 
 <table class="table table-condensed table-striped">
@@ -81,53 +81,52 @@
   {% endfor %}
 </table>
 
-
 {# grades #}
 
 <h4> Scores </h4>
 
 <table class="table table-condensed table-striped">
-    <tr>
-        <th class="col-sm-1"> Leader Score </th>
-        <th class="col-sm-1"> Croo Score </th>
-        <th> Grader </th>
-        <th> </th>
-        <th> </th>
-    </tr>
-    {% for score in application.scores.prefetch_display_data %}
-    <tr>
-        <td class="text-center"> {{ score.leader_score|default:'&mdash;' }} </td>
-        <td class="text-center"> {{ score.croo_score|default:'&mdash;' }} </td>
-        <td>
-            <strong>{{ score.grader }}</strong>
-            {% if score.croo_head %}
-                <span class="label label-primary"> Croo Head </span>
-            {% endif %}
+  <tr>
+    <th class="col-sm-1"> Leader Score </th>
+    <th class="col-sm-1"> Croo Score </th>
+    <th> Grader </th>
+    <th> </th>
+    <th> </th>
+  </tr>
+  {% for score in application.scores.prefetch_display_data %}
+  <tr>
+    <td class="text-center"> {{ score.leader_score|default:'&mdash;' }} </td>
+    <td class="text-center"> {{ score.croo_score|default:'&mdash;' }} </td>
+    <td>
+      <strong>{{ score.grader }}</strong>
+      {% if score.croo_head %}
+      <span class="label label-primary"> Croo Head </span>
+      {% endif %}
 
-            <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
-              {% for comment in score.scorecomment_set.all %}
-              <p><strong>{{ comment.score_question }}:</strong> {{ comment.comment }}</p>
-              {% endfor %}
-            </div>
+      <div class="collapse" id="scoreSpecifics{{ forloop.counter }}">
+        {% for comment in score.scorecomment_set.all %}
+        <p><strong>{{ comment.score_question }}:</strong> {{ comment.comment }}</p>
+        {% endfor %}
+      </div>
 
-            <p>{{ score.general }} </p>
+      <p>{{ score.general }} </p>
 
-            <a role="button" data-toggle="collapse" href="#scoreSpecifics{{ forloop.counter }}" aria-expanded="false" aria-controls="scoreSpecifics{{ forloop.counter }}">
-                see more <i class="fa fa-caret-down"></i>
-            </a>
-        </td>
+      <a role="button" data-toggle="collapse" href="#scoreSpecifics{{ forloop.counter }}" aria-expanded="false" aria-controls="scoreSpecifics{{ forloop.counter }}">
+        see more <i class="fa fa-caret-down"></i>
+      </a>
+    </td>
 
-        <td> {{ score|delete_link }} </td>
-    <tr>
+    <td> {{ score|delete_link }} </td>
+  <tr>
     {% endfor %}
 
     {% if application.average_leader_score or application.average_croo_score %}
-    <tr class="info">
-        <td class="text-center"> {{ application.average_leader_score|floatformat:1 }} </td>
-        <td class="text-center"> {{ application.average_croo_score|floatformat:1 }} </td>
-        <td> AVERAGE </td> <td/> <td/>
-    </tr>
-    {% endif %}
+  <tr class="info">
+    <td class="text-center"> {{ application.average_leader_score|floatformat:1 }} </td>
+    <td class="text-center"> {{ application.average_croo_score|floatformat:1 }} </td>
+    <td> AVERAGE </td> <td/> <td/>
+  </tr>
+  {% endif %}
 </table>
 
 {# application body #}
@@ -135,60 +134,60 @@
 <h4> Application {{ application | edit_link }} </h4>
 <div role="tabpanel">
 
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
 
-        <li role="presentation" class="active">
-            <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
-                {{ application | checkmark_if_true }}
-                General Information
-            </a>
-        </li>
+    <li role="presentation" class="active">
+      <a href="#general" aria-controls="general" role="tab" data-toggle="tab">
+        {{ application | checkmark_if_true }}
+        General Information
+      </a>
+    </li>
 
-        <li role="presentation">
-            <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-                {{ application.leader_application_complete | checkmark_if_true }}
-                Trip Leader Application
-            </a>
-        </li>
+    <li role="presentation">
+      <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
+        {{ application.leader_application_complete | checkmark_if_true }}
+        Trip Leader Application
+      </a>
+    </li>
 
-        <li role="presentation">
-            <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-                {{ application.croo_application_complete | checkmark_if_true }}
-                Croo Application
-            </a>
-        </li>
+    <li role="presentation">
+      <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
+        {{ application.croo_application_complete | checkmark_if_true }}
+        Croo Application
+      </a>
+    </li>
 
-    </ul>
+  </ul>
 
-    <!-- Tab panes -->
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="general">
-            <br/>
-            {% detail application volunteer_fields %}
-            <div>
-                <h4> Application questions </h4>
-                {% display_answers application %}
-            </div>
-        </div>
-
-        <div role="tabpanel" class="tab-pane" id="leader">
-            <br/>
-            {% detail application.leader_supplement leaderapplication_fields %}
-            <div>
-                {% display_docx_filefield_as_html application.leader_supplement.deprecated_document %}
-            </div>
-        </div>
-
-        <div role="tabpanel" class="tab-pane" id="croo">
-            <br/>
-            {% detail application.croo_supplement crooapplication_fields %}
-            <div>
-                {% display_docx_filefield_as_html application.croo_supplement.deprecated_document %}
-            </div>
-        </div>
-
+  <!-- Tab panes -->
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="general">
+      <br/>
+      {% detail application volunteer_fields %}
+      <div>
+        <h4> Application questions </h4>
+        {% display_answers application %}
+      </div>
     </div>
+
+    <div role="tabpanel" class="tab-pane" id="leader">
+      <br/>
+      {% detail application.leader_supplement leaderapplication_fields %}
+      <div>
+        {% display_docx_filefield_as_html application.leader_supplement.deprecated_document %}
+      </div>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="croo">
+      <br/>
+      {% detail application.croo_supplement crooapplication_fields %}
+      <div>
+        {% display_docx_filefield_as_html application.croo_supplement.deprecated_document %}
+      </div>
+    </div>
+
+  </div>
 
 </div>
 
