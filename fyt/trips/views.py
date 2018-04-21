@@ -652,22 +652,21 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
     model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'trips/remove_leader_assignment.html'
+    fields = []
 
     def get_form(self, **kwargs):
-        # save old assignment so we can show it after deletion
-        self._trip_assignment = kwargs['instance'].trip_assignment
-        form = LeaderAssignmentForm(
-            self.trips_year, initial={'trip_assignment': None}, **kwargs
-        )
+        form = super().get_form(**kwargs)
         return crispify(form, 'Remove', 'btn-danger')
+
+    def form_valid(self, form):
+        # Save old assignment for message
+        self._trip_assignment = self.object.trip_assignment
+        self.object.trip_assignment = None
+        return super().form_valid(form)
 
     def get_form_valid_message(self):
         return 'Leader {} removed from Trip {}'.format(
-            self.object.applicant, self._trip_assignment
-        )
-
-    def get_success_url(self):
-        return self.object.detail_url()
+            self.object.applicant, self._trip_assignment)
 
 
 class TrippeeLeaderCounts(DatabaseTemplateView):

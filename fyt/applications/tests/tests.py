@@ -810,6 +810,20 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
             for url in urls:
                 self.app.get(url, user=user, status=status)
 
+    def test_remove_leader_assignment(self):
+        mommy.make(Timetable)
+        self.make_director()
+        application = self.make_application(
+            status=Volunteer.LEADER,
+            trip_assignment=mommy.make(Trip, trips_year=self.trips_year))
+
+        resp1 = self.app.get(application.detail_url(), user=self.director)
+        resp2 = resp1.click(description='remove')
+        resp3 = resp2.form.submit().follow()
+
+        application.refresh_from_db()
+        self.assertIsNone(application.trip_assignment)
+
 
 class PortalContentModelTestCase(ApplicationTestMixin, FytTestCase):
 
