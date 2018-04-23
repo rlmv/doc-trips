@@ -18,7 +18,7 @@ mammoth==1.4.5
 newrelic==3.2.0.91
 psycopg2==2.7.4 --no-binary psycopg2
 pyyaml==3.12
-raven==6.6.0
+raven==6.7.0
 requests==2.18.4
 whitenoise==3.3.1
 
