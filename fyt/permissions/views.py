@@ -1,6 +1,10 @@
 import logging
 
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin, MultiplePermissionsRequiredMixin
+from braces.views import (
+    LoginRequiredMixin,
+    MultiplePermissionsRequiredMixin,
+    PermissionRequiredMixin,
+)
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Column, Fieldset, Layout, Row, Submit
 from django import forms
@@ -13,6 +17,7 @@ from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.permissions.permissions import Group, groups
 from fyt.users.models import DartmouthUser
+
 
 logger = logging.getLogger(__name__)
 

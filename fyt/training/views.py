@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
-from vanilla import UpdateView, ListView
+from vanilla import ListView, UpdateView
 
 from fyt.applications.models import Volunteer
 from fyt.core.models import TripsYear

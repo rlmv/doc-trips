@@ -7,13 +7,22 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils.functional import cached_property
-from vanilla import CreateView, RedirectView, TemplateView, FormView
+from vanilla import CreateView, FormView, RedirectView, TemplateView
 
 from fyt.applications.forms import SKIP, ScoreForm, ScoreQuestionFormset
-from fyt.applications.models import Grader, Score, ScoreClaim, Volunteer, ScoreQuestion
+from fyt.applications.models import (
+    Grader,
+    Score,
+    ScoreClaim,
+    ScoreQuestion,
+    Volunteer,
+)
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
-from fyt.permissions.views import GraderPermissionRequired, SettingsPermissionRequired
+from fyt.permissions.views import (
+    GraderPermissionRequired,
+    SettingsPermissionRequired,
+)
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 

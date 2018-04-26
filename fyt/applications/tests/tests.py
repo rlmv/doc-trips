@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import LeaderSupplementForm, QuestionForm, ApplicationAdminForm
+from ..forms import ApplicationAdminForm, LeaderSupplementForm, QuestionForm
 from ..models import (
     Answer,
     ApplicationInformation,
@@ -14,8 +14,8 @@ from ..models import (
     LeaderSupplement,
     PortalContent,
     Question,
-    Volunteer,
     ScoreValue,
+    Volunteer,
     validate_class_year,
 )
 

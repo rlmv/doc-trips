@@ -12,7 +12,7 @@ from fyt.training.views import (
     SessionUpdate,
     Signup,
     UpdateRegistration,
-    VolunteerFirstAidUpdate
+    VolunteerFirstAidUpdate,
 )
 
 

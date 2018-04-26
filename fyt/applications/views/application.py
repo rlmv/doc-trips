@@ -2,7 +2,7 @@ from braces.views import (
     FormMessagesMixin,
     FormValidMessageMixin,
     GroupRequiredMixin,
-    SetHeadlineMixin
+    SetHeadlineMixin,
 )
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -28,7 +28,12 @@ from fyt.applications.forms import (
     LeaderSupplementForm,
     QuestionForm,
 )
-from fyt.applications.models import ApplicationInformation, Question, Volunteer, ScoreComment
+from fyt.applications.models import (
+    ApplicationInformation,
+    Question,
+    ScoreComment,
+    Volunteer,
+)
 from fyt.applications.tables import ApplicationTable
 from fyt.core.models import TripsYear
 from fyt.core.views import CrispyFormMixin, TripsYearMixin
@@ -40,7 +45,7 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.training.forms import FirstAidCertificationFormset
-from fyt.trips.models import TripType, Trip
+from fyt.trips.models import Trip, TripType
 from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin

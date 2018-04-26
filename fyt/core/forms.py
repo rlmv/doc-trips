@@ -1,5 +1,5 @@
-from django.forms.models import modelform_factory
 from django import forms
+from django.forms.models import modelform_factory
 
 from fyt.core.models import DatabaseModel
 

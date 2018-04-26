@@ -9,8 +9,8 @@ from fyt.applications.views.application import (
     ContinueApplication,
     EditQuestions,
     NewApplication,
+    RemoveCrooAssignment,
     SetupApplication,
-    RemoveCrooAssignment
 )
 from fyt.applications.views.graders import GraderList
 from fyt.applications.views.portal import (
@@ -18,12 +18,12 @@ from fyt.applications.views.portal import (
     VolunteerPortalView,
 )
 from fyt.applications.views.scoring import (
-    DeleteScore,
-    NoApplicationsLeftToScore,
     ClaimNextApplication,
+    DeleteScore,
+    EditScoreQuestions,
+    NoApplicationsLeftToScore,
     ScoreApplication,
     Scoring,
-    EditScoreQuestions
 )
 from fyt.core.urlhelpers import DB_REGEX
 

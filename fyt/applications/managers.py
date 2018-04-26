@@ -10,10 +10,10 @@ from django.db.models import (
     FilteredRelation,
     Lookup,
     OuterRef,
+    Prefetch,
     Sum,
     Value as V,
     When,
-    Prefetch
 )
 from django.db.models.fields import Field
 from django.db.models.functions import Coalesce

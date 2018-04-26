@@ -24,7 +24,7 @@ from vanilla import (
 )
 
 from . import forward
-from .forms import tripsyear_modelform_factory, TripsYearModelForm
+from .forms import TripsYearModelForm, tripsyear_modelform_factory
 from .models import TripsYear
 
 from fyt.permissions.views import (

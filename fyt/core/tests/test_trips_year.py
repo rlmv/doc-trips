@@ -2,8 +2,8 @@ from django.forms.models import model_to_dict
 from django.urls import reverse
 from model_mommy import mommy
 
-from fyt.core.views import TripsYearMixin
 from fyt.core.forms import TripsYearModelForm
+from fyt.core.views import TripsYearMixin
 from fyt.incoming.models import Registration
 from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, Section, TripTemplate, TripType

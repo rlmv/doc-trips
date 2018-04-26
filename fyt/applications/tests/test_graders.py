@@ -1,8 +1,9 @@
 from model_mommy import mommy
 
+from .tests import ApplicationTestMixin
+
 from fyt.applications.models import Grader, Score
 from fyt.test import FytTestCase
-from .tests import ApplicationTestMixin
 
 
 class GraderViewsTestCase(ApplicationTestMixin, FytTestCase):
