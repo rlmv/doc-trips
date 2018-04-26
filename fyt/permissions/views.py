@@ -1,13 +1,10 @@
 import logging
 
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Column, Fieldset, Layout, Row, Submit
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-)
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from vanilla import FormView
@@ -34,6 +31,7 @@ class BasePermissionMixin(LoginRequiredMixin):
     Since this includes the LoginRequired it should go first in the MRO.
     """
     raise_exception = True
+    redirect_unauthenticated_users = True
 
 
 class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):
