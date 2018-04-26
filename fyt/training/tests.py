@@ -364,23 +364,15 @@ class TrainingViewsTestCase(ApplicationTestMixin, FytTestCase):
             session.update_url(),
             session.delete_url(),
             Session.create_url(self.trips_year),
+            reverse('core:session:update_attendance', kwargs=session.obj_kwargs())
         ]
         for url in update_urls:
             self.app.get(url, user=self.tlt)
             self.app.get(url, user=self.director)
             self.app.get(url, user=self.safety_lead)
-            self.app.get(url, user=self.directorate, status=403)
+            self.app.get(url, user=self.directorate)
             self.app.get(url, user=self.user, status=403)
             self.app.get(url, user=self.croo_head, status=403)
-
-        # Directorate members can also update attendance
-        url = reverse('core:session:update_attendance', kwargs=session.obj_kwargs())
-        self.app.get(url, user=self.tlt)
-        self.app.get(url, user=self.director)
-        self.app.get(url, user=self.directorate)
-        self.app.get(url, user=self.safety_lead)
-        self.app.get(url, user=self.user, status=403)
-        self.app.get(url, user=self.croo_head, status=403)
 
     def test_external_view_permissions(self):
         results = {

@@ -138,7 +138,8 @@ groups = GroupRegistry({
 
     'directorate': [
         can_view_database,
-        can_score_applications],
+        can_score_applications,
+        can_edit_trainings],
 
     'safety leads': [
         can_report_incidents,

@@ -1,6 +1,6 @@
 import logging
 
-from braces.views import LoginRequiredMixin, PermissionRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin, MultiplePermissionsRequiredMixin
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Column, Fieldset, Layout, Row, Submit
 from django import forms
@@ -13,7 +13,6 @@ from fyt.dartdm import lookup
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
 from fyt.permissions.permissions import Group, groups
 from fyt.users.models import DartmouthUser
-
 
 logger = logging.getLogger(__name__)
 
@@ -34,17 +33,6 @@ class BasePermissionMixin(LoginRequiredMixin):
     redirect_unauthenticated_users = True
 
 
-class MultiplePermissionsRequiredMixin(PermissionRequiredMixin):
-    """Allow access if the user has *any* of the given permissions.
-
-    This differs from `PermissionRequiredMixin` which requires *all* given
-    permissions.
-    """
-    def has_permission(self):
-        perms = self.get_permission_required()
-        return any(self.request.user.has_perm(p) for p in perms)
-
-
 # TODO: can we set permission_required with an imported permission() call ?
 
 class DatabaseEditPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
@@ -62,18 +50,18 @@ class SettingsPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
 
 class ApplicationEditPermissionRequired(BasePermissionMixin,
                                         MultiplePermissionsRequiredMixin):
-    permission_required = (
-        'permissions.can_edit_db',
-        'permissions.can_edit_applications_and_assign_leaders'
-    )
+    permissions = {
+        'any': [
+            'permissions.can_edit_db',
+            'permissions.can_edit_applications_and_assign_leaders']}
 
 
 class TripInfoEditPermissionRequired(BasePermissionMixin,
                                      MultiplePermissionsRequiredMixin):
-    permission_required = (
-        'permissions.can_edit_db',
-        'permissions.can_edit_trip_info'
-    )
+    permissions = {
+        'any': [
+            'permissions.can_edit_db',
+            'permissions.can_edit_trip_info']}
 
 
 class GraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
@@ -84,11 +72,11 @@ class GraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
 class GraderTablePermissionRequired(BasePermissionMixin,
                                     MultiplePermissionsRequiredMixin):
     """Users with permission to see the graders table in the database."""
-    permission_required = (
-        'permissions.can_view_db',
-        'permissions.can_score_applications',
-        'permissions.can_score_as_croo_head'
-    )
+    permissions = {
+        'any': [
+            'permissions.can_view_db',
+            'permissions.can_score_applications',
+            'permissions.can_score_as_croo_head']}
 
 
 class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
@@ -103,10 +91,9 @@ class TrainingPermissionRequired(BasePermissionMixin,
     """
     For users to schedule trainings and update attendance.
     """
-    permission_required = (
-        'permissions.can_edit_trainings',
-        'permissions.can_edit_db'
-    )
+    permissions = {
+        'any': ['permissions.can_edit_trainings',
+                'permissions.can_edit_db']}
 
 
 class GroupForm(forms.ModelForm):

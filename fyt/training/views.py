@@ -95,11 +95,6 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
         return mark_safe(
             "Record Attendance <small>{}</small>".format(self.object))
 
-    def has_permission(self):
-        """Directorate members can also update training attendance."""
-        return super().has_permission() or (
-            groups.directorate in self.request.user.groups.all())
-
 
 class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):
     model = Session
