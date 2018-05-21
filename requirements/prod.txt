@@ -15,7 +15,7 @@ django-tables2==1.21.2
 django-vanilla-views==1.0.5
 gunicorn==19.8.1
 mammoth==1.4.6
-newrelic==3.2.0.91
+newrelic==3.2.1.93
 psycopg2==2.7.4 --no-binary psycopg2
 pyyaml==3.12
 raven==6.7.0
