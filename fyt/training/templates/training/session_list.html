@@ -11,6 +11,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="alert alert-info">
+  Volunteers can sign up for training sessions using
+  <a href="{% url 'training:signup' %}" class="alert-link"> this page.</a>
+</div>
+
 <table class="table table-condensed">
     <tr>
         <th> Type </th>
