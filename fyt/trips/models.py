@@ -226,12 +226,12 @@ class Section(DatabaseModel):
     )
     leaders_arrive = models.DateField()
 
-    is_local = models.BooleanField(default=False)
-    is_exchange = models.BooleanField(default=False)
-    is_transfer = models.BooleanField(default=False)
-    is_international = models.BooleanField(default=False)
-    is_fysep = models.BooleanField(default=False)
-    is_native = models.BooleanField(default=False)
+    is_local = models.BooleanField('Local', default=False)
+    is_exchange = models.BooleanField('Exchange', default=False)
+    is_transfer = models.BooleanField('Transfer', default=False)
+    is_international = models.BooleanField('International', default=False)
+    is_fysep = models.BooleanField('FYSEP', default=False)
+    is_native = models.BooleanField('Native', default=False)
 
     sophomore_leaders_ok = models.BooleanField(
         'Sophomores taking classes this summer can lead trips during this '
