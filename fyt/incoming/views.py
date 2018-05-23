@@ -19,7 +19,7 @@ from vanilla import CreateView, FormView, TemplateView, UpdateView
 from .filters import RegistrationFilterSet
 from .forms import (
     AssignmentForm,
-    CSVFileForm,
+    PyExcelFileForm,
     RegistrationForm,
     TrippeeInfoForm,
 )
@@ -478,17 +478,13 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     .. todo:: parse or input the status of the incoming student
     .. todo:: simplify and document the column names
     """
-    form_class = CSVFileForm
+    form_class = PyExcelFileForm
     template_name = 'incoming/upload_incoming_students.html'
 
     def form_valid(self, form):
-
-        file = io.TextIOWrapper(
-            form.files['csv_file'].file, encoding='utf-8', errors='replace'
-        )
         try:
-            (ctd, skipped) = IncomingStudent.objects.create_from_csv_file(
-                file, self.trips_year)
+            (ctd, skipped) = IncomingStudent.objects.create_from_sheet(
+                form.load_sheet(), self.trips_year)
 
             if ctd:
                 msg = 'Created incoming students with NetIds %s'
@@ -516,16 +512,12 @@ class UploadHinmanBoxes(DatabaseEditPermissionRequired,
     Upload a CSV file of netids and hinman box numbers.
     Update the cooresponding IncomingStudent's HB #s.
     """
-    form_class = CSVFileForm
+    form_class = PyExcelFileForm
     template_name = 'incoming/upload_hinman_boxes.html'
 
     def form_valid(self, form):
-        file = io.TextIOWrapper(
-            form.files['csv_file'].file, encoding='utf-8', errors='replace'
-        )
         updated, not_found = IncomingStudent.objects.update_hinman_boxes(
-            file, self.trips_year
-        )
+            form.load_sheet(), self.trips_year)
 
         msg = "Not found: %s" % ", ".join(not_found)
         messages.error(self.request, msg)

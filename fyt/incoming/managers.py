@@ -44,9 +44,9 @@ class IncomingStudentManager(models.Manager):
                 registration__registrationtriptypechoice__preference__in=(
                     [FIRST_CHOICE, PREFER, AVAILABLE])))
 
-    def create_from_csv_file(self, file, trips_year):
+    def create_from_sheet(self, sheet, trips_year):
         """
-        Import incoming students from a CSV file.
+        Import incoming students from a pyexcel sheet.
 
         If a student already exists in the database for this year,
         ignore. We compare entries via netid.
@@ -56,10 +56,8 @@ class IncomingStudentManager(models.Manager):
 
         TODO: parse/input incoming_status. How should this work?
         """
-
-        trips_year = TripsYear.objects.get(pk=trips_year)
-
-        reader = csv.DictReader(file)
+        sheet.name_columns_by_row(0)
+        rows = sheet.to_records()
 
         def parse_to_object(row):
             """ Parse a CSV row and return an incoming student object """
@@ -84,7 +82,7 @@ class IncomingStudentManager(models.Manager):
                 )
             )
 
-        incoming = list(filter(None, (parse_to_object(row) for row in reader)))
+        incoming = list(filter(None, (parse_to_object(row) for row in rows)))
         incoming_netids = get_netids(incoming)
 
         existing = self.model.objects.filter(trips_year=trips_year)
@@ -99,21 +97,22 @@ class IncomingStudentManager(models.Manager):
         ignored_netids = existing_netids & incoming_netids
         return (list(netids_to_create), list(ignored_netids))
 
-    def update_hinman_boxes(self, file, trips_year):
+    def update_hinman_boxes(self, sheet, trips_year):
         """
-        Import hinman boxes from a csv file.
+        Import hinman boxes from a pyexcel sheet.
 
-        Given CSV file with a ``netid`` and ``hinman box`` column,
+        Given a spreadsheet file with a ``netid`` and ``hinman box`` column,
         update each IncomingStudent specified by netid with the
         given hinman box number.
         """
         NETID = 'netid'
         HINMAN_BOX = 'hinman box'
 
-        reader = csv.DictReader(file)
+        sheet.name_columns_by_row(0)
+
         updated = []
         not_found = []
-        for row in reader:
+        for row in sheet.to_records():
             try:
                 inc = self.get(netid=row[NETID], trips_year=trips_year)
             except self.model.DoesNotExist:

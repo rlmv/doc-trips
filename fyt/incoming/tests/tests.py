@@ -1,12 +1,14 @@
 import os
 from datetime import date, timedelta
 
+import pyexcel
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db import IntegrityError
 from django.urls import reverse
 from model_mommy import mommy
 
-from fyt.incoming.forms import RegistrationForm
+from fyt.incoming.forms import PyExcelFileForm, RegistrationForm
 from fyt.incoming.models import (
     AVAILABLE,
     FIRST_CHOICE,
@@ -63,8 +65,8 @@ class IncomingStudentModelTestCase(FytTestCase):
         self.assertEqual(incoming.registration, reg)
 
     def test_get_hometown_parsing(self):
-        with open(self.FILE) as f:
-            IncomingStudent.objects.create_from_csv_file(f, self.trips_year.pk)
+        IncomingStudent.objects.create_from_sheet(
+            pyexcel.get_sheet(file_name=self.FILE), self.trips_year)
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
 
@@ -476,19 +478,19 @@ class RegistrationModelTestCase(FytTestCase):
 
 class ImportIncomingStudentsTestCase(FytTestCase):
 
-    FILE = resolve_path('incoming_students.csv')
-    FILE_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
+    FILE_CSV = resolve_path('incoming_students.csv')
+    FILE_CSV_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
+    FILE_XLS = resolve_path('incoming_students.xls')
 
     def setUp(self):
         self.init_trips_year()
 
-    def create_from_filename(self, filename):
-        with open(filename) as f:
-            return IncomingStudent.objects.create_from_csv_file(
-                f, self.trips_year.pk)
+    def create_from_filename(self, file_name):
+        return IncomingStudent.objects.create_from_sheet(
+            pyexcel.get_sheet(file_name=file_name), self.trips_year)
 
     def test_create_from_csv(self):
-        (created, existing) = self.create_from_filename(self.FILE)
+        (created, existing) = self.create_from_filename(self.FILE_CSV)
         self.assertEqual(set(['id_1', 'id_2']), set(created))
         self.assertEqual(existing, [])
         # are student objects created?
@@ -496,22 +498,29 @@ class ImportIncomingStudentsTestCase(FytTestCase):
         IncomingStudent.objects.get(netid='id_2')
 
     def test_ignore_existing_students(self):
-        (created, existing) = self.create_from_filename(self.FILE)
-        (created, existing) = self.create_from_filename(self.FILE)
+        (created, existing) = self.create_from_filename(self.FILE_CSV)
+        (created, existing) = self.create_from_filename(self.FILE_CSV)
         self.assertEqual(set(['id_1', 'id_2']), set(existing))
         self.assertEqual(created, [])
 
     def test_ignore_rows_without_id(self):
-        (created, existing) = self.create_from_filename(self.FILE_WITH_BLANKS)
+        (created, existing) = self.create_from_filename(self.FILE_CSV_WITH_BLANKS)
         self.assertEqual(set(['id_1']), set(created))
         self.assertEqual(existing, [])
         # are student objects created?
         IncomingStudent.objects.get(netid='id_1')
 
+    def test_upload_form(self):
+        with open(self.FILE_XLS, 'rb') as f:
+            uploaded_file = SimpleUploadedFile('incoming_students.xls', f.read())
+        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        sheet = form.load_sheet()
+        self.assertEqual(len(list(sheet.rows())), 3)
+
 
 class ImportIncomingStudentHinmanBoxes(FytTestCase):
 
-    FILE = resolve_path('hinman_boxes.csv')
+    FILE_CSV = resolve_path('hinman_boxes.csv')
 
     def setUp(self):
         self.init_trips_year()
@@ -523,8 +532,8 @@ class ImportIncomingStudentHinmanBoxes(FytTestCase):
             netid='d34898x',
             hinman_box=''
         )
-        with open(self.FILE) as f:
-            imported, not_found = IncomingStudent.objects.update_hinman_boxes(f, self.trips_year)
+        sheet = pyexcel.get_sheet(file_name=self.FILE_CSV)
+        imported, not_found = IncomingStudent.objects.update_hinman_boxes(sheet, self.trips_year)
 
         incoming.refresh_from_db()
         self.assertEqual(incoming.hinman_box, 'Hinman Box 2884')

@@ -1,3 +1,6 @@
+import os
+
+import pyexcel
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
@@ -253,14 +256,23 @@ class TrippeeInfoForm(TripsYearModelForm):
     )
 
 
-class CSVFileForm(forms.Form):
+class PyExcelFileForm(forms.Form):
     """
     Form to upload a CSV file.
     """
-    csv_file = forms.FileField(label='CSV file')
+    spreadsheet = forms.FileField(
+        help_text="Uploaded file may be in Excel or CSV format")
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
+
+    def load_sheet(self):
+        """
+        Return a pyexcel sheet read from the uploaded file.
+        """
+        file_ = self.files['spreadsheet']
+        extension = os.path.splitext(file_.name)[1].strip('.')
+        return pyexcel.get_sheet(file_type=extension, file_stream=file_)

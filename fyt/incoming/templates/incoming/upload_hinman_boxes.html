@@ -6,13 +6,11 @@
 {% endblock %}
 
 {% block content %}
-<p> You must upload data in Comma Separated Values (CSV) format. In Excel, go to <strong> File -> Save As -> Format -> Comma Separated Values (.csv) </strong> </p>
-
 <form enctype="multipart/form-data" method="post" action="">
 {% crispy form %}
 </form>
 <br>
-<p> The database expects to find the following columns in the CSV file:
+<p> The database expects to find the following columns in the spreadsheet:
   <ul>
     <li> netid </li>
     <li> hinman box </li>
