@@ -24,7 +24,7 @@ from vanilla import (
 )
 
 from . import forward
-from .forms import TripsYearModelForm, tripsyear_modelform_factory
+from .forms import tripsyear_modelform_factory
 from .models import TripsYear
 
 from fyt.permissions.views import (
@@ -113,11 +113,8 @@ class TripsYearMixin():
         """
         Return a form instance, passing trips_year as a keyword argument.
         """
-        cls = self.get_form_class()
-
-        # Pass trips_year to the form, if it expects it
-        return cls(trips_year=self.trips_year, data=data, files=files,
-                   **kwargs)
+        return super().get_form(trips_year=self.trips_year, data=data,
+                                files=files, **kwargs)
 
     def form_valid(self, form):
         """

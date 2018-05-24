@@ -3,7 +3,7 @@ from django.urls import reverse
 from model_mommy import mommy
 
 from fyt.core.forms import TripsYearModelForm
-from fyt.core.views import TripsYearMixin
+from fyt.core.views import DatabaseUpdateView, TripsYearMixin
 from fyt.incoming.models import Registration
 from fyt.test import FytTestCase
 from fyt.trips.models import Campsite, Section, TripTemplate, TripType
@@ -161,3 +161,15 @@ class DetailViewTestCase(FytTestCase):
         resp = self.app.get(section.detail_url(), user=self.make_director())
         self.assertEqual(resp.context['update_url'], section.update_url())
         self.assertEqual(resp.context['delete_url'], section.delete_url())
+
+
+class UpdateViewTestCase(FytTestCase):
+
+    def test_form_has_crispy_helper(self):
+        trips_year = self.init_trips_year()
+        view = DatabaseUpdateView()
+        view.model = TripTemplate
+        view.object = mommy.make(TripTemplate, trips_year=trips_year)
+        view.kwargs = {'trips_year': trips_year.pk}
+        form = view.get_form()
+        self.assertIsNotNone(form.helper)

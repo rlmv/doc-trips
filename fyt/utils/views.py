@@ -1,4 +1,3 @@
-
 from crispy_forms.helper import FormHelper
 from django.core.exceptions import ImproperlyConfigured
 
@@ -35,17 +34,19 @@ class CrispyFormMixin():
         Catches a tricky bug wherein some required fields specified on the form
         are accidentally left out of an explicit layout, causing POSTS to fail.
         """
-
-        if hasattr(form.helper, 'layout'):
+        if hasattr(form.helper, 'layout') and form.helper.layout is not None:
             # all fields in the layout
-            layout_fields = set(map(lambda f: f[1], form.helper.layout.get_field_names()))
+            layout_fields = set(map(lambda f: f[1],
+                                    form.helper.layout.get_field_names()))
             # and in the form
             form_fields = set(form.fields.keys())
 
-            if form_fields - layout_fields:
+            missing = form_fields - layout_fields
+
+            if missing:
                 msg = ('whoa there, make sure you include ALL fields specified by '
                        '%s in the Crispy Form layout. %r are missing')
-                raise ImproperlyConfigured(msg % (self.__class__.__name__, form_fields-layout_fields))
+                raise ImproperlyConfigured(msg % (self.__class__.__name__, missing))
 
 
 class PopulateMixin():
