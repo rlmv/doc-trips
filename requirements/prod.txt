@@ -20,7 +20,7 @@ psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.8
 pyexcel-xls==0.5.7
 pyyaml==3.12
-raven==6.8.0
+raven==6.9.0
 requests==2.18.4
 whitenoise==3.3.1
 
