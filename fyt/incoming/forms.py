@@ -4,6 +4,7 @@ import pyexcel
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
+from django.db import transaction
 
 from .layouts import RegistrationFormLayout
 from .models import (
@@ -141,10 +142,10 @@ class RegistrationForm(TripsYearModelForm):
         return helper
 
     def save(self):
-        registration = super().save()
-
-        self.section_handler.save()
-        self.triptype_handler.save()
+        with transaction.atomic():
+            registration = super().save()
+            self.section_handler.save()
+            self.triptype_handler.save()
 
         return registration
 

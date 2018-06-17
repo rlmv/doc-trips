@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import MultipleObjectsReturned
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -272,23 +273,24 @@ class NonStudentRegistration(DatabaseCreateView):
         "and filled in with information from the registration. </p>")
 
     def form_valid(self, form):
-        user = DartmouthUser.objects.create_user_without_netid(
-            form.cleaned_data['name'], form.cleaned_data['email']
-        )
-        form.instance.trips_year = self.trips_year
-        form.instance.user = user
-        self.object = form.save()
+        with transaction.atomic():
+            user = DartmouthUser.objects.create_user_without_netid(
+                form.cleaned_data['name'], form.cleaned_data['email']
+            )
+            form.instance.trips_year = self.trips_year
+            form.instance.user = user
+            self.object = form.save()
 
-        IncomingStudent.objects.create(
-            trips_year=self.trips_year,
-            name=self.object.name,
-            netid=user.netid,
-            email=self.object.email,
-            blitz=self.object.email,
-            phone=self.object.phone,
-            gender=self.object.gender,
-            registration=self.object
-        )
+            IncomingStudent.objects.create(
+                trips_year=self.trips_year,
+                name=self.object.name,
+                netid=user.netid,
+                email=self.object.email,
+                blitz=self.object.email,
+                phone=self.object.phone,
+                gender=self.object.gender,
+                registration=self.object
+            )
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
