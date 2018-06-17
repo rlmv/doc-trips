@@ -136,10 +136,7 @@ class Register(BaseRegistrationView, CreateView):
         The registration will be automagically matched with a
         corresponding IncomingStudent model if it exists.
         """
-        form.instance.trips_year = self.trips_year
-        form.instance.user = self.request.user
-
-        self.object = form.save()
+        self.object = form.save(self.request.user)
         self.object.match()
 
         return HttpResponseRedirect(self.get_success_url())
@@ -277,9 +274,7 @@ class NonStudentRegistration(DatabaseCreateView):
             user = DartmouthUser.objects.create_user_without_netid(
                 form.cleaned_data['name'], form.cleaned_data['email']
             )
-            form.instance.trips_year = self.trips_year
-            form.instance.user = user
-            self.object = form.save()
+            self.object = form.save(user=user)
 
             IncomingStudent.objects.create(
                 trips_year=self.trips_year,

@@ -71,7 +71,6 @@ class RegistrationForm(TripsYearModelForm):
     """
     Form for Trippee registration
     """
-
     class Meta:
         model = Registration
         exclude = [
@@ -141,7 +140,11 @@ class RegistrationForm(TripsYearModelForm):
 
         return helper
 
-    def save(self):
+    def save(self, user=None):
+        if self.instance.pk is None:
+            self.instance.user = user
+            self.instance.trips_year = self.trips_year
+
         with transaction.atomic():
             registration = super().save()
             self.section_handler.save()
