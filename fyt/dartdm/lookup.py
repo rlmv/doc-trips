@@ -4,7 +4,7 @@ from json import JSONDecodeError
 import requests
 
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 # URL constants. These endpoints have changed in the past,
 # so check the source of https://lookup.dartmouth.edu/ if
@@ -46,7 +46,7 @@ def dartdm_lookup(query_string):
     r = requests.get(DARTDM_URL, params={'q': query_string})
 
     if 'error' in r.json():
-        logger.info(r.json())
+        log.info(r.json())
         return []
 
     return [{
@@ -68,20 +68,19 @@ def lookup_email(netid):
     try:
         r = requests.get(DNDPROFILES_URL, params=params)
     except requests.RequestException as e:
-        logger.error(e)
+        log.error(e)
         raise EmailLookupException from e
 
     try:
         r_json = r.json()
-    except JSONDecodeError:
-        msg = 'Email lookup failed: invalid JSON'
-        logger.info(msg)
-        raise EmailLookupException(msg)
+    except JSONDecodeError as e:
+        log.error(e)
+        raise EmailLookupException from e
 
     # Not found
     if not r_json:
         msg = 'Email lookup failed: NetId %s not found' % netid
-        logger.info(msg)
+        log.error(msg)
         raise EmailLookupException(msg)
 
     assert r_json['netid'] == netid
