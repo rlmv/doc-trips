@@ -6,11 +6,11 @@ import requests
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.dartdm.lookup import EmailLookupException, dartdm_lookup, lookup_email
+from fyt.dartdm.lookup import EmailLookupException, lookup_dartdm, lookup_email
 from fyt.test import FytTestCase, vcr
 
 
-class DartmouthDirectoryLookupFieldTestCase(FytTestCase):
+class DartdmLookupFieldTestCase(FytTestCase):
 
     @vcr.use_cassette
     def test_compress(self):
@@ -47,11 +47,11 @@ class DartdmLookupTestCase(unittest.TestCase):
         logging.disable(logging.NOTSET)
 
     def test_too_short_query(self):
-        self.assertEqual([], dartdm_lookup('A'))
+        self.assertEqual([], lookup_dartdm('A'))
 
     @vcr.use_cassette
     def test_query_with_comma(self):
-        self.assertEqual([], dartdm_lookup('a,'))
+        self.assertEqual([], lookup_dartdm('a,'))
 
 
 class EmailLookupTestCase(unittest.TestCase):

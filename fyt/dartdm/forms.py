@@ -74,7 +74,7 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
             # User did not wait for the typeahead autocomplete,
             # or changed the autocompleted name after the lookup.
             # Try and lookup the given name.
-            results = lookup.dartdm_lookup(data_list[0])
+            results = lookup.lookup_dartdm(data_list[0])
             if len(results) == 0:
                 raise ValidationError('User not found')
             elif len(results) == 1:

@@ -33,7 +33,7 @@ class DartDmLookupException(Exception):
     pass
 
 
-def dartdm_lookup(query_string):
+def lookup_dartdm(query_string):
     """
     Search in the Dartmouth Directory Manager for a user.
 
