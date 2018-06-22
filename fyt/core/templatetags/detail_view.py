@@ -46,8 +46,9 @@ def detail(db_object, fields=None):
             # Handle related managers
             if isinstance(value, models.Manager):
                 value = value.all()
-            else:
+            elif callable(value):
                 value = value()
+            # Else, use the raw value
 
             # Link to object, if possible
             # (Added for Registration section & triptype M2M fields)

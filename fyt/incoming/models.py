@@ -670,6 +670,10 @@ class Registration(MedicalMixin, DatabaseModel):
             return None
 
     @property
+    def netid(self):
+        return self.user.netid
+
+    @property
     def is_non_swimmer(self):
         return self.swimming_ability == self.NON_SWIMMER
 

@@ -294,10 +294,11 @@ class NonStudentRegistration(DatabaseCreateView):
 
 class RegistrationDetail(DatabaseDetailView):
     model = Registration
-    template_name = 'incoming/registration_detail.html'
 
     fields = [
+        ('Incoming Student data', 'get_incoming_student'),
         'name',
+        ('NetId', 'netid'),
         'gender',
         'previous_school',
         'phone',
