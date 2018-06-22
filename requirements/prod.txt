@@ -15,7 +15,6 @@ django-tables2==1.21.2
 django-vanilla-views==1.0.5
 gunicorn==19.8.1
 mammoth==1.4.6
-newrelic==3.2.2.94
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.8
 pyexcel-xls==0.5.7

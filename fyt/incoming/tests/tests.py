@@ -757,6 +757,23 @@ class RegistrationViewsTestCase(FytTestCase):
 
 class RegistrationFormTestCase(FytTestCase):
 
+    REGISTRATION_DATA = {
+        'name': 'test',
+        'gender': 'hi',
+        'previous_school': 'nah',
+        'phone': '134',
+        'email': 'asf@gmail.com',
+        'tshirt_size': 'L',
+        'regular_exercise': False,
+        'swimming_ability': 'BEGINNER',
+        'camping_experience': False,
+        'hiking_experience': True,
+        'financial_assistance': True,
+        'waiver': True,
+        'doc_membership': False,
+        'green_fund_donation': 0,
+    }
+
     def setUp(self):
         self.init_trips_year()
         mommy.make(Settings, trips_year=self.trips_year)  # must exist
@@ -765,30 +782,26 @@ class RegistrationFormTestCase(FytTestCase):
         form = RegistrationForm(trips_year=self.trips_year)
         self.assertEqual(form.trips_year, self.trips_year)
 
+    def test_save_adds_year_and_user(self):
+        form = RegistrationForm(trips_year=self.trips_year,
+                                data=self.REGISTRATION_DATA)
+        user = self.make_user()
+        instance = form.save(user=user)
+        self.assertEqual(instance.trips_year, self.trips_year)
+        self.assertEqual(instance.user, user)
+
     def test_section_and_triptype_preferences(self):
         reg = mommy.make(Registration, trips_year=self.trips_year)
         triptype = mommy.make(TripType, pk=1, trips_year=self.trips_year)
         section = mommy.make(Section, pk=1, trips_year=self.trips_year,
                              leaders_arrive=date(2015, 1, 1), name='A')
-
-        form = RegistrationForm(trips_year=self.trips_year, instance=reg, data={
-            'name': 'test',
-            'gender': 'hi',
-            'previous_school': 'nah',
-            'phone': '134',
-            'email': 'asf@gmail.com',
-            'tshirt_size': 'L',
-            'regular_exercise': False,
-            'swimming_ability': 'BEGINNER',
-            'camping_experience': False,
-            'hiking_experience': True,
-            'financial_assistance': True,
-            'waiver': True,
-            'doc_membership': False,
-            'green_fund_donation': 0,
+        data = {
             'triptype_1': 'FIRST CHOICE',
             'section_1': 'PREFER'
-        })
+        }
+        data.update(self.REGISTRATION_DATA)
+        form = RegistrationForm(trips_year=self.trips_year, instance=reg,
+                                data=data)
         reg = form.save()
 
         self.assertEqual(form.fields['section_1'].label,
