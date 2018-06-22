@@ -57,12 +57,17 @@
 {% if unmatched %}
 <div class="alert alert-danger alert-dismissible">
  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"><i class="fa fa-times"></i></span></button>
-  <h4> <i class="fa fa-warning"></i> The following registrations are not matched to Incoming Student data: </h4>
+ <h4> <i class="fa fa-warning"></i> The following registrations are missing incoming student data: </h4>
+ <p>
   <ul>
     {% for reg in unmatched %}
     <li> {{ reg|detail_link }} </li>
     {% endfor %}
   </ul>
+ </p>
+ <p>
+   <a class="alert-link" href="{% url 'core:incomingstudent:upload' trips_year=trips_year %}">Upload</a> incoming student data for these registrations in order to assign them to a trip.
+ </p>
 </div>
 {% endif %}
 
