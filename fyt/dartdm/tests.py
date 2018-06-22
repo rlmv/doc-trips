@@ -2,10 +2,11 @@ import logging
 import os
 import unittest
 
+import requests
 from django.core.exceptions import ValidationError
 
 from fyt.dartdm.forms import DartmouthDirectoryLookupField
-from fyt.dartdm.lookup import dartdm_lookup
+from fyt.dartdm.lookup import EmailLookupException, dartdm_lookup, lookup_email
 from fyt.test import FytTestCase, vcr
 
 
@@ -51,3 +52,17 @@ class DartdmLookupTestCase(unittest.TestCase):
     @vcr.use_cassette
     def test_query_with_comma(self):
         self.assertEqual([], dartdm_lookup('a,'))
+
+
+class EmailLookupTestCase(unittest.TestCase):
+
+    def setUp(self):
+        logging.disable(logging.CRITICAL)
+
+    def tearDown(self):
+        logging.disable(logging.NOTSET)
+
+    @unittest.mock.patch('requests.get', side_effect=requests.ConnectionError)
+    def test_connection_error(self, patched_get):
+        with self.assertRaises(EmailLookupException):
+            lookup_email('d348dgx')

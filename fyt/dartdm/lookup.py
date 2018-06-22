@@ -64,7 +64,12 @@ def lookup_email(netid):
     Lookup the email address of a user, given their NetId.
     """
     params = {'lookup': netid, 'fields': ['email', 'netid']}
-    r = requests.get(DNDPROFILES_URL, params=params)
+
+    try:
+        r = requests.get(DNDPROFILES_URL, params=params)
+    except requests.RequestException as e:
+        logger.error(e)
+        raise EmailLookupException from e
 
     try:
         r_json = r.json()
