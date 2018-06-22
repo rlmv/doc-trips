@@ -2,14 +2,14 @@
 {% load crispy_forms_tags %}
 
 {% block header %}
-<h3>Upload Incoming Student Data </h3>
+<h2>Upload Incoming Student Data </h2>
 {% endblock %}
 
 {% block content %}
-<form enctype="multipart/form-data" method="post" action="">
-{% crispy form %}
-</form>
-<br>
+<p>
+  You may upload multiple spreadsheets of incoming students. Existing data will not be overwritten by subsequent uploads.
+</p>
+
 <p> The database expects to find the following columns in the spreadsheet:
   <ul>
     <li> Id <i> (this is the students NetId) </i> </li>
@@ -31,6 +31,8 @@
 Yes, 'Pr Nation Name' has a lowercase 'r' for whatever reason. These column names were pulled from last year's incoming student data. Let me know if the headers have changed dramatically and I can tweak the expectations of the input. The order of the columns in spreadsheet does not matter. Any extra columns will be ignored.
 </p>
 
-<p> If an incoming student already exists in the database for this trips year (determined by comparing NetIds) the database skips importing that information. </p>
+<form enctype="multipart/form-data" method="post" action="">
+{% crispy form %}
+</form>
 
 {% endblock content %}
