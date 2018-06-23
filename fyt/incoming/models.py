@@ -310,6 +310,19 @@ class IncomingStudent(DatabaseModel):
             raise ValidationError(
                 "Cannot have round-trip AND one-way bus assignments")
 
+    def save(self, **kwargs):
+        """
+        If the incoming student has somehow already submitted a
+        registration, attach the registration to the new object.
+        """
+        if self.pk is None:  # new instance
+            try:
+                self.registration = Registration.objects.get(
+                    trips_year=self.trips_year, user__netid=self.netid)
+            except Registration.DoesNotExist:
+                pass
+        super().save(**kwargs)
+
     def __str__(self):
         return self.name
 
@@ -753,6 +766,19 @@ class Registration(MedicalMixin, DatabaseModel):
         except IncomingStudent.DoesNotExist:
             pass
 
+    def save(self, **kwargs):
+        """
+        When an incoming student submits a registration, try and
+        find the student's college-provided information and attach
+        to the registration.
+
+        If the info cannot be found, the registration is left to sit.
+        """
+        created = self.pk is None
+        super().save(**kwargs)
+        if created:
+            self.match()
+
 
 class Settings(DatabaseModel):
     """
@@ -764,33 +790,3 @@ class Settings(DatabaseModel):
 
     class Meta:
         unique_together = ['trips_year']
-
-
-@receiver(post_save, sender=Registration)
-def connect_registration_to_trippee(instance=None, **kwargs):
-    """
-    When an incoming student submits a registration, try and
-    find the student's college-provided information and attach
-    to the registration.
-
-    If the info cannot be found, the registration is left to sit.
-    """
-    if kwargs.get('created', False):
-        instance.match()
-
-
-@receiver(post_save, sender=IncomingStudent)
-def create_trippee_for_college_info(instance=None, **kwargs):
-    """
-    If the incoming student has somehow already submitted a
-    registration, attach the registration to the new object.
-    """
-    if kwargs.get('created', False):
-        try:
-            instance.registration = Registration.objects.get(
-                trips_year=instance.trips_year,
-                user__netid=instance.netid
-            )
-            instance.save()
-        except Registration.DoesNotExist:
-            pass
