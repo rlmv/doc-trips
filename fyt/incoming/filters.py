@@ -16,6 +16,7 @@ NATIVE = 'is_native'
 FYSEP = 'is_fysep'
 BUS = 'bus'
 ATHLETE = 'is_athlete'
+FINANCIAL_ASSISTANCE = 'financial_assistance'
 ANY = 'ANY'
 NO = 'NO'
 
@@ -110,6 +111,9 @@ class RegistrationFilterSet(django_filters.FilterSet):
 
         self.filters[ATHLETE] = AthleteFilter(ATHLETE, label='Athletes')
 
+        self.filters[FINANCIAL_ASSISTANCE] = SelectBooleanFilter(
+            FINANCIAL_ASSISTANCE, label='Requesting Financial Aid')
+
         self.form.helper = FilterSetFormHelper(self.form)
 
 
@@ -128,6 +132,7 @@ class FilterSetFormHelper(FormHelper):
             filter_row(INTERNATIONAL),
             filter_row(NATIVE),
             filter_row(FYSEP),
+            filter_row(FINANCIAL_ASSISTANCE),
             filter_row(ATHLETE),
             filter_row(BUS),
             filter_row(Submit('submit', 'Filter', css_class='btn-block'))
