@@ -9,50 +9,10 @@
 {% endblock %}
 
 {% block right_column %}
-
 {% crispy filter.form %}
-
-<br><br><br><br><br>
-<ul class="list-group">
-
-  <a class="list-group-item" href="{% url 'core:reports:registrations' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> All Registrations
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:financial_aid' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Financial Aid Requests
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:bus_stops' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> External Bus Requests
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:doc_members' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> DOC Members
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:dietary' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Dietary Info
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:medical' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Medical Info
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:reports:feelings' trips_year=trips_year %}">
-    <i class="fa fa-download"></i> Feelings
-  </a>
-
-  <a class="list-group-item" href="{% url 'core:registration:nonstudent' trips_year=trips_year %}">
-    <i class="fa fa-plus"></i> Non-Student Registration
-  </a>
-<ul>
-
 {% endblock right_column %}
 
 {% block content %}
-
-<br>
 
 {% if unmatched %}
 <div class="alert alert-danger alert-dismissible">
@@ -70,6 +30,34 @@
  </p>
 </div>
 {% endif %}
+
+<div>
+  {% url 'core:registration:nonstudent' trips_year=trips_year as url_ %}
+  {{ url_|upload_button:"Non-Student Registration" }}
+
+  {% url 'core:reports:registrations' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"All Registrations" }}
+
+  {% url 'core:reports:financial_aid' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Financial Aid Requests" }}
+
+  {% url 'core:reports:bus_stops' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"External Bus Requests" }}
+
+  {% url 'core:reports:doc_members' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"DOC Members" }}
+
+  {% url 'core:reports:dietary' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Dietary Info" }}
+
+  {% url 'core:reports:medical' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Medical Info" }}
+
+  {% url 'core:reports:feelings' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Feelings" }}
+</div>
+
+<br/>
 
 {% render_table table %}
 
