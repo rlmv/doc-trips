@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'fyt.croos',
     'fyt.dartdm',
     'fyt.emails',
+    'fyt.gear',
     'fyt.incoming',
     'fyt.permissions',
     'fyt.raids',
