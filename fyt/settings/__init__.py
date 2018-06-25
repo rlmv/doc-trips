@@ -3,10 +3,8 @@ Django settings for the DOC Trips project.
 """
 
 import os
-import sys  # isort:skip
 
 import dj_database_url
-from django import urls  # isort:skip
 
 from .loader import EnvLoader
 
