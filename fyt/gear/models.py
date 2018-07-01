@@ -18,6 +18,11 @@ class GearRequest(DatabaseModel):
     """
     A gear request is either attached to an IncomingStudent, or to a Volunteer.
     """
+    class Meta:
+        unique_together = [
+            ('trips_year', 'incoming_student'),
+            ('trips_year', 'volunteer')]
+
     gear = models.ManyToManyField(Gear, blank=True)
     additional = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
