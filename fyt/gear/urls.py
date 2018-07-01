@@ -8,3 +8,7 @@ gear_urlpatterns = [
     path('create/', GearCreate.as_view(), name='create'),
     path('<int:pk>/update/', GearUpdate.as_view(), name='update'),
 ]
+
+urlpatterns = [
+    path('request/', RequestGear.as_view(), name='request'),
+]

@@ -15,7 +15,10 @@ class Gear(DatabaseModel):
 
 
 class GearRequest(DatabaseModel):
-    gear = models.ManyToManyField(Gear)
+    """
+    A gear request is either attached to an IncomingStudent, or to a Volunteer.
+    """
+    gear = models.ManyToManyField(Gear, blank=True)
     additional = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -36,10 +39,27 @@ class GearRequest(DatabaseModel):
     def requester(self):
         return self.incoming_student or self.volunteer
 
+    @requester.setter
+    def requester(self, user):
+        try:
+            self.incoming_student = IncomingStudent.objects.get(
+                trips_year=self.trips_year, netid=user.netid)
+        except IncomingStudent.DoesNotExist:
+            pass
+        try:
+            self.volunteer = Volunteer.objects.get(
+                trips_year=self.trips_year, applicant=user)
+        except Volunteer.DoesNotExist:
+            pass
+
     def clean(self):
-        if not (bool(self.incoming_student) ^ bool(self.volunteer)):
-            raise ValidationError('A gear request must either be for an '
-                                  'incoming student or a trips volunteer')
+        if self.incoming_student and self.volunteer:
+            raise ValidationError('Only incoming students and trips volunteers '
+                                  'may request gear.')
+
+        if not self.incoming_student and not self.volunteer:
+            raise ValidationError('Only incoming students and trips volunteers '
+                                  'may request gear.')
 
     def __str__(self):
         return 'GearRequest ({})'.format(self.user)
