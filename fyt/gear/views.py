@@ -9,6 +9,7 @@ from fyt.core.models import TripsYear
 from fyt.core.views import (
     BaseCreateView,
     DatabaseCreateView,
+    DatabaseDetailView,
     DatabaseListView,
     DatabaseUpdateView,
 )
@@ -34,6 +35,10 @@ class GearUpdate(DatabaseUpdateView):
 
     def get_success_url(self):
         return reverse('core:gear:list', kwargs={'trips_year': self.trips_year})
+
+
+class GearRequestList(DatabaseListView):
+    model = GearRequest
 
 
 class RequestGear(LoginRequiredMixin, BaseCreateView):

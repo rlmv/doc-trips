@@ -11,7 +11,7 @@ from fyt.core.views import (
     RedirectToCurrentDatabase,
 )
 from fyt.croos.urls import croo_urlpatterns
-from fyt.gear.urls import gear_urlpatterns
+from fyt.gear.urls import gear_urlpatterns, gear_request_urlpatterns
 from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
 from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (
@@ -55,6 +55,8 @@ database_urlpatterns = [
         include((foodbox_urlpatterns, 'foodbox'))),
     url(r'^gear/',
         include((gear_urlpatterns, 'gear'))),
+    url(r'^gear-requests/',
+        include((gear_request_urlpatterns, 'gearrequest'))),
     url(r'^grades/',
         include((grader_urlpatterns, 'graders'))),
     url(r'^incidents/',
