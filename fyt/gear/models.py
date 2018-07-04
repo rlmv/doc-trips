@@ -67,4 +67,4 @@ class GearRequest(DatabaseModel):
                                   'may request gear.')
 
     def __str__(self):
-        return 'GearRequest ({})'.format(self.user)
+        return 'GearRequest ({})'.format(self.requester)
