@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 {% load detail_view %}
 {% load links %}
+{% load gear %}
 
 {% block header %}
 <h2> {{ trippee }} <small> Trippee {{ object.delete_url|delete_button }} </small></h2>
@@ -35,6 +36,8 @@
     <td> {{ object.get_registration.bus_stop_from_hanover|detail_link|default:"*" }} </td>
   </tr>
 </table>
+
+{% gear_request trippee.gear_request %}
 
 <h3> Admin Info {{ edit_admin_url|edit_button }}</h3>
 {% detail trippee view.admin_fields %}

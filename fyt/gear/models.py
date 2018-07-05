@@ -32,12 +32,14 @@ class GearRequest(DatabaseModel):
         IncomingStudent,
         editable=False,
         null=True,
+        related_name='gear_request',
         on_delete=models.PROTECT)
 
     volunteer = models.OneToOneField(
         Volunteer,
         editable=False,
         null=True,
+        related_name='gear_request',
         on_delete=models.PROTECT)
 
     @property
