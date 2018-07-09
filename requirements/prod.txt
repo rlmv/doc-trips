@@ -18,7 +18,7 @@ mammoth==1.4.6
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.8
 pyexcel-xls==0.5.7
-pyyaml==3.12
+pyyaml==3.13
 raven==6.9.0
 requests==2.19.1
 whitenoise==3.3.1
