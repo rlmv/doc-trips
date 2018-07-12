@@ -8,6 +8,11 @@
 
 {% block content %}
 
+<div>
+  {% url 'core:reports:gear_requests' trips_year=trips_year as url_ %}
+  {{ url_|download_button:"Gear Requests" }}
+</div>
+<br>
 <table class="table table-condensed table-striped">
   <tr>
     <th> </th>

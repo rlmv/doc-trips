@@ -1,6 +1,5 @@
 import csv
 import tempfile
-from collections import OrderedDict
 from datetime import date
 
 from django.urls import reverse
@@ -9,10 +8,11 @@ from model_mommy import mommy
 from fyt.applications.models import Grader, Question, Volunteer
 from fyt.applications.tests import ApplicationTestMixin
 from fyt.croos.models import Croo
+from fyt.gear.models import Gear, GearRequest
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
 from fyt.test import FytTestCase
-from fyt.transport.models import ExternalBus, Route, Stop
+from fyt.transport.models import ExternalBus, Route
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 
@@ -635,6 +635,39 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                 'to hanover': '',
                 'from hanover': 'yes'
             }])
+
+    def test_gear_requests(self):
+        gear1 = mommy.make(Gear, trips_year=self.trips_year)
+        gear2 = mommy.make(Gear, trips_year=self.trips_year)
+        request1 = mommy.make(
+            GearRequest, trips_year=self.trips_year,
+            incoming_student__trips_year=self.trips_year,
+            additional='teddy bear')
+        request1.gear.set([gear1])
+        request2 = mommy.make(
+            GearRequest, trips_year=self.trips_year,
+            volunteer__trips_year=self.trips_year,
+            volunteer__status=Volunteer.LEADER)
+        request2.gear.set([gear2])
+
+        self.assertCsvReturns(
+            'core:reports:gear_requests',
+            [{
+                'name': str(request1.incoming_student),
+                'email': request1.incoming_student.email,
+                'role': 'TRIPPEE',
+                gear1.name: 'yes',
+                gear2.name: '',
+                'additional': 'teddy bear'
+            }, {
+                'name': str(request2.volunteer),
+                'email': request2.volunteer.applicant.email,
+                'role': 'LEADER',
+                gear1.name: '',
+                gear2.name: 'yes',
+                'additional': ''
+            }])
+
 
 class TShirtCountTestCase(FytTestCase):
 

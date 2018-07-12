@@ -6,7 +6,6 @@ from .managers import GearRequestManager
 from fyt.applications.models import Volunteer
 from fyt.core.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
-from fyt.users.models import DartmouthUser
 
 
 class Gear(DatabaseModel):
@@ -62,6 +61,18 @@ class GearRequest(DatabaseModel):
                 trips_year=self.trips_year, applicant=user)
         except Volunteer.DoesNotExist:
             pass
+
+    @property
+    def role(self):
+        if self.incoming_student:
+            return 'TRIPPEE'
+        return self.volunteer.status
+
+    @property
+    def email(self):
+        if self.incoming_student:
+            return self.incoming_student.get_email()
+        return self.volunteer.applicant.email
 
     def clean(self):
         if self.incoming_student and self.volunteer:

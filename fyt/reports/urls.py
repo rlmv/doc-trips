@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^applications/croo-members/$', CrooMembersCSV.as_view(),
         name='croo_members'),
     url(r'^dietary/$', DietaryRestrictions.as_view(), name='dietary'),
+    url(r'^gear/requests/$', GearRequests.as_view(), name='gear_requests'),
     url(r'^registrations/financial-aid/$', FinancialAidCSV.as_view(),
         name='financial_aid'),
     url(r'^incoming/trippees/$', TrippeesCSV.as_view(), name='trippees'),

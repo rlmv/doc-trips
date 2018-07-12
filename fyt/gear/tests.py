@@ -4,6 +4,7 @@ from model_mommy import mommy
 from .forms import GearRequestForm
 from .models import GearRequest, Gear
 
+from fyt.applications.models import Volunteer
 from fyt.incoming.models import IncomingStudent
 from fyt.test import FytTestCase
 from fyt.users.models import DartmouthUser
@@ -32,12 +33,15 @@ class GearRequestModelTestCase(FytTestCase):
             GearRequest,
             incoming_student__trips_year=self.trips_year)
         self.assertEqual(gear_request.incoming_student, gear_request.requester)
+        self.assertEqual(gear_request.role, 'TRIPPEE')
 
     def test_volunteer_requester(self):
         gear_request = mommy.make(
             GearRequest,
-            volunteer__trips_year=self.trips_year)
+            volunteer__trips_year=self.trips_year,
+            volunteer__status=Volunteer.LEADER_WAITLIST)
         self.assertEqual(gear_request.volunteer, gear_request.requester)
+        self.assertEqual(gear_request.role, 'LEADER_WAITLIST')
 
 
 class GearRequestFormTestCase(FytTestCase):
