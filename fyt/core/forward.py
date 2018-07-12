@@ -16,6 +16,7 @@ from fyt.applications.models import (
     Volunteer as Application,
 )
 from fyt.croos.models import Croo
+from fyt.gear.models import Gear
 from fyt.incoming.models import IncomingStudent, Registration, Settings
 from fyt.raids.models import RaidInfo
 from fyt.timetable.models import Timetable
@@ -64,6 +65,7 @@ class Forward:
         Campsite,
         Croo,
         Training,
+        Gear,
     ]
 
     def __init__(self, curr_year, next_year):
