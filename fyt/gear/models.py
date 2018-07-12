@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from .managers import GearRequestManager
+
 from fyt.applications.models import Volunteer
 from fyt.core.models import DatabaseModel
 from fyt.incoming.models import IncomingStudent
@@ -22,6 +24,8 @@ class GearRequest(DatabaseModel):
         unique_together = [
             ('trips_year', 'incoming_student'),
             ('trips_year', 'volunteer')]
+
+    objects = GearRequestManager()
 
     gear = models.ManyToManyField(Gear, blank=True)
     additional = models.TextField(blank=True)

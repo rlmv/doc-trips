@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 {% load links %}
+{% load icons %}
 
 {% block header %}
 <h1> Gear Requests </h1>
@@ -8,9 +9,20 @@
 {% block content %}
 
 <table class="table table-condensed table-striped">
-  {% for gear_request in object_list %}
+  <tr>
+    <th> </th>
+    {% for gear in matrix.cols %}
+    <th> {{ gear }} </td>
+    {% endfor %}
+    <th> Additional </th>
+  </tr>
+  {% for gear_request, requested in matrix.items %}
   <tr>
     <td> {{ gear_request.requester|detail_link }} </td>
+    {% for gear, needed in requested.items %}
+    <td> {{ needed|ok_if_true }} </td>
+    {% endfor %}
+    <td> {{ gear_request.additional }} </td>
   </tr>
   {% endfor %}
 </table>

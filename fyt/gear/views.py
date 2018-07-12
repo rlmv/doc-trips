@@ -40,6 +40,11 @@ class GearUpdate(DatabaseUpdateView):
 class GearRequestList(DatabaseListView):
     model = GearRequest
 
+    def extra_context(self):
+        return {
+            'matrix': GearRequest.objects.matrix(self.trips_year)
+        }
+
 
 class RequestGear(LoginRequiredMixin, BaseCreateView):
     model = GearRequest

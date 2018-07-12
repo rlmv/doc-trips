@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
 from .forms import GearRequestForm
-from .models import GearRequest
+from .models import GearRequest, Gear
 
 from fyt.incoming.models import IncomingStudent
 from fyt.test import FytTestCase
@@ -53,3 +53,26 @@ class GearRequestFormTestCase(FytTestCase):
                                trips_year=self.trips_year)
         instance = form.save()
         self.assertEqual(instance.requester, incoming)
+
+
+class GearRequestMatrixTestCase(FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+
+    def test_matrix(self):
+        gear1 = mommy.make(Gear, trips_year=self.trips_year)
+        gear2 = mommy.make(Gear, trips_year=self.trips_year)
+        request1 = mommy.make(GearRequest, trips_year=self.trips_year,
+                              incoming_student__trips_year=self.trips_year)
+        request1.gear.set([gear1])
+        request2 = mommy.make(GearRequest, trips_year=self.trips_year,
+                              volunteer__trips_year=self.trips_year)
+        request2.gear.set([gear2])
+
+        with self.assertNumQueries(3):
+            matrix = GearRequest.objects.matrix(self.trips_year)
+        self.assertEqual(matrix, {
+            request1: {gear1: True, gear2: False},
+            request2: {gear1: False, gear2: True}
+        })
