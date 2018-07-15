@@ -524,6 +524,13 @@ class ImportIncomingStudentsTestCase(FytTestCase):
         sheet = form.load_sheet()
         self.assertEqual(len(list(sheet.rows())), 3)
 
+    def test_upload_form_csv(self):
+        with open(self.FILE_CSV, 'rb') as f:
+            uploaded_file = SimpleUploadedFile('incoming_students.csv', f.read())
+        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        sheet = form.load_sheet()
+        self.assertEqual(len(list(sheet.rows())), 3)
+
 
 class ImportIncomingStudentHinmanBoxes(FytTestCase):
 

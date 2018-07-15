@@ -1,3 +1,4 @@
+import io
 import os
 
 import pyexcel
@@ -277,6 +278,11 @@ class PyExcelFileForm(forms.Form):
         """
         Return a pyexcel sheet read from the uploaded file.
         """
-        file_ = self.files['spreadsheet']
-        extension = os.path.splitext(file_.name)[1].strip('.')
-        return pyexcel.get_sheet(file_type=extension, file_stream=file_)
+        f = self.files['spreadsheet']
+        extension = os.path.splitext(f.name)[1].strip('.')
+
+        # Convert byte-stream to strings
+        if extension == 'csv':
+            f = io.TextIOWrapper(f)
+
+        return pyexcel.get_sheet(file_type=extension, file_stream=f)
