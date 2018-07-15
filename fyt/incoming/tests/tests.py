@@ -480,6 +480,7 @@ class ImportIncomingStudentsTestCase(FytTestCase):
 
     FILE_CSV = resolve_path('incoming_students.csv')
     FILE_CSV_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
+    FILE_CSV_WITH_UPPERCASE = resolve_path('incoming_students_uppercase_netid.csv')
     FILE_XLS = resolve_path('incoming_students.xls')
 
     def setUp(self):
@@ -491,7 +492,7 @@ class ImportIncomingStudentsTestCase(FytTestCase):
 
     def test_create_from_csv(self):
         (created, existing) = self.create_from_filename(self.FILE_CSV)
-        self.assertEqual(set(['id_1', 'id_2']), set(created))
+        self.assertEqual(['id_1', 'id_2'], created)
         self.assertEqual(existing, [])
         # are student objects created?
         IncomingStudent.objects.get(netid='id_1')
@@ -500,12 +501,18 @@ class ImportIncomingStudentsTestCase(FytTestCase):
     def test_ignore_existing_students(self):
         (created, existing) = self.create_from_filename(self.FILE_CSV)
         (created, existing) = self.create_from_filename(self.FILE_CSV)
-        self.assertEqual(set(['id_1', 'id_2']), set(existing))
+        self.assertEqual(['id_1', 'id_2'], existing)
         self.assertEqual(created, [])
+
+    def test_handle_netid_case(self):
+        (created, existing) = self.create_from_filename(self.FILE_CSV)
+        (created, existing) = self.create_from_filename(self.FILE_CSV_WITH_UPPERCASE)
+        self.assertEqual(created, [])
+        self.assertEqual(existing, ['id_1', 'id_2'])
 
     def test_ignore_rows_without_id(self):
         (created, existing) = self.create_from_filename(self.FILE_CSV_WITH_BLANKS)
-        self.assertEqual(set(['id_1']), set(created))
+        self.assertEqual(['id_1'], created)
         self.assertEqual(existing, [])
         # are student objects created?
         IncomingStudent.objects.get(netid='id_1')

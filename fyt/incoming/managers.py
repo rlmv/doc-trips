@@ -59,43 +59,38 @@ class IncomingStudentManager(models.Manager):
         sheet.name_columns_by_row(0)
         rows = sheet.to_records()
 
-        def parse_to_object(row):
-            """ Parse a CSV row and return an incoming student object """
-            if not row['Id']:
-                return None
-            return self.model(
-                trips_year=trips_year,
-                netid=row['Id'],
-                name=row['Formatted Fml Name'],
-                class_year=row['Class Year'],
-                gender=row['Gender'],
-                birthday=row['Birthday'],
-                ethnic_code=row['Fine Ethnic Code'],
-                email=row['EMail'],
-                blitz=row['Blitz'],
-                phone=row['PR Phone'],
-                address="{}\n{}\n{}, {} {}\n{}".format(
-                    row['PR Street 1'],
-                    row['PR Street 2'],
-                    row['PR City'], row['PR State'], row['PR Zip'],
-                    row['Pr Nation Name']
+        added = []
+        ignored = []
+
+        for row in rows:
+            if row['Id']:
+                incoming, created = self.get_or_create(
+                    trips_year=trips_year,
+                    netid=row['Id'],
+                    defaults={
+                        'name': row['Formatted Fml Name'],
+                        'class_year': row['Class Year'],
+                        'gender': row['Gender'],
+                        'birthday': row['Birthday'],
+                        'ethnic_code': row['Fine Ethnic Code'],
+                        'email': row['EMail'],
+                        'blitz': row['Blitz'],
+                        'phone': row['PR Phone'],
+                        'address': "{}\n{}\n{}, {} {}\n{}".format(
+                            row['PR Street 1'],
+                            row['PR Street 2'],
+                            row['PR City'], row['PR State'], row['PR Zip'],
+                            row['Pr Nation Name']
+                        )
+                    }
                 )
-            )
 
-        incoming = list(filter(None, (parse_to_object(row) for row in rows)))
-        incoming_netids = get_netids(incoming)
+                if created:
+                    added.append(incoming.netid)
+                else:
+                    ignored.append(incoming.netid)
 
-        existing = self.model.objects.filter(trips_year=trips_year)
-        existing_netids = get_netids(existing)
-
-        netids_to_create = incoming_netids - existing_netids
-
-        for inc in incoming:
-            if inc.netid in netids_to_create:
-                inc.save()
-
-        ignored_netids = existing_netids & incoming_netids
-        return (list(netids_to_create), list(ignored_netids))
+        return (added, ignored)
 
     def update_hinman_boxes(self, sheet, trips_year):
         """
