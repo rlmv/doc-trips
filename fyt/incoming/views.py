@@ -492,7 +492,7 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
             if skipped:
                 msg = 'Ignored existing incoming students with NetIds %s'
                 logger.info(msg % skipped)
-                messages.warning(self.request, msg % ctd)
+                messages.warning(self.request, msg % skipped)
 
         except KeyError as exc:
             msg = "A column is missing (or mis-named) in the uploaded file: %s"
