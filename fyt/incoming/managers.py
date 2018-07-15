@@ -73,14 +73,14 @@ class IncomingStudentManager(models.Manager):
                         'gender': row['Gender'],
                         'birthday': row['Birthday'],
                         'ethnic_code': row['Fine Ethnic Code'],
-                        'email': row['EMail'],
+                        'email': row['Email'],
                         'blitz': row['Blitz'],
                         'phone': row['PR Phone'],
                         'address': "{}\n{}\n{}, {} {}\n{}".format(
                             row['PR Street 1'],
                             row['PR Street 2'],
                             row['PR City'], row['PR State'], row['PR Zip'],
-                            row['Pr Nation Name']
+                            row['PR Nation Name']
                         )
                     }
                 )
