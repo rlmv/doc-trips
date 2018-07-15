@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>Robert Marchman</Author>
+  <LastAuthor>Robert Marchman</LastAuthor>
+  <Created>2018-05-22T14:44:43Z</Created>
+  <LastSaved>2018-05-22T14:44:43Z</LastSaved>
+  <Company>Dartmouth College</Company>
+  <Version>12.0</Version>
+ </DocumentProperties>
+ <OfficeDocumentSettings xmlns="urn:schemas-microsoft-com:office:office">
+  <AllowPNG/>
+ </OfficeDocumentSettings>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>14340</WindowHeight>
+  <WindowWidth>21360</WindowWidth>
+  <WindowTopX>1420</WindowTopX>
+  <WindowTopY>260</WindowTopY>
+  <Date1904/>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font ss:FontName="Verdana"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="s21">
+   <NumberFormat ss:Format="Short Date"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="incoming_students.csv">
+  <Table ss:ExpandedColumnCount="17" ss:ExpandedRowCount="3" x:FullColumns="1"
+   x:FullRows="1">
+   <Row>
+    <Cell><Data ss:Type="String">Id</Data></Cell>
+    <Cell><Data ss:Type="String">Formatted Fml Name</Data></Cell>
+    <Cell><Data ss:Type="String">Class Year</Data></Cell>
+    <Cell><Data ss:Type="String">Gender</Data></Cell>
+    <Cell><Data ss:Type="String">Fine Ethnic Code</Data></Cell>
+    <Cell><Data ss:Type="String">Birthday</Data></Cell>
+    <Cell><Data ss:Type="String">PR Street 1</Data></Cell>
+    <Cell><Data ss:Type="String">PR Street 2</Data></Cell>
+    <Cell><Data ss:Type="String">PR City</Data></Cell>
+    <Cell><Data ss:Type="String">PR State</Data></Cell>
+    <Cell><Data ss:Type="String">PR Zip</Data></Cell>
+    <Cell><Data ss:Type="String">Pr Nation Name</Data></Cell>
+    <Cell><Data ss:Type="String">PR Phone</Data></Cell>
+    <Cell><Data ss:Type="String">EMail</Data></Cell>
+    <Cell><Data ss:Type="String">Blitz</Data></Cell>
+    <Cell><Data ss:Type="String">Sort Name</Data></Cell>
+    <Cell><Data ss:Type="String">Salutation Name</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">id_1</Data></Cell>
+    <Cell><Data ss:Type="String">Michael</Data></Cell>
+    <Cell><Data ss:Type="Number">18.0</Data></Cell>
+    <Cell><Data ss:Type="String">F</Data></Cell>
+    <Cell><Data ss:Type="String">C</Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="DateTime">1995-09-09T00:00:00.000</Data></Cell>
+    <Cell><Data ss:Type="Number">2081.0</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Ada</Data></Cell>
+    <Cell><Data ss:Type="String">MI</Data></Cell>
+    <Cell><Data ss:Type="Number">14.0</Data></Cell>
+    <Cell ss:Index="13"><Data ss:Type="Number">1.2344556E7</Data></Cell>
+    <Cell><Data ss:Type="String">asdg@gmail.com</Data></Cell>
+    <Cell><Data ss:Type="String">asf8@Dartmouth.edu</Data></Cell>
+    <Cell><Data ss:Type="String">asf</Data></Cell>
+    <Cell><Data ss:Type="String">Michael</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">id_2</Data></Cell>
+    <Cell><Data ss:Type="String">Colton</Data></Cell>
+    <Cell><Data ss:Type="Number">18.0</Data></Cell>
+    <Cell><Data ss:Type="String">M</Data></Cell>
+    <Cell><Data ss:Type="String">I</Data></Cell>
+    <Cell ss:StyleID="s21"><Data ss:Type="DateTime">1996-01-31T00:00:00.000</Data></Cell>
+    <Cell><Data ss:Type="Number">4516.0</Data></Cell>
+    <Cell ss:Index="9"><Data ss:Type="String">Chapel Hill</Data></Cell>
+    <Cell><Data ss:Type="String">NC</Data></Cell>
+    <Cell><Data ss:Type="Number">27514.0</Data></Cell>
+    <Cell><Data ss:Type="String">USA</Data></Cell>
+    <Cell><Data ss:Type="Number">1.34135135E8</Data></Cell>
+    <Cell><Data ss:Type="String">ke@gmail.com</Data></Cell>
+    <Cell><Data ss:Type="String">asdf8@Dartmouth.edu</Data></Cell>
+    <Cell><Data ss:Type="String">asdf</Data></Cell>
+    <Cell><Data ss:Type="String">Colton</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageLayoutZoom>0</PageLayoutZoom>
+   <Selected/>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

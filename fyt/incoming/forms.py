@@ -6,6 +6,7 @@ import pyexcel
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db import transaction
 
 from .layouts import RegistrationFormLayout
@@ -26,7 +27,7 @@ from fyt.transport.models import Stop
 from fyt.trips.fields import TripChoiceField
 from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import NOT_AVAILABLE
-from fyt.utils.fmt import join_with_and
+from fyt.utils.fmt import join_with_and, join_with_or
 
 
 class RoundTripStopChoiceField(forms.ModelChoiceField):
@@ -262,6 +263,7 @@ class TrippeeInfoForm(TripsYearModelForm):
     )
 
 
+
 class PyExcelFileForm(forms.Form):
     """
     Form to upload a CSV file.
@@ -275,19 +277,34 @@ class PyExcelFileForm(forms.Form):
         self.helper.form_tag = False
         self.helper.add_input(Submit('submit', 'Submit'))
 
+    def clean_spreadsheet(self):
+        if self.extension not in self.valid_formats:
+            raise ValidationError(
+                '.{} is not a valid spreadsheet format. Try converting the '
+                'file to one of the following formats: {}.'.format(
+                    self.extension, join_with_or(self.valid_formats)))
+
+    @property
+    def valid_formats(self):
+        return pyexcel.plugins.parsers.READERS.get_all_formats()
+
+    @property
+    def extension(self):
+        f = self.files['spreadsheet']
+        return os.path.splitext(f.name)[1].strip('.')
+
     def load_sheet(self):
         """
         Return a pyexcel sheet read from the uploaded file.
         """
         f = self.files['spreadsheet']
-        extension = os.path.splitext(f.name)[1].strip('.')
 
         # Remove BOM
         if f.read(len(codecs.BOM_UTF8)).startswith(codecs.BOM_UTF8):
             f = io.TextIOWrapper(f, encoding='utf-8-sig')
 
         # Convert byte-stream to strings
-        elif extension == 'csv':
+        elif self.extension == 'csv':
             f = io.TextIOWrapper(f)
 
-        return pyexcel.get_sheet(file_type=extension, file_stream=f)
+        return pyexcel.get_sheet(file_type=self.extension, file_stream=f)

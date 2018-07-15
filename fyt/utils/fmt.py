@@ -12,12 +12,19 @@ def section_range(sxns):
 
 
 
-def join_with_and(iter):
+def join_with_and(iter, closing_word=None):
     """ Given a list ["A", "B", "C"] return "A, B and C" """
+    if closing_word is None:
+        closing_word = 'and'
 
     l = list(map(str, iter))
     if len(l) == 0:
         return ""
     elif len(l) == 1:
         return l[0]
-    return ", ".join(l[:-1]) + " and " + l[-1]
+    return ", ".join(l[:-1]) + " " + closing_word + " " + l[-1]
+
+
+def join_with_or(iter):
+    """ Given a list ["A", "B", "C"] return "A, B or C" """
+    return join_with_and(iter, closing_word='or')

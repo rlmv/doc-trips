@@ -483,6 +483,7 @@ class ImportIncomingStudentsTestCase(FytTestCase):
     FILE_CSV_WITH_UPPERCASE = resolve_path('incoming_students_uppercase_netid.csv')
     FILE_CSV_WITH_BOM = resolve_path('incoming_students_bom.csv')
     FILE_XLS = resolve_path('incoming_students.xls')
+    FILE_XML = resolve_path('incoming_students.xml')
 
     def setUp(self):
         self.init_trips_year()
@@ -539,6 +540,11 @@ class ImportIncomingStudentsTestCase(FytTestCase):
         IncomingStudent.objects.create_from_sheet(form.load_sheet(), self.trips_year)
         self.assertEqual(IncomingStudent.objects.count(), 2)
 
+    def test_validate_extension_format(self):
+        with open(self.FILE_XML, 'rb') as f:
+            uploaded_file = SimpleUploadedFile('incoming_students.xml', f.read())
+        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        self.assertFalse(form.is_valid())
 
 
 class ImportIncomingStudentHinmanBoxes(FytTestCase):

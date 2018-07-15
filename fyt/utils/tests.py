@@ -7,7 +7,7 @@ from model_mommy import mommy
 from fyt.test import FytTestCase
 from fyt.trips.models import Section
 from fyt.utils.cache import cache_as, preload
-from fyt.utils.fmt import join_with_and, section_range
+from fyt.utils.fmt import join_with_and, join_with_or, section_range
 from fyt.utils.lat_lng import parse_lat_lng, validate_lat_lng
 from fyt.utils.matrix import OrderedMatrix
 
@@ -54,6 +54,9 @@ class FmtUtilsTest(FytTestCase):
         self.assertEqual(join_with_and(['A']), 'A')
         self.assertEqual(join_with_and(['A', 'B']), 'A and B')
         self.assertEqual(join_with_and(['A', 'B', 'C', 'D']), 'A, B, C and D')
+
+    def test_join_with_or(self):
+        self.assertEqual(join_with_or(['A', 'B', 'C', 'D']), 'A, B, C or D')
 
 
 class LatLngRegex(unittest.TestCase):
