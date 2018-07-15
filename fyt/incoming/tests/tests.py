@@ -481,6 +481,7 @@ class ImportIncomingStudentsTestCase(FytTestCase):
     FILE_CSV = resolve_path('incoming_students.csv')
     FILE_CSV_WITH_BLANKS = resolve_path('incoming_students_with_blank_id.csv')
     FILE_CSV_WITH_UPPERCASE = resolve_path('incoming_students_uppercase_netid.csv')
+    FILE_CSV_WITH_BOM = resolve_path('incoming_students_bom.csv')
     FILE_XLS = resolve_path('incoming_students.xls')
 
     def setUp(self):
@@ -530,6 +531,14 @@ class ImportIncomingStudentsTestCase(FytTestCase):
         form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
         sheet = form.load_sheet()
         self.assertEqual(len(list(sheet.rows())), 3)
+
+    def test_upload_form_bom_csv(self):
+        with open(self.FILE_CSV_WITH_BOM, 'rb') as f:
+            uploaded_file = SimpleUploadedFile('incoming_students.csv', f.read())
+        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        IncomingStudent.objects.create_from_sheet(form.load_sheet(), self.trips_year)
+        self.assertEqual(IncomingStudent.objects.count(), 2)
+
 
 
 class ImportIncomingStudentHinmanBoxes(FytTestCase):

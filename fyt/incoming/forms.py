@@ -1,3 +1,4 @@
+import codecs
 import io
 import os
 
@@ -281,8 +282,12 @@ class PyExcelFileForm(forms.Form):
         f = self.files['spreadsheet']
         extension = os.path.splitext(f.name)[1].strip('.')
 
+        # Remove BOM
+        if f.read(len(codecs.BOM_UTF8)).startswith(codecs.BOM_UTF8):
+            f = io.TextIOWrapper(f, encoding='utf-8-sig')
+
         # Convert byte-stream to strings
-        if extension == 'csv':
+        elif extension == 'csv':
             f = io.TextIOWrapper(f)
 
         return pyexcel.get_sheet(file_type=extension, file_stream=f)
