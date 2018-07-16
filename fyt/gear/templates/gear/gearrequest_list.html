@@ -16,16 +16,18 @@
 <table class="table table-condensed table-striped">
   <tr>
     <th> </th>
+    <th class="text-center"> Role </th>
     {% for gear in matrix.cols %}
-    <th> {{ gear }} </td>
+    <th class="text-center"> {{ gear }} </td>
     {% endfor %}
     <th> Additional </th>
   </tr>
   {% for gear_request, requested in matrix.items %}
   <tr>
     <td> {{ gear_request.requester|detail_link }} </td>
+    <td class="text-center"> <span class="label label-primary"> {{ gear_request.role }} </span> </td>
     {% for gear, needed in requested.items %}
-    <td> {{ needed|ok_if_true }} </td>
+    <td class="text-center"> {{ needed|ok_if_true }} </td>
     {% endfor %}
     <td> {{ gear_request.additional }} </td>
   </tr>
