@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% load links %}
+
+{% block header %}
+<h1> Available Gear
+  {% create_url view.model trips_year as url_ %}
+  {{ url_|create_button:"Add Gear" }}
+</h1>
+{% endblock %}
+
+{% block content %}
+
+<table class="table table-condensed table-striped">
+  {% for gear in object_list %}
+  <tr>
+    <td> {{ gear }} </td>
+    <td> {{ gear|edit_link }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

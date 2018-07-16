@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^dartdm/', include(('fyt.dartdm.urls', 'dartdm'))),
     url(r'^db/', include(('fyt.core.urls', 'core'))),
+    url(r'^gear/', include(('fyt.gear.urls', 'gear'))),
     url(r'^incoming/', include(('fyt.incoming.urls', 'incoming'))),
     url(r'^permissions/', include(('fyt.permissions.urls', 'permissions'))),
     # TODO: move this to a better namespace / general settings namespace

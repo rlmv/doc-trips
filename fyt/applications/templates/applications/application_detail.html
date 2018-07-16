@@ -5,6 +5,7 @@
 {% load convert %}
 {% load answers %}
 {% load training %}
+{% load gear %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -81,7 +82,7 @@
   {% endfor %}
 </table>
 
-{# grades #}
+{% gear_request application.gear_request %}
 
 <h4> Scores </h4>
 

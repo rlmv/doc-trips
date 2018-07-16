@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from braces.views import AllVerbsMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, Avg, Count, Max, Prefetch
+from django.db.models import Q, Count, Max, Prefetch
 from django.http import HttpResponse
 from django.utils.functional import cached_property
 from vanilla import View
@@ -12,6 +12,7 @@ from vanilla import View
 from fyt.applications.models import Volunteer as Application
 from fyt.applications.views.application import preload_questions
 from fyt.core.views import DatabaseTemplateView, TripsYearMixin
+from fyt.gear.models import GearRequest
 from fyt.incoming.models import (
     IncomingStudent,
     Registration,
@@ -66,9 +67,10 @@ class GenericReportView(DatabaseReadPermissionRequired,
         response['Content-Disposition'] = (
             'attachment; filename="{}"'.format(self.get_filename())
         )
+        qs = self.get_queryset()
         writer = csv.writer(response)
         writer.writerow(self.get_header())
-        for obj in self.get_queryset():
+        for obj in qs:
             writer.writerow(self.get_row(obj))
         return response
 
@@ -522,6 +524,35 @@ class Housing(GenericReportView):
             'yes' if reg and reg.is_native else '',
             'yes' if reg and reg.is_fysep else '',
             'yes' if reg and reg.is_international else '',
+        ]
+
+
+class GearRequests(GenericReportView):
+
+    file_prefix = 'Gear-Requests'
+
+    def get_queryset(self):
+        self.matrix = GearRequest.objects.matrix(self.trips_year)
+        return self.matrix
+
+    def get_header(self):
+        return [
+            'name',
+            'email',
+            'role'
+        ] + list(self.matrix.cols) + [
+            'additional'
+        ]
+
+    def get_row(self, gear_request):
+        return [
+            str(gear_request.requester),
+            gear_request.email,
+            gear_request.role
+        ] + [
+            yes_if_true(need) for need in self.matrix[gear_request].values()
+        ] + [
+            gear_request.additional
         ]
 
 
