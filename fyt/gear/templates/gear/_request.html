@@ -1,17 +1,27 @@
 <h4>
   Gear Requests
 </h4>
+
+{% if gear_request %}
 <table class="table table-condensed table-striped">
-  {% for gear in equipment %}
+  {% for gear in gear_request.gear.all %}
   <tr>
     <td class="col-sm-1"></td>
     <td> <i class="fa fa-check"></i> {{ gear }} </td>
   </tr>
   {% endfor %}
-  {% if additional %}
+  {% if gear_request.additional %}
   <tr>
     <td class="col-sm-1"></td>
-    <td> <i class="fa fa-check"></i> {{ additional }} </td>
+    <td> <i class="fa fa-check"></i> {{ gear_request.additional }} </td>
   </tr>
   {% endif %}
 </table>
+
+{% else %}
+
+<table class="table table-condensed table-striped">
+  <tr> <td> No gear requested </td> </tr>
+</table>
+
+{% endif %}
