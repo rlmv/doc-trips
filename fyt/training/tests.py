@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from model_mommy import mommy
 
@@ -215,6 +216,10 @@ class FirstAidCertificationModelTestCase(FytTestCase):
     def test_str(self):
         self.assertEqual(str(self.cert1), 'WFR (exp. 02/25/19)')
         self.assertEqual(str(self.cert2), 'ABC (exp. 03/23/20)')
+
+    def test_requires_name_or_other(self):
+        with self.assertRaises(ValidationError):
+            mommy.make(FirstAidCertification, name='', other='').full_clean()
 
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):

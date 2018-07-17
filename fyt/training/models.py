@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -111,6 +112,11 @@ class FirstAidCertification(DatabaseModel):
         if self.name == self.OTHER or not self.name:
             return self.other
         return self.name
+
+    def clean(self):
+        if not self.name and not self.other:
+            raise ValidationError({
+                'name': 'Either `name` or `other` must be provided.'})
 
     def __str__(self):
         return '{} (exp. {})'.format(self.get_name(),
