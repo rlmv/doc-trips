@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="header-buttons">
   {% url 'core:reports:all_apps' trips_year=trips_year as url_ %}
   {{ url_|download_button:"All Applications" }}
 
