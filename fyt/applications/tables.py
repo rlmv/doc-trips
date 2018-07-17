@@ -3,20 +3,6 @@ from django.urls import reverse
 
 from fyt.core.templatetags.links import detail_link, make_link
 from fyt.utils.templatetags.icons import ok_if_true
-from fyt.utils.templatetags.tooltips import tooltip_wrap
-
-
-class TrainingColumn(tables.Column):
-    """
-    Column with a tooltip
-    """
-    def __init__(self, verbose_name, tooltip, *args, **kwargs):
-        self.tooltip = tooltip
-        verbose_name = tooltip_wrap(verbose_name, self.tooltip)
-        super().__init__(verbose_name, *args, **kwargs)
-
-    def render(self, value):
-        return tooltip_wrap(value.strftime("%m/%d").lstrip('0'), self.tooltip)
 
 
 class _ApplicationTable(tables.Table):
