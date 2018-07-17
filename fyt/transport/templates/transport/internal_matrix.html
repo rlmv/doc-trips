@@ -1,6 +1,7 @@
 {% extends "core/base.html" %}
 {% load get from dict %}
 {% load links %}
+{% load tooltips %}
 
 {% block header %}
 <h2> Internal Buses </h2>
@@ -84,9 +85,5 @@
 {% endblock content %}
 
 {% block scripts %}
-<script type="text/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
+{% activate_tooltips %}
 {% endblock %}

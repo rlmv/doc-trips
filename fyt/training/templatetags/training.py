@@ -1,7 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 
-from fyt.applications.tables import tooltip_wrap
+from fyt.utils.templatetags.tooltips import tooltip_wrap
 
 
 register = template.Library()

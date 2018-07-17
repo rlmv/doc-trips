@@ -1,18 +1,9 @@
 import django_tables2 as tables
 from django.urls import reverse
-from django.utils.safestring import mark_safe
 
 from fyt.core.templatetags.links import detail_link, make_link
 from fyt.utils.templatetags.icons import ok_if_true
-
-
-def tooltip_wrap(target, tooltip):
-    """
-    Wrap a string with a Bootstrap tooltip
-    """
-    return mark_safe(
-        '<span data-toggle="tooltip" data-placement="top" title="{}"> {} </span>'.format(tooltip, target)
-    )
+from fyt.utils.templatetags.tooltips import tooltip_wrap
 
 
 class TrainingColumn(tables.Column):

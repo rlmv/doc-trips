@@ -6,6 +6,7 @@
 {% load answers %}
 {% load training %}
 {% load gear %}
+{% load tooltips %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -196,9 +197,5 @@
 {% endblock content %}
 
 {% block scripts %}
-<script type="text/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
+{% activate_tooltips %}
 {% endblock %}
