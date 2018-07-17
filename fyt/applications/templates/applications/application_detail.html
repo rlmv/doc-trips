@@ -74,6 +74,7 @@
 <h4>
   First Aid Certifications
   <a href="{% url 'core:attendee:verify' trips_year=trips_year pk=application.pk %}"> edit </a>
+  {{ application|first_aid_label }}
 </h4>
 
 <table class="table table-condensed table-striped">
@@ -192,5 +193,12 @@
 
 </div>
 
-
 {% endblock content %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+{% endblock %}
