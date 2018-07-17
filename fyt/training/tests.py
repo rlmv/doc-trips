@@ -114,42 +114,66 @@ class AttendeeTrainingTestCase(FytTestCase):
                            [self.attendee1])
 
 
-# TODO: roll this over into the FirstAidCertification tests
-class AttendeeFirstAidTestCase(FytTestCase):
+# TODO: move this to volunteer app?
+class VolunteerFirstAidTestCase(ApplicationTestMixin, FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
-        self.attendee1 = make_attendee(trips_year=self.trips_year, fa_cert='WFR')
-        self.attendee2 = make_attendee(
-            trips_year=self.trips_year,
-            fa_cert=Attendee.OTHER,
-            fa_other='ABC')
-        self.attendee3 = make_attendee(
-            trips_year=self.trips_year,
-            fa_cert='',
-            fa_other='ABC')
-        self.attendee4 = make_attendee(
-            trips_year=self.trips_year,
-            fa_cert='',
-            fa_other='')
 
-    def test_get_first_aid_cert(self):
-        self.assertEqual(self.attendee1.get_first_aid_cert(), 'WFR')
+        # No certifications
+        self.incomplete1 = self.make_application()
 
-    def test_get_first_aid_cert_other(self):
-        self.assertEqual(self.attendee2.get_first_aid_cert(), 'ABC')
+        # No CPR
+        self.incomplete2 = self.make_application()
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.incomplete2,
+            name='WFA',
+            verified=True)
 
-    def test_get_first_aid_cert_without_explicit_other(self):
-        self.assertEqual(self.attendee3.get_first_aid_cert(), 'ABC')
+        # No first aid
+        self.incomplete3 = self.make_application()
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.incomplete3,
+            name='CPR',
+            verified=True)
+
+        # Both unverified
+        self.incomplete4 = self.make_application()
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.incomplete4,
+            name='WFA',
+            verified=False)
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.incomplete4,
+            name='CPR',
+            verified=False)
+
+        # All good
+        self.complete = self.make_application()
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.complete,
+            name='EMT',
+            verified=True)
+        mommy.make(
+            FirstAidCertification,
+            volunteer=self.complete,
+            name='CPR',
+            verified=True)
 
     def test_first_aid_complete(self):
-        self.assertQsEqual(Attendee.objects.first_aid_complete(self.trips_year),
-                           [self.attendee1, self.attendee2, self.attendee3])
+        self.assertQsEqual(Volunteer.objects.first_aid_complete(),
+                           [self.complete])
 
     def test_first_aid_incomplete(self):
         self.assertQsEqual(
-            Attendee.objects.first_aid_incomplete(self.trips_year),
-            [self.attendee4])
+            Volunteer.objects.first_aid_incomplete(),
+            [self.incomplete1, self.incomplete2, self.incomplete3,
+             self.incomplete4])
 
 
 class FirstAidCertificationModelTestCase(FytTestCase):

@@ -78,10 +78,11 @@ class FirstAidCertification(DatabaseModel):
 
     # First aid
     OTHER = 'other'
+    CPR = 'CPR'
     CERTIFICATION_CHOICES = (
         (None, '--'),
         ('FA', 'First Aid'),
-        ('CPR', 'CPR'),
+        (CPR, 'CPR'),
         ('WFA', 'WFA'),
         ('WFR', 'WFR'),
         ('W-EMT', 'W-EMT'),

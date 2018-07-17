@@ -204,6 +204,35 @@ class VolunteerQuerySet(models.QuerySet):
             norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
         )
 
+    def first_aid_complete(self):
+        """
+        All volunteers with complete first aid certifications.
+
+        Complete certifications means a *verified* CPR certification, and
+        a *verified* first aid certification, of some sort.
+        """
+        from fyt.training.models import FirstAidCertification
+
+        CPR = FirstAidCertification.CPR
+        non_cpr_options= [
+            k for k, v in FirstAidCertification.CERTIFICATION_CHOICES
+            if k not in (CPR, None)]
+
+        return self.filter(
+            first_aid_certifications__name=FirstAidCertification.CPR,
+            first_aid_certifications__verified=True
+        ).filter(
+            first_aid_certifications__name__in=non_cpr_options,
+            first_aid_certifications__verified=True
+        )
+
+    def first_aid_incomplete(self):
+        """
+        All volunteers missing first aid certifications.
+        """
+        return self.exclude(
+            pk__in=self.model.objects.first_aid_complete().values_list('pk'))
+
 
 VolunteerManager = BaseVolunteerManager.from_queryset(VolunteerQuerySet)
 
