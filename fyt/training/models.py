@@ -101,6 +101,8 @@ class FirstAidCertification(DatabaseModel):
     other = models.CharField(
         max_length=100, blank=True, default=""
     )
+
+    # Note: this is fabricated for all years prior to 2018
     expiration_date = models.DateField()
 
     verified = models.BooleanField('verified?', default=False)
@@ -137,37 +139,6 @@ class Attendee(DatabaseModel):
         Session, blank=True, related_name='registered')
     complete_sessions = models.ManyToManyField(
         Session, blank=True, related_name='completed')
-
-    # TODO: migrate this data over to FirstAidCertification
-    # First aid
-    OTHER = 'other'
-    FIRST_AID_CHOICES = (
-        (None, '--'),
-        ('FA', 'First Aid'),
-        ('CPR', 'CPR'),
-        ('FA/CPR', 'First Aid/CPR'),
-        ('WFA', 'WFA'),
-        ('WFR', 'WFR'),
-        ('W-EMT', 'W-EMT'),
-        ('EMT', 'EMT'),
-        ('OEC', 'OEC'),
-        (OTHER, 'other'),
-    )
-    fa_cert = models.CharField(
-        'first aid cert', max_length=10, blank=True, default="",
-        choices=FIRST_AID_CHOICES
-    )
-    fa_other = models.CharField(
-        'other first aid cert', max_length=100, blank=True, default=""
-    )
-
-    def get_first_aid_cert(self):
-        if self.fa_cert == self.OTHER or not self.fa_cert:
-            return self.fa_other
-        return self.fa_cert
-
-    def first_aid_complete(self):
-        return bool(self.get_first_aid_cert())
 
     TRAINABLE_STATUSES = [
         Volunteer.LEADER,
