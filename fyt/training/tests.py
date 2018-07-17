@@ -152,6 +152,9 @@ class VolunteerFirstAidTestCase(ApplicationTestMixin, FytTestCase):
             name='CPR',
             verified=False)
 
+        self.incompletes = [self.incomplete1, self.incomplete2,
+                            self.incomplete3, self.incomplete4]
+
         # All good
         self.complete = self.make_application()
         mommy.make(
@@ -171,9 +174,12 @@ class VolunteerFirstAidTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_first_aid_incomplete(self):
         self.assertQsEqual(
-            Volunteer.objects.first_aid_incomplete(),
-            [self.incomplete1, self.incomplete2, self.incomplete3,
-             self.incomplete4])
+            Volunteer.objects.first_aid_incomplete(), self.incompletes)
+
+    def test_first_aid_compete_model_method(self):
+        self.assertTrue(self.complete.first_aid_complete)
+        for v in self.incompletes:
+            self.assertFalse(v.first_aid_complete)
 
 
 class FirstAidCertificationModelTestCase(FytTestCase):

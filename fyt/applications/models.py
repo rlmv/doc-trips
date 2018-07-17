@@ -554,6 +554,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
         return '\n'.join(filter(None, data))
 
+    @property
+    def first_aid_complete(self):
+        return Volunteer.objects.first_aid_complete().filter(pk=self.pk).exists()
+
     def within_deadline_extension(self):
         """
         Return True if the extended deadline has not passed.

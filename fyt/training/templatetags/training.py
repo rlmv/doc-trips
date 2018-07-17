@@ -30,8 +30,7 @@ def training_label(volunteer):
 
     Note that this takes a Volunteer instance, not an Attendee.
     """
-    attendee = volunteer.attendee
-    if attendee.first_aid_complete() and attendee.training_complete():
+    if volunteer.first_aid_complete and volunteer.attendee.training_complete():
         label = 'success'
         text = 'Complete'
     else:
@@ -39,4 +38,4 @@ def training_label(volunteer):
         text = 'Incomplete'
 
     return mark_safe('<span class="label label-{}"> {} </span>'.format(
-            label, text))
+        label, text))
