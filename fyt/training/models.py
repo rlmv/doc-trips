@@ -116,9 +116,14 @@ class FirstAidCertification(DatabaseModel):
         return self.name
 
     def clean(self):
+        if self.name == self.OTHER and not self.other:
+            raise ValidationError({
+                'other': 'You must provide a name for this other certification'
+            })
         if not self.name and not self.other:
             raise ValidationError({
-                'name': 'Either `name` or `other` must be provided.'})
+                'name': 'Either `name` or `other` must be provided'
+            })
 
     def __str__(self):
         return '{} (exp. {})'.format(self.get_name(),

@@ -221,6 +221,14 @@ class FirstAidCertificationModelTestCase(FytTestCase):
         with self.assertRaises(ValidationError):
             mommy.make(FirstAidCertification, name='', other='').full_clean()
 
+    def test_other_name_must_have_other_field(self):
+        with self.assertRaises(ValidationError):
+            mommy.make(
+                FirstAidCertification,
+                name=FirstAidCertification.OTHER,
+                other=''
+            ).full_clean()
+
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):
 
