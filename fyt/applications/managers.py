@@ -213,10 +213,9 @@ class VolunteerQuerySet(models.QuerySet):
         """
         from fyt.training.models import FirstAidCertification
 
-        CPR = FirstAidCertification.CPR
-        non_cpr_options= [
+        non_cpr_options = [
             k for k, v in FirstAidCertification.CERTIFICATION_CHOICES
-            if k not in (CPR, None)]
+            if k not in [FirstAidCertification.CPR, None]]
 
         return self.filter(
             first_aid_certifications__name=FirstAidCertification.CPR,
