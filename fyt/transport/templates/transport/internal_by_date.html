@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load tooltips %}
 
 {% block header %}
 <h2> Internal Buses by Date </h2>
@@ -40,10 +41,5 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Enable tooltips -->
-<script type="text/javascript">
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
+{% activate_tooltips %}
 {% endblock %}

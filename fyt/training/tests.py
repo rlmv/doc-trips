@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from model_mommy import mommy
 
@@ -152,6 +153,9 @@ class VolunteerFirstAidTestCase(ApplicationTestMixin, FytTestCase):
             name='CPR',
             verified=False)
 
+        self.incompletes = [self.incomplete1, self.incomplete2,
+                            self.incomplete3, self.incomplete4]
+
         # All good
         self.complete = self.make_application()
         mommy.make(
@@ -171,9 +175,12 @@ class VolunteerFirstAidTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_first_aid_incomplete(self):
         self.assertQsEqual(
-            Volunteer.objects.first_aid_incomplete(),
-            [self.incomplete1, self.incomplete2, self.incomplete3,
-             self.incomplete4])
+            Volunteer.objects.first_aid_incomplete(), self.incompletes)
+
+    def test_first_aid_compete_model_method(self):
+        self.assertTrue(self.complete.first_aid_complete)
+        for v in self.incompletes:
+            self.assertFalse(v.first_aid_complete)
 
 
 class FirstAidCertificationModelTestCase(FytTestCase):
@@ -209,6 +216,18 @@ class FirstAidCertificationModelTestCase(FytTestCase):
     def test_str(self):
         self.assertEqual(str(self.cert1), 'WFR (exp. 02/25/19)')
         self.assertEqual(str(self.cert2), 'ABC (exp. 03/23/20)')
+
+    def test_requires_name_or_other(self):
+        with self.assertRaises(ValidationError):
+            mommy.make(FirstAidCertification, name='', other='').full_clean()
+
+    def test_other_name_must_have_other_field(self):
+        with self.assertRaises(ValidationError):
+            mommy.make(
+                FirstAidCertification,
+                name=FirstAidCertification.OTHER,
+                other=''
+            ).full_clean()
 
 
 class SessionRegistrationFormTestCase(ApplicationTestMixin, FytTestCase):

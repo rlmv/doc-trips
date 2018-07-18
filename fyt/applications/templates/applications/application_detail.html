@@ -6,6 +6,7 @@
 {% load answers %}
 {% load training %}
 {% load gear %}
+{% load tooltips %}
 
 {% block header %}
 <h2> {{ application.applicant }} <small> {{ application.applicant.netid }} </small></h2>
@@ -74,6 +75,7 @@
 <h4>
   First Aid Certifications
   <a href="{% url 'core:attendee:verify' trips_year=trips_year pk=application.pk %}"> edit </a>
+  {{ application|first_aid_label }}
 </h4>
 
 <table class="table table-condensed table-striped">
@@ -192,5 +194,8 @@
 
 </div>
 
-
 {% endblock content %}
+
+{% block scripts %}
+{% activate_tooltips %}
+{% endblock %}

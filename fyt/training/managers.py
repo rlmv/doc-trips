@@ -20,26 +20,6 @@ class AttendeeManager(models.Manager):
             volunteer__status__in=self.model.TRAINABLE_STATUSES
         )
 
-    def first_aid_complete(self, trips_year):
-        """
-        All volunteers with first aid certifications.
-        """
-        return self.filter(
-            trips_year=trips_year
-        ).exclude(
-            Q(fa_cert='') & Q(fa_other='')
-        )
-
-    def first_aid_incomplete(self, trips_year):
-        """
-        All volunteers missing first aid certifications.
-        """
-        return self.filter(
-            trips_year=trips_year
-        ).filter(
-            fa_cert='', fa_other=''
-        )
-
     def training_complete(self, trips_year):
         """
         All volunteers who have finished their training.

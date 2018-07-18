@@ -105,6 +105,10 @@
         min-width: 4em;
         display: inline-block;
     }
+
+    .header-buttons {
+        padding-bottom: .75em;
+    }
 }
 
 @media print {
