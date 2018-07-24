@@ -9,7 +9,7 @@ POSTGRES = fyt
 POSTGRES_USER = fytuser
 POSTGRES_DUMP = latest.dump
 
-SCRIPTS = $(wildcard scripts/*)
+SCRIPTS = scripts/runtests
 
 all:
 	$(MANAGE) runserver
