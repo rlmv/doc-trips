@@ -1,7 +1,7 @@
 {% extends "form.html" %}
 
 {% block header %}
-<h2> Request Gear <small> Trip {{ trip }} </small></h2>
+<h2> Request Gear {% if trip %}<small> Trip {{ trip }} </small>{% endif %}</h2>
 {% endblock header %}
 
 {% block content %}
