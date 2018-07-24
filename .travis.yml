@@ -1,9 +1,6 @@
 language: python
-python: 3.7
-
-# TODO: Remove the following after Travis fully supports 3.7
-dist: xenial
-sudo: true
+python:
+    - 3.6
 
 addons:
     postgresql: "9.6"
