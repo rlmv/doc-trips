@@ -6,7 +6,7 @@
 
 ## Installation
 
-To get a local development version running, install [Python 3.6](https://www.python.org/downloads/)
+To get a local development version running, install [Python 3.7](https://www.python.org/downloads/)
 and [Git](https://git-scm.com/book/id/v2/Getting-Started-Installing-Git). Run
 the following to install the project:
 

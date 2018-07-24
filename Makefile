@@ -1,4 +1,4 @@
-INTERPRETER = python3.6
+INTERPRETER = python3.7
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
