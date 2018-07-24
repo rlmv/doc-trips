@@ -49,7 +49,7 @@ class GearRequestList(DatabaseListView):
 class RequestGear(LoginRequiredMixin, BaseCreateView):
     model = GearRequest
     form_class = GearRequestForm
-    template_name = 'form.html'
+    template_name = 'gear/gearrequest_form.html'
 
     @cached_property
     def trips_year(self):
@@ -58,8 +58,11 @@ class RequestGear(LoginRequiredMixin, BaseCreateView):
     def get_form(self, **kwargs):
         return super().get_form(user=self.request.user, **kwargs)
 
-    def get_headline(self):
-        return 'Request Gear'
-
     def get_success_url(self):
         return self.request.path
+
+    def get_context_data(self, form=None):
+        requester = form.instance.requester
+        return super().get_context_data(
+            form=form,
+            trip=requester.trip_assignment if requester else None)

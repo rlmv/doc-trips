@@ -1,0 +1,15 @@
+{% extends "form.html" %}
+
+{% block header %}
+<h2> Request Gear <small> Trip {{ trip }} </small></h2>
+{% endblock header %}
+
+{% block content %}
+
+{% if trip %}
+<p><strong> Please scroll down for the gear request form </strong></p>
+{{ trip.template.triptype.packing_list|linebreaks }}
+{% endif %}
+
+{{ block.super }}
+{% endblock content%}
