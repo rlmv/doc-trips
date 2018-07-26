@@ -1,3 +1,4 @@
+{% load packing_list %}
 
 {# 'trip' is a template variable in this context #}
 
@@ -40,7 +41,7 @@
 <p> {{ trip.template.desc_conc|linebreaks }} </p>
 
 <h3> Packing List </h3>
-<p> {{ trip.template.triptype.packing_list|linebreaks }}
+{% packing_list trip.template.triptype %}
 </div>
 
 {% else %}

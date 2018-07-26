@@ -1,3 +1,5 @@
+{% load packing_list %}
+
 {% if trip %}
 {% with section=trip.section fmt="F jS"%}
 <p>
@@ -62,7 +64,9 @@
     total cost of Trips is ${{ incoming_student.compute_cost }} (this includes, if you selected any of these options: the cost of a local bus, DOC membership, and your Green Fund donation.) This total will be charged to your college account and appear on your first tuition bill.
   </li>
 
-  <li class="list-group-item"><strong> Packing List </strong> {{ trip.template.triptype.packing_list|linebreaks }} </li>
+  <li class="list-group-item"><strong> Packing List </strong>
+    {% packing_list trip.template.triptype %}
+  </li>
 
 </ul>
 </p>

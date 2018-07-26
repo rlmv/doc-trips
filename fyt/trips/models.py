@@ -442,6 +442,10 @@ class TripType(DatabaseModel):
     # can we have some sort of common/base packing list? and add in extras?
     packing_list = models.TextField(blank=True)
 
+    # TODO: remove this.
+    # Added to save the old information in case the migration went wrong
+    old_packing_list = models.TextField(blank=True)
+
     hidden = models.BooleanField(
         'hide this TripType from leader applications and incoming student '
         'registrations', default=False

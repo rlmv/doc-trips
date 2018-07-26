@@ -1,4 +1,5 @@
 {% extends "form.html" %}
+{% load packing_list %}
 
 {% block header %}
 <h2> Request Gear {% if trip %}<small> Trip {{ trip }} </small>{% endif %}</h2>
@@ -7,8 +8,15 @@
 {% block content %}
 
 {% if trip %}
-<p><strong> Please scroll down for the gear request form </strong></p>
-{{ trip.template.triptype.packing_list|linebreaks }}
+<div class="alert alert-info">
+  <strong> Please scroll down for the gear request form </strong>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    {% packing_list trip.template.triptype link_to_request_form=False%}
+  </div>
+</div>
 {% endif %}
 
 {{ block.super }}

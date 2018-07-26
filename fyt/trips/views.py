@@ -263,12 +263,12 @@ class TripTypeCreate(DatabaseCreateView):
 
 class TripTypeDetail(DatabaseDetailView):
     model = TripType
+    template_name = 'trips/triptype_detail.html'
     fields = [
         'name',
         'hidden',
         'trippee_description',
         'leader_description',
-        'packing_list',
         'half_kickin',
         'gets_supplemental',
     ]

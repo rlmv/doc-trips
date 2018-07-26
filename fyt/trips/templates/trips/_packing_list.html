@@ -1,0 +1,65 @@
+<p>Here is your packing list. Read through the whole thing, and figure out what you have, and what you need to find. YOU DON'T NEED TO BUY ANYTHING NEW! Borrow from friends and family, buy secondhand, or request gear through us. If necessary, we can lend you a hiking backpack (frame pack), a sleeping bag, and a foam sleeping pad all for FREE, however, priority will be given to those on financial aid. In general, we have a limited supply, so first ask friends and family first to see if you can borrow these items.</p>
+
+{% if link_to_request_form %}
+<div class="alert alert-info">
+  <p>To request gear from us, please fill out the form found <a class="alert-link" href="{% url 'gear:request' %}">here</a>.</p>
+</div>
+{% endif %}
+
+<p>You're going away for 5 days. It's an outdoor trip, and you won't have access to a shower, and you won't need your full wardrobe. And guess what? You'll look awesome no matter what, because you ARE awesome.</p>
+
+<p>Now on to Gear. Here's all the Personal Gear that you <strong>MUST BRING</strong>:</p>
+
+{{ triptype.packing_list|linebreaks }}
+
+<h5>OPTIONAL</h5>
+<p>You don't need these, but would be helpful if you have room!</p>
+<ul>
+  <li>LUNCH for the first day! You won't get dinner until 6pm on the day you arrive, so make sure you have food for when you are traveling to Hanover.</li>
+  <li>bandanna, rain cover for frame pack, pocket knife, compass, camera, sunglasses, wind or rain pants, musical instrument, journal, etc.</li>
+  <li>One pair sneakers, crocs, or sport sandals for when you're at your campsite.</li>
+  <li>sunscreen, insect repellent</li>
+</ul>
+
+<h5>PROVIDED BY US</h5>
+<ul>
+  <li>Cooking equipment and stove</li>
+  <li>First aid kit</li>
+  <li>All other trip-specific group gear, for example: kayaks, and rock climbing gear</li>
+</ul>
+
+<h5>NOT ALLOWED</h5>
+<ul>
+  <li>Firearms</li>
+  <li>Private food</li>
+  <li>iPods, radios, TV sets, or  cellular phones</li>
+  <li>Alcoholic beverages or non-medical drugs</li>
+  <li>Garden gnomes</li>
+</ul>
+
+<h5>IMPORTANT NOTES</h5>
+<ul>
+  <li>If you have allergic reactions (bee stings, peanuts, etc.), we ask that you acquire an epinephrine kit from your doctor, and if you have an athletic brace, remember to bring it.</li>
+  <li>The weather in New Hampshire is unpredictable. It can be quite hot during the day, but COLD at night. Even if you're roasting in your town's summer heat right now, prepare for some chilly nights on your trip by bringing warm, non-cotton clothes. If you bring the proper clothing, you will remain warm, even while wet. Don't cut corners on things like hats, sunscreen, and warm, non-cotton layers.</li>
+  <li>The COTTON issue: You should avoid bringing cotton clothing in the woods, especially for your warm layers. Think about throwing your favorite cotton sweatshirt in cold water and then putting it on to keep warm -- it's heavy and doesn't insulate. Most trips experience some rain, so please provide for your own comfort and warmth by bringing non-cotton layers for both top and bottom. Any kind of synthetic material will work, as will wool. Don't be afraid to wear an old wool shirt or thermal underwear! Better to be wet and warm than wet and cold!</li>
+  <li>Line your bag with a plastic trash bag and pack your clothes in plastic bags as well. In the event of rain you will be thrilled to have some dry clothes and a dry sleeping bag in camp.</li>
+  <li>Remember, if you do not have the proper equipment, try borrowing it from a friend or check out your local Army/Navy surplus store. You don't need the top-of-the-line, Himalayan expedition-caliber gear; just make sure it's functional and relatively light. Wool and polyester clothing can be bought for next to nothing at Salvation Army and Goodwill</li>
+  <li>If you have gear questions, contact your local outdoor outfitter such as EMS or REI. Here are some websites that sell less expensive gear: Campmor, REI, Backcountry Store, Sierra Trading Post.</li>
+</ul>
+
+<br>
+
+<p>
+  Check the Website for more info:
+  http://outdoors.dartmouth.edu/firstyear/
+</p>
+
+<p>
+  Please email or call us with any questions whatsoever! We are happy to answer any of your questions and we consider it our responsibility to make sure you feel as prepared as possible for your trip. We look forward to meeting you this fall!
+</p>
+
+<p>
+  603.646.3996
+  <br>
+  DOC.Trips@dartmouth.edu
+</p>

@@ -1,0 +1,13 @@
+{% extends "core/detail.html" %}
+{% load packing_list %}
+
+{% block content %}
+{{ block.super }}
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h4> Packing List </h4>
+    {% packing_list object %}
+  </div>
+</div>
+{% endblock %}
