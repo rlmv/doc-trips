@@ -58,6 +58,9 @@ and add them to `config.yml`:
     GOOGLE_MAPS_KEY: "your google maps key"
     GOOGLE_MAPS_BROWSER_KEY: "your google maps browser key"
 
+Note that `GOOGLE_MAPS_BROWSER_KEY` is used browser-side. Be sure to set
+referrer restrictions on it!
+
 In 2015 and 2016, Leader and Croo applications were submitted with an attached
 word document. Those files were uploaded to Amazon S3. The application was
 refactored in 2017 to use form-based questions, but those files are still in the
