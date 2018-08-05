@@ -24,3 +24,9 @@ def checkmark_if_true(condition):
     else:
         html = '<i class="fa fa-square-o"></i>'
     return mark_safe(html)
+
+
+@register.simple_tag
+def warning_sign():
+    """Warning exclamation mark."""
+    return mark_safe('<i class="fa fa-exclamation text-bright-danger"></i>')

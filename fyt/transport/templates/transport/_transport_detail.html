@@ -1,5 +1,6 @@
 {# has 'transport', 'riders', 'issue', 'capacity', 'trips_year', in context #}
 {% load links %}
+{% load icons %}
 
 <span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %} RIDERS EXCEED CAPACITY: {% elif issue == NOT_SCHEDULED %} TRANSPORT NOT SCHEDULED: {% endif %}Dropping off {{ riders.dropping_off }}/{{ capacity }}, picking up {{ riders.picking_up }}/{{ capacity }}, returning {{ riders.returning }}/{{ capacity }}">
 
@@ -8,11 +9,11 @@
   {% if transport %}
   {{ transport|delete_link:'<i class="fa fa-close text-danger"></i>' }}
   {% if issue == EXCEEDS_CAPACITY %}
-  <i class="fa fa-exclamation text-bright-danger"></i>
+  {% warning_sign %}
   {% endif %}
 
   {% else %}
-  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'core:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}<i class="fa fa-exclamation text-bright-danger"></i>{% endif %}</a>
+  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'core:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}{% warning_sign %}</i>{% endif %}</a>
   {% endif %}
 
 </span>

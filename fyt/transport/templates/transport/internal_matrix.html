@@ -2,6 +2,7 @@
 {% load get from dict %}
 {% load links %}
 {% load tooltips %}
+{% load icons %}
 
 {% block header %}
 <h2> Internal Bus Schedule </h2>
@@ -9,8 +10,8 @@
 
 {% block content %}
 
-<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p>
-<p> Mouseover a bus in the matrix to see the total number of passengers carried. The matrix will warn you if transportation is not scheduled for a trip. The matrix will also warn you if the trips riding on a bus exceed the capacity of a bus at any point along the scheduled route.</p>
+<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus text-info"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p>
+<p> Mouseover a bus in the matrix to see the total number of passengers carried. The matrix will show a {% warning_sign %} if transportation is not scheduled for a trip, or if the bus is over capacity at any point along its route.</p>
 
 <table class="table table-condensed table-bordered">
 
