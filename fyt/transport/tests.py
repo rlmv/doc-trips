@@ -656,14 +656,32 @@ class IssuesMatrixTestCase(TransportTestCase):
             Section,
             trips_year=self.trips_year,
             leaders_arrive=date(2015, 1, 1))
-        trip = mommy.make(
+
+        trip1 = mommy.make(
             Trip,
             trips_year=self.trips_year,
             section=section,
             template__dropoff_stop__route=route,
             template__pickup_stop__route=route,
-            template__return_route=route,
-            template__max_trippees=route.vehicle.capacity + 1000) # exceeds capacity
+            template__return_route=route)
+        mommy.make(
+            IncomingStudent,
+            route.vehicle.capacity,
+            trips_year=self.trips_year,
+            trip_assignment=trip1)
+
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section,
+            template__dropoff_stop__route=route,
+            template__pickup_stop__route=route,
+            template__return_route=route)
+        mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment=trip2)
+
         mommy.make(
             InternalBus,
             trips_year=self.trips_year,
@@ -674,13 +692,19 @@ class IssuesMatrixTestCase(TransportTestCase):
             trips_year=self.trips_year,
             route=route,
             date=date(2015, 1, 5))
+        mommy.make(
+            InternalBus,
+            trips_year=self.trips_year,
+            route=route,
+            date=date(2015, 1, 6))
+
         target = {
             route: {
                 date(2015,1,2): None,
                 date(2015,1,3): EXCEEDS_CAPACITY,
                 date(2015,1,4): None,
                 date(2015,1,5): EXCEEDS_CAPACITY,
-                date(2015,1,6): NOT_SCHEDULED
+                date(2015,1,6): EXCEEDS_CAPACITY,
             }
         }
         matrix = get_internal_issues_matrix(

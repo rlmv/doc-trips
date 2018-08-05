@@ -245,7 +245,6 @@ def _rider_matrix(trips_year, size_key):
 
 
 def get_internal_issues_matrix(transport_matrix, riders_matrix):
-
     assert len(transport_matrix.keys()) == len(riders_matrix.keys())
 
     matrix = riders_matrix.map(lambda x: None)  # new matrix w/ null entries
@@ -254,12 +253,9 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
         for date in dates:
             transport = transport_matrix[route][date]
             riders = riders_matrix[route][date]
-            capacity = route.vehicle.capacity
             if riders and not transport:
                 matrix[route][date] = NOT_SCHEDULED
-            elif riders and (riders.dropping_off > capacity or
-                             riders.picking_up > capacity or
-                             riders.returning > capacity):
+            elif transport and transport.over_capacity():
                 matrix[route][date] = EXCEEDS_CAPACITY
 
     return matrix
