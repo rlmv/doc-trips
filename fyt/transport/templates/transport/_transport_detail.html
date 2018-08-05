@@ -2,18 +2,65 @@
 {% load links %}
 {% load icons %}
 
-<span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %} RIDERS EXCEED CAPACITY: {% elif issue == NOT_SCHEDULED %} TRANSPORT NOT SCHEDULED: {% endif %}Dropping off {{ riders.dropping_off }}/{{ capacity }}, picking up {{ riders.picking_up }}/{{ capacity }}, returning {{ riders.returning }}/{{ capacity }}">
 
-  <a href="{% url 'core:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-bars"></i></a> <br>
+<!-- Modal button -->
+<span data-toggle="tooltip" data-placement="top" title="{% if issue == EXCEEDS_CAPACITY %}
+                                                        RIDERS EXCEED CAPACITY.
+                                                        {% elif issue == NOT_SCHEDULED %}
+                                                        TRANSPORT NOT SCHEDULED.
+                                                        {% endif %}
+                                                        Click for more info">
+  <button type="button" class="btn btn-xs" data-toggle="modal" data-target="#myModal-{{x}}-{{y}}">
+    {% if issue == EXCEEDS_CAPACITY %}
+    <span class="fa fa-fw">
+      <i class="fa fa-users"></i>
+      <i class="fa fa-exclamation text-bright-danger"></i>
+    </span>
 
-  {% if transport %}
-  {{ transport|delete_link:'<i class="fa fa-close text-danger"></i>' }}
-  {% if issue == EXCEEDS_CAPACITY %}
-  {% warning_sign %}
-  {% endif %}
+    {% elif issue == NOT_SCHEDULED %}
+    <span class="fa fa-fw">
+      <i class="fa fa-calendar"></i>
+      <i class="fa fa-exclamation text-bright-danger"></i>
+    </span>
 
-  {% else %}
-  <a id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'core:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> {% if issue == NOT_SCHEDULED %}{% warning_sign %}</i>{% endif %}</a>
-  {% endif %}
+    {% elif transport %}
+    <i class="fa fa-check fa-fw text-bright-success"></i>
 
+    {% else %}
+    <i class="fa fa-plus fa-fw text-info"></i>
+    {% endif %}
+
+  </button>
 </span>
+
+<!-- Modal -->
+<div class="modal" id="myModal-{{x}}-{{y}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-close"></i></button>
+        <h4 class="modal-title" id="myModalLabel">{{ route }} {{ date|date:"n/d" }}</h4>
+      </div>
+      <div class="modal-body">
+        {% if issue == EXCEEDS_CAPACITY %}
+        {% include "transport/_over_capacity_alert.html" with over_capacity=True %}
+        {% elif issue == NOT_SCHEDULED %}
+        {% include "transport/_scheduled_alert.html" with scheduled=False %}
+        {% endif %}
+
+        {% if riders.trips %}
+        <p> Carrying {{ riders.trip_names }} </p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        {% if transport %}
+        {{ transport.delete_url|delete_button }}
+        {% else %}
+        <a type="button" class="btn btn-info" id="{{ date|date:'n-j-Y' }}-create-{{ route.pk }}" href="{% url 'core:internalbus:create' trips_year=trips_year %}?route={{ route.pk }}&date={{ date|date:'n/j/Y' }}"><i class="fa fa-plus"></i> Add bus </a>
+        {% endif %}
+        <a type="button" class="btn btn-primary" href="{% url 'core:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-external-link"></i> More Info</a>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+      </div>
+    </div>
+  </div>
+</div>

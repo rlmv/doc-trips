@@ -199,6 +199,10 @@ class Riders:
 
     __repr__ = __str__
 
+    @property
+    def trip_names(self):
+        return ', '.join(sorted(str(trip) for trip in self.trips))
+
 
 def get_internal_rider_matrix(trips_year):
     """

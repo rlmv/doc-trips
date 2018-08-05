@@ -29,4 +29,4 @@ def checkmark_if_true(condition):
 @register.simple_tag
 def warning_sign():
     """Warning exclamation mark."""
-    return mark_safe('<i class="fa fa-exclamation text-bright-danger"></i>')
+    return mark_safe('<i class="fa fa-exclamation fa-fw text-bright-danger"></i>')

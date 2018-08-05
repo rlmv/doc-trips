@@ -8,13 +8,9 @@
 
 {% block content %}
 
-{% include "transport/_scheduled_alert.html" %}
+{% include "transport/_scheduled_alert.html" with scheduled=scheduled %}
 
-{% if over_capacity %}
-<div class="alert alert-danger">
-  <i class="fa fa-warning"></i> This bus is over capacity! At some point there are too many passengers on the bus.
-</div>
-{% endif %}
+{% include "transport/_over_capacity_alert.html" with over_capacity=over_capacity %}
 
 {% if scheduled %}
 

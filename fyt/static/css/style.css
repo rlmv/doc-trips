@@ -109,6 +109,10 @@
     .header-buttons {
         padding-bottom: .75em;
     }
+
+    .no-wrap {
+        white-space: nowrap;
+    }
 }
 
 @media print {
