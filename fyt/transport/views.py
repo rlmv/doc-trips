@@ -159,25 +159,35 @@ class Riders:
 
     TODO: "Riders" doesn't really mean much, semantically.
     """
-
-    def __init__(self, dropping_off, picking_up, returning):
+    def __init__(self, dropping_off, picking_up, returning, trips=None):
         self.dropping_off = dropping_off
         self.picking_up = picking_up
         self.returning = returning
 
+        # Record trips that generate these riders.
+        # If a trip has no people assigned yet, but is still scheduled,
+        # we consider that to still be 'riders' on the bus.
+        if trips is None:
+            trips = []
+        self.trips = set(trips)
+
     def __add__(self, y):
-        d = self.dropping_off + y.dropping_off
-        p = self.picking_up + y.picking_up
-        r = self.returning + y.returning
-        return Riders(d, p, r)
+        return Riders(self.dropping_off + y.dropping_off,
+                      self.picking_up + y.picking_up,
+                      self.returning + y.returning,
+                      self.trips.union(y.trips))
 
     def __bool__(self):
-        return bool(self.dropping_off or self.picking_up or self.returning)
+        return bool(self.dropping_off or
+                    self.picking_up or
+                    self.returning or
+                    self.trips)
 
     def __eq__(self, y):
         return (self.dropping_off == y.dropping_off and
                 self.picking_up == y.picking_up and
-                self.returning == y.returning)
+                self.returning == y.returning and
+                self.trips == y.trips)
 
     def __ne__(self, y):
         return not self.__eq__(y)
@@ -192,27 +202,8 @@ class Riders:
 
 def get_internal_rider_matrix(trips_year):
     """
-    Matrix of hypothetical numbers,
-    computed with max_trippees + 2 leaders.
-
-    matrix[route][date] gives you the Riders for that route on that date.
-    """
-
-    return _rider_matrix(trips_year, lambda trip: trip.template.max_num_people)
-
-
-def get_actual_rider_matrix(trips_year):
-    """
-    Matrix of actual, assigned transport numbers.
-    """
-    return _rider_matrix(trips_year, lambda trip: trip.size())
-
-
-def _rider_matrix(trips_year, size_key):
-    """
     Size key computes the number of riders on a transport leg
     """
-
     routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     trips = (
@@ -230,16 +221,16 @@ def _rider_matrix(trips_year, size_key):
     matrix = OrderedMatrix(routes, dates, lambda: Riders(0, 0, 0))
 
     for trip in trips:
+        n = trip.size()
 
-        n = size_key(trip)
         # dropoff
         if trip.get_dropoff_route():
-            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0)
+            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0, [trip])
         # pickup
         if trip.get_pickup_route():
-            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0)
+            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0, [trip])
         # return
-        matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n)
+        matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n, [trip])
 
     return matrix
 
@@ -274,10 +265,9 @@ class InternalBusMatrix(DatabaseReadPermissionRequired,
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
 
         # transport count info
-        m = get_actual_rider_matrix(self.trips_year)
-        context['dropoff_matrix'] = m.map(lambda x: x.dropping_off).truncate()
-        context['pickup_matrix'] = m.map(lambda x: x.picking_up).truncate()
-        context['return_matrix'] = m.map(lambda x: x.returning).truncate()
+        context['dropoff_matrix'] = riders.map(lambda x: x.dropping_off).truncate()
+        context['pickup_matrix'] = riders.map(lambda x: x.picking_up).truncate()
+        context['return_matrix'] = riders.map(lambda x: x.returning).truncate()
 
         return context
 

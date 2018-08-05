@@ -30,9 +30,8 @@ from fyt.transport.views import (
     NOT_SCHEDULED,
     Riders,
     TransportChecklist,
-    get_actual_rider_matrix,
-    get_internal_issues_matrix,
     get_internal_rider_matrix,
+    get_internal_issues_matrix,
     get_internal_route_matrix,
     preload_transported_trips,
     trip_transport_matrix,
@@ -375,156 +374,7 @@ class InternalBusMatrixTestCase(TransportTestCase):
         })
 
 
-class RidersMatrixTestCase(TransportTestCase):
-
-    def setUp(self):
-        self.init_trips_year()
-        self.init_transport_config()
-
-    def test_internal_riders_matrix_with_single_trip(self):
-        route = mommy.make(Route, trips_year=self.trips_year, category=Route.INTERNAL)
-        section = mommy.make(
-            Section, trips_year=self.trips_year,
-            leaders_arrive=date(2015, 1, 1)
-        )
-        trip = mommy.make(
-            Trip, trips_year=self.trips_year,
-            section=section,
-            template__dropoff_stop__route=route,
-            template__pickup_stop__route=route,
-            template__return_route=route
-        )
-        n = trip.template.max_num_people
-        target = {
-            route: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,0,n),
-            }
-        }
-        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
-
-    def test_internal_riders_matrix_with_multiple_trips(self):
-        route = mommy.make(
-            Route,
-            trips_year=self.trips_year,
-            category=Route.INTERNAL)
-        section = mommy.make(
-            Section,
-            trips_year=self.trips_year,
-            leaders_arrive=date(2015, 1, 1))
-        # trips share dropoff locations and dates
-        trip1 = mommy.make(
-            Trip, trips_year=self.trips_year,
-            section=section,
-            template__dropoff_stop__route=route,
-            template__pickup_stop__route=route,
-            template__return_route=route
-        )
-        trip2 = mommy.make(
-            Trip, trips_year=self.trips_year,
-            section=section,
-            template__dropoff_stop__route=route,
-            template__pickup_stop__route=route,
-            template__return_route=route
-        )
-        n = trip1.template.max_num_people + trip2.template.max_num_people
-        target = {
-            route: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,0,n),
-            }
-        }
-        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
-
-    def test_internal_riders_matrix_with_multiple_trips_overlap(self):
-        route1 = mommy.make(
-            Route,
-            trips_year=self.trips_year,
-            category=Route.INTERNAL)
-        route2 = mommy.make(
-            Route,
-            trips_year=self.trips_year,
-            category=Route.INTERNAL)
-        section1 = mommy.make(
-            Section,
-            trips_year=self.trips_year,
-            leaders_arrive=date(2015, 1, 1))
-        section2 = mommy.make(
-            Section,
-            trips_year=self.trips_year,
-            leaders_arrive=date(2015, 1, 2))
-        trip1 = mommy.make(
-            Trip,
-            trips_year=self.trips_year,
-            section=section1,
-            template__dropoff_stop__route=route1,
-            template__pickup_stop__route=route1,
-            template__return_route=route1)
-        trip2 = mommy.make(
-            Trip,
-            trips_year=self.trips_year,
-            section=section2,
-            template__dropoff_stop__route=route2,
-            template__pickup_stop__route=route1,
-            template__return_route=route2)
-        n = trip1.template.max_num_people
-        m = trip2.template.max_num_people
-        target = {
-            route1: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,m,n),
-                date(2015,1,7): Riders(0,0,0),
-            },
-            route2: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(0,0,0),
-                date(2015,1,4): Riders(m,0,0),
-                date(2015,1,5): Riders(0,0,0),
-                date(2015,1,6): Riders(0,0,0),
-                date(2015,1,7): Riders(0,0,m),
-            }
-        }
-        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
-
-    def test_internal_riders_matrix_with_overriden_routes(self):
-        route = mommy.make(
-            Route,
-            trips_year=self.trips_year,
-            category=Route.INTERNAL)
-        section = mommy.make(
-            Section,
-            trips_year=self.trips_year,
-            leaders_arrive=date(2015,1,1))
-        # route is set *directly* on scheduled trip
-        trip = mommy.make(
-            Trip, trips_year=self.trips_year,
-            section=section,
-            dropoff_route=route,
-            pickup_route=route,
-            return_route=route)
-        n = trip.template.max_num_people
-        target = {
-            route: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,0,n)
-            }
-        }
-        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
-
-
-class ActualRidersMatrixTestCase(FytTestCase):
+class RidersMatrixTestCase(FytTestCase):
 
     def setUp(self):
         self.init_trips_year()
@@ -555,9 +405,9 @@ class ActualRidersMatrixTestCase(FytTestCase):
                 date(2015,1,6): Riders(0,0,n),
             }
         }
-        self.assertEqual(target, get_actual_rider_matrix(self.trips_year))
+        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
 
-    def test_actual_riders_matrix_with_multiple_trips_overlap(self):
+    def test_rider_matrix_with_multiple_trips_overlap(self):
         route1 = mommy.make(
             Route,
             trips_year=self.trips_year,
@@ -607,7 +457,36 @@ class ActualRidersMatrixTestCase(FytTestCase):
                 date(2015,1,6): Riders(0,0,0),
                 date(2015,1,7): Riders(0,0,m)}
         }
-        self.assertEqual(target, get_actual_rider_matrix(self.trips_year))
+        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
+
+    def test_internal_riders_matrix_with_overriden_routes(self):
+        route = mommy.make(
+            Route,
+            trips_year=self.trips_year,
+            category=Route.INTERNAL)
+        section = mommy.make(
+            Section,
+            trips_year=self.trips_year,
+            leaders_arrive=date(2015,1,1))
+        # route is set *directly* on scheduled trip
+        trip = mommy.make(
+            Trip, trips_year=self.trips_year,
+            section=section,
+            dropoff_route=route,
+            pickup_route=route,
+            return_route=route)
+        n = trip.size()
+        target = {
+            route: {
+                date(2015,1,2): Riders(0,0,0),
+                date(2015,1,3): Riders(n,0,0),
+                date(2015,1,4): Riders(0,0,0),
+                date(2015,1,5): Riders(0,n,0),
+                date(2015,1,6): Riders(0,0,n)
+            }
+        }
+        self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
+
 
 class IssuesMatrixTestCase(TransportTestCase):
 
@@ -644,7 +523,6 @@ class IssuesMatrixTestCase(TransportTestCase):
         matrix = get_internal_issues_matrix(
             get_internal_route_matrix(self.trips_year),
             get_internal_rider_matrix(self.trips_year))
-
         self.assertEqual(target, matrix)
 
     def test_exceeds_capacity(self):
@@ -717,21 +595,20 @@ class IssuesMatrixTestCase(TransportTestCase):
 class RidersClassTestCase(unittest.TestCase):
 
     def test__add__(self):
-        r1 = Riders(0, 0, 1)
+        r1 = Riders(0, 0, 1, trips=['t1', 't2'])
         r2 = Riders(1, 1, 1)
         new = r1 + r2
         self.assertEqual(new.dropping_off, 1)
         self.assertEqual(new.picking_up, 1)
         self.assertEqual(new.returning, 2)
+        self.assertEqual(new.trips, set(['t1', 't2']))
 
-    def test__bool__true(self):
+    def test__bool__(self):
         self.assertTrue(Riders(0, 0, 1))
         self.assertTrue(Riders(0, 2, 0))
         self.assertTrue(Riders(2012, 0, 0))
-
-    def test__bool__false(self):
-        r1 = Riders(0, 0, 0)
-        self.assertFalse(r1)
+        self.assertTrue(Riders(0, 0, 0, trips=['t1']))
+        self.assertFalse(Riders(0, 0, 0))
 
     def test__eq__(self):
         self.assertEqual(Riders(0,0,0), Riders(0,0,0))
