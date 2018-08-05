@@ -398,11 +398,11 @@ class RidersMatrixTestCase(FytTestCase):
         n = trip.size()
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,0,n),
+                date(2015,1,2): Riders(),
+                date(2015,1,3): Riders(dropping_off=[trip]),
+                date(2015,1,4): Riders(),
+                date(2015,1,5): Riders(picking_up=[trip]),
+                date(2015,1,6): Riders(returning=[trip])
             }
         }
         self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
@@ -442,20 +442,21 @@ class RidersMatrixTestCase(FytTestCase):
         m = trip2.size()
         target = {
             route1: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,m,n),
-                date(2015,1,7): Riders(0,0,0)
+                date(2015,1,2): Riders(),
+                date(2015,1,3): Riders(dropping_off=[trip1]),
+                date(2015,1,4): Riders(),
+                date(2015,1,5): Riders(picking_up=[trip1]),
+                date(2015,1,6): Riders(picking_up=[trip2], returning=[trip1]),
+                date(2015,1,7): Riders(),
             },
             route2: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(0,0,0),
-                date(2015,1,4): Riders(m,0,0),
-                date(2015,1,5): Riders(0,0,0),
-                date(2015,1,6): Riders(0,0,0),
-                date(2015,1,7): Riders(0,0,m)}
+                date(2015,1,2): Riders(),
+                date(2015,1,3): Riders(),
+                date(2015,1,4): Riders(dropping_off=[trip2]),
+                date(2015,1,5): Riders(),
+                date(2015,1,6): Riders(),
+                date(2015,1,7): Riders(returning=[trip2])
+            }
         }
         self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
 
@@ -478,11 +479,11 @@ class RidersMatrixTestCase(FytTestCase):
         n = trip.size()
         target = {
             route: {
-                date(2015,1,2): Riders(0,0,0),
-                date(2015,1,3): Riders(n,0,0),
-                date(2015,1,4): Riders(0,0,0),
-                date(2015,1,5): Riders(0,n,0),
-                date(2015,1,6): Riders(0,0,n)
+                date(2015,1,2): Riders(),
+                date(2015,1,3): Riders(dropping_off=[trip]),
+                date(2015,1,4): Riders(),
+                date(2015,1,5): Riders(picking_up=[trip]),
+                date(2015,1,6): Riders(returning=[trip]),
             }
         }
         self.assertEqual(target, get_internal_rider_matrix(self.trips_year))
@@ -592,27 +593,30 @@ class IssuesMatrixTestCase(TransportTestCase):
         self.assertEqual(target, matrix)
 
 
-class RidersClassTestCase(unittest.TestCase):
+class RidersTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.r1 = Riders(returning=['t1', 't2'])
+        self.r2 = Riders(dropping_off=['t3'], picking_up=['t4'], returning=['t5'])
+        self.r3 = Riders(picking_up=['t6'])
+        self.r4 = Riders(dropping_off=['t7'])
 
     def test__add__(self):
-        r1 = Riders(0, 0, 1, trips=['t1', 't2'])
-        r2 = Riders(1, 1, 1)
-        new = r1 + r2
-        self.assertEqual(new.dropping_off, 1)
-        self.assertEqual(new.picking_up, 1)
-        self.assertEqual(new.returning, 2)
-        self.assertEqual(new.trips, set(['t1', 't2']))
+        new = self.r1 + self.r2
+        self.assertEqual(new.dropping_off, {'t3'})
+        self.assertEqual(new.picking_up, {'t4'})
+        self.assertEqual(new.returning, {'t1', 't2', 't5'})
 
     def test__bool__(self):
-        self.assertTrue(Riders(0, 0, 1))
-        self.assertTrue(Riders(0, 2, 0))
-        self.assertTrue(Riders(2012, 0, 0))
-        self.assertTrue(Riders(0, 0, 0, trips=['t1']))
-        self.assertFalse(Riders(0, 0, 0))
+        self.assertTrue(self.r1)
+        self.assertTrue(self.r2)
+        self.assertTrue(self.r3)
+        self.assertTrue(self.r4)
+        self.assertFalse(Riders())
 
     def test__eq__(self):
-        self.assertEqual(Riders(0,0,0), Riders(0,0,0))
-        self.assertNotEqual(Riders(1,2,3), Riders(0,0,0))
+        self.assertEqual(Riders(), Riders())
+        self.assertNotEqual(self.r1, self.r2)
 
 
 class TransportChecklistTest(FytTestCase):

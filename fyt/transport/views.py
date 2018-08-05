@@ -150,6 +150,12 @@ def trip_transport_matrix(trips_year):
     return dropoff_matrix, pickup_matrix, return_matrix
 
 
+def as_set(trips):
+    if trips is None:
+        return set()
+    return set(trips)
+
+
 class Riders:
     """
     Utility class to represent the number of riders on a route.
@@ -159,35 +165,25 @@ class Riders:
 
     TODO: "Riders" doesn't really mean much, semantically.
     """
-    def __init__(self, dropping_off, picking_up, returning, trips=None):
-        self.dropping_off = dropping_off
-        self.picking_up = picking_up
-        self.returning = returning
-
-        # Record trips that generate these riders.
-        # If a trip has no people assigned yet, but is still scheduled,
-        # we consider that to still be 'riders' on the bus.
-        if trips is None:
-            trips = []
-        self.trips = set(trips)
+    def __init__(self, dropping_off=None, picking_up=None, returning=None):
+        self.dropping_off = as_set(dropping_off)
+        self.picking_up = as_set(picking_up)
+        self.returning = as_set(returning)
 
     def __add__(self, y):
-        return Riders(self.dropping_off + y.dropping_off,
-                      self.picking_up + y.picking_up,
-                      self.returning + y.returning,
-                      self.trips.union(y.trips))
+        return Riders(self.dropping_off.union(y.dropping_off),
+                      self.picking_up.union(y.picking_up),
+                      self.returning.union(y.returning))
 
     def __bool__(self):
         return bool(self.dropping_off or
                     self.picking_up or
-                    self.returning or
-                    self.trips)
+                    self.returning)
 
     def __eq__(self, y):
         return (self.dropping_off == y.dropping_off and
                 self.picking_up == y.picking_up and
-                self.returning == y.returning and
-                self.trips == y.trips)
+                self.returning == y.returning)
 
     def __ne__(self, y):
         return not self.__eq__(y)
@@ -206,7 +202,7 @@ class Riders:
 
 def get_internal_rider_matrix(trips_year):
     """
-    Size key computes the number of riders on a transport leg
+    Compute which trips are riding on each route every day.
     """
     routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
@@ -222,19 +218,17 @@ def get_internal_rider_matrix(trips_year):
             'template__return_route'
         )
     )
-    matrix = OrderedMatrix(routes, dates, lambda: Riders(0, 0, 0))
+    matrix = OrderedMatrix(routes, dates, lambda: Riders())
 
     for trip in trips:
-        n = trip.size()
-
         # dropoff
         if trip.get_dropoff_route():
-            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0, [trip])
+            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(dropping_off=[trip])
         # pickup
         if trip.get_pickup_route():
-            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0, [trip])
+            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(picking_up=[trip])
         # return
-        matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n, [trip])
+        matrix[trip.get_return_route()][trip.return_date] += Riders(returning=[trip])
 
     return matrix
 
