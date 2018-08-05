@@ -1,6 +1,7 @@
 {# has 'transport', 'riders', 'issue', 'capacity', 'trips_year', in context #}
 {% load links %}
 {% load icons %}
+{% load maps %}
 
 
 <!-- Modal button -->
@@ -48,9 +49,31 @@
         {% include "transport/_scheduled_alert.html" with scheduled=False %}
         {% endif %}
 
-        {% if riders.trips %}
-        <p> Carrying {{ riders.trip_names }} </p>
+        {% if riders %}
+        <div class="row">
+          {% if riders.dropping_off %}
+          <div class="col-sm-4">
+            <strong>Dropping off:</strong>
+            {% trips_with_counts riders.dropping_off %}
+          </div>
+          {% endif %}
+
+          {% if riders.picking_up %}
+          <div class="col-sm-4">
+            <strong>Picking up:</strong>
+            {% trips_with_counts riders.picking_up %}
+          </div>
+          {% endif %}
+
+          {% if riders.returning %}
+          <div class="col-sm-4">
+            <strong>Returning:</strong>
+            {% trips_with_counts riders.returning %}
+          </div>
+          {% endif %}
+        </div>
         {% endif %}
+
       </div>
       <div class="modal-footer">
         {% if transport %}
