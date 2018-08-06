@@ -321,11 +321,10 @@ class StopListView(DatabaseListView):
     template_name = 'transport/stop_index.html'
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.select_related(
+        return super().get_queryset().select_related(
             'route'
         ).order_by(
-            'route__category', 'route', 'name'
+            'route__category', 'name'
         )
 
 
