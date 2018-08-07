@@ -53,7 +53,7 @@ class WebAuthBackend(ModelBackend):
     """
     CAS authentication backend for Dartmouth Webauth
     """
-    def authenticate(self, ticket, service):
+    def authenticate(self, request, ticket, service):
         """
         Verifies CAS ticket and gets or creates User object.
         """

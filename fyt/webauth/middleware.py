@@ -1,4 +1,3 @@
-
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -22,15 +21,9 @@ class WebAuthMiddleware(MiddlewareMixin):
         assert hasattr(request, 'user'), error
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        """Forwards unauthenticated requests to the admin page to the CAS
-        login URL, as well as calls to django.contrib.auth.views.login and
-        logout.
         """
-        if view_func == auth.views.login:
-            return cas_login(request, *view_args, **view_kwargs)
-        elif view_func == auth.views.logout:
-            return cas_logout(request, *view_args, **view_kwargs)
-
+        Forward unauthenticated requests to the admin page to the CAS login.
+        """
         if not view_func.__module__.startswith('django.contrib.admin.'):
             # Not admin? then we don't care. Pass along the request.
             return None
