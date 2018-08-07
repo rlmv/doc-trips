@@ -246,6 +246,10 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
     return matrix
 
 
+def total_size(trips):
+    return sum(trip.size() for trip in trips)
+
+
 class InternalBusMatrix(DatabaseReadPermissionRequired,
                                TripsYearMixin, TemplateView):
     template_name = 'transport/internal_matrix.html'
@@ -258,10 +262,14 @@ class InternalBusMatrix(DatabaseReadPermissionRequired,
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
 
-        # transport count info
-        context['dropoff_matrix'] = riders.map(lambda x: x.dropping_off).truncate()
-        context['pickup_matrix'] = riders.map(lambda x: x.picking_up).truncate()
-        context['return_matrix'] = riders.map(lambda x: x.returning).truncate()
+        # Transport numbers
+        # TODO: move to separate view
+        context['dropoff_matrix'] = riders.map(
+            lambda x: total_size(x.dropping_off)).truncate()
+        context['pickup_matrix'] = riders.map(
+            lambda x: total_size(x.picking_up)).truncate()
+        context['return_matrix'] = riders.map(
+            lambda x: total_size(x.returning)).truncate()
 
         return context
 
