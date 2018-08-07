@@ -580,6 +580,20 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
         return qs.filter(date=self.date)
 
 
+class InternalBusPacketForBusCompany(InternalBusPacket):
+    """
+    All internal bus directions to send to the bus company. These are only
+    the large chartered buses.
+    """
+    template_name = 'transport/internal_packet_for_bus_company.html'
+
+    # TODO: add `chartered` field to Vehicle so we don't have this hack
+    def get_queryset(self):
+        qs = super().get_queryset().filter(route__vehicle__name='Internal Bus')
+        assert qs.exists()
+        return qs
+
+
 class ExternalBusPacket(DatabaseListView):
     """
     """
