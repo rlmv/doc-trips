@@ -24,6 +24,7 @@ from fyt.transport.models import (
     TransportConfig,
     sort_by_distance,
 )
+from fyt.transport.templatetags.maps import lat_lng_dms
 from fyt.transport.signals import resolve_dropoff, resolve_pickup
 from fyt.transport.views import (
     EXCEEDS_CAPACITY,
@@ -2236,3 +2237,15 @@ class MapsTestCase(TransportTestCase):
     def test_directions_with_one_stop_raises_error(self):
         with self.assertRaisesRegexp(maps.MapError, 'Only one stop provided'):
             maps.get_directions([Hanover(self.trips_year)])
+
+
+class LatLngTestCase(FytTestCase):
+    def test_formatting(self):
+        self.assertEqual(lat_lng_dms('43.736252, -72.251900'),
+                         """43°44'10.5"N 72°15'06.8"W""")
+
+        self.assertEqual(lat_lng_dms('43.977253,-71.8154831'),
+                         """43°58'38.1"N 71°48'55.7"W""")
+
+        self.assertEqual(lat_lng_dms('44.875039,-71.05471'),
+                         """44°52'30.1"N 71°03'17.0"W""")
