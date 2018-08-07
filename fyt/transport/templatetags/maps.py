@@ -76,3 +76,41 @@ def trips_with_counts(trips):
     Checklist of trips with size of trips.
     """
     return {'trips': trips}
+
+
+
+def decdeg2dms(dd):
+    negative = dd < 0
+    dd = abs(dd)
+    minutes,seconds = divmod(dd*3600,60)
+    degrees,minutes = divmod(minutes,60)
+    if negative:
+        if degrees > 0:
+            degrees = -degrees
+        elif minutes > 0:
+            minutes = -minutes
+        else:
+            seconds = -seconds
+    return (degrees,minutes,seconds)
+
+
+def _fmt_side(dec, direction_chars):
+    dms = decdeg2dms(dec)
+    if any([i < 0 for i in dms]):
+        direction = direction_chars[0]
+    else:
+        direction = direction_chars[1]
+
+    dms = [abs(i) for i in dms]
+    return """{:.0f}\u00B0{:02.0f}'{:04.1f}"{}""".format(*dms, direction)
+
+
+@register.filter
+def lat_lng_dms(lat_lng):
+    lat, lng = lat_lng.split(',')
+    lat = float(lat.strip())
+    lng = float(lng.strip())
+
+    return '{} {}'.format(
+        _fmt_side(lat, ['S', 'N']),
+        _fmt_side(lng, ['W', 'E']))

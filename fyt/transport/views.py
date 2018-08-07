@@ -150,6 +150,12 @@ def trip_transport_matrix(trips_year):
     return dropoff_matrix, pickup_matrix, return_matrix
 
 
+def as_set(trips):
+    if trips is None:
+        return set()
+    return set(trips)
+
+
 class Riders:
     """
     Utility class to represent the number of riders on a route.
@@ -159,20 +165,20 @@ class Riders:
 
     TODO: "Riders" doesn't really mean much, semantically.
     """
-
-    def __init__(self, dropping_off, picking_up, returning):
-        self.dropping_off = dropping_off
-        self.picking_up = picking_up
-        self.returning = returning
+    def __init__(self, dropping_off=None, picking_up=None, returning=None):
+        self.dropping_off = as_set(dropping_off)
+        self.picking_up = as_set(picking_up)
+        self.returning = as_set(returning)
 
     def __add__(self, y):
-        d = self.dropping_off + y.dropping_off
-        p = self.picking_up + y.picking_up
-        r = self.returning + y.returning
-        return Riders(d, p, r)
+        return Riders(self.dropping_off.union(y.dropping_off),
+                      self.picking_up.union(y.picking_up),
+                      self.returning.union(y.returning))
 
     def __bool__(self):
-        return bool(self.dropping_off or self.picking_up or self.returning)
+        return bool(self.dropping_off or
+                    self.picking_up or
+                    self.returning)
 
     def __eq__(self, y):
         return (self.dropping_off == y.dropping_off and
@@ -192,27 +198,8 @@ class Riders:
 
 def get_internal_rider_matrix(trips_year):
     """
-    Matrix of hypothetical numbers,
-    computed with max_trippees + 2 leaders.
-
-    matrix[route][date] gives you the Riders for that route on that date.
+    Compute which trips are riding on each route every day.
     """
-
-    return _rider_matrix(trips_year, lambda trip: trip.template.max_num_people)
-
-
-def get_actual_rider_matrix(trips_year):
-    """
-    Matrix of actual, assigned transport numbers.
-    """
-    return _rider_matrix(trips_year, lambda trip: trip.size())
-
-
-def _rider_matrix(trips_year, size_key):
-    """
-    Size key computes the number of riders on a transport leg
-    """
-
     routes = Route.objects.internal(trips_year).select_related('vehicle')
     dates = Section.dates.trip_dates(trips_year)
     trips = (
@@ -227,25 +214,22 @@ def _rider_matrix(trips_year, size_key):
             'template__return_route'
         )
     )
-    matrix = OrderedMatrix(routes, dates, lambda: Riders(0, 0, 0))
+    matrix = OrderedMatrix(routes, dates, lambda: Riders())
 
     for trip in trips:
-
-        n = size_key(trip)
         # dropoff
         if trip.get_dropoff_route():
-            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(n, 0, 0)
+            matrix[trip.get_dropoff_route()][trip.dropoff_date] += Riders(dropping_off=[trip])
         # pickup
         if trip.get_pickup_route():
-            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(0, n, 0)
+            matrix[trip.get_pickup_route()][trip.pickup_date] += Riders(picking_up=[trip])
         # return
-        matrix[trip.get_return_route()][trip.return_date] += Riders(0, 0, n)
+        matrix[trip.get_return_route()][trip.return_date] += Riders(returning=[trip])
 
     return matrix
 
 
 def get_internal_issues_matrix(transport_matrix, riders_matrix):
-
     assert len(transport_matrix.keys()) == len(riders_matrix.keys())
 
     matrix = riders_matrix.map(lambda x: None)  # new matrix w/ null entries
@@ -254,15 +238,16 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
         for date in dates:
             transport = transport_matrix[route][date]
             riders = riders_matrix[route][date]
-            capacity = route.vehicle.capacity
             if riders and not transport:
                 matrix[route][date] = NOT_SCHEDULED
-            elif riders and (riders.dropping_off > capacity or
-                             riders.picking_up > capacity or
-                             riders.returning > capacity):
+            elif transport and transport.over_capacity():
                 matrix[route][date] = EXCEEDS_CAPACITY
 
     return matrix
+
+
+def total_size(trips):
+    return sum(trip.size() for trip in trips)
 
 
 class InternalBusMatrix(DatabaseReadPermissionRequired,
@@ -277,11 +262,14 @@ class InternalBusMatrix(DatabaseReadPermissionRequired,
         context['NOT_SCHEDULED'] = NOT_SCHEDULED
         context['EXCEEDS_CAPACITY'] = EXCEEDS_CAPACITY
 
-        # transport count info
-        m = get_actual_rider_matrix(self.trips_year)
-        context['dropoff_matrix'] = m.map(lambda x: x.dropping_off).truncate()
-        context['pickup_matrix'] = m.map(lambda x: x.picking_up).truncate()
-        context['return_matrix'] = m.map(lambda x: x.returning).truncate()
+        # Transport numbers
+        # TODO: move to separate view
+        context['dropoff_matrix'] = riders.map(
+            lambda x: total_size(x.dropping_off)).truncate()
+        context['pickup_matrix'] = riders.map(
+            lambda x: total_size(x.picking_up)).truncate()
+        context['return_matrix'] = riders.map(
+            lambda x: total_size(x.returning)).truncate()
 
         return context
 
@@ -341,11 +329,10 @@ class StopListView(DatabaseListView):
     template_name = 'transport/stop_index.html'
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.select_related(
+        return super().get_queryset().select_related(
             'route'
         ).order_by(
-            'route__category', 'route', 'name'
+            'route__category', 'name'
         )
 
 
@@ -591,6 +578,20 @@ class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.filter(date=self.date)
+
+
+class InternalBusPacketForBusCompany(InternalBusPacket):
+    """
+    All internal bus directions to send to the bus company. These are only
+    the large chartered buses.
+    """
+    template_name = 'transport/internal_packet_for_bus_company.html'
+
+    # TODO: add `chartered` field to Vehicle so we don't have this hack
+    def get_queryset(self):
+        qs = super().get_queryset().filter(route__vehicle__name='Internal Bus')
+        assert qs.exists()
+        return qs
 
 
 class ExternalBusPacket(DatabaseListView):

@@ -2,53 +2,16 @@
 {% load get from dict %}
 {% load links %}
 {% load tooltips %}
+{% load icons %}
 
 {% block header %}
-<h2> Internal Buses </h2>
+<h2> Internal Bus Schedule </h2>
 {% endblock %}
 
 {% block content %}
-<div class="alert alert-info">
-  <a href="#numbers"><i class="fa fa-toggle-down"></i> Scroll down</a> for actual transport numbers.
-</div>
 
-<div class="page-header">
-  <h2> Capacity Check </h2>
-</div>
-
-<p> This table warns you if any bus is actually over capacity. It goes through the dropoffs and pickups in order and keeps a running tally of passengers. You will see a warning if at any point this number exceeds the capacity of the vehicle. Click on the warning to see details. </p>
-
-<table class="table table-condensed table-bordered">
- {% for route, dates in matrix.items %}
-
-  {% if forloop.first %}
-  <tr>
-    <th> Route </th>
-    {% for date in dates %}
-    <th> {{ date|date:"n/d" }} </th>
-    {% endfor %}
-  </tr>
-  {% endif %}
-
-  <tr>
-    <td> {{ route|detail_link }} </td>
-    {% for date, transport in dates.items %}
-    <td class="text-center">
-      {% if transport.over_capacity %}
-      <a href="{% url 'core:internalbus:checklist' trips_year=trips_year date=date route_pk=route.pk %}"><i class="fa fa-exclamation text-bright-danger"></i></a>
-      {% endif %}
-    </td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
-
-<div class="page-header">
-  <h2> Schedule </h2>
-</div>
-
-<p> Each entry in the matrix represents an internal bus. Click <i class="fa fa-plus"></i> to schedule a transport. Click <i class="fa fa-bars"></i> to see route information.</p>
-<p> Mouseover a block in the matrix to see the number of riders <em>if all trips are maxed out</em>. The matrix will warn you if transportation is not scheduled for a trip. The matrix will also warn you if the trips riding on a bus exceed the capacity of a bus (based on the max trippees of the trip, not the actual number of people). </p>
+<p> Each entry in the table represents an internal bus. Click on entry to see more information about the bus.</p>
+<p> The matrix will show a {% warning_sign %} if transportation is not scheduled for a trip, or if the bus is over capacity at any point along its route.</p>
 
 <table class="table table-condensed table-bordered">
 
@@ -64,9 +27,9 @@
   {% endif %}
 
   <tr>
-    <td> {{ route|detail_link }} </td>
+    <td class="no-wrap"> {{ route|detail_link }} </td>
     {% for date, transport in dates.items %}
-    {% with riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date %}
+    {% with riders=riders|get:route|get:date capacity=route.vehicle.capacity issue=issues|get:route|get:date x=forloop.counter y=forloop.parentloop.counter %}
     <td>
       {% include "transport/_transport_detail.html" %}
     </td>

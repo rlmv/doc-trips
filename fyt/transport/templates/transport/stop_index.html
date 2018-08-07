@@ -10,9 +10,9 @@
 <table class="table">
   <tr>
     <th> Name </th>
+    <th> Category </th>
     <th> Address </th>
     <th> Lat/Lng </th>
-    <th> Category </th>
     <th class="col-sm-2"> Route </th>
     <th> </th>
   </tr>
@@ -20,9 +20,9 @@
   {% for stop in stops %}
   <tr>
     <td> {{ stop|detail_link }} </td>
+    <td> {{ stop.category|default:"" }} </td>
     <td> {{ stop.address }} </td>
     <td> {{ stop.lat_lng }} </td>
-    <td> {{ stop.category|default:"" }} </td>
     <td> {{ stop.route|detail_link|default:""}} </td>
     <td> {{ stop|edit_link }} </td>
   </tr>

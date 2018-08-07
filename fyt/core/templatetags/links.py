@@ -124,10 +124,11 @@ def edit_button(url, name=None):
 
 
 @register.filter
-def delete_button(url):
+def delete_button(url, name=None):
+    name = name or "Delete"
     return mark_safe(
         '<a href="%s" class="btn btn-danger"> '
-        '<i class="fa fa-trash"></i> Delete </a>' % url
+        '<i class="fa fa-trash"></i> %s </a>' % (url, name)
     )
 
 

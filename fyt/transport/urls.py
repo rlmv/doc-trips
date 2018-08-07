@@ -26,6 +26,8 @@ internalbus_urlpatterns = [
     url(r'^packet/$', InternalBusPacket.as_view(), name='packet'),
     url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
         InternalBusPacketForDate.as_view(), name='packet_for_date'),
+    url(r'^packet/for/premier/$',
+        InternalBusPacketForBusCompany.as_view(), name='packet_for_bus_company')
 ]
 
 externalbus_urlpatterns = [

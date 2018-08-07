@@ -177,6 +177,7 @@ PIPELINE = {
                 'css/bootstrap.min.css',
                 'css/bootstrap-theme.min.css',
                 'css/font-awesome.min.css',
+                'css/font-awesome-v4-shims.min.css',
                 'css/summernote.css',
                 'css/metisMenu.css',
             ),
