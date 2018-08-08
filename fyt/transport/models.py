@@ -755,10 +755,34 @@ class ExternalBus(DatabaseModel):
         return [hanover] + sort_by_distance(d.keys())
 
     def directions_to_hanover(self):
-        return self._directions(self.get_stops_to_hanover())
+        directions = self._directions(self.get_stops_to_hanover())
+
+        # Compute end times for each leg
+        for leg in directions.legs:
+            leg.start_time = leg.start_stop.pickup_time
+
+            end_datetime = datetime.combine(
+                self.date_to_hanover,
+                leg.start_time
+            ) + leg.duration
+            leg.end_time = end_datetime.time()
+
+        return directions
 
     def directions_from_hanover(self):
-        return self._directions(self.get_stops_from_hanover())
+        directions = self._directions(self.get_stops_from_hanover())
+
+        # Backcompute start times for each leg
+        for leg in directions.legs:
+            leg.end_time = leg.end_stop.dropoff_time
+
+            start_datetime = datetime.combine(
+                self.date_from_hanover,
+                leg.end_time
+            ) - leg.duration
+            leg.start_time = start_datetime.time()
+
+        return directions
 
     def _directions(self, stops):
         """
