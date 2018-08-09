@@ -468,7 +468,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         """
         types = [Question.ALL, type]
 
-        q_ids = set(q.id for q in self.required_questions() if q.type in types)
+        q_ids = set(q.id for q in self.required_questions if q.type in types)
 
         for answer in self.answer_set.all():
             if answer.answer:  # "" is not an answer
@@ -479,18 +479,19 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
         return len(q_ids) == 0
 
-    REQUIRED_QUESTIONS = '_required_questions'
-
-    @cache_as(REQUIRED_QUESTIONS)
+    @cached_property
     def required_questions(self):
         """
         Used to cache this year's questions so that large querysets can be
         preloaded to improve efficiency.
-        """
-        return Question.objects.required(self.trips_year)
 
-    @cache_as('_get_answers')
-    def get_answers(self):
+        This can be preloaded on a queryset using ``qs.with_required_questions``
+        """
+        return list(Question.objects.required(self.trips_year))
+
+    # TODO: move this to answers templatetag?
+    @cached_property
+    def all_answers(self):
         return self.answer_set.all().select_related('question')
 
     @property

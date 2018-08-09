@@ -46,7 +46,6 @@ from fyt.permissions.views import (
 from fyt.timetable.models import Timetable
 from fyt.training.forms import FirstAidCertificationFormset
 from fyt.trips.models import Trip, TripType
-from fyt.utils.cache import preload
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin
 
@@ -374,21 +373,6 @@ class BlockDirectorate(GroupRequiredMixin):
         )
 
 
-# TODO: move to queryset method
-def preload_questions(qs, trips_year):
-    """
-    Preload the _required_questions cache on a queryset of applications so that
-    `leader_application_complete` and `croo_application_complete` can be
-    efficiently computed.
-    """
-    questions = Question.objects.filter(trips_year=trips_year)
-
-    for app in qs:
-        preload(app, app.REQUIRED_QUESTIONS, questions)
-
-    return qs
-
-
 class BlockOldApplications():
     """
     Only directors can see applications from previous years.
@@ -428,7 +412,7 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
             self.trips_year, self.request.GET,
             queryset=self.object_list
         )
-        filter_qs = preload_questions(filter.qs, self.trips_year)
+        filter_qs = filter.qs.with_required_questions(self.trips_year)
         table = ApplicationTable(filter_qs, self.request)
         return {
             'table': table,

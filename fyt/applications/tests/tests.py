@@ -478,6 +478,8 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.q_croo = mommy.make(
             Question, trips_year=self.trips_year, type=Question.CROO)
 
+        self.questions = [self.q_general, self.q_leader, self.q_croo]
+
         # Complete leader & croo app
         self.app1 = self.make_application()
         self.app1.answer_question(self.q_general, 'answer')
@@ -597,6 +599,15 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(qs[1].avg_croo_score, None)
         self.assertEqual(qs[1].norm_avg_leader_score, 0)
         self.assertEqual(qs[1].norm_avg_croo_score, 0)
+
+    def test_with_required_questions(self):
+        self.assertQsEqual(self.app1.required_questions, self.questions)
+
+        # Test preloading
+        qs = Volunteer.objects.with_required_questions(self.trips_year)
+        with self.assertNumQueries(0):
+            for v in qs:
+                self.assertQsEqual(v.required_questions, self.questions)
 
 
 class ApplicationFormTestCase(FytTestCase):

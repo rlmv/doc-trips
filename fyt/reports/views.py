@@ -10,7 +10,6 @@ from django.utils.functional import cached_property
 from vanilla import View
 
 from fyt.applications.models import Volunteer as Application
-from fyt.applications.views.application import preload_questions
 from fyt.core.views import DatabaseTemplateView, TripsYearMixin
 from fyt.gear.models import GearRequest
 from fyt.incoming.models import (
@@ -109,9 +108,11 @@ class VolunteerCSV(GenericReportView):
         ]
 
     def get_queryset(self):
-        qs = Application.objects.leader_or_croo_applications(
-            self.trips_year).with_avg_scores().prefetch_related('scores')
-        return preload_questions(qs, self.trips_year)
+        return Application.objects.leader_or_croo_applications(
+            self.trips_year
+        ).with_avg_scores().prefetch_related(
+            'scores'
+        ).with_required_questions(self.trips_year)
 
     def get_row(self, application):
         user = application.applicant

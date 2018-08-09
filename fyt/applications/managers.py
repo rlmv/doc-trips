@@ -204,6 +204,16 @@ class VolunteerQuerySet(models.QuerySet):
             norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
         )
 
+    def with_required_questions(self, trips_year):
+        from .models import Question
+        questions = list(Question.objects.filter(trips_year=trips_year))
+
+        # TODO: is there any way to annotate without materializing the qs?
+        for v in self:
+            v.required_questions = questions
+
+        return self
+
     def first_aid_complete(self):
         """
         All volunteers with complete first aid certifications.
