@@ -94,13 +94,20 @@ Calls to external APIs (Dartmouth, Amazon S3, Google Maps) are mocked out using
 [VCRpy](https://vcrpy.readthedocs.io) so the tests can be run without
 configuring credentials for those services.
 
-## Deployment
+## Deployment & CI
 
-The application runs on Heroku. You will need to install the
+The application runs on Heroku, and there is an deployment pipeline in
+place. All commits pushed to the `master` branch on Github are tested with
+TravisCI and, if the tests succeed, are deployed directly to Heroku.  Database
+migrations are run automatically in the release stage; if a migration fails the
+release is not deployed.
+
+You will need to install the
 [Heroku Toolbelt](https://devcenter.heroku.com/articles/heroku-command).
+
 I highly recommend setting up a
 [Heroku staging instance](https://devcenter.heroku.com/articles/multiple-environments)
-for testing.
+for testing and experimentation.
 
 The site uses [Sentry](https://sentry.io) for error tracking and alerts.
 
