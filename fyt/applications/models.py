@@ -32,7 +32,6 @@ from fyt.core.models import DatabaseModel, TripsYear
 from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import DartmouthUser
-from fyt.utils.cache import cache_as
 from fyt.utils.choices import (
     AVAILABLE,
     NOT_AVAILABLE,

@@ -6,7 +6,6 @@ from model_mommy import mommy
 
 from fyt.test import FytTestCase
 from fyt.trips.models import Section
-from fyt.utils.cache import cache_as, preload
 from fyt.utils.fmt import join_with_and, join_with_or, section_range
 from fyt.utils.lat_lng import parse_lat_lng, validate_lat_lng
 from fyt.utils.matrix import OrderedMatrix
@@ -98,42 +97,3 @@ class UrlencodeTagTestCase(FytTestCase):
         self.assertIn(out.strip(), [
             'param1=1&amp;param2=test+this', 'param2=test+this&amp;param1=1'
         ])
-
-
-class Hole:
-    """
-    Class used to test cache_as and preload.
-    """
-    def __init__(self):
-        self.call_count = 0
-
-    DIG = '_DIG'
-    @cache_as(DIG)
-    def dig(self):
-        self.call_count += 1
-        return self.call_count
-
-    FILL = '_fill'
-    @cache_as(FILL)
-    def fill(self, dirt):
-        return 'full'
-
-
-class CacheTestCase(unittest.TestCase):
-
-    def test_cache_as(self):
-        hole = Hole()
-        self.assertEqual(hole.dig(), 1)
-        self.assertEqual(hole.dig(), 1)
-        self.assertEqual(hole.call_count, 1)
-
-    def test_preload(self):
-        hole = Hole()
-        preload(hole, hole.DIG, 100)
-        self.assertEqual(hole.dig(), 100)
-        self.assertEqual(hole.call_count, 0)
-
-    def test_cached_method_must_have_no_args(self):
-        hole = Hole()
-        with self.assertRaises(TypeError):
-            hole.fill('clay')
