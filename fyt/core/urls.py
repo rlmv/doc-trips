@@ -11,7 +11,7 @@ from fyt.core.views import (
     RedirectToCurrentDatabase,
 )
 from fyt.croos.urls import croo_urlpatterns
-from fyt.gear.urls import gear_urlpatterns, gear_request_urlpatterns
+from fyt.gear.urls import gear_request_urlpatterns, gear_urlpatterns
 from fyt.incoming.urls import registration_urlpatterns, trippee_urlpatterns
 from fyt.training.urls import attendee_urlpatterns, session_urlpatterns
 from fyt.transport.urls import (

@@ -24,15 +24,15 @@ from fyt.transport.models import (
     TransportConfig,
     sort_by_distance,
 )
-from fyt.transport.templatetags.maps import lat_lng_dms
 from fyt.transport.signals import resolve_dropoff, resolve_pickup
+from fyt.transport.templatetags.maps import lat_lng_dms
 from fyt.transport.views import (
     EXCEEDS_CAPACITY,
     NOT_SCHEDULED,
     Riders,
     TransportChecklist,
-    get_internal_rider_matrix,
     get_internal_issues_matrix,
+    get_internal_rider_matrix,
     get_internal_route_matrix,
     preload_transported_trips,
     trip_transport_matrix,

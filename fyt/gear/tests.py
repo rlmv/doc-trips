@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from model_mommy import mommy
 
 from .forms import GearRequestForm
-from .models import GearRequest, Gear
+from .models import Gear, GearRequest
 
 from fyt.applications.models import Volunteer
 from fyt.incoming.models import IncomingStudent
