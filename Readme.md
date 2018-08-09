@@ -96,7 +96,7 @@ configuring credentials for those services.
 
 ## Deployment & CI
 
-The application runs on Heroku, and there is an deployment pipeline in
+The application runs on Heroku, and there is a deployment pipeline in
 place. All commits pushed to the `master` branch on Github are tested with
 TravisCI and, if the tests succeed, are deployed directly to Heroku.  Database
 migrations are run automatically in the release stage; if a migration fails the
@@ -109,7 +109,7 @@ I highly recommend setting up a
 [Heroku staging instance](https://devcenter.heroku.com/articles/multiple-environments)
 for testing and experimentation.
 
-The site uses [Sentry](https://sentry.io) for error tracking and alerts.
+The production site uses [Sentry](https://sentry.io) for error tracking and alerts.
 
 ## Dartmouth Services
 
@@ -128,7 +128,7 @@ lookup Dartmouth emails. Dartmouth IT suggests scraping results from
 http://lookupdnd.dartmouth.edu/lite if the current system ever fails.
 
 Unfortunately the DND does not contain alumni information and we cannot
-programmtically find their emails. Therefore when alums log in (e.g. to acces
+programatically find their emails. Therefore when alums log in (e.g. to acces
 the Raid Blog) they must update their email manually.
 
 ## The ever-present `trips_year` variable
