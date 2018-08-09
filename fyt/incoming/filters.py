@@ -86,7 +86,7 @@ class SelectBooleanFilter(django_filters.BooleanFilter):
         if not value:
             return qs
 
-        return qs.filter(**dict([(self.name, True)]))
+        return qs.filter(**dict([(self.field_name, True)]))
 
 
 class RegistrationFilterSet(django_filters.FilterSet):
