@@ -1,34 +1,35 @@
 language: python
+
 python:
-    - 3.6
+  - 3.6
 
 addons:
-    postgresql: "9.6"
+  postgresql: "9.6"
 
 env:
-    global:
-        - DJANGO_SETTINGS_MODULE="fyt.settings"
-        - PYTHONPATH="/home/travis/builds/rlmv/doc-trips"
-        - DATABASE_URL="postgres://postgres@localhost/testdb"
-        - SECRET_KEY="secret"
-        # AWS_ACCESS_KEY_ID
-        - secure: "enKbXvTVF9DjrX27m6o6R1bvxg879pXZQIxZRQOCO0BnvmfjkRM+fE1n2IZr/gk8p4vDYqSKqcaAabTlsfcIErWAg+W9zMFqzjYzuR6LAnqpndFcXjYYU0y6yD0PS6DBhrdSrIGvJJga99+clt4c6ry4MEe0Yu+OcF0hb4x2gExOAk/xN1uPFOBZzwd0RA9Dv1TVkoDP6OtcySfEUdhi4QiKhvmBCoTsee0+4DBk4C3CeSU8G/zcUN92PSPv1uRDDNNtt2TDRtIoWiUZepTpz33ZceF76CeDbrQOXnea7ua8b2NZTGblQci6RO+OPxrpXlhvLeCNVYqP56bR92w4fowRxfZAND7Rr1MiqyI5Xz/BxnHiziVBegN3kYrHtrmq2jae56s2sA8t3qetZjvb/Ix+rR/LeBzdXF0LB6suCtoOCbyz0jTQT0z7X5HAMDWPRXGhYVGyo5A83h0LBhLi6ToI9U4I+ok32f93y2vzBcan3QJ1YUKCPian1YItcfyLN0FFsDc7nly2lvnUeQwh8XVAv+/OzqenSgNwTaLUeKcsQtwPhRCdg/NjHTB09sinbWc0NjQIYTHhWm6XePiR507p2tkZwkVQ46JlNnxyVZXgNDrZ94ZNDOsToQos+umDbUlmZ+NG3vEnDjyki46lQ6wuHpqOgfrakkE0G3kBXeg="
-        # AWS_SECRET_ACCESS_KEY
-        - secure: "n4kd50U4uBBprdUzBNoQ2MlFn6wVWBwCAvEFv3edxbh0zc4P1kPD/gJ+5niasOe4NgiMx737Rx7V4gDNp3gUY9UE8LEo8/n97NYNii/QodasgVeZ9QjARQl+yELuvhx6tL/Z7baNx8RulGUB7fdCwH7J04KfTH/fuMv8r9M+Nhvha6hSqWQnT6ARgHvnuAcwOnytaweX+M7U/soKiDkjutvjQAqMvQGMOH06TrPdM96qBGCBn4Ev2HFJ//+JnJ+UeRD3ZiHlAnw1hxPQk8GdmXB6rGLuFElWsPIz1d3eTvW+7F31oQuaWOONmP2LMDTPgp+iSciTiu5bhNvQDi/FJxVVq7vDXKbU7u/8v8AeGLSGmxSkH0D+Edl7s/gga8+hvoZNXLP8m2pdC6WW/YReSUvRfB1HSj4tq38U43QYWLbgtffPsj9Pn5z7RX+5TklDTOa3S/6YsGCTtLsw5PQ76ozTnPR2h1/mZMwyecjDB2YNyXQWHwqMura4+k4jE/WLt91d08ppDtaHAUe3UIBpeLYjUH7EQQeo6wzDLSa9nXkcWRMUYfC/OMvAC6rRcxsgQp3vSwygnPSLuEkkX5o7fLwsGCOgyLD26KOWhEVYWQOZnODvZn5+/D67pBbjHEVks/CYCBA4BwP0OpfWZwhkdVuQWnlw94xHfI3sqcx3+N8="
-        - AWS_STORAGE_BUCKET_NAME="doc-trips-travis-testing"
-        # GOOGLE_MAPS_KEY
-        - secure: "lDor5JRZcVNVD2HCt0si7tXsls+lJg8rC3mOeWPhJnYpkQ1WmxpsSjmmDtNpnmTK5eFphsvXuCZYGeyE0Hf1SXh76NHOOrvn4FpRBHW7R2crfWwUyOYjw0voGlrp/uoUtJ2k+u8lIJaBNy9Zgmt1Fhdp4yE+CN5s3qWjWeeTrDu5blDfqHVYT3+WSCh+pg+8mbabG2O+fMwYLGV3pcsXCkexHXXRrVgOq6e+/fto540MwJ9f/Nxd1eGTB68LY7D1jvZCaTy2AZjYGoXWG8fATNUA3QFDCJwGkgQkF3YTxm6Hx6+C5AQYinXcn1fS+XiDO9mUVmRZkRSEf6XCPG2lzWJMlo1z6VIhk7fefbrj2eUJ4qmIOrvuopo5aeGabSdpk4IxAZ4+unCxw1n+X8xS8bdsSuT4xD8FYBK4sy3SPWDaYNkitrGct/1VT4rVSP4yXXD/RDf9AWQF2PMtbeUy2gg+Q7egnuau6bCwbWk8jtrU3iTzoVhYthONMBSY7kR4kXM9dwj76QGQisI0u8IMTThdyL6VxK/D4DEdxI6ncxYrHmD6TDHd5sYxXeo5nmr2FOwJmCDuMuUfZHSJVcOn7H1+XaPnpetw6t88fJ/SJ1TOdXoFl5bXrWX47nDaF1GHpf1WQd47wHi9bi38ZGexSdARafa/GqRrXUcEgK9xWAg="
-        # GOOGLE_MAPS_BROWSER_KEY
-        - secure: "khGF7RAHmLKKlhxta8hnF8qtEYzPO676ZG2QJTZXyvc8BE1JIbucVd8iMPcjqoIse7MQHN1lqb+oKmwq8FYWzmPtF38G1FV8sCt2Sim14Jufxf4wUkObH2zBiLzDtmLlGoSYFVnBuRTdY/KYsY3ujIS6Hmjb0yqAbR2QIoHo4mYB4fauUn5TZm2K6DqItptW1j5oK/li7SBKC89pzroKoVAT5U6KRCb4Vn5bbsE3dNlp2MkA9u5Rcma7SNPI5laHkWr8STTtb9C5QFDaHeTuyDTu/nf+NM5fDhGOzkpbxY/2N+idXMBII0pKoxz28ZabmTQFw02PiNhVoTOEoNeqqRKq9Cyi829Vgftkgw/qFeomFSmSMrgJEDC8h4pQqMWFexhx8G00OBy1OMmxDuzMeaO2bJvaBWQdi07/ex+1q4kU5o3U0l0VgqgwqwSmQ/WD9XLG9hiDi+jym7ZUapdmtmmGdV0Fme26BDDuZmIfcTYJFjN/SgNeSPfyx64IoZsZ0NPeFKlK/8DadN0hNp+ZV0E4nXh+32ugmqfj3y+PBEX/6KacqYxrfgJmK7bOrjwWabpKKPYJkAaJ3j76QLDfSycUV/gmovEuABtfBMt81ETCbbhm9L2bJ3VX2BK/ttzCzYfWAmVUX3VBmhKw91cYO3JXg5yAOS6On8RAn6cFLkI="
+  global:
+    - DJANGO_SETTINGS_MODULE="fyt.settings"
+    - PYTHONPATH="/home/travis/builds/rlmv/doc-trips"
+    - DATABASE_URL="postgres://postgres@localhost/testdb"
+    - SECRET_KEY="secret"
+    # AWS_ACCESS_KEY_ID
+    - secure: "enKbXvTVF9DjrX27m6o6R1bvxg879pXZQIxZRQOCO0BnvmfjkRM+fE1n2IZr/gk8p4vDYqSKqcaAabTlsfcIErWAg+W9zMFqzjYzuR6LAnqpndFcXjYYU0y6yD0PS6DBhrdSrIGvJJga99+clt4c6ry4MEe0Yu+OcF0hb4x2gExOAk/xN1uPFOBZzwd0RA9Dv1TVkoDP6OtcySfEUdhi4QiKhvmBCoTsee0+4DBk4C3CeSU8G/zcUN92PSPv1uRDDNNtt2TDRtIoWiUZepTpz33ZceF76CeDbrQOXnea7ua8b2NZTGblQci6RO+OPxrpXlhvLeCNVYqP56bR92w4fowRxfZAND7Rr1MiqyI5Xz/BxnHiziVBegN3kYrHtrmq2jae56s2sA8t3qetZjvb/Ix+rR/LeBzdXF0LB6suCtoOCbyz0jTQT0z7X5HAMDWPRXGhYVGyo5A83h0LBhLi6ToI9U4I+ok32f93y2vzBcan3QJ1YUKCPian1YItcfyLN0FFsDc7nly2lvnUeQwh8XVAv+/OzqenSgNwTaLUeKcsQtwPhRCdg/NjHTB09sinbWc0NjQIYTHhWm6XePiR507p2tkZwkVQ46JlNnxyVZXgNDrZ94ZNDOsToQos+umDbUlmZ+NG3vEnDjyki46lQ6wuHpqOgfrakkE0G3kBXeg="
+    # AWS_SECRET_ACCESS_KEY
+    - secure: "n4kd50U4uBBprdUzBNoQ2MlFn6wVWBwCAvEFv3edxbh0zc4P1kPD/gJ+5niasOe4NgiMx737Rx7V4gDNp3gUY9UE8LEo8/n97NYNii/QodasgVeZ9QjARQl+yELuvhx6tL/Z7baNx8RulGUB7fdCwH7J04KfTH/fuMv8r9M+Nhvha6hSqWQnT6ARgHvnuAcwOnytaweX+M7U/soKiDkjutvjQAqMvQGMOH06TrPdM96qBGCBn4Ev2HFJ//+JnJ+UeRD3ZiHlAnw1hxPQk8GdmXB6rGLuFElWsPIz1d3eTvW+7F31oQuaWOONmP2LMDTPgp+iSciTiu5bhNvQDi/FJxVVq7vDXKbU7u/8v8AeGLSGmxSkH0D+Edl7s/gga8+hvoZNXLP8m2pdC6WW/YReSUvRfB1HSj4tq38U43QYWLbgtffPsj9Pn5z7RX+5TklDTOa3S/6YsGCTtLsw5PQ76ozTnPR2h1/mZMwyecjDB2YNyXQWHwqMura4+k4jE/WLt91d08ppDtaHAUe3UIBpeLYjUH7EQQeo6wzDLSa9nXkcWRMUYfC/OMvAC6rRcxsgQp3vSwygnPSLuEkkX5o7fLwsGCOgyLD26KOWhEVYWQOZnODvZn5+/D67pBbjHEVks/CYCBA4BwP0OpfWZwhkdVuQWnlw94xHfI3sqcx3+N8="
+    - AWS_STORAGE_BUCKET_NAME="doc-trips-travis-testing"
+    # GOOGLE_MAPS_KEY
+    - secure: "lDor5JRZcVNVD2HCt0si7tXsls+lJg8rC3mOeWPhJnYpkQ1WmxpsSjmmDtNpnmTK5eFphsvXuCZYGeyE0Hf1SXh76NHOOrvn4FpRBHW7R2crfWwUyOYjw0voGlrp/uoUtJ2k+u8lIJaBNy9Zgmt1Fhdp4yE+CN5s3qWjWeeTrDu5blDfqHVYT3+WSCh+pg+8mbabG2O+fMwYLGV3pcsXCkexHXXRrVgOq6e+/fto540MwJ9f/Nxd1eGTB68LY7D1jvZCaTy2AZjYGoXWG8fATNUA3QFDCJwGkgQkF3YTxm6Hx6+C5AQYinXcn1fS+XiDO9mUVmRZkRSEf6XCPG2lzWJMlo1z6VIhk7fefbrj2eUJ4qmIOrvuopo5aeGabSdpk4IxAZ4+unCxw1n+X8xS8bdsSuT4xD8FYBK4sy3SPWDaYNkitrGct/1VT4rVSP4yXXD/RDf9AWQF2PMtbeUy2gg+Q7egnuau6bCwbWk8jtrU3iTzoVhYthONMBSY7kR4kXM9dwj76QGQisI0u8IMTThdyL6VxK/D4DEdxI6ncxYrHmD6TDHd5sYxXeo5nmr2FOwJmCDuMuUfZHSJVcOn7H1+XaPnpetw6t88fJ/SJ1TOdXoFl5bXrWX47nDaF1GHpf1WQd47wHi9bi38ZGexSdARafa/GqRrXUcEgK9xWAg="
+    # GOOGLE_MAPS_BROWSER_KEY
+    - secure: "khGF7RAHmLKKlhxta8hnF8qtEYzPO676ZG2QJTZXyvc8BE1JIbucVd8iMPcjqoIse7MQHN1lqb+oKmwq8FYWzmPtF38G1FV8sCt2Sim14Jufxf4wUkObH2zBiLzDtmLlGoSYFVnBuRTdY/KYsY3ujIS6Hmjb0yqAbR2QIoHo4mYB4fauUn5TZm2K6DqItptW1j5oK/li7SBKC89pzroKoVAT5U6KRCb4Vn5bbsE3dNlp2MkA9u5Rcma7SNPI5laHkWr8STTtb9C5QFDaHeTuyDTu/nf+NM5fDhGOzkpbxY/2N+idXMBII0pKoxz28ZabmTQFw02PiNhVoTOEoNeqqRKq9Cyi829Vgftkgw/qFeomFSmSMrgJEDC8h4pQqMWFexhx8G00OBy1OMmxDuzMeaO2bJvaBWQdi07/ex+1q4kU5o3U0l0VgqgwqwSmQ/WD9XLG9hiDi+jym7ZUapdmtmmGdV0Fme26BDDuZmIfcTYJFjN/SgNeSPfyx64IoZsZ0NPeFKlK/8DadN0hNp+ZV0E4nXh+32ugmqfj3y+PBEX/6KacqYxrfgJmK7bOrjwWabpKKPYJkAaJ3j76QLDfSycUV/gmovEuABtfBMt81ETCbbhm9L2bJ3VX2BK/ttzCzYfWAmVUX3VBmhKw91cYO3JXg5yAOS6On8RAn6cFLkI="
 
 install:
-    - pip install -r requirements/dev.txt
-    - pip install coveralls
-    - pip freeze
+  - pip install -r requirements/dev.txt
+  - pip install coveralls
+  - pip freeze
 
 before_script:
-    - psql -c "CREATE DATABASE testdb;" -U postgres
-    - python manage.py collectstatic --noinput
+  - psql -c "CREATE DATABASE testdb;" -U postgres
+  - python manage.py collectstatic --noinput
 
 script: coverage run manage.py test
 
