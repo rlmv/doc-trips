@@ -693,7 +693,7 @@ class Foodboxes(GenericReportView):
         return [
             trip,
             trip.section.name,
-            trip.size(),
+            trip.size,
             '1',
             '1' if trip.half_foodbox else '',
             '1' if trip.supp_foodbox else '',

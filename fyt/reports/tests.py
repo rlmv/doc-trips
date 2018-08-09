@@ -530,7 +530,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         self.assertCsvReturns('core:reports:foodboxes', [{
             'trip': str(trip),
             'section': trip.section.name,
-            'size': str(trip.size()),
+            'size': str(trip.size),
             'full box': '1',
             'half box': '1' if trip.half_foodbox else '',
             'supplement': '1' if trip.supp_foodbox else '',

@@ -396,7 +396,7 @@ class RidersMatrixTestCase(FytTestCase):
             template__dropoff_stop__route=route,
             template__pickup_stop__route=route,
             template__return_route=route)
-        n = trip.size()
+        n = trip.size
         target = {
             route: {
                 date(2015,1,2): Riders(),
@@ -439,8 +439,8 @@ class RidersMatrixTestCase(FytTestCase):
             template__dropoff_stop__route=route2,
             template__pickup_stop__route=route1,
             template__return_route=route2)
-        n = trip1.size()
-        m = trip2.size()
+        n = trip1.size
+        m = trip2.size
         target = {
             route1: {
                 date(2015,1,2): Riders(),
@@ -477,7 +477,7 @@ class RidersMatrixTestCase(FytTestCase):
             dropoff_route=route,
             pickup_route=route,
             return_route=route)
-        n = trip.size()
+        n = trip.size
         target = {
             route: {
                 date(2015,1,2): Riders(),

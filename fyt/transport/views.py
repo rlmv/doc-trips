@@ -247,7 +247,7 @@ def get_internal_issues_matrix(transport_matrix, riders_matrix):
 
 
 def total_size(trips):
-    return sum(trip.size() for trip in trips)
+    return sum(trip.size for trip in trips)
 
 
 class InternalBusMatrix(DatabaseReadPermissionRequired,

@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 from model_utils import FieldTracker
 
 from .managers import (
@@ -15,7 +16,6 @@ from .managers import (
 )
 
 from fyt.core.models import DatabaseModel
-from fyt.utils.cache import cache_as
 
 
 NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
@@ -155,15 +155,11 @@ class Trip(DatabaseModel):
         except StopOrder.DoesNotExist:
             return None
 
-    @cache_as('_size')
+    @cached_property
     def size(self):
         """
         Return the number trippees + leaders on this trip
-
-        TODO: use a constant, NUM_TRIPPEES
         """
-        if hasattr(self, 'num_trippees') and hasattr(self, 'num_leaders'):
-            return self.num_trippees + self.num_leaders
         return self.leaders.count() + self.trippees.count()
 
     @property
@@ -184,7 +180,7 @@ class Trip(DatabaseModel):
         A trip gets an additional half foodbox if it is larger
         than the kickin limit specified by the triptype.
         """
-        return self.size() >= self.template.triptype.half_kickin
+        return self.size >= self.template.triptype.half_kickin
 
     @property
     def supp_foodbox(self):
@@ -202,7 +198,7 @@ class Trip(DatabaseModel):
             num = NUM_BAGELS_SUPPLEMENT
         else:
             num = NUM_BAGELS_REGULAR
-        return math.ceil(num * self.size())
+        return math.ceil(num * self.size)
 
     def __str__(self):
         return '{}{}'.format(self.section.name, self.template.name)

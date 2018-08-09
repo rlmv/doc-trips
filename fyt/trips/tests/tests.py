@@ -203,13 +203,13 @@ class TripRouteOverridesTestCase(FytTestCase):
     def test_size_method_with_noone(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
-        self.assertEqual(trip.size(), 0)
+        self.assertEqual(trip.size, 0)
 
     def test_size_method_with_1_leader(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         make_application(trips_year=trips_year, trip_assignment=trip)
-        self.assertEqual(trip.size(), 1)
+        self.assertEqual(trip.size, 1)
 
     def test_size_method_with_1_leader_and_2_trippees(self):
         trips_year = self.init_trips_year()
@@ -217,7 +217,7 @@ class TripRouteOverridesTestCase(FytTestCase):
         make_application(trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
-        self.assertEqual(trip.size(), 3)
+        self.assertEqual(trip.size, 3)
 
 
 class QuickTestViews(FytTestCase):
@@ -531,13 +531,16 @@ class TripManagerTestCase(FytTestCase):
         )
         self.assertQsEqual(qs, [returning, overridden_return])
 
-    def test_with_counts_shortcuts_size_db_query(self):
+    def test_with_counts(self):
         trips_year = self.init_trips_year()
         trip = mommy.make(Trip, trips_year=trips_year)
         mommy.make(IncomingStudent, trips_year=trips_year, trip_assignment=trip)
         trip = Trip.objects.with_counts(trips_year)[0]
+
         with self.assertNumQueries(0):
-            self.assertEqual(trip.size(), 1)
+            self.assertEqual(trip.size, 1)
+        self.assertEqual(trip.num_trippees, 1)
+        self.assertEqual(trip.num_leaders, 0)
 
 
 class CampsiteManagerTestCase(FytTestCase):

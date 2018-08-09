@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from django.db import models
-from django.db.models import Q
+from django.db.models import F, Q
 
 from fyt.utils.matrix import OrderedMatrix
 
@@ -110,12 +110,13 @@ class TripManager(models.Manager):
 
     def with_counts(self, trips_year):
         """
-        Add the number of trippees and leaders to each obj.
+        Annotate the number of trippees and leaders.
         """
         return (
             self.filter(trips_year=trips_year)
             .annotate(num_trippees=models.Count('trippees', distinct=True))
             .annotate(num_leaders=models.Count('leaders', distinct=True))
+            .annotate(size=F('num_trippees') + F('num_leaders'))
         )
 
     def dropoffs(self, route, date, trips_year):

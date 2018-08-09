@@ -540,9 +540,9 @@ class InternalBus(DatabaseModel):
         load = 0
         for stop in stops:
             for trip in stop.trips_picked_up:
-                load += trip.size()
+                load += trip.size
             for trip in stop.trips_dropped_off:
-                load -= trip.size()
+                load -= trip.size
             if load > self.route.vehicle.capacity:
                 return True
         return False
@@ -559,9 +559,9 @@ class InternalBus(DatabaseModel):
         load = 0
         for stop in stops:
             for trip in stop.trips_picked_up:
-                load += trip.size()
+                load += trip.size
             for trip in stop.trips_dropped_off:
-                load -= trip.size()
+                load -= trip.size
             if load > self.route.vehicle.capacity:
                 stop.over_capacity = True
             else:
