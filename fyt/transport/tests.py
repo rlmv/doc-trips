@@ -944,7 +944,7 @@ class InternalTransportModelTestCase(TransportTestCase):
             template__pickup_stop=stop2,
             section__leaders_arrive=bus.date - timedelta(days=4))
 
-        self.assertEqual(bus.get_stops(),
+        self.assertEqual(bus.all_stops,
                          [Hanover(self.trips_year),
                           stop2,
                           stop1,
@@ -977,7 +977,7 @@ class InternalTransportModelTestCase(TransportTestCase):
             section__leaders_arrive=bus.date - timedelta(days=5))
 
         # should compress the two StopOrders to a single stop
-        (hanover, stop, lodge, hanover_again) = bus.get_stops()
+        (hanover, stop, lodge, hanover_again) = bus.all_stops
         #  should set these fields:
         self.assertEqual(hanover.trips_dropped_off, [])
         self.assertEqual(hanover.trips_picked_up, [trip1])
@@ -1002,7 +1002,7 @@ class InternalTransportModelTestCase(TransportTestCase):
             trips_year=self.trips_year,
             template__dropoff_stop=stop,
             section__leaders_arrive=bus.date - timedelta(days=2))
-        stops = bus.get_stops()
+        stops = bus.all_stops
         self.assertEqual(stops, [Hanover(self.trips_year), stop])
 
     def test_go_to_lodge_if_returns(self):
@@ -1015,11 +1015,11 @@ class InternalTransportModelTestCase(TransportTestCase):
             trips_year=self.trips_year,
             template__return_route=bus.route,
             section__leaders_arrive=bus.date - timedelta(days=5))
-        self.assertEqual(bus.get_stops(), [
+        self.assertEqual(bus.all_stops, [
             Hanover(self.trips_year),
             Lodge(self.trips_year),
             Hanover(self.trips_year)])
-        stops = bus.get_stops()
+        stops = bus.all_stops
         self.assertQsEqual(bus.returning(), stops[1].trips_picked_up)
         self.assertQsEqual(bus.returning(), stops[2].trips_dropped_off)
 

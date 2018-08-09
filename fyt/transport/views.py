@@ -460,7 +460,7 @@ class TransportChecklist(_DateMixin, _RouteMixin, DatabaseTemplateView):
         ).first()
 
         if bus:
-            context['stops'] = bus.get_stops()
+            context['stops'] = bus.all_stops
             context['over_capacity'] = bus.over_capacity()
 
             # TODO: remove this?

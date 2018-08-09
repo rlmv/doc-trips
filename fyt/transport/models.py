@@ -22,7 +22,6 @@ from fyt.transport.managers import (
 )
 from fyt.transport.maps import get_directions
 from fyt.trips.models import Trip
-from fyt.utils.cache import cache_as
 from fyt.utils.lat_lng import validate_lat_lng
 
 
@@ -338,8 +337,8 @@ class InternalBus(DatabaseModel):
             hanover,
             lodge)
 
-    @cache_as('_get_stops')
-    def get_stops(self):
+    @cached_property
+    def all_stops(self):
         """
         All stops which the bus makes as it drops trips off
         and picks them up. The first stop is Hanover, the last
@@ -408,8 +407,6 @@ class InternalBus(DatabaseModel):
 
         Otherwise, the default departure time is 7:30am.
         """
-        directions = self.directions()
-
         # Leave at 7:30 AM
         DEPARTURE_TIME = datetime(
             year=self.date.year,
@@ -427,7 +424,7 @@ class InternalBus(DatabaseModel):
 
         legs_to_lodge = list(
             takewhile(lambda leg: leg.start_stop != self.trip_cache.lodge,
-                      directions.legs))
+                      self.directions.legs))
 
         travel_time = sum((leg.duration for leg in legs_to_lodge), timedelta())
         loading_time = (len(legs_to_lodge) - 1) * self.LOADING_TIME
@@ -445,13 +442,11 @@ class InternalBus(DatabaseModel):
         Go through the bus route and update the times at which trips are
         picked up and dropped off.
         """
-        directions = self.directions()
-
         progress = self.get_departure_time()
 
         legs_to_lodge = list(
             takewhile(lambda leg: leg.start_stop != self.trip_cache.lodge,
-                      directions.legs))
+                      self.directions.legs))
 
         # TODO: wrap this whole update in a transaction?
         for leg in legs_to_lodge:
@@ -488,7 +483,7 @@ class InternalBus(DatabaseModel):
         self.dirty = False
         self.save()
 
-        return directions
+        return self.directions
 
     def validate_stop_ordering(self):
         """
@@ -536,9 +531,8 @@ class InternalBus(DatabaseModel):
         Returns True if the bus will be too full at
         some point on its route.
         """
-        stops = self.get_stops()
         load = 0
-        for stop in stops:
+        for stop in self.all_stops:
             for trip in stop.trips_picked_up:
                 load += trip.size
             for trip in stop.trips_dropped_off:
@@ -547,7 +541,7 @@ class InternalBus(DatabaseModel):
                 return True
         return False
 
-    @cache_as('_directions')
+    @cached_property
     def directions(self):
         """
         Directions from Hanover to the Lodge, with information
@@ -555,9 +549,8 @@ class InternalBus(DatabaseModel):
 
         TODO: refactor
         """
-        stops = self.get_stops()
         load = 0
-        for stop in stops:
+        for stop in self.all_stops:
             for trip in stop.trips_picked_up:
                 load += trip.size
             for trip in stop.trips_dropped_off:
@@ -567,7 +560,7 @@ class InternalBus(DatabaseModel):
             else:
                 stop.over_capacity = False
             stop.passenger_count = load
-        return get_directions(stops)
+        return get_directions(self.all_stops)
 
     def detail_url(self):
         kwargs = {
