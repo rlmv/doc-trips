@@ -23,7 +23,6 @@ from fyt.incoming.models import (
 from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.transport.models import ExternalBus
 from fyt.trips.models import Section, Trip, TripType
-from fyt.utils.cache import cache_as
 from fyt.utils.choices import TSHIRT_SIZES
 
 
@@ -429,8 +428,7 @@ class Charges(GenericReportView):
             incoming.cancellation_cost(self.costs) or '',
         ]
 
-    @property
-    @cache_as('_costs')
+    @cached_property
     def costs(self):
         return Settings.objects.get(trips_year=self.trips_year)
 
