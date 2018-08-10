@@ -286,16 +286,13 @@ class InternalBus(DatabaseModel):
         """
         A cache of Trips with preloaded size attributes.
         """
-        if not hasattr(self, '_trip_cache'):
-            self.load_trip_cache(
-                None,
-                self.dropping_off(),
-                self.picking_up(),
-                self.returning(),
-                Hanover(self.trips_year),
-                Lodge(self.trips_year))
-
-        return self._trip_cache
+        return self.TripCache(
+            None,
+            self.dropping_off(),
+            self.picking_up(),
+            self.returning(),
+            Hanover(self.trips_year),
+            Lodge(self.trips_year))
 
     class TripCache:
         """
@@ -324,18 +321,6 @@ class InternalBus(DatabaseModel):
             if self.trip_dict is None:
                 return value
             return self.trip_dict[value]
-
-    def load_trip_cache(self, all_trips, dropoffs, pickups, returns, hanover, lodge):
-        """
-        Load the trip cache.
-        """
-        self._trip_cache = InternalBus.TripCache(
-            all_trips,
-            dropoffs,
-            pickups,
-            returns,
-            hanover,
-            lodge)
 
     @cached_property
     def all_stops(self):

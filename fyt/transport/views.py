@@ -108,7 +108,7 @@ def preload_transported_trips(buses, trips_year):
     lodge = Lodge(trips_year)
 
     for bus in buses:
-        bus.load_trip_cache(
+        bus.trip_cache = InternalBus.TripCache(
             trips,
             dropoffs[bus.route][bus.date],
             pickups[bus.route][bus.date],
