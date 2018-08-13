@@ -23,6 +23,7 @@ class GearRequest(DatabaseModel):
         unique_together = [
             ('trips_year', 'incoming_student'),
             ('trips_year', 'volunteer')]
+        ordering = ['incoming_student', 'volunteer']
 
     objects = GearRequestManager()
 
