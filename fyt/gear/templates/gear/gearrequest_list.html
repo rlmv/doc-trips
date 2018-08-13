@@ -32,7 +32,14 @@
     <td> {{ gear_request.requester|detail_link }} </td>
     <td class="text-center"> <span class="label label-primary"> {{ gear_request.role }} </span> </td>
     {% for gear, needed in requested.items %}
-    <td class="text-center"> {{ needed|ok_if_true }} </td>
+
+    <td class="text-center">
+      {% if gear in gear_request.provided.all %}
+      <i class="fa fa-check text-bright-success"></i>
+      {% elif needed %}
+      <i class="fa fa-question text-muted"></i>
+      {% endif %}
+    </td>
     {% endfor %}
     <td> <a href="{{ gear_request.update_url }}" class="btn btn-xs btn-primary"> <i class="fa fa-wrench"></i> Update </a> </td>
   </tr>

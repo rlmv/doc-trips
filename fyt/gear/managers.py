@@ -11,7 +11,8 @@ class GearRequestManager(models.Manager):
 
     def matrix(self, trips_year):
         from .models import Gear
-        requests = self.filter(trips_year=trips_year).prefetch_related('gear')
+        requests = self.filter(trips_year=trips_year).prefetch_related(
+            'gear', 'provided')
         equipment = Gear.objects.filter(trips_year=trips_year)
 
         matrix = OrderedMatrix(requests, equipment, default=False)
