@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load trip_assignment %}
+{% load gear %}
 
 {% block header %}
 <h1>Volunteers <small> Trips {{ trips_year }} </small></h1>
@@ -21,6 +22,10 @@
   <p>You have an extension to the application deadline until {{ application.deadline_extension }}.</p>
   <p><a href="{% url 'applications:apply' %}" class="btn btn-primary"> <i class="fa fa-edit"></i> Apply for Trips </a></p>
 </div>
+{% endif %}
+
+{% if application.gear_request %}
+{% gear_request_portal application.gear_request %}
 {% endif %}
 
 <h2> Application Status </h2>

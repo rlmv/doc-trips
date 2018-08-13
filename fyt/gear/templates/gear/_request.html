@@ -1,10 +1,5 @@
 {% load links %}
 
-<h4>
-  Gear Requests
-  {{ gear_request|edit_link }}
-</h4>
-
 {% if gear_request %}
 <table class="table table-condensed table-striped">
   {% for gear in gear_request.gear.all %}

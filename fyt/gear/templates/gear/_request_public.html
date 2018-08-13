@@ -1,0 +1,24 @@
+<ul class="list-group">
+  <li class="list-group-item">
+    <h3 class="list-group-item-heading">Gear Requested</h3>
+    <p> You requested the following gear from us: </p>
+    <ul>
+      {{ gear_request.gear.all|unordered_list }}
+      {% if gear_request.additional %}
+      <li> {{ gear_request.additional }} </li>
+      {% endif %}
+    </ul>
+  </li>
+  {% if gear_request.provided.all or gear_request.provided_comments %}
+  <li class="list-group-item">
+    <h3 class="list-group-item-heading">Gear Provided</h3>
+    <p> We are able to provide the following gear for you. Note that you may not have been given a specific gear item if it is not needed on your trip (for example, trippees on kayaking trips don't need hiking boots.) Please read through your list carefully, and don't hesitate to reach out to us with any additional questions or concerns.</p>
+    <ul>
+      {{ gear_request.provided.all|unordered_list }}
+      {% if gear_request.provided_comments %}
+      <li> {{ gear_request.provided_comments }} </li>
+      {% endif %}
+    </ul>
+  </li>
+  {% endif %}
+</ul>

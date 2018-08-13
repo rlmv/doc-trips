@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load gear %}
 
 {% block header %}
 <h2> Incoming Students <small> Trips {{ trips_year }} </small></h2>
@@ -7,8 +8,12 @@
 {% block content %}
 <p><strong> Not {{ user }}</strong>? <a href="{% url 'users:logout' %}">logout</a></p>
 
+{% if incoming_student.gear_request %}
+{% gear_request_portal incoming_student.gear_request %}
+{% endif %}
+
 {% if assignment_available %}
-{% include "incoming/_trip_assignment.html" %} 
+{% include "incoming/_trip_assignment.html" %}
 {% endif %}
 
 <ul class="list-group">
