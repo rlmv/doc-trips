@@ -1,5 +1,8 @@
+{% load links %}
+
 <h4>
   Gear Requests
+  {{ gear_request|edit_link }}
 </h4>
 
 {% if gear_request %}
@@ -7,15 +10,33 @@
   {% for gear in gear_request.gear.all %}
   <tr>
     <td class="col-sm-1"></td>
-    <td> <i class="fa fa-check"></i> {{ gear }} </td>
+    <td class="col-sm-2">
+      {% if gear in gear_request.provided.all %}
+      <span class="label label-success label-gear-request-status"><i class="fa fa-check"></i> Provided </span>
+      {% else %}
+      <span class="label label-default label-gear-request-status"><i class="fa fa-question"></i> Requested </span>
+      {% endif %}
+    </td>
+    <td> {{ gear }} </td>
   </tr>
   {% endfor %}
+
   {% if gear_request.additional %}
   <tr>
     <td class="col-sm-1"></td>
-    <td> <i class="fa fa-check"></i> {{ gear_request.additional }} </td>
+    <td class="col-sm-2"><strong>Additional Requests</strong></td>
+    <td> {{ gear_request.additional }} </td>
   </tr>
   {% endif %}
+
+  {% if gear_request.provided_comments %}
+  <tr>
+    <td class="col-sm-1"></td>
+    <td class="col-sm-2"><strong>Response </strong></td>
+    <td> {{ gear_request.provided_comments }} </td>
+  </tr>
+  {% endif %}
+
 </table>
 
 {% else %}
