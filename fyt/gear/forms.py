@@ -10,7 +10,7 @@ from fyt.core.forms import TripsYearModelForm
 class GearRequestForm(TripsYearModelForm):
     class Meta:
         model = GearRequest
-        fields = '__all__'
+        fields = ['gear', 'additional']
         widgets = {
             'gear': forms.CheckboxSelectMultiple(),
             'additional': forms.Textarea(attrs={'rows': 4})
@@ -27,3 +27,13 @@ class GearRequestForm(TripsYearModelForm):
         helper = FormHelper(self)
         helper.add_input(Submit('submit', 'Submit'))
         return helper
+
+
+class ProvidedGearForm(TripsYearModelForm):
+    class Meta:
+        model = GearRequest
+        fields = ['provided', 'provided_comments']
+        widgets = {
+            'provided': forms.CheckboxSelectMultiple(),
+            'provided_comments': forms.Textarea(attrs={'rows': 4})
+        }

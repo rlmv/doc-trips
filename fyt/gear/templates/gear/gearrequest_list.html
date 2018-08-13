@@ -17,24 +17,35 @@
   {{ url_|download_button:"Gear Requests" }}
 </div>
 <br>
-<table class="table table-condensed table-striped">
+<table class="table table-condensed">
   <tr>
     <th> </th>
     <th class="text-center"> Role </th>
     {% for gear in matrix.cols %}
     <th class="text-center"> {{ gear }} </td>
     {% endfor %}
-    <th> Additional </th>
-  </tr>
+    <th></th>
+ </tr>
+
   {% for gear_request, requested in matrix.items %}
-  <tr>
+  <tr {% if forloop.counter|divisibleby:2 %} class="active" {% endif %}>
     <td> {{ gear_request.requester|detail_link }} </td>
     <td class="text-center"> <span class="label label-primary"> {{ gear_request.role }} </span> </td>
     {% for gear, needed in requested.items %}
     <td class="text-center"> {{ needed|ok_if_true }} </td>
     {% endfor %}
-    <td> {{ gear_request.additional }} </td>
+    <td> <a href="{{ gear_request.update_url }}" class="btn btn-xs btn-primary"> <i class="fa fa-wrench"></i> Update </a> </td>
   </tr>
+
+  {% if gear_request.additional %}
+  <tr {% if forloop.counter|divisibleby:2 %} class="active" {% endif %}>
+    <td></td>
+    <td></td>
+    <td colspan="{{ matrix.cols|length }}"> {{ gear_request.additional }}</td>
+    <td></td>
+  </tr>
+  {% endif %}
+
   {% endfor %}
 </table>
 

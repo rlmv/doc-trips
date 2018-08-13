@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.functional import cached_property
 
-from .forms import GearRequestForm
+from .forms import GearRequestForm, ProvidedGearForm
 from .models import Gear, GearRequest
 
 from fyt.core.models import TripsYear
@@ -10,6 +10,7 @@ from fyt.core.views import (
     BaseCreateView,
     DatabaseCreateView,
     DatabaseDetailView,
+    DatabaseFormView,
     DatabaseListView,
     DatabaseUpdateView,
 )
@@ -44,6 +45,17 @@ class GearRequestList(DatabaseListView):
         return {
             'matrix': GearRequest.objects.matrix(self.trips_year)
         }
+
+
+class GearRequestUpdateProvided(DatabaseUpdateView):
+    model = GearRequest
+    form_class = ProvidedGearForm
+    template_name = 'gear/gearrequest_update_provided.html'
+    delete_button = False
+
+    def get_success_url(self):
+        return reverse('core:gearrequest:list',
+                       kwargs={'trips_year': self.trips_year})
 
 
 class RequestGear(LoginRequiredMixin, BaseCreateView):

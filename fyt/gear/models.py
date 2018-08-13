@@ -26,8 +26,18 @@ class GearRequest(DatabaseModel):
 
     objects = GearRequestManager()
 
+    # Gear requests
+    # TODO: rename
     gear = models.ManyToManyField(Gear, blank=True)
     additional = models.TextField(blank=True)
+
+    # Requested gear that will be provided to the trippee
+    provided = models.ManyToManyField(Gear, blank=True,
+                                      related_name="provided_to")
+    provided_comments = models.TextField(
+        'additional comments', blank=True, help_text=(
+            'Add information here about why gear is not being provided, if applicable'))
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

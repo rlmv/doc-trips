@@ -1,0 +1,18 @@
+{% extends "core/update.html" %}
+
+
+{% block header %}
+<h2>Update Provided Gear <small> {{ object.requester }} </small></h2>
+{% endblock %}
+
+{% block content %}
+<h5> Gear Requested: </h5>
+<ul>
+  {{ object.gear.all|unordered_list }}
+  {% if object.additional %}
+  <li>"{{ object.additional }}"</li>
+  {% endif %}
+</ul>
+
+{{ block.super }}
+{% endblock %}
