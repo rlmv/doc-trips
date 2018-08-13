@@ -48,10 +48,20 @@
   <tr {% if forloop.counter|divisibleby:2 %} class="active" {% endif %}>
     <td></td>
     <td></td>
-    <td colspan="{{ matrix.cols|length }}"> {{ gear_request.additional }}</td>
+    <td colspan="{{ matrix.cols|length }}"><strong>Additional Requests:</strong> {{ gear_request.additional }}</td>
     <td></td>
   </tr>
   {% endif %}
+
+  {% if gear_request.provided_comments %}
+  <tr {% if forloop.counter|divisibleby:2 %} class="active" {% endif %}>
+    <td></td>
+    <td></td>
+    <td colspan="{{ matrix.cols|length }}"> <strong>Response:</strong> {{ gear_request.provided_comments }}</td>
+    <td></td>
+  </tr>
+  {% endif %}
+
 
   {% endfor %}
 </table>
