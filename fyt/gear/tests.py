@@ -71,18 +71,24 @@ class GearRequestMatrixTestCase(FytTestCase):
     def test_matrix(self):
         gear1 = mommy.make(Gear, trips_year=self.trips_year)
         gear2 = mommy.make(Gear, trips_year=self.trips_year)
+
         request1 = mommy.make(GearRequest, trips_year=self.trips_year,
                               incoming_student__trips_year=self.trips_year)
         request1.gear.set([gear1])
+
         request2 = mommy.make(GearRequest, trips_year=self.trips_year,
                               volunteer__trips_year=self.trips_year)
         request2.gear.set([gear2])
 
-        with self.assertNumQueries(3):
+        request3 = mommy.make(GearRequest, trips_year=self.trips_year,
+                              incoming_student__trips_year=self.trips_year)
+
+        with self.assertNumQueries(4):
             matrix = GearRequest.objects.matrix(self.trips_year)
         self.assertEqual(matrix, {
             request1: {gear1: True, gear2: False},
-            request2: {gear1: False, gear2: True}
+            request2: {gear1: False, gear2: True},
+            request3: {gear1: False, gear2: False}
         })
 
 
