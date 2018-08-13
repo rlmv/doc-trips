@@ -54,6 +54,8 @@ class GearRequestUpdateProvided(DatabaseUpdateView):
     delete_button = False
 
     def get_success_url(self):
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
         return reverse('core:gearrequest:list',
                        kwargs={'trips_year': self.trips_year})
 

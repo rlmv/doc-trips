@@ -39,7 +39,7 @@
 
 <h4>
   Gear Requests
-  {{ trippee.gear_request|edit_link }}
+  <a href="{{ trippee.gear_request.update_url }}?next={{request.get_full_path|urlencode}}">edit</a>
 </h4>
 {% gear_request trippee.gear_request %}
 

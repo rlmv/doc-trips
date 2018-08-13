@@ -1,12 +1,16 @@
+import re
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 from model_mommy import mommy
 
 from .forms import GearRequestForm
 from .models import Gear, GearRequest
 
 from fyt.applications.models import Volunteer
-from fyt.incoming.models import IncomingStudent
+from fyt.applications.tests import ApplicationTestMixin
+from fyt.incoming.models import IncomingStudent, Settings
 from fyt.test import FytTestCase
+from fyt.timetable.models import Timetable
 from fyt.users.models import DartmouthUser
 
 
@@ -80,3 +84,34 @@ class GearRequestMatrixTestCase(FytTestCase):
             request1: {gear1: True, gear2: False},
             request2: {gear1: False, gear2: True}
         })
+
+
+class GearRequestViewsTestCase(ApplicationTestMixin, FytTestCase):
+
+    def setUp(self):
+        self.init_trips_year()
+        self.incoming_student_gear_request = mommy.make(
+            GearRequest,
+            trips_year=self.trips_year,
+            incoming_student__trips_year=self.trips_year)
+        self.volunteer_gear_request = mommy.make(
+            GearRequest,
+            trips_year=self.trips_year,
+            volunteer=self.make_application())
+        mommy.make(Settings, trips_year=self.trips_year)
+        mommy.make(Timetable)
+
+    def test_update_request_redirects_to_proper_view(self):
+        urls = [
+            reverse('core:gearrequest:list',
+                    kwargs={'trips_year': self.trips_year}),
+            self.incoming_student_gear_request.incoming_student.detail_url(),
+            self.volunteer_gear_request.volunteer.detail_url()]
+
+        director = self.make_director()
+        update_url_regex = re.compile(r'gear-requests/\d+/update')
+        for url in urls:
+            resp1 = self.app.get(url, user=director)
+            resp2 = resp1.click(href=update_url_regex, index=0)
+            resp3 = resp2.form.submit()
+            self.assertRedirects(resp3, url)
