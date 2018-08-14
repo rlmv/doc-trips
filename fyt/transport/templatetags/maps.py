@@ -79,34 +79,36 @@ def trips_with_counts(trips):
 
 
 
-def decdeg2dms(dd):
+def _decdeg2dms(dd):
+    """
+    Convert decimal degrees to degrees-minutes-secondes.
+    """
     negative = dd < 0
     dd = abs(dd)
-    minutes,seconds = divmod(dd*3600,60)
-    degrees,minutes = divmod(minutes,60)
-    if negative:
-        if degrees > 0:
-            degrees = -degrees
-        elif minutes > 0:
-            minutes = -minutes
-        else:
-            seconds = -seconds
-    return (degrees,minutes,seconds)
+    minutes, seconds = divmod(dd * 3600, 60)
+    degrees, minutes = divmod(minutes, 60)
+    return (negative, degrees, minutes, seconds)
 
 
 def _fmt_side(dec, direction_chars):
-    dms = decdeg2dms(dec)
-    if any([i < 0 for i in dms]):
+    """
+    Format one part of a DMS coordinate.
+    """
+    negative, degrees, minutes, seconds = _decdeg2dms(dec)
+    if negative:
         direction = direction_chars[0]
     else:
         direction = direction_chars[1]
 
-    dms = [abs(i) for i in dms]
-    return """{:.0f}\u00B0{:02.0f}'{:04.1f}"{}""".format(*dms, direction)
+    return """{:.0f}\u00B0{:02.0f}'{:04.1f}"{}""".format(
+        degrees, minutes, seconds, direction)
 
 
 @register.filter
 def lat_lng_dms(lat_lng):
+    """
+    Temlate filter to convert decimal coordinates to DMS.
+    """
     lat, lng = lat_lng.split(',')
     lat = float(lat.strip())
     lng = float(lng.strip())
