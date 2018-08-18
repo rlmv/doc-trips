@@ -36,7 +36,8 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         with self.assertRaises(StopIteration):
             next(iter)
 
-    def assertCsvReturns(self, urlpattern, target, url_kwargs=None):
+    def assertCsvReturns(self, urlpattern, target, url_kwargs=None,
+                         num_queries=None):
         """
         Test a view by visiting it with director priveleges and
         comparing returned csv to ``target``.
@@ -50,7 +51,13 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             kwargs.update(url_kwargs)
 
         url = reverse(urlpattern, kwargs=kwargs)
-        resp = self.app.get(url, user=self.make_director())
+        director = self.make_director()
+
+        if num_queries:
+            with self.assertNumQueries(num_queries):
+                resp = self.app.get(url, user=director)
+        else:
+            resp = self.app.get(url, user=director)
 
         self.assertTrue(resp['Content-Disposition'].startswith(
             'attachment; filename="'))
@@ -90,7 +97,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'croo score 1': '2.0',
             'croo score 2': '1.0',
             'croo score 3': '3.0',
-        }])
+        }], num_queries=27)
 
     def test_trip_leader_csv(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)

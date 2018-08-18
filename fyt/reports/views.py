@@ -111,7 +111,10 @@ class VolunteerCSV(GenericReportView):
         return Application.objects.leader_or_croo_applications(
             self.trips_year
         ).with_avg_scores().prefetch_related(
-            'scores'
+            'scores',
+            'answer_set',
+            'scores__leader_score',
+            'scores__croo_score',
         ).with_required_questions(self.trips_year)
 
     def get_row(self, application):
