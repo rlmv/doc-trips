@@ -394,6 +394,10 @@ class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
     def get_queryset(self):
         return Volunteer.objects.filter(
             trips_year=self.trips_year
+        ).select_related(
+            None  # Clear leader_supplement, croo_supplement selects
+        ).select_related(
+            'applicant'
         ).with_avg_scores().only(
             'applicant__netid',
             'applicant__name',
