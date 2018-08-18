@@ -531,12 +531,14 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertQsEqual(qs, [self.app1, self.app3])
 
     def test_get_leader_or_croo_applications(self):
-        qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
+        with self.assertNumQueries(3):
+            qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
+            self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
 
     def test_get_leader_and_croo_applications(self):
-        qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app1])
+        with self.assertNumQueries(3):
+            qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
+            self.assertQsEqual(qs, [self.app1])
 
     def test_incomplete_leader_applications(self):
         qs = Volunteer.objects.incomplete_leader_applications(self.trips_year)

@@ -12,6 +12,7 @@ from django.db.models import (
     OuterRef,
     Prefetch,
     Sum,
+    Subquery,
     Value as V,
     When,
 )
@@ -92,30 +93,19 @@ class BaseVolunteerManager(models.Manager):
 
         return qs
 
-    # NOTE: There's a bug in Django (https://code.djangoproject.com/ticket/26959
-    # and https://code.djangoproject.com/ticket/26522) which causes non-
-    # deterministic failures when `|`ing together the leader and croo
-    # querysets so we have to use this instead.
     def leader_or_croo_applications(self, trips_year):
         """
         Return all applications which have either the leader or croo section
         complete.
         """
-        leader_pks = pks(self.leader_applications(trips_year))
-        croo_pks = pks(self.croo_applications(trips_year))
+        leader_pks = self.leader_applications(trips_year).values('pk')
+        croo_pks = self.croo_applications(trips_year).values('pk')
+        return self.filter(pk__in=Subquery(leader_pks | croo_pks))
 
-        either_pks = set(leader_pks).union(croo_pks)
-
-        return self.filter(trips_year=trips_year).filter(pk__in=either_pks)
-
-    # NOTE: the same bug affects ANDs as well
     def leader_and_croo_applications(self, trips_year):
-        leader_pks = pks(self.leader_applications(trips_year))
-        croo_pks = pks(self.croo_applications(trips_year))
-
-        shared_pks = set(leader_pks) & set(croo_pks)
-
-        return self.filter(trips_year=trips_year).filter(pk__in=shared_pks)
+        leader_pks = self.leader_applications(trips_year).values('pk')
+        croo_pks = self.croo_applications(trips_year).values('pk')
+        return self.filter(pk__in=Subquery(leader_pks & croo_pks))
 
     def incomplete_leader_applications(self, trips_year):
         """
@@ -125,7 +115,7 @@ class BaseVolunteerManager(models.Manager):
             trips_year=trips_year,
             leader_willing=True
         ).exclude(
-            pk__in=pks(self.leader_applications(trips_year))
+            pk__in=Subquery(pks(self.leader_applications(trips_year)))
         )
 
     def incomplete_croo_applications(self, trips_year):
@@ -136,7 +126,7 @@ class BaseVolunteerManager(models.Manager):
             trips_year=trips_year,
             croo_willing=True
         ).exclude(
-            pk__in=pks(self.croo_applications(trips_year))
+            pk__in=Subquery(pks(self.croo_applications(trips_year)))
         )
 
     def leaders(self, trips_year):

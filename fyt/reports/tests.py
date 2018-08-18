@@ -97,7 +97,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             'croo score 1': '2.0',
             'croo score 2': '1.0',
             'croo score 3': '3.0',
-        }], num_queries=27)
+        }], num_queries=23)
 
     def test_trip_leader_csv(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
