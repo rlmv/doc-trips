@@ -377,13 +377,21 @@ class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
     context_object_name = 'trippees'
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        return qs.select_related(
-            'registration__user',
+        return super().get_queryset().select_related(
             'trip_assignment__section',
             'trip_assignment__template',
-            'bus_assignment_round_trip'
-        )
+            'bus_assignment_round_trip',
+            'bus_assignment_to_hanover',
+            'bus_assignment_from_hanover',
+        ).defer(
+            # Don't load text fields
+            'trip_assignment__template__description_summary',
+            'trip_assignment__template__desc_intro',
+            'trip_assignment__template__desc_day1',
+            'trip_assignment__template__desc_day2',
+            'trip_assignment__template__desc_day3',
+            'trip_assignment__template__desc_conc',
+            'trip_assignment__template__revisions')
 
 
 class IncomingStudentDetail(DatabaseDetailView):

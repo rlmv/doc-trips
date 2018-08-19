@@ -1,7 +1,8 @@
+from django.urls import reverse
 import django_tables2 as tables
 from django.utils.safestring import mark_safe
 
-from fyt.core.templatetags.links import detail_link, edit_link
+from fyt.core.templatetags.links import detail_link, edit_link, make_link
 
 
 class DetailLinkColumn(tables.Column):
@@ -65,7 +66,7 @@ class IncomingStudentTable(tables.Table):
     name = tables.Column(
         verbose_name='Student'
     )
-    registration = DetailLinkColumn(
+    registration_id = tables.Column(
         verbose_name='Registration'
     )
     trip_assignment = DetailLinkColumn(
@@ -86,6 +87,15 @@ class IncomingStudentTable(tables.Table):
     bus_assignment_from_hanover = DetailLinkColumn(
         verbose_name='Bus FROM Hanover', orderable=False
     )
+
+    def render_registration_id(self, record):
+        # Manually reverse registration url.
+        # Using detail_link requires pulling in the whole Registration
+        # model just to get the pk and trips_year.
+        url = reverse('core:registration:detail', kwargs={
+            'trips_year': record.trips_year_id,
+            'pk': record.registration_id})
+        return make_link(url, record.name)
 
     def render_name(self, record):
         return detail_link(record)
