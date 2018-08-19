@@ -396,7 +396,7 @@ class VehicleCreateView(DatabaseCreateView):
 
 class VehicleDetailView(DatabaseDetailView):
     model = Vehicle
-    fields = ['name', 'capacity']
+    fields = ['name', 'capacity', 'chartered']
 
 
 class VehicleUpdateView(DatabaseUpdateView):
@@ -587,9 +587,8 @@ class InternalBusPacketForBusCompany(InternalBusPacket):
     """
     template_name = 'transport/internal_packet_for_bus_company.html'
 
-    # TODO: add `chartered` field to Vehicle so we don't have this hack
     def get_queryset(self):
-        qs = super().get_queryset().filter(route__vehicle__name='Internal Bus')
+        qs = super().get_queryset().filter(route__vehicle__chartered=True)
         assert qs.exists()
         return qs
 

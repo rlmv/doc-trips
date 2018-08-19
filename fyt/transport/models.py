@@ -216,6 +216,10 @@ class Vehicle(DatabaseModel):
     # eg. Internal Bus, Microbus,
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
+    chartered = models.BooleanField(
+        default=False,
+
+        help_text='Is this bus chartered through a bus company?')
 
     class Meta:
         ordering = ['name']

@@ -1,5 +1,6 @@
 {% extends "core/base.html" %}
 {% load links %}
+{% load icons %}
 
 {% block header %}
 <h3> Vehicles </h3>
@@ -12,12 +13,16 @@
 <tr>
   <th> Name </th>
   <th> Capacity </th>
+  <th> Chartered? </th>
+  <th></th>
+  <th></th>
 </tr>
 
 {% for vehicle in vehicles %}
 <tr>
   <td> {{ vehicle | detail_link }} </td>
   <td> {{ vehicle.capacity }} </td>
+  <td> {{ vehicle.chartered | ok_if_true }} </td>
   <td> {{ vehicle | edit_link }} </td>
   <td> {{ vehicle | delete_link }} </td>
 </tr>
