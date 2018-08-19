@@ -232,16 +232,23 @@ class RegistrationIndex(DatabaseListView):
             'trippee',
             'trippee__trip_assignment__section',
             'trippee__trip_assignment__template',
-        )
+        ).defer(
+            # Don't load text fields
+            'trippee__trip_assignment__template__description_summary',
+            'trippee__trip_assignment__template__desc_intro',
+            'trippee__trip_assignment__template__desc_day1',
+            'trippee__trip_assignment__template__desc_day2',
+            'trippee__trip_assignment__template__desc_day3',
+            'trippee__trip_assignment__template__desc_conc',
+            'trippee__trip_assignment__template__revisions')
 
     def extra_context(self):
         filter = RegistrationFilterSet(
             self.request.GET, queryset=self.get_queryset(),
             trips_year=self.trips_year
         )
-        table = RegistrationTable(filter.qs, self.request)
         return {
-            'table': table,
+            'table': RegistrationTable(filter.qs, self.request),
             'filter': filter,
             'registration_count': len(filter.qs),
             'unmatched': Registration.objects.unmatched(self.trips_year)
