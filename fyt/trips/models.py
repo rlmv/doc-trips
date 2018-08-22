@@ -402,7 +402,7 @@ class TripTemplate(DatabaseModel):
 
 class TripTemplateDescription(DatabaseModel):
     """
-    Descriptions for each part of the trip.
+    Descriptions for each part of the trip template.
 
     This is separated into a separate model to make database queries
     on TripTemplate more efficient. Loading these text fields is a big

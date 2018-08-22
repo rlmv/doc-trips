@@ -3,6 +3,7 @@ from statistics import mean
 
 from braces.views import FormValidMessageMixin, SetHeadlineMixin
 from crispy_forms.layout import Submit
+from django.db.models import Prefetch
 from django.forms.models import modelformset_factory
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -147,16 +148,16 @@ class TripDetail(DatabaseDetailView):
         'triptype',
         'max_trippees',
         'swimtest_required',
-        'desc_intro',
+        'description__intro',
         'dropoff_stop',
-        'desc_day1',
+        'description__day1',
         'campsite1',
-        'desc_day2',
+        'description__day2',
         'campsite2',
-        'desc_day3',
+        'description__day3',
         'pickup_stop',
-        'desc_conc',
-        'revisions']
+        'description__conclusion',
+        'description__revisions']
 
 
 class TripCreate(PopulateMixin, DatabaseCreateView):
@@ -798,12 +799,13 @@ class PacketsForSection(_SectionMixin, DatabaseListView):
             'template__campsite1',
             'template__campsite2',
             'template__dropoff_stop',
-            'template__pickup_stop'
+            'template__pickup_stop',
+            'template__description',
         ).prefetch_related(
             'leaders',
             'leaders__applicant',
             'trippees',
-            'trippees__registration'
+            'trippees__registration',
         )
 
 

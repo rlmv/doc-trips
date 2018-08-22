@@ -34,31 +34,38 @@ def detail(db_object, fields=None):
         if field_name in ['id', 'trips_year'] or field_name.endswith('_id'):
             continue
 
-        try:
-            field = db_object._meta.get_field(field_name)
-            value = getattr(db_object, field_name)
-        except FieldDoesNotExist:
-
-            value = getattr(db_object, field_name)
-
-            # Handle related managers
-            if isinstance(value, models.Manager):
-                value = value.all()
-            elif callable(value):
-                value = value()
-            # Else, use the raw value
-
-            # Link to object, if possible
-            # (Added for Registration section & triptype M2M fields)
+        # Implement multi-object lookups
+        if '__' in field_name:
+            value = db_object
+            for intermediate in field_name.split('__'):
+                field = value._meta.get_field(intermediate)
+                value = getattr(value, intermediate)
+        else:
             try:
-                value = detail_link(value)
-            except AttributeError:
-                pass
+                field = db_object._meta.get_field(field_name)
+                value = getattr(db_object, field_name)
+            except FieldDoesNotExist:
 
-            if label is None:
-                label = field_name
-            display_fields.append((label, value))
-            continue
+                value = getattr(db_object, field_name)
+
+                # Handle related managers
+                if isinstance(value, models.Manager):
+                    value = value.all()
+                elif callable(value):
+                    value = value()
+                # Else, use the raw value
+
+                # Link to object, if possible
+                # (Added for Registration section & triptype M2M fields)
+                try:
+                    value = detail_link(value)
+                except AttributeError:
+                    pass
+
+                if label is None:
+                    label = field_name
+                display_fields.append((label, value))
+                continue
 
         if isinstance(field, models.FileField) and value:
             t = template.Template("""<a href="{{ file.url }}">{{ file }}</a>""")

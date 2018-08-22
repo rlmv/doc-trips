@@ -232,15 +232,7 @@ class RegistrationIndex(DatabaseListView):
             'trippee',
             'trippee__trip_assignment__section',
             'trippee__trip_assignment__template',
-        ).defer(
-            # Don't load text fields
-            'trippee__trip_assignment__template__description_summary',
-            'trippee__trip_assignment__template__desc_intro',
-            'trippee__trip_assignment__template__desc_day1',
-            'trippee__trip_assignment__template__desc_day2',
-            'trippee__trip_assignment__template__desc_day3',
-            'trippee__trip_assignment__template__desc_conc',
-            'trippee__trip_assignment__template__revisions')
+        )
 
     def extra_context(self):
         filter = RegistrationFilterSet(
@@ -390,15 +382,7 @@ class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
             'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
             'bus_assignment_from_hanover',
-        ).defer(
-            # Don't load text fields
-            'trip_assignment__template__description_summary',
-            'trip_assignment__template__desc_intro',
-            'trip_assignment__template__desc_day1',
-            'trip_assignment__template__desc_day2',
-            'trip_assignment__template__desc_day3',
-            'trip_assignment__template__desc_conc',
-            'trip_assignment__template__revisions')
+        )
 
 
 class IncomingStudentDetail(DatabaseDetailView):

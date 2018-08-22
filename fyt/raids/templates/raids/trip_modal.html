@@ -13,16 +13,16 @@
       </div>
 
       <div class="modal-body">
-	<h4> Day 1 ({{ trip.section.at_campsite1|date:"n/j" }}) </h4>
-	<p> {{ trip.template.desc_day1|linebreaks }} </p>
-	<h4> Campsite 1: {{ trip.template.campsite1.name }} </h4>
-	<p> {{ trip.template.campsite1.directions }} </p>
-	<h4> Day 2 ({{ trip.section.at_campsite2|date:"n/j" }}) </h4>
-	<p> {{ trip.template.desc_day2|linebreaks }} </p>
-	<h4> Campsite 2: {{ trip.template.campsite2.name }} </h4>
-	<p> {{ trip.template.campsite2.directions }} </p>
-	<h4> Day 3 ({{ trip.section.arrive_at_lodge|date:"n/j" }}) </h4>
-	<p> {{ trip.template.desc_day3|linebreaks }} </p>
+    <h4> Day 1 ({{ trip.section.at_campsite1|date:"n/j" }}) </h4>
+    <p> {{ trip.template.description.day1|linebreaks }} </p>
+    <h4> Campsite 1: {{ trip.template.campsite1.name }} </h4>
+    <p> {{ trip.template.campsite1.directions }} </p>
+    <h4> Day 2 ({{ trip.section.at_campsite2|date:"n/j" }}) </h4>
+    <p> {{ trip.template.description.day2|linebreaks }} </p>
+    <h4> Campsite 2: {{ trip.template.campsite2.name }} </h4>
+    <p> {{ trip.template.campsite2.directions }} </p>
+    <h4> Day 3 ({{ trip.section.arrive_at_lodge|date:"n/j" }}) </h4>
+    <p> {{ trip.template.description.day3|linebreaks }} </p>
       </div>
     </div>
   </div>

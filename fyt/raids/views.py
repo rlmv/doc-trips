@@ -57,6 +57,7 @@ class TripsToRaid(_RaidMixin, ListView):
         return qs.select_related(
             'template__campsite1',
             'template__campsite2',
+            'template__description'
         ).prefetch_related(
             'raid_set',
             'raid_set__user',

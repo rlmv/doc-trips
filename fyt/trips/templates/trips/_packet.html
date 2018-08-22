@@ -3,7 +3,7 @@
 {% medical_packet trip %}
 
 <h3> Introduction </h3>
-<p> {{ trip.template.desc_intro|linebreaks }} </p>
+<p> {{ trip.template.description.intro|linebreaks }} </p>
 
 {% if trip.notes %}
 <h3> Notes </h3>
@@ -13,23 +13,23 @@
 <p class="h4"> You will be dropped off at {{ trip.template.dropoff_stop }} </p>
 
 <h3> Day 1 ({{ trip.section.at_campsite1|date:"n/j" }}) </h3>
-<p> {{ trip.template.desc_day1|linebreaks }} </p>
+<p> {{ trip.template.description.day1|linebreaks }} </p>
 
 <p class="h4"> Campsite 1: {{ trip.template.campsite1.name }} </p>
 {% campsite trip.template.campsite1 %}
 
 <h3> Day 2 ({{ trip.section.at_campsite2|date:"n/j" }}) </h3>
-<p> {{ trip.template.desc_day2|linebreaks }} </p>
+<p> {{ trip.template.description.day2|linebreaks }} </p>
 
 <p class="h4"> Campsite 2: {{ trip.template.campsite2.name }} </p>
 {% campsite trip.template.campsite2 %}
 
 <h3> Day 3 ({{ trip.section.arrive_at_lodge|date:"n/j" }}) </h3>
-<p> {{ trip.template.desc_day3|linebreaks }} </p>
+<p> {{ trip.template.description.day3|linebreaks }} </p>
 
 <p class="h4"> You will be picked up at {{ trip.template.pickup_stop }} {% if trip.get_pickup_time %} at {{ trip.get_pickup_time }} {% endif %} </p>
 
 <h3> Other Information </h3>
-<p> {{ trip.template.desc_conc|linebreaks }} </p>
+<p> {{ trip.template.description.conclusion|linebreaks }} </p>
 
 {% documents trip.template %}
