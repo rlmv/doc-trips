@@ -367,12 +367,10 @@ class TripTemplate(DatabaseModel):
         'Campsite', related_name='trip_night_2', on_delete=models.PROTECT,
         verbose_name='campsite 2')
 
-    desc_intro = models.TextField('Introduction', blank=True)
-    desc_day1 = models.TextField('Day 1', blank=True)
-    desc_day2 = models.TextField('Day 2', blank=True)
-    desc_day3 = models.TextField('Day 3', blank=True)
-    desc_conc = models.TextField('Conclusion', blank=True)
-    revisions = models.TextField(blank=True)
+    description = models.OneToOneField(
+        'TripTemplateDescription',
+        editable=False,
+        on_delete=models.CASCADE,)
 
     class Meta:
         ordering = ['name']
@@ -400,6 +398,22 @@ class TripTemplate(DatabaseModel):
 
     def __str__(self):
         return "{}: {}".format(self.name, self.description_summary)
+
+
+class TripTemplateDescription(DatabaseModel):
+    """
+    Descriptions for each part of the trip.
+
+    This is separated into a separate model to make database queries
+    on TripTemplate more efficient. Loading these text fields is a big
+    performance hit on large querysets.
+    """
+    intro = models.TextField('Introduction', blank=True)
+    day1 = models.TextField('Day 1', blank=True)
+    day2 = models.TextField('Day 2', blank=True)
+    day3 = models.TextField('Day 3', blank=True)
+    conclusion = models.TextField('Conclusion', blank=True)
+    revisions = models.TextField(blank=True)
 
 
 class Document(DatabaseModel):

@@ -1,6 +1,7 @@
 {% extends "core/detail.html" %}
 {% load links %}
 {% load trips %}
+{% load detail_view %}
 
 {% block more_links %}
 {{ object.file_list_url|edit_button:"Edit uploaded files" }}
@@ -8,5 +9,6 @@
 
 {% block content %}
 {{ block.super }}
+{% detail object.description view.description_fields %}
 {% documents object %}
 {% endblock %}

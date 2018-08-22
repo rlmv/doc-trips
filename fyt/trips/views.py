@@ -200,11 +200,13 @@ class TripTemplateDetail(DatabaseDetailView):
         'campsite2',
         'pickup_stop',
         'return_route',
-        'desc_intro',
-        'desc_day1',
-        'desc_day2',
-        'desc_day3',
-        'desc_conc',
+    ]
+    description_fields = [
+        'intro',
+        'day1',
+        'day2',
+        'day3',
+        'conclusion',
         'revisions',
     ]
 
