@@ -87,7 +87,7 @@ class Forward:
         self.delete_application_medical_info()
         self.reset_timetable()
 
-    def copy_object_forward(self, obj):
+    def copy_object_forward(self, obj, from_one_to_one=None):
         """
         Recursively copy ``obj`` to the next ``trips_year``
 
@@ -96,10 +96,12 @@ class Forward:
 
         Returns the new object.
         """
-        try:  # cached?
+        if obj is None:
+            return None
+
+        # Already in cache?
+        if obj in self.old_to_new:
             return self.old_to_new[obj]
-        except KeyError:
-            pass
 
         logger.info('Copying %s' % obj)
 
@@ -116,11 +118,16 @@ class Forward:
 
             if field.many_to_one and field.related_model != TripsYear:
                 rel = getattr(obj, field.name)
-                if rel is None:
-                    new_rel = None
-                else:
-                    new_rel = self.copy_object_forward(rel)
+                new_rel = self.copy_object_forward(rel)
                 setattr(new_obj, field.name, new_rel)
+
+            elif field.one_to_one:
+                rel = getattr(obj, field.name)
+                # Tag this side of the relationship so we don't come back
+                if from_one_to_one != rel:
+                    new_rel = self.copy_object_forward(rel, from_one_to_one=obj)
+                    setattr(new_obj, field.name, new_rel)
+
         new_obj.trips_year = self.next_year
         new_obj.pk = None
         new_obj.save()
