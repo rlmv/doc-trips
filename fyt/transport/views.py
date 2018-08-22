@@ -116,6 +116,8 @@ def preload_transported_trips(buses, trips_year):
             hanover,
             lodge)
 
+    return buses
+
 
 def trip_transport_matrix(trips_year):
     """
@@ -524,15 +526,6 @@ class OrderStops(DatabaseEditPermissionRequired, TripsYearMixin,
         return super().get_context_data(**kwargs)
 
 
-class InternalBusPacket(DatabaseListView):
-    """
-    Directions and notes for all internal buses.
-    """
-    model = InternalBus
-    template_name = 'transport/internal_packet.html'
-    context_object_name = 'bus_list'
-
-
 class TripWrapper:
 
     def __init__(self, trip, route_getter):
@@ -571,12 +564,31 @@ class InternalTransportByDate(DatabaseTemplateView):
         }
 
 
+class InternalBusPacket(DatabaseListView):
+    """
+    Directions and notes for all internal buses.
+    """
+    model = InternalBus
+    template_name = 'transport/internal_packet.html'
+    context_object_name = 'bus_list'
+
+    def modify_queryset(self, qs):
+        """
+        Used by subclasses to modify qs before preloading trips.
+        """
+        return qs
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = self.modify_queryset(qs)
+        return preload_transported_trips(qs, self.trips_year)
+
+
 class InternalBusPacketForDate(_DateMixin, InternalBusPacket):
     """
     All internal bus directions for a certain date.
     """
-    def get_queryset(self):
-        qs = super().get_queryset()
+    def modify_queryset(self, qs):
         return qs.filter(date=self.date)
 
 
@@ -587,10 +599,8 @@ class InternalBusPacketForBusCompany(InternalBusPacket):
     """
     template_name = 'transport/internal_packet_for_bus_company.html'
 
-    def get_queryset(self):
-        qs = super().get_queryset().filter(route__vehicle__chartered=True)
-        assert qs.exists()
-        return qs
+    def modify_queryset(self, qs):
+        return qs.filter(route__vehicle__chartered=True)
 
 
 class ExternalBusPacket(DatabaseListView):
