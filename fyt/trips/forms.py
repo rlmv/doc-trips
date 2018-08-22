@@ -7,7 +7,7 @@ from django import forms
 from fyt.applications.models import Volunteer
 from fyt.core.forms import TripsYearModelForm
 from fyt.incoming.models import IncomingStudent
-from fyt.trips.models import Section, Trip
+from fyt.trips.models import Section, Trip, TripTemplate, TripTemplateDescription
 
 
 class SectionForm(TripsYearModelForm):
@@ -27,6 +27,30 @@ class SectionForm(TripsYearModelForm):
     def helper(self):
         helper = FormHelper(self)
         helper.add_input(Submit('submit', 'Submit'))
+        return helper
+
+
+class TripTemplateForm(TripsYearModelForm):
+    class Meta:
+        model = TripTemplate
+        fields = '__all__'
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
+        return helper
+
+
+class TripTemplateDescriptionForm(TripsYearModelForm):
+    class Meta:
+        model = TripTemplateDescription
+        fields = '__all__'
+
+    @property
+    def helper(self):
+        helper = FormHelper(self)
+        helper.form_tag = False
         return helper
 
 

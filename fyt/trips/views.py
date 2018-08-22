@@ -14,6 +14,8 @@ from .forms import (
     LeaderAssignmentForm,
     SectionForm,
     TrippeeAssignmentForm,
+    TripTemplateForm,
+    TripTemplateDescriptionForm
 )
 from .models import (
     NUM_BAGELS_REGULAR,
@@ -33,6 +35,7 @@ from fyt.applications.models import (
     Volunteer,
 )
 from fyt.core.views import (
+    BaseCreateView,
     BaseUpdateView,
     DatabaseCreateView,
     DatabaseDeleteView,
@@ -57,7 +60,7 @@ from fyt.permissions.views import (
 )
 from fyt.transport.models import ExternalBus, InternalBus
 from fyt.utils.forms import crispify
-from fyt.utils.views import PopulateMixin
+from fyt.utils.views import PopulateMixin, MultiFormMixin
 
 
 class _SectionMixin():
@@ -181,10 +184,6 @@ class TripTemplateList(DatabaseListView):
         )
 
 
-class TripTemplateCreate(DatabaseCreateView):
-    model = TripTemplate
-
-
 class TripTemplateDetail(DatabaseDetailView):
     model = TripTemplate
     template_name = 'trips/triptemplate_detail.html'
@@ -211,8 +210,49 @@ class TripTemplateDetail(DatabaseDetailView):
     ]
 
 
-class TripTemplateUpdate(TripInfoEditPermissionRequired, BaseUpdateView):
+class TripTemplateCreate(DatabaseEditPermissionRequired, MultiFormMixin,
+                         BaseCreateView):
     model = TripTemplate
+    template_name = 'trips/triptemplate_create.html'
+
+    def get_form_classes(self):
+        return {
+            'template_form': TripTemplateForm,
+            'description_form': TripTemplateDescriptionForm
+        }
+
+    def get_instances(self):
+        return {
+            'template_form': None,
+            'description_form': None
+        }
+
+    def form_valid(self, forms):
+        for form in forms.values():
+            form.instance.trips_year = self.trips_year
+        description = forms['description_form'].save()
+        forms['template_form'].instance.description = description
+        self.object = forms['template_form'].save()
+        return super().form_valid(forms)
+
+
+class TripTemplateUpdate(TripInfoEditPermissionRequired, MultiFormMixin,
+                         BaseUpdateView):
+    model = TripTemplate
+    template_name = 'trips/triptemplate_update.html'
+
+    def get_form_classes(self):
+        return {
+            'template_form': TripTemplateForm,
+            'description_form': TripTemplateDescriptionForm
+        }
+
+    def get_instances(self):
+        self.object = self.get_object()
+        return {
+            'template_form': self.object,
+            'description_form': self.object.description
+        }
 
 
 class TripTemplateDelete(DatabaseDeleteView):
