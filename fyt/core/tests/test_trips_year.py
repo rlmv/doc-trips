@@ -79,7 +79,9 @@ class TripsYearMixinTestCase(FytTestCase):
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
         c1 = mommy.make(Campsite, trips_year=self.trips_year)
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
-        triptemplate = mommy.make(TripTemplate, trips_year=self.trips_year)
+        triptemplate = mommy.make(TripTemplate,
+                                  trips_year=self.trips_year,
+                                  description__trips_year=self.trips_year)
 
         response = self.app.get(triptemplate.update_url(),
                                 user=self.make_director())
