@@ -39,6 +39,7 @@ GOOGLE_MAPS_BROWSER_KEY = env.get('GOOGLE_MAPS_BROWSER_KEY')
 
 # Don't overwrite identically named files
 AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'fyt.utils.storages.S3FileStorage'
 FILE_STORAGE_PREFIX = 'uploads'
 
