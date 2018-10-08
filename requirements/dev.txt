@@ -9,4 +9,4 @@ model-mommy==1.6.0
 pylint==2.1.1
 tblib==1.3.2
 vcrpy==2.0.1
-webtest==2.0.30
+webtest==2.0.32
