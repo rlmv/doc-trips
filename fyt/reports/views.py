@@ -507,6 +507,9 @@ class Housing(GenericReportView):
             trips_year=self.trips_year
         ).prefetch_related(
             'registration'
+        ).select_related(
+            'trip_assignment__template',
+            'trip_assignment__section'
         )
 
     header = ['name', 'netid', 'trip', 'section', 'start date', 'end date',
