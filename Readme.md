@@ -35,8 +35,8 @@ Run the following from the command line:
     make migrate
     make bootstrap
 
-This will run all the database migrations and load the minimal set of data
-required to use the database.
+This will create a database user, run all the database migrations, and load the
+minimal set of data required to use the database.
 
 ## Environment Variables
 

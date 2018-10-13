@@ -59,7 +59,21 @@ clean:
 	rm -rf *~
 	rm $(POSTGRES_DUMP)
 
-reset_db:
+
+PSQL = psql postgres --quiet -c
+
+fytuser:
+	$(PSQL) "                                                        \
+		DO \$$do\$$ BEGIN                                            \
+			IF NOT EXISTS (                                          \
+				SELECT FROM pg_user WHERE pg_user.usename='fytuser') \
+			THEN                                                     \
+				CREATE ROLE fytuser WITH LOGIN PASSWORD 'password';  \
+			END IF;                                                  \
+		END \$$do\$$;"
+	$(PSQL) "ALTER USER fytuser CREATEDB;"
+
+reset_db: fytuser
 	$(MANAGE) reset_db
 
 bootstrap:
