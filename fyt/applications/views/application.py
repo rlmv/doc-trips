@@ -288,7 +288,7 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
 
     @cached_property
     def trips_year(self):
-        return self.current_trips_year
+        return TripsYear.objects.current()
 
     def get_queryset(self):
         return Question.objects.filter(trips_year=self.trips_year)
