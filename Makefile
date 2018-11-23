@@ -67,9 +67,9 @@ fytuser:
 	$(PSQL) "                                                                  \
 		DO \$$do\$$ BEGIN                                                      \
 			IF NOT EXISTS (                                                    \
-				SELECT FROM pg_user WHERE pg_user.usename='$(POSTGRES_USER)')    \
+				SELECT FROM pg_user WHERE pg_user.usename='$(POSTGRES_USER)')  \
 			THEN                                                               \
-				CREATE ROLE fytuser WITH LOGIN PASSWORD '$(POSTGRES_PASSWORD)';  \
+				CREATE ROLE fytuser WITH LOGIN PASSWORD '$(POSTGRES_PASSWORD)';\
 			END IF;                                                            \
 		END \$$do\$$;"
 	$(PSQL) "ALTER USER $(POSTGRES_USER) CREATEDB;"
