@@ -7,6 +7,7 @@ MANAGE = $(PYTHON) manage.py
 
 POSTGRES = fyt
 POSTGRES_USER = fytuser
+POSTGRES_PASSWORD = password
 POSTGRES_DUMP = latest.dump
 
 SCRIPTS = scripts/runtests
@@ -63,15 +64,15 @@ clean:
 PSQL = psql postgres --quiet -c
 
 fytuser:
-	$(PSQL) "                                                        \
-		DO \$$do\$$ BEGIN                                            \
-			IF NOT EXISTS (                                          \
-				SELECT FROM pg_user WHERE pg_user.usename='fytuser') \
-			THEN                                                     \
-				CREATE ROLE fytuser WITH LOGIN PASSWORD 'password';  \
-			END IF;                                                  \
+	$(PSQL) "                                                                  \
+		DO \$$do\$$ BEGIN                                                      \
+			IF NOT EXISTS (                                                    \
+				SELECT FROM pg_user WHERE pg_user.usename='$(POSTGRES_USER)')    \
+			THEN                                                               \
+				CREATE ROLE fytuser WITH LOGIN PASSWORD '$(POSTGRES_PASSWORD)';  \
+			END IF;                                                            \
 		END \$$do\$$;"
-	$(PSQL) "ALTER USER fytuser CREATEDB;"
+	$(PSQL) "ALTER USER $(POSTGRES_USER) CREATEDB;"
 
 reset_db: fytuser
 	$(MANAGE) reset_db
