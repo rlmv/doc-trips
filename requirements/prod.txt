@@ -11,7 +11,7 @@ django-filter==2.0.0
 django-pipeline==1.6.14
 django-storages[boto3]==1.7.1
 django-tables2==2.0.3
-django-vanilla-views==1.0.5
+django-vanilla-views==1.0.6
 gunicorn==19.9.0
 mammoth==1.4.7
 psycopg2==2.7.4 --no-binary psycopg2
