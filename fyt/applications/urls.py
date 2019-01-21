@@ -11,6 +11,7 @@ from fyt.applications.views.application import (
     NewApplication,
     RemoveCrooAssignment,
     SetupApplication,
+    SubmitApplication
 )
 from fyt.applications.views.graders import GraderList
 from fyt.applications.views.portal import (
@@ -40,6 +41,7 @@ urlpatterns = [
     url(r'^setup/portal$', EditVolunteerPortalContent.as_view(), name='setup_portal'),
     url(r'^apply/$', NewApplication.as_view(), name='apply'),
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
+    url(r'^apply/submit/$', SubmitApplication.as_view(), name='submit'),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
     url(r'^setup/scoring$', EditScoreQuestions.as_view(), name='setup_scoring'),

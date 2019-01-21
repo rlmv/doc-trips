@@ -884,6 +884,38 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = self.app.get(url, user=application.applicant).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/application.html')
 
+    def test_application_integration_flow(self):
+        user = self.make_user()
+
+        # Visit application page
+        self.open_application()
+        url = reverse('applications:apply')
+        resp = self.app.get(url, user=user).maybe_follow()
+
+        # Fill required data
+        # TODO: move validation to submit step
+        resp.form['form-class_year'] = 2015
+        resp.form['form-gender'] = 'male'
+        resp.form['form-hinman_box'] = '2345'
+        resp.form['form-tshirt_size'] = 'XS'
+        resp.form['form-hometown']  = "CHA"
+
+        # Save form
+        resp = resp.form.submit('save-application').follow()
+
+        # Submit application
+        resp = resp.form.submit('submit-application').follow()
+
+        # Should redirect to submission page
+        resp.form['trippee_confidentiality'] = True
+        resp.form['in_goodstanding_with_college'] = True
+        resp.form['trainings'] = True
+        resp = resp.form.submit()
+
+        # Should be complete
+        volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)
+        self.assertTrue(volunteer.submitted)
+
 
 class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):
     def setUp(self):

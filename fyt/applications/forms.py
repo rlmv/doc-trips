@@ -103,6 +103,8 @@ class AgreementForm(TripsYearModelForm):
     """
     Form used to agree to the required conditions and submit the application.
     """
+    SUBMIT_APPLICATION = 'submit-application'
+
     class Meta:
         model = Volunteer
         fields = [
@@ -124,7 +126,6 @@ class AgreementForm(TripsYearModelForm):
     @property
     def helper(self):
         helper = FormHelper(self)
-        helper.form_tag = False
         helper.layout = AgreementLayout()
         return helper
 
@@ -143,7 +144,8 @@ class AgreementLayout(Layout):
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
                 'trainings',
-            )
+            ),
+            Submit('submit', 'Submit Score'),
         )
 
 

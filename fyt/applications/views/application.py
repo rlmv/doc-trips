@@ -96,7 +96,6 @@ GENERAL_FORM = 'form'
 LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
 QUESTION_FORM = 'question_form'
-AGREEMENT_FORM = 'agreement_form'
 FIRST_AID_FORM = 'first_aid_form'
 
 FORM_ORDERING = [
@@ -105,7 +104,6 @@ FORM_ORDERING = [
     LEADER_FORM,
     CROO_FORM,
     QUESTION_FORM,
-    AGREEMENT_FORM,
 ]
 
 
@@ -132,7 +130,6 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
     def get_form_classes(self):
         return {
             GENERAL_FORM: ApplicationForm,
-            AGREEMENT_FORM: AgreementForm,
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
             QUESTION_FORM: QuestionForm,
@@ -148,7 +145,6 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
             LEADER_FORM: None,
             CROO_FORM: None,
             QUESTION_FORM: None,
-            AGREEMENT_FORM: None,
             FIRST_AID_FORM: None,
         }
 
@@ -188,7 +184,6 @@ class NewApplication(
         Connect the application instances
         """
         with transaction.atomic():
-            forms[GENERAL_FORM].update_agreements(forms[AGREEMENT_FORM])
             forms[GENERAL_FORM].instance.applicant = self.request.user
             forms[GENERAL_FORM].instance.trips_year = self.trips_year
             application = forms[GENERAL_FORM].save()
@@ -236,12 +231,44 @@ class ContinueApplication(
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
-            AGREEMENT_FORM: self.object,
             QUESTION_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
             FIRST_AID_FORM: self.object,
         }
+
+    def form_valid(self, forms):
+        """
+        Redirect to final submission page if directed.
+        """
+        super().form_valid(forms)
+
+        if AgreementForm.SUBMIT_APPLICATION in self.request.POST:
+            return HttpResponseRedirect(reverse('applications:submit'))
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvailable, UpdateView):
+    model = Volunteer
+    context_object_name = 'application'
+    template_name = 'applications/application_submit.html'
+    form_class = AgreementForm
+
+    success_url = reverse_lazy('applications:portal')
+
+    form_valid_message = "Your application has been submitted. Thank you for applying to Trips!"
+    form_invalid_message = (
+        "Uh oh, it looks like there's a problem with your application"
+    )
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
+    def get_object(self):
+        return get_object_or_404(
+            self.model, applicant=self.request.user, trips_year=self.trips_year
+        )
 
 
 class SetupApplication(
@@ -514,7 +541,6 @@ class ApplicationUpdate(
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
-            AGREEMENT_FORM: self.object,
             QUESTION_FORM: self.object,
             FIRST_AID_FORM: self.object,
         }
