@@ -62,13 +62,9 @@ class FytTestCase(WebTest):
         # solution to this.
         logging.disable(logging.CRITICAL)
 
-        self._STATICFILES_STORAGE = settings.STATICFILES_STORAGE
-        settings.STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
     def _unpatch_settings(self):
         super()._unpatch_settings()
         logging.disable(logging.NOTSET)
-        settings.STATICFILES_STORAGE = self._STATICFILES_STORAGE
 
     def init_trips_year(self):
         """
