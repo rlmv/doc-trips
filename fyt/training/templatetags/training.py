@@ -17,11 +17,13 @@ def capacity_label(session):
         text = 'full'
     else:
         label = 'success'
-        text = '{}/{}'.format(session.registered.count(),
-                              session.DEFAULT_CAPACITY)
+        text = '{}/{}'.format(session.registered.count(), session.DEFAULT_CAPACITY)
 
     return mark_safe(
-        '<span class="label label-{} label-training-capacity"> {} </span>'.format(label, text))
+        '<span class="label label-{} label-training-capacity"> {} </span>'.format(
+            label, text
+        )
+    )
 
 
 @register.filter
@@ -39,8 +41,7 @@ def training_label(volunteer):
         label = 'warning'
         text = 'Incomplete'
 
-    return mark_safe('<span class="label label-{}"> {} </span>'.format(
-        label, text))
+    return mark_safe('<span class="label label-{}"> {} </span>'.format(label, text))
 
 
 @register.filter
@@ -58,9 +59,11 @@ def first_aid_label(volunteer):
         label = 'warning'
         text = 'Incomplete'
 
-    tooltip = ('These are considered complete when a volunteer has a verified '
-               'first aid certification and a verified CPR certification.')
+    tooltip = (
+        'These are considered complete when a volunteer has a verified '
+        'first aid certification and a verified CPR certification.'
+    )
 
     return tooltip_wrap(
-        '<span class="label label-{}"> {} </span>'.format(
-        label, text), tooltip)
+        '<span class="label label-{}"> {} </span>'.format(label, text), tooltip
+    )

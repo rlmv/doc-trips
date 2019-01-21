@@ -32,11 +32,7 @@ from fyt.permissions.views import (
     DatabaseReadPermissionRequired,
     SettingsPermissionRequired,
 )
-from fyt.utils.views import (
-    CrispyFormMixin,
-    ExtraContextMixin,
-    SetExplanationMixin,
-)
+from fyt.utils.views import CrispyFormMixin, ExtraContextMixin, SetExplanationMixin
 
 
 logger = logging.getLogger(__name__)
@@ -44,7 +40,7 @@ logger = logging.getLogger(__name__)
 FORM_INVALID_MESSAGE = "Uh oh! Looks like there's an error in the form"
 
 
-class TripsYearMixin():
+class TripsYearMixin:
     """
     Mixin for ``trips_year``.
 
@@ -56,6 +52,7 @@ class TripsYearMixin():
 
     Form classes for the view are passed a trips_year keyword argument.
     """
+
     def dispatch(self, request, *args, **kwargs):
         """
         Make sure the request is for a valid trips year.
@@ -66,8 +63,11 @@ class TripsYearMixin():
         try:
             self.trips_year
         except TripsYear.DoesNotExist:
-            raise Http404('Trips {} does not exist in the database'.format(
-                self.kwargs["trips_year"]))
+            raise Http404(
+                'Trips {} does not exist in the database'.format(
+                    self.kwargs["trips_year"]
+                )
+            )
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -100,9 +100,7 @@ class TripsYearMixin():
             return self.form_class
 
         if hasattr(self, 'model') and self.model is not None:
-            return tripsyear_modelform_factory(
-                self.model, fields=self.fields
-            )
+            return tripsyear_modelform_factory(self.model, fields=self.fields)
         msg = (
             "'%s' must either define 'form_class' or 'model' "
             "Or CAREFULLY override 'get_form_class()'"
@@ -113,8 +111,9 @@ class TripsYearMixin():
         """
         Return a form instance, passing trips_year as a keyword argument.
         """
-        return super().get_form(trips_year=self.trips_year, data=data,
-                                files=files, **kwargs)
+        return super().get_form(
+            trips_year=self.trips_year, data=data, files=files, **kwargs
+        )
 
     def form_valid(self, form):
         """
@@ -148,14 +147,21 @@ class TripsYearMixin():
         return context
 
 
-class DatabaseListView(DatabaseReadPermissionRequired, ExtraContextMixin,
-                       TripsYearMixin, ListView):
+class DatabaseListView(
+    DatabaseReadPermissionRequired, ExtraContextMixin, TripsYearMixin, ListView
+):
     pass
 
 
-class BaseCreateView(ExtraContextMixin, FormInvalidMessageMixin,
-                     SetExplanationMixin, SetHeadlineMixin, TripsYearMixin,
-                     CrispyFormMixin, CreateView):
+class BaseCreateView(
+    ExtraContextMixin,
+    FormInvalidMessageMixin,
+    SetExplanationMixin,
+    SetHeadlineMixin,
+    TripsYearMixin,
+    CrispyFormMixin,
+    CreateView,
+):
 
     fields = '__all__'
     template_name = 'core/create.html'
@@ -191,23 +197,30 @@ class DatabaseCreateView(DatabaseEditPermissionRequired, BaseCreateView):
     """Create view with default database permissions."""
 
 
-class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
-                     FormInvalidMessageMixin, TripsYearMixin, CrispyFormMixin,
-                     UpdateView):
+class BaseUpdateView(
+    ExtraContextMixin,
+    SetHeadlineMixin,
+    FormInvalidMessageMixin,
+    TripsYearMixin,
+    CrispyFormMixin,
+    UpdateView,
+):
     """
     Base view for updating an object in the database.
 
     If 'delete_button' is True, a link to the delete view for
     this object will be added to the form's button holder.
     """
+
     template_name = 'core/update.html'
     form_invalid_message = FORM_INVALID_MESSAGE
     delete_button = True  # add a "Delete" button?
     fields = '__all__'
 
     def get_headline(self):
-        return mark_safe("Edit %s <small> %s </small>" % (
-            self.model._meta.verbose_name.title(), self.object)
+        return mark_safe(
+            "Edit %s <small> %s </small>"
+            % (self.model._meta.verbose_name.title(), self.object)
         )
 
     def get_success_url(self):
@@ -222,9 +235,12 @@ class BaseUpdateView(ExtraContextMixin, SetHeadlineMixin,
 
         if self.delete_button:
             buttons.append(
-                HTML('<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
-                    self.object.delete_url()
-                )))
+                HTML(
+                    '<a href="{}" class="btn btn-danger" role="button">Delete</a>'.format(
+                        self.object.delete_url()
+                    )
+                )
+            )
 
         helper.layout.append(FormActions(*buttons))
         return helper
@@ -234,14 +250,14 @@ class DatabaseUpdateView(DatabaseEditPermissionRequired, BaseUpdateView):
     """ Update view with restricted permissions. """
 
 
-class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin,
-                     DeleteView):
+class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin, DeleteView):
     template_name = 'core/delete.html'
     success_url_pattern = None
 
     def get_headline(self):
         return "Are you sure you want to delete %s %s?" % (
-            self.object.model_name_lower().title(), self.object
+            self.object.model_name_lower().title(),
+            self.object,
         )
 
     def get_success_url(self):
@@ -265,18 +281,13 @@ class BaseDeleteView(ExtraContextMixin, SetHeadlineMixin, TripsYearMixin,
         """
         try:
             resp = super().post(request, *args, **kwargs)
-            messages.success(
-                request, "Succesfully deleted {}".format(self.object)
-            )
+            messages.success(request, "Succesfully deleted {}".format(self.object))
             return resp
         except models.ProtectedError as e:
             msg = (
                 "Oops, you can't delete {} {} because the "
                 "following objects reference it: {}."
-            ).format(
-                self.object._meta.model.__name__,
-                self.object, e.protected_objects
-            )
+            ).format(self.object._meta.model.__name__, self.object, e.protected_objects)
             messages.error(request, msg)
             return HttpResponseRedirect(request.path)
 
@@ -285,8 +296,9 @@ class DatabaseDeleteView(DatabaseEditPermissionRequired, BaseDeleteView):
     """Database delete view with default permissions."""
 
 
-class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
-                         TripsYearMixin, DetailView):
+class DatabaseDetailView(
+    DatabaseReadPermissionRequired, ExtraContextMixin, TripsYearMixin, DetailView
+):
     template_name = 'core/detail.html'
     # Fields to display in the view. Passed in the template.
     fields = None
@@ -297,13 +309,15 @@ class DatabaseDetailView(DatabaseReadPermissionRequired, ExtraContextMixin,
         return super().get_context_data(**kwargs)
 
 
-class DatabaseTemplateView(DatabaseReadPermissionRequired, ExtraContextMixin,
-                           TripsYearMixin, TemplateView):
+class DatabaseTemplateView(
+    DatabaseReadPermissionRequired, ExtraContextMixin, TripsYearMixin, TemplateView
+):
     pass
 
 
-class DatabaseFormView(DatabaseEditPermissionRequired, ExtraContextMixin,
-                       TripsYearMixin, FormView):
+class DatabaseFormView(
+    DatabaseEditPermissionRequired, ExtraContextMixin, TripsYearMixin, FormView
+):
     pass
 
 
@@ -313,6 +327,7 @@ class DatabaseLandingPage(DatabaseTemplateView):
 
     TODO: should this display the Trips index?
     """
+
     template_name = 'core/landing_page.html'
 
 
@@ -322,18 +337,22 @@ class RedirectToCurrentDatabase(DatabaseReadPermissionRequired, RedirectView):
 
     This view is the target of database urls.
     """
+
     permanent = False
 
     def get_redirect_url(self, *args, **kwargs):
-        return reverse('core:landing_page', kwargs={
-            'trips_year': TripsYear.objects.current()})
+        return reverse(
+            'core:landing_page', kwargs={'trips_year': TripsYear.objects.current()}
+        )
 
 
-class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
-                     TripsYearMixin, FormView):
+class MigrateForward(
+    SettingsPermissionRequired, ExtraContextMixin, TripsYearMixin, FormView
+):
     """
     Migrate the database to the next ``trips_year`
     """
+
     template_name = 'core/migrate.html'
     success_url = reverse_lazy('core:current')
 
@@ -348,20 +367,18 @@ class MigrateForward(SettingsPermissionRequired, ExtraContextMixin,
     def get_form(self, **kwargs):
         form = forms.Form(**kwargs)
         form.helper = FormHelper()
-        form.helper.add_input(Submit(
-            'submit', 'Migrate', css_class='btn-danger'))
+        form.helper.add_input(Submit('submit', 'Migrate', css_class='btn-danger'))
 
         return form
 
     def extra_context(self):
-        return {
-            'next_year': self.next_year
-        }
+        return {'next_year': self.next_year}
 
     def form_valid(self, form):
         forward.forward()
-        messages.success(self.request,
-            "Succesfully migrated the database to Trips {}".format(
-                self.next_year))
+        messages.success(
+            self.request,
+            "Succesfully migrated the database to Trips {}".format(self.next_year),
+        )
 
         return super().form_valid(form)

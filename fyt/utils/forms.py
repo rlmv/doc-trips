@@ -26,16 +26,19 @@ class ReadonlyFormsetMixin:
     Each entry is a (name, accessor) tuple, where `name` is the string
     description of the column and `accessor` is a method on the formset.
     """
-    readonly_data = [
-    ]
+
+    readonly_data = []
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         for form in self.forms:
-            form.readonly_data = OrderedDict([
-                (name, getattr(self, method)(form.instance))
-                for name, method in self.readonly_data])
+            form.readonly_data = OrderedDict(
+                [
+                    (name, getattr(self, method)(form.instance))
+                    for name, method in self.readonly_data
+                ]
+            )
 
     @property
     def helper(self):

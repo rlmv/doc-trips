@@ -40,11 +40,11 @@ def monetize(func):
     >>> identity(1.2)
     Decimal('1.20')
     """
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        return Decimal(
-            func(*args, **kwargs)
-        ).quantize(Decimal('.01'))
+        return Decimal(func(*args, **kwargs)).quantize(Decimal('.01'))
+
     return wrapper
 
 
@@ -57,6 +57,7 @@ class IncomingStudent(DatabaseModel):
     submitting a registration, but a student won't go on a trip
     unless we have received information from the college about her.
     """
+
     objects = IncomingStudentManager()
 
     class Meta:
@@ -68,69 +69,86 @@ class IncomingStudent(DatabaseModel):
         editable=False,
         related_name='trippee',
         null=True,
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
     )
     trip_assignment = models.ForeignKey(
-        Trip, on_delete=models.PROTECT,
-        related_name='trippees', null=True, blank=True
+        Trip, on_delete=models.PROTECT, related_name='trippees', null=True, blank=True
     )
     bus_assignment_round_trip = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name='riders_round_trip',
-        verbose_name="bus assignment (round-trip)"
+        verbose_name="bus assignment (round-trip)",
     )
     bus_assignment_to_hanover = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name='riders_to_hanover',
-        verbose_name="bus assignment TO Hanover (one-way)"
+        verbose_name="bus assignment TO Hanover (one-way)",
     )
     bus_assignment_from_hanover = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, null=True, blank=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
         related_name='riders_from_hanover',
-        verbose_name="bus assignment FROM Hanover (one-way)"
+        verbose_name="bus assignment FROM Hanover (one-way)",
     )
     financial_aid = models.PositiveSmallIntegerField(
         'percentage financial assistance',
-        default=0, validators=[
-            MinValueValidator(0), MaxValueValidator(100)
-        ]
+        default=0,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     cancelled = models.BooleanField(
-        'cancelled last-minute?', default=False, help_text=(
+        'cancelled last-minute?',
+        default=False,
+        help_text=(
             'This Trippee will still be charged even though '
             'they are no longer going on a trip'
-        )
+        ),
     )
     cancelled_fee = models.PositiveSmallIntegerField(
-        'cancellation fee', null=True, blank=True, help_text=(
+        'cancellation fee',
+        null=True,
+        blank=True,
+        help_text=(
             "Customize the cancellation fee. Otherwise a "
             "'cancelled' student is by default charged the full cost "
             "of trips (adjusted by financial aid, if applicable). "
-        )
+        ),
     )
     med_info = models.TextField(
         'additional med info',
-        blank=True, help_text=(
+        blank=True,
+        help_text=(
             "Use this field for additional medical info not provided in "
             "the registration, or simplified information if some details "
             "do not need to be provided to leaders and croos. This is always "
             "exported to leader packets."
-        )
+        ),
     )
     hide_med_info = models.BooleanField(
-        "Hide registration med info?", default=False, help_text=(
+        "Hide registration med info?",
+        default=False,
+        help_text=(
             "Checking this box will cause medical information in this "
             "trippee's registration to *not* be displayed in leader and croo "
             "packets."
-        )
+        ),
     )
 
     decline_reason = models.CharField(max_length=50, blank=True)
     notes = models.TextField(
-        "notes to trippee", blank=True, help_text=(
+        "notes to trippee",
+        blank=True,
+        help_text=(
             "These notes are displayed to the trippee along "
             "with their trip assignment."
-        )
+        ),
     )
 
     # --- information provided by the college ----
@@ -152,7 +170,8 @@ class IncomingStudent(DatabaseModel):
         (FIRSTYEAR, 'First Year'),
     )
     incoming_status = models.CharField(
-        max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True)
+        max_length=20, choices=INCOMING_STATUS_CHOICES, blank=True
+    )
     email = models.EmailField(max_length=254)
     blitz = models.EmailField(max_length=254)
     phone = models.CharField(max_length=30)
@@ -209,18 +228,17 @@ class IncomingStudent(DatabaseModel):
         return self.email
 
     def get_bus_to_hanover(self):
-        return (self.bus_assignment_round_trip or
-                self.bus_assignment_to_hanover)
+        return self.bus_assignment_round_trip or self.bus_assignment_to_hanover
 
     def get_bus_from_hanover(self):
-        return (self.bus_assignment_round_trip or
-                self.bus_assignment_from_hanover)
+        return self.bus_assignment_round_trip or self.bus_assignment_from_hanover
 
     @monetize
     def bus_cost(self):
         """
         Compute the cost of buses for this student.
         """
+
         def one_way_cost(x):
             if not x:
                 return 0
@@ -229,8 +247,9 @@ class IncomingStudent(DatabaseModel):
         if self.bus_assignment_round_trip:
             cost = self.bus_assignment_round_trip.cost_round_trip
         else:
-            cost = (one_way_cost(self.bus_assignment_to_hanover) +
-                    one_way_cost(self.bus_assignment_from_hanover))
+            cost = one_way_cost(self.bus_assignment_to_hanover) + one_way_cost(
+                self.bus_assignment_from_hanover
+            )
 
         return self._adjust(cost)
 
@@ -295,20 +314,20 @@ class IncomingStudent(DatabaseModel):
         if costs is None:
             costs = Settings.objects.get(trips_year=self.trips_year)
 
-        return sum([
-            self.trip_cost(costs),
-            self.cancellation_cost(costs),
-            self.bus_cost(),
-            self.doc_membership_cost(costs),
-            self.green_fund_donation()
-        ])
+        return sum(
+            [
+                self.trip_cost(costs),
+                self.cancellation_cost(costs),
+                self.bus_cost(),
+                self.doc_membership_cost(costs),
+                self.green_fund_donation(),
+            ]
+        )
 
     def clean(self):
-        one_way = (self.bus_assignment_to_hanover or
-                   self.bus_assignment_from_hanover)
+        one_way = self.bus_assignment_to_hanover or self.bus_assignment_from_hanover
         if one_way and self.bus_assignment_round_trip:
-            raise ValidationError(
-                "Cannot have round-trip AND one-way bus assignments")
+            raise ValidationError("Cannot have round-trip AND one-way bus assignments")
 
     def save(self, **kwargs):
         """
@@ -318,7 +337,8 @@ class IncomingStudent(DatabaseModel):
         if self.pk is None:  # new instance
             try:
                 self.registration = Registration.objects.get(
-                    trips_year=self.trips_year, user__netid=self.netid)
+                    trips_year=self.trips_year, user__netid=self.netid
+                )
             except Registration.DoesNotExist:
                 pass
         super().save(**kwargs)
@@ -332,10 +352,11 @@ def validate_waiver(value):
     if not value:
         raise ValidationError("You must agree to the waiver")
 
+
 REGISTRATION_SECTION_CHOICES = (
     (PREFER, 'prefer'),
     (AVAILABLE, 'available'),
-    (NOT_AVAILABLE, 'not available')
+    (NOT_AVAILABLE, 'not available'),
 )
 
 REGISTRATION_TRIPTYPE_CHOICES = (
@@ -345,19 +366,13 @@ REGISTRATION_TRIPTYPE_CHOICES = (
 
 # TODO: make abstract so that leader applications can also use this code
 class RegistrationSectionChoice(models.Model):
-
     class Meta:
         unique_together = ('registration', 'section')
 
-    registration = models.ForeignKey(
-        'Registration', on_delete=models.CASCADE
-    )
-    section = models.ForeignKey(
-        Section, on_delete=models.CASCADE
-    )
+    registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
     preference = models.CharField(
-        max_length=20, choices=REGISTRATION_SECTION_CHOICES,
-        default=NOT_AVAILABLE
+        max_length=20, choices=REGISTRATION_SECTION_CHOICES, default=NOT_AVAILABLE
     )
 
     def __str__(self):
@@ -366,19 +381,13 @@ class RegistrationSectionChoice(models.Model):
 
 # TODO: make abstract so that leader applications can also use this code
 class RegistrationTripTypeChoice(models.Model):
-
     class Meta:
         unique_together = ('registration', 'triptype')
 
-    registration = models.ForeignKey(
-        'Registration', on_delete=models.CASCADE
-    )
-    triptype = models.ForeignKey(
-        TripType, on_delete=models.CASCADE
-    )
+    registration = models.ForeignKey('Registration', on_delete=models.CASCADE)
+    triptype = models.ForeignKey(TripType, on_delete=models.CASCADE)
     preference = models.CharField(
-        max_length=20, choices=REGISTRATION_TRIPTYPE_CHOICES,
-        default=NOT_AVAILABLE
+        max_length=20, choices=REGISTRATION_TRIPTYPE_CHOICES, default=NOT_AVAILABLE
     )
 
     def __str__(self):
@@ -389,32 +398,28 @@ class Registration(MedicalMixin, DatabaseModel):
     """
     Registration information for an incoming student.
     """
-    section_choice = models.ManyToManyField(
-        Section, through=RegistrationSectionChoice,
-    )
+
+    section_choice = models.ManyToManyField(Section, through=RegistrationSectionChoice)
     triptype_choice = models.ManyToManyField(
         TripType, through=RegistrationTripTypeChoice
     )
 
     def set_section_preference(self, section, preference):
         RegistrationSectionChoice.objects.create(
-            registration=self,
-            section=section,
-            preference=preference
+            registration=self, section=section, preference=preference
         )
 
     def set_triptype_preference(self, triptype, preference):
         RegistrationTripTypeChoice.objects.create(
-            registration=self,
-            triptype=triptype,
-            preference=preference
+            registration=self, triptype=triptype, preference=preference
         )
 
     def sections_by_preference(self, preference):
-        qs = (self.registrationsectionchoice_set
-                .filter(preference=preference)
-                .order_by('section')
-                .select_related('section'))
+        qs = (
+            self.registrationsectionchoice_set.filter(preference=preference)
+            .order_by('section')
+            .select_related('section')
+        )
         return [x.section for x in qs]
 
     def new_preferred_sections(self):
@@ -427,10 +432,11 @@ class Registration(MedicalMixin, DatabaseModel):
         return self.sections_by_preference(NOT_AVAILABLE)
 
     def triptypes_by_preference(self, preference):
-        qs = (self.registrationtriptypechoice_set
-                .filter(preference=preference)
-                .order_by('triptype')
-                .select_related('triptype'))
+        qs = (
+            self.registrationtriptypechoice_set.filter(preference=preference)
+            .order_by('triptype')
+            .select_related('triptype')
+        )
         return [x.triptype for x in qs]
 
     def new_firstchoice_triptypes(self):
@@ -452,7 +458,8 @@ class Registration(MedicalMixin, DatabaseModel):
         unique_together = ['trips_year', 'user']
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT)
+        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT
+    )
 
     name = models.CharField(max_length=255)
     gender = models.CharField(max_length=50)
@@ -472,15 +479,17 @@ class Registration(MedicalMixin, DatabaseModel):
 
     is_international = NullYesNoField(
         "Are you an International Student who plans on attending "
-        "the International Student Orientation?")
+        "the International Student Orientation?"
+    )
 
     is_native = NullYesNoField(
         "Are you a Native American Student who plans on attending "
-        "the Native American student orientation?")
+        "the Native American student orientation?"
+    )
 
     is_fysep = NullYesNoField(
-        "Are you participating in the First Year Student Enrichment "
-        "Program (FYSEP)?")
+        "Are you participating in the First Year Student Enrichment " "Program (FYSEP)?"
+    )
 
     ATHLETE_CHOICES = (
         ('NO', 'No'),
@@ -506,12 +515,14 @@ class Registration(MedicalMixin, DatabaseModel):
     )
     is_athlete = models.CharField(
         "Are you a Fall varsity athlete (or Rugby or Water Polo)?",
-        max_length=100, choices=ATHLETE_CHOICES, blank=True,
+        max_length=100,
+        choices=ATHLETE_CHOICES,
+        blank=True,
         help_text=(
             "Each team has its own pre-season schedule. We are in close "
             "contact with fall coaches and will assign you to a trip section "
             "that works well for the team's pre-season schedule."
-        )
+        ),
     )
 
     # ------------------------------------------------------
@@ -534,13 +545,13 @@ class Registration(MedicalMixin, DatabaseModel):
         "Please describe the types of physical activities you enjoy, "
         "including frequency (daily? weekly?) and extent (number of "
         "miles or hours)",
-        blank=True
+        blank=True,
     )
     other_activities = models.TextField(
         "Do you do any other activities that might assist us in "
         "assigning you to a trip (yoga, karate, horseback riding, "
         "photography, fishing, etc.)?",
-        blank=True
+        blank=True,
     )
 
     NON_SWIMMER = 'NON_SWIMMER'
@@ -555,12 +566,11 @@ class Registration(MedicalMixin, DatabaseModel):
     )
     swimming_ability = models.CharField(
         "Please rate yourself as a swimmer",
-        max_length=20, choices=SWIMMING_ABILITY_CHOICES
+        max_length=20,
+        choices=SWIMMING_ABILITY_CHOICES,
     )
 
-    camping_experience = YesNoField(
-        "Have you ever spent a night camping under a tarp?"
-    )
+    camping_experience = YesNoField("Have you ever spent a night camping under a tarp?")
 
     hiking_experience = YesNoField(
         "Have you ever hiked or climbed with a pack of at "
@@ -575,63 +585,69 @@ class Registration(MedicalMixin, DatabaseModel):
         "much as you want. Be honest so that we can place you on the "
         "right trip for YOU. If you have questions about this, please "
         "let us know.",
-        blank=True
+        blank=True,
     )
     has_boating_experience = NullYesNoField(
-        "Have you ever been on an overnight or extended canoe "
-        "or kayak trip?"
+        "Have you ever been on an overnight or extended canoe " "or kayak trip?"
     )
     boating_experience = models.TextField(
         "Please describe your canoe or kayak trip experience. Have you "
         "paddled on flat water? Have you paddled on flat water? When "
         "did you do these trips and how long were they?",
-        blank=True
+        blank=True,
     )
     other_boating_experience = models.TextField(
         "Please describe any other paddling experience you have had. Be "
         "specific regarding location, type of water, and distance covered.",
-        blank=True
+        blank=True,
     )
     fishing_experience = models.TextField(
-        "Please describe your fishing experience.",
-        blank=True
+        "Please describe your fishing experience.", blank=True
     )
     horseback_riding_experience = models.TextField(
         "Please describe your riding experience and ability level. What "
         "riding styles are you familiar with? How recently have you ridden "
         "horses on a regular basis? NOTE: Prior exposure and some "
         "experience is preferred for this trip.",
-        blank=True
+        blank=True,
     )
     mountain_biking_experience = models.TextField(
         "Please describe your biking experience and ability level. Have "
         "you done any biking off of paved trails? How comfortable are you "
         "riding on dirt and rocks?",
-        blank=True
+        blank=True,
     )
     sailing_experience = models.TextField(
-        "Please describe your sailing experience.",
-        blank=True
+        "Please describe your sailing experience.", blank=True
     )
     anything_else = models.TextField(
         "Is there any other information you'd like to provide (anything "
         "helps!) that would assist us in assigning you to a trip?",
-        blank=True
+        blank=True,
     )
 
     # ----- other deets ----
 
     bus_stop_round_trip = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         verbose_name="Where would you like to be bussed from/to?",
         related_name='requests_round_trip',
     )
     bus_stop_to_hanover = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         related_name='requests_to_hanover',
     )
     bus_stop_from_hanover = models.ForeignKey(
-        'transport.Stop', on_delete=models.PROTECT, blank=True, null=True,
+        'transport.Stop',
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         related_name='requests_from_hanover',
     )
     financial_assistance = YesNoField(
@@ -644,14 +660,10 @@ class Registration(MedicalMixin, DatabaseModel):
         "accompanying registration materials. I approve participation "
         "for the student indicated above and this serves as my digital "
         "signature of this release, waiver and acknowledgement.",
-        validators=[validate_waiver]
+        validators=[validate_waiver],
     )
-    doc_membership = YesNoField(
-        "Would you like to purchase a DOC membership?"
-    )
-    green_fund_donation = models.PositiveSmallIntegerField(
-        default=0
-    )
+    doc_membership = YesNoField("Would you like to purchase a DOC membership?")
+    green_fund_donation = models.PositiveSmallIntegerField(default=0)
     final_request = models.TextField(
         "We know this form is really long, so thanks for sticking with "
         "us! The following question has nothing to do with your trip "
@@ -659,7 +671,7 @@ class Registration(MedicalMixin, DatabaseModel):
         "share one thing you are excited and/or nervous for about coming "
         "to Dartmouth (big or small). There is no right or wrong answers "
         "&mdash; anything goes! All responses will remain anonymous.",
-        blank=True
+        blank=True,
     )
 
     def clean(self):
@@ -696,13 +708,15 @@ class Registration(MedicalMixin, DatabaseModel):
 
         If the registration is NON_SWIMMER, exclude all swimming trips.
         """
-        qs = (Trip.objects
-              .filter(trips_year=self.trips_year)
-              .filter(
-                  models.Q(section__in=self.new_preferred_sections()) |
-                  models.Q(section__in=self.new_available_sections()))
-              .select_related('template__triptype', 'section')
-              .order_by('template__triptype', 'section'))
+        qs = (
+            Trip.objects.filter(trips_year=self.trips_year)
+            .filter(
+                models.Q(section__in=self.new_preferred_sections())
+                | models.Q(section__in=self.new_available_sections())
+            )
+            .select_related('template__triptype', 'section')
+            .order_by('template__triptype', 'section')
+        )
         if self.is_non_swimmer:
             return qs.exclude(template__swimtest_required=True)
         return qs
@@ -757,8 +771,7 @@ class Registration(MedicalMixin, DatabaseModel):
         """
         try:
             trippee = IncomingStudent.objects.get(
-                netid=self.user.netid,
-                trips_year=self.trips_year
+                netid=self.user.netid, trips_year=self.trips_year
             )
             trippee.registration = self
             trippee.save()
@@ -784,6 +797,7 @@ class Settings(DatabaseModel):
     """
     Contains global configuration values that appear across the site
     """
+
     trips_cost = models.PositiveSmallIntegerField()
     doc_membership_cost = models.PositiveSmallIntegerField()
     contact_url = models.URLField(help_text='url of trips directorate contact info')

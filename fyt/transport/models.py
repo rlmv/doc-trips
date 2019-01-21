@@ -39,6 +39,7 @@ class TransportConfig(DatabaseModel):
     Hanover and the Lodge. This was added in 2017 because the new Lodge was not
     complete in time for Trips.
     """
+
     class Meta:
         unique_together = ['trips_year']
 
@@ -48,13 +49,15 @@ class TransportConfig(DatabaseModel):
         'Stop',
         related_name="+",
         on_delete=models.PROTECT,
-        help_text='The address at which bus routes start and stop in Hanover.')
+        help_text='The address at which bus routes start and stop in Hanover.',
+    )
 
     lodge = models.ForeignKey(
         'Stop',
         related_name="+",
         on_delete=models.PROTECT,
-        help_text='The address of the Lodge.')
+        help_text='The address of the Lodge.',
+    )
 
 
 def Hanover(trips_year):
@@ -92,7 +95,9 @@ class Stop(DatabaseModel):
         default='',
         help_text=(
             "Plain text address, eg. Hanover, NH 03755. This must "
-            "take you to the location in Google maps."))
+            "take you to the location in Google maps."
+        ),
+    )
 
     lat_lng = models.CharField(
         'coordinates',
@@ -100,7 +105,8 @@ class Stop(DatabaseModel):
         blank=True,
         default='',
         validators=[validate_lat_lng],
-        help_text="Latitude & longitude coordinates, eg. 43.7030,-72.2895")
+        help_text="Latitude & longitude coordinates, eg. 43.7030,-72.2895",
+    )
 
     # verbal directions, descriptions. migrated from legacy.
     directions = models.TextField(blank=True)
@@ -111,7 +117,8 @@ class Stop(DatabaseModel):
         blank=True,
         on_delete=models.PROTECT,
         related_name='stops',
-        help_text="default bus route")
+        help_text="default bus route",
+    )
 
     # costs are required for EXTERNAL stops
     cost_round_trip = models.DecimalField(
@@ -119,26 +126,28 @@ class Stop(DatabaseModel):
         decimal_places=2,
         blank=True,
         null=True,
-        help_text="for external buses")
+        help_text="for external buses",
+    )
 
     cost_one_way = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         blank=True,
         null=True,
-        help_text="for external buses")
+        help_text="for external buses",
+    )
 
     # mostly used for external routes
     dropoff_time = models.TimeField(blank=True, null=True)
     pickup_time = models.TimeField(blank=True, null=True)
 
-    distance = models.PositiveIntegerField(help_text=(
-        "this rough distance from Hanover is used for bus routing"))
+    distance = models.PositiveIntegerField(
+        help_text=("this rough distance from Hanover is used for bus routing")
+    )
 
     def clean(self):
         if not self.lat_lng and not self.address:
-            raise ValidationError(
-                "%s must set either lat_lng or address" % self)
+            raise ValidationError("%s must set either lat_lng or address" % self)
 
         if self.category == Route.EXTERNAL:
             if not self.cost_round_trip:
@@ -184,21 +193,21 @@ class Route(DatabaseModel):
     trip dropoffs/pickups, and the lodge) or EXTERNAl (moving local
     students to and from campus before and after their trips.)
     """
+
     name = models.CharField(max_length=255)
     INTERNAL = INTERNAL
     EXTERNAL = EXTERNAL
     category = models.CharField(
-        max_length=20,
-        choices=(
-            (INTERNAL, 'Internal'),
-            (EXTERNAL, 'External')))
+        max_length=20, choices=((INTERNAL, 'Internal'), (EXTERNAL, 'External'))
+    )
 
     vehicle = models.ForeignKey('Vehicle', on_delete=models.PROTECT)
 
     display_color = models.CharField(
         max_length=20,
         default="white",
-        help_text="The color to use when displaying this route in tables.")
+        help_text="The color to use when displaying this route in tables.",
+    )
 
     objects = RouteManager()
 
@@ -213,13 +222,13 @@ class Vehicle(DatabaseModel):
     """
     A type of vehicle
     """
+
     # eg. Internal Bus, Microbus,
     name = models.CharField(max_length=255)
     capacity = models.PositiveSmallIntegerField()
     chartered = models.BooleanField(
-        default=False,
-
-        help_text='Is this bus chartered through a bus company?')
+        default=False, help_text='Is this bus chartered through a bus company?'
+    )
 
     class Meta:
         ordering = ['name']
@@ -232,6 +241,7 @@ class InternalBus(DatabaseModel):
     """
     Represents a scheduled internal transport.
     """
+
     # Time it takes to load and unload trips
     LOADING_TIME = timedelta(minutes=15)
 
@@ -242,12 +252,12 @@ class InternalBus(DatabaseModel):
     notes = models.TextField(help_text='for the bus driver', blank=True)
 
     dirty = models.BooleanField(
-        'Do directions and times need to be updated?',
-        default=True, editable=False)
+        'Do directions and times need to be updated?', default=True, editable=False
+    )
 
     use_custom_times = models.BooleanField(
-        'Are pickup and dropoff times for this bus input manually?',
-        default=False)
+        'Are pickup and dropoff times for this bus input manually?', default=False
+    )
 
     class Meta:
         unique_together = ['trips_year', 'route', 'date']
@@ -267,8 +277,7 @@ class InternalBus(DatabaseModel):
         """
         return Trip.objects.dropoffs(
             self.route, self.date, self.trips_year_id
-        ).select_related(
-            'template__dropoff_stop')
+        ).select_related('template__dropoff_stop')
 
     def picking_up(self):
         """
@@ -276,8 +285,7 @@ class InternalBus(DatabaseModel):
         """
         return Trip.objects.pickups(
             self.route, self.date, self.trips_year_id
-        ).select_related(
-            'template__pickup_stop')
+        ).select_related('template__pickup_stop')
 
     def returning(self):
         """
@@ -296,12 +304,14 @@ class InternalBus(DatabaseModel):
             self.picking_up(),
             self.returning(),
             Hanover(self.trips_year),
-            Lodge(self.trips_year))
+            Lodge(self.trips_year),
+        )
 
     class TripCache:
         """
         Cache for various preloaded bus properties.
         """
+
         def __init__(self, trips, dropoffs, pickups, returns, hanover, lodge):
             self.trip_dict = None if trips is None else {t: t for t in trips}
             self.dropoffs = dropoffs
@@ -353,12 +363,14 @@ class InternalBus(DatabaseModel):
             stop.trips_dropped_off = [
                 self.trip_cache.get(order.trip)
                 for order in stoporders
-                if order.is_dropoff]
+                if order.is_dropoff
+            ]
 
             stop.trips_picked_up = [
                 self.trip_cache.get(order.trip)
                 for order in stoporders
-                if order.is_pickup]
+                if order.is_pickup
+            ]
 
             stops.append(stop)
 
@@ -402,18 +414,20 @@ class InternalBus(DatabaseModel):
             month=self.date.month,
             day=self.date.day,
             hour=7,
-            minute=30)
+            minute=30,
+        )
 
         # Don't get to the Lodge before 11
         MIN_LODGE_ARRIVAL_TIME = datetime(
-            year=self.date.year,
-            month=self.date.month,
-            day=self.date.day,
-            hour=11)
+            year=self.date.year, month=self.date.month, day=self.date.day, hour=11
+        )
 
         legs_to_lodge = list(
-            takewhile(lambda leg: leg.start_stop != self.trip_cache.lodge,
-                      self.directions.legs))
+            takewhile(
+                lambda leg: leg.start_stop != self.trip_cache.lodge,
+                self.directions.legs,
+            )
+        )
 
         travel_time = sum((leg.duration for leg in legs_to_lodge), timedelta())
         loading_time = (len(legs_to_lodge) - 1) * self.LOADING_TIME
@@ -434,8 +448,11 @@ class InternalBus(DatabaseModel):
         progress = self.get_departure_time()
 
         legs_to_lodge = list(
-            takewhile(lambda leg: leg.start_stop != self.trip_cache.lodge,
-                      self.directions.legs))
+            takewhile(
+                lambda leg: leg.start_stop != self.trip_cache.lodge,
+                self.directions.legs,
+            )
+        )
 
         # TODO: wrap this whole update in a transaction?
         for leg in legs_to_lodge:
@@ -452,8 +469,12 @@ class InternalBus(DatabaseModel):
             # have the same custom time
             if self.use_custom_times:
                 if leg.start_stop != self.trip_cache.hanover:
-                    custom_times = set([t.get_pickup_stoporder().custom_time
-                                        for t in leg.start_stop.trips_picked_up])
+                    custom_times = set(
+                        [
+                            t.get_pickup_stoporder().custom_time
+                            for t in leg.start_stop.trips_picked_up
+                        ]
+                    )
                     assert len(custom_times) <= 1
                     if len(custom_times) == 1:
                         leg.start_time = custom_times.pop()
@@ -478,14 +499,13 @@ class InternalBus(DatabaseModel):
         """
         Sanity check the stop orderings for this bus are correct.
         """
+
         def stoporders_by_type(type):
             return filter(lambda x: x.stop_type == type, self.stoporder_set.all())
 
         opts = (
-            (StopOrder.PICKUP, self.picking_up(),
-             lambda x: x.template.pickup_stop),
-            (StopOrder.DROPOFF, self.dropping_off(),
-             lambda x: x.template.dropoff_stop)
+            (StopOrder.PICKUP, self.picking_up(), lambda x: x.template.pickup_stop),
+            (StopOrder.DROPOFF, self.dropping_off(), lambda x: x.template.dropoff_stop),
         )
 
         for stop_type, trips, stop_getter in opts:
@@ -495,14 +515,14 @@ class InternalBus(DatabaseModel):
 
             if unordered_trips:
                 raise ValidationError(
-                    f'Unordered {stop_type} trips for bus {self}: '
-                    f'{unordered_trips}')
+                    f'Unordered {stop_type} trips for bus {self}: ' f'{unordered_trips}'
+                )
 
             if surplus_trips:
                 # a trip has been removed from the route
                 raise ValidationError(
-                    f'Surplus {stop_type} trips for bus {self}: '
-                    f'{surplus_trips}')
+                    f'Surplus {stop_type} trips for bus {self}: ' f'{surplus_trips}'
+                )
 
     def get_stop_ordering(self):
         """
@@ -555,7 +575,7 @@ class InternalBus(DatabaseModel):
         kwargs = {
             'trips_year': self.trips_year_id,
             'route_pk': self.route_id,
-            'date': self.date
+            'date': self.date,
         }
         return reverse('core:internalbus:checklist', kwargs=kwargs)
 
@@ -575,27 +595,27 @@ class StopOrder(DatabaseModel):
 
     This is essentially the through model of an M2M relationship.
     """
+
     bus = models.ForeignKey(InternalBus, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField()
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
 
     computed_time = models.TimeField(
         'Pickup/dropoff time computed by Google Maps',
-        null=True, default=None, editable=False)
+        null=True,
+        default=None,
+        editable=False,
+    )
 
     custom_time = models.TimeField(
-        'Custom pickup/dropoff time',
-        null=True,
-        blank=True,
-        default=None)
+        'Custom pickup/dropoff time', null=True, blank=True, default=None
+    )
 
     PICKUP = 'PICKUP'
     DROPOFF = 'DROPOFF'
     stop_type = models.CharField(
-        max_length=10,
-        choices=(
-            (PICKUP, PICKUP),
-            (DROPOFF, DROPOFF)))
+        max_length=10, choices=((PICKUP, PICKUP), (DROPOFF, DROPOFF))
+    )
 
     objects = StopOrderManager()
     tracker = FieldTracker(fields=['order'])
@@ -651,6 +671,7 @@ class ExternalBus(DatabaseModel):
     Bus used to transport local-section students to and
     from campus.
     """
+
     objects = ExternalBusManager()
     passengers = ExternalPassengerManager()
 
@@ -681,19 +702,21 @@ class ExternalBus(DatabaseModel):
     @cached_property
     def passengers_to_hanover(self):
         return IncomingStudent.objects.passengers_to_hanover(
-            self.trips_year_id, self.route, self.section)
+            self.trips_year_id, self.route, self.section
+        )
 
     @cached_property
     def passengers_from_hanover(self):
         return IncomingStudent.objects.passengers_from_hanover(
-            self.trips_year_id, self.route, self.section)
+            self.trips_year_id, self.route, self.section
+        )
 
     def all_passengers(self):
         def pks(qs):
             return [x.pk for x in qs]
-        return IncomingStudent.objects.filter(pk__in=(
-            pks(self.passengers_to_hanover) +
-            pks(self.passengers_from_hanover))
+
+        return IncomingStudent.objects.filter(
+            pk__in=(pks(self.passengers_to_hanover) + pks(self.passengers_from_hanover))
         ).order_by('name')
 
     DROPOFF_ATTR = 'dropoff'
@@ -743,10 +766,9 @@ class ExternalBus(DatabaseModel):
         for leg in directions.legs:
             leg.start_time = leg.start_stop.pickup_time
 
-            end_datetime = datetime.combine(
-                self.date_to_hanover,
-                leg.start_time
-            ) + leg.duration
+            end_datetime = (
+                datetime.combine(self.date_to_hanover, leg.start_time) + leg.duration
+            )
             leg.end_time = end_datetime.time()
 
         return directions
@@ -758,10 +780,9 @@ class ExternalBus(DatabaseModel):
         for leg in directions.legs:
             leg.end_time = leg.end_stop.dropoff_time
 
-            start_datetime = datetime.combine(
-                self.date_from_hanover,
-                leg.end_time
-            ) - leg.duration
+            start_datetime = (
+                datetime.combine(self.date_from_hanover, leg.end_time) - leg.duration
+            )
             leg.start_time = start_datetime.time()
 
         return directions

@@ -16,8 +16,10 @@ class Command(BaseCommand):
         try:
             user = DartmouthUser.objects.get(netid=netid)
         except DartmouthUser.DoesNotExist:
-            err = ("User with netid '%s' does not exist in the database "
-                   "Have them log in first, then retry this command")
+            err = (
+                "User with netid '%s' does not exist in the database "
+                "Have them log in first, then retry this command"
+            )
             self.stderr.write(err % netid)
         else:
             user.is_superuser = False

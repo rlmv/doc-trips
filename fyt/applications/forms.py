@@ -29,7 +29,6 @@ from fyt.utils.forms import crispify
 
 
 class ApplicationForm(TripsYearModelForm):
-
     class Meta:
         model = Volunteer
         fields = (
@@ -56,7 +55,7 @@ class ApplicationForm(TripsYearModelForm):
             'transfer_exchange',
             'role_preference',
             'leader_willing',
-            'croo_willing'
+            'croo_willing',
         )
 
     @property
@@ -78,6 +77,7 @@ class QuestionForm(TripsYearModelForm):
     """
     A form for answering dynamic application questions.
     """
+
     class Meta:
         model = Volunteer
         fields = []
@@ -143,7 +143,6 @@ class AgreementLayout(Layout):
 
 
 class CrooSupplementForm(TripsYearModelForm):
-
     class Meta:
         model = CrooSupplement
         fields = (
@@ -203,8 +202,11 @@ class PreferenceHandler:
         setattr(through, self.data_field, data)
 
     def through_qs(self, instance):
-        return getattr(instance, self.through_qs_name).select_related(
-            self.target_field).all()
+        return (
+            getattr(instance, self.through_qs_name)
+            .select_related(self.target_field)
+            .all()
+        )
 
     def create_through(self, instance, target, data):
         return getattr(instance, self.through_creator)(target, data)
@@ -227,7 +229,7 @@ class PreferenceHandler:
             initial=initial,
             choices=self.choices,
             required=True,
-            label=self.formfield_label(target)
+            label=self.formfield_label(target),
         )
 
     def get_formfields(self):
@@ -237,8 +239,7 @@ class PreferenceHandler:
         initial = self.get_initial()
 
         return {
-            self.formfield_name(t): self.formfield(t, initial[t])
-            for t in self.targets
+            self.formfield_name(t): self.formfield(t, initial[t]) for t in self.targets
         }
 
     def get_initial(self):
@@ -248,10 +249,12 @@ class PreferenceHandler:
         initial = {t: self.default for t in self.targets}
 
         if self.form.instance:
-            initial.update({
-                self.get_target(pref): self.get_data(pref)
-                for pref in self.through_qs(self.form.instance)
-            })
+            initial.update(
+                {
+                    self.get_target(pref): self.get_data(pref)
+                    for pref in self.through_qs(self.form.instance)
+                }
+            )
 
         return initial
 
@@ -261,6 +264,7 @@ class PreferenceHandler:
 
         This must be called after the form's `save` method has been called.
         """
+
         def get_cleaned_data(target):
             return self.form.cleaned_data[self.formfield_name(target)]
 
@@ -286,6 +290,7 @@ class QuestionHandler(PreferenceHandler):
     """
     Handler for dynamic questions and answers.
     """
+
     through_qs_name = 'answer_set'
     through_creator = 'answer_question'
     data_field = 'answer'
@@ -303,10 +308,12 @@ class QuestionHandler(PreferenceHandler):
         elif question.croo_only:
             return base_text.format('trip leader')
         elif question.optional:
-            return ('This question is optional. Your application will be '
-                    'considered complete even if you leave this question '
-                    'blank, and whether or not you choose to answer it will '
-                    'not affect the grading of your application.')
+            return (
+                'This question is optional. Your application will be '
+                'considered complete even if you leave this question '
+                'blank, and whether or not you choose to answer it will '
+                'not affect the grading of your application.'
+            )
 
     def formfield(self, question, initial):
         return forms.CharField(
@@ -315,7 +322,7 @@ class QuestionHandler(PreferenceHandler):
             help_text=self.formfield_help_text(question),
             required=False,
             widget=forms.Textarea(attrs={'rows': 8}),
-            validators=[validate_word_count]
+            validators=[validate_word_count],
         )
 
 
@@ -363,7 +370,6 @@ class TripTypePreferenceHandler(PreferenceHandler):
 
 
 class LeaderSupplementForm(TripsYearModelForm):
-
     class Meta:
         model = LeaderSupplement
 
@@ -400,14 +406,16 @@ class LeaderSupplementForm(TripsYearModelForm):
         self.fields['section_availability'].help_text = (
             'Sophomores, if you are available for more than {} please use '
             'the above space to explain how.'.format(
-                join_with_and(Section.objects.sophomore_leaders_ok(
-                    self.trips_year))))
+                join_with_and(Section.objects.sophomore_leaders_ok(self.trips_year))
+            )
+        )
 
         self.helper = FormHelper(self)
         self.helper.form_tag = False
         self.helper.layout = LeaderSupplementLayout(
             self.section_handler.formfield_names(),
-            self.triptype_handler.formfield_names())
+            self.triptype_handler.formfield_names(),
+        )
 
     def save(self):
         application = super().save()
@@ -419,7 +427,6 @@ class LeaderSupplementForm(TripsYearModelForm):
 
 
 class ApplicationStatusForm(TripsYearModelForm):
-
     class Meta:
         model = Volunteer
         fields = ('status',)
@@ -430,7 +437,6 @@ class ApplicationStatusForm(TripsYearModelForm):
 
 
 class ApplicationAdminForm(TripsYearModelForm):
-
     class Meta:
         model = Volunteer
         fields = [
@@ -438,18 +444,18 @@ class ApplicationAdminForm(TripsYearModelForm):
             'trip_assignment',
             'croo_assignment',
             'safety_lead',
-            'deadline_extension']
+            'deadline_extension',
+        ]
         widgets = {
-            'deadline_extension': DateTimePicker(options={
-                'format': 'MM/DD/YYYY HH:mm'})
+            'deadline_extension': DateTimePicker(options={'format': 'MM/DD/YYYY HH:mm'})
         }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.fields['trip_assignment'].queryset = (
-            self.fields['trip_assignment'].queryset.select_related(
-                'section', 'template', 'template__triptype'))
+        self.fields['trip_assignment'].queryset = self.fields[
+            'trip_assignment'
+        ].queryset.select_related('section', 'template', 'template__triptype')
 
     @property
     def helper(self):
@@ -468,7 +474,6 @@ class ApplicationAdminForm(TripsYearModelForm):
 
 
 class ApplicationLayout(Layout):
-
     def __init__(self):
         super().__init__(
             Fieldset(
@@ -483,7 +488,7 @@ class ApplicationLayout(Layout):
             ),
             SectionAlert(
                 'NON-GRADED SECTION',
-                'Answers in these sections will NOT be used in the scoring process.'
+                'Answers in these sections will NOT be used in the scoring process.',
             ),
             Fieldset(
                 'General Information',
@@ -528,34 +533,32 @@ class ApplicationLayout(Layout):
                     'First Aid Certifications',
                     HTML(
                         "<p>Please list all of your <strong>current</strong> first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please list it in the 'other' field.</p>"
-                    )
-                )
+                    ),
+                ),
             ),
         )
 
 
 def SectionAlert(header, content):
     return Alert(
-        dismiss=False, css_class='alert-info', content=(
-            '<h3>{}</h3> <p>{}</p>'.format(header, content)
-        )
+        dismiss=False,
+        css_class='alert-info',
+        content=('<h3>{}</h3> <p>{}</p>'.format(header, content)),
     )
 
 
 class QuestionLayout(Layout):
-
     def __init__(self, dynamic_questions):
         super().__init__(
             SectionAlert(
                 'GRADED SECTION',
-                'This is the ONLY section that will be available to readers during the blind reading and scoring process. Each answer may be no longer than 300 words.'
+                'This is the ONLY section that will be available to readers during the blind reading and scoring process. Each answer may be no longer than 300 words.',
             ),
             *dynamic_questions
         )
 
 
 class LeaderSupplementLayout(Layout):
-
     def __init__(self, section_fields, triptype_fields):
         super().__init__(
             Fieldset(
@@ -595,10 +598,7 @@ class LeaderSupplementLayout(Layout):
                     "place you.</p>"
                 ),
             ),
-            Fieldset(
-                'Sections',
-                *section_fields
-            ),
+            Fieldset('Sections', *section_fields),
             Field('section_availability', rows=2),
             Fieldset(
                 'Trip Types',
@@ -618,7 +618,6 @@ class LeaderSupplementLayout(Layout):
 
 
 class CrooSupplementLayout(Layout):
-
     def __init__(self):
         super().__init__(
             Fieldset(
@@ -658,7 +657,7 @@ class CrooSupplementLayout(Layout):
                 ),
                 'kitchen_lead_willing',
                 Field('kitchen_lead_qualifications', rows=2),
-            )
+            ),
         )
 
 
@@ -666,6 +665,7 @@ class CommentHandler(PreferenceHandler):
     """
     Handler for comments on dynamic answers
     """
+
     through_qs_name = 'scorecomment_set'
     through_creator = 'add_comment'
     data_field = 'comment'
@@ -711,6 +711,7 @@ def ScoreForm(application, grader, **kwargs):
         """
         The dynamically generated form class.
         """
+
         class Meta:
             model = Score
             fields = ['general'] + score_fields
@@ -721,7 +722,8 @@ def ScoreForm(application, grader, **kwargs):
             self.grader = grader
             self.application = self.instance.application = application
             self.score_questions = ScoreQuestion.objects.filter(
-                trips_year=self.trips_year)
+                trips_year=self.trips_year
+            )
             self.comment_handler = CommentHandler(self, self.score_questions)
             self.fields.update(self.comment_handler.get_formfields())
 
@@ -735,9 +737,11 @@ def ScoreForm(application, grader, **kwargs):
                 Field('general', rows=3),
                 FormActions(
                     Submit('submit', 'Submit Score'),
-                    Submit(SKIP, 'Skip this Application',
-                           css_class='btn-warning',
-                           formnovalidate=True  # Disable browser validation
+                    Submit(
+                        SKIP,
+                        'Skip this Application',
+                        css_class='btn-warning',
+                        formnovalidate=True,  # Disable browser validation
                     ),
                 )
             )
@@ -754,15 +758,19 @@ def ScoreForm(application, grader, **kwargs):
     return _ScoreForm(application, grader, **kwargs)
 
 
-class ScoreQuestionFormset(forms.models.modelformset_factory(
+class ScoreQuestionFormset(
+    forms.models.modelformset_factory(
         ScoreQuestion,
         extra=2,
         fields=['question', 'order'],
         can_delete=True,
-        widgets={'question': forms.Textarea(attrs={'rows': 2})})):
+        widgets={'question': forms.Textarea(attrs={'rows': 2})},
+    )
+):
     """
     Formset used to setup scoring for the year.
     """
+
     def __init__(self, trips_year, *args, **kwargs):
         self.trips_year = trips_year
         super().__init__(*args, **kwargs)

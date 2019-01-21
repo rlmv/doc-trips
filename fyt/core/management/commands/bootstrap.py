@@ -17,7 +17,8 @@ class Command(BaseCommand):
         if TripsYear.objects.count() > 0:
             self.stderr.write(
                 "At least one TripsYear already exists in the database. "
-                "Flush the database and try again.")
+                "Flush the database and try again."
+            )
             sys.exit(1)
 
         with transaction.atomic():

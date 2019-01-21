@@ -34,11 +34,13 @@ class BasePermissionMixin(LoginRequiredMixin):
 
     Since this includes the LoginRequired it should go first in the MRO.
     """
+
     raise_exception = True
     redirect_unauthenticated_users = True
 
 
 # TODO: can we set permission_required with an imported permission() call ?
+
 
 class DatabaseEditPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     permission_required = 'permissions.can_edit_db'
@@ -50,67 +52,71 @@ class DatabaseReadPermissionRequired(BasePermissionMixin, PermissionRequiredMixi
 
 class SettingsPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """ Access for users allowed to edit database settings."""
+
     permission_required = 'permissions.can_edit_settings'
 
 
-class ApplicationEditPermissionRequired(BasePermissionMixin,
-                                        MultiplePermissionsRequiredMixin):
+class ApplicationEditPermissionRequired(
+    BasePermissionMixin, MultiplePermissionsRequiredMixin
+):
     permissions = {
         'any': [
             'permissions.can_edit_db',
-            'permissions.can_edit_applications_and_assign_leaders']}
+            'permissions.can_edit_applications_and_assign_leaders',
+        ]
+    }
 
 
-class TripInfoEditPermissionRequired(BasePermissionMixin,
-                                     MultiplePermissionsRequiredMixin):
-    permissions = {
-        'any': [
-            'permissions.can_edit_db',
-            'permissions.can_edit_trip_info']}
+class TripInfoEditPermissionRequired(
+    BasePermissionMixin, MultiplePermissionsRequiredMixin
+):
+    permissions = {'any': ['permissions.can_edit_db', 'permissions.can_edit_trip_info']}
 
 
 class GraderPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """Users allowed to score applications."""
+
     permission_required = 'permissions.can_score_applications'
 
 
-class GraderTablePermissionRequired(BasePermissionMixin,
-                                    MultiplePermissionsRequiredMixin):
+class GraderTablePermissionRequired(
+    BasePermissionMixin, MultiplePermissionsRequiredMixin
+):
     """Users with permission to see the graders table in the database."""
+
     permissions = {
         'any': [
             'permissions.can_view_db',
             'permissions.can_score_applications',
-            'permissions.can_score_as_croo_head']}
+            'permissions.can_score_as_croo_head',
+        ]
+    }
 
 
 class SafetyLogPermissionRequired(BasePermissionMixin, PermissionRequiredMixin):
     """
     For users allowed to report incidents in the safety log
     """
+
     permission_required = 'permissions.can_report_incidents'
 
 
-class TrainingPermissionRequired(BasePermissionMixin,
-                                 MultiplePermissionsRequiredMixin):
+class TrainingPermissionRequired(BasePermissionMixin, MultiplePermissionsRequiredMixin):
     """
     For users to schedule trainings and update attendance.
     """
-    permissions = {
-        'any': ['permissions.can_edit_trainings',
-                'permissions.can_edit_db']}
+
+    permissions = {'any': ['permissions.can_edit_trainings', 'permissions.can_edit_db']}
 
 
 class GroupForm(forms.ModelForm):
-
     class Meta:
         model = Group
         fields = []
 
     members = forms.ModelMultipleChoiceField(
-        queryset=None,
-        widget=forms.CheckboxSelectMultiple,
-        required=False)
+        queryset=None, widget=forms.CheckboxSelectMultiple, required=False
+    )
     new_member = DartmouthDirectoryLookupField(required=False)
 
     def __init__(self, group, *args, **kwargs):
@@ -134,8 +140,8 @@ class GroupForm(forms.ModelForm):
 
         if new_member_data:
             new_member, _ = DartmouthUser.objects.get_or_create_by_netid(
-                new_member_data[lookup.NETID],
-                new_member_data[lookup.NAME])
+                new_member_data[lookup.NETID], new_member_data[lookup.NAME]
+            )
 
             if new_member not in members:
                 members = list(members)
@@ -148,24 +154,22 @@ class GroupForm(forms.ModelForm):
         helper = FormHelper(self)
         helper.form_tag = False
 
-        perms_text = ('<p>The {} group has the following permissions: '
-                      '<ul>{}</ul></p>'.format(
-                          self.group.name.capitalize(),
-                          ''.join(['<li>{}</li>'.format(p.name)
-                                   for p in self.group.permissions.all()])))
+        perms_text = (
+            '<p>The {} group has the following permissions: '
+            '<ul>{}</ul></p>'.format(
+                self.group.name.capitalize(),
+                ''.join(
+                    ['<li>{}</li>'.format(p.name) for p in self.group.permissions.all()]
+                ),
+            )
+        )
 
         helper.layout = Layout(
             Fieldset(
                 str(self.group).capitalize(),
                 Row(
-                    Column(
-                        'members',
-                        'new_member',
-                        css_class='col-sm-6',
-                    ),
-                    Column(
-                        HTML(perms_text),
-                        css_class='col-sm-6'),
+                    Column('members', 'new_member', css_class='col-sm-6'),
+                    Column(HTML(perms_text), css_class='col-sm-6'),
                 ),
                 Submit('submit', 'Update'),
                 style="padding-bottom: 2em;",
@@ -180,8 +184,10 @@ class SetPermissions(SettingsPermissionRequired, FormView):
     success_url = reverse_lazy('permissions:set_permissions')
 
     def get_forms(self, *args, **kwargs):
-        return [GroupForm(group, *args, prefix=str(group), **kwargs)
-                for group in groups.all()]
+        return [
+            GroupForm(group, *args, prefix=str(group), **kwargs)
+            for group in groups.all()
+        ]
 
     def get(self, request, *args, **kwargs):
         forms = self.get_forms()

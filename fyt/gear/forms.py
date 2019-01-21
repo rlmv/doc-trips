@@ -13,7 +13,7 @@ class GearRequestForm(TripsYearModelForm):
         fields = ['gear', 'additional']
         widgets = {
             'gear': forms.CheckboxSelectMultiple(),
-            'additional': forms.Textarea(attrs={'rows': 4})
+            'additional': forms.Textarea(attrs={'rows': 4}),
         }
 
     def __init__(self, user=None, **kwargs):
@@ -35,5 +35,5 @@ class ProvidedGearForm(TripsYearModelForm):
         fields = ['provided', 'provided_comments']
         widgets = {
             'provided': forms.CheckboxSelectMultiple(),
-            'provided_comments': forms.Textarea(attrs={'rows': 4})
+            'provided_comments': forms.Textarea(attrs={'rows': 4}),
         }

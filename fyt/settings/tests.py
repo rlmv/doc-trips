@@ -6,7 +6,6 @@ from .loader import EnvLoader
 
 
 class EnvLoaderTestCase(unittest.TestCase):
-
     def setUp(self):
         os.environ['ENV_LOADER_VALUE'] = '123'
 

@@ -14,10 +14,12 @@ class WebAuthMiddleware(MiddlewareMixin):
     def process_request(self, request):
         """Checks that the authentication middleware is installed"""
 
-        error = ("The Django CAS middleware requires authentication "
-                 "middleware to be installed. Edit your MIDDLEWARE_CLASSES "
-                 "setting to insert 'django.contrib.auth.middleware."
-                 "AuthenticationMiddleware'.")
+        error = (
+            "The Django CAS middleware requires authentication "
+            "middleware to be installed. Edit your MIDDLEWARE_CLASSES "
+            "setting to insert 'django.contrib.auth.middleware."
+            "AuthenticationMiddleware'."
+        )
         assert hasattr(request, 'user'), error
 
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -29,13 +31,15 @@ class WebAuthMiddleware(MiddlewareMixin):
             return None
 
         if not request.user.is_authenticated:
-            login_url = settings.LOGIN_URL + '?' + urlencode({
-                auth.REDIRECT_FIELD_NAME: request.get_full_path()})
+            login_url = (
+                settings.LOGIN_URL
+                + '?'
+                + urlencode({auth.REDIRECT_FIELD_NAME: request.get_full_path()})
+            )
             return HttpResponseRedirect(login_url)
 
         if request.user.is_staff:
             return None
 
-        error = ('<h1>Forbidden</h1>'
-                 '<p>You do not have staff privileges.</p>')
+        error = '<h1>Forbidden</h1>' '<p>You do not have staff privileges.</p>'
         return HttpResponseForbidden(error)

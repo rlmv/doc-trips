@@ -20,13 +20,11 @@ class TripsYearMixinTestCase(FytTestCase):
 
     def test_dispatch_for_trips_year(self):
         year = self.init_trips_year()
-        response = self.app.get('/db/{}/'.format(year.year),
-                                user=self.make_director())
+        response = self.app.get('/db/{}/'.format(year.year), user=self.make_director())
         self.assertEqual(response.status_code, 200)
 
     def test_dispatch_for_nonexistant_year(self):
-        response = self.app.get('/db/2314124/', status=404,
-                                user=self.make_director())
+        response = self.app.get('/db/2314124/', status=404, user=self.make_director())
         self.assertEqual(response.status_code, 404)
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
@@ -53,6 +51,7 @@ class TripsYearMixinTestCase(FytTestCase):
         response = self.app.get(ex1.index_url(), user=self.make_director())
 
         from fyt.trips.views import TripTypeList
+
         objects = response.context[TripTypeList.context_object_name]
         self.assertEqual(len(objects), 1, 'should only get one object')
         self.assertEqual(objects[0], ex1, 'should get object for `trips_year`')
@@ -69,22 +68,28 @@ class TripsYearMixinTestCase(FytTestCase):
         self.assertEqual(object, c1)
 
         # bad request
-        url = reverse('core:campsite:update', kwargs={
-            'trips_year': c1.trips_year.year, 'pk': c2.pk})
+        url = reverse(
+            'core:campsite:update',
+            kwargs={'trips_year': c1.trips_year.year, 'pk': c2.pk},
+        )
 
         response = self.app.get(url, expect_errors=True, user=self.director)
-        self.assertEqual(response.status_code, 404,
-            'should not find c2 because `trips_year != c2.trips_year`')
+        self.assertEqual(
+            response.status_code,
+            404,
+            'should not find c2 because `trips_year != c2.trips_year`',
+        )
 
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
         c1 = mommy.make(Campsite, trips_year=self.trips_year)
         c2 = mommy.make(Campsite, trips_year=self.old_trips_year)
-        triptemplate = mommy.make(TripTemplate,
-                                  trips_year=self.trips_year,
-                                  description__trips_year=self.trips_year)
+        triptemplate = mommy.make(
+            TripTemplate,
+            trips_year=self.trips_year,
+            description__trips_year=self.trips_year,
+        )
 
-        response = self.app.get(triptemplate.update_url(),
-                                user=self.make_director())
+        response = self.app.get(triptemplate.update_url(), user=self.make_director())
         choices = response.context['form'].fields['campsite1'].queryset
 
         # should only show object from current_trips_year
@@ -99,7 +104,6 @@ class TripsYearMixinTestCase(FytTestCase):
 
 
 class TripsYearModelFormTestCase(FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
         self.init_old_trips_year()
@@ -150,12 +154,10 @@ class TripsYearModelFormTestCase(FytTestCase):
                 fields = '__all__'
 
         with self.assertRaises(ValueError):
-            TripTemplateForm(trips_year=self.old_trips_year,
-                             instance=triptemplate)
+            TripTemplateForm(trips_year=self.old_trips_year, instance=triptemplate)
 
 
 class DetailViewTestCase(FytTestCase):
-
     def test_urls_in_context(self):
         trips_year = self.init_trips_year()
         # test Section detail, for example
@@ -166,7 +168,6 @@ class DetailViewTestCase(FytTestCase):
 
 
 class UpdateViewTestCase(FytTestCase):
-
     def test_form_has_crispy_helper(self):
         trips_year = self.init_trips_year()
         view = DatabaseUpdateView()

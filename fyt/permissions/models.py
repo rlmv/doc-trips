@@ -12,11 +12,10 @@ Permissions are set on the SitePermission model.
 This lets us do SitePermission.objects.create(codename, name)
 """
 
+
 def get_content_type():
     """ Return the SitePermission content type """
-    return ContentType.objects.get_for_model(
-        SitePermission, for_concrete_model=False
-    )
+    return ContentType.objects.get_for_model(SitePermission, for_concrete_model=False)
 
 
 class SitePermissionManager(models.Manager):
@@ -29,10 +28,11 @@ class SitePermissionManager(models.Manager):
 
 class SitePermission(Permission):
     """ Proxy model for the django Permissions model. """
+
     objects = SitePermissionManager()
 
     class Meta:
-        proxy = True # proxy models are cool!
+        proxy = True  # proxy models are cool!
 
     def save(self, *args, **kwargs):
         self.content_type = get_content_type()

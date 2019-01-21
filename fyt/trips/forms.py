@@ -14,13 +14,14 @@ class SectionForm(TripsYearModelForm):
     """
     Form for Section Create and Update views.
     """
+
     class Meta:
         model = Section
         fields = '__all__'
         widgets = {
-            'leaders_arrive': DateTimePicker(options={
-                'format': 'MM/DD/YYYY', 'pickTime': False
-            })
+            'leaders_arrive': DateTimePicker(
+                options={'format': 'MM/DD/YYYY', 'pickTime': False}
+            )
         }
 
     @property
@@ -55,13 +56,10 @@ class TripTemplateDescriptionForm(TripsYearModelForm):
 
 
 class LeaderAssignmentForm(TripsYearModelForm):
-
     class Meta:
         model = Volunteer
         fields = ['trip_assignment']
-        widgets = {
-            'trip_assignment': forms.HiddenInput()
-        }
+        widgets = {'trip_assignment': forms.HiddenInput()}
 
     def clean(self):
         """
@@ -73,20 +71,15 @@ class LeaderAssignmentForm(TripsYearModelForm):
 
 
 class TrippeeAssignmentForm(TripsYearModelForm):
-
     class Meta:
         model = IncomingStudent
         fields = ['trip_assignment']
-        widgets = {
-            'trip_assignment': forms.HiddenInput()
-        }
+        widgets = {'trip_assignment': forms.HiddenInput()}
 
     @property
     def helper(self):
         helper = FormHelper(self)
-        label = 'Assign to %s' % (
-            Trip.objects.get(pk=self.data['trip_assignment'])
-        )
+        label = 'Assign to %s' % (Trip.objects.get(pk=self.data['trip_assignment']))
         helper.add_input(Submit('submit', label))
         return helper
 

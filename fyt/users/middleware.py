@@ -15,6 +15,7 @@ class UserEmailRequiredMiddleware(MiddlewareMixin):
     :meth:`~fyt.users.models.DartmouthUserManager.create_user`
     fails to lookup the email.
     """
+
     def process_request(self, request):
         update_url = reverse('users:update_email')
 

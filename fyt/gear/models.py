@@ -19,10 +19,12 @@ class GearRequest(DatabaseModel):
     """
     A gear request is either attached to an IncomingStudent, or to a Volunteer.
     """
+
     class Meta:
         unique_together = [
             ('trips_year', 'incoming_student'),
-            ('trips_year', 'volunteer')]
+            ('trips_year', 'volunteer'),
+        ]
         ordering = ['incoming_student', 'volunteer']
 
     objects = GearRequestManager()
@@ -33,11 +35,14 @@ class GearRequest(DatabaseModel):
     additional = models.TextField(blank=True)
 
     # Requested gear that will be provided to the trippee
-    provided = models.ManyToManyField(Gear, blank=True,
-                                      related_name="provided_to")
+    provided = models.ManyToManyField(Gear, blank=True, related_name="provided_to")
     provided_comments = models.TextField(
-        'additional comments', blank=True, help_text=(
-            'Add information here about why gear is not being provided, if applicable'))
+        'additional comments',
+        blank=True,
+        help_text=(
+            'Add information here about why gear is not being provided, if applicable'
+        ),
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -47,14 +52,16 @@ class GearRequest(DatabaseModel):
         editable=False,
         null=True,
         related_name='gear_request',
-        on_delete=models.PROTECT)
+        on_delete=models.PROTECT,
+    )
 
     volunteer = models.OneToOneField(
         Volunteer,
         editable=False,
         null=True,
         related_name='gear_request',
-        on_delete=models.PROTECT)
+        on_delete=models.PROTECT,
+    )
 
     @property
     def requester(self):
@@ -64,12 +71,14 @@ class GearRequest(DatabaseModel):
     def requester(self, user):
         try:
             self.incoming_student = IncomingStudent.objects.get(
-                trips_year=self.trips_year, netid=user.netid)
+                trips_year=self.trips_year, netid=user.netid
+            )
         except IncomingStudent.DoesNotExist:
             pass
         try:
             self.volunteer = Volunteer.objects.get(
-                trips_year=self.trips_year, applicant=user)
+                trips_year=self.trips_year, applicant=user
+            )
         except Volunteer.DoesNotExist:
             pass
 
@@ -87,12 +96,14 @@ class GearRequest(DatabaseModel):
 
     def clean(self):
         if self.incoming_student and self.volunteer:
-            raise ValidationError('Only incoming students and trips volunteers '
-                                  'may request gear.')
+            raise ValidationError(
+                'Only incoming students and trips volunteers ' 'may request gear.'
+            )
 
         if not self.incoming_student and not self.volunteer:
-            raise ValidationError('Only incoming students and trips volunteers '
-                                  'may request gear.')
+            raise ValidationError(
+                'Only incoming students and trips volunteers ' 'may request gear.'
+            )
 
     def __str__(self):
         return 'GearRequest ({})'.format(self.requester)

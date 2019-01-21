@@ -14,5 +14,3 @@ def lookup_pgt():
         print(pgt.tgt)
     else:
         print('FAIL')
-
-

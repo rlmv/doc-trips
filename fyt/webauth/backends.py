@@ -14,6 +14,7 @@ def parse_cas_success(tree):
 
     Returns the verified user.
     """
+
     def findtext(text):
         tag_prefix = "{http://www.yale.edu/tp/cas}"
         return tree[0].findtext(tag_prefix + text)
@@ -53,6 +54,7 @@ class WebAuthBackend(ModelBackend):
     """
     CAS authentication backend for Dartmouth Webauth
     """
+
     def authenticate(self, request, ticket, service):
         """
         Verifies CAS ticket and gets or creates User object.

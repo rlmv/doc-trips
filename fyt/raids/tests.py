@@ -10,14 +10,12 @@ raid_recipe = Recipe(Raid, trips_year=foreign_key(trips_year_recipe))
 
 
 class RaidModelsTestCase(FytTestCase):
-
     def test_raid_requires_trip_or_campsite(self):
         with self.assertRaises(ValidationError):
             raid_recipe.prepare(campsite=None, trip=None).full_clean()
 
 
 class RaidViewsTestCase(FytTestCase):
-
     def test_only_directors_can_delete_raids(self):
         trips_year = trips_year_recipe.make()
         raid = raid_recipe.make(trips_year=trips_year)

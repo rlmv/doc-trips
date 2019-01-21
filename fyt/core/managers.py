@@ -1,8 +1,8 @@
-
 from django.db import models
 
 
 # TODO: test cases
+
 
 class TripsYearManager(models.Manager):
     """ Object manager for TripsYear """
@@ -15,6 +15,3 @@ class TripsYearManager(models.Manager):
         not *necessarily* the actual date.
         """
         return self.get(is_current=True)
-
-
-

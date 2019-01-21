@@ -12,7 +12,8 @@ def display_docx_filefield_as_html(filefield):
     if not filefield:
         return ''
 
-    t = template.Template("""
+    t = template.Template(
+        """
     <div class="alert alert-info" role="alert">
     Can't see the application, or the formatting is wonky?
     <a href="{{ filefield.url }}">Download the application here </a>
@@ -20,7 +21,8 @@ def display_docx_filefield_as_html(filefield):
     <div class="well">
     {{ html }}
     </div>
-    """)
+    """
+    )
 
     try:
         html = convert_docx_filefield_to_html(filefield)

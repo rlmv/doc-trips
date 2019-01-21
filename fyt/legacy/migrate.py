@@ -35,23 +35,29 @@ Boom! Everything should be set.
 
 """
 
+
 def setup_connection():
 
     engine = create_engine('mysql+mysqlconnector://django@localhost/doc')
     return engine.connect()
+
 
 def trips_year():
 
     trips_year, created = TripsYear.objects.get_or_create(year=2015, is_current=True)
     return trips_year
 
+
 def walk_to_lodge_transport_stop():
 
-    stop, created = Stop.objects.get_or_create(trips_year=trips_year(),
-                                               name='Walk To Lodge',
-                                               address='walk to lodge',
-                                               category='INTERNAL')
+    stop, created = Stop.objects.get_or_create(
+        trips_year=trips_year(),
+        name='Walk To Lodge',
+        address='walk to lodge',
+        category='INTERNAL',
+    )
     return stop
+
 
 def migrate_campsites():
 
@@ -73,13 +79,15 @@ def migrate_campsites():
         if secret is None:
             secret = ''
 
-        campsite = Campsite(id=row['id'],
-                            name=row['name'],
-                            capacity=capacity,
-                            directions=directions,
-                            bugout=bugout,
-                            secret=secret,
-                            trips_year=trips_year())
+        campsite = Campsite(
+            id=row['id'],
+            name=row['name'],
+            capacity=capacity,
+            directions=directions,
+            bugout=bugout,
+            secret=secret,
+            trips_year=trips_year(),
+        )
         campsite.save()
         print('Added campsite ' + str(campsite))
 
@@ -95,7 +103,8 @@ def migrate_vehicles():
             id=row['id'],
             name=row['name'],
             capacity=row['passengers'],
-            trips_year=trips_year())
+            trips_year=trips_year(),
+        )
 
         vehicle.save()
         print('Added vehicle ' + str(vehicle))
@@ -115,7 +124,8 @@ def migrate_routes():
             name=row['name'],
             vehicle_id=row['transportationtype_id'],
             category=category,
-            trips_year=trips_year())
+            trips_year=trips_year(),
+        )
 
         route.save()
         print('Added route ' + str(route))
@@ -156,7 +166,8 @@ def migrate_stops():
             dropoff_time=dropoff_time,
             route_id=row['primary_transportationroute_id'],
             category=category,
-            trips_year=trips_year())
+            trips_year=trips_year(),
+        )
 
         stop.save()
         print('Added stop ' + str(stop))
@@ -175,7 +186,8 @@ def migrate_triptypes():
             leader_description=row['desc_leader'],
             trippee_description=row['desc_trippee'],
             packing_list=row['packing_list'],
-            trips_year=trips_year())
+            trips_year=trips_year(),
+        )
 
         triptype.save()
         print('Added triptype ' + str(triptype))
@@ -244,7 +256,8 @@ def migrate_triptemplates():
             description_day3=day3,
             description_conclusion=conclusion,
             revision_notes=revision_notes,
-            trips_year=trips_year())
+            trips_year=trips_year(),
+        )
 
         triptemplate.save()
         print('Added triptemplate ' + str(triptemplate))

@@ -15,6 +15,7 @@ from fyt.utils.query import pks
 
 class AvailableSectionFilter(django_filters.ModelChoiceFilter):
     """Filter leaders based on the trips sections they are available for."""
+
     def __init__(self, trips_year):
         qs = Section.objects.filter(trips_year=trips_year)
         super().__init__(queryset=qs)
@@ -24,13 +25,15 @@ class AvailableSectionFilter(django_filters.ModelChoiceFilter):
             return qs
 
         return qs.filter(
-            Q(leader_supplement__leadersectionchoice__preference=PREFER) |
-            Q(leader_supplement__leadersectionchoice__preference=AVAILABLE),
-            leader_supplement__leadersectionchoice__section=value)
+            Q(leader_supplement__leadersectionchoice__preference=PREFER)
+            | Q(leader_supplement__leadersectionchoice__preference=AVAILABLE),
+            leader_supplement__leadersectionchoice__section=value,
+        )
 
 
 class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
     """Filter leaders based on the trip types they are available for."""
+
     def __init__(self, trips_year):
         qs = TripType.objects.filter(trips_year=trips_year)
         super().__init__(queryset=qs)
@@ -40,9 +43,10 @@ class AvailableTripTypeFilter(django_filters.ModelChoiceFilter):
             return qs
 
         return qs.filter(
-            Q(leader_supplement__leadertriptypechoice__preference=PREFER) |
-            Q(leader_supplement__leadertriptypechoice__preference=AVAILABLE),
-            leader_supplement__leadertriptypechoice__triptype=value)
+            Q(leader_supplement__leadertriptypechoice__preference=PREFER)
+            | Q(leader_supplement__leadertriptypechoice__preference=AVAILABLE),
+            leader_supplement__leadertriptypechoice__triptype=value,
+        )
 
 
 _Choice = namedtuple('_Choice', ['value', 'display', 'action'])
@@ -50,6 +54,7 @@ _Choice = namedtuple('_Choice', ['value', 'display', 'action'])
 
 class ApplicationTypeFilter(django_filters.ChoiceFilter):
     """Filter for different types of applications."""
+
     def __init__(self, trips_year):
         self.trips_year = trips_year
         self.actions = {c.value: c.action for c in self.choices}
@@ -63,35 +68,35 @@ class ApplicationTypeFilter(django_filters.ChoiceFilter):
         _Choice('croo', 'Croo Applications', 'croo_applications'),
         _Choice('either', 'Leader OR Croo Applications', 'either_applications'),
         _Choice('both', 'Leader AND Croo Applications', 'both_applications'),
-        _Choice('incomplete_leader', 'Incomplete Leader Applications',
-                'incomplete_leader_applications'),
-        _Choice('incomplete_croo', 'Incomplete Croo Applications',
-                'incomplete_croo_applications'),
+        _Choice(
+            'incomplete_leader',
+            'Incomplete Leader Applications',
+            'incomplete_leader_applications',
+        ),
+        _Choice(
+            'incomplete_croo',
+            'Incomplete Croo Applications',
+            'incomplete_croo_applications',
+        ),
     ]
 
     def croo_applications(self, qs):
-        return qs & Volunteer.objects.croo_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.croo_applications(self.trips_year)
 
     def leader_applications(self, qs):
-        return qs & Volunteer.objects.leader_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.leader_applications(self.trips_year)
 
     def either_applications(self, qs):
-        return qs & Volunteer.objects.leader_or_croo_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.leader_or_croo_applications(self.trips_year)
 
     def both_applications(self, qs):
-        return qs & Volunteer.objects.leader_and_croo_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.leader_and_croo_applications(self.trips_year)
 
     def incomplete_leader_applications(self, qs):
-        return qs & Volunteer.objects.incomplete_leader_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.incomplete_leader_applications(self.trips_year)
 
     def incomplete_croo_applications(self, qs):
-        return qs & Volunteer.objects.incomplete_croo_applications(
-            self.trips_year)
+        return qs & Volunteer.objects.incomplete_croo_applications(self.trips_year)
 
     def filter(self, qs, value):
         if not value or not self.actions[value]:
@@ -110,12 +115,12 @@ class FirstAidFilter(django_filters.ChoiceFilter):
 
     def __init__(self, trips_year, *args, **kwargs):
         self.trips_year = trips_year
-        kwargs.update({
-            'choices': (
-                (self.MISSING, 'Missing'),
-                (self.COMPLETE, 'Complete')),
-            'label': 'First Aid Training'
-        })
+        kwargs.update(
+            {
+                'choices': ((self.MISSING, 'Missing'), (self.COMPLETE, 'Complete')),
+                'label': 'First Aid Training',
+            }
+        )
         super().__init__(self, *args, **kwargs)
 
     def filter(self, qs, value):
@@ -133,12 +138,15 @@ class TrainingFilter(django_filters.ChoiceFilter):
 
     def __init__(self, training, *args, **kwargs):
         self.training = training
-        kwargs.update({
-            'choices': (
-                (self.INCOMPLETE, 'Incomplete'),
-                (self.COMPLETE, 'Complete')),
-            'label': f'{training} Training'
-        })
+        kwargs.update(
+            {
+                'choices': (
+                    (self.INCOMPLETE, 'Incomplete'),
+                    (self.COMPLETE, 'Complete'),
+                ),
+                'label': f'{training} Training',
+            }
+        )
         super().__init__(self, *args, **kwargs)
 
     def filter(self, qs, value):
@@ -185,8 +193,8 @@ SHORT_LABELS = {
 
 BLANK = '--------'
 
-class ApplicationFilterSet(django_filters.FilterSet):
 
+class ApplicationFilterSet(django_filters.FilterSet):
     class Meta:
         model = Volunteer
         fields = [
@@ -200,13 +208,11 @@ class ApplicationFilterSet(django_filters.FilterSet):
             DMBC_LEADER,
             CNT_LEADER,
             SAFETY_LEAD,
-            KITCHEN_LEAD
+            KITCHEN_LEAD,
         ]
 
-    name = django_filters.CharFilter(method='lookup_user_by_name',
-                                     label='Name')
-    netid = django_filters.CharFilter(method='lookup_user_by_netid',
-                                      label='NetId')
+    name = django_filters.CharFilter(method='lookup_user_by_name', label='Name')
+    netid = django_filters.CharFilter(method='lookup_user_by_netid', label='NetId')
 
     def lookup_user_by_name(self, qs, name, value):
         if not value:
@@ -238,9 +244,8 @@ class ApplicationFilterSet(django_filters.FilterSet):
         # Provide a better default to NullBooleanFields
         for field in [SAFETY_LEAD, KITCHEN_LEAD]:
             self.filters[field].field.widget = Select(
-                choices=[(None, BLANK),
-                         (True, 'Yes'),
-                         (False, 'No')])
+                choices=[(None, BLANK), (True, 'Yes'), (False, 'No')]
+            )
 
         # Use abbreviated labels
         for field, label in SHORT_LABELS.items():
@@ -250,7 +255,6 @@ class ApplicationFilterSet(django_filters.FilterSet):
 
 
 class FilterSetFormHelper(FormHelper):
-
     def __init__(self, training_fields, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -279,5 +283,5 @@ class FilterSetFormHelper(FormHelper):
             filter_row(CNT_LEADER),
             filter_row(SAFETY_LEAD),
             filter_row(KITCHEN_LEAD),
-            filter_row(Submit('submit', 'Filter', css_class='btn-block'))
+            filter_row(Submit('submit', 'Filter', css_class='btn-block')),
         )

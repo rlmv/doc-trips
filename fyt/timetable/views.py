@@ -14,8 +14,8 @@ OPTIONS = {'format': 'MM/DD/YYYY HH:mm'}
 # 'MM/DD/YYYY hh:mm a'} won't work without changing
 # settings.DATETIME_INPUT_FORMATS
 
-class TimetableForm(ModelForm):
 
+class TimetableForm(ModelForm):
     class Meta:
         model = Timetable
         fields = '__all__'

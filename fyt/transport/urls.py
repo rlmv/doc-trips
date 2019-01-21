@@ -9,25 +9,28 @@ transportconfig_urlpatterns = [
 ]
 
 internalbus_urlpatterns = [
-    url(DB_REGEX['LIST'], InternalBusMatrix.as_view(),
-        name='index'),
-    url(r'^by-date/$', InternalTransportByDate.as_view(),
-        name='by_date'),
-    url(DB_REGEX['CREATE'], InternalBusCreateView.as_view(),
-        name='create'),
-    url(DB_REGEX['UPDATE'], InternalBusUpdateView.as_view(),
-        name='update'),
-    url(DB_REGEX['DELETE'], InternalBusDeleteView.as_view(),
-        name='delete'),
-    url(r'^ordering/(?P<bus_pk>[0-9]+)/$', OrderStops.as_view(),
-        name='order'),
-    url(r'^(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
-        TransportChecklist.as_view(), name='checklist'),
+    url(DB_REGEX['LIST'], InternalBusMatrix.as_view(), name='index'),
+    url(r'^by-date/$', InternalTransportByDate.as_view(), name='by_date'),
+    url(DB_REGEX['CREATE'], InternalBusCreateView.as_view(), name='create'),
+    url(DB_REGEX['UPDATE'], InternalBusUpdateView.as_view(), name='update'),
+    url(DB_REGEX['DELETE'], InternalBusDeleteView.as_view(), name='delete'),
+    url(r'^ordering/(?P<bus_pk>[0-9]+)/$', OrderStops.as_view(), name='order'),
+    url(
+        r'^(?P<route_pk>[0-9]+)/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
+        TransportChecklist.as_view(),
+        name='checklist',
+    ),
     url(r'^packet/$', InternalBusPacket.as_view(), name='packet'),
-    url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
-        InternalBusPacketForDate.as_view(), name='packet_for_date'),
-    url(r'^packet/for/premier/$',
-        InternalBusPacketForBusCompany.as_view(), name='packet_for_bus_company')
+    url(
+        r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
+        InternalBusPacketForDate.as_view(),
+        name='packet_for_date',
+    ),
+    url(
+        r'^packet/for/premier/$',
+        InternalBusPacketForBusCompany.as_view(),
+        name='packet_for_bus_company',
+    ),
 ]
 
 externalbus_urlpatterns = [
@@ -35,13 +38,21 @@ externalbus_urlpatterns = [
     url(DB_REGEX['CREATE'], ExternalBusCreate.as_view(), name='create'),
     url(DB_REGEX['DELETE'], ExternalBusDelete.as_view(), name='delete'),
     url(r'^packet/$', ExternalBusPacket.as_view(), name='packet'),
-    url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
-        ExternalBusPacketForDate.as_view(), name='packet_for_date'),
-    url(r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/(?P<route_pk>[0-9]+)$',
+    url(
+        r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/$',
+        ExternalBusPacketForDate.as_view(),
+        name='packet_for_date',
+    ),
+    url(
+        r'^packet/for/(?P<date>[0-9]+-[0-9]+-[0-9]+)/(?P<route_pk>[0-9]+)$',
         ExternalBusPacketForDateAndRoute.as_view(),
-        name='packet_for_date_and_route'),
-    url(r'^(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
-        ExternalBusChecklist.as_view(), name='checklist'),
+        name='packet_for_date_and_route',
+    ),
+    url(
+        r'^(?P<route_pk>[0-9]+)/(?P<section_pk>[0-9]+)/$',
+        ExternalBusChecklist.as_view(),
+        name='checklist',
+    ),
 ]
 
 stop_urlpatterns = [

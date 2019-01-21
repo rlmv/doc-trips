@@ -12,7 +12,6 @@ from fyt.utils.matrix import OrderedMatrix
 
 
 class OrderedMatrixTestCase(unittest.TestCase):
-
     def test_truncate_matrix(self):
         rows = [0, 1]
         cols = [0, 1]
@@ -25,7 +24,7 @@ class OrderedMatrixTestCase(unittest.TestCase):
         cols = [0, 1]
         m = OrderedMatrix(rows, cols, default=0)
         n = m.map(lambda x: x + 1)
-        self.assertTrue(n[0][0]==n[0][1]==n[1][0]==n[1][1]==1)
+        self.assertTrue(n[0][0] == n[0][1] == n[1][0] == n[1][1] == 1)
 
     def test_map_creates_new_instance(self):
         rows = [0, 1]
@@ -36,7 +35,6 @@ class OrderedMatrixTestCase(unittest.TestCase):
 
 
 class FmtUtilsTest(FytTestCase):
-
     def test_section_range(self):
         mommy.make(Section, name="A")
         mommy.make(Section, name="B")
@@ -59,7 +57,6 @@ class FmtUtilsTest(FytTestCase):
 
 
 class LatLngRegex(unittest.TestCase):
-
     def test_lat_lng(self):
         tests = [
             ('13.0,153.5', '13.0,153.5'),
@@ -84,16 +81,14 @@ class LatLngRegex(unittest.TestCase):
 
 
 class UrlencodeTagTestCase(FytTestCase):
-
     def test_tag(self):
         out = Template(
             """
             {% load urlencode %}
             {% urlencode param1=value1 param2="test this" %}
             """
-        ).render(Context({
-            'value1': 1
-        }))
-        self.assertIn(out.strip(), [
-            'param1=1&amp;param2=test+this', 'param2=test+this&amp;param1=1'
-        ])
+        ).render(Context({'value1': 1}))
+        self.assertIn(
+            out.strip(),
+            ['param1=1&amp;param2=test+this', 'param2=test+this&amp;param1=1'],
+        )

@@ -7,18 +7,10 @@ from fyt.utils.templatetags.icons import ok_if_true
 
 class _ApplicationTable(tables.Table):
 
-    applicant = tables.Column(
-        verbose_name='Applications'
-    )
-    netid = tables.Column(
-        verbose_name='NetId', accessor='applicant.netid'
-    )
-    status = tables.Column(
-        verbose_name='Status'
-    )
-    gender = tables.Column(
-        verbose_name='Gender'
-    )
+    applicant = tables.Column(verbose_name='Applications')
+    netid = tables.Column(verbose_name='NetId', accessor='applicant.netid')
+    status = tables.Column(verbose_name='Status')
+    gender = tables.Column(verbose_name='Gender')
     avg_leader_score = tables.Column(
         verbose_name='Leader Score', order_by='-norm_avg_leader_score'
     )
@@ -27,17 +19,15 @@ class _ApplicationTable(tables.Table):
     )
     leader_application = tables.Column(
         verbose_name='Leader app',
-        accessor='leader_application_complete', orderable=False
+        accessor='leader_application_complete',
+        orderable=False,
     )
     croo_application = tables.Column(
-        verbose_name='Croo app',
-        accessor='croo_application_complete', orderable=False
+        verbose_name='Croo app', accessor='croo_application_complete', orderable=False
     )
 
     class Meta:
-        attrs = {
-            "class": "table table-condensed"  # bootstrap class
-        }
+        attrs = {"class": "table table-condensed"}  # bootstrap class
 
     def render_applicant(self, record):
         return detail_link(record)

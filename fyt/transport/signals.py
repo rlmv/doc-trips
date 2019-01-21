@@ -15,18 +15,14 @@ from fyt.trips.models import Section, Trip, TripTemplate
 
 def create_dropoff(bus, trip):
     return StopOrder.objects.create(
-        trips_year=bus.trips_year,
-        bus=bus,
-        trip=trip,
-        stop_type=StopOrder.DROPOFF)
+        trips_year=bus.trips_year, bus=bus, trip=trip, stop_type=StopOrder.DROPOFF
+    )
 
 
 def create_pickup(bus, trip):
     return StopOrder.objects.create(
-        trips_year=bus.trips_year,
-        bus=bus,
-        trip=trip,
-        stop_type=StopOrder.PICKUP)
+        trips_year=bus.trips_year, bus=bus, trip=trip, stop_type=StopOrder.PICKUP
+    )
 
 
 def mark_dirty(bus):
@@ -97,12 +93,12 @@ def update_ordering_for_stop_changes(instance, created, **kwargs):
 
         # TODO: move these to manager methods?
         affected_dropoffs = Trip.objects.filter(
-            template__dropoff_stop=instance,
-            dropoff_route=None)
+            template__dropoff_stop=instance, dropoff_route=None
+        )
 
         affected_pickups = Trip.objects.filter(
-            template__pickup_stop=instance,
-            pickup_route=None)
+            template__pickup_stop=instance, pickup_route=None
+        )
 
         for trip in affected_dropoffs:
             resolve_dropoff(trip)
@@ -120,17 +116,20 @@ def mark_buses_dirty_for_address_changes(instance, created, **kwargs):
     If the address of the Lodge or Hanover stop changes, then all buses
     directions and times need to be updatedg.
     """
-    if (not created and (instance.tracker.has_changed('address') or
-                         instance.tracker.has_changed('lat_lng'))):
+    if not created and (
+        instance.tracker.has_changed('address')
+        or instance.tracker.has_changed('lat_lng')
+    ):
         # TODO: can the Lodge/Hanover check be done without a db query?
-        if (instance == Hanover(instance.trips_year) or
-                instance == Lodge(instance.trips_year)):
-            affected_buses = InternalBus.objects.filter(
-                trips_year=instance.trips_year)
+        if instance == Hanover(instance.trips_year) or instance == Lodge(
+            instance.trips_year
+        ):
+            affected_buses = InternalBus.objects.filter(trips_year=instance.trips_year)
         else:
             affected_buses = InternalBus.objects.filter(
-                Q(stoporder__trip__template__dropoff_stop=instance) |
-                Q(stoporder__trip__template__pickup_stop=instance))
+                Q(stoporder__trip__template__dropoff_stop=instance)
+                | Q(stoporder__trip__template__pickup_stop=instance)
+            )
 
         # TODO: iterate and save if we use a signal to generate directions
         # based on the dirty flag, since `update` does not emit a signal.
@@ -176,9 +175,10 @@ def update_all_buses_for_hanover_and_lodge_changes(instance, created, **kwargs):
     """
     If the Hanover or Lodge stop are changed, all buses need to be updated.
     """
-    if (not created and instance.tracker.has_changed('hanover')
-            or instance.tracker.has_changed('lodge')):
+    if (
+        not created
+        and instance.tracker.has_changed('hanover')
+        or instance.tracker.has_changed('lodge')
+    ):
 
-        InternalBus.objects.filter(
-            trips_year=instance.trips_year
-        ).update(dirty=True)
+        InternalBus.objects.filter(trips_year=instance.trips_year).update(dirty=True)

@@ -26,13 +26,14 @@ urlpatterns = [
     url(r'^training/', include(('fyt.training.urls', 'training'))),
     url(r'^users/', include(('fyt.users.urls', 'users'))),
     url(r'^volunteers/', include(('fyt.applications.urls', 'applications'))),
-    url(r'^robots\.txt$', TemplateView.as_view(
-        template_name='robots.txt', content_type='text/plain'))
+    url(
+        r'^robots\.txt$',
+        TemplateView.as_view(template_name='robots.txt', content_type='text/plain'),
+    ),
 ]
 
 # Install django-debug-toolbar
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+
+    urlpatterns = [url(r'^__debug__/', include(debug_toolbar.urls))] + urlpatterns

@@ -42,9 +42,7 @@ class GearRequestList(DatabaseListView):
     model = GearRequest
 
     def extra_context(self):
-        return {
-            'matrix': GearRequest.objects.matrix(self.trips_year)
-        }
+        return {'matrix': GearRequest.objects.matrix(self.trips_year)}
 
 
 class GearRequestUpdateProvided(DatabaseUpdateView):
@@ -56,8 +54,7 @@ class GearRequestUpdateProvided(DatabaseUpdateView):
     def get_success_url(self):
         if 'next' in self.request.GET:
             return self.request.GET['next']
-        return reverse('core:gearrequest:list',
-                       kwargs={'trips_year': self.trips_year})
+        return reverse('core:gearrequest:list', kwargs={'trips_year': self.trips_year})
 
 
 class RequestGear(LoginRequiredMixin, BaseCreateView):
@@ -78,5 +75,5 @@ class RequestGear(LoginRequiredMixin, BaseCreateView):
     def get_context_data(self, form=None):
         requester = form.instance.requester
         return super().get_context_data(
-            form=form,
-            trip=requester.trip_assignment if requester else None)
+            form=form, trip=requester.trip_assignment if requester else None
+        )

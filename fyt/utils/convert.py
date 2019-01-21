@@ -1,4 +1,3 @@
-
 import logging
 
 import bleach
@@ -10,11 +9,21 @@ logger = logging.getLogger(__name__)
 
 
 BLEACH_WHITELIST = {
-    'tags': ['p', 'strong', 'br', 'table', 'td', 'tr',
-             'em', 'ol', 'ul', 'li', 'a', 'sup'],
-    'attributes': {
-        'a': ['href'],
-    },
+    'tags': [
+        'p',
+        'strong',
+        'br',
+        'table',
+        'td',
+        'tr',
+        'em',
+        'ol',
+        'ul',
+        'li',
+        'a',
+        'sup',
+    ],
+    'attributes': {'a': ['href']},
     'styles': [],
 }
 

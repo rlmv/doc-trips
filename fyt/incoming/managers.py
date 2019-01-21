@@ -12,7 +12,6 @@ def get_netids(incoming_students):
 
 
 class IncomingStudentManager(models.Manager):
-
     def unregistered(self, trips_year):
         return self.filter(trips_year=trips_year, registration__isnull=True)
 
@@ -35,14 +34,19 @@ class IncomingStudentManager(models.Manager):
 
         return (
             qs.filter(trips_year=trip.trips_year)
-              .filter(
+            .filter(
                 registration__registrationsectionchoice__section=section,
                 registration__registrationsectionchoice__preference__in=(
-                    [PREFER, AVAILABLE]))
-              .filter(
+                    [PREFER, AVAILABLE]
+                ),
+            )
+            .filter(
                 registration__registrationtriptypechoice__triptype=triptype,
                 registration__registrationtriptypechoice__preference__in=(
-                    [FIRST_CHOICE, PREFER, AVAILABLE])))
+                    [FIRST_CHOICE, PREFER, AVAILABLE]
+                ),
+            )
+        )
 
     def create_from_sheet(self, sheet, trips_year):
         """
@@ -79,10 +83,12 @@ class IncomingStudentManager(models.Manager):
                         'address': "{}\n{}\n{}, {} {}\n{}".format(
                             row['PR Street 1'],
                             row['PR Street 2'],
-                            row['PR City'], row['PR State'], row['PR Zip'],
-                            row['PR Nation Name']
-                        )
-                    }
+                            row['PR City'],
+                            row['PR State'],
+                            row['PR Zip'],
+                            row['PR Nation Name'],
+                        ),
+                    },
                 )
 
                 if created:
@@ -124,11 +130,11 @@ class IncomingStudentManager(models.Manager):
         Base queryset for passengers_to/from_hanover.
         """
         from fyt.transport.models import Route
+
         assert route.category == Route.EXTERNAL
 
         return self.filter(
-            trips_year=trips_year,
-            trip_assignment__section=section
+            trips_year=trips_year, trip_assignment__section=section
         ).select_related(
             'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
@@ -140,11 +146,11 @@ class IncomingStudentManager(models.Manager):
         Return all trippees assigned to ride on external
         bus route on section TO Hanover
         """
-        qs = self._passengers_base_qs(
-            trips_year, route, section
-        ).filter(
-            (Q(bus_assignment_round_trip__route=route) |
-             Q(bus_assignment_to_hanover__route=route)),
+        qs = self._passengers_base_qs(trips_year, route, section).filter(
+            (
+                Q(bus_assignment_round_trip__route=route)
+                | Q(bus_assignment_to_hanover__route=route)
+            )
         )
         return sorted(qs, key=lambda x: x.get_bus_to_hanover().distance)
 
@@ -153,11 +159,11 @@ class IncomingStudentManager(models.Manager):
         Return all trippees assigned to ride on external
         bus route on section FROM Hanover
         """
-        qs = self._passengers_base_qs(
-            trips_year, route, section
-        ).filter(
-            (Q(bus_assignment_round_trip__route=route) |
-             Q(bus_assignment_from_hanover__route=route)),
+        qs = self._passengers_base_qs(trips_year, route, section).filter(
+            (
+                Q(bus_assignment_round_trip__route=route)
+                | Q(bus_assignment_from_hanover__route=route)
+            )
         )
         return sorted(qs, key=lambda x: x.get_bus_from_hanover().distance)
 
@@ -165,21 +171,16 @@ class IncomingStudentManager(models.Manager):
         """
         All trippees who have a trip assignment
         """
-        return self.filter(
-            trips_year=trips_year, trip_assignment__isnull=False
-        )
+        return self.filter(trips_year=trips_year, trip_assignment__isnull=False)
 
     def cancelled(self, trips_year):
         """
         All trippees who cancelled their trip
         """
-        return self.filter(
-            trips_year=trips_year, cancelled=True
-        )
+        return self.filter(trips_year=trips_year, cancelled=True)
 
 
 class RegistrationManager(models.Manager):
-
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.select_related('user')
@@ -188,9 +189,7 @@ class RegistrationManager(models.Manager):
         """
         All registrations for trips_year requesting financial aid.
         """
-        return self.filter(
-            trips_year=trips_year, financial_assistance=True
-        )
+        return self.filter(trips_year=trips_year, financial_assistance=True)
 
     def want_bus(self, trips_year):
         """
@@ -199,7 +198,7 @@ class RegistrationManager(models.Manager):
         return self.filter(trips_year=trips_year).exclude(
             bus_stop_round_trip=None,
             bus_stop_to_hanover=None,
-            bus_stop_from_hanover=None
+            bus_stop_from_hanover=None,
         )
 
     def unmatched(self, trips_year):

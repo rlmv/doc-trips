@@ -9,7 +9,6 @@ from fyt.timetable.models import Timetable
 
 
 class TimetableTestCase(FytTestCase):
-
     def test_application_grace_period(self):
         now = timezone.now()
         timetable = mommy.make(Timetable)

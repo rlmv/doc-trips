@@ -7,7 +7,6 @@ from fyt.users.models import MAX_NETID_LENGTH, DartmouthUser
 
 
 class UserManagerTestCase(FytTestCase):
-
     @vcr.use_cassette
     def test_create_user(self):
         netid = 'd123456z'
@@ -47,7 +46,6 @@ class UserManagerTestCase(FytTestCase):
 
 
 class NetIdFieldTestCase(FytTestCase):
-
     def test_lowercase_conversion(self):
         netid = 'D34898Z'
         user = mommy.make(DartmouthUser, netid=netid)
@@ -60,10 +58,8 @@ class NetIdFieldTestCase(FytTestCase):
 
 
 class UserEmailMiddlewareTestCase(FytTestCase):
-
     def setUp(self):
-        self.user = DartmouthUser.objects.create(
-            netid='d34898z', name='test', email='')
+        self.user = DartmouthUser.objects.create(netid='d34898z', name='test', email='')
         self.update_url = reverse('users:update_email')
 
     def test_user_with_no_email_must_manually_add_email(self):
@@ -92,7 +88,6 @@ class UserEmailMiddlewareTestCase(FytTestCase):
 
 
 class UserUrlsTestCase(FytTestCase):
-
     def test_unauthorized_user_is_redirected_to_login(self):
         target_url = reverse('applications:portal')
         resp = self.app.get(target_url, status=302)

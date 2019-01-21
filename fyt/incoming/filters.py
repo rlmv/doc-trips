@@ -41,14 +41,16 @@ class ExternalBusRequestFilter(django_filters.ChoiceFilter):
         # Return all registrations which request *some* bus
         if value == ANY:
             return qs.exclude(
-                Q(bus_stop_round_trip=None) &
-                Q(bus_stop_to_hanover=None) &
-                Q(bus_stop_from_hanover=None))
+                Q(bus_stop_round_trip=None)
+                & Q(bus_stop_to_hanover=None)
+                & Q(bus_stop_from_hanover=None)
+            )
 
         return qs.filter(
-            Q(bus_stop_round_trip=value) |
-            Q(bus_stop_to_hanover=value) |
-            Q(bus_stop_from_hanover=value))
+            Q(bus_stop_round_trip=value)
+            | Q(bus_stop_to_hanover=value)
+            | Q(bus_stop_from_hanover=value)
+        )
 
 
 class AthleteFilter(django_filters.ChoiceFilter):
@@ -90,7 +92,6 @@ class SelectBooleanFilter(django_filters.BooleanFilter):
 
 
 class RegistrationFilterSet(django_filters.FilterSet):
-
     class Meta:
         model = Registration
         fields = []
@@ -102,23 +103,25 @@ class RegistrationFilterSet(django_filters.FilterSet):
         self.filters[EXCHANGE] = SelectBooleanFilter(EXCHANGE, label='Exchange')
         self.filters[TRANSFER] = SelectBooleanFilter(TRANSFER, label='Transfer')
         self.filters[INTERNATIONAL] = SelectBooleanFilter(
-            INTERNATIONAL, label='International')
+            INTERNATIONAL, label='International'
+        )
         self.filters[NATIVE] = SelectBooleanFilter(NATIVE, label='Native')
         self.filters[FYSEP] = SelectBooleanFilter(FYSEP, label='FYSEP')
 
         self.filters[BUS] = ExternalBusRequestFilter(
-            trips_year, label='External Bus Request')
+            trips_year, label='External Bus Request'
+        )
 
         self.filters[ATHLETE] = AthleteFilter(ATHLETE, label='Athletes')
 
         self.filters[FINANCIAL_ASSISTANCE] = SelectBooleanFilter(
-            FINANCIAL_ASSISTANCE, label='Requesting Financial Aid')
+            FINANCIAL_ASSISTANCE, label='Requesting Financial Aid'
+        )
 
         self.form.helper = FilterSetFormHelper(self.form)
 
 
 class FilterSetFormHelper(FormHelper):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -135,5 +138,5 @@ class FilterSetFormHelper(FormHelper):
             filter_row(FINANCIAL_ASSISTANCE),
             filter_row(ATHLETE),
             filter_row(BUS),
-            filter_row(Submit('submit', 'Filter', css_class='btn-block'))
+            filter_row(Submit('submit', 'Filter', css_class='btn-block')),
         )

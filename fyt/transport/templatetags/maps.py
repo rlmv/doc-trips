@@ -17,14 +17,14 @@ def embed_map(stops):
     """
     orig, waypoints, dest = _split_stops(stops)
 
-    return loader.get_template(
-        'transport/maps/embed.html'
-    ).render({
-        'orig': orig,
-        'waypoints': waypoints,
-        'dest': dest,
-        'key': settings.GOOGLE_MAPS_BROWSER_KEY
-    })
+    return loader.get_template('transport/maps/embed.html').render(
+        {
+            'orig': orig,
+            'waypoints': waypoints,
+            'dest': dest,
+            'key': settings.GOOGLE_MAPS_BROWSER_KEY,
+        }
+    )
 
 
 @register.inclusion_tag('transport/maps/directions.html')
@@ -36,7 +36,7 @@ def directions(bus):
         return {
             # TODO: refactor to use bus.directions()
             'directions': bus.update_stop_times(),
-            'stop_template': 'transport/maps/_internal_stop.html'
+            'stop_template': 'transport/maps/_internal_stop.html',
         }
     except MapError as exc:
         return {'error': exc}
@@ -50,7 +50,7 @@ def directions_to_hanover(bus):
     try:
         return {
             'directions': bus.directions_to_hanover(),
-            'stop_template': 'transport/maps/_external_stop.html'
+            'stop_template': 'transport/maps/_external_stop.html',
         }
     except MapError as exc:
         return {'error': exc}
@@ -78,7 +78,6 @@ def trips_with_counts(trips):
     return {'trips': trips}
 
 
-
 def _decdeg2dms(dd):
     """
     Convert decimal degrees to degrees-minutes-secondes.
@@ -101,7 +100,8 @@ def _fmt_side(dec, direction_chars):
         direction = direction_chars[1]
 
     return """{:.0f}\u00B0{:02.0f}'{:04.1f}"{}""".format(
-        degrees, minutes, seconds, direction)
+        degrees, minutes, seconds, direction
+    )
 
 
 @register.filter
@@ -113,6 +113,4 @@ def lat_lng_dms(lat_lng):
     lat = float(lat.strip())
     lng = float(lng.strip())
 
-    return '{} {}'.format(
-        _fmt_side(lat, ['S', 'N']),
-        _fmt_side(lng, ['W', 'E']))
+    return '{} {}'.format(_fmt_side(lat, ['S', 'N']), _fmt_side(lng, ['W', 'E']))

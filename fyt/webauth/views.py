@@ -1,4 +1,3 @@
-
 from urllib.parse import urlencode, urljoin
 
 from django.conf import settings
@@ -50,7 +49,7 @@ def _redirect_url(request):
             next = request.META.get('HTTP_REFERER', settings.CAS_REDIRECT_URL)
 
         if next.startswith(host_url(request)):
-            next = next[len(host_url(request)):]
+            next = next[len(host_url(request)) :]
     return next
 
 
@@ -89,16 +88,14 @@ def login(request, next_page=None):
     try:
         user = auth.authenticate(ticket=ticket, service=service)
     except EmailLookupException as e:
-        return render(
-            request, 'webauth/email_lookup_error.html', {'exception': e})
+        return render(request, 'webauth/email_lookup_error.html', {'exception': e})
 
     if user is not None:
         # Has ticket, logs in fine
         auth.login(request, user)
         return HttpResponseRedirect(next_page)
     else:
-        error = ('<h1>Forbidden</h1>'
-                 '<p>Login failed. Please try logging in again.</p>')
+        error = '<h1>Forbidden</h1>' '<p>Login failed. Please try logging in again.</p>'
         return HttpResponseForbidden(error)
 
 
@@ -106,6 +103,7 @@ def logout(request, next_page=None):
     """Redirects to CAS logout page"""
 
     from django.contrib.auth import logout
+
     logout(request)
 
     if not next_page:

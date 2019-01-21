@@ -39,8 +39,9 @@ def fmt_float(value):
     return '{:.1f}'.format(value)
 
 
-class GenericReportView(DatabaseReadPermissionRequired,
-                        TripsYearMixin, AllVerbsMixin, View):
+class GenericReportView(
+    DatabaseReadPermissionRequired, TripsYearMixin, AllVerbsMixin, View
+):
     # TODO use a ListView here?
 
     file_prefix = None
@@ -62,8 +63,8 @@ class GenericReportView(DatabaseReadPermissionRequired,
 
     def all(self, request, *args, **kwargs):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = (
-            'attachment; filename="{}"'.format(self.get_filename())
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(
+            self.get_filename()
         )
         qs = self.get_queryset()
         writer = csv.writer(response)
@@ -93,65 +94,61 @@ class VolunteerCSV(GenericReportView):
     ]
 
     def get_header(self):
-        score_count_max = Application.objects.leader_or_croo_applications(
-            self.trips_year
-        ).annotate(
-            Count('scores')
-        ).aggregate(
-            Max('scores__count')
-        )['scores__count__max']
+        score_count_max = (
+            Application.objects.leader_or_croo_applications(self.trips_year)
+            .annotate(Count('scores'))
+            .aggregate(Max('scores__count'))['scores__count__max']
+        )
 
-        return self.header + [
-            'leader score {}'.format(i) for i in range(1, score_count_max + 1)
-        ] + [
-            'croo score {}'.format(i) for i in range(1, score_count_max + 1)
-        ]
+        return (
+            self.header
+            + ['leader score {}'.format(i) for i in range(1, score_count_max + 1)]
+            + ['croo score {}'.format(i) for i in range(1, score_count_max + 1)]
+        )
 
     def get_queryset(self):
-        return Application.objects.leader_or_croo_applications(
-            self.trips_year
-        ).with_avg_scores().prefetch_related(
-            'scores',
-            'answer_set',
-            'scores__leader_score',
-            'scores__croo_score',
-        ).with_required_questions(self.trips_year)
+        return (
+            Application.objects.leader_or_croo_applications(self.trips_year)
+            .with_avg_scores()
+            .prefetch_related(
+                'scores', 'answer_set', 'scores__leader_score', 'scores__croo_score'
+            )
+            .with_required_questions(self.trips_year)
+        )
 
     def get_row(self, application):
         user = application.applicant
-        return [
-            user.name,
-            user.netid,
-            fmt_float(application.avg_leader_score),
-            fmt_float(application.avg_croo_score),
-            application.status,
-            yes_no(application.leader_application_complete),
-            yes_no(application.croo_application_complete),
-            application.class_year,
-            application.gender,
-            application.race_ethnicity,
-            application.hometown,
-            application.personal_activities,
-            application.leader_supplement.co_leader,
-        ] + [
-            score.leader_score for score in application.scores.all()
-        ] + [
-            score.croo_score for score in application.scores.all()
-        ]
+        return (
+            [
+                user.name,
+                user.netid,
+                fmt_float(application.avg_leader_score),
+                fmt_float(application.avg_croo_score),
+                application.status,
+                yes_no(application.leader_application_complete),
+                yes_no(application.croo_application_complete),
+                application.class_year,
+                application.gender,
+                application.race_ethnicity,
+                application.hometown,
+                application.personal_activities,
+                application.leader_supplement.co_leader,
+            ]
+            + [score.leader_score for score in application.scores.all()]
+            + [score.croo_score for score in application.scores.all()]
+        )
 
 
 class TripLeadersCSV(GenericReportView):
     file_prefix = 'Leaders'
 
     def get_queryset(self):
-        return Application.objects.leaders(
-            self.trips_year
-        ).select_related(
-            'trip_assignment__section',
-            'trip_assignment__template'
+        return Application.objects.leaders(self.trips_year).select_related(
+            'trip_assignment__section', 'trip_assignment__template'
         )
 
     header = ['name', 'netid', 'email', 'trip', 'section', 'gear requests']
+
     def get_row(self, leader):
         trip = leader.trip_assignment
         return [
@@ -160,7 +157,8 @@ class TripLeadersCSV(GenericReportView):
             leader.applicant.email,
             trip,
             trip.section.name if trip else '',
-            leader.gear]
+            leader.gear,
+        ]
 
 
 class CrooMembersCSV(TripLeadersCSV):
@@ -170,11 +168,12 @@ class CrooMembersCSV(TripLeadersCSV):
         return Application.objects.croo_members(self.trips_year)
 
     header = ['name', 'netid', 'croo']
+
     def get_row(self, croo_member):
         return [
             croo_member.name,
             croo_member.applicant.netid,
-            croo_member.croo_assignment
+            croo_member.croo_assignment,
         ]
 
 
@@ -200,16 +199,12 @@ class ExternalBusRequestsCSV(GenericReportView):
         'netid',
         'requested bus round trip',
         'requested bus to hanover',
-        'requested bus from hanover'
+        'requested bus from hanover',
     ]
 
     def get_queryset(self):
-        return Registration.objects.want_bus(
-            self.trips_year
-        ).select_related(
-            'bus_stop_round_trip',
-            'bus_stop_to_hanover',
-            'bus_stop_from_hanover'
+        return Registration.objects.want_bus(self.trips_year).select_related(
+            'bus_stop_round_trip', 'bus_stop_to_hanover', 'bus_stop_from_hanover'
         )
 
     def get_row(self, reg):
@@ -220,7 +215,7 @@ class ExternalBusRequestsCSV(GenericReportView):
             user.netid,
             reg.bus_stop_round_trip or '',
             reg.bus_stop_to_hanover or '',
-            reg.bus_stop_from_hanover or ''
+            reg.bus_stop_from_hanover or '',
         ]
 
 
@@ -230,7 +225,8 @@ class ExternalBusRidersCSV(GenericReportView):
     def get_filename(self):
         bus = self.get_bus()
         return "External-Bus-Riders-Section-{}-{}.csv".format(
-            bus.section.name, bus.route.name)
+            bus.section.name, bus.route.name
+        )
 
     def get_bus(self):
         return ExternalBus.objects.get(pk=self.kwargs['bus_pk'])
@@ -238,15 +234,7 @@ class ExternalBusRidersCSV(GenericReportView):
     def get_queryset(self):
         return self.get_bus().all_passengers().select_related('registration')
 
-    header = [
-        'name',
-        'netid',
-        'phone',
-        'email',
-        'blitz',
-        'to hanover',
-        'from hanover',
-    ]
+    header = ['name', 'netid', 'phone', 'email', 'blitz', 'to hanover', 'from hanover']
 
     def get_row(self, incoming):
         return [
@@ -256,7 +244,7 @@ class ExternalBusRidersCSV(GenericReportView):
             incoming.get_email(),
             incoming.blitz,
             yes_if_true(incoming.get_bus_to_hanover()),
-            yes_if_true(incoming.get_bus_from_hanover())
+            yes_if_true(incoming.get_bus_from_hanover()),
         ]
 
 
@@ -264,12 +252,14 @@ class TrippeesCSV(GenericReportView):
     """
     All trippees going on trips
     """
+
     file_prefix = 'Trippees'
 
     def get_queryset(self):
         return IncomingStudent.objects.with_trip(self.trips_year)
 
     header = ['name', 'netid']
+
     def get_row(self, trippee):
         return [trippee.name, trippee.netid.upper()]
 
@@ -278,18 +268,23 @@ class Registrations(GenericReportView):
     """
     Information for all registered trippees.
     """
+
     file_prefix = 'Registrations'
 
     def get_queryset(self):
-        return Registration.objects.filter(
-            trips_year=self.trips_year
-        ).select_related(
-            'user',
-        ).prefetch_related(
-            Prefetch('registrationsectionchoice_set',
-                     queryset=RegistrationSectionChoice.objects.order_by('section')),
-            Prefetch('registrationtriptypechoice_set',
-                     queryset=RegistrationTripTypeChoice.objects.order_by('triptype'))
+        return (
+            Registration.objects.filter(trips_year=self.trips_year)
+            .select_related('user')
+            .prefetch_related(
+                Prefetch(
+                    'registrationsectionchoice_set',
+                    queryset=RegistrationSectionChoice.objects.order_by('section'),
+                ),
+                Prefetch(
+                    'registrationtriptypechoice_set',
+                    queryset=RegistrationTripTypeChoice.objects.order_by('triptype'),
+                ),
+            )
         )
 
     def get_header(self):
@@ -306,7 +301,8 @@ class Registrations(GenericReportView):
             'athlete?',
             'tshirt size',
             'height',
-            'weight']
+            'weight',
+        ]
         header += [str(s) for s in self.sections]
         header += [str(t) for t in self.triptypes]
         header += [
@@ -394,18 +390,19 @@ class Charges(GenericReportView):
 
     All values are adjusted by financial aid, if applicable
     """
+
     file_prefix = 'Charges'
 
     def get_queryset(self):
         return IncomingStudent.objects.filter(
-            (Q(trip_assignment__isnull=False) |
-             Q(cancelled=True) |
-             Q(registration__doc_membership=True) |
-             Q(registration__green_fund_donation__gt=0)),
+            (
+                Q(trip_assignment__isnull=False)
+                | Q(cancelled=True)
+                | Q(registration__doc_membership=True)
+                | Q(registration__green_fund_donation__gt=0)
+            ),
             trips_year=self.trips_year,
-        ).prefetch_related(
-            'registration'
-        )
+        ).prefetch_related('registration')
 
     header = [
         'name',
@@ -416,8 +413,9 @@ class Charges(GenericReportView):
         'bus',
         'doc membership',
         'green fund',
-        'cancellation'
+        'cancellation',
     ]
+
     def get_row(self, incoming):
         reg = incoming.get_registration()
         return [
@@ -441,6 +439,7 @@ class DocMembers(GenericReportView):
     """
     CSV file of registrations requesting DOC memberships.
     """
+
     file_prefix = 'DOC-Members'
 
     def get_queryset(self):
@@ -449,6 +448,7 @@ class DocMembers(GenericReportView):
         )
 
     header = ['name', 'netid', 'email']
+
     def get_row(self, reg):
         return [reg.user.name, reg.user.netid, reg.user.email]
 
@@ -467,34 +467,33 @@ def _tshirt_count(qs):
 
 
 def leader_tshirts(trips_year):
-    return _tshirt_count(Application.objects.filter(
-        trips_year=trips_year, status=Application.LEADER
-    ))
+    return _tshirt_count(
+        Application.objects.filter(trips_year=trips_year, status=Application.LEADER)
+    )
 
 
 def croo_tshirts(trips_year):
-    return _tshirt_count(Application.objects.filter(
-        trips_year=trips_year, status=Application.CROO
-    ))
+    return _tshirt_count(
+        Application.objects.filter(trips_year=trips_year, status=Application.CROO)
+    )
 
 
 def trippee_tshirts(trips_year):
-    return _tshirt_count(Registration.objects.filter(
-        trips_year=trips_year
-    ))
+    return _tshirt_count(Registration.objects.filter(trips_year=trips_year))
 
 
 class TShirts(DatabaseTemplateView):
     """
     Counts of all tshirt sizes requested by leaders, croos, and trippees.
     """
+
     template_name = "reports/tshirts.html"
 
     def extra_context(self):
         return {
             'leaders': leader_tshirts(self.trips_year),
             'croos': croo_tshirts(self.trips_year),
-            'trippees': trippee_tshirts(self.trips_year)
+            'trippees': trippee_tshirts(self.trips_year),
         }
 
 
@@ -503,17 +502,24 @@ class Housing(GenericReportView):
     file_prefix = 'Housing'
 
     def get_queryset(self):
-        return IncomingStudent.objects.filter(
-            trips_year=self.trips_year
-        ).prefetch_related(
-            'registration'
-        ).select_related(
-            'trip_assignment__template',
-            'trip_assignment__section'
+        return (
+            IncomingStudent.objects.filter(trips_year=self.trips_year)
+            .prefetch_related('registration')
+            .select_related('trip_assignment__template', 'trip_assignment__section')
         )
 
-    header = ['name', 'netid', 'trip', 'section', 'start date', 'end date',
-              'native', 'fysep', 'international']
+    header = [
+        'name',
+        'netid',
+        'trip',
+        'section',
+        'start date',
+        'end date',
+        'native',
+        'fysep',
+        'international',
+    ]
+
     def get_row(self, incoming):
         is_assigned = incoming.trip_assignment is not None
         reg = incoming.get_registration()
@@ -541,50 +547,40 @@ class GearRequests(GenericReportView):
         return self.matrix
 
     def get_header(self):
-        return [
-            'name',
-            'email',
-            'role'
-        ] + list(self.matrix.cols) + [
-            'additional'
-        ]
+        return ['name', 'email', 'role'] + list(self.matrix.cols) + ['additional']
 
     def get_row(self, gear_request):
-        return [
-            str(gear_request.requester),
-            gear_request.email,
-            gear_request.role
-        ] + [
-            yes_if_true(need) for need in self.matrix[gear_request].values()
-        ] + [
-            gear_request.additional
-        ]
+        return (
+            [str(gear_request.requester), gear_request.email, gear_request.role]
+            + [yes_if_true(need) for need in self.matrix[gear_request].values()]
+            + [gear_request.additional]
+        )
 
 
 class DietaryRestrictions(GenericReportView):
     """
     Dietary restrictions for Leaders, Croos, and Trippees.
     """
+
     file_prefix = 'Dietary-Restrictions'
 
     def get_queryset(self):
-        applications = Application.objects.filter(
-            trips_year=self.trips_year
-        ).filter(
-            Q(status=Application.LEADER) | Q(status=Application.CROO)
-        ).select_related(
-            'trip_assignment',
-            'trip_assignment__section',
-            'trip_assignment__template'
-        ).order_by(
-            'status'
+        applications = (
+            Application.objects.filter(trips_year=self.trips_year)
+            .filter(Q(status=Application.LEADER) | Q(status=Application.CROO))
+            .select_related(
+                'trip_assignment',
+                'trip_assignment__section',
+                'trip_assignment__template',
+            )
+            .order_by('status')
         )
         registrations = Registration.objects.filter(
             trips_year=self.trips_year
         ).select_related(
             'trippee__trip_assignment',
             'trippee__trip_assignment__section',
-            'trippee__trip_assignment__template'
+            'trippee__trip_assignment__template',
         )
         return itertools.chain(applications, registrations)
 
@@ -597,7 +593,8 @@ class DietaryRestrictions(GenericReportView):
         # The following have the same accesors on both models:
         'food allergies',
         'dietary restrictions',
-        'epipen']
+        'epipen',
+    ]
 
     def registration_base_fields(self, obj):
         """
@@ -609,7 +606,8 @@ class DietaryRestrictions(GenericReportView):
             trip.section.name if trip else '',
             trip.template.name if trip else '',
             'TRIPPEE',
-            obj.user.netid]
+            obj.user.netid,
+        ]
 
     def volunteer_base_fields(self, obj):
         """
@@ -621,16 +619,14 @@ class DietaryRestrictions(GenericReportView):
             trip.section.name if trip else '',
             trip.template.name if trip else '',
             obj.status,
-            obj.applicant.netid]
+            obj.applicant.netid,
+        ]
 
     def shared_fields(self, obj):
         """
         Fields shared between Volunteer and Registration models.
         """
-        return [
-            obj.food_allergies,
-            obj.dietary_restrictions,
-            obj.get_epipen_display()]
+        return [obj.food_allergies, obj.dietary_restrictions, obj.get_epipen_display()]
 
     def get_row(self, obj):
         if isinstance(obj, Registration):
@@ -643,6 +639,7 @@ class MedicalInfo(DietaryRestrictions):
     """
     All medical info for Trippees, Croos, and Leaders.
     """
+
     file_prefix = 'Medical-Info'
 
     header = [
@@ -655,7 +652,8 @@ class MedicalInfo(DietaryRestrictions):
         'food allergies',
         'dietary restrictions',
         'epipen',
-        'needs']
+        'needs',
+    ]
 
     def shared_fields(self, obj):
         return [
@@ -663,7 +661,8 @@ class MedicalInfo(DietaryRestrictions):
             obj.food_allergies,
             obj.dietary_restrictions,
             obj.get_epipen_display(),
-            obj.needs]
+            obj.needs,
+        ]
 
 
 class Feelings(GenericReportView):
@@ -674,6 +673,7 @@ class Feelings(GenericReportView):
         return Registration.objects.filter(trips_year=self.trips_year)
 
     header = ['']
+
     def get_row(self, reg):
         return [reg.final_request]
 
@@ -685,15 +685,8 @@ class Foodboxes(GenericReportView):
     def get_queryset(self):
         return Trip.objects.filter(trips_year=self.trips_year)
 
-    header = [
-        'trip',
-        'section',
-        'size',
-        'full box',
-        'half box',
-        'supplement',
-        'bagels'
-    ]
+    header = ['trip', 'section', 'size', 'full box', 'half box', 'supplement', 'bagels']
+
     def get_row(self, trip):
         return [
             trip,
@@ -702,7 +695,7 @@ class Foodboxes(GenericReportView):
             '1',
             '1' if trip.half_foodbox else '',
             '1' if trip.supp_foodbox else '',
-            trip.bagels
+            trip.bagels,
         ]
 
 
@@ -710,6 +703,7 @@ class Statistics(DatabaseTemplateView):
     """
     Basic statistics regarding trippees
     """
+
     template_name = 'reports/statistics.html'
 
     def extra_context(self):
@@ -720,10 +714,10 @@ class Statistics(DatabaseTemplateView):
             'transfer_count': qs.filter(incoming_status=IS.TRANSFER).count(),
             'exchange_count': qs.filter(incoming_status=IS.EXCHANGE).count(),
             'unlabeled': qs.filter(incoming_status='').count(),
-            'total': qs.count()
+            'total': qs.count(),
         }
 
         return {
             'with_trip': counts(IS.objects.with_trip(self.trips_year)),
-            'cancelled': counts(IS.objects.cancelled(self.trips_year))
+            'cancelled': counts(IS.objects.cancelled(self.trips_year)),
         }

@@ -60,17 +60,17 @@ class SessionDetail(DatabaseDetailView):
         ('number registered', 'size'),
         'registered',
         ('registered emails', 'registered_emails_str'),
-        'completed'
+        'completed',
     ]
 
     def extra_context(self):
         return {
             'update_attendance_url': reverse(
-                'core:session:update_attendance',
-                kwargs=self.object.obj_kwargs()),
+                'core:session:update_attendance', kwargs=self.object.obj_kwargs()
+            ),
             'update_registration_url': reverse(
-                'core:session:update_registration',
-                kwargs=self.object.obj_kwargs()),
+                'core:session:update_registration', kwargs=self.object.obj_kwargs()
+            ),
         }
 
 
@@ -92,8 +92,7 @@ class RecordAttendance(TrainingPermissionRequired, BaseUpdateView):
     delete_button = False
 
     def get_headline(self):
-        return mark_safe(
-            "Record Attendance <small>{}</small>".format(self.object))
+        return mark_safe("Record Attendance <small>{}</small>".format(self.object))
 
 
 class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):
@@ -102,24 +101,22 @@ class UpdateRegistration(TrainingPermissionRequired, BaseUpdateView):
     delete_button = False
 
     def get_headline(self):
-        return mark_safe(
-            "Update Registrations <small>{}</small>".format(self.object))
+        return mark_safe("Update Registrations <small>{}</small>".format(self.object))
 
 
 class RecordFirstAid(TrainingPermissionRequired, TripsYearMixin, ListView):
     """
     Batch update first aid certifications.
     """
+
     template_name = 'training/first_aid_certification_list.html'
     model = Volunteer
 
     def get_queryset(self):
-        return Attendee.objects.trainable(
-            self.trips_year
-        ).select_related(
-            'volunteer',
-        ).prefetch_related(
-            'volunteer__first_aid_certifications'
+        return (
+            Attendee.objects.trainable(self.trips_year)
+            .select_related('volunteer')
+            .prefetch_related('volunteer__first_aid_certifications')
         )
 
 
@@ -129,20 +126,20 @@ class AttendeeSessionsUpdate(TrainingPermissionRequired, BaseUpdateView):
     form_class = CompletedSessionsForm
 
     def get_headline(self):
-        return mark_safe(
-            'Update trainings <small>{}</small>'.format(self.object))
+        return mark_safe('Update trainings <small>{}</small>'.format(self.object))
 
 
-class VolunteerFirstAidUpdate(TrainingPermissionRequired, FormMessagesMixin,
-                              BaseUpdateView):
+class VolunteerFirstAidUpdate(
+    TrainingPermissionRequired, FormMessagesMixin, BaseUpdateView
+):
     model = Volunteer
     delete_button = False
     form_class = FirstAidVerificationFormset
 
     def get_headline(self):
         return mark_safe(
-            'Edit First Aid Certifications <small>{}</small>'.format(
-                self.object))
+            'Edit First Aid Certifications <small>{}</small>'.format(self.object)
+        )
 
     def get_success_url(self):
         if 'next' in self.request.GET:
@@ -155,8 +152,8 @@ class VolunteerFirstAidUpdate(TrainingPermissionRequired, FormMessagesMixin,
 
 # Volunteer-facing views
 
-class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
-             UpdateView):
+
+class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin, UpdateView):
 
     model = Attendee
     form_class = SignupForm
@@ -177,8 +174,8 @@ class Signup(LoginRequiredMixin, UserPassesTestMixin, FormMessagesMixin,
 
     def get_object(self):
         return Attendee.objects.get(
-            trips_year=self.trips_year,
-            volunteer__applicant=self.request.user)
+            trips_year=self.trips_year, volunteer__applicant=self.request.user
+        )
 
     @cached_property
     def trips_year(self):

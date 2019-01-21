@@ -22,7 +22,13 @@ from fyt.raids.models import RaidInfo
 from fyt.timetable.models import Timetable
 from fyt.training.models import Training
 from fyt.transport.models import Route, Stop, TransportConfig, Vehicle
-from fyt.trips.models import Campsite, Document, TripTemplate, TripType, TripTemplateDescription
+from fyt.trips.models import (
+    Campsite,
+    Document,
+    TripTemplate,
+    TripType,
+    TripTemplateDescription,
+)
 
 
 logger = logging.getLogger(__name__)

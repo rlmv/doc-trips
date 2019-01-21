@@ -16,10 +16,12 @@ def pass_null(func):
     If the first argument is False, return the
     argument. Otherwise call func.
     """
+
     def wrapper(obj, *args, **kwargs):
         if not obj:
             return obj
         return func(obj, *args, **kwargs)
+
     # used by django template parser to introspect args
     wrapper._decorated_function = getattr(func, '_decorated_function', func)
     return wraps(func)(wrapper)
@@ -29,6 +31,7 @@ def _make_link(url, text):
     """ Format a link. """
     html = '<a href="{}">{}</a>'.format(url, text)
     return mark_safe(html)
+
 
 make_link = _make_link
 
@@ -66,14 +69,16 @@ def detail_link(db_obj, text=None):
     The object can also be an iterable of objects; if so, the tag returns a
     comma separated list of links.
     """
+
     def build_link(obj):
         name = str(obj) if text is None else text
-        return  _make_link(obj.detail_url(), name)
+        return _make_link(obj.detail_url(), name)
 
     return mark_safe(', '.join(map(build_link, as_list(db_obj))))
 
 
 # Lifted from googlemaps.convert
+
 
 def as_list(arg):
     """
@@ -91,11 +96,13 @@ def _is_list(arg):
     """
     if isinstance(arg, dict):
         return False
-    if isinstance(arg, str): # Python 3-only, as str has __iter__
+    if isinstance(arg, str):  # Python 3-only, as str has __iter__
         return False
-    return (not _has_method(arg, "strip")
-            and _has_method(arg, "__getitem__")
-            or _has_method(arg, "__iter__"))
+    return (
+        not _has_method(arg, "strip")
+        and _has_method(arg, "__getitem__")
+        or _has_method(arg, "__iter__")
+    )
 
 
 def _has_method(arg, method):

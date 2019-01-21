@@ -11,6 +11,7 @@ class DartmouthUserManager(BaseUserManager):
     """
     Object manager for DartmouthUser
     """
+
     def get_or_create_by_netid(self, netid, name):
         """
         Return the user with netid.
@@ -41,8 +42,9 @@ class DartmouthUserManager(BaseUserManager):
         return self.create(netid=netid, email=email, name=name)
 
     def create_superuser(self, **kwargs):
-        raise Exception("create_superuser not implemented. "
-                        "Use 'manage.py setsuperuser' instead.")
+        raise Exception(
+            "create_superuser not implemented. " "Use 'manage.py setsuperuser' instead."
+        )
 
     def create_user_without_netid(self, name, email):
         """
@@ -63,6 +65,7 @@ class NetIdField(models.CharField):
     """
     Saves NetIds as lowercase for easy comparison.
     """
+
     description = "A field to hold a Dartmouth WebAuth Netid"
 
     def __init__(self, *args, **kwargs):

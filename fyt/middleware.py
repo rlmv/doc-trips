@@ -11,13 +11,12 @@ def CanonicalHostMiddleware(get_response):
     """
     Redirect requests to the doc-trips.herokuapp.com url to doctrips.org.
     """
+
     def middleware(request):
 
         if request.get_host() == settings.HEROKU_HOST:
             url = '{}://{}{}'.format(
-                request.scheme,
-                settings.CANONICAL_HOST,
-                request.get_full_path()
+                request.scheme, settings.CANONICAL_HOST, request.get_full_path()
             )
             return redirect(url, permanent=True)
 
@@ -30,6 +29,7 @@ def UserLoggerMiddleware(get_response):
     """
     Log the user and IP address to facilitate Papertrail debugging.
     """
+
     def middleware(request):
 
         if settings.PRODUCTION:

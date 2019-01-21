@@ -28,27 +28,24 @@ class VolunteerPortalView(LoginRequiredMixin, TemplateView):
         context['trips_year'] = self.trips_year
         context['content'] = content
         context['timetable'] = timetable
-        context['applications_available'] = (
-            timetable.applications_available)
-        context['application_status_available'] = (
-            timetable.application_status_available)
-        context['applications_close'] = (
-            timetable.applications_close)
+        context['applications_available'] = timetable.applications_available
+        context['application_status_available'] = timetable.application_status_available
+        context['applications_close'] = timetable.applications_close
 
         try:
             application = Volunteer.objects.get(
-                trips_year=self.trips_year,
-                applicant=self.request.user)
+                trips_year=self.trips_year, applicant=self.request.user
+            )
 
-            context['within_deadline_extension'] = (
-                application.within_deadline_extension())
-            status_description = content.get_status_description(
-                application.status)
+            context[
+                'within_deadline_extension'
+            ] = application.within_deadline_extension()
+            status_description = content.get_status_description(application.status)
             context['show_trip_assignment'] = (
-                timetable.leader_assignment_available and
-                application.status == Volunteer.LEADER)
-            context['show_trainings'] = (
-                application.attendee.can_register)
+                timetable.leader_assignment_available
+                and application.status == Volunteer.LEADER
+            )
+            context['show_trainings'] = application.attendee.can_register
 
         except Volunteer.DoesNotExist:
             application = None
