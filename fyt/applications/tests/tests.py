@@ -184,33 +184,6 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
 
-    def test_must_agree_to_trippee_confidentiality(self):
-        with self.assertRaisesMessage(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=False,
-                in_goodstanding_with_college=True,
-                trainings=True,
-            ).full_clean()
-
-    def test_must_be_in_good_standing(self):
-        with self.assertRaisesRegex(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=True,
-                in_goodstanding_with_college=False,
-                trainings=True,
-            ).full_clean()
-
-    def test_must_agree_to_trainings(self):
-        with self.assertRaisesRegex(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=True,
-                in_goodstanding_with_college=True,
-                trainings=False,
-            ).full_clean()
-
     def test_set_section_preference(self):
         trips_year = self.init_trips_year()
         ls = self.make_application(trips_year=trips_year).leader_supplement

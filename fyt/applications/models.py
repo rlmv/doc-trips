@@ -224,6 +224,7 @@ class PortalContent(DatabaseModel):
         }[status]
 
 
+# TODO: remove this once we reset database migrations
 def validate_condition_true(value):
     if value is not True:
         raise ValidationError('You must agree to this condition')
@@ -416,14 +417,12 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "confidentiality of this information, except as is required by "
         "medical or legal concerns",
         default=False,
-        validators=[validate_condition_true],
     )
     in_goodstanding_with_college = models.BooleanField(
         "By applying to volunteer for Trips, I acknowledge that I am in good "
         "standing with the College. This will be verified by DOC Trips "
         "through the Undergraduate Dean’s Office.",
         default=False,
-        validators=[validate_condition_true],
     )
     trainings = models.BooleanField(
         "I understand that if I am accepted as a Trips volunteer "
@@ -432,7 +431,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "do not meet these requirements, I will not be able to volunteer for "
         "Trips.",
         default=False,
-        validators=[validate_condition_true],
     )
     spring_training_ok = models.BooleanField(
         "I can attend trainings during the spring term.", default=False
