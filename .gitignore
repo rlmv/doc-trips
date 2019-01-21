@@ -3,6 +3,9 @@ config.sh
 config.yaml
 config.yml
 
+# Postgres data
+postgres-data
+
 # Python virtual environment
 venv/
 

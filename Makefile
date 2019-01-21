@@ -1,18 +1,21 @@
+.PHONY: scripts postgres3
+
 INTERPRETER = python3.6
+
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
 COVERAGE = $(VENV)/bin/coverage
 MANAGE = $(PYTHON) manage.py
 
-POSTGRES = fyt
+POSTGRES_DB = fyt
 POSTGRES_USER = fytuser
 POSTGRES_PASSWORD = password
 POSTGRES_DUMP = latest.dump
 
 SCRIPTS = scripts/runtests
 
-all:
+all: postgres
 	$(MANAGE) runserver
 
 install: venv config.yml scripts
@@ -25,8 +28,6 @@ venv:
 config.yml:
 	cp -nv config.yml.example config.yml
 
-.PHONY: scripts
-
 scripts:
 	chmod +x $(SCRIPTS)
 	ln -sfv $(SCRIPTS) .
@@ -35,22 +36,22 @@ deploy:
 	git push production master
 	heroku run manage migrate
 
-migrations:
+migrations: postgres
 	$(MANAGE) makemigrations
 
-migrate:
+migrate: postgres
 	$(MANAGE) migrate
 
-superuser:
+superuser: postgres
 	$(MANAGE) setsuperuser d34898x
 
-test:
+test: postgres
 	$(MANAGE) test --nomigrations --noinput --parallel 2
 
 tidy:
 	$(VENV)/bin/importanize -v fyt
 
-coverage:
+coverage: postgres
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations
 	$(COVERAGE) report -m
 	$(COVERAGE) html
@@ -60,32 +61,21 @@ clean:
 	rm -rf *~
 	rm $(POSTGRES_DUMP)
 
+postgres:
+	docker-compose up -d postgres
 
-PSQL = psql postgres --quiet -c
-
-fytuser:
-	$(PSQL) "                                                                  \
-		DO \$$do\$$ BEGIN                                                      \
-			IF NOT EXISTS (                                                    \
-				SELECT FROM pg_user WHERE pg_user.usename='$(POSTGRES_USER)')  \
-			THEN                                                               \
-				CREATE ROLE fytuser WITH LOGIN PASSWORD '$(POSTGRES_PASSWORD)';\
-			END IF;                                                            \
-		END \$$do\$$;"
-	$(PSQL) "ALTER USER $(POSTGRES_USER) CREATEDB;"
-
-reset_db: fytuser
+reset_db: postgres
 	$(MANAGE) reset_db
 
-bootstrap:
+bootstrap: postgres
 	$(MANAGE) bootstrap
 
 dump_remote:
 	heroku pg:backups:capture
 	heroku pg:backups:download --output $(POSTGRES_DUMP)
 
-load_dump:
+load_dump: postgres
 	pg_restore -v --no-acl --no-owner -n public -1 \
-		-h localhost -U $(POSTGRES_USER) -d $(POSTGRES) $(POSTGRES_DUMP)
+		-h localhost -U $(POSTGRES_USER) -d $(POSTGRES_DB) $(POSTGRES_DUMP)
 
 postgres_from_remote: dump_remote reset_db load_dump

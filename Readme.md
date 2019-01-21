@@ -25,11 +25,14 @@ each time you begin development.
 
 ## Database
 
-The site uses PostgreSQL as a database backend in production. You *can* use
-SQLite for development, but it's not recommended: some unit tests will fail,
-and other features won't work quite the same. Instead, [install Postgres](https://www.postgresql.org).
+The site uses PostgreSQL as a database backend in production. The project is
+set up to run a local Postgres instance using Docker. You can install Docker
+[here](https://docs.docker.com/install/). Once that is done, run the following
+to ensure everything is properly set up:
 
-Run the following from the command line:
+    make postgres
+
+Then run the following from the command line:
 
     make reset_db
     make migrate
