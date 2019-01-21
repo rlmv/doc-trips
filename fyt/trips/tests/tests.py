@@ -679,9 +679,9 @@ def s3_map_matcher(r1, r2):
 vcr.register_matcher('s3_map.txt', s3_map_matcher)
 
 
+@unittest.skip("need to fix VCR data/remove entirely")
 class TripTemplateDocumentUploadTestCase(FytTestCase):
 
-    @unittest.expectedFailure
     @vcr.use_cassette(match_on=['s3_map.txt'])
     def test_uploaded_document_is_attached_to_TripTemplate(self):
         trips_year = self.init_trips_year()
@@ -696,7 +696,6 @@ class TripTemplateDocumentUploadTestCase(FytTestCase):
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].name, 'Map')
 
-    @unittest.expectedFailure
     @vcr.use_cassette(match_on=['s3_map.txt'])
     def test_triptemplate_documents_are_migrated(self):
         trips_year = self.init_trips_year()
