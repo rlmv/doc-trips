@@ -145,7 +145,8 @@ class AgreementLayout(Layout):
                 'in_goodstanding_with_college',
                 'trainings',
             ),
-            Submit('submit', 'Submit Score'),
+            HTML('<p>Once you click "submit" your application will be submitted for scoring and you will be unable to edit your application any further.</p>'),
+            Submit('submit', 'Submit'),
         )
 
 

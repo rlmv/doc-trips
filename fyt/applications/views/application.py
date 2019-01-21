@@ -249,7 +249,7 @@ class ContinueApplication(
         return HttpResponseRedirect(self.get_success_url())
 
 
-class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvailable, UpdateView):
+class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvailable, ExtraContextMixin, UpdateView):
     model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application_submit.html'
@@ -269,6 +269,9 @@ class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvai
         return get_object_or_404(
             self.model, applicant=self.request.user, trips_year=self.trips_year
         )
+
+    def extra_context(self):
+        return {'trips_year': self.trips_year}
 
 
 class SetupApplication(
