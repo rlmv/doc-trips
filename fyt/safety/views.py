@@ -2,14 +2,7 @@ from braces.views import SetHeadlineMixin
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from vanilla import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    FormView,
-    ListView,
-    UpdateView,
-)
+from vanilla import CreateView, DeleteView, DetailView, FormView, ListView, UpdateView
 
 from fyt.core.views import TripsYearMixin
 from fyt.permissions.views import SafetyLogPermissionRequired
@@ -55,14 +48,9 @@ class IncidentDetail(_IncidentMixin, FormView, DetailView):
         'desc',
         'resp',
         'outcome',
-        'follow_up'
+        'follow_up',
     )
-    update_fields = (
-        'caller',
-        'caller_role',
-        'caller_number',
-        'update',
-    )
+    update_fields = ('caller', 'caller_role', 'caller_number', 'update')
     form_class = IncidentUpdateForm
 
     def get_context_data(self, **kwargs):
@@ -82,13 +70,13 @@ class DeleteIncident(_IncidentMixin, SetHeadlineMixin, DeleteView):
     template_name = 'core/delete.html'
 
     def get_headline(self):
-        return ("Are you sure you want to delete Incident %s? "
-                "You will not be able to undo this." % self.object)
+        return (
+            "Are you sure you want to delete Incident %s? "
+            "You will not be able to undo this." % self.object
+        )
 
     def get_success_url(self):
-        return reverse('core:safety:list', kwargs={
-            'trips_year': self.trips_year
-        })
+        return reverse('core:safety:list', kwargs={'trips_year': self.trips_year})
 
     def post(self, request, *args, **kwargs):
         resp = super().post(request, *args, **kwargs)

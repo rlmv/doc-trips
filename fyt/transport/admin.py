@@ -1,12 +1,6 @@
 from django.contrib import admin
 
-from fyt.transport.models import (
-    ExternalBus,
-    InternalBus,
-    Route,
-    StopOrder,
-    Vehicle,
-)
+from fyt.transport.models import ExternalBus, InternalBus, Route, StopOrder, Vehicle
 
 
 admin.site.register(Vehicle)

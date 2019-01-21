@@ -31,13 +31,14 @@ except:
     PROXY_URL = 'https://webdev.labs.ome.ksu.edu/accounts/login/casProxyCallback/'
     # Depending on your cas login form you may need to adjust these field name
     # keys
-    TOKEN = '_eventID'                    # CSRF token field name
+    TOKEN = '_eventID'  # CSRF token field name
     # CAS server successful login flag (find string in html page)
     CAS_SUCCESS = 'Login successful'
-    AUTH = {'username': 'garrett',           # user field name
-            'password': 'password',           # password field name
-            'submit': 'submit'         # login submit button
-            }
+    AUTH = {
+        'username': 'garrett',  # user field name
+        'password': 'password',  # password field name
+        'submit': 'submit',  # login submit button
+    }
     # A script to extract the PGT from your proxying server
     SCRIPT = 'manage.py shell --plain < get_pgt.py'
 
@@ -115,9 +116,15 @@ class TestCAS(unittest.TestCase):
         print('---------------------------------------')
         proxy = self.proxy4_login(pt)
         if proxy:
-            print('PASS: Got Success response for app %s using proxy %s' % (self.urls['app'], proxy))
+            print(
+                'PASS: Got Success response for app %s using proxy %s'
+                % (self.urls['app'], proxy)
+            )
         else:
-            print('FAIL: The proxy login to %s via %s has failed' % (self.urls['app'], self.urls['proxy']))
+            print(
+                'FAIL: The proxy login to %s via %s has failed'
+                % (self.urls['app'], self.urls['proxy'])
+            )
 
         print('')
         print('Test direct proxy login')
@@ -133,7 +140,8 @@ class TestCAS(unittest.TestCase):
         else:
             self.auth['username'] = getpass.getuser()
         self.auth['password'] = getpass.getpass(
-            'CAS Password for user %s:' % AUTH['username'])
+            'CAS Password for user %s:' % AUTH['username']
+        )
         return
 
     def get_token(self, url=None, token=TOKEN, page=''):
@@ -146,8 +154,7 @@ class TestCAS(unittest.TestCase):
             page = r.read()
         if not page:
             return 'FAIL: Page is empty'
-        starts = ['<input type="hidden" name="%s"' % token,
-                  'value="']
+        starts = ['<input type="hidden" name="%s"' % token, 'value="']
         return self.find_in_page(page, starts, '"')
 
     def get_ticket(self, page, app_url):
@@ -256,8 +263,7 @@ class TestCAS(unittest.TestCase):
         """ Use login ticket to get proxy iou
             NB: SSO server installation may require self.urls['proxy']/?pgtIou be called at the root
         """
-        url_args = (
-            self.urls['cas'], self.ticket, self.urls['app'], self.urls['proxy'])
+        url_args = (self.urls['cas'], self.ticket, self.urls['app'], self.urls['proxy'])
         url = '%sserviceValidate?ticket=%s&service=%s&pgtUrl=%s' % url_args
         try:
             iou = self.opener.open(url)
@@ -265,9 +271,14 @@ class TestCAS(unittest.TestCase):
             return 'FAIL: service validate url=%s not found' % url
         page = iou.read()
         if page.find('cas:authenticationSuccess') > -1:
-            iou_ticket = self.find_in_dom(page, ['cas:serviceResponse',
-                                                 'cas:authenticationSuccess',
-                                                 'cas:proxyGrantingTicket'])
+            iou_ticket = self.find_in_dom(
+                page,
+                [
+                    'cas:serviceResponse',
+                    'cas:authenticationSuccess',
+                    'cas:proxyGrantingTicket',
+                ],
+            )
             if iou_ticket:
                 return iou_ticket
             else:
@@ -288,7 +299,7 @@ class TestCAS(unittest.TestCase):
             by calling the django shell environment
         """
         out = commands.getoutput(SCRIPT)
-        pgt = self.find_in_page(out, ['PGT', ], ' ')
+        pgt = self.find_in_page(out, ['PGT'], ' ')
         return 'PGT%s' % pgt
 
     def proxy3_pt(self, pgt):
@@ -302,8 +313,9 @@ class TestCAS(unittest.TestCase):
         page = pt.read()
         if page.find('cas:serviceResponse') > -1:
             try:
-                pt_ticket = self.find_in_dom(page, ['cas:proxySuccess',
-                                                    'cas:proxyTicket'])
+                pt_ticket = self.find_in_dom(
+                    page, ['cas:proxySuccess', 'cas:proxyTicket']
+                )
                 return pt_ticket
             except:
                 print(url)
@@ -316,7 +328,8 @@ class TestCAS(unittest.TestCase):
             Use a new opener so its not got any cookies / auth already
         """
         opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+            urllib2.HTTPCookieProcessor(cookielib.CookieJar())
+        )
         url_args = (self.urls['cas'], self.urls['app'], pt)
         url = '%sproxyValidate?service=%s&ticket=%s' % url_args
         try:
@@ -326,8 +339,7 @@ class TestCAS(unittest.TestCase):
         page = login.read()
         print(page)
         if page.find('cas:authenticationSuccess') > -1:
-            proxy = self.find_in_dom(page, ['cas:proxies',
-                                            'cas:proxy'])
+            proxy = self.find_in_dom(page, ['cas:proxies', 'cas:proxy'])
             return proxy
         return None
 
@@ -336,8 +348,10 @@ class TestCAS(unittest.TestCase):
             Use a new opener so its not got any cookies / auth already
         """
         opener = urllib2.build_opener(
-            urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+            urllib2.HTTPCookieProcessor(cookielib.CookieJar())
+        )
         return self.get_restricted(ticket=pt, opener=opener)
+
 
 if __name__ == '__main__':
     unittest.main()

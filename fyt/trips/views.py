@@ -16,7 +16,7 @@ from .forms import (
     SectionForm,
     TrippeeAssignmentForm,
     TripTemplateForm,
-    TripTemplateDescriptionForm
+    TripTemplateDescriptionForm,
 )
 from .models import (
     NUM_BAGELS_REGULAR,
@@ -64,10 +64,11 @@ from fyt.utils.forms import crispify
 from fyt.utils.views import PopulateMixin, MultiFormMixin
 
 
-class _SectionMixin():
+class _SectionMixin:
     """
     Utility mixin for CBVs which have a section_pk url kwarg.
     """
+
     @cached_property
     def section(self):
         return Section.objects.get(pk=self.kwargs['section_pk'])
@@ -77,10 +78,11 @@ class _SectionMixin():
         return super().get_context_data(**kwargs)
 
 
-class _TripMixin():
+class _TripMixin:
     """
     Mixin to pull a trip object from a trip_pk url kwarg
     """
+
     @cached_property
     def trip(self):
         return Trip.objects.get(pk=self.kwargs['trip_pk'])
@@ -90,10 +92,11 @@ class _TripMixin():
         return super().get_context_data(**kwargs)
 
 
-class _TripTemplateMixin():
+class _TripTemplateMixin:
     """
     Mixin to pull a TripTemplate object from a triptemplate_pk url kwarg
     """
+
     @cached_property
     def triptemplate(self):
         return TripTemplate.objects.get(pk=self.kwargs['triptemplate_pk'])
@@ -112,17 +115,10 @@ class TripList(DatabaseTemplateView):
 
 class TripUpdate(DatabaseUpdateView):
     model = Trip
-    fields = [
-        'dropoff_route',
-        'pickup_route',
-        'return_route',
-        'notes'
-    ]
+    fields = ['dropoff_route', 'pickup_route', 'return_route', 'notes']
 
     def get_headline(self):
-        return mark_safe(
-            "Edit %s <small> Trip </small>" % self.object
-        )
+        return mark_safe("Edit %s <small> Trip </small>" % self.object)
 
 
 class TripDetail(DatabaseDetailView):
@@ -141,7 +137,7 @@ class TripDetail(DatabaseDetailView):
         ('pickup route', 'get_pickup_route'),
         ('pickup bus', 'get_pickup_bus'),
         ('pickup time', 'get_pickup_time'),
-        ('return route', 'get_return_route')
+        ('return route', 'get_return_route'),
     ]
 
     triptemplate_fields = [
@@ -157,7 +153,8 @@ class TripDetail(DatabaseDetailView):
         'description__day3',
         'pickup_stop',
         'description__conclusion',
-        'description__revisions']
+        'description__revisions',
+    ]
 
 
 class TripCreate(PopulateMixin, DatabaseCreateView):
@@ -176,12 +173,12 @@ class TripTemplateList(DatabaseListView):
     template_name = 'trips/template_index.html'
 
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'triptype',
-            'campsite1',
-            'campsite2',
-            'dropoff_stop',
-            'pickup_stop'
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'triptype', 'campsite1', 'campsite2', 'dropoff_stop', 'pickup_stop'
+            )
         )
 
 
@@ -201,32 +198,23 @@ class TripTemplateDetail(DatabaseDetailView):
         'pickup_stop',
         'return_route',
     ]
-    description_fields = [
-        'intro',
-        'day1',
-        'day2',
-        'day3',
-        'conclusion',
-        'revisions',
-    ]
+    description_fields = ['intro', 'day1', 'day2', 'day3', 'conclusion', 'revisions']
 
 
-class TripTemplateCreate(DatabaseEditPermissionRequired, MultiFormMixin,
-                         BaseCreateView):
+class TripTemplateCreate(
+    DatabaseEditPermissionRequired, MultiFormMixin, BaseCreateView
+):
     model = TripTemplate
     template_name = 'trips/triptemplate_create.html'
 
     def get_form_classes(self):
         return {
             'template_form': TripTemplateForm,
-            'description_form': TripTemplateDescriptionForm
+            'description_form': TripTemplateDescriptionForm,
         }
 
     def get_instances(self):
-        return {
-            'template_form': None,
-            'description_form': None
-        }
+        return {'template_form': None, 'description_form': None}
 
     def form_valid(self, forms):
         for form in forms.values():
@@ -237,22 +225,23 @@ class TripTemplateCreate(DatabaseEditPermissionRequired, MultiFormMixin,
         return super().form_valid(forms)
 
 
-class TripTemplateUpdate(TripInfoEditPermissionRequired, MultiFormMixin,
-                         BaseUpdateView):
+class TripTemplateUpdate(
+    TripInfoEditPermissionRequired, MultiFormMixin, BaseUpdateView
+):
     model = TripTemplate
     template_name = 'trips/triptemplate_update.html'
 
     def get_form_classes(self):
         return {
             'template_form': TripTemplateForm,
-            'description_form': TripTemplateDescriptionForm
+            'description_form': TripTemplateDescriptionForm,
         }
 
     def get_instances(self):
         self.object = self.get_object()
         return {
             'template_form': self.object,
-            'description_form': self.object.description
+            'description_form': self.object.description,
         }
 
 
@@ -265,13 +254,12 @@ class UploadTripTemplateDocument(_TripTemplateMixin, DatabaseCreateView):
     """
     Upload a supplementary file and attach it to a TripTemplate.
     """
+
     model = Document
     fields = ['name', 'file']
 
     def get_headline(self):
-        return mark_safe(
-            "Upload File <small>%s</small>" % self.triptemplate
-        )
+        return mark_safe("Upload File <small>%s</small>" % self.triptemplate)
 
     def form_valid(self, form):
         form.instance.template = self.triptemplate
@@ -290,8 +278,9 @@ class TripTemplateDocumentDelete(_TripTemplateMixin, DatabaseDeleteView):
     model = Document
 
     def get_success_url(self):
-        return reverse('core:triptemplate:document_list',
-                       kwargs=self.triptemplate.obj_kwargs())
+        return reverse(
+            'core:triptemplate:document_list', kwargs=self.triptemplate.obj_kwargs()
+        )
 
 
 class TripTypeList(DatabaseListView):
@@ -340,9 +329,7 @@ class CampsiteMatrix(DatabaseTemplateView):
     template_name = 'trips/campsite_index.html'
 
     def extra_context(self):
-        return {
-            'matrix': Campsite.objects.matrix(self.trips_year)
-        }
+        return {'matrix': Campsite.objects.matrix(self.trips_year)}
 
 
 class CampsiteCreate(DatabaseCreateView):
@@ -359,7 +346,7 @@ class CampsiteDetail(DatabaseDetailView):
         'shelter',
         'bear_bag',
         'bugout',
-        'secret'
+        'secret',
     ]
 
 
@@ -416,15 +403,16 @@ class LeaderTrippeeIndexView(DatabaseListView):
 
     Links to pages to assign leaders and trippees.
     """
+
     model = Trip
     template_name = 'trips/assignments.html'
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related(
-            'leaders',
-            'leaders__applicant',
-            'trippees'
+        return (
+            super()
+            .get_queryset()
+            .prefetch_related('leaders', 'leaders__applicant', 'trippees')
         )
 
 
@@ -445,6 +433,7 @@ class AssignTrippee(_TripMixin, DatabaseListView):
     Because of our database structure, preferences are not easy to
     compute efficiently. See below...
     """
+
     model = IncomingStudent
     template_name = 'trips/assign_trippee.html'
     context_object_name = 'available_trippees'
@@ -457,16 +446,14 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         Only pull in required fields because a whole application
         queryset is big enough to slow down performance.
         """
-        return self.model.objects.available_for_trip(
-            self.trip
-        ).select_related(
+        return self.model.objects.available_for_trip(self.trip).select_related(
             'trip_assignment',
             'trip_assignment__template',
             'trip_assignment__section',
             'registration',
             'registration__bus_stop_round_trip',
             'registration__bus_stop_to_hanover',
-            'registration__bus_stop_from_hanover'
+            'registration__bus_stop_from_hanover',
         )
 
     # TODO: refactor this with the new M2M setup
@@ -499,30 +486,27 @@ class AssignTrippee(_TripMixin, DatabaseListView):
         triptype_pref = {
             pref.registration_id: pref.preference
             for pref in RegistrationTripTypeChoice.objects.filter(
-                triptype=triptype,
-                preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]
+                triptype=triptype, preference__in=[AVAILABLE, PREFER, FIRST_CHOICE]
             )
         }
         section_pref = {
             pref.registration_id: pref.preference
             for pref in RegistrationSectionChoice.objects.filter(
-                section=section,
-                preference__in=[AVAILABLE, PREFER]
+                section=section, preference__in=[AVAILABLE, PREFER]
             )
         }
 
         # all external buses for this section
-        buses = ExternalBus.objects.filter(
-            trips_year=self.trips_year, section=section)
+        buses = ExternalBus.objects.filter(trips_year=self.trips_year, section=section)
         # all ids of routes running on this section
         route_ids = [bus.route_id for bus in buses]
 
         for trippee in self.object_list:
             reg = trippee.registration
-            url = reverse('core:assign_trippee_to_trip', kwargs={
-                'trips_year': self.trips_year,
-                'trippee_pk': trippee.pk
-            })
+            url = reverse(
+                'core:assign_trippee_to_trip',
+                kwargs={'trips_year': self.trips_year, 'trippee_pk': trippee.pk},
+            )
             trippee.assignment_url = '%s?assign_to=%s' % (url, self.trip.pk)
             trippee.triptype_pref = triptype_pref[reg.id]
             trippee.section_pref = section_pref[reg.id]
@@ -530,14 +514,14 @@ class AssignTrippee(_TripMixin, DatabaseListView):
             bus_requests = (
                 reg.bus_stop_round_trip,
                 reg.bus_stop_to_hanover,
-                reg.bus_stop_from_hanover
+                reg.bus_stop_from_hanover,
             )
             if not any(bus_requests):  # don't want a bus
                 trippee.bus_available = False
             else:
-                trippee.bus_available = all([
-                    bus.route_id in route_ids for bus in bus_requests if bus
-                ])
+                trippee.bus_available = all(
+                    [bus.route_id in route_ids for bus in bus_requests if bus]
+                )
         return context
 
 
@@ -559,9 +543,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     def get_form_valid_message(self):
         """ Flash success message """
-        return '{} assigned to {}'.format(
-            self.object, self.object.trip_assignment
-        )
+        return '{} assigned to {}'.format(self.object, self.object.trip_assignment)
 
     def get_headline(self):
         self.object = self.get_object()
@@ -569,8 +551,7 @@ class AssignTrippeeToTrip(FormValidMessageMixin, DatabaseUpdateView):
 
     def get_success_url(self):
         """ Override DatabaseUpdateView default """
-        return reverse('core:leader_index',
-                       kwargs={'trips_year': self.trips_year})
+        return reverse('core:leader_index', kwargs={'trips_year': self.trips_year})
 
 
 class AssignLeader(_TripMixin, DatabaseListView):
@@ -586,30 +567,32 @@ class AssignLeader(_TripMixin, DatabaseListView):
     * ``triptype_pref`` - 'prefer' or 'available'
     * ``section_pref`` - 'prefer' or 'available'
     """
+
     model = Volunteer
     template_name = 'trips/assign_leader.html'
     context_object_name = 'leader_applications'
 
     def get_queryset(self):
-        return Volunteer.objects.prospective_leaders_for_trip(
-            self.trip
-        ).with_avg_scores().order_by(
-            '-avg_leader_score'
-        ).select_related(
-            'applicant',
-            'trip_assignment',
-            'trip_assignment__template',
-            'trip_assignment__section'
+        return (
+            Volunteer.objects.prospective_leaders_for_trip(self.trip)
+            .with_avg_scores()
+            .order_by('-avg_leader_score')
+            .select_related(
+                'applicant',
+                'trip_assignment',
+                'trip_assignment__template',
+                'trip_assignment__section',
+            )
         )
 
     def get_assign_url(self, leader, trip):
         """
         Return the url used to assign leader to trip
         """
-        url = reverse('core:assign_leader_to_trip', kwargs={
-            'trips_year': self.trips_year,
-            'leader_pk': leader.pk
-        })
+        url = reverse(
+            'core:assign_leader_to_trip',
+            kwargs={'trips_year': self.trips_year, 'leader_pk': leader.pk},
+        )
         return '%s?trip_assignment=%s' % (url, trip.pk)
 
     def get_context_data(self, **kwargs):
@@ -629,16 +612,14 @@ class AssignLeader(_TripMixin, DatabaseListView):
         triptype_pref = {
             pref.application.application_id: pref.preference
             for pref in LeaderTripTypeChoice.objects.filter(
-                triptype=self.trip.template.triptype,
-                preference__in=[PREFER, AVAILABLE]
+                triptype=self.trip.template.triptype, preference__in=[PREFER, AVAILABLE]
             ).select_related('application')
         }
 
         section_pref = {
             pref.application.application_id: pref.preference
             for pref in LeaderSectionChoice.objects.filter(
-                section=self.trip.section,
-                preference__in=[PREFER, AVAILABLE]
+                section=self.trip.section, preference__in=[PREFER, AVAILABLE]
             ).select_related('application')
         }
 
@@ -647,7 +628,7 @@ class AssignLeader(_TripMixin, DatabaseListView):
                 leader,
                 self.get_assign_url(leader, self.trip),
                 triptype_pref[leader.id],
-                section_pref[leader.id]
+                section_pref[leader.id],
             )
 
         leaders = [process_leader(x) for x in self.object_list]
@@ -655,9 +636,14 @@ class AssignLeader(_TripMixin, DatabaseListView):
         return context
 
 
-class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
-                         SetHeadlineMixin, FormValidMessageMixin,
-                         TripsYearMixin, UpdateView):
+class AssignLeaderToTrip(
+    ApplicationEditPermissionRequired,
+    PopulateMixin,
+    SetHeadlineMixin,
+    FormValidMessageMixin,
+    TripsYearMixin,
+    UpdateView,
+):
     model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'core/update.html'
@@ -677,21 +663,19 @@ class AssignLeaderToTrip(ApplicationEditPermissionRequired, PopulateMixin,
 
     def get_headline(self):
         self.object = self.get_object()
-        return 'Assign {} to trip'.format(
-            self.object.applicant
-        )
+        return 'Assign {} to trip'.format(self.object.applicant)
 
     def get_success_url(self):
-        return reverse('core:leader_index', kwargs={
-            'trips_year': self.trips_year
-        })
+        return reverse('core:leader_index', kwargs={'trips_year': self.trips_year})
 
 
-class RemoveAssignedTrip(ApplicationEditPermissionRequired,
-                         FormValidMessageMixin, TripsYearMixin, UpdateView):
+class RemoveAssignedTrip(
+    ApplicationEditPermissionRequired, FormValidMessageMixin, TripsYearMixin, UpdateView
+):
     """
     Remove a leader's assigned trip
     """
+
     model = Volunteer
     lookup_url_kwarg = 'leader_pk'
     template_name = 'trips/remove_leader_assignment.html'
@@ -709,19 +693,19 @@ class RemoveAssignedTrip(ApplicationEditPermissionRequired,
 
     def get_form_valid_message(self):
         return 'Leader {} removed from Trip {}'.format(
-            self.object.applicant, self._trip_assignment)
+            self.object.applicant, self._trip_assignment
+        )
 
 
 class TrippeeLeaderCounts(DatabaseTemplateView):
     """
     Shows a matrix of the number of tripees and leaders for all trips
     """
+
     template_name = 'trips/trippee_leader_counts.html'
 
     def extra_context(self):
-        return {
-            'matrix': Trip.objects.matrix(self.trips_year)
-        }
+        return {'matrix': Trip.objects.matrix(self.trips_year)}
 
 
 class FoodboxCounts(DatabaseListView):
@@ -731,9 +715,7 @@ class FoodboxCounts(DatabaseListView):
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return Trip.objects.filter(
-            trips_year=self.trips_year
-        ).select_related(
+        return Trip.objects.filter(trips_year=self.trips_year).select_related(
             'template__triptype'
         )
 
@@ -758,8 +740,7 @@ class FoodboxRules(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
 
     def get_form(self, **kwargs):
         FoodRulesFormset = modelformset_factory(
-            TripType, fields=['name', 'half_kickin', 'gets_supplemental'],
-            extra=0
+            TripType, fields=['name', 'half_kickin', 'gets_supplemental'], extra=0
         )
         formset = FoodRulesFormset(queryset=self.get_queryset(), **kwargs)
         formset.helper = FoodboxFormsetHelper()
@@ -780,6 +761,7 @@ class LeaderPacket(DatabaseDetailView):
     All information that leader's need: schedule, directions,
     medical info, etc.
     """
+
     model = Trip
     template_name = 'trips/leader_packet.html'
 
@@ -788,24 +770,26 @@ class PacketsForSection(_SectionMixin, DatabaseListView):
     """
     All leader packets for a section.
     """
+
     model = Trip
     template_name = 'trips/section_packet.html'
     context_object_name = 'trips'
 
     def get_queryset(self):
-        return super().get_queryset().filter(
-            section=self.section
-        ).select_related(
-            'template__campsite1',
-            'template__campsite2',
-            'template__dropoff_stop',
-            'template__pickup_stop',
-            'template__description',
-        ).prefetch_related(
-            'leaders',
-            'leaders__applicant',
-            'trippees',
-            'trippees__registration',
+        return (
+            super()
+            .get_queryset()
+            .filter(section=self.section)
+            .select_related(
+                'template__campsite1',
+                'template__campsite2',
+                'template__dropoff_stop',
+                'template__pickup_stop',
+                'template__description',
+            )
+            .prefetch_related(
+                'leaders', 'leaders__applicant', 'trippees', 'trippees__registration'
+            )
         )
 
 
@@ -815,6 +799,7 @@ class MedicalInfoForSection(PacketsForSection):
 
     Contains leader and trippee med information.
     """
+
     template_name = 'trips/medical_packet.html'
 
 
@@ -822,32 +807,33 @@ class TrippeeChecklist(_SectionMixin, DatabaseListView):
     """
     Checklist of a trippees for a section.
     """
+
     model = IncomingStudent
     template_name = 'trips/person_checklist.html'
     header_text = 'Trippee'
 
     def get_queryset(self):
-        return super().get_queryset().filter(
-            trip_assignment__section=self.section)
+        return super().get_queryset().filter(trip_assignment__section=self.section)
 
 
 class LeaderChecklist(_SectionMixin, DatabaseListView):
     """
     All leaders for a section.
     """
+
     model = Volunteer
     template_name = 'trips/person_checklist.html'
     header_text = 'Leader'
 
     def get_queryset(self):
-        return super().get_queryset().filter(
-            trip_assignment__section=self.section)
+        return super().get_queryset().filter(trip_assignment__section=self.section)
 
 
 class Checklists(DatabaseTemplateView):
     """
     Central list of all checklists"
     """
+
     template_name = 'trips/checklists.html'
 
     def extra_context(self):
@@ -855,34 +841,46 @@ class Checklists(DatabaseTemplateView):
         d = OrderedDict([date, []] for date in dates)
 
         for sxn in Section.objects.filter(trips_year=self.trips_year):
-            kwargs = {
-                'trips_year': self.trips_year,
-                'section_pk': sxn.pk
-            }
-            d[sxn.leaders_arrive].append((
-                'Section %s Leader Checkin' % sxn.name,
-                reverse('core:checklists:leaders', kwargs=kwargs)))
+            kwargs = {'trips_year': self.trips_year, 'section_pk': sxn.pk}
+            d[sxn.leaders_arrive].append(
+                (
+                    'Section %s Leader Checkin' % sxn.name,
+                    reverse('core:checklists:leaders', kwargs=kwargs),
+                )
+            )
 
-            d[sxn.trippees_arrive].append((
-                'Section %s Trippee Checkin' % sxn.name,
-                reverse('core:checklists:trippees', kwargs=kwargs)))
+            d[sxn.trippees_arrive].append(
+                (
+                    'Section %s Trippee Checkin' % sxn.name,
+                    reverse('core:checklists:trippees', kwargs=kwargs),
+                )
+            )
 
-            d[sxn.trippees_arrive].append((
-                'Section %s Leader Packets' % sxn.name,
-                reverse('core:packets:section', kwargs=kwargs)))
+            d[sxn.trippees_arrive].append(
+                (
+                    'Section %s Leader Packets' % sxn.name,
+                    reverse('core:packets:section', kwargs=kwargs),
+                )
+            )
 
-            d[sxn.trippees_arrive].append((
-                'Section %s Medical Information' % sxn.name,
-                reverse('core:packets:medical', kwargs=kwargs)))
+            d[sxn.trippees_arrive].append(
+                (
+                    'Section %s Medical Information' % sxn.name,
+                    reverse('core:packets:medical', kwargs=kwargs),
+                )
+            )
 
         buses = InternalBus.objects.filter(trips_year=self.trips_year)
         for date in set(map(lambda x: x.date, buses)):
-            d[date].append((
-                'Internal Bus Directions for %s' % date.strftime('%m/%d'),
-                reverse('core:internalbus:packet_for_date', kwargs={
-                    'trips_year': self.trips_year, 'date': date
-                })
-            ))
+            d[date].append(
+                (
+                    'Internal Bus Directions for %s' % date.strftime('%m/%d'),
+                    reverse(
+                        'core:internalbus:packet_for_date',
+                        kwargs={'trips_year': self.trips_year, 'date': date},
+                    ),
+                )
+            )
 
         buses = ExternalBus.objects.filter(trips_year=self.trips_year)
         bus_dict = defaultdict(set)
@@ -892,17 +890,28 @@ class Checklists(DatabaseTemplateView):
 
         for date, buses in bus_dict.items():
             for bus in buses:
-                d[date].append((
-                    '%s Directions for %s' % (bus.route, date.strftime('%m/%d')),
-                    reverse('core:externalbus:packet_for_date_and_route', kwargs={
-                        'trips_year': self.trips_year,
-                        'date': date,
-                        'route_pk': bus.route.pk})))
+                d[date].append(
+                    (
+                        '%s Directions for %s' % (bus.route, date.strftime('%m/%d')),
+                        reverse(
+                            'core:externalbus:packet_for_date_and_route',
+                            kwargs={
+                                'trips_year': self.trips_year,
+                                'date': date,
+                                'route_pk': bus.route.pk,
+                            },
+                        ),
+                    )
+                )
 
-                d[date].append((
-                    '%s Riders Spreadsheet' % bus.route,
-                    reverse('core:reports:bus_riders', kwargs={
-                        'trips_year': self.trips_year,
-                        'bus_pk': bus.pk})))
+                d[date].append(
+                    (
+                        '%s Riders Spreadsheet' % bus.route,
+                        reverse(
+                            'core:reports:bus_riders',
+                            kwargs={'trips_year': self.trips_year, 'bus_pk': bus.pk},
+                        ),
+                    )
+                )
 
         return {'date_dict': d}

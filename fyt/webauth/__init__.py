@@ -24,7 +24,7 @@ _DEFAULTS = {
     'CAS_RESPONSE_CALLBACKS': None,
     'CAS_CUSTOM_FORBIDDEN': None,
     'CAS_LOGOUT_REQUEST_ALLOWED': (),
-    'CAS_USER_CREATION': True
+    'CAS_USER_CREATION': True,
 }
 
 for key, value in iteritems(_DEFAULTS):

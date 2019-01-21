@@ -11,8 +11,9 @@ def split(a, n):
     http://stackoverflow.com/a/2135920/3818777
     """
     import math
+
     k, m = math.floor(len(a) / n), len(a) % n
-    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+    return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
 @register.simple_tag
@@ -33,8 +34,4 @@ def person_checklist(people, phone_numbers=False):
         n_cols = 3
         template_name = 'utils/checklists/people.html'
 
-    return loader.get_template(
-        template_name
-    ).render({
-        'columns': split(people, n_cols)
-    })
+    return loader.get_template(template_name).render({'columns': split(people, n_cols)})

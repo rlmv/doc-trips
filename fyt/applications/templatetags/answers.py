@@ -9,6 +9,4 @@ def display_answers(application):
     """
     Display the answers to dynamic application questions.
     """
-    return {
-        'answers': application.all_answers
-    }
+    return {'answers': application.all_answers}

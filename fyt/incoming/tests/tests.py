@@ -41,10 +41,14 @@ class IncomingStudentModelTestCase(FytTestCase):
     def setUp(self):
         self.init_trips_year()
 
-    def test_creating_Registration_automatically_links_to_existing_IncomingStudent(self):
+    def test_creating_Registration_automatically_links_to_existing_IncomingStudent(
+        self
+    ):
         user = self.make_incoming_student()
         # make existing info for user with netid
-        incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=self.trips_year)
+        incoming = mommy.make(
+            IncomingStudent, netid=user.netid, trips_year=self.trips_year
+        )
         reg = mommy.make(Registration, trips_year=self.trips_year, user=user)
         self.assertEqual(reg.trippee, incoming)
 
@@ -58,15 +62,15 @@ class IncomingStudentModelTestCase(FytTestCase):
         user = self.make_incoming_student()
         reg = mommy.make(Registration, trips_year=self.trips_year, user=user)
         incoming = mommy.make(
-            IncomingStudent,
-            netid=user.netid,
-            trips_year=self.trips_year)
+            IncomingStudent, netid=user.netid, trips_year=self.trips_year
+        )
         reg.refresh_from_db()
         self.assertEqual(incoming.registration, reg)
 
     def test_get_hometown_parsing(self):
         IncomingStudent.objects.create_from_sheet(
-            pyexcel.get_sheet(file_name=self.FILE), self.trips_year)
+            pyexcel.get_sheet(file_name=self.FILE), self.trips_year
+        )
         incoming = IncomingStudent.objects.get(netid='id_2')
         self.assertEqual(incoming.get_hometown(), 'Chapel Hill, NC USA')
 
@@ -78,30 +82,23 @@ class IncomingStudentModelTestCase(FytTestCase):
 
     def test_get_gender_without_registration(self):
         incoming = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            gender='MALE')
+            IncomingStudent, trips_year=self.trips_year, gender='MALE'
+        )
         self.assertEqual(incoming.get_gender(), 'male')
 
     def test_get_gender_with_registration(self):
         """ Pull from registration, if available """
-        reg = mommy.make(
-            Registration,
-            trips_year=self.trips_year,
-            gender='FEMALE')
+        reg = mommy.make(Registration, trips_year=self.trips_year, gender='FEMALE')
         incoming = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            gender='MALE',
-            registration=reg)
+            IncomingStudent, trips_year=self.trips_year, gender='MALE', registration=reg
+        )
         self.assertEqual(incoming.get_gender(), 'female')
 
     def test_get_phone_number(self):
         # No registration
         incoming = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            phone='919-384-3945')
+            IncomingStudent, trips_year=self.trips_year, phone='919-384-3945'
+        )
         self.assertEqual(incoming.get_phone_number(), '919-384-3945')
 
         # Registration phone supersedes incoming
@@ -109,25 +106,23 @@ class IncomingStudentModelTestCase(FytTestCase):
             Registration,
             trips_year=self.trips_year,
             trippee=incoming,
-            phone='1-800-DANGER')
+            phone='1-800-DANGER',
+        )
         self.assertEqual(incoming.get_phone_number(), '1-800-DANGER')
 
     def test_financial_aid_in_range_0_to_100(self):
         with self.assertRaises(ValidationError):
             mommy.prepare(
-                IncomingStudent, trips_year=self.trips_year,
-                financial_aid=-1
+                IncomingStudent, trips_year=self.trips_year, financial_aid=-1
             ).full_clean()
 
         with self.assertRaises(ValidationError):
             mommy.prepare(
-                IncomingStudent, trips_year=self.trips_year,
-                financial_aid=101
+                IncomingStudent, trips_year=self.trips_year, financial_aid=101
             ).full_clean()
 
         mommy.prepare(
-            IncomingStudent, trips_year=self.trips_year,
-            financial_aid=100
+            IncomingStudent, trips_year=self.trips_year, financial_aid=100
         ).full_clean()
 
     def test_compute_base_cost(self):
@@ -137,7 +132,7 @@ class IncomingStudentModelTestCase(FytTestCase):
             trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=0,
-            bus_assignment_round_trip=None
+            bus_assignment_round_trip=None,
         )
         self.assertEqual(inc.compute_cost(), 100)
 
@@ -148,7 +143,7 @@ class IncomingStudentModelTestCase(FytTestCase):
             trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=35,
-            bus_assignment_round_trip=None
+            bus_assignment_round_trip=None,
         )
         self.assertEqual(inc.compute_cost(), 65)
 
@@ -159,47 +154,60 @@ class IncomingStudentModelTestCase(FytTestCase):
             trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip),
             financial_aid=25,
-            bus_assignment_round_trip__cost_round_trip=25
+            bus_assignment_round_trip__cost_round_trip=25,
         )
         self.assertEqual(inc.compute_cost(), 93.75)
 
     def test_compute_cost_with_doc_membership(self):
-        mommy.make(Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50)
+        mommy.make(
+            Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50
+        )
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip),
-            financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
-            registration__doc_membership=True
+            financial_aid=25,
+            bus_assignment_round_trip__cost_round_trip=25,
+            registration__doc_membership=True,
         )
         self.assertEqual(inc.compute_cost(), 131.25)
 
     def test_compute_cost_with_green_fund_contribution(self):
-        mommy.make(Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50)
+        mommy.make(
+            Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50
+        )
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=mommy.make(Trip),
-            financial_aid=25, bus_assignment_round_trip__cost_round_trip=25,
+            financial_aid=25,
+            bus_assignment_round_trip__cost_round_trip=25,
             registration__doc_membership=True,
-            registration__green_fund_donation=290
+            registration__green_fund_donation=290,
         )
         self.assertEqual(inc.compute_cost(), 421.25)
 
     def test_compute_cost_with_no_trip_assignment_but_with_doc_membership(self):
-        mommy.make(Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50)
+        mommy.make(
+            Settings, trips_year=self.trips_year, trips_cost=100, doc_membership_cost=50
+        )
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
-            financial_aid=0, bus_assignment_round_trip=None,
-            registration__doc_membership=True
+            financial_aid=0,
+            bus_assignment_round_trip=None,
+            registration__doc_membership=True,
         )
         self.assertEqual(inc.compute_cost(), 50)
 
     def test_compute_cost_with_cancelled_trip(self):
         mommy.make(Settings, trips_year=self.trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
-            cancelled=True
+            cancelled=True,
         )
         # still charged if cancels last-minute
         self.assertEqual(inc.compute_cost(), 100)
@@ -207,10 +215,11 @@ class IncomingStudentModelTestCase(FytTestCase):
     def test_compute_cost_with_cancelled_trip_and_custom_cancellation_fee(self):
         mommy.make(Settings, trips_year=self.trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
             cancelled=True,
-            cancelled_fee=13
+            cancelled_fee=13,
         )
         self.assertEqual(inc.compute_cost(), 13)
 
@@ -224,38 +233,42 @@ class IncomingStudentModelTestCase(FytTestCase):
     def test_cancellation_cost(self):
         costs = mommy.make(Settings, trips_year=self.trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
             cancelled=True,
-            financial_aid=70
+            financial_aid=70,
         )
         self.assertEqual(inc.cancellation_cost(costs), 30)
 
     def test_cancellation_cost_with_fee_override(self):
         costs = mommy.make(Settings, trips_year=self.trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
             cancelled=True,
-            cancelled_fee=13
+            cancelled_fee=13,
         )
         self.assertEqual(inc.cancellation_cost(costs), 13)
 
     def test_trip_cost_with_no_trip(self):
         costs = mommy.make(Settings, trips_year=self.trips_year, trips_cost=100)
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
-            trip_assignment=None,
+            IncomingStudent, trips_year=self.trips_year, trip_assignment=None
         )
         self.assertEqual(inc.trip_cost(costs), 0)
 
     def test_doc_membership_cost(self):
-        costs = mommy.make(Settings, trips_year=self.trips_year, doc_membership_cost=100)
+        costs = mommy.make(
+            Settings, trips_year=self.trips_year, doc_membership_cost=100
+        )
         inc = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             trip_assignment=None,
             registration__doc_membership=True,
-            financial_aid=60
+            financial_aid=60,
         )
         self.assertEqual(inc.doc_membership_cost(costs), 40)
 
@@ -270,20 +283,22 @@ class IncomingStudentModelTestCase(FytTestCase):
             mommy.prepare(
                 IncomingStudent,
                 bus_assignment_round_trip=mommy.make(Stop),
-                bus_assignment_to_hanover=mommy.make(Stop)
+                bus_assignment_to_hanover=mommy.make(Stop),
             ).full_clean()
         with self.assertRaisesRegexp(ValidationError, msg):
             mommy.prepare(
                 IncomingStudent,
                 bus_assignment_round_trip=mommy.make(Stop),
-                bus_assignment_from_hanover=mommy.make(Stop)
+                bus_assignment_from_hanover=mommy.make(Stop),
             ).full_clean()
 
     def test_bus_cost_with_round_trip(self):
         inc = mommy.make(
             IncomingStudent,
-            bus_assignment_round_trip=mommy.make(Stop, cost_round_trip=100, cost_one_way=15),
-            financial_aid=35
+            bus_assignment_round_trip=mommy.make(
+                Stop, cost_round_trip=100, cost_one_way=15
+            ),
+            financial_aid=35,
         )
         self.assertEqual(inc.bus_cost(), 65)
 
@@ -291,10 +306,12 @@ class IncomingStudentModelTestCase(FytTestCase):
         inc = mommy.make(
             IncomingStudent,
             bus_assignment_to_hanover=mommy.make(
-                Stop, cost_round_trip=3, cost_one_way=30),
+                Stop, cost_round_trip=3, cost_one_way=30
+            ),
             bus_assignment_from_hanover=mommy.make(
-                Stop, cost_round_trip=1, cost_one_way=70),
-            financial_aid=10
+                Stop, cost_round_trip=1, cost_one_way=70
+            ),
+            financial_aid=10,
         )
         self.assertEqual(inc.bus_cost(), 90)
 
@@ -309,27 +326,18 @@ class IncomingStudentModelTestCase(FytTestCase):
 
     def test_get_bus_stop_to_and_from_hanover_with_round_trip(self):
         stop = mommy.make(Stop)
-        inc = mommy.make(
-            IncomingStudent,
-            bus_assignment_round_trip=stop
-        )
+        inc = mommy.make(IncomingStudent, bus_assignment_round_trip=stop)
         self.assertEqual(inc.get_bus_to_hanover(), stop)
         self.assertEqual(inc.get_bus_from_hanover(), stop)
 
     def test_get_bus_stop_to_hanover_one_way(self):
         stop = mommy.make(Stop)
-        inc = mommy.make(
-            IncomingStudent,
-            bus_assignment_to_hanover=stop
-        )
+        inc = mommy.make(IncomingStudent, bus_assignment_to_hanover=stop)
         self.assertEqual(inc.get_bus_to_hanover(), stop)
 
     def test_get_bus_stop_from_hanover_one_way(self):
         stop = mommy.make(Stop)
-        inc = mommy.make(
-            IncomingStudent,
-            bus_assignment_from_hanover=stop
-        )
+        inc = mommy.make(IncomingStudent, bus_assignment_from_hanover=stop)
         self.assertEqual(inc.get_bus_from_hanover(), stop)
 
     def test_lastname(self):
@@ -344,24 +352,32 @@ class IncomingStudentModelTestCase(FytTestCase):
 
 
 class RegistrationModelTestCase(FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
     def test_must_agree_to_waiver(self):
-        with self.assertRaisesMessage(
-                ValidationError, "You must agree to the waiver"):
+        with self.assertRaisesMessage(ValidationError, "You must agree to the waiver"):
             mommy.make(Registration, waiver=False).full_clean()
 
     def test_get_trip_assignment_returns_assignment(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
         reg = mommy.make(Registration, trips_year=self.trips_year)
-        trippee = mommy.make(IncomingStudent, trips_year=self.trips_year, trip_assignment=trip, registration=reg)
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment=trip,
+            registration=reg,
+        )
         self.assertEqual(trip, reg.get_trip_assignment())
 
     def test_get_trip_assignment_with_no_trip_assignment_returns_None(self):
         reg = mommy.make(Registration, trips_year=self.trips_year)
-        trippee = mommy.make(IncomingStudent, trips_year=self.trips_year, trip_assignment=None, registration=reg)
+        trippee = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            trip_assignment=None,
+            registration=reg,
+        )
         self.assertIsNone(reg.get_trip_assignment())
 
     def test_get_trip_assignment_with_no_IncomingStudent_returns_None(self):
@@ -369,17 +385,35 @@ class RegistrationModelTestCase(FytTestCase):
         self.assertIsNone(reg.get_trip_assignment())
 
     def test_nonswimmer_property(self):
-        non_swimmer =  mommy.make(Registration, trips_year=self.trips_year, swimming_ability=Registration.NON_SWIMMER)
+        non_swimmer = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.NON_SWIMMER,
+        )
         self.assertTrue(non_swimmer.is_non_swimmer)
-        for choice in [Registration.BEGINNER, Registration.COMPETENT, Registration.EXPERT]:
-            swimmer = mommy.make(Registration, trips_year=self.trips_year, swimming_ability=choice)
+        for choice in [
+            Registration.BEGINNER,
+            Registration.COMPETENT,
+            Registration.EXPERT,
+        ]:
+            swimmer = mommy.make(
+                Registration, trips_year=self.trips_year, swimming_ability=choice
+            )
             self.assertFalse(swimmer.is_non_swimmer)
 
     def test_base_trip_choice_queryset_filters_for_nonswimmers(self):
-        trip1 = mommy.make(Trip, trips_year=self.trips_year, template__swimtest_required=True)
-        trip2 = mommy.make(Trip, trips_year=self.trips_year, template__swimtest_required=False)
+        trip1 = mommy.make(
+            Trip, trips_year=self.trips_year, template__swimtest_required=True
+        )
+        trip2 = mommy.make(
+            Trip, trips_year=self.trips_year, template__swimtest_required=False
+        )
 
-        reg = mommy.make(Registration, trips_year=self.trips_year, swimming_ability=Registration.NON_SWIMMER)
+        reg = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.NON_SWIMMER,
+        )
         reg.set_section_preference(trip1.section, PREFER)
         reg.set_section_preference(trip2.section, PREFER)
 
@@ -390,7 +424,11 @@ class RegistrationModelTestCase(FytTestCase):
         trip2 = mommy.make(Trip, trips_year=self.trips_year)
         trip3 = mommy.make(Trip, trips_year=self.trips_year)
 
-        reg = mommy.make(Registration, trips_year=self.trips_year, swimming_ability=Registration.COMPETENT)
+        reg = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.COMPETENT,
+        )
         reg.set_section_preference(trip1.section, PREFER)
         reg.set_section_preference(trip2.section, AVAILABLE)
 
@@ -400,11 +438,24 @@ class RegistrationModelTestCase(FytTestCase):
         section1 = mommy.make('Section', trips_year=self.trips_year)
         section2 = mommy.make('Section', trips_year=self.trips_year)
         firstchoice_triptype = mommy.make('TripType', trips_year=self.trips_year)
-        trip1 = mommy.make(Trip, trips_year=self.trips_year, section=section1, template__triptype=firstchoice_triptype)
-        trip2 = mommy.make(Trip, trips_year=self.trips_year, section=section2, template__triptype=firstchoice_triptype)
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section1,
+            template__triptype=firstchoice_triptype,
+        )
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section2,
+            template__triptype=firstchoice_triptype,
+        )
 
-        reg = mommy.make(Registration, trips_year=self.trips_year,
-                         swimming_ability=Registration.COMPETENT)
+        reg = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.COMPETENT,
+        )
         reg.set_section_preference(section1, AVAILABLE)
         reg.set_triptype_preference(firstchoice_triptype, FIRST_CHOICE)
 
@@ -414,12 +465,25 @@ class RegistrationModelTestCase(FytTestCase):
         section1 = mommy.make('Section', trips_year=self.trips_year)
         section2 = mommy.make('Section', trips_year=self.trips_year)
         triptype = mommy.make('TripType', trips_year=self.trips_year)
-        trip1 = mommy.make(Trip, trips_year=self.trips_year, section=section1, template__triptype=triptype)
-        trip2 = mommy.make(Trip, trips_year=self.trips_year, section=section2, template__triptype=triptype)
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section1,
+            template__triptype=triptype,
+        )
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section2,
+            template__triptype=triptype,
+        )
         trip3 = mommy.make(Trip, trips_year=self.trips_year, section=section1)
 
-        reg = mommy.make(Registration, trips_year=self.trips_year,
-                         swimming_ability=Registration.COMPETENT)
+        reg = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.COMPETENT,
+        )
         reg.set_section_preference(section1, PREFER)
         reg.set_triptype_preference(triptype, PREFER)
 
@@ -429,12 +493,25 @@ class RegistrationModelTestCase(FytTestCase):
         section1 = mommy.make('Section', trips_year=self.trips_year)
         section2 = mommy.make('Section', trips_year=self.trips_year)
         triptype = mommy.make('TripType', trips_year=self.trips_year)
-        trip1 = mommy.make(Trip, trips_year=self.trips_year, section=section1, template__triptype=triptype)
-        trip2 = mommy.make(Trip, trips_year=self.trips_year, section=section2, template__triptype=triptype)
+        trip1 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section1,
+            template__triptype=triptype,
+        )
+        trip2 = mommy.make(
+            Trip,
+            trips_year=self.trips_year,
+            section=section2,
+            template__triptype=triptype,
+        )
         trip3 = mommy.make(Trip, trips_year=self.trips_year, section=section1)
 
-        reg = mommy.make(Registration, trips_year=self.trips_year,
-                         swimming_ability=Registration.COMPETENT)
+        reg = mommy.make(
+            Registration,
+            trips_year=self.trips_year,
+            swimming_ability=Registration.COMPETENT,
+        )
         reg.set_section_preference(section1, PREFER)
         reg.set_triptype_preference(triptype, AVAILABLE)
 
@@ -443,14 +520,17 @@ class RegistrationModelTestCase(FytTestCase):
     def test_get_incoming_student(self):
         reg = mommy.make(Registration, trips_year=self.trips_year)
         self.assertIsNone(reg.get_incoming_student())
-        incoming = mommy.make(IncomingStudent, trips_year=self.trips_year,
-                              registration=reg)
+        incoming = mommy.make(
+            IncomingStudent, trips_year=self.trips_year, registration=reg
+        )
         reg = Registration.objects.get(pk=reg.pk)
         self.assertEqual(reg.get_incoming_student(), incoming)
 
     def test_match(self):
         user = self.make_incoming_student()
-        incoming = mommy.make(IncomingStudent, netid=user.netid, trips_year=self.trips_year)
+        incoming = mommy.make(
+            IncomingStudent, netid=user.netid, trips_year=self.trips_year
+        )
         reg = mommy.make(Registration, trips_year=self.trips_year, user=user)
         # clear automatic connections
         incoming.registration = None
@@ -465,14 +545,14 @@ class RegistrationModelTestCase(FytTestCase):
                 Registration,
                 bus_stop_round_trip=mommy.make(Stop),
                 bus_stop_to_hanover=mommy.make(Stop),
-                waiver=True
+                waiver=True,
             ).full_clean()
         with self.assertRaisesRegex(ValidationError, "round-trip AND a one-way"):
             mommy.make(
                 Registration,
                 bus_stop_round_trip=mommy.make(Stop),
                 bus_stop_from_hanover=mommy.make(Stop),
-                waiver=True
+                waiver=True,
             ).full_clean()
 
 
@@ -490,7 +570,8 @@ class ImportIncomingStudentsTestCase(FytTestCase):
 
     def create_from_filename(self, file_name):
         return IncomingStudent.objects.create_from_sheet(
-            pyexcel.get_sheet(file_name=file_name), self.trips_year)
+            pyexcel.get_sheet(file_name=file_name), self.trips_year
+        )
 
     def test_create_from_csv(self):
         (created, existing) = self.create_from_filename(self.FILE_CSV)
@@ -522,28 +603,36 @@ class ImportIncomingStudentsTestCase(FytTestCase):
     def test_upload_form(self):
         with open(self.FILE_XLS, 'rb') as f:
             uploaded_file = SimpleUploadedFile('incoming_students.xls', f.read())
-        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        form = PyExcelFileForm(
+            trips_year=self.trips_year, files={'spreadsheet': uploaded_file}
+        )
         sheet = form.load_sheet()
         self.assertEqual(len(list(sheet.rows())), 3)
 
     def test_upload_form_csv(self):
         with open(self.FILE_CSV, 'rb') as f:
             uploaded_file = SimpleUploadedFile('incoming_students.csv', f.read())
-        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        form = PyExcelFileForm(
+            trips_year=self.trips_year, files={'spreadsheet': uploaded_file}
+        )
         sheet = form.load_sheet()
         self.assertEqual(len(list(sheet.rows())), 3)
 
     def test_upload_form_bom_csv(self):
         with open(self.FILE_CSV_WITH_BOM, 'rb') as f:
             uploaded_file = SimpleUploadedFile('incoming_students.csv', f.read())
-        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        form = PyExcelFileForm(
+            trips_year=self.trips_year, files={'spreadsheet': uploaded_file}
+        )
         IncomingStudent.objects.create_from_sheet(form.load_sheet(), self.trips_year)
         self.assertEqual(IncomingStudent.objects.count(), 2)
 
     def test_validate_extension_format(self):
         with open(self.FILE_XML, 'rb') as f:
             uploaded_file = SimpleUploadedFile('incoming_students.xml', f.read())
-        form = PyExcelFileForm(trips_year=self.trips_year, files={'spreadsheet': uploaded_file})
+        form = PyExcelFileForm(
+            trips_year=self.trips_year, files={'spreadsheet': uploaded_file}
+        )
         self.assertFalse(form.is_valid())
 
 
@@ -556,13 +645,12 @@ class ImportIncomingStudentHinmanBoxes(FytTestCase):
 
     def test_import_from_csv(self):
         incoming = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            netid='d34898x',
-            hinman_box=''
+            IncomingStudent, trips_year=self.trips_year, netid='d34898x', hinman_box=''
         )
         sheet = pyexcel.get_sheet(file_name=self.FILE_CSV)
-        imported, not_found = IncomingStudent.objects.update_hinman_boxes(sheet, self.trips_year)
+        imported, not_found = IncomingStudent.objects.update_hinman_boxes(
+            sheet, self.trips_year
+        )
 
         incoming.refresh_from_db()
         self.assertEqual(incoming.hinman_box, 'Hinman Box 2884')
@@ -571,77 +659,107 @@ class ImportIncomingStudentHinmanBoxes(FytTestCase):
 
 
 class IncomingStudentsManagerTestCase(FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
     def test_unregistered(self):
         registration = mommy.make(Registration, trips_year=self.trips_year)
-        registered = mommy.make(IncomingStudent, trips_year=self.trips_year, registration=registration)
+        registered = mommy.make(
+            IncomingStudent, trips_year=self.trips_year, registration=registration
+        )
         unregistered = mommy.make(IncomingStudent, trips_year=self.trips_year)
-        self.assertQsEqual(IncomingStudent.objects.unregistered(self.trips_year), [unregistered])
+        self.assertQsEqual(
+            IncomingStudent.objects.unregistered(self.trips_year), [unregistered]
+        )
 
     def test_availability_for_trip(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
 
         # Available for both the section and triptype
-        available = mommy.make(IncomingStudent, trips_year=self.trips_year,
-                               registration=mommy.make(Registration, trips_year=self.trips_year))
+        available = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            registration=mommy.make(Registration, trips_year=self.trips_year),
+        )
         available.registration.set_section_preference(trip.section, PREFER)
-        available.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
+        available.registration.set_triptype_preference(
+            trip.template.triptype, AVAILABLE
+        )
 
         # Available for the section but not the triptype
-        unavailable1 = mommy.make(IncomingStudent, trips_year=self.trips_year,
-                                  registration=mommy.make(Registration, trips_year=self.trips_year))
+        unavailable1 = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            registration=mommy.make(Registration, trips_year=self.trips_year),
+        )
         unavailable1.registration.set_section_preference(trip.section, PREFER)
 
         # Available for the triptype, but not the section
-        unavailable2 = mommy.make(IncomingStudent, trips_year=self.trips_year,
-                                 registration=mommy.make(Registration, trips_year=self.trips_year))
+        unavailable2 = mommy.make(
+            IncomingStudent,
+            trips_year=self.trips_year,
+            registration=mommy.make(Registration, trips_year=self.trips_year),
+        )
         unavailable2.registration.set_section_preference(trip.section, NOT_AVAILABLE)
-        unavailable2.registration.set_section_preference(mommy.make(Section, trips_year=self.trips_year), PREFER)
-        unavailable2.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
+        unavailable2.registration.set_section_preference(
+            mommy.make(Section, trips_year=self.trips_year), PREFER
+        )
+        unavailable2.registration.set_triptype_preference(
+            trip.template.triptype, AVAILABLE
+        )
 
-        self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
+        self.assertQsEqual(
+            IncomingStudent.objects.available_for_trip(trip), [available]
+        )
 
     def test_non_swimmer_availability_for_trip(self):
         trip = mommy.make(
-            Trip, trips_year=self.trips_year,
-            template__swimtest_required=True
+            Trip, trips_year=self.trips_year, template__swimtest_required=True
         )
         available = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
-            registration__swimming_ability=Registration.BEGINNER
+            IncomingStudent,
+            trips_year=self.trips_year,
+            registration__swimming_ability=Registration.BEGINNER,
         )
         available.registration.set_section_preference(trip.section, PREFER)
-        available.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
+        available.registration.set_triptype_preference(
+            trip.template.triptype, AVAILABLE
+        )
 
         unavailable = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
-            registration__swimming_ability=Registration.NON_SWIMMER
+            IncomingStudent,
+            trips_year=self.trips_year,
+            registration__swimming_ability=Registration.NON_SWIMMER,
         )
         unavailable.registration.set_section_preference(trip.section, PREFER)
-        unavailable.registration.set_triptype_preference(trip.template.triptype, AVAILABLE)
+        unavailable.registration.set_triptype_preference(
+            trip.template.triptype, AVAILABLE
+        )
 
-        self.assertQsEqual(IncomingStudent.objects.available_for_trip(trip), [available])
+        self.assertQsEqual(
+            IncomingStudent.objects.available_for_trip(trip), [available]
+        )
 
     def test_passengers_to_hanover(self):
         rte = mommy.make(Route, trips_year=self.trips_year, category=Route.EXTERNAL)
         sxn = mommy.make(Section, trips_year=self.trips_year)
         psngr1 = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_round_trip__route=rte,
-            trip_assignment__section=sxn
+            trip_assignment__section=sxn,
         )
         psngr2 = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_to_hanover__route=rte,
-            trip_assignment__section=sxn
+            trip_assignment__section=sxn,
         )
         not_psngr = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_from_hanover__route=rte,
-            trips_assignment__section=sxn
+            trips_assignment__section=sxn,
         )
         target = [psngr1, psngr2]
         actual = IncomingStudent.objects.passengers_to_hanover(
@@ -653,19 +771,22 @@ class IncomingStudentsManagerTestCase(FytTestCase):
         rte = mommy.make(Route, trips_year=self.trips_year, category=Route.EXTERNAL)
         sxn = mommy.make(Section, trips_year=self.trips_year)
         psngr1 = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_round_trip__route=rte,
-            trip_assignment__section=sxn
+            trip_assignment__section=sxn,
         )
         psngr2 = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_from_hanover__route=rte,
-            trip_assignment__section=sxn
+            trip_assignment__section=sxn,
         )
         not_psngr = mommy.make(
-            IncomingStudent, trips_year=self.trips_year,
+            IncomingStudent,
+            trips_year=self.trips_year,
             bus_assignment_to_hanover__route=rte,
-            trips_assignment__section=sxn
+            trips_assignment__section=sxn,
         )
         target = [psngr1, psngr2]
         actual = IncomingStudent.objects.passengers_from_hanover(
@@ -674,36 +795,29 @@ class IncomingStudentsManagerTestCase(FytTestCase):
         self.assertQsEqual(actual, target)
 
     def test_with_trip(self):
-        trip = mommy.make(
-            Trip,
-            trips_year=self.trips_year
-        )
+        trip = mommy.make(Trip, trips_year=self.trips_year)
         assigned = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            trip_assignment=trip
+            IncomingStudent, trips_year=self.trips_year, trip_assignment=trip
         )
         not_assigned = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            trip_assignment=None
+            IncomingStudent, trips_year=self.trips_year, trip_assignment=None
         )
         actual = list(IncomingStudent.objects.with_trip(self.trips_year))
         self.assertEqual(actual, [assigned])
 
     def test_cancelled(self):
         cancelled = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            cancelled=True
+            IncomingStudent, trips_year=self.trips_year, cancelled=True
         )
         not_cancelled = mommy.make(
             IncomingStudent,
             trips_year=self.trips_year,
             cancelled=False,
-            trip_assignment=mommy.make(Trip)
+            trip_assignment=mommy.make(Trip),
         )
-        self.assertQsEqual(IncomingStudent.objects.cancelled(self.trips_year), [cancelled])
+        self.assertQsEqual(
+            IncomingStudent.objects.cancelled(self.trips_year), [cancelled]
+        )
 
 
 class RegistrationViewsTestCase(FytTestCase):
@@ -723,7 +837,9 @@ class RegistrationViewsTestCase(FytTestCase):
         t.save()
         mommy.make(Settings, trips_year=self.trips_year)
         user = self.make_incoming_student()
-        student = mommy.make(IncomingStudent, trips_year=self.trips_year, netid=user.netid)
+        student = mommy.make(
+            IncomingStudent, trips_year=self.trips_year, netid=user.netid
+        )
         reg_data = {
             'name': 'test',
             'gender': 'hi',
@@ -748,7 +864,9 @@ class RegistrationViewsTestCase(FytTestCase):
 
     def test_non_student_registration(self):
         mommy.make(Settings, trips_year=self.trips_year)
-        url = reverse('core:registration:nonstudent', kwargs={'trips_year': self.trips_year})
+        url = reverse(
+            'core:registration:nonstudent', kwargs={'trips_year': self.trips_year}
+        )
         data = {
             'name': 'name',
             'gender': 'm',
@@ -812,8 +930,7 @@ class RegistrationFormTestCase(FytTestCase):
         self.assertEqual(form.trips_year, self.trips_year)
 
     def test_save_adds_year_and_user(self):
-        form = RegistrationForm(trips_year=self.trips_year,
-                                data=self.REGISTRATION_DATA)
+        form = RegistrationForm(trips_year=self.trips_year, data=self.REGISTRATION_DATA)
         user = self.make_user()
         instance = form.save(user=user)
         self.assertEqual(instance.trips_year, self.trips_year)
@@ -822,19 +939,19 @@ class RegistrationFormTestCase(FytTestCase):
     def test_section_and_triptype_preferences(self):
         reg = mommy.make(Registration, trips_year=self.trips_year)
         triptype = mommy.make(TripType, pk=1, trips_year=self.trips_year)
-        section = mommy.make(Section, pk=1, trips_year=self.trips_year,
-                             leaders_arrive=date(2015, 1, 1), name='A')
-        data = {
-            'triptype_1': 'FIRST CHOICE',
-            'section_1': 'PREFER'
-        }
+        section = mommy.make(
+            Section,
+            pk=1,
+            trips_year=self.trips_year,
+            leaders_arrive=date(2015, 1, 1),
+            name='A',
+        )
+        data = {'triptype_1': 'FIRST CHOICE', 'section_1': 'PREFER'}
         data.update(self.REGISTRATION_DATA)
-        form = RegistrationForm(trips_year=self.trips_year, instance=reg,
-                                data=data)
+        form = RegistrationForm(trips_year=self.trips_year, instance=reg, data=data)
         reg = form.save()
 
-        self.assertEqual(form.fields['section_1'].label,
-                         'A &mdash; Jan 02 to Jan 06')
+        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 02 to Jan 06')
 
         tts = reg.registrationtriptypechoice_set.all()
         self.assertEqual(len(tts), 1)
@@ -848,7 +965,6 @@ class RegistrationFormTestCase(FytTestCase):
 
 
 class IncomingStudentViewsTestCase(FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
@@ -857,28 +973,30 @@ class IncomingStudentViewsTestCase(FytTestCase):
         url = incoming.delete_url()
         res = self.app.get(url, user=self.make_director())
         res = res.form.submit().follow()
-        self.assertEqual(res.request.path,
-                         reverse('core:incomingstudent:index', kwargs={'trips_year': self.trips_year}))
+        self.assertEqual(
+            res.request.path,
+            reverse(
+                'core:incomingstudent:index', kwargs={'trips_year': self.trips_year}
+            ),
+        )
         with self.assertRaises(IncomingStudent.DoesNotExist):
             IncomingStudent.objects.get(pk=incoming.pk)
 
 
 class RegistrationManagerTestCase(FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
     def test_requesting_financial_aid(self):
         requesting = mommy.make(
-            Registration, trips_year=self.trips_year,
-            financial_assistance=True
+            Registration, trips_year=self.trips_year, financial_assistance=True
         )
         not_requesting = mommy.make(
-            Registration, trips_year=self.trips_year,
-            financial_assistance=False
+            Registration, trips_year=self.trips_year, financial_assistance=False
         )
-        self.assertQsEqual(Registration.objects.want_financial_aid(self.trips_year),
-                           [requesting])
+        self.assertQsEqual(
+            Registration.objects.want_financial_aid(self.trips_year), [requesting]
+        )
 
     def test_requesting_bus(self):
         stop = mommy.make(
@@ -894,12 +1012,10 @@ class RegistrationManagerTestCase(FytTestCase):
             Registration, trips_year=self.trips_year, bus_stop_from_hanover=stop
         )
         not_requesting = mommy.make(Registration, trips_year=self.trips_year)
-        self.assertQsEqual(Registration.objects.want_bus(self.trips_year),
-                           [r1, r2, r3])
+        self.assertQsEqual(Registration.objects.want_bus(self.trips_year), [r1, r2, r3])
 
     def test_unmatched(self):
         matched = mommy.make(Registration, trips_year=self.trips_year)
         mommy.make(IncomingStudent, trips_year=self.trips_year, registration=matched)
         unmatched = mommy.make(Registration, trips_year=self.trips_year)
-        self.assertQsEqual(Registration.objects.unmatched(self.trips_year),
-                           [unmatched])
+        self.assertQsEqual(Registration.objects.unmatched(self.trips_year), [unmatched])

@@ -10,19 +10,10 @@ from django.utils.functional import cached_property
 from vanilla import CreateView, FormView, RedirectView, TemplateView
 
 from fyt.applications.forms import SKIP, ScoreForm, ScoreQuestionFormset
-from fyt.applications.models import (
-    Grader,
-    Score,
-    ScoreClaim,
-    ScoreQuestion,
-    Volunteer,
-)
+from fyt.applications.models import Grader, Score, ScoreClaim, ScoreQuestion, Volunteer
 from fyt.core.models import TripsYear
 from fyt.core.views import DatabaseDeleteView
-from fyt.permissions.views import (
-    GraderPermissionRequired,
-    SettingsPermissionRequired,
-)
+from fyt.permissions.views import GraderPermissionRequired, SettingsPermissionRequired
 from fyt.timetable.models import Timetable
 from fyt.utils.views import ExtraContextMixin
 
@@ -37,6 +28,7 @@ class Scoring(GraderPermissionRequired, ExtraContextMixin, TemplateView):
     """
     Landing page for scoring.
     """
+
     template_name = 'applications/scoring.html'
 
     @cached_property
@@ -46,33 +38,36 @@ class Scoring(GraderPermissionRequired, ExtraContextMixin, TemplateView):
     def extra_context(self):
         return {
             'trips_year': self.trips_year,
-            'progress': Volunteer.objects.score_progress(self.trips_year)
+            'progress': Volunteer.objects.score_progress(self.trips_year),
         }
 
 
-class IfScoringAvailable():
+class IfScoringAvailable:
     """
     Only allow grading once applications are closed
     """
+
     def dispatch(self, request, *args, **kwargs):
         if not Timetable.objects.timetable().scoring_available:
             return render(request, 'applications/scoring_not_available.html')
         return super().dispatch(request, *args, **kwargs)
 
 
-class NoApplicationsLeftToScore(GraderPermissionRequired,
-                                IfScoringAvailable, TemplateView):
+class NoApplicationsLeftToScore(
+    GraderPermissionRequired, IfScoringAvailable, TemplateView
+):
     """
     Tell user there are no more applications for her to grade
     """
+
     template_name = 'applications/no_applications.html'
 
 
-class ClaimNextApplication(GraderPermissionRequired, IfScoringAvailable,
-                           RedirectView):
+class ClaimNextApplication(GraderPermissionRequired, IfScoringAvailable, RedirectView):
     """
     Redirect to the next Volunteer application that needs to be scored.
     """
+
     permanent = False
 
     @property
@@ -88,12 +83,18 @@ class ClaimNextApplication(GraderPermissionRequired, IfScoringAvailable,
         return reverse('applications:score:add', kwargs={'pk': application.pk})
 
 
-class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
-                       ExtraContextMixin, SetHeadlineMixin, FormMessagesMixin,
-                       CreateView):
+class ScoreApplication(
+    GraderPermissionRequired,
+    IfScoringAvailable,
+    ExtraContextMixin,
+    SetHeadlineMixin,
+    FormMessagesMixin,
+    CreateView,
+):
     """
     Score a Volunteer application.
     """
+
     model = Score
     form_class = ScoreForm
     template_name = 'applications/grade.html'
@@ -109,7 +110,8 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
 
     def get_headline(self):
         return 'Score {}: NetId {}'.format(
-            self.application_name, self.application.applicant.netid)
+            self.application_name, self.application.applicant.netid
+        )
 
     @cached_property
     def trips_year(self):
@@ -129,8 +131,9 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
 
     def get(self, *args, **kwargs):
         if not self.claim:
-            self.messages.warning("You took longer than the alloted time "
-                                  "for scoring this application")
+            self.messages.warning(
+                "You took longer than the alloted time " "for scoring this application"
+            )
             return HttpResponseRedirect(self.get_success_url())
 
         self.show_average_grade()
@@ -143,14 +146,19 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         """
         score_count = self.grader.score_count(self.trips_year)
 
-        if (score_count % SHOW_SCORE_AVG_INTERVAL == 0 and score_count != 0):
-            msg = ("FYI, your average awarded leader score is {}. "
-                   "Your average awarded croo score is {}. "
-                   "You'll see your average score every {} grades.")
-            self.messages.info(msg.format(
-                self.grader.avg_leader_score(self.trips_year),
-                self.grader.avg_croo_score(self.trips_year),
-                SHOW_SCORE_AVG_INTERVAL))
+        if score_count % SHOW_SCORE_AVG_INTERVAL == 0 and score_count != 0:
+            msg = (
+                "FYI, your average awarded leader score is {}. "
+                "Your average awarded croo score is {}. "
+                "You'll see your average score every {} grades."
+            )
+            self.messages.info(
+                msg.format(
+                    self.grader.avg_leader_score(self.trips_year),
+                    self.grader.avg_croo_score(self.trips_year),
+                    SHOW_SCORE_AVG_INTERVAL,
+                )
+            )
 
     def post(self, request, *args, **kwargs):
         """
@@ -162,8 +170,9 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
             return HttpResponseRedirect(self.get_success_url())
 
         if not self.claim:
-            self.messages.warning("You took longer than the alloted time "
-                                  "for scoring this application")
+            self.messages.warning(
+                "You took longer than the alloted time " "for scoring this application"
+            )
             return HttpResponseRedirect(self.get_success_url())
 
         return super().post(request, *args, **kwargs)
@@ -175,7 +184,7 @@ class ScoreApplication(GraderPermissionRequired, IfScoringAvailable,
         return {
             'application': self.application,
             'time_left': self.claim.time_left(),
-            'timeout_url': reverse('applications:score:scoring')
+            'timeout_url': reverse('applications:score:scoring'),
         }
 
 
@@ -186,8 +195,7 @@ class DeleteScore(DatabaseDeleteView):
         return self.object.application.detail_url()
 
 
-class EditScoreQuestions(SettingsPermissionRequired, FormMessagesMixin,
-                         FormView):
+class EditScoreQuestions(SettingsPermissionRequired, FormMessagesMixin, FormView):
     template_name = 'applications/score_questions.html'
     success_url = reverse_lazy('applications:setup_scoring')
     form_valid_message = "Score questions successfully updated"
@@ -201,8 +209,9 @@ class EditScoreQuestions(SettingsPermissionRequired, FormMessagesMixin,
         return ScoreQuestion.objects.filter(trips_year=self.trips_year)
 
     def get_form(self, **kwargs):
-        return ScoreQuestionFormset(trips_year=self.trips_year,
-                                    queryset=self.get_queryset(), **kwargs)
+        return ScoreQuestionFormset(
+            trips_year=self.trips_year, queryset=self.get_queryset(), **kwargs
+        )
 
     def form_valid(self, formset):
         formset.save()

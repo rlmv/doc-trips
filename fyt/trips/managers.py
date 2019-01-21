@@ -7,7 +7,6 @@ from fyt.utils.matrix import OrderedMatrix
 
 
 class SectionDatesManager(models.Manager):
-
     def camping_dates(self, trips_year):
         """
         Get all dates when trips are out camping for this trips_year.
@@ -41,7 +40,6 @@ class SectionDatesManager(models.Manager):
 
 
 class SectionManager(models.Manager):
-
     def local(self, trips_year):
         return self.filter(trips_year=trips_year, is_local=True)
 
@@ -68,7 +66,6 @@ class SectionManager(models.Manager):
 
 
 class TripManager(models.Manager):
-
     def get_queryset(self):
         """
         Go ahead and pull in section and template since we
@@ -91,10 +88,10 @@ class TripManager(models.Manager):
         """
 
         from fyt.trips.models import Section, TripTemplate
+
         sections = Section.objects.filter(trips_year=trips_year)
-        templates = (
-            TripTemplate.objects.filter(trips_year=trips_year)
-            .select_related('triptype')
+        templates = TripTemplate.objects.filter(trips_year=trips_year).select_related(
+            'triptype'
         )
 
         matrix = OrderedMatrix(templates, sections)
@@ -129,9 +126,11 @@ class TripManager(models.Manager):
 
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date-timedelta(days=2))
-            .filter(Q(dropoff_route=route) |
-                    Q(dropoff_route=None, template__dropoff_stop__route=route))
+            .filter(section__leaders_arrive=date - timedelta(days=2))
+            .filter(
+                Q(dropoff_route=route)
+                | Q(dropoff_route=None, template__dropoff_stop__route=route)
+            )
         )
 
     def pickups(self, route, date, trips_year):
@@ -140,9 +139,11 @@ class TripManager(models.Manager):
         """
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date-timedelta(days=4))
-            .filter(Q(pickup_route=route) |
-                    Q(pickup_route=None, template__pickup_stop__route=route))
+            .filter(section__leaders_arrive=date - timedelta(days=4))
+            .filter(
+                Q(pickup_route=route)
+                | Q(pickup_route=None, template__pickup_stop__route=route)
+            )
         )
 
     def returns(self, route, date, trips_year):
@@ -151,14 +152,15 @@ class TripManager(models.Manager):
         """
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date-timedelta(days=5))
-            .filter(Q(return_route=route) |
-                    Q(return_route=None, template__return_route=route))
+            .filter(section__leaders_arrive=date - timedelta(days=5))
+            .filter(
+                Q(return_route=route)
+                | Q(return_route=None, template__return_route=route)
+            )
         )
 
 
 class CampsiteManager(models.Manager):
-
     def matrix(self, trips_year):
         """
         Return of a matrix of trips residency by date.
@@ -167,16 +169,14 @@ class CampsiteManager(models.Manager):
         at campsite on date.
         """
         from .models import Section, Trip
+
         campsites = self.filter(trips_year=trips_year)
         dates = Section.dates.camping_dates(trips_year)
 
         matrix = OrderedMatrix(campsites, dates, default=list)
 
-        trips = Trip.objects.filter(
-            trips_year=trips_year
-        ).select_related(
-            'template__campsite1',
-            'template__campsite2',
+        trips = Trip.objects.filter(trips_year=trips_year).select_related(
+            'template__campsite1', 'template__campsite2'
         )
 
         for trip in trips:
@@ -187,7 +187,6 @@ class CampsiteManager(models.Manager):
 
 
 class TripTypeManager(models.Manager):
-
     def visible(self, trips_year):
         """
         Return the triptypes which are not hidden from leader applications and

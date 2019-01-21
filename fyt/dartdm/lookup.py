@@ -49,10 +49,9 @@ def lookup_dartdm(query_string):
         log.info(r.json())
         return []
 
-    return [{
-        NETID: data['uid'],
-        NAME: data['displayName'],
-    } for data in r.json()['users']]
+    return [
+        {NETID: data['uid'], NAME: data['displayName']} for data in r.json()['users']
+    ]
 
 
 class EmailLookupException(Exception):

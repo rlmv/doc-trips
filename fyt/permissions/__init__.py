@@ -8,6 +8,7 @@ class PermissionsConfig(AppConfig):
 
     def ready(self):
         from .permissions import groups
+
         # Initialize groups and permissions after every migration
         @receiver(post_migrate)
         def sync_auth(**kwargs):

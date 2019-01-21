@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 LAT_LNG_PARSER = re.compile(r'(-?\d+.\d+)[ ,] *(-?\d+.\d+)')
 LAT_LNG_TARGET = re.compile(r'(-?\d+.\d+,-?\d+.\d+)')
 
+
 def parse_lat_lng(string):
     """ 
     Try and pull something which looks like geo 
@@ -14,6 +15,7 @@ def parse_lat_lng(string):
     match = LAT_LNG_PARSER.search(string)
     if match:
         return match.expand(r'\1,\2')
+
 
 def validate_lat_lng(string):
     """

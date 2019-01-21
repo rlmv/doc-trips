@@ -19,7 +19,6 @@ def all_field_names(obj):
 
 
 class MigrateForwardTestCase(FytTestCase):
-
     def assertDataEqual(self, obj1, obj2):
         """
         Check that all data on the objects is equal except for
@@ -37,14 +36,16 @@ class MigrateForwardTestCase(FytTestCase):
                 field1 = obj1._meta.get_field(name)
                 field2 = obj2._meta.get_field(name)
 
-                if isinstance(field1, models.ForeignKey) and not name.endswith('_id'):  # recurse
-                    self.assertDataEqual(getattr(obj1, name),
-                                         getattr(obj2, name))
+                if isinstance(field1, models.ForeignKey) and not name.endswith(
+                    '_id'
+                ):  # recurse
+                    self.assertDataEqual(getattr(obj1, name), getattr(obj2, name))
 
                 if isinstance(field1, models.ManyToManyField):
                     raise Exception(
                         'ManyToManyFields are not currently handled '
-                        'by assertDataEqual')
+                        'by assertDataEqual'
+                    )
 
                 self.assertEqual(field1, field2)
             except models.fields.FieldDoesNotExist:  # reverse/related field
@@ -75,9 +76,7 @@ class MigrateForwardTestCase(FytTestCase):
         next_year = self.trips_year.make_next_year()
         # using just as an example
         vehicle = mommy.make(Vehicle, trips_year=self.trips_year)
-        new_vehicle = Forward(
-            self.trips_year, next_year
-        ).copy_object_forward(vehicle)
+        new_vehicle = Forward(self.trips_year, next_year).copy_object_forward(vehicle)
 
         self.assertEqual(new_vehicle.trips_year, next_year)
         self.assertDataEqual(vehicle, new_vehicle)
@@ -115,9 +114,7 @@ class MigrateForwardTestCase(FytTestCase):
 
     def test_trippee_med_info_is_deleted(self):
         trippee = mommy.make(
-            IncomingStudent,
-            trips_year=self.trips_year,
-            med_info='sparkles',
+            IncomingStudent, trips_year=self.trips_year, med_info='sparkles'
         )
         registration = mommy.make(
             Registration,
@@ -126,7 +123,7 @@ class MigrateForwardTestCase(FytTestCase):
             food_allergies='mangoes',
             dietary_restrictions='gluten free',
             needs='dinosaurs',
-            epipen=True
+            epipen=True,
         )
         forward()  # to next year
         trippee.refresh_from_db()
@@ -146,7 +143,7 @@ class MigrateForwardTestCase(FytTestCase):
             food_allergies='mangoes',
             dietary_restrictions='gluten free',
             needs='dinosaurs',
-            epipen=True
+            epipen=True,
         )
         forward()  # to next year
         app.refresh_from_db()
@@ -180,13 +177,11 @@ class MigrateForwardTestCase(FytTestCase):
 
     def test_complex_hierarchy_is_migrated(self):
         template = mommy.make(
-            TripTemplate,
-            trips_year=self.trips_year,
-            description__intro='hello')
+            TripTemplate, trips_year=self.trips_year, description__intro='hello'
+        )
 
         forward()
-        new_template = TripTemplate.objects.get(
-            trips_year=self.trips_year.year + 1)
+        new_template = TripTemplate.objects.get(trips_year=self.trips_year.year + 1)
 
         self.assertTrue(new_template.dropoff_stop.pk is not None)
         self.assertNotEqual(template.dropoff_stop.pk, new_template.dropoff_stop.pk)

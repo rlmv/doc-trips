@@ -27,7 +27,8 @@ class DartmouthDirectoryLookupWidget(forms.MultiWidget):
         widgets = [
             forms.TextInput(attrs={'class': 'dartdmLookup nameField'}),
             forms.HiddenInput(attrs={'class': 'netIdField'}),
-            forms.HiddenInput(attrs={'class': 'hiddenNameField'})]
+            forms.HiddenInput(attrs={'class': 'hiddenNameField'}),
+        ]
         super().__init__(widgets, attrs)
 
     def decompress(self, value):
@@ -82,7 +83,4 @@ class DartmouthDirectoryLookupField(forms.MultiValueField):
             else:
                 raise ValidationError("Ambiguous name %r" % data_list[0])
 
-        return {
-            lookup.NAME: data_list[0],
-            lookup.NETID: data_list[1],
-        }
+        return {lookup.NAME: data_list[0], lookup.NETID: data_list[1]}

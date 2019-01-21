@@ -11,7 +11,6 @@ from fyt.test import FytTestCase, vcr
 
 
 class DartdmLookupFieldTestCase(FytTestCase):
-
     @vcr.use_cassette
     def test_compress(self):
         field = DartmouthDirectoryLookupField()
@@ -24,22 +23,17 @@ class DartdmLookupFieldTestCase(FytTestCase):
         with self.assertRaises(ValidationError):
             field.compress(['Robert L. Marchmanxyzsgasdgasdf'])
 
-        answer = {
-            'netid': 'a002bxd',
-            'name': 'Robert L. Marchman IV'
-        }
+        answer = {'netid': 'a002bxd', 'name': 'Robert L. Marchman IV'}
 
         # Entered before typeahead completed
         self.assertEqual(field.compress(['Robert L. Marchman IV']), answer)
 
         # Entered after typeahead completed
-        data_list = ['Robert L. Marchman IV', 'a002bxd',
-                     'Robert L. Marchman IV']
+        data_list = ['Robert L. Marchman IV', 'a002bxd', 'Robert L. Marchman IV']
         self.assertEqual(field.compress(data_list), answer)
 
 
 class DartdmLookupTestCase(unittest.TestCase):
-
     def setUp(self):
         logging.disable(logging.CRITICAL)
 
@@ -55,7 +49,6 @@ class DartdmLookupTestCase(unittest.TestCase):
 
 
 class EmailLookupTestCase(unittest.TestCase):
-
     def setUp(self):
         logging.disable(logging.CRITICAL)
 

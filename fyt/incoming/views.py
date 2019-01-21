@@ -18,12 +18,7 @@ from django.utils.functional import cached_property
 from vanilla import CreateView, FormView, TemplateView, UpdateView
 
 from .filters import RegistrationFilterSet
-from .forms import (
-    AssignmentForm,
-    PyExcelFileForm,
-    RegistrationForm,
-    TrippeeInfoForm,
-)
+from .forms import AssignmentForm, PyExcelFileForm, RegistrationForm, TrippeeInfoForm
 from .models import IncomingStudent, Registration, Settings
 from .tables import IncomingStudentTable, RegistrationTable
 
@@ -56,16 +51,15 @@ registrations and trippees in the database.
 logger = logging.getLogger(__name__)
 
 
-class IfRegistrationAvailable():
+class IfRegistrationAvailable:
     """
     Redirect if trippee registration is not currently available
     """
+
     def dispatch(self, request, *args, **kwargs):
 
         if not Timetable.objects.timetable().registration_available():
-            return HttpResponseRedirect(
-                reverse('incoming:registration_not_available')
-            )
+            return HttpResponseRedirect(reverse('incoming:registration_not_available'))
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -73,14 +67,17 @@ class RegistrationNotAvailable(TemplateView):
     """
     View shown if registration is not available.
     """
+
     template_name = 'incoming/not_available.html'
 
 
-class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
-                           FormMessagesMixin, TripsYearMixin):
+class BaseRegistrationView(
+    LoginRequiredMixin, IfRegistrationAvailable, FormMessagesMixin, TripsYearMixin
+):
     """
     CBV base for registration form with all contextual information
     """
+
     model = Registration
     form_class = RegistrationForm
     template_name = 'incoming/register.html'
@@ -98,10 +95,12 @@ class BaseRegistrationView(LoginRequiredMixin, IfRegistrationAvailable,
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['triptypes'] = TripType.objects.visible(self.trips_year)
-        context['registration_deadline'] = (
-            Timetable.objects.timetable().trippee_registrations_close)
+        context[
+            'registration_deadline'
+        ] = Timetable.objects.timetable().trippee_registrations_close
         context['contact_url'] = Settings.objects.get(
-            trips_year=self.trips_year).contact_url
+            trips_year=self.trips_year
+        ).contact_url
         return context
 
 
@@ -112,6 +111,7 @@ class Register(BaseRegistrationView, CreateView):
     Redirect to the edit view if this incoming student
     has already registered.
     """
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         """
@@ -122,8 +122,8 @@ class Register(BaseRegistrationView, CreateView):
         order *then* passed to the LoginRequiredMixin, which doesn't work.
         """
         reg = Registration.objects.filter(
-            trips_year=self.trips_year,
-            user=request.user).first()
+            trips_year=self.trips_year, user=request.user
+        ).first()
         if reg:
             return HttpResponseRedirect(reverse('incoming:edit_registration'))
 
@@ -146,23 +146,23 @@ class EditRegistration(BaseRegistrationView, UpdateView):
     """
     Edit a trips registration.
     """
+
     def get_object(self):
         """
         Get registration for user
         """
         return get_object_or_404(
-            self.model, user=self.request.user,
-            trips_year=self.trips_year
+            self.model, user=self.request.user, trips_year=self.trips_year
         )
 
 
-class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
-                            TemplateView):
+class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin, TemplateView):
     """
     Information for incoming students.
 
     Shows trip assignment, if available, and link to registration.
     """
+
     template_name = 'incoming/portal.html'
 
     @cached_property
@@ -175,8 +175,7 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
         """
         try:
             return Registration.objects.get(
-                user=self.request.user,
-                trips_year=self.trips_year
+                user=self.request.user, trips_year=self.trips_year
             )
         except Registration.DoesNotExist:
             return None
@@ -187,8 +186,7 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
         """
         try:
             return IncomingStudent.objects.get(
-                netid=self.request.user.netid,
-                trips_year=self.trips_year
+                netid=self.request.user.netid, trips_year=self.trips_year
             )
         except IncomingStudent.DoesNotExist:
             return None
@@ -207,13 +205,14 @@ class IncomingStudentPortal(LoginRequiredMixin, ExtraContextMixin,
             'trip': inc.trip_assignment if inc else None,
             'registration_available': timetable.registration_available(),
             'registration_closes': timetable.trippee_registrations_close,
-            'after_deadline': (
-                timetable.trippee_registrations_close > timezone.now()),
+            'after_deadline': (timetable.trippee_registrations_close > timezone.now()),
             'assignment_available': timetable.trippee_assignment_available,
             'trips_year': self.trips_year,
             'contact_url': (
-                Settings.objects.get(trips_year=self.trips_year).contact_url),
+                Settings.objects.get(trips_year=self.trips_year).contact_url
+            ),
         }
+
 
 # ----- database internal views --------
 
@@ -222,6 +221,7 @@ class RegistrationIndex(DatabaseListView):
     """
     All trippee registrations.
     """
+
     model = Registration
     template_name = 'incoming/registration_index.html'
     context_object_name = 'registrations'
@@ -236,14 +236,13 @@ class RegistrationIndex(DatabaseListView):
 
     def extra_context(self):
         filter = RegistrationFilterSet(
-            self.request.GET, queryset=self.get_queryset(),
-            trips_year=self.trips_year
+            self.request.GET, queryset=self.get_queryset(), trips_year=self.trips_year
         )
         return {
             'table': RegistrationTable(filter.qs, self.request),
             'filter': filter,
             'registration_count': len(filter.qs),
-            'unmatched': Registration.objects.unmatched(self.trips_year)
+            'unmatched': Registration.objects.unmatched(self.trips_year),
         }
 
 
@@ -260,13 +259,15 @@ class NonStudentRegistration(DatabaseCreateView):
     This view creates a user object without a netid and links the registration
     to this user.
     """
+
     model = Registration
     form_class = RegistrationForm
     explanation = (
         "<p> Upload a registration for a non-student. Use this only "
         "if, for some reason, the trippee does not have a NetId. "
         "An Incoming Student object will be automatically created "
-        "and filled in with information from the registration. </p>")
+        "and filled in with information from the registration. </p>"
+    )
 
     def form_valid(self, form):
         with transaction.atomic():
@@ -283,7 +284,7 @@ class NonStudentRegistration(DatabaseCreateView):
                 blitz=self.object.email,
                 phone=self.object.phone,
                 gender=self.object.gender,
-                registration=self.object
+                registration=self.object,
             )
         return HttpResponseRedirect(self.get_success_url())
 
@@ -311,7 +312,7 @@ class RegistrationDetail(DatabaseDetailView):
         'is_athlete',
         ('preferred sections', 'new_preferred_sections'),
         ('available sections', 'new_available_sections'),
-        ('first choice trip types','new_firstchoice_triptypes'),
+        ('first choice trip types', 'new_firstchoice_triptypes'),
         ('preferred trip types', 'new_preferred_triptypes'),
         ('available trip types', 'new_available_triptypes'),
         'schedule_conflicts',
@@ -345,7 +346,7 @@ class RegistrationDetail(DatabaseDetailView):
         'waiver',
         'doc_membership',
         'green_fund_donation',
-        'final_request'
+        'final_request',
     ]
 
 
@@ -353,6 +354,7 @@ class RegistrationUpdate(DatabaseUpdateView):
     """
     Edit a registration.
     """
+
     model = Registration
     form_class = RegistrationForm
 
@@ -361,6 +363,7 @@ class RegistrationDelete(DatabaseDeleteView):
     """
     Delete a registration.
     """
+
     model = Registration
     success_url_pattern = 'core:registration:index'
 
@@ -369,6 +372,7 @@ class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
     """
     All incoming students
     """
+
     model = IncomingStudent
     table_class = IncomingStudentTable
     table_pagination = False
@@ -376,12 +380,16 @@ class IncomingStudentIndex(tables.views.SingleTableMixin, DatabaseListView):
     context_object_name = 'trippees'
 
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'trip_assignment__section',
-            'trip_assignment__template',
-            'bus_assignment_round_trip',
-            'bus_assignment_to_hanover',
-            'bus_assignment_from_hanover',
+        return (
+            super()
+            .get_queryset()
+            .select_related(
+                'trip_assignment__section',
+                'trip_assignment__template',
+                'bus_assignment_round_trip',
+                'bus_assignment_to_hanover',
+                'bus_assignment_from_hanover',
+            )
         )
 
 
@@ -399,7 +407,7 @@ class IncomingStudentDetail(DatabaseDetailView):
         'hide_med_info',
         'med_info',
         'decline_reason',
-        'notes'
+        'notes',
     )
     college_fields = (
         'name',
@@ -413,15 +421,17 @@ class IncomingStudentDetail(DatabaseDetailView):
         'blitz',
         'phone',
         'address',
-        'hinman_box'
+        'hinman_box',
     )
 
     def extra_context(self):
         return {
             'edit_assignment_url': reverse(
-                'core:incomingstudent:update_assignment', kwargs=self.kwargs),
+                'core:incomingstudent:update_assignment', kwargs=self.kwargs
+            ),
             'edit_admin_url': reverse(
-                'core:incomingstudent:update', kwargs=self.kwargs)
+                'core:incomingstudent:update', kwargs=self.kwargs
+            ),
         }
 
 
@@ -429,6 +439,7 @@ class IncomingStudentDelete(DatabaseDeleteView):
     """
     Delete an incoming student.
     """
+
     model = IncomingStudent
     success_url_pattern = 'core:incomingstudent:index'
 
@@ -437,15 +448,14 @@ class UpdateTripAssignment(DatabaseUpdateView):
     """
     Edit trip and bus assignments for an incoming student.
     """
+
     model = IncomingStudent
     template_name = 'incoming/update_trip.html'
     form_class = AssignmentForm
 
     def extra_context(self):
         reg = self.object.get_registration()
-        context = {
-            'registration': reg
-        }
+        context = {'registration': reg}
         if reg:
             context['firstchoice_trips'] = reg.get_firstchoice_trips()
             context['preferred_trips'] = reg.get_preferred_trips()
@@ -458,14 +468,16 @@ class IncomingStudentUpdate(DatabaseUpdateView):
     """
     Edit other incoming student information.
     """
+
     model = IncomingStudent
     context_object_name = 'trippee'
     form_class = TrippeeInfoForm
     delete_button = False
 
 
-class UploadIncomingStudentData(DatabaseEditPermissionRequired,
-                                TripsYearMixin, FormView):
+class UploadIncomingStudentData(
+    DatabaseEditPermissionRequired, TripsYearMixin, FormView
+):
     """
     Accept an upload of CSV file of incoming students.
 
@@ -475,13 +487,15 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
     .. todo:: parse or input the status of the incoming student
     .. todo:: simplify and document the column names
     """
+
     form_class = PyExcelFileForm
     template_name = 'incoming/upload_incoming_students.html'
 
     def form_valid(self, form):
         try:
             (ctd, skipped) = IncomingStudent.objects.create_from_sheet(
-                form.load_sheet(), self.trips_year)
+                form.load_sheet(), self.trips_year
+            )
 
             if ctd:
                 msg = 'Created incoming students with NetIds %s'
@@ -503,18 +517,19 @@ class UploadIncomingStudentData(DatabaseEditPermissionRequired,
         return self.request.path
 
 
-class UploadHinmanBoxes(DatabaseEditPermissionRequired,
-                        TripsYearMixin, FormView):
+class UploadHinmanBoxes(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     """
     Upload a CSV file of netids and hinman box numbers.
     Update the cooresponding IncomingStudent's HB #s.
     """
+
     form_class = PyExcelFileForm
     template_name = 'incoming/upload_hinman_boxes.html'
 
     def form_valid(self, form):
         updated, not_found = IncomingStudent.objects.update_hinman_boxes(
-            form.load_sheet(), self.trips_year)
+            form.load_sheet(), self.trips_year
+        )
 
         msg = "Not found: %s" % ", ".join(not_found)
         messages.error(self.request, msg)
@@ -524,8 +539,7 @@ class UploadHinmanBoxes(DatabaseEditPermissionRequired,
         return HttpResponseRedirect(self.request.path)
 
 
-class MatchRegistrations(DatabaseEditPermissionRequired,
-                         TripsYearMixin, FormView):
+class MatchRegistrations(DatabaseEditPermissionRequired, TripsYearMixin, FormView):
     """
     Match all registrations for this ``trips_year``.
 
@@ -534,6 +548,7 @@ class MatchRegistrations(DatabaseEditPermissionRequired,
 
     .. todo:: expose this with a link
     """
+
     template_name = 'db/form.html'
 
     def get_form(self, **kwargs):
@@ -559,6 +574,7 @@ class EditSettings(DatabaseUpdateView):
     """
     Edit Registration settings - cost, contact info
     """
+
     model = Settings
     template_name = 'form.html'
     delete_button = False

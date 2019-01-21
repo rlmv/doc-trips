@@ -11,7 +11,6 @@ def section_range(sxns):
     return "%s - %s" % (sxns[0], sxns[-1])
 
 
-
 def join_with_and(iter, closing_word=None):
     """ Given a list ["A", "B", "C"] return "A, B and C" """
     if closing_word is None:

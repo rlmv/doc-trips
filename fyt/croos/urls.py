@@ -15,5 +15,5 @@ croo_urlpatterns = [
     url(DB_REGEX['CREATE'], CrooCreateView.as_view(), name='create'),
     url(DB_REGEX['UPDATE'], CrooUpdateView.as_view(), name='update'),
     url(DB_REGEX['DETAIL'], CrooDetailView.as_view(), name='detail'),
-    url(DB_REGEX['DELETE'], CrooDeleteView.as_view(), name='delete')
+    url(DB_REGEX['DELETE'], CrooDeleteView.as_view(), name='delete'),
 ]

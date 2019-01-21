@@ -20,7 +20,6 @@ GRACE_PERIOD = timedelta(minutes=15)
 
 
 class TimetableManager(models.Manager):
-
     def timetable(self):
         return self.get(id=TIMETABLE_ID)
 
@@ -29,43 +28,47 @@ class Timetable(models.Model):
     """
     Singleton model for important dates
     """
+
     applications_open = models.DateTimeField(default=timezone.now)
     applications_close = models.DateTimeField(default=timezone.now)
 
     scoring_available = models.BooleanField(
-        default=False, help_text=(
+        default=False,
+        help_text=(
             "Turn this on to begin the scoring process. Only do so once all "
             "applications have been submitted. Applications with extensions "
             "will not be scored until the extension deadline has passed. "
             "Graders will have access to the scoring page when this is enabled."
-        )
+        ),
     )
     hide_volunteer_page = models.BooleanField(
-        default=False, help_text=(
+        default=False,
+        help_text=(
             "Enabling this will hide the database Volunteers page from "
             "everyone except directors and trip leader trainers. Use "
             "this during grading to prevent graders from seeing "
             "applicant's scores."
-        )
+        ),
     )
     application_status_available = models.BooleanField(
-        default=False, help_text=(
+        default=False,
+        help_text=(
             "Turn this on once all decisions have been made "
             "regarding Leaders and Croos"
-        )
+        ),
     )
     leader_assignment_available = models.BooleanField(
-        default=False, help_text=(
+        default=False,
+        help_text=(
             "Turn this on to let Trip Leaders see information "
             "about their assigned trip"
-        )
+        ),
     )
     trippee_registrations_open = models.DateTimeField(default=timezone.now)
     trippee_registrations_close = models.DateTimeField(default=timezone.now)
     trippee_assignment_available = models.BooleanField(
-        default=False, help_text=(
-            "Turn this on to let Incoming Students see their trip assignments"
-        )
+        default=False,
+        help_text=("Turn this on to let Incoming Students see their trip assignments"),
     )
 
     objects = TimetableManager()
@@ -79,8 +82,9 @@ class Timetable(models.Model):
 
     def clean(self):
         if self.applications_available() and self.scoring_available:
-            raise ValidationError('Scoring is not available while '
-                                  'applications are still open')
+            raise ValidationError(
+                'Scoring is not available while ' 'applications are still open'
+            )
 
     def applications_available(self):
         """
@@ -91,16 +95,20 @@ class Timetable(models.Model):
         at the very last minute.
         """
         now = timezone.now()
-        return (self.applications_open < now and
-                now < self.applications_close + GRACE_PERIOD)
+        return (
+            self.applications_open < now
+            and now < self.applications_close + GRACE_PERIOD
+        )
 
     def registration_available(self):
         """
         Returns True if trippee registration is available
         """
         now = timezone.now()
-        return (self.trippee_registrations_open < now and
-                now < self.trippee_registrations_close)
+        return (
+            self.trippee_registrations_open < now
+            and now < self.trippee_registrations_close
+        )
 
     def reset(self):
         """

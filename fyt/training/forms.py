@@ -14,18 +14,12 @@ from fyt.utils.fmt import join_with_and
 from fyt.utils.forms import ReadonlyFormsetMixin
 
 
-DATE_OPTIONS = {
-    'format': 'MM/DD/YYYY',
-}
+DATE_OPTIONS = {'format': 'MM/DD/YYYY'}
 
-TIME_OPTIONS = {
-    'format': 'HH:mm',
-    'stepping': 15,
-}
+TIME_OPTIONS = {'format': 'HH:mm', 'stepping': 15}
 
 
 class SessionForm(TripsYearModelForm):
-
     class Meta:
         model = Session
         fields = '__all__'
@@ -35,7 +29,7 @@ class SessionForm(TripsYearModelForm):
             # for more options.
             'date': DateTimePicker(options=DATE_OPTIONS),
             'start_time': DateTimePicker(options=TIME_OPTIONS),
-            'end_time': DateTimePicker(options=TIME_OPTIONS)
+            'end_time': DateTimePicker(options=TIME_OPTIONS),
         }
 
     @property
@@ -49,7 +43,7 @@ class SessionForm(TripsYearModelForm):
                 Div('end_time', css_class='col-sm-4'),
             ),
             'location',
-            Submit('submit', 'Save')
+            Submit('submit', 'Save'),
         )
         return helper
 
@@ -58,6 +52,7 @@ class SessionRegistrationForm(TripsYearModelForm):
     """
     Form used to update registered attendees on the backend.
     """
+
     class Meta:
         model = Session
         fields = []
@@ -68,7 +63,8 @@ class SessionRegistrationForm(TripsYearModelForm):
             queryset=Attendee.objects.trainable(self.instance.trips_year),
             initial=self.instance.registered.all(),
             widget=forms.CheckboxSelectMultiple(),
-            required=False)
+            required=False,
+        )
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
@@ -85,6 +81,7 @@ class AttendanceForm(TripsYearModelForm):
     ModelForms cannot edit reverse ManyToMany relationships, hence the custom
     field and overriden save method.
     """
+
     class Meta:
         model = Session
         fields = []
@@ -95,7 +92,8 @@ class AttendanceForm(TripsYearModelForm):
             queryset=self.instance.registered.all(),
             initial=self.instance.completed.all(),
             widget=forms.CheckboxSelectMultiple(),
-            required=False)
+            required=False,
+        )
 
     def save(self, **kwargs):
         instance = super().save(**kwargs)
@@ -111,24 +109,17 @@ class RegisteredSessionsField(forms.ModelMultipleChoiceField):
 
 
 class SignupForm(TripsYearModelForm):
-
     class Meta:
         model = Attendee
         fields = ['registered_sessions']
-        field_classes = {
-            'registered_sessions': RegisteredSessionsField
-        }
-        widgets = {
-            'registered_sessions': forms.CheckboxSelectMultiple()
-        }
-        labels = {
-            'registered_sessions': ''
-        }
+        field_classes = {'registered_sessions': RegisteredSessionsField}
+        widgets = {'registered_sessions': forms.CheckboxSelectMultiple()}
+        labels = {'registered_sessions': ''}
 
     def clean_registered_sessions(self):
-        new_registrations = (
-            set(self.cleaned_data['registered_sessions']) -
-            set(self.instance.registered_sessions.all()))
+        new_registrations = set(self.cleaned_data['registered_sessions']) - set(
+            self.instance.registered_sessions.all()
+        )
 
         full = [session for session in new_registrations if session.full()]
 
@@ -136,35 +127,26 @@ class SignupForm(TripsYearModelForm):
             raise ValidationError(
                 "The following sessions are full: {}. Please choose another "
                 "session. If this is the only time you can attend, please "
-                "contact the Trip Leader Trainers directly.".format(
-                    join_with_and(full)))
+                "contact the Trip Leader Trainers directly.".format(join_with_and(full))
+            )
 
         return self.cleaned_data['registered_sessions']
 
 
 class CompletedSessionsForm(TripsYearModelForm):
-
     class Meta:
         model = Attendee
-        fields = [
-            'complete_sessions',
-        ]
-        widgets = {
-            'complete_sessions': forms.CheckboxSelectMultiple()
-        }
+        fields = ['complete_sessions']
+        widgets = {'complete_sessions': forms.CheckboxSelectMultiple()}
 
     @property
     def helper(self):
         helper = FormHelper(self)
-        helper.layout = Layout(
-            'complete_sessions',
-            Submit('submit', 'Save')
-        )
+        helper.layout = Layout('complete_sessions', Submit('submit', 'Save'))
         return helper
 
 
 class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
-
     def __init__(self, trips_year, *args, **kwargs):
         self.trips_year = trips_year
         super().__init__(*args, **kwargs)
@@ -185,14 +167,16 @@ class BaseFirstAidCertificationFormset(forms.BaseInlineFormSet):
         return instances
 
 
-class FirstAidCertificationFormset(forms.inlineformset_factory(
+class FirstAidCertificationFormset(
+    forms.inlineformset_factory(
         Volunteer,
         FirstAidCertification,
         formset=BaseFirstAidCertificationFormset,
         fields=['name', 'other', 'expiration_date'],
         widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
-        can_delete=True)):
-
+        can_delete=True,
+    )
+):
     @property
     def helper(self):
         helper = FormHelper()  # Don't pass formset instance
@@ -201,14 +185,16 @@ class FirstAidCertificationFormset(forms.inlineformset_factory(
         return helper
 
 
-class FirstAidVerificationFormset(forms.inlineformset_factory(
+class FirstAidVerificationFormset(
+    forms.inlineformset_factory(
         Volunteer,
         FirstAidCertification,
         formset=BaseFirstAidCertificationFormset,
         fields=['name', 'other', 'expiration_date', 'verified'],
         widgets={'expiration_date': DateTimePicker(options=DATE_OPTIONS)},
-        can_delete=True)):
-
+        can_delete=True,
+    )
+):
     @property
     def helper(self):
         helper = FormHelper()  # Don't pass formset instance

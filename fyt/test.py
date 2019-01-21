@@ -17,12 +17,15 @@ from fyt.users.models import DartmouthUser
 # Model Mommy generates fake model data
 # -----------------------------------------------------------------
 
+
 def gen_class_year():
     return 2016
 
 
 def gen_short_string(max_length):
     return random_gen.gen_string(min(max_length, 10))
+
+
 gen_short_string.required = ['max_length']
 
 
@@ -34,14 +37,18 @@ mommy.generators.add('django.db.models.CharField', gen_short_string)
 # Use VCRpy to mock remote APIs
 # -----------------------------------------------------------------
 
+
 def path_generator(function):
-    return os.path.join(os.path.dirname(inspect.getfile(function)),
-                        'cassettes', function.__name__)
+    return os.path.join(
+        os.path.dirname(inspect.getfile(function)), 'cassettes', function.__name__
+    )
+
 
 vcr = VCR(
     path_transformer=VCR.ensure_suffix('.yaml'),
     func_path_generator=path_generator,
-    filter_query_parameters=['key'])  # Strip Google Maps API key
+    filter_query_parameters=['key'],
+)  # Strip Google Maps API key
 
 
 class FytTestCase(WebTest):
@@ -153,8 +160,9 @@ class FytTestCase(WebTest):
         """
         Override django assertQuerysetEqual with more useful arguments.
         """
-        return self.assertQuerysetEqual(qs, values, transform=transform,
-                                        ordered=ordered, msg=msg)
+        return self.assertQuerysetEqual(
+            qs, values, transform=transform, ordered=ordered, msg=msg
+        )
 
     def assertQsContains(self, qs, values, msg=None):
         """

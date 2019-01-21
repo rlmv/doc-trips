@@ -5,7 +5,6 @@ from fyt.webauth.views import host_url, protocol
 
 
 class GroupPermissionsTest(FytTestCase):
-
     def test_group_permissions_work_with_custom_backend(self):
         # None of the permissions worked when the backend
         # did not inherit from ModelBackend
@@ -16,7 +15,6 @@ class GroupPermissionsTest(FytTestCase):
 
 
 class CasUtilsTestCase(unittest.TestCase):
-
     def test_protocol(self):
         attrs = {'is_secure.return_value': True}
         request = unittest.mock.Mock(**attrs)
@@ -27,11 +25,12 @@ class CasUtilsTestCase(unittest.TestCase):
         self.assertEqual(protocol(request), 'http://')
 
     def test_host_url(self):
-        attrs = {'is_secure.return_value': True,
-                 'get_host.return_value': 'localhost:8000'}
+        attrs = {
+            'is_secure.return_value': True,
+            'get_host.return_value': 'localhost:8000',
+        }
         request = unittest.mock.Mock(**attrs)
         self.assertEqual(host_url(request), 'https://localhost:8000')
 
         path = '/login'
-        self.assertEqual(host_url(request, path),
-                         'https://localhost:8000/login')
+        self.assertEqual(host_url(request, path), 'https://localhost:8000/login')

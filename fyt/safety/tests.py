@@ -27,7 +27,8 @@ class IncidentViewsTestCase(FytTestCase):
             mommy.prepare(
                 Incident,
                 trip=mommy.make(Trip, trips_year=trips_year),
-                when=datetime.datetime.now()
-            ))
+                when=datetime.datetime.now(),
+            )
+        )
         self.app.post(url, params=data, user=self.make_director())
         self.assertEqual(Incident.objects.get().trips_year, trips_year)

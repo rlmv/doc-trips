@@ -11,10 +11,7 @@ gear_urlpatterns = [
 
 gear_request_urlpatterns = [
     path('', GearRequestList.as_view(), name='list'),
-    path('<int:pk>/update/', GearRequestUpdateProvided.as_view(),
-         name='update')
+    path('<int:pk>/update/', GearRequestUpdateProvided.as_view(), name='update'),
 ]
 
-urlpatterns = [
-    path('request/', RequestGear.as_view(), name='request'),
-]
+urlpatterns = [path('request/', RequestGear.as_view(), name='request')]

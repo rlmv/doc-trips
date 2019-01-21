@@ -11,11 +11,13 @@ from fyt.permissions.views import DatabaseReadPermissionRequired
 from fyt.trips.models import Section, TripType
 
 
-class BaseEmailList(DatabaseReadPermissionRequired, TripsYearMixin,
-                    SetHeadlineMixin, TemplateView):
+class BaseEmailList(
+    DatabaseReadPermissionRequired, TripsYearMixin, SetHeadlineMixin, TemplateView
+):
     """
     Base class for email list view
     """
+
     template_name = 'emails/emails.html'
 
     def get_email_lists(self):
@@ -59,24 +61,38 @@ class Applicants(BaseEmailList):
 
     def get_email_lists(self):
         return [
-            ('all applicants', emails(
-                Volunteer.objects.filter(trips_year=self.trips_year))),
-            ('complete leader applications', emails(
-                Volunteer.objects.leader_applications(self.trips_year))),
-            ('complete croo applications', emails(
-                Volunteer.objects.croo_applications(self.trips_year))),
-            ('incomplete leader applications', emails(
-                Volunteer.objects.incomplete_leader_applications(self.trips_year))),
-            ('incomplete croo applications', emails(
-                Volunteer.objects.incomplete_croo_applications(self.trips_year))),
-            ('leaders', emails(
-                Volunteer.objects.leaders(self.trips_year))),
-            ('leader waitlist', emails(
-                Volunteer.objects.leader_waitlist(self.trips_year))),
-            ('croo members', emails(
-                Volunteer.objects.croo_members(self.trips_year))),
-            ('rejected applicants', emails(
-                Volunteer.objects.rejected(self.trips_year))),
+            (
+                'all applicants',
+                emails(Volunteer.objects.filter(trips_year=self.trips_year)),
+            ),
+            (
+                'complete leader applications',
+                emails(Volunteer.objects.leader_applications(self.trips_year)),
+            ),
+            (
+                'complete croo applications',
+                emails(Volunteer.objects.croo_applications(self.trips_year)),
+            ),
+            (
+                'incomplete leader applications',
+                emails(
+                    Volunteer.objects.incomplete_leader_applications(self.trips_year)
+                ),
+            ),
+            (
+                'incomplete croo applications',
+                emails(Volunteer.objects.incomplete_croo_applications(self.trips_year)),
+            ),
+            ('leaders', emails(Volunteer.objects.leaders(self.trips_year))),
+            (
+                'leader waitlist',
+                emails(Volunteer.objects.leader_waitlist(self.trips_year)),
+            ),
+            ('croo members', emails(Volunteer.objects.croo_members(self.trips_year))),
+            (
+                'rejected applicants',
+                emails(Volunteer.objects.rejected(self.trips_year)),
+            ),
         ]
 
 
@@ -91,8 +107,13 @@ class LeadersByTripType(BaseEmailList):
         email_list = []
         for triptype in triptypes:
             email_list.append(
-                ('%s leaders' % triptype,
-                 emails(leaders.filter(trip_assignment__template__triptype=triptype))))
+                (
+                    '%s leaders' % triptype,
+                    emails(
+                        leaders.filter(trip_assignment__template__triptype=triptype)
+                    ),
+                )
+            )
         return email_list
 
 
@@ -107,8 +128,10 @@ class LeadersBySection(BaseEmailList):
         email_list = []
         for section in sections:
             email_list.append(
-                ('%s leaders' % section,
-                 emails(leaders.filter(trip_assignment__section=section)))
+                (
+                    '%s leaders' % section,
+                    emails(leaders.filter(trip_assignment__section=section)),
+                )
             )
         return email_list
 
@@ -139,20 +162,15 @@ class Trippees(BaseEmailList):
         trippees = IncomingStudent.objects.with_trip(self.trips_year)
 
         email_list = [
-            ("All Trippees (Incoming Students with a trip assignment)",
-             personal_emails(trippees)),
-            ("All Trippees - blitz",
-             blitz(trippees))
+            (
+                "All Trippees (Incoming Students with a trip assignment)",
+                personal_emails(trippees),
+            ),
+            ("All Trippees - blitz", blitz(trippees)),
         ]
 
         for sxn in sections:
             trpz = trippees.filter(trip_assignment__section=sxn)
-            email_list.append((
-                "Section %s trippees" % sxn.name,
-                personal_emails(trpz)
-            ))
-            email_list.append((
-                "Section %s trippees - blitz" % sxn.name,
-                blitz(trpz)
-            ))
+            email_list.append(("Section %s trippees" % sxn.name, personal_emails(trpz)))
+            email_list.append(("Section %s trippees - blitz" % sxn.name, blitz(trpz)))
         return email_list

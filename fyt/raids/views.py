@@ -6,11 +6,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from vanilla import CreateView, DetailView, FormView, ListView
 
-from fyt.core.views import (
-    DatabaseDeleteView,
-    DatabaseUpdateView,
-    TripsYearMixin,
-)
+from fyt.core.views import DatabaseDeleteView, DatabaseUpdateView, TripsYearMixin
 from fyt.raids.forms import CommentForm
 from fyt.raids.models import Raid, RaidInfo
 from fyt.trips.models import Trip
@@ -37,14 +33,10 @@ class RaidList(_RaidMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.annotate(
-            num_comments=Count('comment')
-        ).select_related(
-            'trip__template',
-            'trip__section'
-        ).prefetch_related(
-            'user',
-            'trip__leaders__applicant'
+        return (
+            qs.annotate(num_comments=Count('comment'))
+            .select_related('trip__template', 'trip__section')
+            .prefetch_related('user', 'trip__leaders__applicant')
         )
 
 
@@ -55,14 +47,8 @@ class TripsToRaid(_RaidMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.select_related(
-            'template__campsite1',
-            'template__campsite2',
-            'template__description'
-        ).prefetch_related(
-            'raid_set',
-            'raid_set__user',
-            'leaders__applicant'
-        )
+            'template__campsite1', 'template__campsite2', 'template__description'
+        ).prefetch_related('raid_set', 'raid_set__user', 'leaders__applicant')
 
 
 class RaidTrip(_RaidMixin, PopulateMixin, SetHeadlineMixin, CreateView):
@@ -107,8 +93,7 @@ class RaidDelete(DatabaseDeleteView):
     success_url_pattern = 'core:raids:list'
 
     def get_headline(self):
-        return "Delete %s's raid of %s?" % (
-            self.object.user, self.object.verbose_str())
+        return "Delete %s's raid of %s?" % (self.object.user, self.object.verbose_str())
 
 
 class UpdateRaidInfo(DatabaseUpdateView):

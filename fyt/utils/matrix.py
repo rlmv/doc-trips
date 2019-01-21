@@ -8,6 +8,7 @@ class OrderedMatrix(OrderedDict):
     Unlike a numerical matrix, the entries can be keyed
     with any hashable object.
     """
+
     def __init__(self, rows, cols, default=None):
         super().__init__()
         self.rows = rows
@@ -26,8 +27,7 @@ class OrderedMatrix(OrderedDict):
 
         Note: this mutates the original matrix.
         """
-        empty = [row for row, cols in self.items()
-                 if not any(cols.values())]
+        empty = [row for row, cols in self.items() if not any(cols.values())]
 
         for row in empty:
             self.pop(row)

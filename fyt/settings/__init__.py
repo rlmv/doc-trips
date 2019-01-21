@@ -49,9 +49,7 @@ HEROKU_HOST = 'doc-trips.herokuapp.com'
 CANONICAL_HOST = 'www.doctrips.org'
 
 # Sentry monitoring
-RAVEN_CONFIG = {
-    'dsn': env.get('SENTRY_DSN'),
-}
+RAVEN_CONFIG = {'dsn': env.get('SENTRY_DSN')}
 
 # For Heroku
 ALLOWED_HOSTS = ['*']
@@ -63,14 +61,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'bootstrap3_datetime',
     'crispy_forms',
     'django_extensions',
     'django_tables2',
     'pipeline',
     'raven.contrib.django.raven_compat',
-
     'fyt.applications',
     'fyt.core',
     'fyt.croos',
@@ -91,31 +87,31 @@ INSTALLED_APPS = [
     'fyt.webauth',
 ]
 if DEBUG:
-    INSTALLED_APPS += [
-        'debug_toolbar',
-        'test_without_migrations']
+    INSTALLED_APPS += ['debug_toolbar', 'test_without_migrations']
     INTERNAL_IPS = ['127.0.0.1']
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'fyt.middleware.CanonicalHostMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-] + (['debug_toolbar.middleware.DebugToolbarMiddleware'] if DEBUG else []) + [
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'fyt.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
-    'fyt.users.middleware.UserEmailRequiredMiddleware',  # fix email lookup failures
-    'fyt.middleware.UserLoggerMiddleware',
-]
+MIDDLEWARE = (
+    [
+        'django.middleware.security.SecurityMiddleware',
+        'fyt.middleware.CanonicalHostMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+    ]
+    + (['debug_toolbar.middleware.DebugToolbarMiddleware'] if DEBUG else [])
+    + [
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.middleware.csrf.CsrfViewMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'fyt.webauth.middleware.WebAuthMiddleware',  # enable Dartmouth WebAuth
+        'fyt.users.middleware.UserEmailRequiredMiddleware',  # fix email lookup failures
+        'fyt.middleware.UserLoggerMiddleware',
+    ]
+)
 
 AUTH_USER_MODEL = 'users.DartmouthUser'
-AUTHENTICATION_BACKENDS = (
-    'fyt.webauth.backends.WebAuthBackend',
-)
+AUTHENTICATION_BACKENDS = ('fyt.webauth.backends.WebAuthBackend',)
 # Dartmouth WebAuth server
 CAS_SERVER_URL = 'https://login.dartmouth.edu/cas/'
 
@@ -155,9 +151,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATICFILES_STORAGE = 'fyt.utils.storages.WhitenoisePipelineStorage'
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -182,7 +176,7 @@ PIPELINE = {
                 'css/summernote.css',
                 'css/metisMenu.css',
             ),
-            'output_filename': 'base.css'
+            'output_filename': 'base.css',
         }
     },
     'JAVASCRIPT': {
@@ -194,29 +188,24 @@ PIPELINE = {
                 'dartdm/lookup.js',  # must come after typeahead
                 'js/stupidtable.js',
                 'js/metisMenu.min.js',
-                'js/timer.js'
+                'js/timer.js',
             ),
-            'output_filename': 'base.js'
+            'output_filename': 'base.js',
         },
         'summernote': {
-            'source_filenames': (
-                'js/summernote.js',
-                'js/init_summernote.js',
-            ),
-            'output_filename': 'my_summernote.js'
-        }
-    }
+            'source_filenames': ('js/summernote.js', 'js/init_summernote.js'),
+            'output_filename': 'my_summernote.js',
+        },
+    },
 }
 
 
 _TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader'
+    'django.template.loaders.app_directories.Loader',
 ]
 if not DEBUG:
-    _TEMPLATE_LOADERS = [
-        ['django.template.loaders.cached.Loader', _TEMPLATE_LOADERS],
-    ]
+    _TEMPLATE_LOADERS = [['django.template.loaders.cached.Loader', _TEMPLATE_LOADERS]]
 
 _TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -235,7 +224,7 @@ TEMPLATES = [
         'OPTIONS': {
             'loaders': _TEMPLATE_LOADERS,
             'context_processors': _TEMPLATE_CONTEXT_PROCESSORS,
-        }
+        },
     }
 ]
 
@@ -243,9 +232,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-        'simple': {
-            'format': '%(levelname)s  %(message)s %(pathname)s:%(lineno)s',
-        },
+        'simple': {'format': '%(levelname)s  %(message)s %(pathname)s:%(lineno)s'}
     },
     'handlers': {
         'console': {
@@ -259,10 +246,7 @@ LOGGING = {
         },
     },
     'loggers': {
-        'django': {
-            'handlers': ['console', 'sentry'],
-            'level': 'INFO',
-        },
+        'django': {'handlers': ['console', 'sentry'], 'level': 'INFO'},
         'fyt': {  # project namespace
             'handlers': ['console', 'sentry'],
             'level': 'INFO',
@@ -275,7 +259,7 @@ DEBUG_TOOLBAR_CONFIG = {
     # See https://github.com/jazzband/django-debug-toolbar/issues/910
     'DISABLE_PANELS': {
         'debug_toolbar.panels.redirects.RedirectsPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel'
+        'debug_toolbar.panels.templates.TemplatesPanel',
     },
     # Use local jQuery (for offline debugging)
     'JQUERY_URL': '',

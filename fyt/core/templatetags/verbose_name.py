@@ -1,9 +1,8 @@
-
-
 from django import template
 
 
 register = template.Library()
+
 
 @register.filter
 def verbose_name(object):

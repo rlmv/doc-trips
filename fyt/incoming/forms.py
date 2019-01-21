@@ -34,6 +34,7 @@ class RoundTripStopChoiceField(forms.ModelChoiceField):
     """
     Field for displaying an external transport Stop, with round trip prices
     """
+
     def label_from_instance(self, obj):
         return "{} - ${}".format(obj.name, obj.cost_round_trip)
 
@@ -42,6 +43,7 @@ class OneWayStopChoiceField(forms.ModelChoiceField):
     """
     Field for displaying an external transport Stop, with one-way prices
     """
+
     def label_from_instance(self, obj):
         return "{} - ${}".format(obj.name, obj.cost_one_way)
 
@@ -55,7 +57,7 @@ class SectionPreferenceHandler(PreferenceHandler):
     default = NOT_AVAILABLE
 
     def formfield_label(self, section):
-        return '{} &mdash; {}' .format(section.name, section.trippee_date_str())
+        return '{} &mdash; {}'.format(section.name, section.trippee_date_str())
 
 
 class TripTypePreferenceHandler(PreferenceHandler):
@@ -74,12 +76,10 @@ class RegistrationForm(TripsYearModelForm):
     """
     Form for Trippee registration
     """
+
     class Meta:
         model = Registration
-        exclude = [
-            'section_choice',
-            'triptype_choice',
-        ]
+        exclude = ['section_choice', 'triptype_choice']
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -94,16 +94,17 @@ class RegistrationForm(TripsYearModelForm):
 
         external_stops = Stop.objects.external(self.trips_year)
         self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
-            label="Bus stop (round-trip)",
-            queryset=external_stops, required=False
+            label="Bus stop (round-trip)", queryset=external_stops, required=False
         )
         self.fields['bus_stop_to_hanover'] = OneWayStopChoiceField(
             label="Bus stop (one-way TO Hanover)",
-            queryset=external_stops, required=False
+            queryset=external_stops,
+            required=False,
         )
         self.fields['bus_stop_from_hanover'] = OneWayStopChoiceField(
             label="Bus stop (one-way FROM Hanover)",
-            queryset=external_stops, required=False
+            queryset=external_stops,
+            required=False,
         )
 
         # Show which sections are available for these choices
@@ -139,7 +140,8 @@ class RegistrationForm(TripsYearModelForm):
         helper.layout = RegistrationFormLayout(
             self.section_handler.formfield_names(),
             self.triptype_handler.formfield_names(),
-            **kwargs)
+            **kwargs
+        )
 
         return helper
 
@@ -160,6 +162,7 @@ class AssignmentForm(TripsYearModelForm):
     """
     Form to assign an IncomingStudent to a trip and bus
     """
+
     class Meta:
         model = IncomingStudent
         fields = [
@@ -167,7 +170,7 @@ class AssignmentForm(TripsYearModelForm):
             'cancelled',
             'bus_assignment_round_trip',
             'bus_assignment_to_hanover',
-            'bus_assignment_from_hanover'
+            'bus_assignment_from_hanover',
         ]
 
     def __init__(self, **kwargs):
@@ -175,10 +178,10 @@ class AssignmentForm(TripsYearModelForm):
         self.fields['trip_assignment'] = TripChoiceField(
             required=False,
             queryset=(
-                Trip.objects
-                .filter(trips_year=self.trips_year)
-                .select_related('template', 'template__triptype', 'section')
-            )
+                Trip.objects.filter(trips_year=self.trips_year).select_related(
+                    'template', 'template__triptype', 'section'
+                )
+            ),
         )
         ext_stops = Stop.objects.external(self.trips_year)
         self.fields['bus_assignment_round_trip'].queryset = ext_stops
@@ -203,6 +206,7 @@ class TrippeeInfoForm(TripsYearModelForm):
     """
     Form for editing administrative trippee info
     """
+
     class Meta:
         model = IncomingStudent
         fields = [
@@ -239,11 +243,7 @@ class TrippeeInfoForm(TripsYearModelForm):
                 Div('cancelled_fee', css_class='col-sm-7'),
             ),
         ),
-        Fieldset(
-            'Medical Info',
-            'hide_med_info',
-            Field('med_info', rows=3),
-        ),
+        Fieldset('Medical Info', 'hide_med_info', Field('med_info', rows=3)),
         Fieldset(
             'Contact and Demographic Info',
             'name',
@@ -259,17 +259,18 @@ class TrippeeInfoForm(TripsYearModelForm):
             Field('address', rows=4),
             'hinman_box',
         ),
-        Submit('submit', 'Update')
+        Submit('submit', 'Update'),
     )
-
 
 
 class PyExcelFileForm(forms.Form):
     """
     Form to upload a CSV file.
     """
+
     spreadsheet = forms.FileField(
-        help_text="Uploaded file may be in Excel or CSV format")
+        help_text="Uploaded file may be in Excel or CSV format"
+    )
 
     def __init__(self, trips_year, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -282,7 +283,9 @@ class PyExcelFileForm(forms.Form):
             raise ValidationError(
                 '.{} is not a valid spreadsheet format. Try converting the '
                 'file to one of the following formats: {}.'.format(
-                    self.extension, join_with_or(self.valid_formats)))
+                    self.extension, join_with_or(self.valid_formats)
+                )
+            )
 
     @property
     def valid_formats(self):

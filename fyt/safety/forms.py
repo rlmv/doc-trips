@@ -7,7 +7,6 @@ from fyt.safety.models import Incident, IncidentUpdate
 
 
 class IncidentForm(TripsYearModelForm):
-
     class Meta:
         model = Incident
         fields = [
@@ -25,9 +24,7 @@ class IncidentForm(TripsYearModelForm):
             'outcome',
             'follow_up',
         ]
-        widgets = {
-            'when': DateTimePicker(options={'format': 'MM/DD/YYYY HH:mm'})
-        }
+        widgets = {'when': DateTimePicker(options={'format': 'MM/DD/YYYY HH:mm'})}
 
     @property
     def helper(self):
@@ -38,22 +35,16 @@ class IncidentForm(TripsYearModelForm):
 
 IncidentFormLayout = lambda: Layout(
     HTML('<p><strong> Your are logged in as {{ user }} </strong></p>'),
-    Row(
-        Div('trip', css_class='col-sm-6'),
-        Div('when', css_class='col-sm-6'),
-    ),
+    Row(Div('trip', css_class='col-sm-6'), Div('when', css_class='col-sm-6')),
     Field('where', rows=2),
     Row(
         Div('caller', css_class='col-sm-3'),
         Div('caller_role', css_class='col-sm-3'),
         Div('caller_number', css_class='col-sm-3'),
     ),
+    Row(Div('injuries', css_class='col-sm-6')),
     Row(
-        Div('injuries', css_class='col-sm-6'),
-    ),
-    Row(
-        Div('subject', css_class='col-sm-3'),
-        Div('subject_role', css_class='col-sm-3'),
+        Div('subject', css_class='col-sm-3'), Div('subject_role', css_class='col-sm-3')
     ),
     Field('desc', rows=3),
     Field('resp', rows=3),
@@ -73,12 +64,11 @@ IncidentUpdateFormLayout = lambda: Layout(
         ),
         Field('update', rows=4),
     ),
-    Submit('submit', 'Update')
+    Submit('submit', 'Update'),
 )
 
 
 class IncidentUpdateForm(TripsYearModelForm):
-
     class Meta:
         model = IncidentUpdate
         fields = '__all__'

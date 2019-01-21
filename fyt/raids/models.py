@@ -11,28 +11,25 @@ class Raid(DatabaseModel):
     """
     A raid
     """
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        editable=False,
-        on_delete=models.PROTECT)
 
-    trip = models.ForeignKey(
-        Trip,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT
+    )
+
+    trip = models.ForeignKey(Trip, null=True, blank=True, on_delete=models.PROTECT)
 
     campsite = models.ForeignKey(
-        Campsite,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT)
+        Campsite, null=True, blank=True, on_delete=models.PROTECT
+    )
 
     date = models.DateField()
-    plan = models.TextField(blank=True, help_text=(
-        "Do you have a theme? Are you going to intercept "
-        "the trip on the trail or at their campsite?"
-    ))
+    plan = models.TextField(
+        blank=True,
+        help_text=(
+            "Do you have a theme? Are you going to intercept "
+            "the trip on the trail or at their campsite?"
+        ),
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -53,25 +50,19 @@ class Raid(DatabaseModel):
 
     def verbose_str(self):
         if self.trip:
-            return "%s on %s" % (
-                self.trip.verbose_str(),
-                self.date.strftime('%m/%d')
-            )
+            return "%s on %s" % (self.trip.verbose_str(), self.date.strftime('%m/%d'))
 
 
 class Comment(DatabaseModel):
     """
     A comment on a raid.
     """
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        editable=False,
-        on_delete=models.PROTECT)
 
-    raid = models.ForeignKey(
-        Raid,
-        editable=False,
-        on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT
+    )
+
+    raid = models.ForeignKey(Raid, editable=False, on_delete=models.CASCADE)
 
     comment = models.TextField()
     created = models.DateTimeField(auto_now_add=True)

@@ -34,7 +34,6 @@ def _expire_claim(claim):
 
 
 class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
         self.make_score_values()
@@ -42,33 +41,36 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_create_score_saves_croo_head_status(self):
         app = self.make_application(trips_year=self.trips_year)
         score = Score.objects.create(
-            trips_year=app.trips_year,
-            application=app,
-            grader=mommy.make(Grader))  # Not a croo head
+            trips_year=app.trips_year, application=app, grader=mommy.make(Grader)
+        )  # Not a croo head
         self.assertFalse(score.croo_head)
 
         score = Score.objects.create(
             trips_year=app.trips_year,
             application=app,
-            grader=_get_grader(self.make_croo_head()))  # Croo head
+            grader=_get_grader(self.make_croo_head()),
+        )  # Croo head
         self.assertTrue(score.croo_head)
 
     def test_leader_application_requires_leader_score(self):
         for leader_willing, leader_score, ok in [
-                [True, self.V3, True],
-                [True, None, False],
-                [False, self.V3, True],
-                [False, None, True]]:
+            [True, self.V3, True],
+            [True, None, False],
+            [False, self.V3, True],
+            [False, None, True],
+        ]:
 
             def _check():
                 application = self.make_application(
                     trips_year=self.trips_year,
                     leader_willing=leader_willing,
-                    croo_willing=False)
+                    croo_willing=False,
+                )
                 score = mommy.make(Grader).add_score(
                     application=application,
                     leader_score=leader_score,
-                    general="A comment")
+                    general="A comment",
+                )
                 score.full_clean()
 
             if ok:
@@ -79,20 +81,21 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_croo_application_requires_croo_score(self):
         for croo_willing, croo_score, ok in [
-                [True, self.V3, True],
-                [True, None, False],
-                [False, self.V3, True],
-                [False, None, True]]:
+            [True, self.V3, True],
+            [True, None, False],
+            [False, self.V3, True],
+            [False, None, True],
+        ]:
 
             def _check():
                 application = self.make_application(
                     trips_year=self.trips_year,
                     leader_willing=False,
-                    croo_willing=croo_willing)
+                    croo_willing=croo_willing,
+                )
                 score = mommy.make(Grader).add_score(
-                    application=application,
-                    croo_score=croo_score,
-                    general="A comment")
+                    application=application, croo_score=croo_score, general="A comment"
+                )
                 score.full_clean()
 
             if ok:
@@ -103,7 +106,6 @@ class ScoreModelTestCase(ApplicationTestMixin, FytTestCase):
 
 
 class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
         self.grader = _get_grader(self.make_grader())
@@ -129,16 +131,20 @@ class ScoreFormTestCase(ApplicationTestMixin, FytTestCase):
         self.make_score_values()
         application = self.make_application()
         form = ScoreForm(application=application, grader=self.grader)
-        self.assertQsEqual(form.fields['leader_score'].queryset,
-                           ScoreValue.objects.filter(trips_year=self.trips_year))
-        self.assertQsEqual(form.fields['croo_score'].queryset,
-                           ScoreValue.objects.filter(trips_year=self.trips_year))
+        self.assertQsEqual(
+            form.fields['leader_score'].queryset,
+            ScoreValue.objects.filter(trips_year=self.trips_year),
+        )
+        self.assertQsEqual(
+            form.fields['croo_score'].queryset,
+            ScoreValue.objects.filter(trips_year=self.trips_year),
+        )
 
 
 class ScoreClaimModelTestCase(ApplicationTestMixin, FytTestCase):
-
-    @unittest.mock.patch('fyt.applications.models.timezone.now',
-                         return_value=timezone.now())
+    @unittest.mock.patch(
+        'fyt.applications.models.timezone.now', return_value=timezone.now()
+    )
     def test_time_left(self, patched_now):
         now = patched_now()
         claim = mommy.make(ScoreClaim)
@@ -159,7 +165,6 @@ class ScoreClaimModelTestCase(ApplicationTestMixin, FytTestCase):
 
 
 class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
         self.init_old_trips_year()
@@ -172,8 +177,9 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
 
     def make_scores(self, app, n):
         for i in range(n):
-            mommy.make(Score, croo_head=False, trips_year=self.trips_year,
-                       application=app)
+            mommy.make(
+                Score, croo_head=False, trips_year=self.trips_year, application=app
+            )
 
     def test_convert_grader_to_user(self):
         _user = mommy.make(DartmouthUser)
@@ -205,7 +211,7 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
             trips_year=self.old_trips_year,
             grader=self.grader,
             leader_score=self.V3,
-            croo_score=self.V4
+            croo_score=self.V4,
         )
         self.assertEqual(self.grader.avg_leader_score(self.trips_year), 2)
         self.assertEqual(self.grader.avg_croo_score(self.trips_year), 3.5)
@@ -220,8 +226,9 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(claim.trips_year, self.trips_year)
         self.assertIsNotNone(claim.claimed_at)
 
-    @unittest.mock.patch('fyt.applications.models.timezone.now',
-                         return_value=timezone.now())
+    @unittest.mock.patch(
+        'fyt.applications.models.timezone.now', return_value=timezone.now()
+    )
     def test_claim_score_updates_timestamp(self, patched_now):
         now = patched_now()
         app = self.make_application()
@@ -279,7 +286,8 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         app2 = self.make_application(trips_year=self.trips_year)
         claim = self.grader.claim_score(app1)
         claim.claimed_at = orig_claim_time = (
-            claim.claimed_at - ScoreClaim.HOLD_DURATION / 2)
+            claim.claimed_at - ScoreClaim.HOLD_DURATION / 2
+        )
         claim.save()
 
         self.assertEqual(app1, self.grader.claim_next_to_score())
@@ -304,13 +312,13 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         self.assertIsNone(self.user.next_to_score())
 
     def test_dont_score_apps_that_still_have_a_deadline_extension(self):
-        app1 = self.make_application(
-            deadline_extension=(timezone.now() + timedelta(1)))
+        app1 = self.make_application(deadline_extension=(timezone.now() + timedelta(1)))
         self.assertIsNone(self.user.next_to_score())
 
         # Past the extension
         app2 = self.make_application(
-            deadline_extension=(timezone.now() + timedelta(-1)))
+            deadline_extension=(timezone.now() + timedelta(-1))
+        )
         self.assertEqual(app2, self.user.next_to_score())
 
     def test_user_only_scores_application_once(self):
@@ -454,25 +462,16 @@ class GraderModelTestCase(ApplicationTestMixin, FytTestCase):
         # 0/3 scores
         app3 = self.make_application()
 
-        progress = {
-            'complete': 4,
-            'total': 9,
-            'percentage': 44
-        }
+        progress = {'complete': 4, 'total': 9, 'percentage': 44}
         self.assertEqual(progress, Volunteer.objects.score_progress(self.trips_year))
 
     def test_score_progress_with_no_scores(self):
         # Don't divide by zero
-        progress = {
-            'complete': 0,
-            'total': 0,
-            'percentage': 100
-        }
+        progress = {'complete': 0, 'total': 0, 'percentage': 100}
         self.assertEqual(progress, Volunteer.objects.score_progress(self.trips_year))
 
 
 class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
         self.make_director()
@@ -540,8 +539,8 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
         _expire_claim(grader.current_claim())
 
         resp = self.app.get(
-            reverse('applications:score:add', kwargs={'pk': app.pk}),
-            user=grader)
+            reverse('applications:score:add', kwargs={'pk': app.pk}), user=grader
+        )
         self.assertEqual(resp.location, url)
         resp = resp.maybe_follow()
 
@@ -599,7 +598,7 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
                 trips_year=self.trips_year,
                 grader=grader,
                 leader_score=self.V3,
-                croo_score=self.V4
+                croo_score=self.V4,
             )
 
         url = reverse('applications:score:next')
@@ -612,7 +611,9 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_delete_score_is_restricted_to_directors(self):
         score = mommy.make(Score, trips_year=self.trips_year)
-        url = reverse('core:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk})
+        url = reverse(
+            'core:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk}
+        )
         res = self.app.get(url, user=self.make_tlt(), status=403)
         res = self.app.get(url, user=self.make_directorate(), status=403)
         res = self.app.get(url, user=self.grader, status=403)
@@ -622,14 +623,15 @@ class ScoreViewsTestCase(ApplicationTestMixin, FytTestCase):
     def test_delete_score_redirects_to_app(self):
         application = self.make_application(self.trips_year)
         score = mommy.make(Score, trips_year=self.trips_year, application=application)
-        url = reverse('core:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk})
+        url = reverse(
+            'core:score:delete', kwargs={'trips_year': self.trips_year, 'pk': score.pk}
+        )
         resp = self.app.get(url, user=self.director)
         resp = resp.form.submit()
         self.assertRedirects(resp, application.detail_url())
 
 
 class ScoreValueModelTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
@@ -639,7 +641,6 @@ class ScoreValueModelTestCase(ApplicationTestMixin, FytTestCase):
 
 
 class ScoreQuestionFormsetTestCase(ApplicationTestMixin, FytTestCase):
-
     def setUp(self):
         self.init_trips_year()
 
@@ -654,7 +655,8 @@ class ScoreQuestionFormsetTestCase(ApplicationTestMixin, FytTestCase):
                 'formset-MAX_NUM_FORMS': '',
                 'formset-0-question': 'What is your name?',
                 'formset-0-order': '3',
-            })
+            },
+        )
         self.assertTrue(formset.is_valid())
         formset.save()
         question = ScoreQuestion.objects.get()

@@ -15,6 +15,7 @@ class Training(DatabaseModel):
     """
     A type of training.
     """
+
     class Meta:
         ordering = ['name']
 
@@ -29,6 +30,7 @@ class Session(DatabaseModel):
     """
     A scheduled session for a certain training type.
     """
+
     class Meta:
         ordering = ['date', 'start_time', 'training']
 
@@ -49,8 +51,7 @@ class Session(DatabaseModel):
 
     def registered_emails(self):
         """Emails for all registered attendees."""
-        return self.registered.values_list(
-            'volunteer__applicant__email', flat=True)
+        return self.registered.values_list('volunteer__applicant__email', flat=True)
 
     # TODO: move to view
     def registered_emails_str(self):
@@ -61,21 +62,21 @@ class Session(DatabaseModel):
             self.training,
             self.date.strftime('%B %d'),
             self.start_time.strftime('%l:%M %p'),
-            self.end_time.strftime('%l:%M %p'))
+            self.end_time.strftime('%l:%M %p'),
+        )
 
     def update_attendance_url(self):
-        return reverse('core:session:update_attendance',
-                       kwargs=self.obj_kwargs())
+        return reverse('core:session:update_attendance', kwargs=self.obj_kwargs())
 
 
 class FirstAidCertification(DatabaseModel):
     """
     A first aid certification for a volunteer.
     """
+
     volunteer = models.ForeignKey(
-        Volunteer,
-        on_delete=models.PROTECT,
-        related_name='first_aid_certifications')
+        Volunteer, on_delete=models.PROTECT, related_name='first_aid_certifications'
+    )
 
     # First aid
     OTHER = 'other'
@@ -96,11 +97,9 @@ class FirstAidCertification(DatabaseModel):
         max_length=10,
         blank=True,
         default="",
-        choices=CERTIFICATION_CHOICES
+        choices=CERTIFICATION_CHOICES,
     )
-    other = models.CharField(
-        max_length=100, blank=True, default=""
-    )
+    other = models.CharField(max_length=100, blank=True, default="")
 
     # Note: this is fabricated for all years prior to 2018
     expiration_date = models.DateField()
@@ -117,23 +116,23 @@ class FirstAidCertification(DatabaseModel):
 
     def clean(self):
         if self.name == self.OTHER and not self.other:
-            raise ValidationError({
-                'other': 'You must provide a name for this other certification'
-            })
+            raise ValidationError(
+                {'other': 'You must provide a name for this other certification'}
+            )
         if not self.name and not self.other:
-            raise ValidationError({
-                'name': 'Either `name` or `other` must be provided'
-            })
+            raise ValidationError({'name': 'Either `name` or `other` must be provided'})
 
     def __str__(self):
-        return '{} (exp. {})'.format(self.get_name(),
-                                     self.expiration_date.strftime('%x'))
+        return '{} (exp. {})'.format(
+            self.get_name(), self.expiration_date.strftime('%x')
+        )
 
 
 class Attendee(DatabaseModel):
     """
     A volunteer attending trainings.
     """
+
     objects = AttendeeManager()
 
     class Meta:
@@ -141,14 +140,13 @@ class Attendee(DatabaseModel):
 
     volunteer = models.OneToOneField(Volunteer, on_delete=models.PROTECT)
     registered_sessions = models.ManyToManyField(
-        Session, blank=True, related_name='registered')
+        Session, blank=True, related_name='registered'
+    )
     complete_sessions = models.ManyToManyField(
-        Session, blank=True, related_name='completed')
+        Session, blank=True, related_name='completed'
+    )
 
-    TRAINABLE_STATUSES = [
-        Volunteer.LEADER,
-        Volunteer.CROO,
-        Volunteer.LEADER_WAITLIST]
+    TRAINABLE_STATUSES = [Volunteer.LEADER, Volunteer.CROO, Volunteer.LEADER_WAITLIST]
 
     @property
     def can_register(self):
@@ -183,5 +181,4 @@ def create_attendee(instance=None, **kwargs):
     Whenever a Volunteer is created, create a corresponding Attendee.
     """
     if kwargs.get('created', False):
-        Attendee.objects.create(
-            trips_year=instance.trips_year, volunteer=instance)
+        Attendee.objects.create(trips_year=instance.trips_year, volunteer=instance)

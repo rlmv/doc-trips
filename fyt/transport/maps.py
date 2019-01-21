@@ -48,7 +48,7 @@ def get_directions(stops):
     # Is there ever a route with 23 stops?
     if len(waypoints) > MAX_WAYPOINTS:
         d1 = get_directions(stops[:MAX_WAYPOINTS])
-        d2 = get_directions(stops[MAX_WAYPOINTS - 1:])
+        d2 = get_directions(stops[MAX_WAYPOINTS - 1 :])
 
         # Sanity check
         if d1.legs[-1].end_stop != d2.legs[0].start_stop:
@@ -59,8 +59,7 @@ def get_directions(stops):
     client = googlemaps.Client(key=settings.GOOGLE_MAPS_KEY, timeout=TIMEOUT)
 
     try:
-        resp = client.directions(
-            origin=orig, destination=dest, waypoints=waypoints)
+        resp = client.directions(origin=orig, destination=dest, waypoints=waypoints)
     except (TransportError, ApiError) as exc:
         raise MapError(exc)
 
@@ -78,6 +77,7 @@ class Directions:
 
     The passed stops must be the stops used to generate the directions.
     """
+
     def __init__(self, raw_json, stops):
         self.raw = raw_json
         self.stops = stops
@@ -85,8 +85,9 @@ class Directions:
         if len(stops) != len(raw_json['legs']) + 1:
             raise MapError('mismatched stops and legs')
 
-        self.legs = [Leg(leg, stops[i], stops[i+1])
-                     for i, leg in enumerate(raw_json['legs'])]
+        self.legs = [
+            Leg(leg, stops[i], stops[i + 1]) for i, leg in enumerate(raw_json['legs'])
+        ]
 
 
 class Leg:
@@ -96,6 +97,7 @@ class Leg:
     Each leg has a `start_stop` and `end_stop` attribute, corresponding
     to the Stop objects on either end of the leg.
     """
+
     def __init__(self, raw_json, start_stop, end_stop):
         self.raw = raw_json
         self.start_stop = start_stop

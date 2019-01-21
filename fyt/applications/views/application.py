@@ -50,18 +50,19 @@ from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin, MultiFormMixin
 
 
-class IfApplicationAvailable():
+class IfApplicationAvailable:
     """
     Restrict application availability based on Timetable dates
     """
+
     def dispatch(self, request, *args, **kwargs):
         if Timetable.objects.timetable().applications_available():
             return super().dispatch(request, *args, **kwargs)
 
         try:
             existing_application = Volunteer.objects.get(
-                applicant=self.request.user,
-                trips_year=self.trips_year)
+                applicant=self.request.user, trips_year=self.trips_year
+            )
         except Volunteer.DoesNotExist:
             pass
         else:
@@ -71,7 +72,7 @@ class IfApplicationAvailable():
         return render(request, 'applications/not_available.html')
 
 
-class ContinueIfAlreadyApplied():
+class ContinueIfAlreadyApplied:
     """
     If user has already applied, redirect to edit existing application.
 
@@ -79,10 +80,10 @@ class ContinueIfAlreadyApplied():
     has to follow LoginRequired in the MRO. An AnonymousUser causes the
     query to throw an error.
     """
+
     def dispatch(self, request, *args, **kwargs):
         exists = Volunteer.objects.filter(
-            applicant=self.request.user,
-            trips_year=self.trips_year
+            applicant=self.request.user, trips_year=self.trips_year
         ).exists()
         if exists:
             return HttpResponseRedirect(reverse('applications:continue'))
@@ -104,7 +105,7 @@ FORM_ORDERING = [
     LEADER_FORM,
     CROO_FORM,
     QUESTION_FORM,
-    AGREEMENT_FORM
+    AGREEMENT_FORM,
 ]
 
 
@@ -118,6 +119,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
     View mixin which handles forms for GenearlApplication, LeaderSupplement,
     and CrooSupplement in the same view.
     """
+
     model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application.html'
@@ -134,7 +136,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
             QUESTION_FORM: QuestionForm,
-            FIRST_AID_FORM: FirstAidCertificationFormset
+            FIRST_AID_FORM: FirstAidCertificationFormset,
         }
 
     def get_instances(self):
@@ -147,7 +149,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
             CROO_FORM: None,
             QUESTION_FORM: None,
             AGREEMENT_FORM: None,
-            FIRST_AID_FORM: None
+            FIRST_AID_FORM: None,
         }
 
     def get_context_data(self, forms, **kwargs):
@@ -158,19 +160,23 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
             forms=order_forms(forms),
             trips_year=self.trips_year,
             timetable=Timetable.objects.timetable(),
-            information=ApplicationInformation.objects.get(
-                trips_year=self.trips_year),
+            information=ApplicationInformation.objects.get(trips_year=self.trips_year),
             triptypes=TripType.objects.visible(self.trips_year),
             **kwargs
         )
 
 
-class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
-                     ContinueIfAlreadyApplied, ApplicationFormsMixin,
-                     CreateView):
+class NewApplication(
+    LoginRequiredMixin,
+    IfApplicationAvailable,
+    ContinueIfAlreadyApplied,
+    ApplicationFormsMixin,
+    CreateView,
+):
     """
     Apply for trips
     """
+
     success_url = reverse_lazy('applications:continue')
 
     @cached_property
@@ -205,11 +211,13 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailable,
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
-                          ApplicationFormsMixin, UpdateView):
+class ContinueApplication(
+    LoginRequiredMixin, IfApplicationAvailable, ApplicationFormsMixin, UpdateView
+):
     """
     View for applicants to edit their application.
     """
+
     success_url = reverse_lazy('applications:continue')
 
     @cached_property
@@ -221,9 +229,7 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
         TODO: perhaps redirect to NewApplication instead of 404?
         """
         return get_object_or_404(
-            self.model,
-            applicant=self.request.user,
-            trips_year=self.trips_year
+            self.model, applicant=self.request.user, trips_year=self.trips_year
         )
 
     def get_instances(self):
@@ -234,12 +240,17 @@ class ContinueApplication(LoginRequiredMixin, IfApplicationAvailable,
             QUESTION_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
-            FIRST_AID_FORM: self.object
+            FIRST_AID_FORM: self.object,
         }
 
 
-class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
-                       FormValidMessageMixin, CrispyFormMixin, UpdateView):
+class SetupApplication(
+    SettingsPermissionRequired,
+    ExtraContextMixin,
+    FormValidMessageMixin,
+    CrispyFormMixin,
+    UpdateView,
+):
     """
     Let directors create/edit this year's application
 
@@ -251,9 +262,7 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     model = ApplicationInformation
     template_name = 'applications/setup.html'
     success_url = reverse_lazy('applications:setup')
-    fields = [
-        'application_header'
-    ]
+    fields = ['application_header']
     form_valid_message = "Application successfully updated"
 
     @cached_property
@@ -272,7 +281,7 @@ class SetupApplication(SettingsPermissionRequired, ExtraContextMixin,
     def extra_context(self):
         return {
             'trips_year': self.trips_year,
-            'questions': Question.objects.filter(trips_year=self.trips_year)
+            'questions': Question.objects.filter(trips_year=self.trips_year),
         }
 
 
@@ -316,6 +325,7 @@ class BlockDirectorate(GroupRequiredMixin):
 
     This must go *after* permission checks.
     """
+
     group_required = ['directors', 'trip leader trainers']
 
     def dispatch(self, request, *args, **kwargs):
@@ -333,72 +343,81 @@ class BlockDirectorate(GroupRequiredMixin):
             if not in_group:
                 raise PermissionDenied
 
-        return super(GroupRequiredMixin, self).dispatch(
-            request, *args, **kwargs
-        )
+        return super(GroupRequiredMixin, self).dispatch(request, *args, **kwargs)
 
 
-class BlockOldApplications():
+class BlockOldApplications:
     """
     Only directors can see applications from previous years.
     """
+
     def dispatch(self, request, *args, **kwargs):
-        if (not self.trips_year.is_current and
-                not request.user.has_perm('permissions.can_view_old_applications')):
-            raise PermissionDenied('Only Trip Directors can view applications '
-                                   'from previous years.')
+        if not self.trips_year.is_current and not request.user.has_perm(
+            'permissions.can_view_old_applications'
+        ):
+            raise PermissionDenied(
+                'Only Trip Directors can view applications ' 'from previous years.'
+            )
         return super().dispatch(request, *args, **kwargs)
 
 
-class ApplicationIndex(DatabaseReadPermissionRequired, BlockDirectorate,
-                       BlockOldApplications, TripsYearMixin,
-                       ExtraContextMixin, ListView):
+class ApplicationIndex(
+    DatabaseReadPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    TripsYearMixin,
+    ExtraContextMixin,
+    ListView,
+):
     model = Volunteer
     template_name = 'applications/application_index.html'
 
     def get_queryset(self):
-        return Volunteer.objects.filter(
-            trips_year=self.trips_year
-        ).select_related(
-            None  # Clear leader_supplement, croo_supplement selects
-        ).select_related(
-            'applicant'
-        ).with_avg_scores().only(
-            'applicant__netid',
-            'applicant__name',
-            'trips_year_id',
-            'status',
-            'gender',
-            'leader_willing',
-            'croo_willing',
-        ).prefetch_related(
-            'answer_set'
+        return (
+            Volunteer.objects.filter(trips_year=self.trips_year)
+            .select_related(None)  # Clear leader_supplement, croo_supplement selects
+            .select_related('applicant')
+            .with_avg_scores()
+            .only(
+                'applicant__netid',
+                'applicant__name',
+                'trips_year_id',
+                'status',
+                'gender',
+                'leader_willing',
+                'croo_willing',
+            )
+            .prefetch_related('answer_set')
         )
 
     def extra_context(self):
         # TODO: use/make a generic FilterView mixin?
         filter = ApplicationFilterSet(
-            self.trips_year, self.request.GET,
-            queryset=self.object_list
+            self.trips_year, self.request.GET, queryset=self.object_list
         )
         filter_qs = filter.qs.with_required_questions(self.trips_year)
         table = ApplicationTable(filter_qs, self.request)
         return {
             'table': table,
             'application_count': len(filter_qs),
-            'applications_filter': filter
+            'applications_filter': filter,
         }
 
 
-class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
-                        BlockOldApplications, ExtraContextMixin,
-                        TripsYearMixin, DetailView):
+class ApplicationDetail(
+    DatabaseReadPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    ExtraContextMixin,
+    TripsYearMixin,
+    DetailView,
+):
     model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application_detail.html'
 
     volunteer_fields = [
-        ('Applying for trip leader','leader_willing'),
+        ('Applying for trip leader', 'leader_willing'),
         ('Applying for croo', 'croo_willing'),
         'class_year',
         'gender',
@@ -409,7 +428,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'tshirt_size',
         'height',  # TODO: gear app
         'weight',  # TODO
-        'gear',    # TODO
+        'gear',  # TODO
         'hometown',
         'academic_interests',
         'personal_activities',
@@ -451,7 +470,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'availability',
         'section_availability',
         'co_leader',
-        '_old_document'  # Deprecated field - include conditionally?
+        '_old_document',  # Deprecated field - include conditionally?
     ]
     crooapplication_fields = [
         'licensed',
@@ -462,7 +481,7 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
         'safety_lead_willing',
         'kitchen_lead_willing',
         'kitchen_lead_qualifications',
-        '_old_document'  # Deprecated field - include conditionally?
+        '_old_document',  # Deprecated field - include conditionally?
     ]
 
     def extra_context(self):
@@ -471,18 +490,23 @@ class ApplicationDetail(DatabaseReadPermissionRequired, BlockDirectorate,
             'leaderapplication_fields': self.leaderapplication_fields,
             'crooapplication_fields': self.crooapplication_fields,
             'admin_update_url': reverse(
-                'core:volunteer:update_admin', kwargs=self.kwargs)
+                'core:volunteer:update_admin', kwargs=self.kwargs
+            ),
         }
 
 
-class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
-                        BlockOldApplications, ApplicationFormsMixin,
-                        TripsYearMixin, UpdateView):
+class ApplicationUpdate(
+    ApplicationEditPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    ApplicationFormsMixin,
+    TripsYearMixin,
+    UpdateView,
+):
     template_name = 'applications/application_update.html'
 
     def get_form_valid_message(self):
-        return "Succesfully updated {}'s application".format(
-            self.object.applicant.name)
+        return "Succesfully updated {}'s application".format(self.object.applicant.name)
 
     def get_instances(self):
         self.object = self.get_object()
@@ -492,28 +516,39 @@ class ApplicationUpdate(ApplicationEditPermissionRequired, BlockDirectorate,
             CROO_FORM: self.object.croo_supplement,
             AGREEMENT_FORM: self.object,
             QUESTION_FORM: self.object,
-            FIRST_AID_FORM: self.object
+            FIRST_AID_FORM: self.object,
         }
 
 
-class ApplicationStatusUpdate(ApplicationEditPermissionRequired,
-                              BlockDirectorate, BlockOldApplications,
-                              TripsYearMixin, UpdateView):
+class ApplicationStatusUpdate(
+    ApplicationEditPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    TripsYearMixin,
+    UpdateView,
+):
     """
     Edit Application status
     """
+
     model = Volunteer
     form_class = ApplicationStatusForm
     template_name = 'applications/status_update.html'
 
 
-class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
-                             BlockDirectorate, BlockOldApplications,
-                             ExtraContextMixin, SetHeadlineMixin,
-                             TripsYearMixin, UpdateView):
+class ApplicationAdminUpdate(
+    ApplicationEditPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    ExtraContextMixin,
+    SetHeadlineMixin,
+    TripsYearMixin,
+    UpdateView,
+):
     """
     Update status, trip/croo assignment etc.
     """
+
     model = Volunteer
     template_name = 'core/update.html'
     form_class = ApplicationAdminForm
@@ -526,22 +561,22 @@ class ApplicationAdminUpdate(ApplicationEditPermissionRequired,
 
     def extra_context(self):
         order = lambda qs: qs.order_by(
-            'template__triptype',
-            'section',
-            'template'
-        ).select_related(
-            'template__triptype'
-        )
+            'template__triptype', 'section', 'template'
+        ).select_related('template__triptype')
         return {
             'preferred_trips': order(self.object.get_preferred_trips()),
             'available_trips': order(self.object.get_available_trips()),
-            'croos': Croo.objects.filter(trips_year=self.trips_year)
+            'croos': Croo.objects.filter(trips_year=self.trips_year),
         }
 
 
-class RemoveCrooAssignment(ApplicationEditPermissionRequired,
-                           BlockDirectorate, BlockOldApplications,
-                           TripsYearMixin, UpdateView):
+class RemoveCrooAssignment(
+    ApplicationEditPermissionRequired,
+    BlockDirectorate,
+    BlockOldApplications,
+    TripsYearMixin,
+    UpdateView,
+):
     model = Volunteer
     fields = []
     template_name = 'applications/remove_croo_assignment.html'

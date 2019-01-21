@@ -20,5 +20,5 @@ def TrueIf(**kwargs):
     return models.Case(
         models.When(then=True, **kwargs),
         default=False,
-        output_field=models.BooleanField()
+        output_field=models.BooleanField(),
     )

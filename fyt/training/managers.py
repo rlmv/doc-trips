@@ -5,18 +5,16 @@ from fyt.utils.query import pks
 
 
 class AttendeeManager(models.Manager):
-
     def get_queryset(self):
-        return super().get_queryset().select_related(
-            'volunteer', 'volunteer__applicant')
+        return (
+            super().get_queryset().select_related('volunteer', 'volunteer__applicant')
+        )
 
     def trainable(self, trips_year):
         """
         All volunteers can be trained this year.
         """
-        return self.filter(
-            trips_year=trips_year
-        ).filter(
+        return self.filter(trips_year=trips_year).filter(
             volunteer__status__in=self.model.TRAINABLE_STATUSES
         )
 
@@ -27,6 +25,7 @@ class AttendeeManager(models.Manager):
         qs = self.filter(trips_year=trips_year)
 
         from .models import Training
+
         for training in Training.objects.filter(trips_year=trips_year):
             qs = qs.filter(complete_sessions__training=training)
 
@@ -36,8 +35,6 @@ class AttendeeManager(models.Manager):
         """
         All volunteers who have not completed their training.
         """
-        return self.filter(
-            trips_year=trips_year
-        ).exclude(
+        return self.filter(trips_year=trips_year).exclude(
             pk__in=pks(self.training_complete(trips_year))
         )

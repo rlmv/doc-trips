@@ -33,40 +33,54 @@ class Trip(DatabaseModel):
     trip as leaders. The `trippees` attribute contains all the
     `IncomingStudents` who are assigned to the trip.
     """
-    objects = TripManager()
-    tracker = FieldTracker(fields=[
-        'template',
-        'section',
-        'dropoff_route',
-        'pickup_route'])
 
-    template = models.ForeignKey(
-        'TripTemplate',
-        on_delete=models.PROTECT)
+    objects = TripManager()
+    tracker = FieldTracker(
+        fields=['template', 'section', 'dropoff_route', 'pickup_route']
+    )
+
+    template = models.ForeignKey('TripTemplate', on_delete=models.PROTECT)
 
     section = models.ForeignKey(
-        'Section',
-        on_delete=models.PROTECT,
-        related_name='trips')
+        'Section', on_delete=models.PROTECT, related_name='trips'
+    )
 
-    notes = models.TextField(blank=True, help_text=(
-        "Trip-specific details such as weird timing. "
-        "This information will be added to leader packets."
-    ))
+    notes = models.TextField(
+        blank=True,
+        help_text=(
+            "Trip-specific details such as weird timing. "
+            "This information will be added to leader packets."
+        ),
+    )
 
     # Theses fields override the default transport routes. If any of these
     # routes are set, they are used instead of trip.template.*_route.
     # Is there a way to easily tell when a route is way off for a stop?
     ROUTE_HELP_TEXT = 'leave blank to use default route from template'
     dropoff_route = models.ForeignKey(
-        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overridden_dropped_off_trips', help_text=ROUTE_HELP_TEXT)
+        'transport.Route',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='overridden_dropped_off_trips',
+        help_text=ROUTE_HELP_TEXT,
+    )
     pickup_route = models.ForeignKey(
-        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overridden_picked_up_trips', help_text=ROUTE_HELP_TEXT)
+        'transport.Route',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='overridden_picked_up_trips',
+        help_text=ROUTE_HELP_TEXT,
+    )
     return_route = models.ForeignKey(
-        'transport.Route', blank=True, null=True, on_delete=models.PROTECT,
-        related_name='overriden_returning_trips', help_text=ROUTE_HELP_TEXT)
+        'transport.Route',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='overriden_returning_trips',
+        help_text=ROUTE_HELP_TEXT,
+    )
 
     class Meta:
         # no two Trips can have the same template-section-trips_year
@@ -125,9 +139,9 @@ class Trip(DatabaseModel):
         not scheduled.
         """
         from fyt.transport.models import InternalBus
+
         return InternalBus.objects.filter(
-            route=self.get_dropoff_route(),
-            date=self.dropoff_date
+            route=self.get_dropoff_route(), date=self.dropoff_date
         ).first()
 
     def get_pickup_bus(self):
@@ -136,13 +150,14 @@ class Trip(DatabaseModel):
         scheduled.
         """
         from fyt.transport.models import InternalBus
+
         return InternalBus.objects.filter(
-            route=self.get_pickup_route(),
-            date=self.pickup_date
+            route=self.get_pickup_route(), date=self.pickup_date
         ).first()
 
     def get_dropoff_stoporder(self):
         from fyt.transport.models import StopOrder
+
         try:
             return self.stoporder_set.get(stop_type=StopOrder.DROPOFF)
         except StopOrder.DoesNotExist:
@@ -150,6 +165,7 @@ class Trip(DatabaseModel):
 
     def get_pickup_stoporder(self):
         from fyt.transport.models import StopOrder
+
         try:
             return self.stoporder_set.get(stop_type=StopOrder.PICKUP)
         except StopOrder.DoesNotExist:
@@ -205,8 +221,7 @@ class Trip(DatabaseModel):
 
     def verbose_str(self):
         return '{}{}: {}'.format(
-            self.section.name, self.template.name,
-            self.template.description_summary
+            self.section.name, self.template.name, self.template.description_summary
         )
 
 
@@ -214,6 +229,7 @@ class Section(DatabaseModel):
     """
     Model to represent a trips section.
     """
+
     class Meta:
         ordering = ['name']
 
@@ -230,8 +246,9 @@ class Section(DatabaseModel):
     is_native = models.BooleanField('Native', default=False)
 
     sophomore_leaders_ok = models.BooleanField(
-        'Sophomores taking classes this summer can lead trips during this '
-        'section', default=False)
+        'Sophomores taking classes this summer can lead trips during this ' 'section',
+        default=False,
+    )
 
     objects = SectionManager()
     dates = SectionDatesManager()
@@ -291,7 +308,8 @@ class Section(DatabaseModel):
             self.at_campsite1,
             self.at_campsite2,
             self.arrive_at_lodge,
-            self.return_to_campus]
+            self.return_to_campus,
+        ]
 
     @property
     def leader_dates(self):
@@ -311,16 +329,22 @@ class Section(DatabaseModel):
         Looks like 'Aug 10th to Aug 15th'
         """
         fmt = '%b %d'
-        return (self.leaders_arrive.strftime(fmt) + ' to ' +
-                self.return_to_campus.strftime(fmt))
+        return (
+            self.leaders_arrive.strftime(fmt)
+            + ' to '
+            + self.return_to_campus.strftime(fmt)
+        )
 
     def trippee_date_str(self):
         """
         Date string for *trippees*
         """
         fmt = '%b %d'
-        return (self.trippees_arrive.strftime(fmt) + ' to ' +
-                self.return_to_campus.strftime(fmt))
+        return (
+            self.trippees_arrive.strftime(fmt)
+            + ' to '
+            + self.return_to_campus.strftime(fmt)
+        )
 
 
 def validate_triptemplate_name(value):
@@ -344,33 +368,38 @@ class TripTemplate(DatabaseModel):
     )
     max_trippees = models.PositiveSmallIntegerField()
     swimtest_required = models.BooleanField(
-        default=False, help_text=(
-            "if selected, available trippees will "
-            "be at least 'BEGINNER' swimmers"
-        )
+        default=False,
+        help_text=(
+            "if selected, available trippees will " "be at least 'BEGINNER' swimmers"
+        ),
     )
     dropoff_stop = models.ForeignKey(
-        'transport.Stop', related_name='dropped_off_trips',
-        on_delete=models.PROTECT)
+        'transport.Stop', related_name='dropped_off_trips', on_delete=models.PROTECT
+    )
     pickup_stop = models.ForeignKey(
-        'transport.Stop', related_name='picked_up_trips',
-        on_delete=models.PROTECT)
+        'transport.Stop', related_name='picked_up_trips', on_delete=models.PROTECT
+    )
     return_route = models.ForeignKey(
-        'transport.Route', related_name='returning_trips',
-        on_delete=models.PROTECT)
+        'transport.Route', related_name='returning_trips', on_delete=models.PROTECT
+    )
 
     # TODO: better related names
     campsite1 = models.ForeignKey(
-        'Campsite', related_name='trip_night_1', on_delete=models.PROTECT,
-        verbose_name='campsite 1')
+        'Campsite',
+        related_name='trip_night_1',
+        on_delete=models.PROTECT,
+        verbose_name='campsite 1',
+    )
     campsite2 = models.ForeignKey(
-        'Campsite', related_name='trip_night_2', on_delete=models.PROTECT,
-        verbose_name='campsite 2')
+        'Campsite',
+        related_name='trip_night_2',
+        on_delete=models.PROTECT,
+        verbose_name='campsite 2',
+    )
 
     description = models.OneToOneField(
-        'TripTemplateDescription',
-        editable=False,
-        on_delete=models.CASCADE,)
+        'TripTemplateDescription', editable=False, on_delete=models.CASCADE
+    )
 
     class Meta:
         ordering = ['name']
@@ -386,9 +415,10 @@ class TripTemplate(DatabaseModel):
         """
         Url used to attach files to this trip template
         """
-        return reverse('core:triptemplate:upload_file', kwargs={
-            'trips_year': self.trips_year, 'triptemplate_pk': self.pk
-        })
+        return reverse(
+            'core:triptemplate:upload_file',
+            kwargs={'trips_year': self.trips_year, 'triptemplate_pk': self.pk},
+        )
 
     def file_list_url(self):
         """
@@ -408,6 +438,7 @@ class TripTemplateDescription(DatabaseModel):
     on TripTemplate more efficient. Loading these text fields is a big
     performance hit on large querysets.
     """
+
     intro = models.TextField('Introduction', blank=True)
     day1 = models.TextField('Day 1', blank=True)
     day2 = models.TextField('Day 2', blank=True)
@@ -422,10 +453,10 @@ class Document(DatabaseModel):
 
     Should this be restricted to PDFs? Allow images?
     """
+
     template = models.ForeignKey(
-        'TripTemplate',
-        on_delete=models.PROTECT,
-        related_name='documents')
+        'TripTemplate', on_delete=models.PROTECT, related_name='documents'
+    )
 
     name = models.CharField(max_length=255)
     file = models.FileField()
@@ -458,7 +489,8 @@ class TripType(DatabaseModel):
 
     hidden = models.BooleanField(
         'hide this TripType from leader applications and incoming student '
-        'registrations', default=False
+        'registrations',
+        default=False,
     )
 
     # --- foodbox info ----
@@ -482,35 +514,16 @@ class Campsite(DatabaseModel):
     """
     A location where trips camp
     """
-    name = models.CharField(
-        max_length=255
-    )
-    capacity = models.PositiveSmallIntegerField(
-        null=True
-    )
-    directions = models.TextField(
-        blank=True
-    )
-    water_source = models.TextField(
-        "closest water source", blank=True
-    )
-    bear_bag = models.BooleanField(
-        "bear-bag required?", default=False
-    )
-    SHELTER_CHOICES = (
-        ('TARP', 'tarp'),
-        ('SHELTER', 'shelter'),
-        ('CABIN', 'cabin')
-    )
-    shelter = models.CharField(
-        "shelter type", max_length=10, choices=SHELTER_CHOICES
-    )
-    bugout = models.TextField(
-        blank=True, help_text="directions for quick help"
-    )
-    secret = models.TextField(
-        blank=True, help_text="door codes and other secret info"
-    )
+
+    name = models.CharField(max_length=255)
+    capacity = models.PositiveSmallIntegerField(null=True)
+    directions = models.TextField(blank=True)
+    water_source = models.TextField("closest water source", blank=True)
+    bear_bag = models.BooleanField("bear-bag required?", default=False)
+    SHELTER_CHOICES = (('TARP', 'tarp'), ('SHELTER', 'shelter'), ('CABIN', 'cabin'))
+    shelter = models.CharField("shelter type", max_length=10, choices=SHELTER_CHOICES)
+    bugout = models.TextField(blank=True, help_text="directions for quick help")
+    secret = models.TextField(blank=True, help_text="door codes and other secret info")
 
     class Meta:
         ordering = ['name']

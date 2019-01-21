@@ -32,6 +32,7 @@ class NotEqual(Lookup):
     """
     Register a not-equals lookup.
     """
+
     lookup_name = 'ne'
 
     def as_sql(self, qn, connection):
@@ -42,11 +43,9 @@ class NotEqual(Lookup):
 
 
 class BaseVolunteerManager(models.Manager):
-
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.select_related('applicant', 'croo_supplement',
-                                 'leader_supplement')
+        return qs.select_related('applicant', 'croo_supplement', 'leader_supplement')
 
     def prospective_leaders_for_trip(self, trip):
         """
@@ -66,13 +65,17 @@ class BaseVolunteerManager(models.Manager):
             self.leader_applications(trip.trips_year)
             .filter(
                 leader_supplement__leadersectionchoice__section=trip.section,
-                leader_supplement__leadersectionchoice__preference__in=opts)
+                leader_supplement__leadersectionchoice__preference__in=opts,
+            )
             .filter(
                 leader_supplement__leadertriptypechoice__triptype=triptype,
-                leader_supplement__leadertriptypechoice__preference__in=opts))
+                leader_supplement__leadertriptypechoice__preference__in=opts,
+            )
+        )
 
     def leader_applications(self, trips_year):
         from .models import Question
+
         questions = Question.objects.required_for_leaders(trips_year)
 
         qs = self.filter(trips_year=trips_year, leader_willing=True)
@@ -84,6 +87,7 @@ class BaseVolunteerManager(models.Manager):
 
     def croo_applications(self, trips_year):
         from .models import Question
+
         questions = Question.objects.required_for_croos(trips_year)
 
         qs = self.filter(trips_year=trips_year, croo_willing=True)
@@ -111,10 +115,7 @@ class BaseVolunteerManager(models.Manager):
         """
         Return all leader applications which are incomplete.
         """
-        return self.filter(
-            trips_year=trips_year,
-            leader_willing=True
-        ).exclude(
+        return self.filter(trips_year=trips_year, leader_willing=True).exclude(
             pk__in=Subquery(pks(self.leader_applications(trips_year)))
         )
 
@@ -122,10 +123,7 @@ class BaseVolunteerManager(models.Manager):
         """
         Return all croo applications which are incomplete.
         """
-        return self.filter(
-            trips_year=trips_year,
-            croo_willing=True
-        ).exclude(
+        return self.filter(trips_year=trips_year, croo_willing=True).exclude(
             pk__in=Subquery(pks(self.croo_applications(trips_year)))
         )
 
@@ -136,12 +134,10 @@ class BaseVolunteerManager(models.Manager):
         return self.filter(trips_year=trips_year, status=self.model.CROO)
 
     def leader_waitlist(self, trips_year):
-        return self.filter(trips_year=trips_year,
-                           status=self.model.LEADER_WAITLIST)
+        return self.filter(trips_year=trips_year, status=self.model.LEADER_WAITLIST)
 
     def rejected(self, trips_year):
-        return self.filter(trips_year=trips_year,
-                           status=self.model.REJECTED)
+        return self.filter(trips_year=trips_year, status=self.model.REJECTED)
 
     def score_progress(self, trips_year):
         """
@@ -158,25 +154,24 @@ class BaseVolunteerManager(models.Manager):
         total = qs.count() * NUM_SCORES
 
         complete = sum(
-            min(x.scores__count, NUM_SCORES)
-            for x in qs.annotate(Count('scores')))
+            min(x.scores__count, NUM_SCORES) for x in qs.annotate(Count('scores'))
+        )
 
         return {
             'complete': complete,
             'total': total,
-            'percentage': round(complete / total * 100) if total else 100
+            'percentage': round(complete / total * 100) if total else 100,
         }
 
 
 class VolunteerQuerySet(models.QuerySet):
-
     def within_deadline_extension(self):
         """
         All applications that have a deadline extension and are within it.
         """
         return self.filter(
-            deadline_extension__isnull=False,
-            deadline_extension__gt=timezone.now())
+            deadline_extension__isnull=False, deadline_extension__gt=timezone.now()
+        )
 
     def with_avg_scores(self):
         """
@@ -188,14 +183,15 @@ class VolunteerQuerySet(models.QuerySet):
         """
         return self.annotate(
             avg_leader_score=Avg('scores__leader_score__value'),
-            avg_croo_score=Avg('scores__croo_score__value')
+            avg_croo_score=Avg('scores__croo_score__value'),
         ).annotate(
             norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
-            norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0))
+            norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0)),
         )
 
     def with_required_questions(self, trips_year):
         from .models import Question
+
         questions = list(Question.objects.filter(trips_year=trips_year))
 
         # TODO: is there any way to annotate without materializing the qs?
@@ -214,15 +210,17 @@ class VolunteerQuerySet(models.QuerySet):
         from fyt.training.models import FirstAidCertification
 
         non_cpr_options = [
-            k for k, v in FirstAidCertification.CERTIFICATION_CHOICES
-            if k not in [FirstAidCertification.CPR, None]]
+            k
+            for k, v in FirstAidCertification.CERTIFICATION_CHOICES
+            if k not in [FirstAidCertification.CPR, None]
+        ]
 
         return self.filter(
             first_aid_certifications__name=FirstAidCertification.CPR,
-            first_aid_certifications__verified=True
+            first_aid_certifications__verified=True,
         ).filter(
             first_aid_certifications__name__in=non_cpr_options,
-            first_aid_certifications__verified=True
+            first_aid_certifications__verified=True,
         )
 
     def first_aid_incomplete(self):
@@ -230,14 +228,14 @@ class VolunteerQuerySet(models.QuerySet):
         All volunteers missing first aid certifications.
         """
         return self.exclude(
-            pk__in=self.model.objects.first_aid_complete().values_list('pk'))
+            pk__in=self.model.objects.first_aid_complete().values_list('pk')
+        )
 
 
 VolunteerManager = BaseVolunteerManager.from_queryset(VolunteerQuerySet)
 
 
 class QuestionManager(models.Manager):
-
     def required_for_leaders(self, trips_year):
         target_types = [self.model.LEADER, self.model.ALL]
         return self.required(trips_year).filter(type__in=target_types)
@@ -251,14 +249,12 @@ class QuestionManager(models.Manager):
 
 
 class BaseGraderManager(models.Manager):
-
     def from_user(self, user):
         """Return the Grader object proxying the given user."""
         return self.get(pk=user.pk)
 
 
 class GraderQuerySet(models.QuerySet):
-
     def with_statistics(self, trips_year):
         """
         Return all users who have scored applications this year.
@@ -266,39 +262,52 @@ class GraderQuerySet(models.QuerySet):
         LEADER_SCORE_LOOKUP = 'scores_for_year__leader_score'
         CROO_SCORE_LOOKUP = 'scores_for_year__croo_score'
 
-        qs = self.annotate(
-            scores_for_year=FilteredRelation('scores', condition=Q(
-                scores__trips_year=trips_year))
-        ).filter(
-            scores_for_year__isnull=False
-        ).distinct().annotate(
-            score_count=Count('scores_for_year'),
-            avg_leader_score=Avg(LEADER_SCORE_LOOKUP + '__value'),
-            avg_croo_score=Avg(CROO_SCORE_LOOKUP + '__value')
+        qs = (
+            self.annotate(
+                scores_for_year=FilteredRelation(
+                    'scores', condition=Q(scores__trips_year=trips_year)
+                )
+            )
+            .filter(scores_for_year__isnull=False)
+            .distinct()
+            .annotate(
+                score_count=Count('scores_for_year'),
+                avg_leader_score=Avg(LEADER_SCORE_LOOKUP + '__value'),
+                avg_croo_score=Avg(CROO_SCORE_LOOKUP + '__value'),
+            )
         )
 
         qs = qs._annotate_score_counts(LEADER_SCORE_LOOKUP, trips_year)
         qs = qs._annotate_score_counts(CROO_SCORE_LOOKUP, trips_year)
-        qs = qs._attach_histogram('leader_score_histogram', LEADER_SCORE_LOOKUP,
-                                  trips_year)
-        qs = qs._attach_histogram('croo_score_histogram', CROO_SCORE_LOOKUP,
-                                  trips_year)
+        qs = qs._attach_histogram(
+            'leader_score_histogram', LEADER_SCORE_LOOKUP, trips_year
+        )
+        qs = qs._attach_histogram('croo_score_histogram', CROO_SCORE_LOOKUP, trips_year)
 
         return qs
 
     def _annotate_score_counts(self, score_lookup, trips_year):
         values = score_values(trips_year)
         return self.annotate(
-            **{_bin(score_lookup, value): Count('scores_for_year', filter=Q(
-                **{score_lookup: value}))
-               for value in values})
+            **{
+                _bin(score_lookup, value): Count(
+                    'scores_for_year', filter=Q(**{score_lookup: value})
+                )
+                for value in values
+            }
+        )
 
     def _attach_histogram(self, histogram_name, score_lookup, trips_year):
         values = score_values(trips_year)
         for grader in self:
-            setattr(grader, histogram_name, OrderedDict(
-                (value, getattr(grader, _bin(score_lookup, value.value)))
-                for value in values))
+            setattr(
+                grader,
+                histogram_name,
+                OrderedDict(
+                    (value, getattr(grader, _bin(score_lookup, value.value)))
+                    for value in values
+                ),
+            )
         return self
 
 
@@ -307,6 +316,7 @@ GraderManager = BaseGraderManager.from_queryset(GraderQuerySet)
 
 def score_values(trips_year):
     from .models import ScoreValue
+
     return ScoreValue.objects.filter(trips_year=trips_year)
 
 
@@ -315,22 +325,20 @@ def _bin(score_lookup, x):
 
 
 class ScoreQuerySet(models.QuerySet):
-
     def prefetch_display_data(self):
         from .models import ScoreComment
+
         return self.select_related(
-            'grader',
-            'leader_score',
-            'croo_score'
+            'grader', 'leader_score', 'croo_score'
         ).prefetch_related(
             Prefetch(
                 'scorecomment_set',
-                queryset=ScoreComment.objects.select_related(
-                    'score_question')))
+                queryset=ScoreComment.objects.select_related('score_question'),
+            )
+        )
 
 
 class ScoreClaimQuerySet(models.QuerySet):
-
     def active(self):
         """
         Filter claims that are currently active - that is, within the
@@ -339,25 +347,22 @@ class ScoreClaimQuerySet(models.QuerySet):
         """
         from .models import Score, Skip
 
-        return self.filter(
-            claimed_at__gt=(timezone.now() - self.model.HOLD_DURATION)
-        ).annotate(
-            # Has the grader already added a score for this claim?
-            already_scored=Exists(
-                Score.objects.filter(
-                    application=OuterRef('application'),
-                    grader=OuterRef('grader')
-                )
-            ),
-            # Has the grader already skipped this claim?
-            already_skipped=Exists(
-                Skip.objects.filter(
-                    application=OuterRef('application'),
-                    grader=OuterRef('grader')
-                )
+        return (
+            self.filter(claimed_at__gt=(timezone.now() - self.model.HOLD_DURATION))
+            .annotate(
+                # Has the grader already added a score for this claim?
+                already_scored=Exists(
+                    Score.objects.filter(
+                        application=OuterRef('application'), grader=OuterRef('grader')
+                    )
+                ),
+                # Has the grader already skipped this claim?
+                already_skipped=Exists(
+                    Skip.objects.filter(
+                        application=OuterRef('application'), grader=OuterRef('grader')
+                    )
+                ),
             )
-        ).exclude(
-            already_scored=True
-        ).exclude(
-            already_skipped=True
+            .exclude(already_scored=True)
+            .exclude(already_skipped=True)
         )

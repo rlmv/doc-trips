@@ -52,7 +52,7 @@ tidy:
 	$(VENV)/bin/importanize -v fyt
 
 format:
-	black -S fyt
+	black -S --exclude migrations/ fyt
 
 coverage: postgres
 	$(COVERAGE) run --omit "$(VENV)/*" manage.py test --nomigrations

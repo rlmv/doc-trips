@@ -6,13 +6,11 @@ from fyt.utils.matrix import OrderedMatrix
 
 
 class StopManager(models.Manager):
-
     def external(self, trips_year):
         return self.filter(trips_year=trips_year, route__category=EXTERNAL)
 
 
 class RouteManager(models.Manager):
-
     def internal(self, trips_year):
         return self.filter(trips_year=trips_year, category=INTERNAL)
 
@@ -21,7 +19,6 @@ class RouteManager(models.Manager):
 
 
 class InternalBusManager(models.Manager):
-
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.select_related('route')
@@ -52,15 +49,14 @@ class ExternalBusManager(models.Manager):
     """
     Manager for the ExternalBus model.
     """
+
     def schedule_matrix(self, trips_year):
         """
         Returns and ordered matrix of all scheduled external
         transports.
         """
         matrix = external_route_matrix(trips_year)
-        scheduled = self.filter(
-            trips_year=trips_year
-        ).select_related(
+        scheduled = self.filter(trips_year=trips_year).select_related(
             'route', 'section'
         )
         for transport in scheduled:
@@ -69,7 +65,6 @@ class ExternalBusManager(models.Manager):
 
 
 class ExternalPassengerManager(models.Manager):
-
     def matrix_to_hanover(self, trips_year):
         """
         Each entry in the matrix contains the number of
@@ -77,9 +72,11 @@ class ExternalPassengerManager(models.Manager):
         """
         return self._matrix(
             trips_year,
-            (models.Q(bus_assignment_round_trip__isnull=False) |
-             models.Q(bus_assignment_to_hanover__isnull=False)),
-            lambda p: p.bus_assignment_to_hanover
+            (
+                models.Q(bus_assignment_round_trip__isnull=False)
+                | models.Q(bus_assignment_to_hanover__isnull=False)
+            ),
+            lambda p: p.bus_assignment_to_hanover,
         )
 
     def matrix_from_hanover(self, trips_year):
@@ -89,9 +86,11 @@ class ExternalPassengerManager(models.Manager):
         """
         return self._matrix(
             trips_year,
-            (models.Q(bus_assignment_round_trip__isnull=False) |
-             models.Q(bus_assignment_from_hanover__isnull=False)),
-            lambda p: p.bus_assignment_from_hanover
+            (
+                models.Q(bus_assignment_round_trip__isnull=False)
+                | models.Q(bus_assignment_from_hanover__isnull=False)
+            ),
+            lambda p: p.bus_assignment_from_hanover,
         )
 
     def _matrix(self, trips_year, condition, getter):
@@ -99,17 +98,18 @@ class ExternalPassengerManager(models.Manager):
         getter returns the one-way bus stop from the IncStudent
         """
         from fyt.incoming.models import IncomingStudent
+
         matrix = external_route_matrix(trips_year, default=0)
         passengers = IncomingStudent.objects.filter(
             condition,
             trips_year=trips_year,
             trip_assignment__isnull=False,
-            trip_assignment__section__is_local=True
+            trip_assignment__section__is_local=True,
         ).select_related(
             'bus_assignment_round_trip__route',
             'bus_assignment_to_hanover__route',
             'bus_assignment_from_hanover__route',
-            'trip_assignment__section'
+            'trip_assignment__section',
         )
         for p in passengers:
             bus = p.bus_assignment_round_trip or getter(p)
@@ -124,17 +124,17 @@ class ExternalPassengerManager(models.Manager):
         section.
         """
         from fyt.incoming.models import IncomingStudent
+
         return IncomingStudent.objects.filter(
-            Q(bus_assignment_round_trip__isnull=False) |
-            Q(bus_assignment_to_hanover__isnull=False) |
-            Q(bus_assignment_from_hanover__isnull=False),
-            Q(trip_assignment=None) |
-            Q(trip_assignment__section__is_local=False),
-            trips_year=trips_year)
+            Q(bus_assignment_round_trip__isnull=False)
+            | Q(bus_assignment_to_hanover__isnull=False)
+            | Q(bus_assignment_from_hanover__isnull=False),
+            Q(trip_assignment=None) | Q(trip_assignment__section__is_local=False),
+            trips_year=trips_year,
+        )
 
 
 class StopOrderManager(models.Manager):
-
     def get_queryset(self):
         qs = super().get_queryset()
         return qs.select_related(

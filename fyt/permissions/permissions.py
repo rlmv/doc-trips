@@ -17,60 +17,71 @@ SitePermission.
 
 def get_permission(codename, name):
     """ Return a the requested SitePermission. """
-    permission, _ = SitePermission.objects.get_or_create(
-        codename=codename, name=name)
+    permission, _ = SitePermission.objects.get_or_create(codename=codename, name=name)
     return permission
 
 
 def can_view_database():
-    return get_permission('can_view_db',
-                          'Can view the trips database')
+    return get_permission('can_view_db', 'Can view the trips database')
+
 
 def can_edit_database():
     """
     Implies can_view_db permissions. It's assumed that if you can edit,
     you can also view an object.
     """
-    return get_permission('can_edit_db',
-                          'Can edit objects in the trips database')
+    return get_permission('can_edit_db', 'Can edit objects in the trips database')
+
 
 def can_edit_settings():
-    return get_permission('can_edit_settings',
-                          'Can change database settings')
+    return get_permission('can_edit_settings', 'Can change database settings')
+
 
 def can_score_applications():
     return get_permission('can_score_applications', 'Can score applications')
 
+
 def can_score_as_croo_head():
-    return get_permission('can_score_as_croo_head',
-                          'Can score applications reserved for croo heads')
+    return get_permission(
+        'can_score_as_croo_head', 'Can score applications reserved for croo heads'
+    )
+
 
 def can_edit_applications_and_assign_trip_leaders():
     """ Permission specific to TLTs so they can tweak leader applications """
-    return get_permission('can_edit_applications_and_assign_leaders',
-                          'Can change apps in DB and assign leaders')
+    return get_permission(
+        'can_edit_applications_and_assign_leaders',
+        'Can change apps in DB and assign leaders',
+    )
+
 
 def can_edit_trainings():
     """Permissions allowing TLTs and directorate to update trainings."""
     return get_permission('can_edit_trainings', 'Can edit trainings')
 
+
 def can_edit_trip_info():
     """ Permissions to allow olcs users to edit trip itineraries """
     return get_permission('can_edit_trip_info', 'Can edit trip itineraries')
 
+
 def can_report_incidents():
-    return get_permission('can_report_incidents',
-                          'Can report incidents in the safety log')
+    return get_permission(
+        'can_report_incidents', 'Can report incidents in the safety log'
+    )
+
 
 def can_view_old_applications():
-    return get_permission('can_view_old_applications',
-                          'Can view applications from previous years')
+    return get_permission(
+        'can_view_old_applications', 'Can view applications from previous years'
+    )
 
 
 class GroupRegistry:
     """
     Core registry of all groups and permissions for each group.
     """
+
     def __init__(self, group_perms):
         self.group_perms = group_perms
 
@@ -109,42 +120,36 @@ class GroupRegistry:
 
 
 #: Register all groups
-groups = GroupRegistry({
-    'directors': [
-        can_view_database,
-        can_edit_database,
-        can_edit_settings,
-        can_score_applications,
-        can_edit_applications_and_assign_trip_leaders,
-        can_report_incidents,
-        can_edit_trainings,
-        can_view_old_applications],
-
-    'croo heads': [
-        can_view_database,
-        can_score_applications,
-        can_score_as_croo_head],
-
-    'trip leader trainers': [
-        can_view_database,
-        can_score_applications,
-        can_edit_applications_and_assign_trip_leaders,
-        can_edit_trainings],
-
-    'outdoor logistics coordinators': [
-        can_view_database,
-        can_score_applications,
-        can_edit_trip_info],
-
-    'directorate': [
-        can_view_database,
-        can_score_applications,
-        can_edit_trainings],
-
-    'safety leads': [
-        can_report_incidents,
-        can_edit_trainings],
-
-    'graders': [
-        can_score_applications]
-    })
+groups = GroupRegistry(
+    {
+        'directors': [
+            can_view_database,
+            can_edit_database,
+            can_edit_settings,
+            can_score_applications,
+            can_edit_applications_and_assign_trip_leaders,
+            can_report_incidents,
+            can_edit_trainings,
+            can_view_old_applications,
+        ],
+        'croo heads': [
+            can_view_database,
+            can_score_applications,
+            can_score_as_croo_head,
+        ],
+        'trip leader trainers': [
+            can_view_database,
+            can_score_applications,
+            can_edit_applications_and_assign_trip_leaders,
+            can_edit_trainings,
+        ],
+        'outdoor logistics coordinators': [
+            can_view_database,
+            can_score_applications,
+            can_edit_trip_info,
+        ],
+        'directorate': [can_view_database, can_score_applications, can_edit_trainings],
+        'safety leads': [can_report_incidents, can_edit_trainings],
+        'graders': [can_score_applications],
+    }
+)

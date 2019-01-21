@@ -10,6 +10,7 @@ class DetailLinkColumn(tables.Column):
     Render a ForeignKey value as a link to the object's
     detail view.
     """
+
     def render(self, value):
         return detail_link(value)
 
@@ -18,24 +19,18 @@ class _RegistrationTable(tables.Table):
     """
     Table for Registrations
     """
-    class Meta:
-        attrs = {
-            "class": "table table-condensed"  # bootstrap
-        }
 
-    user = tables.Column(
-        verbose_name='Registration'
-    )
+    class Meta:
+        attrs = {"class": "table table-condensed"}  # bootstrap
+
+    user = tables.Column(verbose_name='Registration')
     trip_assignment = tables.Column(
-        accessor='trippee', order_by='-trippee__trip_assignment',
-        verbose_name='Trip Assignment'
+        accessor='trippee',
+        order_by='-trippee__trip_assignment',
+        verbose_name='Trip Assignment',
     )
-    trippee = DetailLinkColumn(
-        verbose_name='Incoming Student Data'
-    )
-    edit_link = tables.Column(
-        verbose_name=' ', accessor='user'
-    )
+    trippee = DetailLinkColumn(verbose_name='Incoming Student Data')
+    edit_link = tables.Column(verbose_name=' ', accessor='user')
 
     def render_user(self, record):
         return detail_link(record)
@@ -58,26 +53,15 @@ class IncomingStudentTable(tables.Table):
     """
     Table for displaying Incoming Students
     """
-    class Meta:
-        attrs = {
-            "class": "table table-condensed"
-        }
 
-    name = tables.Column(
-        verbose_name='Student'
-    )
-    registration_id = tables.Column(
-        verbose_name='Registration'
-    )
-    trip_assignment = DetailLinkColumn(
-        verbose_name='Trip'
-    )
-    cancelled = tables.Column(
-        verbose_name='Cancelled?'
-    )
-    incoming_status = tables.Column(
-        verbose_name='Status'
-    )
+    class Meta:
+        attrs = {"class": "table table-condensed"}
+
+    name = tables.Column(verbose_name='Student')
+    registration_id = tables.Column(verbose_name='Registration')
+    trip_assignment = DetailLinkColumn(verbose_name='Trip')
+    cancelled = tables.Column(verbose_name='Cancelled?')
+    incoming_status = tables.Column(verbose_name='Status')
     bus_assignment_round_trip = DetailLinkColumn(
         verbose_name='Bus ROUND TRIP', orderable=False
     )
@@ -92,9 +76,10 @@ class IncomingStudentTable(tables.Table):
         # Manually reverse registration url.
         # Using detail_link requires pulling in the whole Registration
         # model just to get the pk and trips_year.
-        url = reverse('core:registration:detail', kwargs={
-            'trips_year': record.trips_year_id,
-            'pk': record.registration_id})
+        url = reverse(
+            'core:registration:detail',
+            kwargs={'trips_year': record.trips_year_id, 'pk': record.registration_id},
+        )
         return make_link(url, record.name)
 
     def render_name(self, record):

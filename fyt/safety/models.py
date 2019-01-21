@@ -15,7 +15,7 @@ ROLE_CHOICES = (
     ('TRIP_LEADER', 'Trip Leader'),
     ('CROO_MEMBER', 'Croo Member'),
     ('TRIPPEE', 'Trippee'),
-    ('OTHER', 'Other')
+    ('OTHER', 'Other'),
 )
 
 
@@ -23,14 +23,14 @@ class _IncidentBase(DatabaseModel):
     """
     Base fields for Incident and IncidentUpdate
     """
+
     class Meta:
         abstract = True
 
     # inputing user
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        editable=False,
-        on_delete=models.PROTECT)
+        settings.AUTH_USER_MODEL, editable=False, on_delete=models.PROTECT
+    )
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
 
@@ -41,27 +41,26 @@ class _IncidentBase(DatabaseModel):
 
 
 class Incident(_IncidentBase):
-
     class Meta:
         ordering = ['status', '-when']
 
     OPEN = 'OPEN'
     RESOLVED = 'RESOLVED'
     status = models.CharField(
-        max_length=10, default=OPEN, choices=(
-            (OPEN, 'open'),
-            (RESOLVED, 'resolved')
-        ))
+        max_length=10, default=OPEN, choices=((OPEN, 'open'), (RESOLVED, 'resolved'))
+    )
 
     trip = models.ForeignKey(
-        Trip, blank=True, null=True,
+        Trip,
+        blank=True,
+        null=True,
         on_delete=models.PROTECT,
         verbose_name='On what trip did this incident occur?',
-        help_text='leave blank if incident did not occur on a trip'
+        help_text='leave blank if incident did not occur on a trip',
     )
     where = models.TextField(
         "Where during the trip did this occur?",
-        help_text="trail name, campsite, Hanover, Lodge, etc"
+        help_text="trail name, campsite, Hanover, Lodge, etc",
     )
     when = models.DateTimeField("When did this incident occur?")
 
@@ -74,9 +73,7 @@ class Incident(_IncidentBase):
     resp = models.TextField('What was the response to the incident?')
     outcome = models.TextField('What was the outcome of the response?')
 
-    follow_up = models.TextField(
-        'Is any additional follow-up needed? If so, what?'
-    )
+    follow_up = models.TextField('Is any additional follow-up needed? If so, what?')
 
     def detail_url(self):
         return reverse('core:safety:detail', kwargs=self.obj_kwargs())
@@ -96,10 +93,7 @@ class Incident(_IncidentBase):
 
 class IncidentUpdate(_IncidentBase):
     # parent incident
-    incident = models.ForeignKey(
-        Incident,
-        editable=False,
-        on_delete=models.CASCADE)
+    incident = models.ForeignKey(Incident, editable=False, on_delete=models.CASCADE)
 
     update = models.TextField()
 

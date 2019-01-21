@@ -16,7 +16,7 @@ class Command(BaseCommand):
         try:
             user = DartmouthUser.objects.get(netid=netid)
         except DartmouthUser.DoesNotExist:
-            err = ("User with netid '%s' does not exist in the database")
+            err = "User with netid '%s' does not exist in the database"
             self.stderr.write(err % netid)
         else:
             user.delete()

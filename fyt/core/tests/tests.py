@@ -21,7 +21,6 @@ class InitialDataTestCase(FytTestCase):
 
 
 class DatabaseModelTestCase(FytTestCase):
-
     def test_trips_year_field_is_required(self):
         self.assertRaises(IntegrityError, mommy.make, Campsite, trips_year=None)
 
@@ -36,6 +35,7 @@ class DatabaseModelTestCase(FytTestCase):
 
 class DatabaseMixinTestCase(FytTestCase):
     """ DatabaseMixin integration tests """
+
     csrf_checks = False
 
     def test_need_database_permissions_to_access_database_pages(self):
@@ -48,29 +48,25 @@ class DatabaseMixinTestCase(FytTestCase):
 
 
 class RedirectToCurrentDatabaseTestCase(FytTestCase):
-
     def test_db_redirect_access_without_permissions(self):
         trips_year = self.init_trips_year()
         self.app.get('/db/', user=self.make_user(), status=403)
 
 
 class TemplateTestCase(FytTestCase):
-
     def test_previous_years_link_to_current(self):
         self.init_trips_year()
         self.init_old_trips_year()
         self.make_director()
 
         # Last year
-        url = reverse('core:landing_page', kwargs={
-            'trips_year': self.old_trips_year})
+        url = reverse('core:landing_page', kwargs={'trips_year': self.old_trips_year})
         resp = self.app.get(url, user=self.director)
         self.assertContains(resp, "This page is for Trips 2013")
         self.assertContains(resp, "Return to 2014")
 
         # This year
-        url = reverse('core:landing_page', kwargs={
-            'trips_year': self.trips_year})
+        url = reverse('core:landing_page', kwargs={'trips_year': self.trips_year})
         resp = self.app.get(url, user=self.director)
         self.assertNotContains(resp, "This page is for Trips 2014")
         self.assertNotContains(resp, "Return to 2014")
