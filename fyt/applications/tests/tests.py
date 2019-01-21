@@ -419,7 +419,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         app.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
 
         prospects = Volunteer.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app])
+        self.assertEqual(list(prospects), [app])
 
     def test_prospective_leader_with_available_choices(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
@@ -429,7 +429,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         app.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         prospects = Volunteer.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [app])
+        self.assertEqual(list(prospects), [app])
 
     def test_only_complete_applications(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
@@ -445,7 +445,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         not_prosp.leader_supplement.set_triptype_preference(trip.template.triptype, AVAILABLE)
 
         prospects = Volunteer.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [prospective])
+        self.assertEqual(list(prospects), [prospective])
 
     def test_without_section_preference(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
@@ -455,7 +455,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         app.leader_supplement.set_triptype_preference(trip.template.triptype, PREFER)
 
         prospects = Volunteer.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [])
+        self.assertEqual(list(prospects), [])
 
     def test_without_triptype_preference(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
@@ -464,7 +464,7 @@ class ApplicationManager_prospective_leaders_TestCase(ApplicationTestMixin, FytT
         app.leader_supplement.set_section_preference(trip.section, PREFER)
 
         prospects = Volunteer.objects.prospective_leaders_for_trip(trip)
-        self.assertEquals(list(prospects), [])
+        self.assertEqual(list(prospects), [])
 
 
 class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
@@ -702,7 +702,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
         form.save()
 
         prefs = self.leader_app.leadersectionchoice_set.all()
-        self.assertEquals(len(prefs), 1)
+        self.assertEqual(len(prefs), 1)
         self.assertEqual(prefs[0].section, self.section)
         self.assertEqual(prefs[0].preference, 'AVAILABLE')
 
@@ -716,7 +716,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
         form.save()
 
         prefs = self.leader_app.leadersectionchoice_set.all()
-        self.assertEquals(len(prefs), 1)
+        self.assertEqual(len(prefs), 1)
         self.assertEqual(prefs[0].section, self.section)
         self.assertEqual(prefs[0].preference, 'AVAILABLE')
 
@@ -752,7 +752,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
         self.assertEqual(form.fields['triptype_1'].label, 'Climbing')
 
         prefs = self.leader_app.leadertriptypechoice_set.all()
-        self.assertEquals(len(prefs), 1)
+        self.assertEqual(len(prefs), 1)
         self.assertEqual(prefs[0].triptype, triptype1)
         self.assertEqual(prefs[0].preference, 'NOT AVAILABLE')
 

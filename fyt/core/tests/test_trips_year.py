@@ -22,12 +22,12 @@ class TripsYearMixinTestCase(FytTestCase):
         year = self.init_trips_year()
         response = self.app.get('/db/{}/'.format(year.year),
                                 user=self.make_director())
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
     def test_dispatch_for_nonexistant_year(self):
         response = self.app.get('/db/2314124/', status=404,
                                 user=self.make_director())
-        self.assertEquals(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     def test_trips_year_is_added_to_models_by_create_form_submission(self):
         """Use Section as model, instead of hacking together an example"""
@@ -40,7 +40,7 @@ class TripsYearMixinTestCase(FytTestCase):
 
         # should have object in the database
         s = Section.objects.get(name=data['name'])
-        self.assertEquals(s.trips_year, self.trips_year)
+        self.assertEqual(s.trips_year, self.trips_year)
 
     def test_trips_year_queryset_filtering(self):
         """
@@ -66,14 +66,14 @@ class TripsYearMixinTestCase(FytTestCase):
         # good request - trips year in url matches trips year of c1
         response = self.app.get(c1.update_url(), user=self.director)
         object = response.context['object']
-        self.assertEquals(object, c1)
+        self.assertEqual(object, c1)
 
         # bad request
         url = reverse('core:campsite:update', kwargs={
             'trips_year': c1.trips_year.year, 'pk': c2.pk})
 
         response = self.app.get(url, expect_errors=True, user=self.director)
-        self.assertEquals(response.status_code, 404,
+        self.assertEqual(response.status_code, 404,
             'should not find c2 because `trips_year != c2.trips_year`')
 
     def test_related_objects_in_form_have_same_trips_year_as_main_object(self):
@@ -88,7 +88,7 @@ class TripsYearMixinTestCase(FytTestCase):
         choices = response.context['form'].fields['campsite1'].queryset
 
         # should only show object from current_trips_year
-        self.assertEquals(len(choices), 1)
+        self.assertEqual(len(choices), 1)
         self.assertTrue(c1 in choices)
         self.assertTrue(c2 not in choices)
 

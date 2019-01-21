@@ -61,8 +61,8 @@ class TripTestCase(FytTestCase):
         self.assertIn('unique constraint', str(response.content).lower())
         # should not create the trip
         scheduled_trips = Trip.objects.all()
-        self.assertEquals(len(scheduled_trips), 1)
-        self.assertEquals(scheduled_trips[0], trip)
+        self.assertEqual(len(scheduled_trips), 1)
+        self.assertEqual(scheduled_trips[0], trip)
 
     def test_num_queries_in_scheduled_trip_matrix(self):
         trips_year = self.trips_year
