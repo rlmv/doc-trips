@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import ApplicationAdminForm, LeaderSupplementForm, QuestionForm
+from ..forms import ApplicationAdminForm, LeaderSupplementForm, QuestionForm, AgreementForm
 from ..models import (
     Answer,
     ApplicationInformation,
@@ -654,6 +654,34 @@ class ApplicationFormTestCase(FytTestCase):
     def test_question_field_word_count(self):
         form = QuestionForm(instance=self.app, data={'question_1': 'word ' * 301})
         self.assertFalse(form.is_valid())
+
+
+class AgreementFormTestCase(FytTestCase):
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.app = make_application(trips_year=self.trips_year)
+
+    def test_agreement_form_validation(self):
+        form = AgreementForm(instance=self.app, data={
+            'trippee_confidentiality': True,
+            'in_goodstanding_with_college': False,
+            'trainings': True
+        })
+        self.assertFalse(form.is_valid())
+        self.app.refresh_from_db()
+        self.assertFalse(self.app.submitted)
+
+    def test_agreement_form_submits_application(self):
+        form = AgreementForm(instance=self.app, data={
+            'trippee_confidentiality': True,
+            'in_goodstanding_with_college': True,
+            'trainings': True
+        })
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.app.refresh_from_db()
+        self.assertTrue(self.app.submitted)
+        # TODO: test all conditions are set
 
 
 class LeaderSupplementFormTestCase(FytTestCase):

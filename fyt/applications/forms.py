@@ -101,13 +101,8 @@ class QuestionForm(TripsYearModelForm):
 
 class AgreementForm(TripsYearModelForm):
     """
-    An extra form that allows us to separate the agreements section from the
-    rest of the general application form.
-
-    Crispy forms doesn't allow a single ModelForm to be split into separate
-    layouts.
+    Form used to agree to the required conditions and submit the application.
     """
-
     class Meta:
         model = Volunteer
         fields = [
@@ -115,6 +110,16 @@ class AgreementForm(TripsYearModelForm):
             'in_goodstanding_with_college',
             'trainings',
         ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not all(cleaned_data.get(f) for f in self._meta.fields):
+            raise forms.ValidationError('You must agree to these conditions')
+        return cleaned_data
+
+    def save(self, **kwargs):
+        self.instance.submitted = True
+        super().save()
 
     @property
     def helper(self):
