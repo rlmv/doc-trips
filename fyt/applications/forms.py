@@ -66,13 +66,6 @@ class ApplicationForm(TripsYearModelForm):
         helper.layout = ApplicationLayout()
         return helper
 
-    # TODO: get rid of the need for this
-    def update_agreements(self, agreement_form):
-        """Update the agreements submitted in the agreement form."""
-        for f in agreement_form.fields:
-            value = getattr(agreement_form.instance, f)
-            setattr(self.instance, f, value)
-
 
 class QuestionForm(TripsYearModelForm):
     """
