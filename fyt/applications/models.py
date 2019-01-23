@@ -277,8 +277,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
         related_name='applications',
         on_delete=models.PROTECT,
     )
-    submitted = models.BooleanField(
-        default=False,
+    submitted = models.DateTimeField(
+        null=True,
+        default=None,
         editable=False
     )
     deadline_extension = models.DateTimeField(

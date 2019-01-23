@@ -642,7 +642,7 @@ class AgreementFormTestCase(FytTestCase):
         })
         self.assertFalse(form.is_valid())
         self.app.refresh_from_db()
-        self.assertFalse(self.app.submitted)
+        self.assertIsNone(self.app.submitted)
 
     def test_agreement_form_submits_application(self):
         form = AgreementForm(instance=self.app, data={
@@ -653,7 +653,7 @@ class AgreementFormTestCase(FytTestCase):
         self.assertTrue(form.is_valid())
         form.save()
         self.app.refresh_from_db()
-        self.assertTrue(self.app.submitted)
+        self.assertIsNotNone(self.app.submitted)
         # TODO: test all conditions are set
 
 
@@ -914,7 +914,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         # Should be complete
         volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)
-        self.assertTrue(volunteer.submitted)
+        self.assertIsNotNone(volunteer.submitted)
 
 
 class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):

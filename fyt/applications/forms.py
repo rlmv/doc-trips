@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
+from django.utils import timezone
 
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
@@ -120,7 +121,7 @@ class AgreementForm(TripsYearModelForm):
         return cleaned_data
 
     def save(self, **kwargs):
-        self.instance.submitted = True
+        self.instance.submitted = timezone.now()
         super().save()
 
     @property
