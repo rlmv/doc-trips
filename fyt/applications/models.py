@@ -248,6 +248,18 @@ class Volunteer(MedicalMixin, DatabaseModel):
         ordering = ['applicant']
         unique_together = ['trips_year', 'applicant']
 
+    # We handle this validation outside the normal Django model/form
+    # validation machinery so that users can save an incomplete application
+    # and come back to it. The final validation is performed at submission.
+    REQUIRED_FIELDS = [
+        'class_year',
+        'gender',
+        'race_ethnicity',
+        'hinman_box',
+        'tshirt_size',
+        'hometown',
+    ]
+
     # Maximum number of scores for an application
     NUM_SCORES = 3
 
@@ -304,10 +316,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
     safety_lead = models.BooleanField(default=False)  # TODO: remove?
 
     # ----- general information, not shown to graders ------
-    class_year = ClassYearField()
-    gender = models.CharField(max_length=25)
+    class_year = ClassYearField(blank=True)
+    gender = models.CharField(max_length=25, blank=True)
     race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True)
-    hinman_box = models.CharField(max_length=10)
+    hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
         blank=True,
@@ -317,7 +329,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
             'address.'
         ),
     )
-    tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES)
+    tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES, blank=True)
 
     # TODO: migrate this data to the new gear app
     height = models.CharField(max_length=10, blank=True)
@@ -336,7 +348,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         blank=True,
     )
 
-    hometown = models.CharField(max_length=255)
+    hometown = models.CharField(max_length=255, blank=True)
     academic_interests = models.CharField(
         'What do you like to study?', max_length=255, blank=True
     )
