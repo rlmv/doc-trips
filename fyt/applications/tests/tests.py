@@ -938,6 +938,17 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)
         self.assertIsNotNone(volunteer.submitted)
 
+    def test_submit_page_is_unreachable_with_missing_information(self):
+        user = self.make_user()
+
+        # Start application
+        self.open_application()
+        resp = self.app.get(reverse('applications:apply'), user=user).maybe_follow()
+        resp.form.submit('save-application').follow()
+
+        # Jumping to submit page is forbidden
+        self.app.get(reverse('applications:submit'), user=user, status=403)
+
 
 class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):
     def setUp(self):

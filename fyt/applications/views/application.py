@@ -8,7 +8,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
@@ -269,9 +269,17 @@ class SubmitApplication(
         return TripsYear.objects.current()
 
     def get_object(self):
-        return get_object_or_404(
+        instance = get_object_or_404(
             self.model, applicant=self.request.user, trips_year=self.trips_year
         )
+        # User cannot submit their application if they have not completed the
+        # required fields
+        try:
+            instance.validate_required_fields()
+        except ValidationError:
+            raise PermissionDenied
+
+        return instance
 
     def extra_context(self):
         return {'trips_year': self.trips_year}
