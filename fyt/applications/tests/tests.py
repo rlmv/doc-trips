@@ -334,6 +334,12 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
             "a certification\n\nsome experience",
         )
 
+    def test_validate_required_fields(self):
+        trips_year = self.init_trips_year()
+        app = self.make_application(trips_year=trips_year)
+        with self.assertRaises(ValidationError):
+            app.validate_required_fields()
+
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_word_count_validation(self):
@@ -886,31 +892,47 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_application_integration_flow(self):
         user = self.make_user()
+        mommy.make(PortalContent, trips_year=self.trips_year)
 
         # Visit application page
         self.open_application()
         url = reverse('applications:apply')
         resp = self.app.get(url, user=user).maybe_follow()
 
-        # Fill required data
-        # TODO: move validation to submit step
-        resp.form['form-class_year'] = 2015
-        resp.form['form-gender'] = 'male'
-        resp.form['form-hinman_box'] = '2345'
-        resp.form['form-tshirt_size'] = 'XS'
-        resp.form['form-hometown']  = "CHA"
-
-        # Save form
+        # Save form with incomplete data - OK
         resp = resp.form.submit('save-application').follow()
 
-        # Submit application
-        resp = resp.form.submit('submit-application').follow()
+        # Try and submit application - fails with missing data
+        resp = resp.form.submit('submit-application')
+        self.assertContains(
+            resp,
+            'You cannot submit your application until you resolve each of the following issues',
+        )
 
-        # Should redirect to submission page
+        # Fill required data
+        resp.form['form-class_year'] = 2015
+        resp.form['form-gender'] = 'male'
+        resp.form['form-race_ethnicity'] = 'white'
+        resp.form['form-hinman_box'] = '2345'
+        resp.form['form-tshirt_size'] = 'XS'
+        resp.form['form-hometown'] = 'CHA'
+
+        # Submit application - should redirect to submission page
+        resp = resp.form.submit('submit-application')
+        self.assertEqual(resp.location, reverse('applications:submit'))
+        resp = resp.follow()
+
+        # Submit without agreeing to conditions - fails
+        resp = resp.form.submit()
+        self.assertContains(resp, 'You must agree to these conditions')
+
+        # Agree and submit - should redirect to portal
         resp.form['trippee_confidentiality'] = True
         resp.form['in_goodstanding_with_college'] = True
         resp.form['trainings'] = True
         resp = resp.form.submit()
+        self.assertEqual(resp.location, reverse('applications:portal'))
+        resp.follow()
 
         # Should be complete
         volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)

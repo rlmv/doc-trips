@@ -11,7 +11,7 @@ from fyt.applications.views.application import (
     NewApplication,
     RemoveCrooAssignment,
     SetupApplication,
-    SubmitApplication
+    SubmitApplication,
 )
 from fyt.applications.views.graders import GraderList
 from fyt.applications.views.portal import (

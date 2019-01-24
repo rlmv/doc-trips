@@ -250,7 +250,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     # We handle this validation outside the normal Django model/form
     # validation machinery so that users can save an incomplete application
-    # and come back to it. The final validation is performed at submission.
+    # and come back to it. The final validation is performed on submission.
     REQUIRED_FIELDS = [
         'class_year',
         'gender',
@@ -259,6 +259,18 @@ class Volunteer(MedicalMixin, DatabaseModel):
         'tshirt_size',
         'hometown',
     ]
+
+    def validate_required_fields(self):
+        """Validator for fields that can be saved empty, but not submitted empty"""
+        errors = []
+        for field_name in Volunteer.REQUIRED_FIELDS:
+            if not getattr(self, field_name):
+                errors.append(field_name)
+        if errors:
+            raise ValidationError(
+                {field_name: 'This field is required' for field_name in errors},
+                code='required',
+            )
 
     # Maximum number of scores for an application
     NUM_SCORES = 3
@@ -289,11 +301,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         related_name='applications',
         on_delete=models.PROTECT,
     )
-    submitted = models.DateTimeField(
-        null=True,
-        default=None,
-        editable=False
-    )
+    submitted = models.DateTimeField(null=True, default=None, editable=False)
     deadline_extension = models.DateTimeField(
         null=True,
         blank=True,
@@ -316,7 +324,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     safety_lead = models.BooleanField(default=False)  # TODO: remove?
 
     # ----- general information, not shown to graders ------
-    class_year = ClassYearField(blank=True)
+    class_year = ClassYearField(blank=True, null=True)
     gender = models.CharField(max_length=25, blank=True)
     race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True)
     hinman_box = models.CharField(max_length=10, blank=True)
@@ -329,7 +337,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
             'address.'
         ),
     )
-    tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES, blank=True)
+    tshirt_size = models.CharField(
+        max_length=3, choices=TSHIRT_SIZE_CHOICES, blank=True
+    )
 
     # TODO: migrate this data to the new gear app
     height = models.CharField(max_length=10, blank=True)

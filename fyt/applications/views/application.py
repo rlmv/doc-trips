@@ -98,13 +98,7 @@ CROO_FORM = 'croo_form'
 QUESTION_FORM = 'question_form'
 FIRST_AID_FORM = 'first_aid_form'
 
-FORM_ORDERING = [
-    GENERAL_FORM,
-    FIRST_AID_FORM,
-    LEADER_FORM,
-    CROO_FORM,
-    QUESTION_FORM,
-]
+FORM_ORDERING = [GENERAL_FORM, FIRST_AID_FORM, LEADER_FORM, CROO_FORM, QUESTION_FORM]
 
 
 def order_forms(forms):
@@ -243,13 +237,19 @@ class ContinueApplication(
         """
         super().form_valid(forms)
 
-        if AgreementForm.SUBMIT_APPLICATION in self.request.POST:
+        if ApplicationForm.SUBMIT_APPLICATION in self.request.POST:
             return HttpResponseRedirect(reverse('applications:submit'))
 
         return HttpResponseRedirect(self.get_success_url())
 
 
-class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvailable, ExtraContextMixin, UpdateView):
+class SubmitApplication(
+    LoginRequiredMixin,
+    FormMessagesMixin,
+    IfApplicationAvailable,
+    ExtraContextMixin,
+    UpdateView,
+):
     model = Volunteer
     context_object_name = 'application'
     template_name = 'applications/application_submit.html'
@@ -257,10 +257,13 @@ class SubmitApplication(LoginRequiredMixin, FormMessagesMixin, IfApplicationAvai
 
     success_url = reverse_lazy('applications:portal')
 
-    form_valid_message = "Your application has been submitted. Thank you for applying to Trips!"
+    form_valid_message = (
+        "Your application has been submitted. Thank you for applying to Trips!"
+    )
     form_invalid_message = (
         "Uh oh, it looks like there's a problem with your application"
     )
+
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()

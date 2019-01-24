@@ -11,8 +11,8 @@ from django.db.models import (
     Lookup,
     OuterRef,
     Prefetch,
-    Sum,
     Subquery,
+    Sum,
     Value as V,
     When,
 )

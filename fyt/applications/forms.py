@@ -3,7 +3,7 @@ from crispy_forms.bootstrap import Alert, FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.utils import timezone
 
 from fyt.applications.models import (
@@ -30,6 +30,11 @@ from fyt.utils.forms import crispify
 
 
 class ApplicationForm(TripsYearModelForm):
+
+    # Constants used to identify application form buttons
+    SUBMIT_APPLICATION = 'submit-application'
+    SAVE_APPLICATION = 'save-application'
+
     class Meta:
         model = Volunteer
         fields = (
@@ -58,6 +63,31 @@ class ApplicationForm(TripsYearModelForm):
             'leader_willing',
             'croo_willing',
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # This is slightly obscure.
+        # We allow users to _save_ incomplete applications, but they cannot
+        # _submit_ incomplete apps. In order to share logic, the validation lives
+        # on the Volunteer model, and we use some internal Django magic to
+        # construct a temporary Volunteer instance from the form data to
+        # validate against.
+        if ApplicationForm.SUBMIT_APPLICATION in self.data:
+            opts = self._meta
+            try:
+                instance = forms.models.construct_instance(
+                    self, self.instance, opts.fields, opts.exclude
+                )
+            except ValidationError:
+                # Django will handle any of these errors internally, and we
+                # don't need to worry about validating our model in the case
+                # that other things fail
+                pass
+            else:
+                instance.validate_required_fields()
+
+        return cleaned_data
 
     @property
     def helper(self):
@@ -97,7 +127,6 @@ class AgreementForm(TripsYearModelForm):
     """
     Form used to agree to the required conditions and submit the application.
     """
-    SUBMIT_APPLICATION = 'submit-application'
 
     class Meta:
         model = Volunteer
@@ -110,7 +139,7 @@ class AgreementForm(TripsYearModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if not all(cleaned_data.get(f) for f in self._meta.fields):
-            raise forms.ValidationError('You must agree to these conditions')
+            raise ValidationError('You must agree to these conditions')
         return cleaned_data
 
     def save(self, **kwargs):
@@ -139,7 +168,9 @@ class AgreementLayout(Layout):
                 'in_goodstanding_with_college',
                 'trainings',
             ),
-            HTML('<p>Once you click "submit" your application will be submitted for scoring and you will be unable to edit your application any further.</p>'),
+            HTML(
+                '<p>Once you click "submit" your application will be submitted for scoring and you will be unable to edit your application any further.</p>'
+            ),
             Submit('submit', 'Submit'),
         )
 

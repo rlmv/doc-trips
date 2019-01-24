@@ -4,7 +4,7 @@
 {% if form_invalid %}
 <div class="alert alert-danger">
   <h4><i class="fa fa-warning"></i> Issues </h4>
-  <p> Your application will not be saved until you resolve each of the following issues: </p>
+  <p> You cannot submit your application until you resolve each of the following issues: </p>
   <p>
     {% for form_or_formset in forms %}
     {% if form_or_formset.management_form %} {# is a formset #}
