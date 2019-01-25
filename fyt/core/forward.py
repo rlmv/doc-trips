@@ -140,26 +140,27 @@ class Forward:
         Delete all medical info saved on
         ``IncomingStudents`` and ``Registrations``.
         """
-        incoming = IncomingStudent.objects.filter(trips_year=self.curr_year)
-        for inc in incoming:
-            inc.med_info = ''
+        IncomingStudent.objects.filter(trips_year=self.curr_year).update(med_info='')
 
-        registrations = Registration.objects.filter(trips_year=self.curr_year)
-        for reg in registrations:
-            reg.clear_medical_info()
-
-        bulk_update(incoming)
-        bulk_update(registrations)
+        Registration.objects.filter(trips_year=self.curr_year).update(
+            food_allergies='',
+            dietary_restrictions='',
+            medical_conditions='',
+            epipen=None,
+            needs=''
+        )
 
     def delete_application_medical_info(self):
         """
         Delete all medical info saved on ``Volunteers``
         """
-        applications = Application.objects.filter(trips_year=self.curr_year)
-        for app in applications:
-            app.clear_medical_info()
-
-        bulk_update(applications)
+        Application.objects.filter(trips_year=self.curr_year).update(
+            food_allergies='',
+            dietary_restrictions='',
+            medical_conditions='',
+            epipen=None,
+            needs=''
+        )
 
     def reset_timetable(self):
         """
