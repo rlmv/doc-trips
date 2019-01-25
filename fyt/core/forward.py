@@ -1,8 +1,5 @@
-import copy
 import logging
 
-from bulk_update.helper import bulk_update as _bulk_update
-from django.conf import settings
 from django.db.transaction import atomic
 
 from .models import TripsYear
@@ -24,21 +21,7 @@ from fyt.training.models import Training
 from fyt.transport.models import Route, Stop, TransportConfig, Vehicle
 from fyt.trips.models import Campsite, Document, TripTemplate, TripType, TripTemplateDescription
 
-
 logger = logging.getLogger(__name__)
-
-# Sqlite databases have a max number of variables in any given query.
-# This keeps ``bulk_update`` from causing errors on development
-# sqlite databases, but also keeps the site from timing out in
-# production.
-if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
-    SQLITE_BATCH_LIMIT = 1
-else:
-    SQLITE_BATCH_LIMIT = None
-
-
-def bulk_update(qs):
-    _bulk_update(qs, batch_size=SQLITE_BATCH_LIMIT)
 
 
 class Forward:
