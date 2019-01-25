@@ -869,39 +869,6 @@ class Score(DatabaseModel):
         unique_together = ['grader', 'application']
         ordering = ['created_at']
 
-    SCORE_CHOICES = (
-        (
-            1,
-            "1 -- Bad application -- I really don't want this person to be a "
-            "volunteer and I have serious concerns",
-        ),
-        (1.5, "1.5"),
-        (
-            2,
-            "2 -- Poor application -- I have some concerns about this person "
-            "being a Trips volunteer",
-        ),
-        (2.5, "2.5"),
-        (
-            3,
-            "3 -- Fine application -- This person might work well as a "
-            "volunteer but I have some questions",
-        ),
-        (3.5, "3.5"),
-        (
-            4,
-            "4 -- Good application -- I would consider this person to be a "
-            "volunteer but I wouldn't be heartbroken if they were not "
-            "selected",
-        ),
-        (4.5, "4.5"),
-        (
-            5,
-            "5 -- Great application -- I think this person would be a "
-            "fantastic volunteer",
-        ),
-    )
-
     grader = models.ForeignKey(
         'Grader', editable=False, related_name='scores', on_delete=models.PROTECT
     )
