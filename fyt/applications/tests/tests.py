@@ -942,6 +942,11 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)
         self.assertIsNotNone(volunteer.submitted)
 
+        # Cannot revist application
+        resp = self.app.get(reverse('applications:continue'), user=user)
+        self.assertRedirects(resp, reverse('applications:already_submitted'))
+
+
     def test_submit_page_is_unreachable_with_missing_information(self):
         user = self.make_user()
         mommy.make(PortalContent, trips_year=self.trips_year)

@@ -13,7 +13,11 @@
 {% include "applications/_user_check.html" %}
 {% include "applications/_application_header.html" %}
 
-{% if applications_available or within_deadline_extension %}
+{% if application.submitted %}
+
+<div> You have submitted your application </div>
+
+{% elif applications_available or within_deadline_extension %}
 
   {% if within_deadline_extension %}
   <div class="alert alert-info">

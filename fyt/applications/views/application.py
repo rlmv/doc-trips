@@ -17,7 +17,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
-from vanilla import DetailView, FormView, ListView, UpdateView
+from vanilla import DetailView, FormView, ListView, UpdateView, TemplateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -52,26 +52,31 @@ from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin, MultiFormMixin
 
 
-class IfApplicationAvailable:
+class IfApplicationAvailableAndNotSubmitted:
     """
-    Restrict application availability based on Timetable dates
+    Users cannot edit applications that have been submitted.
+    Also estrict application availability based on Timetable dates.
     """
 
     def dispatch(self, request, *args, **kwargs):
-        if Timetable.objects.timetable().applications_available():
-            return super().dispatch(request, *args, **kwargs)
-
         try:
             existing_application = Volunteer.objects.get(
                 applicant=self.request.user, trips_year=self.trips_year
             )
         except Volunteer.DoesNotExist:
-            pass
-        else:
-            if existing_application.within_deadline_extension():
-                return super().dispatch(request, *args, **kwargs)
+            existing_application = None
 
-        return render(request, 'applications/not_available.html')
+        if existing_application and existing_application.submitted:
+            return HttpResponseRedirect(reverse('applications:already_submitted'))
+
+        elif Timetable.objects.timetable().applications_available():
+            return super().dispatch(request, *args, **kwargs)
+
+        elif existing_application and existing_application.within_deadline_extension():
+            return super().dispatch(request, *args, **kwargs)
+
+        else:
+            return render(request, 'applications/not_available.html')
 
 
 # Form constants
@@ -141,7 +146,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
 
 class NewApplication(
     LoginRequiredMixin,
-    IfApplicationAvailable,
+    IfApplicationAvailableAndNotSubmitted,
     View
 ):
     """
@@ -187,7 +192,7 @@ class NewApplication(
 
 
 class ContinueApplication(
-    LoginRequiredMixin, IfApplicationAvailable, ApplicationFormsMixin, UpdateView
+    LoginRequiredMixin, IfApplicationAvailableAndNotSubmitted, ApplicationFormsMixin, UpdateView
 ):
     """
     View for applicants to edit their application.
@@ -232,7 +237,7 @@ class ContinueApplication(
 class SubmitApplication(
     LoginRequiredMixin,
     FormMessagesMixin,
-    IfApplicationAvailable,
+    IfApplicationAvailableAndNotSubmitted,
     ExtraContextMixin,
     UpdateView,
 ):
@@ -343,6 +348,11 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
 
         formset.save()
         return super().form_valid(formset)
+
+
+class ApplicationAlreadySubmitted(TemplateView):
+
+    template_name = 'applications/already_submitted.html'
 
 
 class BlockDirectorate(GroupRequiredMixin):
