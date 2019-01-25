@@ -13,15 +13,22 @@
 {% include "applications/_user_check.html" %}
 {% include "applications/_application_header.html" %}
 
-{% if applications_available %}
-<p>
-  <a href="{% url 'applications:apply' %}" class="btn btn-primary"> <i class="fa fa-edit"></i> Apply for Trips </a>
-</p>
-{% elif within_deadline_extension %}
-<div class="alert alert-info">
+{% if applications_available or within_deadline_extension %}
+
+  {% if within_deadline_extension %}
+  <div class="alert alert-info">
   <p>You have an extension to the application deadline until {{ application.deadline_extension }}.</p>
-  <p><a href="{% url 'applications:apply' %}" class="btn btn-primary"> <i class="fa fa-edit"></i> Apply for Trips </a></p>
-</div>
+  {% else %}
+  <div>
+  {% endif %}
+
+  <form action="{% url 'applications:start' %}" method="post" enctype="multipart/form-data" id="start-application">
+    {% csrf_token %}
+    <input type="submit" name="submit" value="Apply to Trips" class="btn btn-primary"/></form>
+  </form>
+
+  </div>
+
 {% endif %}
 
 {% if application.gear_request %}

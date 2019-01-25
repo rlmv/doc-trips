@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.views import View
 from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
@@ -30,6 +31,8 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import (
     ApplicationInformation,
+    CrooSupplement,
+    LeaderSupplement,
     Question,
     ScoreComment,
     Volunteer,
@@ -160,44 +163,31 @@ class NewApplication(
     LoginRequiredMixin,
     IfApplicationAvailable,
     ContinueIfAlreadyApplied,
-    ApplicationFormsMixin,
-    CreateView,
+    View,
 ):
     """
-    Apply for trips
+    Begin an application for Trips, creating a skeleton of the application.
     """
-
-    success_url = reverse_lazy('applications:continue')
-
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
 
-    def form_valid(self, forms):
-        """
-        Connect the application instances
-        """
+    def post(self, request):
         with transaction.atomic():
-            forms[GENERAL_FORM].instance.applicant = self.request.user
-            forms[GENERAL_FORM].instance.trips_year = self.trips_year
-            application = forms[GENERAL_FORM].save()
+            application = Volunteer.objects.create(
+                applicant=self.request.user,
+                trips_year=self.trips_year
+            )
+            LeaderSupplement.objects.create(
+                application=application,
+                trips_year=self.trips_year
+            )
+            CrooSupplement.objects.create(
+                application=application,
+                trips_year=self.trips_year
+            )
 
-            forms[QUESTION_FORM].instance = application
-            forms[QUESTION_FORM].save()
-
-            forms[LEADER_FORM].instance.application = application
-            forms[LEADER_FORM].instance.trips_year = self.trips_year
-            forms[LEADER_FORM].save()
-
-            forms[CROO_FORM].instance.application = application
-            forms[CROO_FORM].instance.trips_year = self.trips_year
-            forms[CROO_FORM].save()
-
-            forms[FIRST_AID_FORM].instance = application
-            forms[FIRST_AID_FORM].save()
-
-        self.messages.success(self.get_form_valid_message())
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(reverse('applications:continue'))
 
 
 class ContinueApplication(

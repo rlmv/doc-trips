@@ -397,12 +397,14 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
 
     leader_willing = models.BooleanField(
-        'I would like to be considered for a trip leader position.'
+        'I would like to be considered for a trip leader position.',
+        default=False
     )
     croo_willing = models.BooleanField(
         'I would like to be considered for a crooling position. (NOTE: '
         'students who are taking classes this sophomore summer can NOT apply, '
-        'given the conflict of dates.)'
+        'given the conflict of dates.)',
+        default=False
     )
 
     # ------ certs -------

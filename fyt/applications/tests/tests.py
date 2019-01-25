@@ -871,7 +871,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         # OK: Regular application, within regular application period
         self.open_application()
-        url = reverse('applications:apply')
+        url = reverse('applications:start')
         resp = self.app.get(url, user=application.applicant).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/application.html')
 
@@ -893,11 +893,15 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
     def test_application_integration_flow(self):
         user = self.make_user()
         mommy.make(PortalContent, trips_year=self.trips_year)
+        self.open_application()
 
         # Visit application page
-        self.open_application()
-        url = reverse('applications:apply')
-        resp = self.app.get(url, user=user).maybe_follow()
+        resp = self.app.get(reverse('applications:portal'), user=user)
+
+        # Click link to start application - redirect
+        resp = resp.forms['start-application'].submit()
+        self.assertEqual(resp.location, reverse('applications:continue'))
+        resp = resp.follow()
 
         # Save form with incomplete data - OK
         resp = resp.form.submit('save-application').follow()
@@ -940,11 +944,12 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
     def test_submit_page_is_unreachable_with_missing_information(self):
         user = self.make_user()
-
-        # Start application
+        mommy.make(PortalContent, trips_year=self.trips_year)
         self.open_application()
-        resp = self.app.get(reverse('applications:apply'), user=user).maybe_follow()
-        resp.form.submit('save-application').follow()
+
+        # Start application page
+        resp = self.app.get(reverse('applications:portal'), user=user)
+        resp = resp.forms['start-application'].submit().follow()
 
         # Jumping to submit page is forbidden
         self.app.get(reverse('applications:submit'), user=user, status=403)
