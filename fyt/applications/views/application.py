@@ -7,17 +7,17 @@ from braces.views import (
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
-from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
+from vanilla import DetailView, FormView, ListView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -34,7 +34,6 @@ from fyt.applications.models import (
     CrooSupplement,
     LeaderSupplement,
     Question,
-    ScoreComment,
     Volunteer,
 )
 from fyt.applications.tables import ApplicationTable
@@ -48,7 +47,7 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.training.forms import FirstAidCertificationFormset
-from fyt.trips.models import Trip, TripType
+from fyt.trips.models import TripType
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin, MultiFormMixin
 
@@ -73,25 +72,6 @@ class IfApplicationAvailable:
                 return super().dispatch(request, *args, **kwargs)
 
         return render(request, 'applications/not_available.html')
-
-
-class ContinueIfAlreadyApplied:
-    """
-    If user has already applied, redirect to edit existing application.
-
-    This lives in a mixin instead of in the NewApplication view because if
-    has to follow LoginRequired in the MRO. An AnonymousUser causes the
-    query to throw an error.
-    """
-
-    def dispatch(self, request, *args, **kwargs):
-        exists = Volunteer.objects.filter(
-            applicant=self.request.user, trips_year=self.trips_year
-        ).exists()
-        if exists:
-            return HttpResponseRedirect(reverse('applications:continue'))
-
-        return super().dispatch(request, *args, **kwargs)
 
 
 # Form constants
@@ -162,8 +142,7 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
 class NewApplication(
     LoginRequiredMixin,
     IfApplicationAvailable,
-    ContinueIfAlreadyApplied,
-    View,
+    View
 ):
     """
     Begin an application for Trips, creating a skeleton of the application.
@@ -171,6 +150,23 @@ class NewApplication(
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Redirect to existing application, if it exists
+
+        This is redundantly decorated with login_required to prevent user
+        from being anonymous. Otherwise this gets called first in the MRO
+        order *then* passed to the LoginRequiredMixin, which doesn't work.
+        """
+        volunteer = Volunteer.objects.filter(
+            applicant=self.request.user, trips_year=self.trips_year
+        )
+        if volunteer.exists():
+            return HttpResponseRedirect(reverse('applications:continue'))
+
+        return super().dispatch(request, *args, **kwargs)
 
     def post(self, request):
         with transaction.atomic():
