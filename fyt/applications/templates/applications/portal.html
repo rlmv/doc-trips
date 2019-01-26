@@ -8,53 +8,63 @@
 
 {% block content %}
 
+{% include "applications/_user_check.html" %}
+
 <h2> Trip Leader and Croo Application </h2>
 
-{% include "applications/_user_check.html" %}
-{% include "applications/_application_header.html" %}
-
 {% if application.submitted %}
+  <p>
+    <i class="fa fa-check-square-o"></i>
+    <strong>Your application is <span class="label label-success">SUBMITTED</span></strong>
+    <p> Thanks for applying! </p>
+  </p>
 
-<div> You have submitted your application </div>
-
-{% elif applications_available or within_deadline_extension %}
-
-  {% if within_deadline_extension %}
-  <div class="alert alert-info">
-  <p>You have an extension to the application deadline until {{ application.deadline_extension }}.</p>
-  {% else %}
-  <div>
+  {% if application.gear_request %}
+  {% gear_request_portal application.gear_request %}
   {% endif %}
 
-  <form action="{% url 'applications:start' %}" method="post" enctype="multipart/form-data" id="start-application">
-    {% csrf_token %}
-    <input type="submit" name="submit" value="Apply to Trips" class="btn btn-primary"/></form>
-  </form>
-
-  </div>
-
-{% endif %}
-
-{% if application.gear_request %}
-{% gear_request_portal application.gear_request %}
-{% endif %}
-
-<h2> Application Status </h2>
-{% if application_status_available %}
+  <h3> Application Status </h3>
+  {% if application_status_available %}
     <p>{{ status_description|safe }}</p>
 
     {% if show_trainings %}
-        <h2> Trainings </h2>
-        <p> <a href="{% url 'training:signup' %}"> <i class="fa fa-calendar"></i> Register for Trip Leader and Croo Trainings </a></p>
+    <h2> Trainings </h2>
+    <p> <a href="{% url 'training:signup' %}"> <i class="fa fa-calendar"></i> Register for Trip Leader and Croo Trainings </a></p>
     {% endif %}
 
     {% if show_trip_assignment %}
-        <h2> Trip Assignment </h2>
-        {% trip_assignment application.trip_assignment content %}
+    <h2> Trip Assignment </h2>
+    {% trip_assignment application.trip_assignment content %}
     {% endif %}
 
-{% else %}
+  {% else %}
     <p> The status of your application is not available at this time. </p>
+  {% endif %}
+
+{% else %}
+  {% if applications_available or within_deadline_extension %}
+
+    {% include "applications/_application_header.html" %}
+
+    {% if within_deadline_extension %}
+    <div class="alert alert-info">
+      <p>You have an extension to the application deadline until {{ application.deadline_extension }}.</p>
+    {% else %}
+    <div>
+    {% endif %}
+
+    {% if application %}
+    <a href="{% url 'applications:continue' %}" class="btn btn-primary" role="button"> Continue application </a>
+    {% else %}
+    <form action="{% url 'applications:start' %}" method="post" enctype="multipart/form-data" id="start-application">
+      {% csrf_token %}
+      <input type="submit" name="submit" value="Apply to Trips" class="btn btn-primary"></input>
+    </form>
+    {% endif %}
+
+    </div>
+  {% endif %}
 {% endif %}
+
 
 {% endblock %}
