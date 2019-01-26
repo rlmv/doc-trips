@@ -301,7 +301,11 @@ class Volunteer(MedicalMixin, DatabaseModel):
         related_name='applications',
         on_delete=models.PROTECT,
     )
+
+    # This was added in 2019. All applications completed prior to that are
+    # backfilled with an arbitrary date to maintain database consistency.
     submitted = models.DateTimeField(null=True, default=None, editable=False)
+
     deadline_extension = models.DateTimeField(
         null=True,
         blank=True,
