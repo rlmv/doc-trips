@@ -272,6 +272,17 @@ class Volunteer(MedicalMixin, DatabaseModel):
                 code='required',
             )
 
+    # TODO: expand error messages
+    def validate_application_complete(self):
+        if not self.leader_willing and not self.croo_willing:
+            raise ValidationError('Must submit a croo or leader application')
+
+        if self.leader_willing and not self.leader_application_complete:
+            raise ValidationError('Leader application is incomplete')
+
+        if self.croo_willing and not self.croo_application_complete:
+            raise ValidationError('Croo application is incomplete')
+
     # Maximum number of scores for an application
     NUM_SCORES = 3
 

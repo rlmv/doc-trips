@@ -264,9 +264,10 @@ class SubmitApplication(
             self.model, applicant=self.request.user, trips_year=self.trips_year
         )
         # User cannot submit their application if they have not completed the
-        # required fields
+        # required fields - sanity check
         try:
             instance.validate_required_fields()
+            instance.validate_application_complete()
         except ValidationError:
             raise PermissionDenied
 
