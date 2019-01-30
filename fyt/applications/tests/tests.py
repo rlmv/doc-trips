@@ -35,6 +35,7 @@ def make_application(
     croo_assignment=None,
     leader_willing=True,
     croo_willing=True,
+    submitted=timezone.now(), # TODO: generate dates for each call
     **kwargs
 ):
 
@@ -46,6 +47,7 @@ def make_application(
         croo_assignment=croo_assignment,
         leader_willing=leader_willing,
         croo_willing=croo_willing,
+        submitted=submitted,
         **kwargs
     )
 
@@ -424,16 +426,14 @@ class ApplicationManager_prospective_leaders_TestCase(
 
     def test_only_complete_applications(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
-        question = mommy.make(Question, trips_year=self.trips_year)
 
         prospective = self.make_application(status=Volunteer.LEADER_WAITLIST)
-        prospective.answer_question(question, 'An answer')
         prospective.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         prospective.leader_supplement.set_triptype_preference(
             trip.template.triptype, AVAILABLE
         )
 
-        not_prosp = self.make_application(status=Volunteer.LEADER_WAITLIST)
+        not_prosp = self.make_application(status=Volunteer.LEADER_WAITLIST, submitted=None)
         not_prosp.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         not_prosp.leader_supplement.set_triptype_preference(
             trip.template.triptype, AVAILABLE
@@ -478,46 +478,16 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.questions = [self.q_general, self.q_leader, self.q_croo]
 
         # Complete leader & croo app
-        self.app1 = self.make_application()
-        self.app1.answer_question(self.q_general, 'answer')
-        self.app1.answer_question(self.q_leader, 'answer')
-        self.app1.answer_question(self.q_croo, 'answer')
+        self.app1 = self.make_application(submitted=timezone.now(), leader_willing=True, croo_willing=True)
 
-        # Complete leader
-        self.app2 = self.make_application()
-        self.app2.answer_question(self.q_general, 'answer')
-        self.app2.answer_question(self.q_leader, 'answer')
-        self.app2.answer_question(self.q_croo, '')
+        # Complete leader but not croo
+        self.app2 = self.make_application(submitted=timezone.now(), leader_willing=True, croo_willing=False)
 
-        # Complete croo
-        self.app3 = self.make_application()
-        self.app3.answer_question(self.q_general, 'answer')
-        self.app3.answer_question(self.q_leader, '')
-        self.app3.answer_question(self.q_croo, 'answer')
+        # Complete croo but not leader
+        self.app3 = self.make_application(submitted=timezone.now(), leader_willing=False, croo_willing=True)
 
-        # Not complete - missing croo & leader answer
-        self.app4 = self.make_application()
-        self.app4.answer_question(self.q_general, 'answer')
-
-        # Not complete - empty answer
-        self.app5 = self.make_application()
-        self.app5.answer_question(self.q_general, '')
-        self.app5.answer_question(self.q_leader, 'answer')
-        self.app5.answer_question(self.q_croo, 'answer')
-
-        # Not a leader app
-        self.app6 = self.make_application()
-        self.app6.answer_question(self.q_general, 'answer')
-        self.app6.answer_question(self.q_leader, 'answer')
-        self.app6.leader_willing = False
-        self.app6.save()
-
-        # Not a croo app
-        self.app7 = self.make_application()
-        self.app7.answer_question(self.q_general, 'answer')
-        self.app7.answer_question(self.q_croo, 'answer')
-        self.app7.croo_willing = False
-        self.app7.save()
+        # Not complete - started but not submitted
+        self.app4 = self.make_application(submitted=None, leader_willing=True, croo_willing=True)
 
     def test_get_leader_applications(self):
         qs = Volunteer.objects.leader_applications(self.trips_year)
@@ -528,22 +498,20 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertQsEqual(qs, [self.app1, self.app3])
 
     def test_get_leader_or_croo_applications(self):
-        with self.assertNumQueries(3):
-            qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
-            self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
+        qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
 
     def test_get_leader_and_croo_applications(self):
-        with self.assertNumQueries(3):
-            qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
-            self.assertQsEqual(qs, [self.app1])
+        qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1])
 
     def test_incomplete_leader_applications(self):
         qs = Volunteer.objects.incomplete_leader_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app3, self.app4, self.app5, self.app7])
+        self.assertQsEqual(qs, [self.app4])
 
     def test_incomplete_croo_applications(self):
         qs = Volunteer.objects.incomplete_croo_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app2, self.app4, self.app5, self.app6])
+        self.assertQsEqual(qs, [self.app4])
 
     def test_leaders(self):
         trips_year = self.init_trips_year()
@@ -638,7 +606,7 @@ class ApplicationFormTestCase(FytTestCase):
 class AgreementFormTestCase(FytTestCase):
     def setUp(self):
         self.trips_year = self.init_trips_year()
-        self.app = make_application(trips_year=self.trips_year)
+        self.app = make_application(trips_year=self.trips_year, submitted=None)
 
     def test_agreement_form_validation(self):
         form = AgreementForm(instance=self.app, data={
@@ -867,7 +835,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         mommy.make(ApplicationInformation, trips_year=self.trips_year)
 
     def test_deadline_extension(self):
-        application = self.make_application()
+        application = self.make_application(submitted=None)
 
         # OK: Regular application, within regular application period
         self.open_application()
@@ -914,6 +882,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         )
 
         # Fill required data
+        resp.form['form-leader_willing'] = True
         resp.form['form-class_year'] = 2015
         resp.form['form-gender'] = 'male'
         resp.form['form-race_ethnicity'] = 'white'
