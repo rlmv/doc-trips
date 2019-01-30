@@ -17,7 +17,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.views import View
-from vanilla import DetailView, FormView, ListView, UpdateView, TemplateView
+from vanilla import DetailView, FormView, ListView, TemplateView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -144,14 +144,11 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
         )
 
 
-class NewApplication(
-    LoginRequiredMixin,
-    IfApplicationAvailableAndNotSubmitted,
-    View
-):
+class NewApplication(LoginRequiredMixin, IfApplicationAvailableAndNotSubmitted, View):
     """
     Begin an application for Trips, creating a skeleton of the application.
     """
+
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
@@ -176,23 +173,23 @@ class NewApplication(
     def post(self, request):
         with transaction.atomic():
             application = Volunteer.objects.create(
-                applicant=self.request.user,
-                trips_year=self.trips_year
+                applicant=self.request.user, trips_year=self.trips_year
             )
             LeaderSupplement.objects.create(
-                application=application,
-                trips_year=self.trips_year
+                application=application, trips_year=self.trips_year
             )
             CrooSupplement.objects.create(
-                application=application,
-                trips_year=self.trips_year
+                application=application, trips_year=self.trips_year
             )
 
         return HttpResponseRedirect(reverse('applications:continue'))
 
 
 class ContinueApplication(
-    LoginRequiredMixin, IfApplicationAvailableAndNotSubmitted, ApplicationFormsMixin, UpdateView
+    LoginRequiredMixin,
+    IfApplicationAvailableAndNotSubmitted,
+    ApplicationFormsMixin,
+    UpdateView,
 ):
     """
     View for applicants to edit their application.

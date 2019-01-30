@@ -26,8 +26,8 @@ from fyt.trips.models import (
     Campsite,
     Document,
     TripTemplate,
-    TripType,
     TripTemplateDescription,
+    TripType,
 )
 
 

@@ -74,10 +74,14 @@ class BaseVolunteerManager(models.Manager):
         )
 
     def leader_applications(self, trips_year):
-        return self.filter(trips_year=trips_year, leader_willing=True, submitted__isnull=False)
+        return self.filter(
+            trips_year=trips_year, leader_willing=True, submitted__isnull=False
+        )
 
     def croo_applications(self, trips_year):
-        return self.filter(trips_year=trips_year, croo_willing=True, submitted__isnull=False)
+        return self.filter(
+            trips_year=trips_year, croo_willing=True, submitted__isnull=False
+        )
 
     def leader_or_croo_applications(self, trips_year):
         """
@@ -85,23 +89,29 @@ class BaseVolunteerManager(models.Manager):
         complete.
         """
         return self.filter(trips_year=trips_year, submitted__isnull=False).filter(
-            Q(leader_willing=True) | Q(croo_willing=True))
+            Q(leader_willing=True) | Q(croo_willing=True)
+        )
 
     def leader_and_croo_applications(self, trips_year):
         return self.filter(trips_year=trips_year, submitted__isnull=False).filter(
-            Q(leader_willing=True) & Q(croo_willing=True))
+            Q(leader_willing=True) & Q(croo_willing=True)
+        )
 
     def incomplete_leader_applications(self, trips_year):
         """
         Return all leader applications which are incomplete.
         """
-        return self.filter(trips_year=trips_year, leader_willing=True, submitted__isnull=True)
+        return self.filter(
+            trips_year=trips_year, leader_willing=True, submitted__isnull=True
+        )
 
     def incomplete_croo_applications(self, trips_year):
         """
         Return all croo applications which are incomplete.
         """
-        return self.filter(trips_year=trips_year, croo_willing=True, submitted__isnull=True)
+        return self.filter(
+            trips_year=trips_year, croo_willing=True, submitted__isnull=True
+        )
 
     def leaders(self, trips_year):
         return self.filter(trips_year=trips_year, status=self.model.LEADER)

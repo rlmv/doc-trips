@@ -43,7 +43,11 @@ urlpatterns = [
     url(r'^apply/create/$', NewApplication.as_view(), name='start'),
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
     url(r'^apply/submit/$', SubmitApplication.as_view(), name='submit'),
-    url(r'^apply/already-submitted/$', ApplicationAlreadySubmitted.as_view(), name='already_submitted'),
+    url(
+        r'^apply/already-submitted/$',
+        ApplicationAlreadySubmitted.as_view(),
+        name='already_submitted',
+    ),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
     url(r'^setup/scoring$', EditScoreQuestions.as_view(), name='setup_scoring'),

@@ -5,7 +5,12 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import ApplicationAdminForm, LeaderSupplementForm, QuestionForm, AgreementForm
+from ..forms import (
+    AgreementForm,
+    ApplicationAdminForm,
+    LeaderSupplementForm,
+    QuestionForm,
+)
 from ..models import (
     Answer,
     ApplicationInformation,
@@ -35,7 +40,7 @@ def make_application(
     croo_assignment=None,
     leader_willing=True,
     croo_willing=True,
-    submitted=timezone.now(), # TODO: generate dates for each call
+    submitted=timezone.now(),  # TODO: generate dates for each call
     **kwargs
 ):
 
@@ -433,7 +438,9 @@ class ApplicationManager_prospective_leaders_TestCase(
             trip.template.triptype, AVAILABLE
         )
 
-        not_prosp = self.make_application(status=Volunteer.LEADER_WAITLIST, submitted=None)
+        not_prosp = self.make_application(
+            status=Volunteer.LEADER_WAITLIST, submitted=None
+        )
         not_prosp.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         not_prosp.leader_supplement.set_triptype_preference(
             trip.template.triptype, AVAILABLE
@@ -478,16 +485,24 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.questions = [self.q_general, self.q_leader, self.q_croo]
 
         # Complete leader & croo app
-        self.app1 = self.make_application(submitted=timezone.now(), leader_willing=True, croo_willing=True)
+        self.app1 = self.make_application(
+            submitted=timezone.now(), leader_willing=True, croo_willing=True
+        )
 
         # Complete leader but not croo
-        self.app2 = self.make_application(submitted=timezone.now(), leader_willing=True, croo_willing=False)
+        self.app2 = self.make_application(
+            submitted=timezone.now(), leader_willing=True, croo_willing=False
+        )
 
         # Complete croo but not leader
-        self.app3 = self.make_application(submitted=timezone.now(), leader_willing=False, croo_willing=True)
+        self.app3 = self.make_application(
+            submitted=timezone.now(), leader_willing=False, croo_willing=True
+        )
 
         # Not complete - started but not submitted
-        self.app4 = self.make_application(submitted=None, leader_willing=True, croo_willing=True)
+        self.app4 = self.make_application(
+            submitted=None, leader_willing=True, croo_willing=True
+        )
 
     def test_get_leader_applications(self):
         qs = Volunteer.objects.leader_applications(self.trips_year)
@@ -609,21 +624,27 @@ class AgreementFormTestCase(FytTestCase):
         self.app = make_application(trips_year=self.trips_year, submitted=None)
 
     def test_agreement_form_validation(self):
-        form = AgreementForm(instance=self.app, data={
-            'trippee_confidentiality': True,
-            'in_goodstanding_with_college': False,
-            'trainings': True
-        })
+        form = AgreementForm(
+            instance=self.app,
+            data={
+                'trippee_confidentiality': True,
+                'in_goodstanding_with_college': False,
+                'trainings': True,
+            },
+        )
         self.assertFalse(form.is_valid())
         self.app.refresh_from_db()
         self.assertIsNone(self.app.submitted)
 
     def test_agreement_form_submits_application(self):
-        form = AgreementForm(instance=self.app, data={
-            'trippee_confidentiality': True,
-            'in_goodstanding_with_college': True,
-            'trainings': True
-        })
+        form = AgreementForm(
+            instance=self.app,
+            data={
+                'trippee_confidentiality': True,
+                'in_goodstanding_with_college': True,
+                'trainings': True,
+            },
+        )
         self.assertTrue(form.is_valid())
         form.save()
         self.app.refresh_from_db()
@@ -914,7 +935,6 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         # Cannot revist application
         resp = self.app.get(reverse('applications:continue'), user=user)
         self.assertRedirects(resp, reverse('applications:already_submitted'))
-
 
     def test_submit_page_is_unreachable_with_missing_information(self):
         user = self.make_user()
