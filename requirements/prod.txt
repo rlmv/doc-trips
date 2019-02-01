@@ -1,4 +1,4 @@
-bleach==3.0.2
+bleach==3.1.0
 googlemaps==3.0.2
 dj-database-url==0.5.0
 django==2.1.5
