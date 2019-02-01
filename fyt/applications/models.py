@@ -303,6 +303,13 @@ class Volunteer(MedicalMixin, DatabaseModel):
         (CANCELED, 'Canceled'),
     )
 
+    GENDER_CHOICES = (
+        ('MALE', 'man'),
+        ('FEMALE', 'woman'),
+        ('NON_BINARY', 'nonbinary'),
+        ('OTHER', 'other'),
+    )
+
     answers = models.ManyToManyField(Question, through=Answer)
 
     # ---- administrative information. not seen by applicants ------
@@ -340,7 +347,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     # ----- general information, not shown to graders ------
     class_year = ClassYearField(blank=True, null=True)
-    gender = models.CharField(max_length=25, blank=True)
+
+    # Note: strict choices added in 2019 - prior years contain freeform answers
+    gender = models.CharField(max_length=25, blank=True, choices=GENDER_CHOICES)
+
     race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True)
     hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
