@@ -905,8 +905,8 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         # Fill required data
         resp.form['form-leader_willing'] = True
         resp.form['form-class_year'] = 2015
-        resp.form['form-gender'] = 'nonbinary'
-        resp.form['form-race_ethnicity'] = 'white'
+        resp.form['form-gender'] = 'NON_BINARY'
+        resp.form['form-race_ethnicity'] = 'WHITE'
         resp.form['form-hinman_box'] = '2345'
         resp.form['form-tshirt_size'] = 'XS'
         resp.form['form-hometown'] = 'CHA'

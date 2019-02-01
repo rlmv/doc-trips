@@ -310,6 +310,19 @@ class Volunteer(MedicalMixin, DatabaseModel):
         ('OTHER', 'other'),
     )
 
+    RACE_ETHNICITY_CHOICES = (
+        ('WHITE', 'White'),
+        ('BLACK', 'Black'),
+        ('LATINO', 'Latino/a/x'),
+        ('NATIVE', 'Native American/Alaskan'),
+        ('PACIFIC_ISLANDER', 'Pacific Islander/Native Hawaiian'),
+        ('EAST_ASIAN', 'East Asian'),
+        ('SOUTH_ASIAN', 'South Asian'),
+        ('MIDDLE_EASTERN', 'Middle Eastern'),
+        ('MIXED_RACE', 'Mixed Race'),
+        ('OTHER', 'Other')
+    )
+
     answers = models.ManyToManyField(Question, through=Answer)
 
     # ---- administrative information. not seen by applicants ------
@@ -351,7 +364,8 @@ class Volunteer(MedicalMixin, DatabaseModel):
     # Note: strict choices added in 2019 - prior years contain freeform answers
     gender = models.CharField(max_length=25, blank=True, choices=GENDER_CHOICES)
 
-    race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True)
+    race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True,
+                                      choices=RACE_ETHNICITY_CHOICES)
     hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
