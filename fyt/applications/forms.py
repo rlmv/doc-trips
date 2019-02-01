@@ -3,7 +3,8 @@ from crispy_forms.bootstrap import Alert, FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Fieldset, Layout, Row, Submit
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.utils import timezone
 
 from fyt.applications.models import (
     LEADER_SECTION_CHOICES,
@@ -29,6 +30,11 @@ from fyt.utils.forms import crispify
 
 
 class ApplicationForm(TripsYearModelForm):
+
+    # Constants used to identify application form buttons
+    SUBMIT_APPLICATION = 'submit-application'
+    SAVE_APPLICATION = 'save-application'
+
     class Meta:
         model = Volunteer
         fields = (
@@ -58,19 +64,37 @@ class ApplicationForm(TripsYearModelForm):
             'croo_willing',
         )
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # This is slightly obscure.
+        # We allow users to _save_ incomplete applications, but they cannot
+        # _submit_ incomplete apps. In order to share logic, the validation lives
+        # on the Volunteer model, and we use some internal Django magic to
+        # construct a temporary Volunteer instance from the form data to
+        # validate against.
+        if ApplicationForm.SUBMIT_APPLICATION in self.data:
+            opts = self._meta
+            try:
+                instance = forms.models.construct_instance(
+                    self, self.instance, opts.fields, opts.exclude
+                )
+            except ValidationError:
+                # Django will handle any of these errors internally, and we
+                # don't need to worry about validating our model in the case
+                # that other things fail
+                pass
+            else:
+                instance.validate_required_fields()
+
+        return cleaned_data
+
     @property
     def helper(self):
         helper = FormHelper(self)
         helper.form_tag = False
         helper.layout = ApplicationLayout()
         return helper
-
-    # TODO: get rid of the need for this
-    def update_agreements(self, agreement_form):
-        """Update the agreements submitted in the agreement form."""
-        for f in agreement_form.fields:
-            value = getattr(agreement_form.instance, f)
-            setattr(self.instance, f, value)
 
 
 class QuestionForm(TripsYearModelForm):
@@ -101,11 +125,7 @@ class QuestionForm(TripsYearModelForm):
 
 class AgreementForm(TripsYearModelForm):
     """
-    An extra form that allows us to separate the agreements section from the
-    rest of the general application form.
-
-    Crispy forms doesn't allow a single ModelForm to be split into separate
-    layouts.
+    Form used to agree to the required conditions and submit the application.
     """
 
     class Meta:
@@ -116,10 +136,19 @@ class AgreementForm(TripsYearModelForm):
             'trainings',
         ]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if not all(cleaned_data.get(f) for f in self._meta.fields):
+            raise ValidationError('You must agree to these conditions')
+        return cleaned_data
+
+    def save(self, **kwargs):
+        self.instance.submitted = timezone.now()
+        super().save()
+
     @property
     def helper(self):
         helper = FormHelper(self)
-        helper.form_tag = False
         helper.layout = AgreementLayout()
         return helper
 
@@ -138,7 +167,11 @@ class AgreementLayout(Layout):
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
                 'trainings',
-            )
+            ),
+            HTML(
+                '<p>Once you click "submit" your application will be submitted for scoring and you will be unable to edit your application any further.</p>'
+            ),
+            Submit('submit', 'Submit'),
         )
 
 

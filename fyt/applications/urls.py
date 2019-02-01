@@ -2,6 +2,7 @@ from django.conf.urls import include, url
 
 from fyt.applications.views.application import (
     ApplicationAdminUpdate,
+    ApplicationAlreadySubmitted,
     ApplicationDetail,
     ApplicationIndex,
     ApplicationStatusUpdate,
@@ -11,6 +12,7 @@ from fyt.applications.views.application import (
     NewApplication,
     RemoveCrooAssignment,
     SetupApplication,
+    SubmitApplication,
 )
 from fyt.applications.views.graders import GraderList
 from fyt.applications.views.portal import (
@@ -38,8 +40,14 @@ score_urlpatterns = [
 urlpatterns = [
     url(r'^$', VolunteerPortalView.as_view(), name='portal'),
     url(r'^setup/portal$', EditVolunteerPortalContent.as_view(), name='setup_portal'),
-    url(r'^apply/$', NewApplication.as_view(), name='apply'),
+    url(r'^apply/create/$', NewApplication.as_view(), name='start'),
     url(r'^apply/continue/$', ContinueApplication.as_view(), name='continue'),
+    url(r'^apply/submit/$', SubmitApplication.as_view(), name='submit'),
+    url(
+        r'^apply/already-submitted/$',
+        ApplicationAlreadySubmitted.as_view(),
+        name='already_submitted',
+    ),
     url(r'^setup/application$', SetupApplication.as_view(), name='setup'),
     url(r'^setup/questions$', EditQuestions.as_view(), name='setup_questions'),
     url(r'^setup/scoring$', EditScoreQuestions.as_view(), name='setup_scoring'),

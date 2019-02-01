@@ -11,8 +11,8 @@ from django.db.models import (
     Lookup,
     OuterRef,
     Prefetch,
-    Sum,
     Subquery,
+    Sum,
     Value as V,
     When,
 )
@@ -74,57 +74,43 @@ class BaseVolunteerManager(models.Manager):
         )
 
     def leader_applications(self, trips_year):
-        from .models import Question
-
-        questions = Question.objects.required_for_leaders(trips_year)
-
-        qs = self.filter(trips_year=trips_year, leader_willing=True)
-
-        for question in questions:
-            qs = qs.filter(answer__question=question, answer__answer__ne="")
-
-        return qs
+        return self.filter(
+            trips_year=trips_year, leader_willing=True, submitted__isnull=False
+        )
 
     def croo_applications(self, trips_year):
-        from .models import Question
-
-        questions = Question.objects.required_for_croos(trips_year)
-
-        qs = self.filter(trips_year=trips_year, croo_willing=True)
-
-        for question in questions:
-            qs = qs.filter(answer__question=question, answer__answer__ne="")
-
-        return qs
+        return self.filter(
+            trips_year=trips_year, croo_willing=True, submitted__isnull=False
+        )
 
     def leader_or_croo_applications(self, trips_year):
         """
         Return all applications which have either the leader or croo section
         complete.
         """
-        leader_pks = self.leader_applications(trips_year).values('pk')
-        croo_pks = self.croo_applications(trips_year).values('pk')
-        return self.filter(pk__in=Subquery(leader_pks | croo_pks))
+        return self.filter(trips_year=trips_year, submitted__isnull=False).filter(
+            Q(leader_willing=True) | Q(croo_willing=True)
+        )
 
     def leader_and_croo_applications(self, trips_year):
-        leader_pks = self.leader_applications(trips_year).values('pk')
-        croo_pks = self.croo_applications(trips_year).values('pk')
-        return self.filter(pk__in=Subquery(leader_pks & croo_pks))
+        return self.filter(trips_year=trips_year, submitted__isnull=False).filter(
+            Q(leader_willing=True) & Q(croo_willing=True)
+        )
 
     def incomplete_leader_applications(self, trips_year):
         """
         Return all leader applications which are incomplete.
         """
-        return self.filter(trips_year=trips_year, leader_willing=True).exclude(
-            pk__in=Subquery(pks(self.leader_applications(trips_year)))
+        return self.filter(
+            trips_year=trips_year, leader_willing=True, submitted__isnull=True
         )
 
     def incomplete_croo_applications(self, trips_year):
         """
         Return all croo applications which are incomplete.
         """
-        return self.filter(trips_year=trips_year, croo_willing=True).exclude(
-            pk__in=Subquery(pks(self.croo_applications(trips_year)))
+        return self.filter(
+            trips_year=trips_year, croo_willing=True, submitted__isnull=True
         )
 
     def leaders(self, trips_year):

@@ -1,31 +1,38 @@
 <div class="panel panel-default application-header">
   <div class="panel-body">
-
-    <p>
-      The application will be available until <strong>{{ timetable.applications_close }}</strong> You can return at any time up until the deadine to finish your application. There is no "submit" button. After the deadline we will read and score the most recently saved version of your application.
-    </p>
-
     <p>
       {% if application.leader_application_complete %}
-      <i class="fa fa-check-square-o"></i>
-      <strong>Your Trip Leader application is <span class="label label-success">COMPLETE</span></strong>
+      <i class="fa fa-square-o"></i>
+      <strong>Your Trip Leader application is <span class="label label-info">READY TO SUBMIT</span></strong>
+      <p> You have answered all the required questions, but still need to submit your application. </p>
+
+      {% elif application.leader_willing %}
+      <i class="fa fa-square-o"></i>
+      <strong>Your Trip Leader application is <span class="label label-danger">INCOMPLETE</span></strong>
+      <p>You still need to answer all the application questions and submit your application.</p>
+
       {% else %}
       <i class="fa fa-square-o"></i>
-      <strong>Your Trip Leader application is <span class="label label-danger">UNFINISHED</span></strong>
-      <br/>
-      Your Trip Leader application will be considered complete when you have indicated that you would like to be considered for a Trip Leader position and you have answered the graded application questions.
+      <strong>Your Trip Leader application is <span class="label label-warning">NOT STARTED</span></strong>
+      <p>You are not currently applying for a Trip Leader position.</p>
       {% endif %}
     </p>
 
     <p>
       {% if application.croo_application_complete %}
-      <i class="fa fa-check-square-o"></i>
-      <strong>Your Crooling application is <span class="label label-success">COMPLETE</span></strong>
+      <i class="fa fa-square-o"></i>
+      <strong>Your Crooling application is <span class="label label-info">READY TO SUBMIT</span></strong>
+      <p> You have answered all the required questions, but still need to submit your application. </p>
+
+      {% elif application.croo_willing %}
+      <i class="fa fa-square-o"></i>
+      <strong>Your Crooling application is <span class="label label-danger">INCOMPLETE</span></strong>
+      <p>You still need to answer all the application questions and submit your application.</p>
+
       {% else %}
       <i class="fa fa-square-o"></i>
-      <strong>Your Crooling application is <span class="label label-danger">UNFINISHED</span></strong>
-      <br/>
-      Your Crooling application will be considered complete when you have indicated that you would like to be considered for a Crooling position and you have answered the graded application questions.
+      <strong>Your Crooling application is <span class="label label-warning">NOT STARTED</span></strong>
+      <p>You are not currently applying for a Crooling position.</p>
       {% endif %}
     </p>
   </div>

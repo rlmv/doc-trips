@@ -46,10 +46,11 @@ superuser: postgres
 	$(MANAGE) setsuperuser d34898x
 
 test: postgres
-	$(MANAGE) test --nomigrations --noinput --parallel 2
+	$(MANAGE) test --nomigrations --noinput --parallel 4
 
 tidy:
 	$(VENV)/bin/importanize -v fyt
+	$(VENV)/bin/black -S --exclude migrations/ fyt
 
 format:
 	black -S --exclude migrations/ fyt

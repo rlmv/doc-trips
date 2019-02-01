@@ -127,7 +127,7 @@ class VolunteerCSV(GenericReportView):
                 application.status,
                 yes_no(application.leader_application_complete),
                 yes_no(application.croo_application_complete),
-                application.class_year,
+                str(application.class_year),
                 application.gender,
                 application.race_ethnicity,
                 application.hometown,

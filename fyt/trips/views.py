@@ -14,9 +14,9 @@ from .forms import (
     FoodboxFormsetHelper,
     LeaderAssignmentForm,
     SectionForm,
-    TrippeeAssignmentForm,
-    TripTemplateForm,
     TripTemplateDescriptionForm,
+    TripTemplateForm,
+    TrippeeAssignmentForm,
 )
 from .models import (
     NUM_BAGELS_REGULAR,
@@ -61,7 +61,7 @@ from fyt.permissions.views import (
 )
 from fyt.transport.models import ExternalBus, InternalBus
 from fyt.utils.forms import crispify
-from fyt.utils.views import PopulateMixin, MultiFormMixin
+from fyt.utils.views import MultiFormMixin, PopulateMixin
 
 
 class _SectionMixin:

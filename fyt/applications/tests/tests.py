@@ -5,7 +5,12 @@ from django.urls import reverse
 from django.utils import timezone
 from model_mommy import mommy
 
-from ..forms import ApplicationAdminForm, LeaderSupplementForm, QuestionForm
+from ..forms import (
+    AgreementForm,
+    ApplicationAdminForm,
+    LeaderSupplementForm,
+    QuestionForm,
+)
 from ..models import (
     Answer,
     ApplicationInformation,
@@ -35,6 +40,7 @@ def make_application(
     croo_assignment=None,
     leader_willing=True,
     croo_willing=True,
+    submitted=timezone.now(),  # TODO: generate dates for each call
     **kwargs
 ):
 
@@ -46,6 +52,7 @@ def make_application(
         croo_assignment=croo_assignment,
         leader_willing=leader_willing,
         croo_willing=croo_willing,
+        submitted=submitted,
         **kwargs
     )
 
@@ -183,33 +190,6 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         ]
         not_preferred_trip = mommy.make(Trip, trips_year=trips_year)
         self.assertEqual(set(available_trips), set(application.get_available_trips()))
-
-    def test_must_agree_to_trippee_confidentiality(self):
-        with self.assertRaisesMessage(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=False,
-                in_goodstanding_with_college=True,
-                trainings=True,
-            ).full_clean()
-
-    def test_must_be_in_good_standing(self):
-        with self.assertRaisesRegex(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=True,
-                in_goodstanding_with_college=False,
-                trainings=True,
-            ).full_clean()
-
-    def test_must_agree_to_trainings(self):
-        with self.assertRaisesRegex(ValidationError, 'condition'):
-            mommy.make(
-                Volunteer,
-                trippee_confidentiality=True,
-                in_goodstanding_with_college=True,
-                trainings=False,
-            ).full_clean()
 
     def test_set_section_preference(self):
         trips_year = self.init_trips_year()
@@ -361,6 +341,12 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
             "a certification\n\nsome experience",
         )
 
+    def test_validate_required_fields(self):
+        trips_year = self.init_trips_year()
+        app = self.make_application(trips_year=trips_year)
+        with self.assertRaises(ValidationError):
+            app.validate_required_fields()
+
 
 class AnswerModelTestCase(ApplicationTestMixin, FytTestCase):
     def test_word_count_validation(self):
@@ -445,16 +431,16 @@ class ApplicationManager_prospective_leaders_TestCase(
 
     def test_only_complete_applications(self):
         trip = mommy.make(Trip, trips_year=self.trips_year)
-        question = mommy.make(Question, trips_year=self.trips_year)
 
         prospective = self.make_application(status=Volunteer.LEADER_WAITLIST)
-        prospective.answer_question(question, 'An answer')
         prospective.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         prospective.leader_supplement.set_triptype_preference(
             trip.template.triptype, AVAILABLE
         )
 
-        not_prosp = self.make_application(status=Volunteer.LEADER_WAITLIST)
+        not_prosp = self.make_application(
+            status=Volunteer.LEADER_WAITLIST, submitted=None
+        )
         not_prosp.leader_supplement.set_section_preference(trip.section, AVAILABLE)
         not_prosp.leader_supplement.set_triptype_preference(
             trip.template.triptype, AVAILABLE
@@ -499,46 +485,24 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.questions = [self.q_general, self.q_leader, self.q_croo]
 
         # Complete leader & croo app
-        self.app1 = self.make_application()
-        self.app1.answer_question(self.q_general, 'answer')
-        self.app1.answer_question(self.q_leader, 'answer')
-        self.app1.answer_question(self.q_croo, 'answer')
+        self.app1 = self.make_application(
+            submitted=timezone.now(), leader_willing=True, croo_willing=True
+        )
 
-        # Complete leader
-        self.app2 = self.make_application()
-        self.app2.answer_question(self.q_general, 'answer')
-        self.app2.answer_question(self.q_leader, 'answer')
-        self.app2.answer_question(self.q_croo, '')
+        # Complete leader but not croo
+        self.app2 = self.make_application(
+            submitted=timezone.now(), leader_willing=True, croo_willing=False
+        )
 
-        # Complete croo
-        self.app3 = self.make_application()
-        self.app3.answer_question(self.q_general, 'answer')
-        self.app3.answer_question(self.q_leader, '')
-        self.app3.answer_question(self.q_croo, 'answer')
+        # Complete croo but not leader
+        self.app3 = self.make_application(
+            submitted=timezone.now(), leader_willing=False, croo_willing=True
+        )
 
-        # Not complete - missing croo & leader answer
-        self.app4 = self.make_application()
-        self.app4.answer_question(self.q_general, 'answer')
-
-        # Not complete - empty answer
-        self.app5 = self.make_application()
-        self.app5.answer_question(self.q_general, '')
-        self.app5.answer_question(self.q_leader, 'answer')
-        self.app5.answer_question(self.q_croo, 'answer')
-
-        # Not a leader app
-        self.app6 = self.make_application()
-        self.app6.answer_question(self.q_general, 'answer')
-        self.app6.answer_question(self.q_leader, 'answer')
-        self.app6.leader_willing = False
-        self.app6.save()
-
-        # Not a croo app
-        self.app7 = self.make_application()
-        self.app7.answer_question(self.q_general, 'answer')
-        self.app7.answer_question(self.q_croo, 'answer')
-        self.app7.croo_willing = False
-        self.app7.save()
+        # Not complete - started but not submitted
+        self.app4 = self.make_application(
+            submitted=None, leader_willing=True, croo_willing=True
+        )
 
     def test_get_leader_applications(self):
         qs = Volunteer.objects.leader_applications(self.trips_year)
@@ -549,22 +513,20 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertQsEqual(qs, [self.app1, self.app3])
 
     def test_get_leader_or_croo_applications(self):
-        with self.assertNumQueries(3):
-            qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
-            self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
+        qs = Volunteer.objects.leader_or_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1, self.app2, self.app3])
 
     def test_get_leader_and_croo_applications(self):
-        with self.assertNumQueries(3):
-            qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
-            self.assertQsEqual(qs, [self.app1])
+        qs = Volunteer.objects.leader_and_croo_applications(self.trips_year)
+        self.assertQsEqual(qs, [self.app1])
 
     def test_incomplete_leader_applications(self):
         qs = Volunteer.objects.incomplete_leader_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app3, self.app4, self.app5, self.app7])
+        self.assertQsEqual(qs, [self.app4])
 
     def test_incomplete_croo_applications(self):
         qs = Volunteer.objects.incomplete_croo_applications(self.trips_year)
-        self.assertQsEqual(qs, [self.app2, self.app4, self.app5, self.app6])
+        self.assertQsEqual(qs, [self.app4])
 
     def test_leaders(self):
         trips_year = self.init_trips_year()
@@ -654,6 +616,40 @@ class ApplicationFormTestCase(FytTestCase):
     def test_question_field_word_count(self):
         form = QuestionForm(instance=self.app, data={'question_1': 'word ' * 301})
         self.assertFalse(form.is_valid())
+
+
+class AgreementFormTestCase(FytTestCase):
+    def setUp(self):
+        self.trips_year = self.init_trips_year()
+        self.app = make_application(trips_year=self.trips_year, submitted=None)
+
+    def test_agreement_form_validation(self):
+        form = AgreementForm(
+            instance=self.app,
+            data={
+                'trippee_confidentiality': True,
+                'in_goodstanding_with_college': False,
+                'trainings': True,
+            },
+        )
+        self.assertFalse(form.is_valid())
+        self.app.refresh_from_db()
+        self.assertIsNone(self.app.submitted)
+
+    def test_agreement_form_submits_application(self):
+        form = AgreementForm(
+            instance=self.app,
+            data={
+                'trippee_confidentiality': True,
+                'in_goodstanding_with_college': True,
+                'trainings': True,
+            },
+        )
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.app.refresh_from_db()
+        self.assertIsNotNone(self.app.submitted)
+        # TODO: test all conditions are set
 
 
 class LeaderSupplementFormTestCase(FytTestCase):
@@ -860,11 +856,11 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         mommy.make(ApplicationInformation, trips_year=self.trips_year)
 
     def test_deadline_extension(self):
-        application = self.make_application()
+        application = self.make_application(submitted=None)
 
         # OK: Regular application, within regular application period
         self.open_application()
-        url = reverse('applications:apply')
+        url = reverse('applications:start')
         resp = self.app.get(url, user=application.applicant).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/application.html')
 
@@ -882,6 +878,75 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         application.save()
         resp = self.app.get(url, user=application.applicant).maybe_follow()
         self.assertTemplateUsed(resp, 'applications/application.html')
+
+    def test_application_integration_flow(self):
+        user = self.make_user()
+        mommy.make(PortalContent, trips_year=self.trips_year)
+        self.open_application()
+
+        # Visit application page
+        resp = self.app.get(reverse('applications:portal'), user=user)
+
+        # Click link to start application - redirect
+        resp = resp.forms['start-application'].submit()
+        self.assertEqual(resp.location, reverse('applications:continue'))
+        resp = resp.follow()
+
+        # Save form with incomplete data - OK
+        resp = resp.form.submit('save-application').follow()
+
+        # Try and submit application - fails with missing data
+        resp = resp.form.submit('submit-application')
+        self.assertContains(
+            resp,
+            'You cannot submit your application until you resolve each of the following issues',
+        )
+
+        # Fill required data
+        resp.form['form-leader_willing'] = True
+        resp.form['form-class_year'] = 2015
+        resp.form['form-gender'] = 'male'
+        resp.form['form-race_ethnicity'] = 'white'
+        resp.form['form-hinman_box'] = '2345'
+        resp.form['form-tshirt_size'] = 'XS'
+        resp.form['form-hometown'] = 'CHA'
+
+        # Submit application - should redirect to submission page
+        resp = resp.form.submit('submit-application')
+        self.assertEqual(resp.location, reverse('applications:submit'))
+        resp = resp.follow()
+
+        # Submit without agreeing to conditions - fails
+        resp = resp.form.submit()
+        self.assertContains(resp, 'You must agree to these conditions')
+
+        # Agree and submit - should redirect to portal
+        resp.form['trippee_confidentiality'] = True
+        resp.form['in_goodstanding_with_college'] = True
+        resp.form['trainings'] = True
+        resp = resp.form.submit()
+        self.assertEqual(resp.location, reverse('applications:portal'))
+        resp.follow()
+
+        # Should be complete
+        volunteer = Volunteer.objects.get(trips_year=self.trips_year, applicant=user)
+        self.assertIsNotNone(volunteer.submitted)
+
+        # Cannot revist application
+        resp = self.app.get(reverse('applications:continue'), user=user)
+        self.assertRedirects(resp, reverse('applications:already_submitted'))
+
+    def test_submit_page_is_unreachable_with_missing_information(self):
+        user = self.make_user()
+        mommy.make(PortalContent, trips_year=self.trips_year)
+        self.open_application()
+
+        # Start application page
+        resp = self.app.get(reverse('applications:portal'), user=user)
+        resp = resp.forms['start-application'].submit().follow()
+
+        # Jumping to submit page is forbidden
+        self.app.get(reverse('applications:submit'), user=user, status=403)
 
 
 class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):

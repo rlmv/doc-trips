@@ -7,16 +7,17 @@ from braces.views import (
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
-from django.db.models import Prefetch
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
-from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
-from vanilla import CreateView, DetailView, FormView, ListView, UpdateView
+from django.views import View
+from vanilla import DetailView, FormView, ListView, TemplateView, UpdateView
 
 from fyt.applications.filters import ApplicationFilterSet
 from fyt.applications.forms import (
@@ -30,8 +31,9 @@ from fyt.applications.forms import (
 )
 from fyt.applications.models import (
     ApplicationInformation,
+    CrooSupplement,
+    LeaderSupplement,
     Question,
-    ScoreComment,
     Volunteer,
 )
 from fyt.applications.tables import ApplicationTable
@@ -45,50 +47,35 @@ from fyt.permissions.views import (
 )
 from fyt.timetable.models import Timetable
 from fyt.training.forms import FirstAidCertificationFormset
-from fyt.trips.models import Trip, TripType
+from fyt.trips.models import TripType
 from fyt.utils.forms import crispify
 from fyt.utils.views import ExtraContextMixin, MultiFormMixin
 
 
-class IfApplicationAvailable:
+class IfApplicationAvailableAndNotSubmitted:
     """
-    Restrict application availability based on Timetable dates
+    Users cannot edit applications that have been submitted.
+    Also estrict application availability based on Timetable dates.
     """
-
     def dispatch(self, request, *args, **kwargs):
-        if Timetable.objects.timetable().applications_available():
-            return super().dispatch(request, *args, **kwargs)
-
         try:
             existing_application = Volunteer.objects.get(
                 applicant=self.request.user, trips_year=self.trips_year
             )
         except Volunteer.DoesNotExist:
-            pass
+            existing_application = None
+
+        if existing_application and existing_application.submitted:
+            return HttpResponseRedirect(reverse('applications:already_submitted'))
+
+        elif Timetable.objects.timetable().applications_available():
+            return super().dispatch(request, *args, **kwargs)
+
+        elif existing_application and existing_application.within_deadline_extension():
+            return super().dispatch(request, *args, **kwargs)
+
         else:
-            if existing_application.within_deadline_extension():
-                return super().dispatch(request, *args, **kwargs)
-
-        return render(request, 'applications/not_available.html')
-
-
-class ContinueIfAlreadyApplied:
-    """
-    If user has already applied, redirect to edit existing application.
-
-    This lives in a mixin instead of in the NewApplication view because if
-    has to follow LoginRequired in the MRO. An AnonymousUser causes the
-    query to throw an error.
-    """
-
-    def dispatch(self, request, *args, **kwargs):
-        exists = Volunteer.objects.filter(
-            applicant=self.request.user, trips_year=self.trips_year
-        ).exists()
-        if exists:
-            return HttpResponseRedirect(reverse('applications:continue'))
-
-        return super().dispatch(request, *args, **kwargs)
+            return render(request, 'applications/not_available.html')
 
 
 # Form constants
@@ -96,17 +83,9 @@ GENERAL_FORM = 'form'
 LEADER_FORM = 'leader_form'
 CROO_FORM = 'croo_form'
 QUESTION_FORM = 'question_form'
-AGREEMENT_FORM = 'agreement_form'
 FIRST_AID_FORM = 'first_aid_form'
 
-FORM_ORDERING = [
-    GENERAL_FORM,
-    FIRST_AID_FORM,
-    LEADER_FORM,
-    CROO_FORM,
-    QUESTION_FORM,
-    AGREEMENT_FORM,
-]
+FORM_ORDERING = [GENERAL_FORM, FIRST_AID_FORM, LEADER_FORM, CROO_FORM, QUESTION_FORM]
 
 
 def order_forms(forms):
@@ -132,7 +111,6 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
     def get_form_classes(self):
         return {
             GENERAL_FORM: ApplicationForm,
-            AGREEMENT_FORM: AgreementForm,
             LEADER_FORM: LeaderSupplementForm,
             CROO_FORM: CrooSupplementForm,
             QUESTION_FORM: QuestionForm,
@@ -148,7 +126,6 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
             LEADER_FORM: None,
             CROO_FORM: None,
             QUESTION_FORM: None,
-            AGREEMENT_FORM: None,
             FIRST_AID_FORM: None,
         }
 
@@ -166,53 +143,53 @@ class ApplicationFormsMixin(FormMessagesMixin, MultiFormMixin):
         )
 
 
-class NewApplication(
-    LoginRequiredMixin,
-    IfApplicationAvailable,
-    ContinueIfAlreadyApplied,
-    ApplicationFormsMixin,
-    CreateView,
-):
+class NewApplication(LoginRequiredMixin, IfApplicationAvailableAndNotSubmitted, View):
     """
-    Apply for trips
+    Begin an application for Trips, creating a skeleton of the application.
     """
-
     success_url = reverse_lazy('applications:continue')
 
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
 
-    def form_valid(self, forms):
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
         """
-        Connect the application instances
+        Redirect to existing application, if it exists
+
+        This is redundantly decorated with login_required to prevent user
+        from being anonymous. Otherwise this gets called first in the MRO
+        order *then* passed to the LoginRequiredMixin, which doesn't work.
         """
+        volunteer = Volunteer.objects.filter(
+            applicant=self.request.user, trips_year=self.trips_year
+        )
+        if volunteer.exists():
+            return HttpResponseRedirect(self.success_url)
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request):
         with transaction.atomic():
-            forms[GENERAL_FORM].update_agreements(forms[AGREEMENT_FORM])
-            forms[GENERAL_FORM].instance.applicant = self.request.user
-            forms[GENERAL_FORM].instance.trips_year = self.trips_year
-            application = forms[GENERAL_FORM].save()
+            application = Volunteer.objects.create(
+                applicant=self.request.user, trips_year=self.trips_year
+            )
+            LeaderSupplement.objects.create(
+                application=application, trips_year=self.trips_year
+            )
+            CrooSupplement.objects.create(
+                application=application, trips_year=self.trips_year
+            )
 
-            forms[QUESTION_FORM].instance = application
-            forms[QUESTION_FORM].save()
-
-            forms[LEADER_FORM].instance.application = application
-            forms[LEADER_FORM].instance.trips_year = self.trips_year
-            forms[LEADER_FORM].save()
-
-            forms[CROO_FORM].instance.application = application
-            forms[CROO_FORM].instance.trips_year = self.trips_year
-            forms[CROO_FORM].save()
-
-            forms[FIRST_AID_FORM].instance = application
-            forms[FIRST_AID_FORM].save()
-
-        self.messages.success(self.get_form_valid_message())
-        return HttpResponseRedirect(self.get_success_url())
+        return HttpResponseRedirect(self.success_url)
 
 
 class ContinueApplication(
-    LoginRequiredMixin, IfApplicationAvailable, ApplicationFormsMixin, UpdateView
+    LoginRequiredMixin,
+    IfApplicationAvailableAndNotSubmitted,
+    ApplicationFormsMixin,
+    UpdateView,
 ):
     """
     View for applicants to edit their application.
@@ -236,12 +213,65 @@ class ContinueApplication(
         self.object = self.get_object()
         return {
             GENERAL_FORM: self.object,
-            AGREEMENT_FORM: self.object,
             QUESTION_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
             FIRST_AID_FORM: self.object,
         }
+
+    def form_valid(self, forms):
+        """
+        Redirect to final submission page if directed.
+        """
+        super().form_valid(forms)
+
+        if ApplicationForm.SUBMIT_APPLICATION in self.request.POST:
+            return HttpResponseRedirect(reverse('applications:submit'))
+
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class SubmitApplication(
+    LoginRequiredMixin,
+    FormMessagesMixin,
+    IfApplicationAvailableAndNotSubmitted,
+    ExtraContextMixin,
+    UpdateView,
+):
+    model = Volunteer
+    context_object_name = 'application'
+    template_name = 'applications/application_submit.html'
+    form_class = AgreementForm
+
+    success_url = reverse_lazy('applications:portal')
+
+    form_valid_message = (
+        "Your application has been submitted. Thank you for applying to Trips!"
+    )
+    form_invalid_message = (
+        "Uh oh, it looks like there's a problem with your application"
+    )
+
+    @cached_property
+    def trips_year(self):
+        return TripsYear.objects.current()
+
+    def get_object(self):
+        instance = get_object_or_404(
+            self.model, applicant=self.request.user, trips_year=self.trips_year
+        )
+        # User cannot submit their application if they have not completed the
+        # required fields - sanity check
+        try:
+            instance.validate_required_fields()
+            instance.validate_application_complete()
+        except ValidationError:
+            raise PermissionDenied
+
+        return instance
+
+    def extra_context(self):
+        return {'trips_year': self.trips_year}
 
 
 class SetupApplication(
@@ -316,6 +346,11 @@ class EditQuestions(SettingsPermissionRequired, FormValidMessageMixin, FormView)
 
         formset.save()
         return super().form_valid(formset)
+
+
+class ApplicationAlreadySubmitted(TemplateView):
+
+    template_name = 'applications/already_submitted.html'
 
 
 class BlockDirectorate(GroupRequiredMixin):
@@ -514,7 +549,6 @@ class ApplicationUpdate(
             GENERAL_FORM: self.object,
             LEADER_FORM: self.object.leader_supplement,
             CROO_FORM: self.object.croo_supplement,
-            AGREEMENT_FORM: self.object,
             QUESTION_FORM: self.object,
             FIRST_AID_FORM: self.object,
         }

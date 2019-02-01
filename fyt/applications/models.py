@@ -224,6 +224,7 @@ class PortalContent(DatabaseModel):
         }[status]
 
 
+# TODO: remove this once we reset database migrations
 def validate_condition_true(value):
     if value is not True:
         raise ValidationError('You must agree to this condition')
@@ -246,6 +247,41 @@ class Volunteer(MedicalMixin, DatabaseModel):
     class Meta:
         ordering = ['applicant']
         unique_together = ['trips_year', 'applicant']
+
+    # We handle this validation outside the normal Django model/form
+    # validation machinery so that users can save an incomplete application
+    # and come back to it. The final validation is performed on submission.
+    REQUIRED_FIELDS = [
+        'class_year',
+        'gender',
+        'race_ethnicity',
+        'hinman_box',
+        'tshirt_size',
+        'hometown',
+    ]
+
+    def validate_required_fields(self):
+        """Validator for fields that can be saved empty, but not submitted empty"""
+        errors = []
+        for field_name in Volunteer.REQUIRED_FIELDS:
+            if not getattr(self, field_name):
+                errors.append(field_name)
+        if errors:
+            raise ValidationError(
+                {field_name: 'This field is required' for field_name in errors},
+                code='required',
+            )
+
+    # TODO: expand error messages
+    def validate_application_complete(self):
+        if not self.leader_willing and not self.croo_willing:
+            raise ValidationError('Must submit a croo or leader application')
+
+        if self.leader_willing and not self.leader_application_complete:
+            raise ValidationError('Leader application is incomplete')
+
+        if self.croo_willing and not self.croo_application_complete:
+            raise ValidationError('Croo application is incomplete')
 
     # Maximum number of scores for an application
     NUM_SCORES = 3
@@ -276,6 +312,11 @@ class Volunteer(MedicalMixin, DatabaseModel):
         related_name='applications',
         on_delete=models.PROTECT,
     )
+
+    # This was added in 2019. All applications completed prior to that are
+    # backfilled with an arbitrary date to maintain database consistency.
+    submitted = models.DateTimeField(null=True, default=None, editable=False)
+
     deadline_extension = models.DateTimeField(
         null=True,
         blank=True,
@@ -298,10 +339,10 @@ class Volunteer(MedicalMixin, DatabaseModel):
     safety_lead = models.BooleanField(default=False)  # TODO: remove?
 
     # ----- general information, not shown to graders ------
-    class_year = ClassYearField()
-    gender = models.CharField(max_length=25)
+    class_year = ClassYearField(blank=True, null=True)
+    gender = models.CharField(max_length=25, blank=True)
     race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True)
-    hinman_box = models.CharField(max_length=10)
+    hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
         blank=True,
@@ -311,7 +352,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
             'address.'
         ),
     )
-    tshirt_size = models.CharField(max_length=3, choices=TSHIRT_SIZE_CHOICES)
+    tshirt_size = models.CharField(
+        max_length=3, choices=TSHIRT_SIZE_CHOICES, blank=True
+    )
 
     # TODO: migrate this data to the new gear app
     height = models.CharField(max_length=10, blank=True)
@@ -330,7 +373,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         blank=True,
     )
 
-    hometown = models.CharField(max_length=255)
+    hometown = models.CharField(max_length=255, blank=True)
     academic_interests = models.CharField(
         'What do you like to study?', max_length=255, blank=True
     )
@@ -369,12 +412,13 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
 
     leader_willing = models.BooleanField(
-        'I would like to be considered for a trip leader position.'
+        'I would like to be considered for a trip leader position.', default=False
     )
     croo_willing = models.BooleanField(
         'I would like to be considered for a crooling position. (NOTE: '
         'students who are taking classes this sophomore summer can NOT apply, '
-        'given the conflict of dates.)'
+        'given the conflict of dates.)',
+        default=False,
     )
 
     # ------ certs -------
@@ -412,14 +456,12 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "confidentiality of this information, except as is required by "
         "medical or legal concerns",
         default=False,
-        validators=[validate_condition_true],
     )
     in_goodstanding_with_college = models.BooleanField(
         "By applying to volunteer for Trips, I acknowledge that I am in good "
         "standing with the College. This will be verified by DOC Trips "
         "through the Undergraduate Dean’s Office.",
         default=False,
-        validators=[validate_condition_true],
     )
     trainings = models.BooleanField(
         "I understand that if I am accepted as a Trips volunteer "
@@ -428,7 +470,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "do not meet these requirements, I will not be able to volunteer for "
         "Trips.",
         default=False,
-        validators=[validate_condition_true],
     )
     spring_training_ok = models.BooleanField(
         "I can attend trainings during the spring term.", default=False
@@ -841,39 +882,6 @@ class Score(DatabaseModel):
     class Meta:
         unique_together = ['grader', 'application']
         ordering = ['created_at']
-
-    SCORE_CHOICES = (
-        (
-            1,
-            "1 -- Bad application -- I really don't want this person to be a "
-            "volunteer and I have serious concerns",
-        ),
-        (1.5, "1.5"),
-        (
-            2,
-            "2 -- Poor application -- I have some concerns about this person "
-            "being a Trips volunteer",
-        ),
-        (2.5, "2.5"),
-        (
-            3,
-            "3 -- Fine application -- This person might work well as a "
-            "volunteer but I have some questions",
-        ),
-        (3.5, "3.5"),
-        (
-            4,
-            "4 -- Good application -- I would consider this person to be a "
-            "volunteer but I wouldn't be heartbroken if they were not "
-            "selected",
-        ),
-        (4.5, "4.5"),
-        (
-            5,
-            "5 -- Great application -- I think this person would be a "
-            "fantastic volunteer",
-        ),
-    )
 
     grader = models.ForeignKey(
         'Grader', editable=False, related_name='scores', on_delete=models.PROTECT
