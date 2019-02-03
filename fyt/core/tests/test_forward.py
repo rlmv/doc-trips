@@ -161,6 +161,7 @@ class MigrateForwardTestCase(FytTestCase):
 
     def test_timetable_is_reset(self):
         timetable = Timetable()
+        timetable.scoring_available = True
         timetable.hide_volunteer_page = True
         timetable.application_status_available = True
         timetable.leader_assignment_available = True
@@ -170,6 +171,7 @@ class MigrateForwardTestCase(FytTestCase):
         forward()
 
         timetable = Timetable.objects.timetable()
+        self.assertFalse(timetable.scoring_available)
         self.assertFalse(timetable.hide_volunteer_page)
         self.assertFalse(timetable.application_status_available)
         self.assertFalse(timetable.leader_assignment_available)

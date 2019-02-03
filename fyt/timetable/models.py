@@ -114,6 +114,7 @@ class Timetable(models.Model):
         """
         Hide all statuses.
         """
+        self.scoring_available = False
         self.hide_volunteer_page = False
         self.application_status_available = False
         self.leader_assignment_available = False
