@@ -64,30 +64,15 @@ class ApplicationForm(TripsYearModelForm):
             'croo_willing',
         )
 
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # This is slightly obscure.
-        # We allow users to _save_ incomplete applications, but they cannot
-        # _submit_ incomplete apps. In order to share logic, the validation lives
-        # on the Volunteer model, and we use some internal Django magic to
-        # construct a temporary Volunteer instance from the form data to
-        # validate against.
-        # if ApplicationForm.SUBMIT_APPLICATION in self.data:
-        #     opts = self._meta
-        #     try:
-        #         instance = forms.models.construct_instance(
-        #             self, self.instance, opts.fields, opts.exclude
-        #         )
-        #     except ValidationError:
-        #         # Django will handle any of these errors internally, and we
-        #         # don't need to worry about validating our model in the case
-        #         # that other things fail
-        #         pass
-        #     else:
-        #         instance.validate_required_fields()
-
-        return cleaned_data
+    def validate_instance(self):
+        """
+        Special validation that is only run to show errors on application
+        submission.
+        """
+        try:
+            self.instance.validate_required_fields()
+        except ValidationError as e:
+            self._update_errors(e)
 
     @property
     def helper(self):
@@ -118,6 +103,16 @@ class QuestionForm(TripsYearModelForm):
         helper.form_tag = False
         helper.layout = QuestionLayout(self.question_handler.formfield_names())
         return helper
+
+    def validate_instance(self):
+        """
+        Special validation that is only run to show errors on application
+        submission.
+        """
+        try:
+            self.instance.validate_application_complete()
+        except ValidationError as e:
+            self._update_errors(e)
 
     def save(self, **kwargs):
         self.question_handler.save()

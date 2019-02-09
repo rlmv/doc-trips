@@ -197,6 +197,26 @@ class ContinueApplication(
 
     success_url = reverse_lazy('applications:continue')
 
+    def get(self, request, *args, **kwargs):
+        """
+        If SubmitApplication has redirected to here with the 'incomplete' query
+        arg, run strict form validation and show errors
+        """
+        forms = self.get_forms(instances=self.get_instances())
+
+        if 'incomplete' in request.GET:
+            form_invalid = True
+            for form in forms.values():
+                try:
+                    form.validate_instance()
+                except AttributeError:
+                    pass
+        else:
+            form_invalid = False
+
+        context = self.get_context_data(forms=forms, form_invalid=form_invalid)
+        return self.render_to_response(context)
+
     @cached_property
     def trips_year(self):
         return TripsYear.objects.current()
@@ -218,8 +238,6 @@ class ContinueApplication(
             CROO_FORM: self.object.croo_supplement,
             FIRST_AID_FORM: self.object,
         }
-
-    # TODO: if reject in request.GET, run form validation before rendering
 
     def form_valid(self, forms):
         """
@@ -280,6 +298,7 @@ class SubmitApplication(
             instance.validate_required_fields()
             instance.validate_application_complete()
         except ValidationError:
+            self.messages.error(self.get_form_invalid_message())
             raise IncompleteApplication()
 
         return instance

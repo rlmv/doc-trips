@@ -902,10 +902,10 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = resp.follow()
         app = Volunteer.objects.get(applicant=user, trips_year=self.trips_year)
         self.assertTrue(app.leader_willing)
-        # self.assertContains(
-        #     resp,
-        #     "Uh oh, it looks like there's a problem with your application"
-        # )
+        self.assertContains(
+            resp,
+            "Uh oh, it looks like there's a problem with your application"
+        )
 
         # Fill required data
         resp.form['form-class_year'] = 2015
