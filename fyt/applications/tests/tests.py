@@ -904,7 +904,7 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertTrue(app.leader_willing)
         self.assertContains(
             resp,
-            "Uh oh, it looks like there's a problem with your application"
+            "Uh oh, it looks like there is a problem with your application"
         )
 
         # Fill required data

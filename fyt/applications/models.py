@@ -276,13 +276,23 @@ class Volunteer(MedicalMixin, DatabaseModel):
         if errors:
             raise ValidationError(errors, code='required')
 
-    # TODO: expand error messages
     def validate_application_complete(self):
-        if self.leader_willing and not self.leader_application_complete:
-            raise ValidationError('Leader application is incomplete')
+        missing = {}
 
-        if self.croo_willing and not self.croo_application_complete:
-            raise ValidationError('Croo application is incomplete')
+        if self.leader_willing:
+            for q, answered in self.answered_questions(Question.LEADER).items():
+                if not answered:
+                    # These keys are tied to QuestionForm
+                    missing[f'question_{q.pk}'] = 'This field is required'
+
+        if self.croo_willing:
+            for q, answered in self.answered_questions(Question.CROO).items():
+                if not answered:
+                    # These keys are tied to QuestionForm
+                    missing[f'question_{q.pk}'] = 'This field is required'
+
+        if missing:
+            raise ValidationError(missing)
 
     # Maximum number of scores for an application
     NUM_SCORES = 3
@@ -534,18 +544,22 @@ class Volunteer(MedicalMixin, DatabaseModel):
         Returns True if all the required dynamic questions are answered, for
         the given type of question.
         """
+        return all(self.answered_questions(type).values())
+
+    def answered_questions(self, type):
         types = [Question.ALL, type]
 
-        q_ids = set(q.id for q in self.required_questions if q.type in types)
+        questions_of_interest = [q for q in self.required_questions if q.type in types]
+        answered = {q.id: False for q in questions_of_interest}
 
         for answer in self.answer_set.all():
             if answer.answer:  # "" is not an answer
                 try:
-                    q_ids.remove(answer.question_id)
+                    answered[answer.question_id] = True
                 except KeyError:
                     pass
 
-        return len(q_ids) == 0
+        return {q: answered[q.id] for q in questions_of_interest}
 
     @cached_property
     def required_questions(self):

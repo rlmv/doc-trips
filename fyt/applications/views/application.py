@@ -269,7 +269,7 @@ class SubmitApplication(
         "Your application has been submitted. Thank you for applying to Trips!"
     )
     form_invalid_message = (
-        "Uh oh, it looks like there's a problem with your application"
+        "Uh oh, it looks like there is a problem with your application"
     )
 
     @cached_property
