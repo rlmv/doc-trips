@@ -73,19 +73,19 @@ class ApplicationForm(TripsYearModelForm):
         # on the Volunteer model, and we use some internal Django magic to
         # construct a temporary Volunteer instance from the form data to
         # validate against.
-        if ApplicationForm.SUBMIT_APPLICATION in self.data:
-            opts = self._meta
-            try:
-                instance = forms.models.construct_instance(
-                    self, self.instance, opts.fields, opts.exclude
-                )
-            except ValidationError:
-                # Django will handle any of these errors internally, and we
-                # don't need to worry about validating our model in the case
-                # that other things fail
-                pass
-            else:
-                instance.validate_required_fields()
+        # if ApplicationForm.SUBMIT_APPLICATION in self.data:
+        #     opts = self._meta
+        #     try:
+        #         instance = forms.models.construct_instance(
+        #             self, self.instance, opts.fields, opts.exclude
+        #         )
+        #     except ValidationError:
+        #         # Django will handle any of these errors internally, and we
+        #         # don't need to worry about validating our model in the case
+        #         # that other things fail
+        #         pass
+        #     else:
+        #         instance.validate_required_fields()
 
         return cleaned_data
 

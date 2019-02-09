@@ -895,15 +895,19 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         # Save form with incomplete data - OK
         resp = resp.form.submit('save-application').follow()
 
-        # Try and submit application - fails with missing data
-        resp = resp.form.submit('submit-application')
-        self.assertContains(
-            resp,
-            'You cannot submit your application until you resolve each of the following issues',
-        )
+        # Try and submit application - saves data but redirects back
+        resp.form['form-leader_willing'] = True
+        resp = resp.form.submit('submit-application').follow()
+        self.assertEqual(resp.location, reverse('applications:continue') + '?incomplete=true')
+        resp = resp.follow()
+        app = Volunteer.objects.get(applicant=user, trips_year=self.trips_year)
+        self.assertTrue(app.leader_willing)
+        # self.assertContains(
+        #     resp,
+        #     "Uh oh, it looks like there's a problem with your application"
+        # )
 
         # Fill required data
-        resp.form['form-leader_willing'] = True
         resp.form['form-class_year'] = 2015
         resp.form['form-gender'] = 'NON_BINARY'
         resp.form['form-race_ethnicity'] = 'WHITE'
@@ -946,7 +950,9 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         resp = resp.forms['start-application'].submit().follow()
 
         # Jumping to submit page is forbidden
-        self.app.get(reverse('applications:submit'), user=user, status=403)
+        resp = self.app.get(reverse('applications:submit'), user=user, status=302)
+        self.assertEqual(resp.location, reverse('applications:continue') + '?incomplete=true')
+        resp.follow()
 
 
 class ApplicationAdminFormTestCase(ApplicationTestMixin, FytTestCase):

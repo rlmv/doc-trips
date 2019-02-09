@@ -219,6 +219,8 @@ class ContinueApplication(
             FIRST_AID_FORM: self.object,
         }
 
+    # TODO: if reject in request.GET, run form validation before rendering
+
     def form_valid(self, forms):
         """
         Redirect to final submission page if directed.
@@ -256,22 +258,45 @@ class SubmitApplication(
     def trips_year(self):
         return TripsYear.objects.current()
 
+    # Wow, this is some hacky flow.
+    #
+    # We need to check that, when a user goes to submit their application,
+    # all required fields are complete. If it is incomplete, we redirect back
+    # to the application page and send a query param indicating that the
+    # form should show errors.
+    #
+    # This validation has to happen after checking that the user is logged
+    # in, and in both GET and POST requests. The easiest way to do that is
+    # by running validation when we get the application object, and raising
+    # an exception that is caught and handled by dispatch.
+    #
+    # This is so that we can save all POSTed data, even when there are problems
+
     def get_object(self):
         instance = get_object_or_404(
             self.model, applicant=self.request.user, trips_year=self.trips_year
         )
-        # User cannot submit their application if they have not completed the
-        # required fields - sanity check
         try:
             instance.validate_required_fields()
             instance.validate_application_complete()
         except ValidationError:
-            raise PermissionDenied
+            raise IncompleteApplication()
 
         return instance
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except IncompleteApplication:
+            return HttpResponseRedirect(
+                reverse('applications:continue') + '?incomplete=true')
+
     def extra_context(self):
         return {'trips_year': self.trips_year}
+
+
+class IncompleteApplication(Exception):
+    pass
 
 
 class SetupApplication(
