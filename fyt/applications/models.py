@@ -262,21 +262,22 @@ class Volunteer(MedicalMixin, DatabaseModel):
 
     def validate_required_fields(self):
         """Validator for fields that can be saved empty, but not submitted empty"""
-        errors = []
+        errors = {}
+
+        if not self.leader_willing and not self.croo_willing:
+            msg = 'Must pick leader and/or croo application'
+            errors['croo_willing'] = msg
+            errors['leader_willing'] = msg
+
         for field_name in Volunteer.REQUIRED_FIELDS:
             if not getattr(self, field_name):
-                errors.append(field_name)
+                errors[field_name] = 'This field is required'
+
         if errors:
-            raise ValidationError(
-                {field_name: 'This field is required' for field_name in errors},
-                code='required',
-            )
+            raise ValidationError(errors, code='required')
 
     # TODO: expand error messages
     def validate_application_complete(self):
-        if not self.leader_willing and not self.croo_willing:
-            raise ValidationError('Must submit a croo or leader application')
-
         if self.leader_willing and not self.leader_application_complete:
             raise ValidationError('Leader application is incomplete')
 

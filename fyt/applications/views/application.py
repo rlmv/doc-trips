@@ -207,10 +207,10 @@ class ContinueApplication(
         if 'incomplete' in request.GET:
             form_invalid = True
             for form in forms.values():
-                try:
+                if hasattr(form, 'validate_instance'):
+                    # Hack: set cleaned data
+                    form.cleaned_data = {}
                     form.validate_instance()
-                except AttributeError:
-                    pass
         else:
             form_invalid = False
 
