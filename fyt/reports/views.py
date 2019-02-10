@@ -98,7 +98,7 @@ class VolunteerCSV(GenericReportView):
             Application.objects.leader_or_croo_applications(self.trips_year)
             .annotate(Count('scores'))
             .aggregate(Max('scores__count'))['scores__count__max']
-        )
+        ) or 0
 
         return (
             self.header
