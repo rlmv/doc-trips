@@ -54,7 +54,7 @@
     {% endif %}
 
     {% if application %}
-    <a href="{% url 'applications:continue' %}" class="btn btn-primary" role="button"> Continue application </a>
+    <a href="{% url 'applications:continue' %}" class="btn btn-primary" role="button"> Continue Application </a>
     {% else %}
     <form action="{% url 'applications:start' %}" method="post" enctype="multipart/form-data" id="start-application">
       {% csrf_token %}
