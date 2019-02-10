@@ -332,7 +332,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         ('SOUTH_ASIAN', 'South Asian'),
         ('MIDDLE_EASTERN', 'Middle Eastern'),
         ('MIXED_RACE', 'Mixed Race'),
-        ('OTHER', 'Other')
+        ('OTHER', 'Other'),
     )
 
     answers = models.ManyToManyField(Question, through=Answer)
@@ -376,8 +376,9 @@ class Volunteer(MedicalMixin, DatabaseModel):
     # Note: strict choices added in 2019 - prior years contain freeform answers
     gender = models.CharField(max_length=25, blank=True, choices=GENDER_CHOICES)
 
-    race_ethnicity = models.CharField('Race/Ethnicity', max_length=255, blank=True,
-                                      choices=RACE_ETHNICITY_CHOICES)
+    race_ethnicity = models.CharField(
+        'Race/Ethnicity', max_length=255, blank=True, choices=RACE_ETHNICITY_CHOICES
+    )
     hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
@@ -1147,7 +1148,7 @@ class Grader(DartmouthUser):
             grader=self,
             leader_score=leader_score,
             croo_score=croo_score,
-            **kwargs
+            **kwargs,
         )
 
     def skip(self, application):

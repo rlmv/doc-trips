@@ -57,6 +57,7 @@ class IfApplicationAvailableAndNotSubmitted:
     Users cannot edit applications that have been submitted.
     Also estrict application availability based on Timetable dates.
     """
+
     def dispatch(self, request, *args, **kwargs):
         try:
             existing_application = Volunteer.objects.get(
@@ -147,6 +148,7 @@ class NewApplication(LoginRequiredMixin, IfApplicationAvailableAndNotSubmitted, 
     """
     Begin an application for Trips, creating a skeleton of the application.
     """
+
     success_url = reverse_lazy('applications:continue')
 
     @cached_property
@@ -308,7 +310,8 @@ class SubmitApplication(
             return super().dispatch(request, *args, **kwargs)
         except IncompleteApplication:
             return HttpResponseRedirect(
-                reverse('applications:continue') + '?incomplete=true')
+                reverse('applications:continue') + '?incomplete=true'
+            )
 
     def extra_context(self):
         return {'trips_year': self.trips_year}

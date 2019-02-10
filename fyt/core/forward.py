@@ -137,7 +137,7 @@ class Forward:
             dietary_restrictions='',
             medical_conditions='',
             epipen=None,
-            needs=''
+            needs='',
         )
 
     def delete_application_medical_info(self):
@@ -149,7 +149,7 @@ class Forward:
             dietary_restrictions='',
             medical_conditions='',
             epipen=None,
-            needs=''
+            needs='',
         )
 
     def reset_timetable(self):

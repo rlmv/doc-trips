@@ -898,13 +898,14 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
         # Try and submit application - saves data but redirects back
         resp.form['form-leader_willing'] = True
         resp = resp.form.submit('submit-application').follow()
-        self.assertEqual(resp.location, reverse('applications:continue') + '?incomplete=true')
+        self.assertEqual(
+            resp.location, reverse('applications:continue') + '?incomplete=true'
+        )
         resp = resp.follow()
         app = Volunteer.objects.get(applicant=user, trips_year=self.trips_year)
         self.assertTrue(app.leader_willing)
         self.assertContains(
-            resp,
-            "Uh oh, it looks like there is a problem with your application"
+            resp, "Uh oh, it looks like there is a problem with your application"
         )
 
         # Fill required data
@@ -951,7 +952,9 @@ class ApplicationViewsTestCase(ApplicationTestMixin, FytTestCase):
 
         # Jumping to submit page is forbidden
         resp = self.app.get(reverse('applications:submit'), user=user, status=302)
-        self.assertEqual(resp.location, reverse('applications:continue') + '?incomplete=true')
+        self.assertEqual(
+            resp.location, reverse('applications:continue') + '?incomplete=true'
+        )
         resp.follow()
 
 
