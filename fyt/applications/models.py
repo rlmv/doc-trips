@@ -276,6 +276,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         if errors:
             raise ValidationError(errors, code='required')
 
+    # TODO: move to form?
     def validate_application_complete(self):
         missing = {}
 
