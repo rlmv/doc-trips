@@ -71,10 +71,11 @@
         <a href="#"> <i class="fa fa-fw fa-envelope"></i> Email Lists <i class="fa arrow"></i> </a>
         <ul class="nav nav-stacked">
           <li> <a href="{% url 'core:emails:applicants' trips_year=trips_year %}"> Applicants </a> </li>
-          <li> <a href="{% url 'core:emails:leaders_by_triptype' trips_year=trips_year %}"> Leaders By Triptype</a> </li>
+          <li> <a href="{% url 'core:emails:leaders_by_triptype' trips_year=trips_year %}"> Leaders By Trip Type</a> </li>
           <li> <a href="{% url 'core:emails:leaders_by_section' trips_year=trips_year %}"> Leaders By Section</a> </li>
           <li> <a href="{% url 'core:emails:incoming' trips_year=trips_year %}"> Incoming Students </a> </li>
           <li> <a href="{% url 'core:emails:trippees' trips_year=trips_year %}"> Trippees  </a> </li>
+          <li> <a href="{% url 'core:emails:trippees_by_triptype' trips_year=trips_year %}"> Trippees By Trip Type </a> </li>
         </ul>
       </li>
 

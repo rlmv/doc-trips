@@ -37,22 +37,21 @@ def emails(qs):
     """
     Return a list of applicant emails from GenApp qs
     """
-    values = qs.values('applicant__email')
-    return [x['applicant__email'] for x in values]
+    return qs.values_list('applicant__email', flat=True)
 
 
 def personal_emails(qs):
     """
     List of trippee emails from IncomingStudent qs
     """
-    return [x.email for x in qs]
+    return qs.values_list('email', flat=True)
 
 
 def blitz(qs):
     """
     List of trippee blitzes from IncomingStudent qs
     """
-    return [x.blitz for x in qs]
+    return qs.values_list('blitz', flat=True)
 
 
 class Applicants(BaseEmailList):
@@ -173,4 +172,25 @@ class Trippees(BaseEmailList):
             trpz = trippees.filter(trip_assignment__section=sxn)
             email_list.append(("Section %s trippees" % sxn.name, personal_emails(trpz)))
             email_list.append(("Section %s trippees - blitz" % sxn.name, blitz(trpz)))
+        return email_list
+
+
+class TrippeesByTripType(BaseEmailList):
+
+    headline = "Trippee Emails by Trip Type"
+
+    def get_email_lists(self):
+        trippees = IncomingStudent.objects.with_trip(self.trips_year)
+        triptypes = TripType.objects.filter(trips_year=self.trips_year)
+
+        email_list = []
+        for triptype in triptypes:
+            email_list.append(
+                (
+                    '%s trippees' % triptype,
+                    blitz(
+                        trippees.filter(trip_assignment__template__triptype=triptype)
+                    ),
+                )
+            )
         return email_list

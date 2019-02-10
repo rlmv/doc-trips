@@ -6,6 +6,7 @@ from fyt.emails.views import (
     LeadersBySection,
     LeadersByTripType,
     Trippees,
+    TrippeesByTripType,
 )
 
 
@@ -21,4 +22,10 @@ urlpatterns = [
     ),
     url(r'^incoming/$', IncomingStudents.as_view(), name='incoming'),
     url(r'^trippees/$', Trippees.as_view(), name='trippees'),
+    url(
+        r'^trippees/by-triptype/$',
+        TrippeesByTripType.as_view(),
+        name='trippees_by_triptype',
+    ),
+
 ]
