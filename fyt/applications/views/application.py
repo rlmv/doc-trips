@@ -536,6 +536,7 @@ class ApplicationDetail(
         ('available sections', 'new_available_sections'),
         ('preferred trip types', 'new_preferred_triptypes'),
         ('available trip types', 'new_available_triptypes'),
+        'swim_test',
         'class_2_3_paddler',
         'ledyard_level_1',
         'ledyard_level_2',

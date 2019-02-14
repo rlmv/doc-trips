@@ -742,6 +742,8 @@ class LeaderSupplement(DatabaseModel):
         blank=True,
     )
 
+    swim_test = NullYesNoField('Have you passed the Dartmouth swim test?')
+
     class_2_3_paddler = YesNoField('Can you comfortably paddle Class II/III rapids?')
     ledyard_level_1 = YesNoField(
         'Are you a Level I Ledyard whitewater kayaking leader or anticipate '

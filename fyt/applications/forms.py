@@ -404,6 +404,7 @@ class LeaderSupplementForm(TripsYearModelForm):
         fields = (
             'availability',
             'relevant_experience',
+            'swim_test',
             'class_2_3_paddler',
             'ledyard_level_1',
             'ledyard_level_2',
@@ -597,6 +598,7 @@ class LeaderSupplementLayout(Layout):
                     "trips do require wilderness skills. These questions will "
                     "help us place you appropriately.</p>"
                 ),
+                'swim_test',
                 'class_2_3_paddler',
                 'ledyard_level_1',
                 'ledyard_level_2',

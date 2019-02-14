@@ -165,6 +165,7 @@ FIRST_AID = 'first_aid'
 TRAINING = 'training'
 AVAILABLE_SECTIONS = 'available_sections'
 AVAILABLE_TRIPTYPES = 'available_triptypes'
+SWIM_TEST = 'leader_supplement__swim_test'
 CLASS_2_3 = 'leader_supplement__class_2_3_paddler'
 LEDYARD_LEVEL_1 = 'leader_supplement__ledyard_level_1'
 LEDYARD_LEVEL_2 = 'leader_supplement__ledyard_level_2'
@@ -178,6 +179,7 @@ KITCHEN_LEAD = 'croo_supplement__kitchen_lead_willing'
 SHORT_LABELS = {
     STATUS: 'Status',
     CLASS_YEAR: 'Class Year',
+    SWIM_TEST: 'Swim Test',
     CLASS_2_3: 'Class II/III Paddler',
     LEDYARD_LEVEL_1: 'Ledyard Level 1',
     LEDYARD_LEVEL_2: 'Ledyard Level 2',
@@ -200,6 +202,7 @@ class ApplicationFilterSet(django_filters.FilterSet):
         fields = [
             STATUS,
             CLASS_YEAR,
+            SWIM_TEST,
             CLASS_2_3,
             LEDYARD_LEVEL_1,
             LEDYARD_LEVEL_2,
@@ -274,6 +277,7 @@ class FilterSetFormHelper(FormHelper):
             filter_row('netid'),
             filter_row(AVAILABLE_SECTIONS),
             filter_row(AVAILABLE_TRIPTYPES),
+            filter_row(SWIM_TEST),
             filter_row(CLASS_2_3),
             filter_row(LEDYARD_LEVEL_1),
             filter_row(LEDYARD_LEVEL_2),
