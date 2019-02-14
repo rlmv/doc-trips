@@ -581,7 +581,9 @@ class QuestionLayout(Layout):
         super().__init__(
             SectionAlert(
                 'GRADED SECTION',
-                'This is the ONLY section that will be available to readers during the blind reading and scoring process. Each answer may be no longer than 300 words.',
+                'This is the ONLY section that will be available to readers during '
+                'the blind reading and scoring process. Each answer may be no '
+                'longer than {} words.'.format(Answer.MAX_RESPONSE_LENGTH)
             ),
             *dynamic_questions
         )

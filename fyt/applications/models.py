@@ -160,14 +160,15 @@ class Question(DatabaseModel):
 
 
 def validate_word_count(value):
-    if len(value.split()) > 300:
-        raise ValidationError('Your answer must be less than 300 words long.')
+    if len(value.split()) > Answer.MAX_RESPONSE_LENGTH:
+        raise ValidationError('Your answer must be less than {} words long.'.format(Answer.MAX_RESPONSE_LENGTH))
 
 
 class Answer(models.Model):
     """
     Through model for application answers.
     """
+    MAX_RESPONSE_LENGTH = 250
 
     class Meta:
         unique_together = ('application', 'question')
