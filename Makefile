@@ -66,7 +66,8 @@ clean:
 	rm $(POSTGRES_DUMP)
 
 postgres:
-	docker-compose up -d postgres
+	brew services start postgresql@9.6
+	#docker-compose up -d postgres
 
 reset_db: postgres
 	$(MANAGE) reset_db
