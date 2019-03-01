@@ -15,7 +15,7 @@ gunicorn==19.9.0
 mammoth==1.4.8
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.12
-pyexcel-io==0.5.11
+pyexcel-io==0.5.14
 pyexcel-xls==0.5.8
 pyyaml==4.2b4
 raven==6.10.0
