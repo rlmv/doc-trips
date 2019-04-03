@@ -173,7 +173,9 @@ class VolunteerQuerySet(models.QuerySet):
         ).annotate(
             norm_avg_leader_score=Coalesce('avg_leader_score', V(0.0)),
             norm_avg_croo_score=Coalesce('avg_croo_score', V(0.0)),
-        )
+        # Silence deprecation warning caused by
+        # https://docs.djangoproject.com/en/2.2/releases/2.2/#model-meta-ordering-will-no-longer-affect-group-by-queries
+        ).order_by(*self.model._meta.ordering)
 
     def with_required_questions(self, trips_year):
         from .models import Question

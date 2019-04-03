@@ -1,5 +1,6 @@
 import csv
 import tempfile
+from contextlib import contextmanager
 from datetime import date
 
 from django.urls import reverse
@@ -17,6 +18,7 @@ from fyt.trips.models import Section, Trip, TripType
 from fyt.utils.choices import L, M, S, XL, XS, XXL
 
 
+@contextmanager
 def save_and_open_csv(resp):
     """
     Save the file content return by response and
@@ -24,8 +26,8 @@ def save_and_open_csv(resp):
     """
     f = tempfile.NamedTemporaryFile()
     f.write(resp.content)
-    f = open(f.name)  # open in non-binary mode
-    return csv.DictReader(f)
+    with open(f.name) as f: # open in non-binary mode
+        yield csv.DictReader(f)
 
 
 class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
@@ -61,7 +63,9 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         self.assertTrue(
             resp['Content-Disposition'].startswith('attachment; filename="')
         )
-        self.assertEqual([dict(r) for r in save_and_open_csv(resp)], target)
+
+        with save_and_open_csv(resp) as csvf:
+            self.assertEqual([dict(r) for r in csvf], target)
 
     def setUp(self):
         self.init_trips_year()

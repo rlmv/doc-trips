@@ -114,6 +114,9 @@ class TripManager(models.Manager):
             .annotate(num_trippees=models.Count('trippees', distinct=True))
             .annotate(num_leaders=models.Count('leaders', distinct=True))
             .annotate(size=F('num_trippees') + F('num_leaders'))
+            # Silence deprecation warning caused by
+            # https://docs.djangoproject.com/en/2.2/releases/2.2/#model-meta-ordering-will-no-longer-affect-group-by-queries
+            .order_by(*self.model._meta.ordering)
         )
 
     def dropoffs(self, route, date, trips_year):
