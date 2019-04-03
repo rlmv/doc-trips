@@ -12,7 +12,7 @@ class EnvLoader:
     def __init__(self, config_file=None):
         if config_file and os.path.isfile(config_file):
             with open(config_file) as f:
-                values = yaml.load(f.read())
+                values = yaml.safe_load(f.read())
         else:
             values = {}
 

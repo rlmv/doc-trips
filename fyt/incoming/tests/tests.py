@@ -279,13 +279,13 @@ class IncomingStudentModelTestCase(FytTestCase):
 
     def test_bus_assignment_is_either_one_way_or_round_trip(self):
         msg = "Cannot have round-trip AND one-way bus assignments"
-        with self.assertRaisesRegexp(ValidationError, msg):
+        with self.assertRaisesRegex(ValidationError, msg):
             mommy.prepare(
                 IncomingStudent,
                 bus_assignment_round_trip=mommy.make(Stop),
                 bus_assignment_to_hanover=mommy.make(Stop),
             ).full_clean()
-        with self.assertRaisesRegexp(ValidationError, msg):
+        with self.assertRaisesRegex(ValidationError, msg):
             mommy.prepare(
                 IncomingStudent,
                 bus_assignment_round_trip=mommy.make(Stop),
