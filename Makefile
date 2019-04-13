@@ -32,10 +32,6 @@ scripts:
 	chmod +x $(SCRIPTS)
 	ln -sfv $(SCRIPTS) .
 
-deploy:
-	git push production master
-	heroku run manage migrate
-
 migrations: postgres
 	$(MANAGE) makemigrations
 
