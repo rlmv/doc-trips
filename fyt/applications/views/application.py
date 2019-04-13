@@ -468,6 +468,7 @@ class ApplicationIndex(
                 'gender',
                 'leader_willing',
                 'croo_willing',
+                'submitted',
             )
             .prefetch_related('answer_set')
         )

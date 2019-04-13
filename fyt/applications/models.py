@@ -588,12 +588,20 @@ class Volunteer(MedicalMixin, DatabaseModel):
         return self.leader_willing and self.required_questions_answered(Question.LEADER)
 
     @property
+    def leader_application_submitted(self):
+        return self.leader_willing and self.submitted is not None
+
+    @property
     def croo_application_complete(self):
         """
         A croo application is complete if all questions are answered
         and the applicant has indicated that they want to be on a croo.
         """
         return self.croo_willing and self.required_questions_answered(Question.CROO)
+
+    @property
+    def croo_application_submitted(self):
+        return self.croo_willing and self.submitted is not None
 
     def answer_question(self, question, text):
         """

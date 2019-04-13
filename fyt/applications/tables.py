@@ -19,11 +19,11 @@ class _ApplicationTable(tables.Table):
     )
     leader_application = tables.Column(
         verbose_name='Leader app',
-        accessor='leader_application_complete',
+        accessor='leader_application_submitted',
         orderable=False,
     )
     croo_application = tables.Column(
-        verbose_name='Croo app', accessor='croo_application_complete', orderable=False
+        verbose_name='Croo app', accessor='croo_application_submitted', orderable=False
     )
 
     class Meta:
