@@ -106,7 +106,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                     'croo score 3': '3.0',
                 }
             ],
-            num_queries=19,
+            num_queries=18,
         )
 
     def test_trip_leader_csv(self):

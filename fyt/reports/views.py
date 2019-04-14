@@ -113,7 +113,6 @@ class VolunteerCSV(GenericReportView):
             .prefetch_related(
                 'scores', 'answer_set', 'scores__leader_score', 'scores__croo_score'
             )
-            .with_required_questions(self.trips_year)
         )
 
     def get_row(self, application):
@@ -125,8 +124,8 @@ class VolunteerCSV(GenericReportView):
                 fmt_float(application.avg_leader_score),
                 fmt_float(application.avg_croo_score),
                 application.status,
-                yes_no(application.leader_application_complete),
-                yes_no(application.croo_application_complete),
+                yes_no(application.leader_application_submitted),
+                yes_no(application.croo_application_submitted),
                 str(application.class_year),
                 application.gender,
                 application.race_ethnicity,

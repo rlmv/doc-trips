@@ -734,9 +734,9 @@ def ScoreForm(application, grader, **kwargs):
     """
     # Select appropriate score fields
     score_fields = []
-    if application.leader_application_complete:
+    if application.leader_application_submitted:
         score_fields.append('leader_score')
-    if application.croo_application_complete:
+    if application.croo_application_submitted:
         score_fields.append('croo_score')
 
     class _ScoreForm(TripsYearModelForm):

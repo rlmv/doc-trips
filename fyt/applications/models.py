@@ -569,8 +569,6 @@ class Volunteer(MedicalMixin, DatabaseModel):
         """
         Used to cache this year's questions so that large querysets can be
         preloaded to improve efficiency.
-
-        This can be preloaded on a queryset using ``qs.with_required_questions``
         """
         return list(Question.objects.required(self.trips_year))
 
@@ -978,12 +976,12 @@ class Score(DatabaseModel):
     objects = ScoreQuerySet.as_manager()
 
     def clean(self):
-        if self.application.leader_application_complete and self.leader_score is None:
+        if self.application.leader_application_submitted and self.leader_score is None:
             raise ValidationError(
                 {'leader_score': 'Score is required for leader applications'}
             )
 
-        if self.application.croo_application_complete and self.croo_score is None:
+        if self.application.croo_application_submitted and self.croo_score is None:
             raise ValidationError(
                 {'croo_score': 'Score is required for croo applications'}
             )

@@ -15,10 +15,10 @@
 <p><strong> If you recognize an applicant, skip the application! </strong></p>
 
 <div>
-  {% if application.leader_application_complete %}
+  {% if application.leader_application_submitted %}
   <p>This is a <span class="label label-primary">LEADER APPLICATION</span></p>
   {% endif %}
-  {% if application.croo_application_complete %}
+  {% if application.croo_application_submitted %}
   <p>This is a <span class="label label-primary">CROO APPLICATION</span></p>
   {% endif %}
 </div>

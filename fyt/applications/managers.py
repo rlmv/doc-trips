@@ -177,17 +177,6 @@ class VolunteerQuerySet(models.QuerySet):
         # https://docs.djangoproject.com/en/2.2/releases/2.2/#model-meta-ordering-will-no-longer-affect-group-by-queries
         ).order_by(*self.model._meta.ordering)
 
-    def with_required_questions(self, trips_year):
-        from .models import Question
-
-        questions = list(Question.objects.filter(trips_year=trips_year))
-
-        # TODO: is there any way to annotate without materializing the qs?
-        for v in self:
-            v.required_questions = questions
-
-        return self
-
     def first_aid_complete(self):
         """
         All volunteers with complete first aid certifications.

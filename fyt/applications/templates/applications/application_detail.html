@@ -153,14 +153,14 @@
 
     <li role="presentation">
       <a href="#leader" aria-controls="leader" role="tab" data-toggle="tab">
-        {{ application.leader_application_complete | checkmark_if_true }}
+        {{ application.leader_application_submitted | checkmark_if_true }}
         Trip Leader Application
       </a>
     </li>
 
     <li role="presentation">
       <a href="#croo" aria-controls="croo" role="tab" data-toggle="tab">
-        {{ application.croo_application_complete | checkmark_if_true }}
+        {{ application.croo_application_submitted | checkmark_if_true }}
         Croo Application
       </a>
     </li>

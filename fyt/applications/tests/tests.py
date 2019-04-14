@@ -220,15 +220,17 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
         question4 = mommy.make(Question, trips_year=trips_year, type=Question.OPTIONAL)
 
-        app = make_application(trips_year=trips_year)
+        app = make_application(trips_year=trips_year, submitted=None)
         app.leader_willing = True
 
         # Not complete because there is an unanswered question
         self.assertFalse(app.leader_application_complete)
+        self.assertFalse(app.leader_application_submitted)
 
         # Not complete because the leader question is unanswered
         app.answer_question(question1, 'An answer')
         self.assertFalse(app.leader_application_complete)
+        self.assertFalse(app.leader_application_submitted)
 
         # Not complete because there is a blank answer
         answer2 = app.answer_question(question2, '')
@@ -238,10 +240,20 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         answer2.answer = 'Some text!'
         answer2.save()
         self.assertTrue(app.leader_application_complete)
+        self.assertFalse(app.leader_application_submitted)
 
         # Answered but unwilling
         app.leader_willing = False
         self.assertFalse(app.leader_application_complete)
+
+        # Submitted but unwilling
+        app.submitted = timezone.now()
+        self.assertFalse(app.leader_application_submitted)
+
+        # Submitted and willing
+        app.leader_willing = True
+        self.assertTrue(app.leader_application_complete)
+        self.assertTrue(app.leader_application_submitted)
 
     def test_croo_application_complete(self):
         trips_year = self.init_trips_year()
@@ -250,28 +262,41 @@ class VolunteerModelTestCase(ApplicationTestMixin, FytTestCase):
         question3 = mommy.make(Question, trips_year=trips_year, type=Question.CROO)
         question4 = mommy.make(Question, trips_year=trips_year, type=Question.OPTIONAL)
 
-        app = make_application(trips_year=trips_year)
+        app = make_application(trips_year=trips_year, submitted=None)
         app.croo_willing = True
 
         # Not complete because there is an unanswered question
         self.assertFalse(app.croo_application_complete)
+        self.assertFalse(app.croo_application_submitted)
 
         # Not complete because there is a blank answer
         app.answer_question(question1, 'Answer')
         self.assertFalse(app.croo_application_complete)
+        self.assertFalse(app.croo_application_submitted)
 
         # Not complete because the croo question is unanswered
         answer3 = app.answer_question(question3, '')
         self.assertFalse(app.croo_application_complete)
+        self.assertFalse(app.croo_application_submitted)
 
         # Complete - answered
         answer3.answer = 'Some text!'
         answer3.save()
         self.assertTrue(app.croo_application_complete)
+        self.assertFalse(app.croo_application_submitted)
 
         # Answered but unwilling
         app.croo_willing = False
         self.assertFalse(app.croo_application_complete)
+
+        # Submitted but unwilling
+        app.submitted = timezone.now()
+        self.assertFalse(app.croo_application_submitted)
+
+        # Submitted and willing
+        app.croo_willing = True
+        self.assertTrue(app.croo_application_complete)
+        self.assertTrue(app.croo_application_submitted)
 
     def test_answer_question(self):
         trips_year = self.init_trips_year()
@@ -574,15 +599,6 @@ class VolunteerManagerTestCase(ApplicationTestMixin, FytTestCase):
         self.assertEqual(qs[1].avg_croo_score, None)
         self.assertEqual(qs[1].norm_avg_leader_score, 0)
         self.assertEqual(qs[1].norm_avg_croo_score, 0)
-
-    def test_with_required_questions(self):
-        self.assertQsEqual(self.app1.required_questions, self.questions)
-
-        # Test preloading
-        qs = Volunteer.objects.with_required_questions(self.trips_year)
-        with self.assertNumQueries(0):
-            for v in qs:
-                self.assertQsEqual(v.required_questions, self.questions)
 
 
 class ApplicationFormTestCase(FytTestCase):
