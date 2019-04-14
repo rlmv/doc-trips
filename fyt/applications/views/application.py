@@ -470,7 +470,6 @@ class ApplicationIndex(
                 'croo_willing',
                 'submitted',
             )
-            .prefetch_related('answer_set')
         )
 
     def extra_context(self):
@@ -478,11 +477,10 @@ class ApplicationIndex(
         filter = ApplicationFilterSet(
             self.trips_year, self.request.GET, queryset=self.object_list
         )
-        filter_qs = filter.qs.with_required_questions(self.trips_year)
-        table = ApplicationTable(filter_qs, self.request)
+        table = ApplicationTable(filter.qs, self.request)
         return {
             'table': table,
-            'application_count': len(filter_qs),
+            'application_count': len(filter.qs),
             'applications_filter': filter,
         }
 

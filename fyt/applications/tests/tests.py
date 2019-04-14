@@ -781,6 +781,16 @@ class DbVolunteerViewsTestCase(ApplicationTestMixin, FytTestCase):
         self.assertContains(res, str(complete))
         self.assertNotContains(res, str(incomplete))
 
+    def test_volunteer_index_queries(self):
+        mommy.make(Timetable)
+        for _ in range(10):
+            self.make_application()
+
+        user = self.make_director()
+        with self.assertNumQueries(20):
+            url = reverse('core:volunteer:index', kwargs={'trips_year': self.trips_year})
+            self.app.get(url, user=user)
+
     def test_old_applications_are_hidden(self):
         mommy.make(Timetable)
         mommy.make(ApplicationInformation, trips_year=self.old_trips_year)
