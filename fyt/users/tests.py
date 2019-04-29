@@ -16,12 +16,14 @@ class UserManagerTestCase(FytTestCase):
         self.assertTrue(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
+        self.assertIsNotNone(user.profile)
 
         # Second retrieval: not created, name doesn't change
         user, ct = DartmouthUser.objects.get_or_create_by_netid(netid, 'Ogor')
         self.assertFalse(ct)
         self.assertEqual(user.netid, netid)
         self.assertEqual(user.name, name)
+        self.assertIsNotNone(user.profile)
 
     @vcr.use_cassette
     def test_email_lookup_error_sets_blank_email(self):
@@ -36,6 +38,7 @@ class UserManagerTestCase(FytTestCase):
         self.assertEqual(user.name, name)
         self.assertEqual(user.netid, name)
         self.assertEqual(user.email, email)
+        self.assertIsNotNone(user.profile)
 
         name = 'a' * (MAX_NETID_LENGTH + 1)  # One character too long
 
@@ -43,6 +46,7 @@ class UserManagerTestCase(FytTestCase):
         self.assertEqual(user.name, name)
         self.assertEqual(user.netid, name[:20])
         self.assertEqual(user.email, email)
+        self.assertIsNotNone(user.profile)
 
 
 class NetIdFieldTestCase(FytTestCase):

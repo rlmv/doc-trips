@@ -13,6 +13,7 @@ django-tables2==2.0.6
 django-vanilla-views==1.0.6
 gunicorn==19.9.0
 mammoth==1.4.9
+pillow==6.0.0
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.13
 pyexcel-io==0.5.16

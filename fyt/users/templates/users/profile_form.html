@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block header %}
+<h2> Update User Profile <small> {{ user }} </small> </h2>
+{% endblock %}
+
+{% block content %}
+{% crispy form %}
+{% endblock %}
