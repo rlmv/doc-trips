@@ -1,7 +1,7 @@
 bleach==3.1.0
 googlemaps==3.0.2
 dj-database-url==0.5.0
-django==2.2
+django==2.2.1
 django-braces==1.13.0
 django-crispy-forms==1.7.2
 django-extensions==2.1.6
@@ -15,7 +15,7 @@ gunicorn==19.9.0
 mammoth==1.4.9
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.13
-pyexcel-io==0.5.16
+pyexcel-io==0.5.17
 pyexcel-xls==0.5.8
 pyyaml==5.1
 raven==6.10.0
