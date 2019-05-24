@@ -297,6 +297,8 @@ class RegistrationDetail(DatabaseDetailView):
 
     fields = [
         ('Incoming Student data', 'get_incoming_student'),
+        ('Submitted at', 'created_at'),
+        'updated_at',
         'name',
         ('NetId', 'netid'),
         'gender',

@@ -674,6 +674,10 @@ class Registration(MedicalMixin, DatabaseModel):
         blank=True,
     )
 
+    # Added in 2019, hence the NULLable values
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
     def clean(self):
         one_way = self.bus_stop_to_hanover or self.bus_stop_from_hanover
         if self.bus_stop_round_trip and one_way:

@@ -30,6 +30,7 @@ class _RegistrationTable(tables.Table):
         verbose_name='Trip Assignment',
     )
     trippee = DetailLinkColumn(verbose_name='Incoming Student Data')
+    created_at = tables.Column(accessor='created_at', verbose_name='Submitted at')
     edit_link = tables.Column(verbose_name=' ', accessor='user')
 
     def render_user(self, record):
