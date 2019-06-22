@@ -95,7 +95,7 @@ class FytTestCase(WebTest):
         netid = name
         email = name + '@dartmouth.edu'
 
-        user = DartmouthUser.objects.create_user(netid, name, email)
+        user = DartmouthUser.objects.create(netid=netid, name=name, email=email)
         user.groups.add(*groups)
 
         return user

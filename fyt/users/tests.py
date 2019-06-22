@@ -25,7 +25,7 @@ class UserManagerTestCase(FytTestCase):
 
     @vcr.use_cassette
     def test_email_lookup_error_sets_blank_email(self):
-        user = DartmouthUser.objects.create_user('junk_netid', 'name')
+        user, _ = DartmouthUser.objects.get_or_create_by_netid('junk_netid', 'name')
         self.assertEqual(user.email, '')
 
     def test_create_user_without_netid(self):

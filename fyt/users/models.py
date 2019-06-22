@@ -1,8 +1,11 @@
+import logging
+
 from django.contrib.auth.models import BaseUserManager, PermissionsMixin
 from django.db import models
 
 from fyt.dartdm.lookup import EmailLookupException, lookup_email
 
+log = logging.getLogger(__name__)
 
 MAX_NETID_LENGTH = 20
 
@@ -14,36 +17,29 @@ class DartmouthUserManager(BaseUserManager):
 
     def get_or_create_by_netid(self, netid, name):
         """
-        Return the user with netid.
+        Return the user with the given netid.
 
         Create the user if necessary. Does not search via name, since names
         from different sources (CAS, DartDm lookup) can be slightly different.
         """
-        try:
-            user = self.get(netid=netid)
-            created = False
-        except self.model.DoesNotExist:
-            user = self.create_user(netid, name=name)
-            created = True
+        (user, created) = self.get_or_create(netid=netid, defaults={"name": name})
+
+        # Try and lookup user's email in the Dartmouth Directory
+        # manager, since the CAS response does not contain the email.
+        # If not found, email is left empty.
+        if created:
+            try:
+                user.email = lookup_email(netid)
+                user.save()
+            except EmailLookupException:
+                log.error("Email not found for %s %s", name, netid)
+                pass
 
         return (user, created)
 
-    def create_user(self, netid, name, email=None):
-        """
-        Create a user. Try and lookup user's email in the Dartmouth Directory
-        manager. If not found email is left empty.
-        """
-        if email is None:
-            try:
-                email = lookup_email(netid)
-            except EmailLookupException:
-                email = ''
-
-        return self.create(netid=netid, email=email, name=name)
-
     def create_superuser(self, **kwargs):
         raise Exception(
-            "create_superuser not implemented. " "Use 'manage.py setsuperuser' instead."
+            "create_superuser not implemented. Use 'manage.py setsuperuser' instead."
         )
 
     def create_user_without_netid(self, name, email):
