@@ -98,7 +98,7 @@ class StopModelTestCase(FytTestCase):
         self.assertEqual(str(mommy.prepare(Stop, name='Boston')), 'Boston')
 
     def test_external_requires_round_trip_cost(self):
-        with self.assertRaisesRegex(ValidationError, 'requires round-trip cost'):
+        with self.assertRaisesRegex(ValidationError, 'require round-trip cost'):
             mommy.make(
                 Stop,
                 address='stub',
@@ -108,7 +108,7 @@ class StopModelTestCase(FytTestCase):
             ).full_clean()
 
     def test_external_requires_one_way_cost(self):
-        with self.assertRaisesRegex(ValidationError, 'requires one-way cost'):
+        with self.assertRaisesRegex(ValidationError, 'require one-way cost'):
             mommy.make(
                 Stop,
                 address='stub',
@@ -117,8 +117,32 @@ class StopModelTestCase(FytTestCase):
                 route__category=Route.EXTERNAL,
             ).full_clean()
 
+    def test_external_requires_pickup_time(self):
+        with self.assertRaisesRegex(ValidationError, 'require pickup time'):
+            mommy.make(
+                Stop,
+                address='stub',
+                cost_one_way=2,
+                cost_round_trip=3,
+                pickup_time=None,
+                dropoff_time=time(8, 34, 2),
+                route__category=Route.EXTERNAL,
+            ).full_clean()
+
+    def test_external_requires_dropoff_time(self):
+        with self.assertRaisesRegex(ValidationError, 'require dropoff time'):
+            mommy.make(
+                Stop,
+                address='stub',
+                cost_one_way=2,
+                cost_round_trip=3,
+                pickup_time=time(8, 34, 2),
+                dropoff_time=None,
+                route__category=Route.EXTERNAL,
+            ).full_clean()
+
     def test_internal_cannot_set_round_trip_cost(self):
-        with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
+        with self.assertRaisesRegex(ValidationError, 'cannot have a cost'):
             mommy.make(
                 Stop,
                 address='stub',
@@ -128,7 +152,7 @@ class StopModelTestCase(FytTestCase):
             ).full_clean()
 
     def test_internal_cannot_set_one_way_cost(self):
-        with self.assertRaisesRegex(ValidationError, 'internal stop cannot have cost'):
+        with self.assertRaisesRegex(ValidationError, 'cannot have a cost'):
             mommy.make(
                 Stop,
                 address='stub',
