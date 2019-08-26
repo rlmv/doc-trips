@@ -538,6 +538,9 @@ class Housing(GenericReportView):
 
 
 class GearRequests(GenericReportView):
+    """
+    Requested gear for Leaders, Croos, and Trippees.
+    """
 
     file_prefix = 'Gear-Requests'
 
@@ -549,9 +552,21 @@ class GearRequests(GenericReportView):
         return ['name', 'email', 'role'] + list(self.matrix.cols) + ['additional']
 
     def get_row(self, gear_request):
+
+        request = self.matrix[gear_request]
+        provided_gear = list(gear_request.provided.all())
+
+        def get_request_status(gear, needed):
+            """helper method to distinguish between provided and requested gear"""
+            if gear in provided_gear:
+                return 'provided'
+            elif needed:
+                return 'requested'
+            return ''
+
         return (
             [str(gear_request.requester), gear_request.email, gear_request.role]
-            + [yes_if_true(need) for need in self.matrix[gear_request].values()]
+            + [get_request_status(gear, needed) for gear, needed in request.items()]
             + [gear_request.additional]
         )
 
