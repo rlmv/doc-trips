@@ -26,7 +26,7 @@ def save_and_open_csv(resp):
     """
     f = tempfile.NamedTemporaryFile()
     f.write(resp.content)
-    with open(f.name) as f: # open in non-binary mode
+    with open(f.name) as f:  # open in non-binary mode
         yield csv.DictReader(f)
 
 
@@ -711,6 +711,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
             additional='teddy bear',
         )
         request1.gear.set([gear1])
+
         request2 = mommy.make(
             GearRequest,
             trips_year=self.trips_year,
@@ -719,6 +720,15 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         )
         request2.gear.set([gear2])
 
+        request3 = mommy.make(
+            GearRequest,
+            trips_year=self.trips_year,
+            volunteer__trips_year=self.trips_year,
+            volunteer__status=Volunteer.LEADER,
+        )
+        request3.gear.set([gear1, gear2])
+        request3.provided.set([gear1])
+
         self.assertCsvReturns(
             'core:reports:gear_requests',
             [
@@ -726,7 +736,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                     'name': str(request1.incoming_student),
                     'email': request1.incoming_student.email,
                     'role': 'TRIPPEE',
-                    gear1.name: 'yes',
+                    gear1.name: 'requested',
                     gear2.name: '',
                     'additional': 'teddy bear',
                 },
@@ -735,9 +745,17 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                     'email': request2.volunteer.applicant.email,
                     'role': 'LEADER',
                     gear1.name: '',
-                    gear2.name: 'yes',
+                    gear2.name: 'requested',
                     'additional': '',
                 },
+                {
+                    'name': str(request3.volunteer),
+                    'email': request3.volunteer.applicant.email,
+                    'role': 'LEADER',
+                    gear1.name: 'provided',
+                    gear2.name: 'requested',
+                    'additional': '',
+                }
             ],
         )
 
