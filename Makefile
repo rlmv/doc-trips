@@ -13,6 +13,8 @@ POSTGRES_USER = fytuser
 POSTGRES_PASSWORD = password
 POSTGRES_DUMP = latest.dump
 
+HEROKU_NAME = doc-trips
+
 SCRIPTS = scripts/runtests
 
 all: postgres
@@ -72,8 +74,8 @@ bootstrap: postgres
 	$(MANAGE) bootstrap
 
 dump_remote:
-	heroku pg:backups:capture
-	heroku pg:backups:download --output $(POSTGRES_DUMP)
+	heroku pg:backups:capture -a $(HEROKU_NAME)
+	heroku pg:backups:download -a $(HEROKU_NAME) --output $(POSTGRES_DUMP)
 
 load_dump: postgres
 	pg_restore -v --no-acl --no-owner -n public -1 \
