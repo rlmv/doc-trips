@@ -30,10 +30,12 @@ class MedicalMixin(models.Model):
         help_text=LEAVE_BLANK,
     )
     medical_conditions = models.TextField(
-        "Do you have any other medical conditions, past injuries, disabilities "
-        "or other allergies that we should be aware of? Please describe any "
-        "injury, condition, disability, or illness which we should take "
-        "into consideration in assigning you a trip",
+        "Do you have any other medical conditions, past injuries, ability-related concerns, "
+        "other allergies, or personal concerns (regarding your own physical/mental/emotional health) "
+        "that would be relevant to your role as a trip leader or crooling (in trip placement, "
+        "completing trainings, participating in a croo, etc.)? This information is requested "
+        "to help us place you in a position you feel comfortable. Again, this entire section "
+        "will not be considered during the grading of your application.",
         blank=True,
         help_text=LEAVE_BLANK,
     )

@@ -55,7 +55,7 @@ from fyt.utils.views import ExtraContextMixin, MultiFormMixin
 class IfApplicationAvailableAndNotSubmitted:
     """
     Users cannot edit applications that have been submitted.
-    Also estrict application availability based on Timetable dates.
+    Also restrict application availability based on Timetable dates.
     """
 
     def dispatch(self, request, *args, **kwargs):
@@ -505,7 +505,6 @@ class ApplicationDetail(
         'race_ethnicity',
         'hinman_box',
         'phone',
-        'summer_address',
         'tshirt_size',
         'height',  # TODO: gear app
         'weight',  # TODO
@@ -561,8 +560,6 @@ class ApplicationDetail(
         'microbus_certified',
         'can_get_certified',
         'safety_lead_willing',
-        'kitchen_lead_willing',
-        'kitchen_lead_qualifications',
         '_old_document',  # Deprecated field - include conditionally?
     ]
 

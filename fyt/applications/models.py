@@ -33,7 +33,7 @@ from fyt.croos.models import Croo
 from fyt.trips.models import Section, Trip, TripType
 from fyt.users.models import DartmouthUser
 from fyt.utils.choices import AVAILABLE, NOT_AVAILABLE, PREFER, TSHIRT_SIZE_CHOICES
-from fyt.utils.model_fields import NullYesNoField, YesNoField
+from fyt.utils.model_fields import NullYesNoField, YesNoField, YesNoUnsureField
 from fyt.utils.models import MedicalMixin
 from fyt.utils.query import TrueIf, pks
 
@@ -321,6 +321,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         ('FEMALE', 'woman'),
         ('NON_BINARY', 'nonbinary'),
         ('OTHER', 'other'),
+        ('DECLINE', 'decline to answer'),
     )
 
     RACE_ETHNICITY_CHOICES = (
@@ -331,6 +332,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         ('PACIFIC_ISLANDER', 'Pacific Islander/Native Hawaiian'),
         ('EAST_ASIAN', 'East Asian'),
         ('SOUTH_ASIAN', 'South Asian'),
+        ('SOUTH_EAST_ASIAN', 'Southeast Asian'),
         ('MIDDLE_EASTERN', 'Middle Eastern'),
         ('MIXED_RACE', 'Mixed Race'),
         ('OTHER', 'Other'),
@@ -375,7 +377,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     class_year = ClassYearField(blank=True, null=True)
 
     # Note: strict choices added in 2019 - prior years contain freeform answers
-    gender = models.CharField(max_length=25, blank=True, choices=GENDER_CHOICES)
+    gender = models.CharField('Gender Identity', max_length=25, blank=True, choices=GENDER_CHOICES)
 
     race_ethnicity = models.CharField(
         'Race/Ethnicity', max_length=255, blank=True, choices=RACE_ETHNICITY_CHOICES
@@ -411,14 +413,13 @@ class Volunteer(MedicalMixin, DatabaseModel):
         blank=True,
     )
 
-    hometown = models.CharField(max_length=255, blank=True)
+    hometown = models.CharField("Where would you say you're from? (physical location please)", max_length=255, blank=True)
     academic_interests = models.CharField(
         'What do you like to study?', max_length=255, blank=True
     )
     personal_activities = models.TextField(
         "In order of importance to you, please list your activities, "
-        "involvements, and communities at Dartmouth and beyond (e.g. greek "
-        "affiliation, affinity group, campus organization, team, etc)",
+        "involvements, and communities at Dartmouth and beyond.",
         blank=True,
     )
     feedback = models.TextField(
@@ -428,7 +429,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "help us improve the program for incoming students!",
         blank=True,
     )
-    hanover_in_fall = YesNoField('Are you planning to be in Hanover this fall?')
+    hanover_in_fall = YesNoUnsureField('Are you planning to be in Hanover this fall?')
 
     transfer_exchange = YesNoField('Are you a transfer or exchange student?')
 
@@ -661,8 +662,11 @@ LEADER_SECTION_CHOICES = (
     (NOT_AVAILABLE, 'not available'),
 )
 
-LEADER_TRIPTYPE_CHOICES = LEADER_SECTION_CHOICES
-
+LEADER_TRIPTYPE_CHOICES = (
+    (PREFER, 'prefer'),
+    (AVAILABLE, 'willing'),
+    (NOT_AVAILABLE, 'unwilling/unable'),
+)
 
 class LeaderSectionChoice(models.Model):
     class Meta:
@@ -727,20 +731,18 @@ class LeaderSupplement(DatabaseModel):
     )
 
     availability = models.TextField(
-        "Looking at the Trips descriptions, please feel free to use this "
-        "space to address any concerns or explain your availability. "
-        "If applicable, please also elaborate on any particular trips or "
-        "activities that you absolutely CANNOT participate in. All "
-        "information in this application will remain confidential.",
+        "Looking at the Trips descriptions, please feel free to use this space "
+        "to address any concerns you might have about leading certain trips. "
+        "All information in this application will remain confidential.",
         blank=True,
     )
 
     relevant_experience = models.TextField(
-        'WITHOUT repeating anything you have already told us, please describe '
-        'your level of expertise and any previous experience that you could '
-        'bring to each trip type that you selected (e.g. lifeguard training, '
-        'yoga experience, meditation experience, fishing experience, '
-        'photography class, Walden enthusiast, etc).',
+        'WITHOUT repeating anything you have already told us, please '
+        'describe any expertise or previous experience (if you have it) '
+        'that you could bring to trip types you selected (e.g. lifeguard '
+        'training, yoga experience, meditation experience, fishing '
+        'experience, photography class, Walden enthusiast, etc).',
         blank=True,
     )
     co_leader = models.TextField(
@@ -761,7 +763,7 @@ class LeaderSupplement(DatabaseModel):
         'becoming one before the fall term?'
     )
     paddling_experience = models.TextField(
-        'Please describe any kayaking or canoeing experience you have.', blank=True
+        'Please describe any kayaking or canoeing experience you have, including flatwater.', blank=True
     )
     climbing_course = YesNoField(
         'Have you taken a DOC-sponsored top rope course/anchor building '
@@ -775,7 +777,7 @@ class LeaderSupplement(DatabaseModel):
         'Please describe any climbing experience you have.', blank=True
     )
     dmbc_leader = YesNoField(
-        'Are you a leader in the Mountain Biking Club or will you become one '
+        'Are you a leader in the Dartmouth Mountain Biking Club or will you become one '
         'before fall term?'
     )
     biking_experience = models.TextField(

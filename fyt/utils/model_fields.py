@@ -2,6 +2,7 @@ from django.db import models
 
 
 YES_NO_CHOICES = ((True, 'Yes'), (False, 'No'))
+YES_NO_UNSURE_CHOICES = ((True, 'Yes'), (False, 'No'), (None, 'Unsure'))
 YES_NO_NONE_CHOICES = ((None, '----'), (True, 'Yes'), (False, 'No'))
 
 
@@ -10,6 +11,12 @@ def YesNoField(*args, **kwargs):
     kwargs['default'] = False
     return models.BooleanField(*args, **kwargs)
 
+def YesNoUnsureField(*args, **kwargs):
+    kwargs['choices'] = YES_NO_UNSURE_CHOICES
+    kwargs['default'] = None
+    kwargs['null'] = True
+    kwargs['blank'] = True
+    return models.BooleanField(*args, **kwargs)
 
 def NullYesNoField(*args, **kwargs):
     kwargs['choices'] = YES_NO_NONE_CHOICES
