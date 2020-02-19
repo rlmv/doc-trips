@@ -382,6 +382,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     race_ethnicity = models.CharField(
         'Race/Ethnicity', max_length=255, blank=True, choices=RACE_ETHNICITY_CHOICES
     )
+
     hinman_box = models.CharField(max_length=10, blank=True)
     phone = models.CharField('cell phone number', blank=True, max_length=255)
     summer_address = models.CharField(
@@ -723,10 +724,11 @@ class LeaderSupplement(DatabaseModel):
     # ------- availibilty and experience --------
 
     section_availability = models.TextField(
-        'First-year students who plan to attend pre-orientation programs or are '
-        'transfer/exchange students will be placed on particular sections, as '
-        'indicated above. If you would like to lead a trip on a section with '
-        'these students, please indicate your preference here.',
+        'First-year students who plan to attend pre-orientation programs '
+        '(FYSEP, Native and Indigenous Orientation, International Student '
+        'Orientation, Transfer/Exchange Students) will be placed on '
+        'particular sections. If you would like to lead a trip on a '
+        'section with these students, please indicate your preference here.',
         blank=True,
     )
 
