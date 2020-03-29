@@ -951,7 +951,7 @@ class RegistrationFormTestCase(FytTestCase):
         form = RegistrationForm(trips_year=self.trips_year, instance=reg, data=data)
         reg = form.save()
 
-        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 02 to Jan 06')
+        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 03 to Jan 07')
 
         tts = reg.registrationtriptypechoice_set.all()
         self.assertEqual(len(tts), 1)
