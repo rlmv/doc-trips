@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import F, Q
 
 from fyt.utils.matrix import OrderedMatrix
+from fyt.trips.constants import FIRST_CAMPSITE_DELTA, LODGE_ARRIVAL_DELTA, RETURN_TO_CAMPUS_DELTA
 
 
 class SectionDatesManager(models.Manager):
@@ -129,7 +130,7 @@ class TripManager(models.Manager):
 
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date - timedelta(days=2))
+            .filter(section__leaders_arrive=date - timedelta(days=FIRST_CAMPSITE_DELTA))
             .filter(
                 Q(dropoff_route=route)
                 | Q(dropoff_route=None, template__dropoff_stop__route=route)
@@ -142,7 +143,7 @@ class TripManager(models.Manager):
         """
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date - timedelta(days=4))
+            .filter(section__leaders_arrive=date - timedelta(days=LODGE_ARRIVAL_DELTA))
             .filter(
                 Q(pickup_route=route)
                 | Q(pickup_route=None, template__pickup_stop__route=route)
@@ -155,7 +156,7 @@ class TripManager(models.Manager):
         """
         return (
             self.with_counts(trips_year)
-            .filter(section__leaders_arrive=date - timedelta(days=5))
+            .filter(section__leaders_arrive=date - timedelta(days=RETURN_TO_CAMPUS_DELTA))
             .filter(
                 Q(return_route=route)
                 | Q(return_route=None, template__return_route=route)

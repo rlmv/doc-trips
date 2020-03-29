@@ -16,7 +16,8 @@ from .managers import (
 )
 
 from fyt.core.models import DatabaseModel
-
+from fyt.trips.constants import TRIPPEE_ARRIVAL_DELTA, FIRST_CAMPSITE_DELTA, SECOND_CAMPSITE_DELTA, \
+    LODGE_ARRIVAL_DELTA, RETURN_TO_CAMPUS_DELTA
 
 NUM_BAGELS_REGULAR = 1.3  # number of bagels per person
 NUM_BAGELS_SUPPLEMENT = 1.6  # number of bagels for supplemental trip
@@ -259,21 +260,21 @@ class Section(DatabaseModel):
         """
         Date that trippees arrive in Hanover.
         """
-        return self.leaders_arrive + timedelta(days=1)
+        return self.leaders_arrive + timedelta(days=TRIPPEE_ARRIVAL_DELTA)
 
     @property
     def at_campsite1(self):
         """
         Date that section is at first campsite
         """
-        return self.leaders_arrive + timedelta(days=2)
+        return self.leaders_arrive + timedelta(days=FIRST_CAMPSITE_DELTA)
 
     @property
     def at_campsite2(self):
         """
         Date the section is at the second campsite
         """
-        return self.leaders_arrive + timedelta(days=3)
+        return self.leaders_arrive + timedelta(days=SECOND_CAMPSITE_DELTA)
 
     @property
     def nights_camping(self):
@@ -287,14 +288,14 @@ class Section(DatabaseModel):
         """
         Date section arrives at the lodge.
         """
-        return self.leaders_arrive + timedelta(days=4)
+        return self.leaders_arrive + timedelta(days=LODGE_ARRIVAL_DELTA)
 
     @property
     def return_to_campus(self):
         """
         Date section returns to campus from the lodge
         """
-        return self.leaders_arrive + timedelta(days=5)
+        return self.leaders_arrive + timedelta(days=RETURN_TO_CAMPUS_DELTA)
 
     @property
     def trip_dates(self):
