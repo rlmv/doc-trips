@@ -150,7 +150,7 @@ class VolunteerCSV(GenericReportView):
                 application.new_preferred_sections,
                 application.new_available_sections,
                 application.new_preferred_triptypes,
-                application.new_preferred_triptypes,
+                application.new_available_triptypes,
             ]
             + [score.leader_score for score in application.scores.all()]
             + [score.croo_score for score in application.scores.all()]
