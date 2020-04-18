@@ -75,22 +75,35 @@ class GenericReportView(
 
 
 class VolunteerCSV(GenericReportView):
-
+    # ('preferred sections', 'new_preferred_sections'),
+    # ('available sections', 'new_available_sections'),
+    # ('preferred trip types', 'new_preferred_triptypes'),
+    # ('available trip types', 'new_available_triptypes'),
     file_prefix = 'TL-and-Croo-applicants'
     header = [
         'name',
         'netid',
         'avg leader score',
         'avg croo score',
+        'role_preference',
         'status',
         'leader app',
         'croo app',
         'class year',
         'gender',
         'race/ethnicity',
+        'transfer_exchange',
+        'section_availability', # interested in pre-orientation programming trippees
         'hometown',
+        'hanover_in_fall',
+        'swim_test',
+        'hiking_experience', # do they have hiking experience
         'clubs/interests',
         'co-leader',
+        'preferred sections',
+        'available sections',
+        'preferred triptypes',
+        'available triptypes',
     ]
 
     def get_header(self):
@@ -123,15 +136,25 @@ class VolunteerCSV(GenericReportView):
                 user.netid,
                 fmt_float(application.avg_leader_score),
                 fmt_float(application.avg_croo_score),
+                application.role_preference,
                 application.status,
                 yes_no(application.leader_application_submitted),
                 yes_no(application.croo_application_submitted),
                 str(application.class_year),
                 application.gender,
                 application.race_ethnicity,
+                application.transfer_exchange,
+                application.section_availability,
                 application.hometown,
+                application.hanover_in_fall,
+                application.swim_test,
                 application.personal_activities,
+                application.hiking_experience,
                 application.leader_supplement.co_leader,
+                application.new_preferred_sections,
+                application.new_available_sections,
+                application.new_preferred_triptypes,
+                application.new_preferred_triptypes,
             ]
             + [score.leader_score for score in application.scores.all()]
             + [score.croo_score for score in application.scores.all()]
