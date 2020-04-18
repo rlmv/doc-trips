@@ -75,10 +75,6 @@ class GenericReportView(
 
 
 class VolunteerCSV(GenericReportView):
-    # ('preferred sections', 'new_preferred_sections'),
-    # ('available sections', 'new_available_sections'),
-    # ('preferred trip types', 'new_preferred_triptypes'),
-    # ('available trip types', 'new_available_triptypes'),
     file_prefix = 'TL-and-Croo-applicants'
     header = [
         'name',
@@ -97,8 +93,8 @@ class VolunteerCSV(GenericReportView):
         'hometown',
         'hanover_in_fall',
         'swim_test',
-        'hiking_experience', # do they have hiking experience
         'clubs/interests',
+        'hiking_experience', # do they have hiking experience
         'co-leader',
         'preferred sections',
         'available sections',
