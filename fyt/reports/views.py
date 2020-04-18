@@ -32,11 +32,16 @@ def yes_no(value):
 def yes_if_true(value):
     return 'yes' if value else ''
 
-
 def fmt_float(value):
     if value is None:
         return ''
     return '{:.1f}'.format(value)
+
+def print_section_availability(section_availability):
+    return ','.join(str(section)[-1] for section in section_availability)
+
+def print_triptype_availability(trip_availability):
+    return ','.join(str(trip) for trip in trip_availability)
 
 
 class GenericReportView(
@@ -75,22 +80,31 @@ class GenericReportView(
 
 
 class VolunteerCSV(GenericReportView):
-
     file_prefix = 'TL-and-Croo-applicants'
     header = [
         'name',
         'netid',
         'avg leader score',
         'avg croo score',
+        'role_preference',
         'status',
         'leader app',
         'croo app',
         'class year',
         'gender',
         'race/ethnicity',
+        'transfer_exchange',
+        'section_availability',
         'hometown',
+        'hanover_in_fall',
+        'swim_test',
         'clubs/interests',
+        'hiking_experience',
         'co-leader',
+        'preferred sections',
+        'available sections',
+        'preferred triptypes',
+        'available triptypes',
     ]
 
     def get_header(self):
@@ -117,21 +131,32 @@ class VolunteerCSV(GenericReportView):
 
     def get_row(self, application):
         user = application.applicant
+
         return (
             [
                 user.name,
                 user.netid,
                 fmt_float(application.avg_leader_score),
                 fmt_float(application.avg_croo_score),
+                application.role_preference,
                 application.status,
                 yes_no(application.leader_application_submitted),
                 yes_no(application.croo_application_submitted),
                 str(application.class_year),
                 application.gender,
                 application.race_ethnicity,
+                application.transfer_exchange,
+                application.leader_supplement.section_availability,
                 application.hometown,
+                application.hanover_in_fall,
+                application.leader_supplement.swim_test,
                 application.personal_activities,
+                application.leader_supplement.hiking_experience,
                 application.leader_supplement.co_leader,
+                print_section_availability(application.leader_supplement.new_preferred_sections()),
+                print_section_availability(application.leader_supplement.new_available_sections()),
+                print_triptype_availability(application.leader_supplement.new_preferred_triptypes()),
+                print_triptype_availability(application.leader_supplement.new_available_triptypes())
             ]
             + [score.leader_score for score in application.scores.all()]
             + [score.croo_score for score in application.scores.all()]

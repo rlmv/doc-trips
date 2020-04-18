@@ -11,11 +11,11 @@ from fyt.applications.tests import ApplicationTestMixin
 from fyt.croos.models import Croo
 from fyt.gear.models import Gear, GearRequest
 from fyt.incoming.models import IncomingStudent, Registration, Settings
-from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts
+from fyt.reports.views import croo_tshirts, leader_tshirts, trippee_tshirts, fmt_float
 from fyt.test import FytTestCase
 from fyt.transport.models import ExternalBus, Route
 from fyt.trips.models import Section, Trip, TripType
-from fyt.utils.choices import L, M, S, XL, XS, XXL
+from fyt.utils.choices import L, M, S, XL, XS, XXL, PREFER, AVAILABLE
 
 
 @contextmanager
@@ -28,6 +28,12 @@ def save_and_open_csv(resp):
     f.write(resp.content)
     with open(f.name) as f:  # open in non-binary mode
         yield csv.DictReader(f)
+
+def print_section_availability(section_availability):
+    return ','.join(str(section)[-1] for section in section_availability)
+
+def print_triptype_availability(trip_availability):
+    return ','.join(str(trip) for trip in trip_availability)
 
 
 class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
@@ -74,8 +80,25 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
         self.make_score_values()
         question = mommy.make(Question, trips_year=self.trips_year)
         app = self.make_application(trips_year=self.trips_year)
+
+        preferred_section = mommy.make(Section, trips_year=self.trips_year)
+        available_section = mommy.make(Section, trips_year=self.trips_year)
+        preferred_triptype = mommy.make(TripType, trips_year=self.trips_year)
+        available_triptype = mommy.make(TripType, trips_year=self.trips_year)
+
+
+        app.leader_supplement.set_section_preference(preferred_section, PREFER)
+        app.leader_supplement.set_section_preference(available_section, AVAILABLE)
+        app.leader_supplement.set_triptype_preference(preferred_triptype, PREFER)
+        app.leader_supplement.set_triptype_preference(available_triptype, AVAILABLE)
+        app.leader_supplement.swim_test = True
+
+        app.hanover_in_fall = True
         app.croo_willing = False
+
+        app.leader_supplement.save()
         app.save()
+
         app.answer_question(question, 'An answer')
         mommy.make(Grader).add_score(app, self.V4, self.V2)
         mommy.make(Grader).add_score(app, self.V5, self.V1)
@@ -87,15 +110,25 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                 {
                     'name': app.name,
                     'netid': app.applicant.netid,
+                    'role_preference': app.role_preference,
                     'status': app.status,
                     'leader app': 'yes',
                     'croo app': 'no',
                     'class year': str(app.class_year),
                     'gender': app.gender,
                     'race/ethnicity': app.race_ethnicity,
+                    'transfer_exchange': str(app.transfer_exchange),
+                    'section_availability': app.leader_supplement.section_availability,
                     'hometown': app.hometown,
+                    'hanover_in_fall': str(app.hanover_in_fall),
+                    'swim_test': str(app.leader_supplement.swim_test),
                     'clubs/interests': app.personal_activities,
+                    'hiking_experience': app.leader_supplement.hiking_experience,
                     'co-leader': app.leader_supplement.co_leader,
+                    'preferred sections': print_section_availability(app.leader_supplement.new_preferred_sections()),
+                    'available sections': print_section_availability(app.leader_supplement.new_available_sections()),
+                    'preferred triptypes': print_triptype_availability(app.leader_supplement.new_preferred_triptypes()),
+                    'available triptypes': print_triptype_availability(app.leader_supplement.new_available_triptypes()),
                     'avg leader score': '4.3',
                     'leader score 1': '4.0',
                     'leader score 2': '5.0',
@@ -106,7 +139,7 @@ class ReportViewsTestCase(FytTestCase, ApplicationTestMixin):
                     'croo score 3': '3.0',
                 }
             ],
-            num_queries=18,
+            num_queries=22,
         )
 
     def test_trip_leader_csv(self):
