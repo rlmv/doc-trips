@@ -8,6 +8,6 @@ django-webtest==1.9.7
 importanize==0.7.0
 model-mommy==2.0.0
 pylint==2.5.0
-tblib==1.5.0
+tblib==1.6.0
 vcrpy==2.1.0
 webtest==2.0.33
