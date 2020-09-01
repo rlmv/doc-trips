@@ -12,7 +12,7 @@ django-storages[boto3]==1.10
 django-tables2==2.3.1
 django-vanilla-views==1.1.0
 gunicorn==20.0.4
-mammoth==1.4.9
+mammoth==1.4.11
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.5.15
 pyexcel-io==0.5.20
