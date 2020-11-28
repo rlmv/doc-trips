@@ -334,11 +334,11 @@ class SectionModelTestCase(FytTestCase):
         self.assertEqual(
             section.trip_dates,
             [
+                date(2015, 1, 2),
                 date(2015, 1, 3),
                 date(2015, 1, 4),
                 date(2015, 1, 5),
                 date(2015, 1, 6),
-                date(2015, 1, 7),
             ],
         )
 
@@ -351,11 +351,11 @@ class SectionModelTestCase(FytTestCase):
             section.leader_dates,
             [
                 date(2015, 1, 1),
+                date(2015, 1, 2),
                 date(2015, 1, 3),
                 date(2015, 1, 4),
                 date(2015, 1, 5),
                 date(2015, 1, 6),
-                date(2015, 1, 7),
             ],
         )
 

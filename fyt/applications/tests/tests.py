@@ -700,7 +700,7 @@ class LeaderSupplementFormTestCase(FytTestCase):
 
     def test_section_field_label(self):
         form = LeaderSupplementForm(trips_year=self.trips_year)
-        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 01 to Jan 07')
+        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 01 to Jan 06')
 
     def test_default_section_choice(self):
         form = LeaderSupplementForm(instance=self.leader_app, data=self.data({}))
