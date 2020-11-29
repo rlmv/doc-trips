@@ -1267,7 +1267,7 @@ class Grader(DartmouthUser):
         """
         trips_year = TripsYear.objects.current()
 
-        croo_app_pks = pks(Volunteer.objects.croo_applications(trips_year))
+        croo_app_pks = list(pks(Volunteer.objects.croo_applications(trips_year)))
 
         NUM_SCORES = Volunteer.NUM_SCORES
 
@@ -1287,16 +1287,17 @@ class Grader(DartmouthUser):
             .annotate(active_claims_count=Count(Subquery(active_claims)))
             .annotate(scores_and_claims=F('scores__count') + F('active_claims_count'))
             .filter(scores_and_claims__lt=NUM_SCORES)
+            .annotate(croo_head_scores_count=Count('pk', filter=Q(scores__croo_head=True)))
+            .annotate(croo_head_claims_count=Count(Subquery(active_croo_head_claims)))
             .annotate(
-                croo_head_scores_count=Count('pk', filter=Q(scores__croo_head=True)),
-                croo_head_claims_count=Count(Subquery(active_croo_head_claims)),
                 needs_croo_score=TrueIf(
                     pk__in=croo_app_pks,
                     croo_head_scores_count=0,
                     croo_head_claims_count=0,
-                ),
+                )
             )
         )
+
 
         # Croo head: try and pick a croo app which needs a croo head score
         if self.is_croo_head:

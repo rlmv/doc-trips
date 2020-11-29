@@ -1,6 +1,6 @@
 from django import template
 from django.db import models
-from django.db.models.fields import FieldDoesNotExist
+from django.core.exceptions import FieldDoesNotExist
 
 from fyt.core.templatetags.links import *
 from fyt.users.models import DartmouthUser
