@@ -17,7 +17,7 @@ psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.6.5
 pyexcel-io==0.6.4
 pyexcel-xls==0.6.1
-pyyaml==5.3.1
+pyyaml==5.4
 raven==6.10.0
 requests==2.24.0
 whitenoise==5.2.0
