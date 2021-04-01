@@ -11,7 +11,7 @@ django-pipeline==2.0.6
 django-storages[boto3]==1.11.1
 django-tables2==2.3.4
 django-vanilla-views==2.0.0
-gunicorn==20.0.4
+gunicorn==20.1.0
 mammoth==1.4.12
 psycopg2==2.7.4 --no-binary psycopg2
 pyexcel==0.6.5
