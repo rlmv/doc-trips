@@ -19,7 +19,7 @@ pyexcel-io==0.6.4
 pyexcel-xls==0.6.2
 pyyaml==5.4.1
 raven==6.10.0
-requests==2.24.0
+requests==2.25.1
 whitenoise==5.2.0
 
 git+git://github.com/rlmv/django-bootstrap3-datetimepicker.git
