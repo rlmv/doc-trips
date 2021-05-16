@@ -530,7 +530,7 @@ class ApplicationLayout(Layout):
             ),
             Fieldset(
                 'Medical and Personal Information',
-                HTML("<h5>This information will be kept confidential among the Director and Associate Director and shared on a need-to-know basis with relevant Directorate members (i.e. allergies).</h5><br>"),
+                HTML("<h5>This information will be kept confidential among Outdoor Programs staff and shared on a need-to-know basis with relevant students (e.g., allergies during food ordering).</h5><br>"),
                 Field('food_allergies', rows=3),
                 Field('dietary_restrictions', rows=3),
                 Field('medical_conditions', rows=3),
@@ -543,13 +543,12 @@ class ApplicationLayout(Layout):
                 HTML(
                     "<p>If selected to be a trip leader, you must arrive 2 days before your trip leaves to complete trip leader training to ensure the safety and engagement of the first-years who you will be responsible for for five days and four nights. You must also become First Aid/CPR certified. Note that financial aid is available for First Aid and CPR ceritfications!</p>"
                     "<p>Some specialized trips which do not have a dedicated support croo (e.g. Flatwater Kayaking, Horseback Riding, Sailing) may require at least one leader to provide a proof of skill or undergo additional training. We will provide any additional training necessary and inform you of this with your assignment.</p>"
-                    "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to arrive on August 18th to complete croo training (different requirements for different croos), and become First Aid and CPR certified.</p>"
-                    "<p>NOTE: Trip leaders and croolings are eligible for PE credit once they have completed trainings AND served their role in Trips. We are currently working with the PE department to iron out these details given the remote nature of spring term and will provide more details later on.</p>"
+                    "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to arrive before incoming students in order to complete croo training (different requirements for different croos). You must also become First Aid and CPR certified.</p>"
                 ),
                 Fieldset(
                     'First Aid Certifications',
                     HTML(
-                        "<p>Please list all of your <strong>current</strong> first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please list it in the 'other' field.</p>"
+                        "<p>Please list all of your <strong>current</strong> first aid certifications and their expiration date. If your certification is not listed in the dropdown box, please list it in the 'other' field. If you do not currently hold any of these, that's okay! Just note that all Trips volunteers have basic First Aid and CPR certifications before the beginning of Trips.</p>"
                     ),
                 ),
             ),
@@ -583,7 +582,7 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Special Skills and Experience',
                 HTML(
-                    "<p>This will help us in placing you on trips and croos. It is TOTALLY acceptable for the answer to be No/None for ALL of these questions (as is the case for many, if not the majority of Trips volunteers). </p>"
+                    "<p>This information is entirely voluntary, and is to help us in placing you on trips and croos and in staffing some trips which some technical skills. The majority of people will answer No/None to all of these questions. This is TOTALLY acceptable and expected.  </p>"
                 ),
                 'swim_test',
                 'class_2_3_paddler',
@@ -602,10 +601,7 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Trip Leader Availability',
                 HTML(
-                    "<p>Please indicate your availability for each section and type of trip. For each section, the first date listed is when leaders arrive for their two pre-Trips training days, and two days after the first date listed is when your trippees will arrive. The last day is the day you return from Moosilauke Ravine Lodge. </p>"
-                    "<p>We understand that your summer plans may be in flux due to the ongoing COVID-19 pandemic. We encourage you to put down your best estimate as to your availability (even if that is an extremely rough one!). If selected, and your availability changes, please contact us, and we’re committed to being as flexible as possible to ensure you can volunteer, given you’re available for the entirety of training and your trip. Trip leaders who are assigned to a Trips section and then are no longer able to lead at that time can be placed on the leader waitlist and reassigned to another trip.  If you are selected and find out later you can no longer volunteer, that is okay too, and we still encourage you to apply if you think you will be available.</p>"
-                    "<p><b>For those taking classes this summer:</b> Currently, given our modified training schedule based on spring term being conducted remotely, those taking classes will only be available to lead on section J, and should mark their availability as section J only. We will be in touch if we can open up availability for those taking classes further.</p>"
-                    "<p>Please keep in mind that your availability will affect our ability to place you on a trip—the more available you are for sections and trip types, the more likely we will be able to place you.</p>"
+                    "<p> Trips Sections and dates are still being finalized. If selected to be a Trip Leader, we will assign you to a section. In the meantime, please note availability for the placeholder – Section X. If you are unsure of your availability, we still encourage you to apply – there is no penalty for backing out of an assignment."
                 ),
             ),
             Fieldset('Sections', *section_fields),
@@ -613,8 +609,8 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Trip Types',
                 HTML(
-                    "<p>For trip leader applicants only. Please keep in mind that your availability will affect our ability to place you on a trip&mdash;the more available you are, the more likely we will be able to place you. We can't guarantee to place you on your preferred trips, but we will not assign you to trips you say you are unable or unwilling to lead.</p>"
-                    "<p>For selecting trip type, \"unwilling/unable\" means you would be uncomfortable leading this trip, \"willing\" means you would be comfortable leading this trip, and \"prefer\" means if Directorate has the flexibility, you'd prefer to lead these trips. You can prefer more than one option. </p>"
+                    "<p>For trip leader applicants only. This is to gauge what kinds of Trips you might be assigned to leading. We are aware that these are general categories, so we encourage you to be open minded! We will not assign you to trips you say you are unable or unwilling to lead, and if you eventually are assigned a trip that you're uncomfortable leading, feel free to reach out to us and we'll help to adjust things to meet your needs.</p>"
+                    "<p>For selecting trip type, \"unwilling/unable\" means you would be uncomfortable leading this trip, \"willing\" means you would be comfortable leading this trip, and \"prefer\" means if there is flexibility, you'd prefer to lead these trips. You can prefer more than one option. </p>"
                     '<p>{% include "applications/triptype_modal.html" %}</p>'
                 ),
                 *triptype_fields
@@ -639,14 +635,12 @@ class CrooSupplementLayout(Layout):
             Fieldset(
                 'Safety Lead',
                 HTML(
-                    "<p>Every croo has at least one or more <strong>Safety "
-                    "Leads</strong> who is responsible for medical care and "
-                    "evacuations at their respective location (Hanover, "
-                    "Grant, Oak Hill, etc). Safety Leads are an integral part "
-                    "of each croo and, in addition to their medical responsibilities, "
-                    "are included in all other croo activities. If you have a "
+                    "<p> Safety Leads are an integral part "
+                    "of Trips, working to keep everyone on the program safe in case of"
+                    "a medical situation. They are paired with other croos and work with" 
+                    " croos to fulfill the logistical needs of Trips, alongside their safety responsibilies. If you have a "
                     "WFR, EMT, W-EMT, OEC, or equivalent medical certification "
-                    "(or are planning to have one by August 2020), you are qualified "
+                    "(or are planning to have one by Trips), you are qualified "
                     "to be a Safety Lead. We will prioritize people who have "
                     "(or are planning to have) higher safety certifications "
                     "(EMT, W-EMT) and extensive safety experience.</p>"
