@@ -541,10 +541,11 @@ class ApplicationLayout(Layout):
                 'Trainings',
                 Field('peer_training', rows=4),
                 HTML(
-                    "<p>If selected to be a trip leader, you must complete training before Trips begins to ensure the safety and engagement of the first-years who you will be responsible for for five days and four nights. The position requires you to complete 9 hours of trip leader training in the spring OR summer term, become First Aid/CPR certified, as well as attend a mental health training seminar. Note that financial aid is available for these ceritfications!</p>"                    "<p>Some specialized trips which do not have a dedicated support croo (e.g. Flatwater Kayaking, Horseback Riding, Sailing) may require at least one leader to provide a proof of skill or undergo additional training. We will provide any additional training necessary and inform you of this with your assignment.</p>"
--                   "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to complete 6+ hours of croo training (different requirements for different croos), become First Aid and CPR certified, and attend a mental health training seminar.</p>"
--                   "<p>NOTE: Trip leaders are eligible for PE credit once they have completed trainings AND served their role in Trips. We are currently working with the PE department to provide this perk for croolings as well.</p>"
--                   "<p><strong>Please select which terms you would be available to complete trip leader and croo trainings. (Trip leader and croo trainings are DOC Trips-specific, while First Aid and CPR certifications can be acquired off-campus.) Please indicate both if you are available for both.</strong></p>"
+                    "<p>If selected to be a trip leader, you must complete training before Trips begins to ensure the safety and engagement of the first-years who you will be responsible for for five days and four nights. The position requires you to complete 9 hours of trip leader training in the spring OR summer term, become First Aid/CPR certified, as well as attend a mental health training seminar. Note that financial aid is available for these ceritfications!</p>"
+                    "<p>Some specialized trips which do not have a dedicated support croo (e.g. Flatwater Kayaking, Horseback Riding, Sailing) may require at least one leader to provide a proof of skill or undergo additional training. We will provide any additional training necessary and inform you of this with your assignment.</p>"
+                    "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to complete 6+ hours of croo training (different requirements for different croos), become First Aid and CPR certified, and attend a mental health training seminar.</p>"
+                    "<p>NOTE: Trip leaders are eligible for PE credit once they have completed trainings AND served their role in Trips. We are currently working with the PE department to provide this perk for croolings as well.</p>"
+                    "<p><strong>Please select which terms you would be available to complete trip leader and croo trainings. (Trip leader and croo trainings are DOC Trips-specific, while First Aid and CPR certifications can be acquired off-campus.) Please indicate both if you are available for both.</strong></p>"
                 ),
                 Fieldset(
                     'First Aid Certifications',
@@ -602,8 +603,8 @@ class LeaderSupplementLayout(Layout):
             Fieldset(
                 'Trip Leader Availability',
                 HTML(
--                    "<p>Please indicate your availability for each section and type of trip. For each section, the first date listed is when leaders arrive for a pre-Trips training day, and your trippees will arrive the day after. The last day is the day you return from Moosilauke Ravine Lodge. If your availability changes once you've been selected, you can always update it and we will work with you to try to get you on a trip!</p>"
--                    "<p>Please keep in mind that your availability will affect our ability to place you on a trip—the more available you are for sections and trip types, the more likely we will be able to place you. </p>"
+                     "<p>Please indicate your availability for each section and type of trip. For each section, the first date listed is when leaders arrive for a pre-Trips training day, and your trippees will arrive the day after. The last day is the day you return from Moosilauke Ravine Lodge. If your availability changes once you've been selected, you can always update it and we will work with you to try to get you on a trip!</p>"
+                     "<p>Please keep in mind that your availability will affect our ability to place you on a trip—the more available you are for sections and trip types, the more likely we will be able to place you. </p>"
                 ),
             ),
             Fieldset('Sections', *section_fields),
