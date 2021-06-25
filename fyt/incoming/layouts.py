@@ -24,17 +24,11 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Mission',
                 HTML(
-                    '<p>Trips, as the program is called, welcomes first-year students to '
-                    'life at Dartmouth through the beauty of the New Hampshire outdoors. '
-                    'It is a unique, five-day, outdoor experience designed to provide '
-                    'students with a support system from the time they arrive, both '
-                    'among incoming students and with upper-class student volunteers, '
-                    'and it encourages students to befriend people of all backgrounds '
-                    'and create an inclusive Dartmouth beyond Trips. Trips is proud '
-                    'to be student-run, and we aim to create a program in which all '
-                    'first-year students feel welcome during and after their trip '
-                    'through the mentorship of upperclass Dartmouth students and '
-                    'through quality programming.</p>'
+                    '<p>First-Year Trips is a pre-orientation experience which aims to  '
+                    'support the transition of incoming students to Dartmouth, while '
+                    'fostering a sense of belonging and empowerment for all new members of the Dartmouth community. '
+                    'First-Year Trips collaborates with New Student Orientation and Outdoor Programs '
+                    'to provide peer-led, small-group connections in the spaces and places within and surrounding Dartmouth’s campus. '
                 ),
             ),
             Fieldset(
@@ -91,32 +85,27 @@ class RegistrationFormLayout(Layout):
                 Field('schedule_conflicts', rows=3),
             ),
             Fieldset(
+                'Accommodations',
+                HTML(
+                    "<p> We recognize that some students may need additional accommodations related (but not limited) to disabilities, religious practices, dietary restrictions, allergies, and other needs. We are committed to doing everything possible to help all students participate in the Trips program to the extent they feel comfortable. (e.g. electricity can be provided if you require a medical device). Please let us know of your needs on your registration form; all information is kept confidential. You may also contact the Student Accessibility Services Office by phone at (603) 646.9900. </p>"
+                ),
+            ),
+            Fieldset(
                 'Trip Type',
                 HTML(
-                    "<p> Every trip spends two and a half of the five days exploring a specific location around New Hampshire while doing any number of outdoor activities - everything from hiking to yoga to kayaking to organic farming. No matter which trip you are assigned to, we promise you'll find the experience to be an exciting and comfortable one. </p>"
-                    "<p> We offer a variety of different types of trips on each section. The trip type is determined by the activity featured on the trip. {% include 'incoming/_triptype_modal.html' %} </p>"
-                    "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. We do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. The likelihood of getting your first choice increases if you: </p>"
-                    "<ul> <li>submit all your registration materials by the deadline, </li><li>choose trip sections that correspond to your geographic location (Northeast U.S.: Sections "
-                    + local_sections_range
-                    + ", Other regions: Sections "
-                    + not_local_sections_range
-                    + "), and </li> <li> are available for many sections. </li> </ul>"
-                    "<p><strong> Registering early does not increase your chances of getting your desired trip. However, you must register by the deadline. </strong></p>"
+                    "<p> Every trip spends time exploring a part of New Hampshire or Vermont while doing any number of activities - everything from hiking to yoga to kayaking to organic farming to ecology. We will work with you to match you to something that you feel is exciting and comfortable. </p>"
+                    "<p> We offer a variety of types of trip, each corresponding to another activity. {% include 'incoming/_triptype_modal.html' %} </p>"
+                    "<p> You must list a Hiking or Cabin Camping trip as one of your possible choices - those are the most common trip types we offer. If that sounds scary to you, don’t worry! We offer these activities in areas, facilities, and intensities that can accommodate anyone. If you have a specific concern about accessibility or ability, please reach out to us! We will work with you to meet your needs, whatever they may be. </p>"
+                    "<p> In our process, we do our very best to assign you to a trip you have listed as either your first choice or a preferred option. If you are not assigned your first choice, we encourage you to check out the beginner classes & trips offered by the Dartmouth Outing Club throughout the school year. </p>"
                 ),
                 *triptype_fields
             ),
             Fieldset(
                 'T-Shirts',
                 HTML(
-                    "<p> You'll be getting a First-Year Trips t-shirt! These shirts are 100% organic cotton &mdash; wahoo! What size would you like? </p>"
+                    "<p> As part of going on Trips, you get a T-Shirt! They’re uniquely designed for students every year (and we like to think they’re pretty neat). What size would you like (US Unisex sizes)? </p>"
                 ),
                 'tshirt_size',
-            ),
-            Fieldset(
-                'Accommodations',
-                HTML(
-                    "<p> We recognize that some students may need additional accommodations related (but not limited) to disabilities, religious practices, dietary restrictions, allergies, and other needs. We are committed to doing everything possible to help all students participate in the Trips program to the extent they feel comfortable. (e.g. electricity can be provided if you require a medical device). Please let us know of your needs on your registration form; all information is kept confidential. You may also contact the Student Accessibility Services Office by phone at (603) 646.9900. </p>"
-                ),
             ),
             Fieldset(
                 'Medical Information',
@@ -144,11 +133,11 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Swimming Experience',
                 HTML(
-                    "<p> Completing a 50 yard swim is a Dartmouth graduation requirement, and is also required for participation in some of our trips, so every incoming student will have the opportunity to take a swim test the day they arrive. If possible, we highly recommend that you take your swim test during Trips so you can get it out of the way. </p>"
+                    "<p> Some First-Year Trips, such as Kayaking, heavily involve water and may involve swimming. Anyone who participates in a Water Trip must complete a 50-meter swim test on their first day of Trips. Here, please rate your swimming ability to help us match you to a Trip! </p>"
                 ),
                 'swimming_ability',
                 HTML(
-                    "<p> If you cannot swim or would rather not take the swim test, please indicate that by answering the above question with 'non-swimmer'. Don't worry, there are plenty of chances to complete the 50-yard swim graduation requirement throughout your time at Dartmouth. This way we can assign you to a trip that does not require you to have passed a swim test. <i>And don't worry! Over half the trips don't involve swimming!</i> <p>"
+                    "<p> If you cannot swim or would rather not take the swim test, please indicate that by answering the above question with 'non-swimmer'. Don’t worry -- there are plenty of Trips which don’t involve water. <p>"
                 ),
             ),
             Fieldset(
