@@ -408,7 +408,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
         "Most trips require participants to have a frame pack, sleeping bag, "
         "and sleeping pad. What outdoor gear is available to you? Will you be "
         "able to borrow gear from friends and family or will you require "
-        "rentals from DOC Trips?  While we will do our best to accommodate "
+        "rentals from First-Year Trips?  While we will do our best to accommodate "
         "your gear needs if you are selected, priority will be given to "
         "first-years.",
         blank=True,
@@ -497,7 +497,7 @@ class Volunteer(MedicalMixin, DatabaseModel):
     )
     in_goodstanding_with_college = models.BooleanField(
         "By applying to volunteer for Trips, I acknowledge that I am in good "
-        "standing with the College. This will be verified by DOC Trips "
+        "standing with the College. This will be verified by First-Year Trips "
         "through the Undergraduate Dean’s Office.",
         default=False,
     )

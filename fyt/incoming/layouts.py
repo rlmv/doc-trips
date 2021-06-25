@@ -51,8 +51,8 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Orientations and Pre-Season Training',
                 HTML(
-                    "<p> The College has several different pre-orientation options, including athletics pre-season for fall sports. ALL students are able to participate in DOC Trips, even if they are involved in other pre-orientation programs. We work with other programs and offices as we schedule the Trips program, so the information below is helpful in assigning you to an appropriately scheduled trip. </p>"
-                    "<p> If your group is limited to certain sections, be sure to mark all other sections as 'Not Available' (see below). Please note that marking any of these groups will NOT affect your eligibility to participate in DOC Trips.</p>"
+                    "<p> The College has several different pre-orientation options, including athletics pre-season for fall sports. ALL students are able to participate in First-Year Trips, even if they are involved in other pre-orientation programs. We work with other programs and offices as we schedule the Trips program, so the information below is helpful in assigning you to an appropriately scheduled trip. </p>"
+                    "<p> If your group is limited to certain sections, be sure to mark all other sections as 'Not Available' (see below). Please note that marking any of these groups will NOT affect your eligibility to participate in First-Year Trips.</p>"
                 ),
                 'is_exchange',
                 'is_transfer',
@@ -67,10 +67,10 @@ class RegistrationFormLayout(Layout):
                     "<p>Because we can’t have a thousand students all arrive on the same day, we stagger our program over ten Sections.</p>"
                     "<p> "
                     + local_sections
-                    + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for as many of these sections as possible. DOC Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
+                    + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for as many of these sections as possible. First-Year Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
                     "<p> "
                     + not_local_sections
-                    + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of DOC Trips. Students on sections "
+                    + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of First-Year Trips. Students on sections "
                     + not_local_sections_range
                     + " can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
                     "<p> "
@@ -108,7 +108,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'T-Shirts',
                 HTML(
-                    "<p> You'll be getting a DOC Trips t-shirt! These shirts are 100% organic cotton &mdash; wahoo! What size would you like? </p>"
+                    "<p> You'll be getting a First-Year Trips t-shirt! These shirts are 100% organic cotton &mdash; wahoo! What size would you like? </p>"
                 ),
                 'tshirt_size',
             ),
@@ -235,7 +235,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'Financial Assistance',
                 HTML(
-                    "<p> We are <i>very</i> committed to making Trips available to anyone, regardless of financial need. We offer <strong>generous financial assistance</strong>, which you can request below. Financial assistance is also available for bussing if you are taking a DOC Trips bus from one of our Northeast stops to Hanover. The cost for DOC Trips is $"
+                    "<p> We are <i>very</i> committed to making Trips available to anyone, regardless of financial need. We offer <strong>generous financial assistance</strong>, which you can request below. Financial assistance is also available for bussing if you are taking a First-Year Trips bus from one of our Northeast stops to Hanover. The cost for First-Year Trips is $"
                     + trips_cost
                     + ". The cost is the same regardless of which trip you are assigned. </p>"
                     "<p> Eligibility for financial assistance is determined "
@@ -274,7 +274,7 @@ class RegistrationFormLayout(Layout):
             Fieldset(
                 'OPTIONAL: Green Fund Donation',
                 HTML(
-                    "<p> As the largest outdoors orientation program in the country, DOC Trips is committed to being a responsible steward of both natural resources and the environment. Your donation to the Green Fund will go directly toward sustainability initiatives within the program such as locally-sourced food, providing organic cotton t-shirts to all participants, using bio-diesel fuel for Trips transportation, and serving an entirely vegetarian/organic menu during the program. <i>Note: this donation, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill.</i> </p>"
+                    "<p> As the largest outdoors orientation program in the country, First-Year Trips is committed to being a responsible steward of both natural resources and the environment. Your donation to the Green Fund will go directly toward sustainability initiatives within the program such as locally-sourced food, providing organic cotton t-shirts to all participants, using bio-diesel fuel for Trips transportation, and serving an entirely vegetarian/organic menu during the program. <i>Note: this donation, along with the rest of the cost for your Trip, will be placed directly on your first College tuition bill.</i> </p>"
                 ),
                 'green_fund_donation',
             ),

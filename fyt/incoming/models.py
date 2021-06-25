@@ -651,7 +651,7 @@ class Registration(MedicalMixin, DatabaseModel):
         related_name='requests_from_hanover',
     )
     financial_assistance = YesNoField(
-        "Are you requesting financial assistance from DOC Trips? If "
+        "Are you requesting financial assistance from First-Year Trips? If "
         "'yes' we will contact you in July with more information about "
         "your financial assistance."
     )

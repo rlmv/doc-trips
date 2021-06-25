@@ -156,7 +156,7 @@ class AgreementLayout(Layout):
                     "<p>You must agree to the following statements in order "
                     "to volunteer for Trips. Checking each box indicates your "
                     "acceptance of the conditions required to participate in "
-                    "DOC Trips.</p>"
+                    "First-Year Trips.</p>"
                 ),
                 'trippee_confidentiality',
                 'in_goodstanding_with_college',
@@ -545,7 +545,7 @@ class ApplicationLayout(Layout):
                     "<p>Some specialized trips which do not have a dedicated support croo (e.g. Flatwater Kayaking, Horseback Riding, Sailing) may require at least one leader to provide a proof of skill or undergo additional training. We will provide any additional training necessary and inform you of this with your assignment.</p>"
                     "<p>If selected to be a crooling, you will ensure the safety and engagement of hundreds of first-years and volunteers. The position requires you to complete 6+ hours of croo training (different requirements for different croos), become First Aid and CPR certified, and attend a mental health training seminar.</p>"
                     "<p>NOTE: Trip leaders are eligible for PE credit once they have completed trainings AND served their role in Trips. We are currently working with the PE department to provide this perk for croolings as well.</p>"
-                    "<p><strong>Please select which terms you would be available to complete trip leader and croo trainings. (Trip leader and croo trainings are DOC Trips-specific, while First Aid and CPR certifications can be acquired off-campus.) Please indicate both if you are available for both.</strong></p>"
+                    "<p><strong>Please select which terms you would be available to complete trip leader and croo trainings. (Trip leader and croo trainings are Trips-specific, while First Aid and CPR certifications can be acquired off-campus.) Please indicate both if you are available for both.</strong></p>"
                 ),
                 Fieldset(
                     'First Aid Certifications',
