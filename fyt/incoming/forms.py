@@ -79,33 +79,18 @@ class RegistrationForm(TripsYearModelForm):
 
     class Meta:
         model = Registration
-        exclude = ['section_choice', 'triptype_choice']
+        exclude = ['section_choice', 'triptype_choice', 'schedule_conflicts', 'bus_stop_round_trip', 'bus_stop_to_hanover', 'bus_stop_from_hanover']
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        sections = Section.objects.filter(trips_year=self.trips_year)
-        self.section_handler = SectionPreferenceHandler(self, sections)
-        self.fields.update(self.section_handler.get_formfields())
+        # sections = Section.objects.filter(trips_year=self.trips_year)
+        # self.section_handler = SectionPreferenceHandler(self, sections)
+        # self.fields.update(self.section_handler.get_formfields())
 
         triptypes = TripType.objects.visible(self.trips_year)
         self.triptype_handler = TripTypePreferenceHandler(self, triptypes)
         self.fields.update(self.triptype_handler.get_formfields())
-
-        external_stops = Stop.objects.external(self.trips_year)
-        self.fields['bus_stop_round_trip'] = RoundTripStopChoiceField(
-            label="Bus stop (round-trip)", queryset=external_stops, required=False
-        )
-        self.fields['bus_stop_to_hanover'] = OneWayStopChoiceField(
-            label="Bus stop (one-way TO Hanover)",
-            queryset=external_stops,
-            required=False,
-        )
-        self.fields['bus_stop_from_hanover'] = OneWayStopChoiceField(
-            label="Bus stop (one-way FROM Hanover)",
-            queryset=external_stops,
-            required=False,
-        )
 
         # Show which sections are available for these choices
         self.fields['is_exchange'].help_text = join_with_and(
@@ -138,7 +123,6 @@ class RegistrationForm(TripsYearModelForm):
             'contact_url': settings.contact_url,
         }
         helper.layout = RegistrationFormLayout(
-            self.section_handler.formfield_names(),
             self.triptype_handler.formfield_names(),
             **kwargs
         )
@@ -152,7 +136,6 @@ class RegistrationForm(TripsYearModelForm):
 
         with transaction.atomic():
             registration = super().save()
-            self.section_handler.save()
             self.triptype_handler.save()
 
         return registration
