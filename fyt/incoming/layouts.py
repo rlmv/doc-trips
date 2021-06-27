@@ -43,6 +43,48 @@ class RegistrationFormLayout(Layout):
                 'guardian_email',
             ),
             Fieldset(
+                'Orientations and Pre-Season Training',
+                HTML(
+                    "<p> The College has several different pre-orientation options, including athletics pre-season for fall sports. ALL students are able to participate in First-Year Trips, even if they are involved in other pre-orientation programs. We work with other programs and offices as we schedule the Trips program, so the information below is helpful in assigning you to an appropriately scheduled trip. </p>"
+                    "<p> If your group is limited to certain sections, be sure to mark all other sections as 'Not Available' (see below). Please note that marking any of these groups will NOT affect your eligibility to participate in First-Year Trips.</p>"
+                ),
+                'is_exchange',
+                'is_transfer',
+                'is_international',
+                'is_native',
+                'is_fysep',
+                'is_athlete',
+            ),
+            Fieldset(
+                'Section',
+                HTML(
+                    "<p>Because we can’t have a thousand students all arrive on the same day, we stagger our program over ten Sections.</p>"
+                    "<p> "
+                    + local_sections
+                    + " are for students who live within a few hours drive of Hanover, NH and can return home after their trip. They then come back to campus on the College's official move-in day. If you live in the Northeast United States, please try to be available for as many of these sections as possible. First-Year Trips provides bus service to several parts of the Northeast U.S. for these specific sections, so check out the 'Bus Option' below. </p>"
+                    "<p> "
+                    + not_local_sections
+                    + " are for students who do not live nearby, and couldn’t reasonably return home between their trip and the College's official move-in day. These students will be able to store their belongings in their dorm rooms when they arrive (although they WILL NOT be staying there until their DOC Trip is over). We will provide lodging for the duration of First-Year Trips. Students on sections "
+                    + not_local_sections_range
+                    + " can move into their rooms when their trip returns to campus (even though some return before official move-in day).</p>"
+                    "<p> "
+                    + international_sections
+                    + " are the sections for international students. Signing up for these sections as an international student will ensure you are able to move-in to your residence hall the day before your trip (ONLY international students can do this), you are not expected to go home after your Trip. By selecting these sections, you will return from your trip in time for the start of International Student Orientation. </p> "
+                    "<p>Pull out your calendar for this! Confirm the dates of "
+                    "family activities, work schedules, and other commitments. "
+                    "<strong> Please select all sections you "
+                    "would be available for unless you have a specific reason "
+                    "that you would not be available.</strong> Once your "
+                    "section has been assigned it is incredibly difficult for "
+                    "us to change it!</p>"
+                ),
+                Layout(*section_fields),
+                HTML(
+                    "<p> If you have a particular, immovable scheduling conflict and need to come on a specific section, please elaborate below. Let us know which section(s) you can attend and which ones you cannot. </p>"
+                ),
+                Field('schedule_conflicts', rows=3),
+            ),
+            Fieldset(
                 'Accommodations',
                 HTML(
                     "<p> We recognize that some students may need additional accommodations related (but not limited) to disabilities, religious practices, dietary restrictions, allergies, and other needs. We are committed to doing everything possible to help all students participate in the Trips program to the extent they feel comfortable. (e.g. electricity can be provided if you require a medical device). Please let us know of your needs on your registration form; all information is kept confidential. You may also contact the Student Accessibility Services Office by phone at (603) 646.9900. </p>"
@@ -153,6 +195,30 @@ class RegistrationFormLayout(Layout):
                 Row(
                     Div('height', css_class='col-sm-3'),
                     Div('weight', css_class='col-sm-3'),
+                ),
+            ),
+            Fieldset(
+                'Bus Option',
+                HTML(
+                    "<p> Students in "
+                    + local_sections
+                    + " will not be able to move into their rooms after their trips. It is for them that we coordinate bus transportation. We charter buses from various areas of the Northeast to bring students to Hanover for their trips and return them home afterwards. Because of the need to reserve spaces on later sections for those who live farther away, it is essential that all applicants from the Northeast come on Sections "
+                    + local_sections_range
+                    + ". </p>"
+                    "<p><strong> These buses do not pick up at the airport.</strong> They are for students who live in the Northeast, NOT students who will be flying to Boston or Manchester airports. (Transportation from the airport must be arranged on your own.)</p>"
+                    "<p>If you live in the Northeast, we ask you to elect the bus option unless: <ul> <li> you are absolutely unavailable for "
+                    + local_sections
+                    + ", or </li> <li>none of the stops are within 75 miles of you, or </li> <li> you live close enough to have relatively easy transportation to/from Hanover for you and your trip gear </li> </ul> </p>"
+                    "<p> Bus fares vary by location (see bus options below for exact price). Financial assistance is available for bus fares. If the cost of transportation/Trips may prevent you from participating, please contact us & we can help! See below for more information. </p>"
+                ),
+                'bus_stop_round_trip',
+                HTML("<p> Or, if you would like to take a bus only one-way:</p>"),
+                Row(
+                    Div('bus_stop_to_hanover', css_class="col-sm-6"),
+                    Div('bus_stop_from_hanover', css_class="col-sm-6"),
+                ),
+                HTML(
+                    '<p> If our bus option does not work for you, there are other public transportation services such as the train (<a href="http://www.amtrak.com/home">Amtrak</a>) or bus (<a href="https://www.greyhound.com/">Greyhound</a>, <a href="http://www.dartmouthcoach.com/">Dartmouth Coach</a>). We consider these options the most environmentally friendly ways to get here, so check them out!</p>'
                 ),
             ),
             Fieldset(
