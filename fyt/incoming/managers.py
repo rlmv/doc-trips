@@ -88,6 +88,8 @@ class IncomingStudentManager(models.Manager):
                             row['PR Zip'],
                             row['PR Nation Name'],
                         ),
+                        'med_info': row['Medical Info'],
+                        'notes': row['Notes'],
                     },
                 )
 
