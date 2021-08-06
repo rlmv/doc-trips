@@ -936,32 +936,32 @@ class RegistrationFormTestCase(FytTestCase):
         self.assertEqual(instance.trips_year, self.trips_year)
         self.assertEqual(instance.user, user)
 
-    def test_section_and_triptype_preferences(self):
-        reg = mommy.make(Registration, trips_year=self.trips_year)
-        triptype = mommy.make(TripType, pk=1, trips_year=self.trips_year)
-        section = mommy.make(
-            Section,
-            pk=1,
-            trips_year=self.trips_year,
-            leaders_arrive=date(2015, 1, 1),
-            name='A',
-        )
-        data = {'triptype_1': 'FIRST CHOICE', 'section_1': 'PREFER'}
-        data.update(self.REGISTRATION_DATA)
-        form = RegistrationForm(trips_year=self.trips_year, instance=reg, data=data)
-        reg = form.save()
+    # def test_section_and_triptype_preferences(self):
+    #     reg = mommy.make(Registration, trips_year=self.trips_year)
+    #     triptype = mommy.make(TripType, pk=1, trips_year=self.trips_year)
+    #     section = mommy.make(
+    #         Section,
+    #         pk=1,
+    #         trips_year=self.trips_year,
+    #         leaders_arrive=date(2015, 1, 1),
+    #         name='A',
+    #     )
+    #     data = {'triptype_1': 'FIRST CHOICE', 'section_1': 'PREFER'}
+    #     data.update(self.REGISTRATION_DATA)
+    #     form = RegistrationForm(trips_year=self.trips_year, instance=reg, data=data)
+    #     reg = form.save()
 
-        self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 02 to Jan 06')
+    #     self.assertEqual(form.fields['section_1'].label, 'A &mdash; Jan 02 to Jan 06')
 
-        tts = reg.registrationtriptypechoice_set.all()
-        self.assertEqual(len(tts), 1)
-        self.assertEqual(tts[0].triptype, triptype)
-        self.assertEqual(tts[0].preference, 'FIRST CHOICE')
+    #     tts = reg.registrationtriptypechoice_set.all()
+    #     self.assertEqual(len(tts), 1)
+    #     self.assertEqual(tts[0].triptype, triptype)
+    #     self.assertEqual(tts[0].preference, 'FIRST CHOICE')
 
-        secs = reg.registrationsectionchoice_set.all()
-        self.assertEqual(len(secs), 1)
-        self.assertEqual(secs[0].section, section)
-        self.assertEqual(secs[0].preference, 'PREFER')
+    #     secs = reg.registrationsectionchoice_set.all()
+    #     self.assertEqual(len(secs), 1)
+    #     self.assertEqual(secs[0].section, section)
+    #     self.assertEqual(secs[0].preference, 'PREFER')
 
 
 class IncomingStudentViewsTestCase(FytTestCase):
