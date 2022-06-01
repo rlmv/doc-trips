@@ -20,7 +20,7 @@ pyexcel-xls==0.7.0
 pyyaml==6.0
 raven==6.10.0
 requests==2.27.1
-whitenoise==5.2.0
+whitenoise==6.1.0
 
 git+git://github.com/rlmv/django-bootstrap3-datetimepicker.git
 git+git://github.com/jazzband/django-model-utils.git@bf1adce0b819b59ca8e5075ca1f45230286a1ae8
