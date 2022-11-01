@@ -9,5 +9,5 @@ importanize==0.7.0
 model-mommy==2.0.0
 pylint==2.15.5
 tblib==1.7.0
-vcrpy==4.1.1
+vcrpy==4.2.1
 webtest==2.0.35
