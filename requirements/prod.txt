@@ -14,7 +14,7 @@ django-vanilla-views==3.0.0
 gunicorn==20.1.0
 mammoth==1.5.0
 psycopg2==2.7.4 --no-binary psycopg2
-pyexcel==0.6.6
+pyexcel==0.7.0
 pyexcel-io==0.6.4
 pyexcel-xls==0.6.2
 pyyaml==5.4.1
